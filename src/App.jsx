@@ -1,7 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { PlanProvider, usePlan } from './context/PlanContext';
 import Layout from './components/Layout';
+import SetupWizard from './components/SetupWizard';
 
 // Modules
 import VistaPrevia from './modules/VistaPrevia';
@@ -12,16 +13,33 @@ import PitchDeck from './modules/PitchDeck';
 import Semilla from './modules/Semilla';
 import DynamicModule from './components/DynamicModule';
 
+// [HDD] Primer arranque: si no hay setup en localStorage, mostramos el wizard
 function AppContent() {
-  const { planData } = usePlan();
-  
+  const { planData, updateConfig } = usePlan();
+  const [showWizard, setShowWizard] = useState(false);
+
   useEffect(() => {
     const theme = planData.config?.theme || 'dark';
     document.documentElement.setAttribute('data-theme', theme);
   }, [planData.config?.theme]);
 
+  useEffect(() => {
+    // [TDD] Solo mostrar wizard si no hay configuración previa
+    const setup = localStorage.getItem('openplan_setup');
+    if (!setup) setShowWizard(true);
+  }, []);
+
+  // [EDD] Evento de completion: aplica la config detectada al plan
+  const handleWizardComplete = (config) => {
+    if (config.model) updateConfig('ai', 'model', config.model);
+    if (config.contextSize) updateConfig('ai', 'contextSize', config.contextSize);
+    if (config.endpoint) updateConfig('ai', 'endpoint', config.endpoint);
+    setShowWizard(false);
+  };
+
   return (
     <BrowserRouter>
+      {showWizard && <SetupWizard onComplete={handleWizardComplete} />}
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Navigate to="/semilla" replace />} />
@@ -48,3 +66,4 @@ function App() {
 }
 
 export default App;
+

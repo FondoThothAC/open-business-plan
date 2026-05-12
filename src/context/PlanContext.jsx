@@ -29,9 +29,24 @@ const createEmptyPlan = (projectType = 'business') => {
   const plan = {
     config: {
       projectType,
-      locks: {}, theme: 'dark',
+      locks: {}, theme: 'light',
       visibility: {},
-      ai: { primaryProvider: 'gemini', secondaryProvider: 'groq', apiKey: KEYS.gemini, groqKey: KEYS.groq, endpoint: 'http://localhost:11434', model: 'gemma4:e2b' },
+      ai: {
+        primaryProvider: 'gemini', secondaryProvider: 'groq',
+        apiKey: KEYS.gemini, groqKey: KEYS.groq,
+        endpoint: 'http://localhost:11434',
+        model: 'gemma4:e4b',   // modelo base (nivel rápido)
+        depth: 1,              // 1=Rápido, 2=Pro, 3=Profundo
+        contextSize: 65536,    // 64k por defecto (seguro para 8GB VRAM)
+        // [DDD] Modelos por rol — sobreescriben DEFAULT_AGENT_CONFIG en ai.js
+        agentModels: {
+          analista:     { model: 'gemma4:e4b', role: 'Analista Estratégico' },
+          critico:      { model: 'gemma4:e4b', role: 'Crítico Financiero' },
+          redactor:     { model: 'gemma4:e4b', role: 'Redactor Ejecutivo' },
+          estratega:    { model: 'gemma4:e4b', role: 'Estratega de Negocio' },
+          abogadoDiablo:{ model: 'gemma4:e4b', role: "Devil's Advocate" },
+        }
+      },
       brandKit: { primaryColor: '#6366f1', secondaryColor: '#8b5cf6', logoUrl: '', companyName: '' },
       externalApis: { inegiToken: KEYS.denue, banxicoToken: KEYS.banxico },
       anexos: [],
@@ -87,9 +102,9 @@ export const PlanProvider = ({ children }) => {
       document.documentElement.style.setProperty('--accent-color', planData.config.brandKit.primaryColor);
       document.documentElement.style.setProperty('--accent-hover', planData.config.brandKit.secondaryColor);
     }
-    // Migration: Update model name to e2b (7.2GB version)
-    if (planData.config?.ai?.model === 'gemma2:2b' || planData.config?.ai?.model === 'gemma4:latest') {
-      updateConfig('ai', 'model', 'gemma4:e2b');
+    // Migration: Update model name to pro (Optimized for 12GB)
+    if (planData.config?.ai?.model === 'gemma2:2b' || planData.config?.ai?.model === 'gemma4:latest' || planData.config?.ai?.model === 'gemma4:e2b' || planData.config?.ai?.model === 'gemma4:e4b') {
+      updateConfig('ai', 'model', 'gemma4:pro');
     }
 
     // Auto-save to Local Backend (Markdown & JSON)

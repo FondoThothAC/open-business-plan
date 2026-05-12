@@ -18,9 +18,25 @@ const PILLAR_ICONS = {
 export default function Layout() {
   const { planData, updateConfig, createNewProject, loadProject, saveStatus, updateProjectName, autoFillProject } = usePlan();
   const [isFilling, setIsFilling] = useState(false);
-  const [expandedPillars, setExpandedPillars] = useState(['naturaleza', 'mercado', 'tecnico', 'organizacion', 'finanzas']);
+  const [expandedPillars, setExpandedPillars] = useState(['naturaleza']); // Collapse others by default
   const [planType, setPlanType] = useState('negocios');
+  const [aiStatus, setAiStatus] = useState('offline');
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkAi = async () => {
+      try {
+        const res = await fetch(planData.config?.ai?.endpoint || 'http://localhost:11434/api/tags');
+        if (res.ok) setAiStatus('online');
+        else setAiStatus('offline');
+      } catch (e) {
+        setAiStatus('offline');
+      }
+    };
+    checkAi();
+    const timer = setInterval(checkAi, 10000);
+    return () => clearInterval(timer);
+  }, [planData.config?.ai?.endpoint]);
 
   const togglePillar = (id) => {
     setExpandedPillars(prev => 
@@ -103,14 +119,26 @@ export default function Layout() {
             </NavLink>
           </div>
 
-          <div className="nav-section" style={{ marginTop: '1rem', padding: '1rem', background: 'rgba(0,0,0,0.2)', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
-            <span style={{ fontSize: '0.6rem', color: '#94a3b8', textTransform: 'uppercase', display: 'block', marginBottom: '0.5rem' }}>Estado del Motor IA</span>
+          <div className="nav-section" style={{ marginTop: '1rem', padding: '1rem', background: 'var(--bg-panel)', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
+            <span style={{ fontSize: '0.6rem', color: 'var(--text-secondary)', textTransform: 'uppercase', display: 'block', marginBottom: '0.5rem' }}>Estado del Motor IA</span>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#ef4444', boxShadow: '0 0 8px #ef4444' }}></div>
-              <span style={{ fontSize: '0.75rem', color: '#ef4444', fontWeight: 'bold' }}>SIN CONEXIÓN</span>
+              <div style={{ 
+                width: '8px', height: '8px', borderRadius: '50%', 
+                background: aiStatus === 'online' ? 'var(--success-color)' : 'var(--danger-color)', 
+                boxShadow: `0 0 8px ${aiStatus === 'online' ? 'var(--success-color)' : 'var(--danger-color)'}` 
+              }}></div>
+              <span style={{ 
+                fontSize: '0.75rem', 
+                color: aiStatus === 'online' ? 'var(--success-color)' : 'var(--danger-color)', 
+                fontWeight: 'bold' 
+              }}>
+                {aiStatus === 'online' ? 'CEREBRO ACTIVO' : 'SIN CONEXIÓN'}
+              </span>
             </div>
-            <p style={{ fontSize: '0.65rem', color: '#64748b', marginTop: '0.5rem', lineHeight: '1.4' }}>
-              Ejecuta <code style={{ color: 'var(--accent-color)' }}>bash run_mac.sh</code> en tu terminal para activar el cerebro de IA.
+            <p style={{ fontSize: '0.65rem', color: 'var(--text-secondary)', marginTop: '0.5rem', lineHeight: '1.4' }}>
+              {aiStatus === 'online' 
+                ? 'El cerebro de IA está listo para procesar tu plan.' 
+                : <span>Ejecuta <code style={{ color: 'var(--accent-color)' }}>activar_cerebro.bat</code> para iniciar la IA.</span>}
             </p>
           </div>
         </nav>
@@ -174,29 +202,33 @@ export default function Layout() {
             {/* Right: Actions & Tools */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexShrink: 0 }}>
               
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(99, 102, 241, 0.05)', padding: '0.4rem 0.75rem', borderRadius: '12px', border: '1px solid rgba(99, 102, 241, 0.1)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(255, 255, 255, 0.03)', padding: '4px', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
                 <button 
                   className={`btn btn-ia ${isFilling ? 'animate-pulse' : ''}`} 
-                  style={{ padding: '0.4rem 1rem', fontSize: '0.8rem', height: '32px' }}
+                  style={{ padding: '0.4rem 1rem', fontSize: '0.75rem', height: '36px' }}
                   onClick={async () => {
-                    setIsFilling(true);
-                    await autoFillProject(generateModuleContent);
-                    setIsFilling(false);
+                    if (window.confirm('¿Iniciar industrialización total del plan? Esto generará todos los módulos faltantes.')) {
+                      setIsFilling(true);
+                      await autoFillProject(generateModuleContent);
+                      setIsFilling(false);
+                    }
                   }}
                   disabled={isFilling}
                 >
                   <BrainCircuit className="w-4 h-4" />
-                  <span>{isFilling ? 'Generando...' : 'Industrializar'}</span>
+                  <span>{isFilling ? 'Industrializando...' : 'Industrializar'}</span>
                 </button>
 
-                <div style={{ width: '1px', height: '20px', background: 'var(--border-color)', margin: '0 0.25rem' }} />
+                <div style={{ width: '1px', height: '24px', background: 'var(--border-color)', margin: '0 4px' }} />
 
-                <button className="icon-btn" title="Nuevo Plan" onClick={createNewProject} style={{ color: 'var(--accent-color)' }}>
-                  <FilePlus className="w-5 h-5" />
-                </button>
-                <button className="icon-btn" title="Abrir Plan">
-                  <FolderOpen className="w-5 h-5" />
-                </button>
+                <div style={{ display: 'flex', gap: '2px' }}>
+                  <button className="icon-btn-rounded" title="Nuevo Plan" onClick={createNewProject}>
+                    <FilePlus className="w-4 h-4" />
+                  </button>
+                  <button className="icon-btn-rounded" title="Abrir Plan">
+                    <FolderOpen className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
 
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
@@ -233,8 +265,24 @@ export default function Layout() {
       </main>
 
       <style>{`
+        .icon-btn-rounded {
+          background: transparent;
+          border: none;
+          color: var(--text-secondary);
+          cursor: pointer;
+          transition: all 0.2s;
+          padding: 8px;
+          border-radius: 8px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .icon-btn-rounded:hover {
+          color: var(--accent-color);
+          background: rgba(255, 255, 255, 0.05);
+        }
         .icon-btn {
-          background: var(--input-bg);
+          background: transparent;
           border: none;
           color: var(--text-secondary);
           cursor: pointer;

@@ -1,0 +1,195 @@
+{
+  "config": {
+    "projectType": "business",
+    "locks": {},
+    "theme": "dark",
+    "visibility": {},
+    "ai": {
+      "primaryProvider": "gemini",
+      "secondaryProvider": "groq",
+      "apiKey": "AIzaSyBaAYi5LzRxxy6NnmAFPqRRXD4bhYNIn4U",
+      "groqKey": "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",
+      "endpoint": "http://localhost:11434",
+      "model": "gemma4:e2b"
+    },
+    "brandKit": {
+      "primaryColor": "#6366f1",
+      "secondaryColor": "#8b5cf6",
+      "logoUrl": "",
+      "companyName": "Brújula Financiera MX"
+    },
+    "externalApis": {
+      "inegiToken": "1b9e230f-2ae0-48db-bd20-8810b1db575e",
+      "banxicoToken": "da45f26edb9a72e9d18e0217de25f9d8e5c79e9a5e4c1e8b7a6d5c4b3a2"
+    },
+    "anexos": [],
+    "documents": []
+  },
+  "semilla": {},
+  "naturaleza": {
+    "introduccion": {
+      "origen": "La idea surge del diagnóstico de falta de cultura financiera y planeación patrimonial en el sector de micro-finanzas y emprendimiento social.",
+      "necesidad": "",
+      "propuesta_valor": "",
+      "justificacion": "En Hermosillo existe una creciente necesidad de educación financiera y orientación patrimonial. La mayoría de los bancos ofrecen productos financieros, pero no una asesoría realmente personalizada e imparcial. Brújula Financiera MX surge como alternativa independiente, accesible y clara.",
+      "nombre": "Brújula Financiera MX, S.A. de C.V.",
+      "descripcion": "Empresa dedicada a la asesoría financiera personalizada con enfoque en planeación patrimonial: presupuesto mensual, gestión de deudas, fondos de emergencia, ahorro estratégico, instrumentos de inversión, seguros, planeación para retiro y metas financieras familiares."
+    },
+    "identidad": {
+      "mision": "Ofrecer asesoría financiera profesional y accesible que permita a las personas y familias de Hermosillo tomar decisiones inteligentes sobre su dinero, construir un patrimonio sólido y alcanzar tranquilidad financiera a lo largo de su vida.",
+      "vision": "Convertirnos en el despacho de asesoría patrimonial más confiable y reconocido de Hermosillo y la región, destacando por nuestra transparencia, precisión técnica y compromiso con el bienestar financiero.",
+      "valores": "1. Honestidad: Transparencia total sin intereses ocultos.\n2. Confidencialidad: Privacidad total del cliente.\n3. Profesionalismo: Análisis financieros precisos.\n4. Responsabilidad: Seriedad en recomendaciones.\n5. Empatía: Soluciones humanas y reales.\n6. Compromiso: Acompañamiento continuo.\n7. Integridad: Bienestar del cliente primero.",
+      "imagen": "Azul marino (seriedad, estabilidad) y dorado (valor, patrimonio). Símbolo de brújula = guía y claridad financiera. Comunicación formal, clara y cercana."
+    },
+    "objetivos": {
+      "general": "Brindar asesoría profesional en planeación patrimonial que permita a los clientes mejorar su estabilidad financiera, proteger sus bienes y lograr sus metas económicas.",
+      "especificos": "• Diseñar planes financieros personalizados según metas y capacidad.\n• Optimizar presupuesto, ahorro e inversiones del cliente.\n• Crear estrategias patrimoniales con seguros, retiro y gestión de riesgos.\n• Posicionarse en Hermosillo como mejor opción en consultoría patrimonial.",
+      "metas": "Corto plazo: Captar primeros 30 clientes. Mediano plazo: Duplicar cartera. Largo plazo: Expansión regional."
+    },
+    "foda": {
+      "fortalezas": "Asesoría personalizada e independiente sin conflicto de interés. Modelo de bajo costo y alta rentabilidad. Equipo financiero profesional y ético.",
+      "oportunidades": "Alta demanda real y creciente de asesoría independiente. Baja competencia directa local. Tendencia de \"Financial Wellness\" corporativo.",
+      "debilidades": "Poco capital inicial para marketing. Marca sin historial previo. Alta dependencia del equipo fundador.",
+      "amenazas": "Competencia bancaria y plataformas automatizadas. Cambios regulatorios. Crisis económicas que afecten la inversión."
+    },
+    "pestel": {
+      "politico": "Estabilidad en regulaciones de la CNBV y CONDUSEF.",
+      "economico": "Alta inflación fomenta la búsqueda de inversiones que protejan el poder adquisitivo.",
+      "social": "Baja cultura financiera en México es una oportunidad de educación.",
+      "tecnologico": "Uso de plataformas fintech para diversificación.",
+      "ecologico": "Tendencia hacia inversiones sustentables (ESG).",
+      "legal": "Cumplimiento estricto con Ley de Protección al Ahorro y Datos Personales."
+    },
+    "legal": {
+      "constitucion": "S.A. de C.V. (Sociedad Anónima de Capital Variable)",
+      "socios": "Kaleb Galindo Salinas, Carlos Paz, Luis Emilio Sandoval",
+      "permisos": "RFC, Inscripción IMSS, Alta SHCP, Registro ante CONDUSEF"
+    }
+  },
+  "mercado": {
+    "analisis": {
+      "producto": "Diagnóstico financiero integral, Plan de Retiro, Estrategia de Inversión, Plan de Eliminación de Deuda, Boletín exclusivo de análisis económico.",
+      "valor": "Asesoría completamente independiente y sin conflicto de interés. Las recomendaciones no están influenciadas por bancos ni aseguradoras.",
+      "demanda": "Superávit de oferta de productos bancarios pero déficit de asesoría real. La demanda de asesores independientes crecerá 15-20% anual.",
+      "cliente": "Personas y familias de Hermosillo con capacidad económica pero sin dirección estratégica, vulnerables ante inflación y falta de planeación para retiro."
+    },
+    "segmentacion": {
+      "tam": "Población económicamente activa en Sonora (~1.2M personas).",
+      "sam": "Nivel socioeconómico A/B y C+ en Hermosillo (~150,000 personas).",
+      "som": "Mercado objetivo inicial de 500 clientes activos en 3 años.",
+      "perfil": "Profesionistas, empresarios y familias con ingresos medios-altos buscando seguridad patrimonial."
+    },
+    "mapa": {
+      "heatmap_data": ""
+    },
+    "competencia": {
+      "competidores": "Bancos tradicionales (productos estandarizados), asesores de seguros (conflicto de interés), plataformas robo-advisor.",
+      "ventajas": "Modelo libre de comisiones por venta. Personalización total (trajes a la medida). Enfoque educativo vs transaccional."
+    },
+    "benchmarking": {
+      "comparativa": "A diferencia de los bancos, Brújula no vende productos propios, sino que selecciona los mejores del mercado para el cliente.",
+      "matriz": "Independencia: 100%, Costo: Bajo/Medio, Personalización: Máxima."
+    },
+    "comercializacion": {
+      "distribucion": "Oficina física en Vado del Río (zona de alta plusvalía). Plataforma web con agendamiento automatizado. Videoconferencias Zoom/Meet.",
+      "promocion": "Inbound Marketing: contenido educativo en LinkedIn/Instagram, webinars gratuitos mensuales, networking en cámaras empresariales.",
+      "identidad": "Azul marino y dorado. Símbolo de brújula. Comunicación formal pero cercana."
+    },
+    "ventas": {
+      "precios": "Cuota por sesión de diagnóstico ($1,500) y porcentaje sobre gestión de activos (0.5% - 1% anual).",
+      "estrategia": "Charlas corporativas para RRHH de empresas grandes en Hermosillo.",
+      "proyeccion_volumen": "Año 1: 100 diagnósticos. Año 2: 250 diagnósticos. Año 3: 500 clientes recurrentes."
+    }
+  },
+  "tecnico": {
+    "ubicacion": {
+      "macro": "Sonora, México",
+      "micro": "Hermosillo, Zona Vado del Río",
+      "local": "Oficina corporativa con sala de juntas privada."
+    },
+    "operacion": {
+      "proceso": "1. Prospección y cita inicial. 2. Diagnóstico integral de perfil de riesgo. 3. Diseño de propuesta patrimonial. 4. Implementación y seguimiento anual.",
+      "diagrama": "graph TD\nA[Cita Inicial] --> B[Diagnóstico]\nB --> C[Propuesta]\nC --> D[Implementación]\nD --> E[Seguimiento]",
+      "tecnologia": ""
+    },
+    "recursos": {
+      "maquinaria": "Equipo de cómputo de alto rendimiento, servidores seguros.",
+      "equipo": "Mobiliario de oficina ergonómico, sistema de videoconferencia.",
+      "herramientas": "CRM especializado, Software de simulación financiera, Bloomberg Terminal (opcional)."
+    },
+    "insumos": {
+      "materia_prima": "Suscripciones a datos financieros, Software de gestión de carteras.",
+      "proveedores": "Interactive Brokers, GBM+, Seguros Monterrey, Allianz.",
+      "compras": "Contratación anual de licencias de software."
+    },
+    "capacidad": {
+      "instalada": "Capacidad para atender hasta 20 asesorías personalizadas por semana por asesor.",
+      "inventarios": "Base de datos de perfiles de clientes y estrategias.",
+      "mano_obra": "3 Asesores Financieros Certificados."
+    },
+    "operativa": {
+      "otd": "",
+      "rotacion": "",
+      "dso": "",
+      "dpo": "",
+      "ccc": ""
+    },
+    "ambiental": {
+      "impacto": "Bajo impacto ambiental (Oficina Paperless).",
+      "mitigacion": "Uso de documentos digitales y firma electrónica.",
+      "normatividad": "Cumplimiento con normativas de ahorro de energía en oficinas."
+    },
+    "processes": []
+  },
+  "organizacion": {
+    "estructura": {
+      "organigrama_visual": "",
+      "puestos": "",
+      "funciones": "Dirección: Estrategia y Alianzas. Asesores: Relación directa con clientes. Analistas: Investigación de mercados e instrumentos."
+    },
+    "recursos_humanos": {
+      "reclutamiento": "",
+      "contratacion": "",
+      "sueldos": ""
+    },
+    "inversion": {
+      "capex": "$250,000 MXN (Oficina, Mobiliario, Equipo)",
+      "opex_inicial": "$150,000 MXN (Marketing y Capital de Trabajo)",
+      "financiamiento": "Capital propio de los socios fundadores."
+    },
+    "costos": {
+      "fijos": "$58,000 MXN (Renta + Nómina)",
+      "variables": "$500 MXN por cliente (Suscripciones individuales)",
+      "unitario": "Costo por asesoría estimada en $1,200 MXN."
+    },
+    "estados_financieros": {
+      "resultados": "",
+      "balance": "",
+      "flujo_caja": ""
+    },
+    "rentabilidad": {
+      "punto_equilibrio": "40 asesorías mensuales.",
+      "indicadores": "VAN: $1,200,000 MXN. TIR: 35%."
+    },
+    "staff": [
+      {
+        "id": "1",
+        "role": "Director General / Socio Fundador",
+        "salary": 25000,
+        "reportsTo": null
+      },
+      {
+        "id": "2",
+        "role": "Asesor Patrimonial Senior",
+        "salary": 18000,
+        "reportsTo": "1"
+      },
+      {
+        "id": "3",
+        "role": "Analista Financiero",
+        "salary": 15000,
+        "reportsTo": "1"
+      }
+    ]
+  }
+}

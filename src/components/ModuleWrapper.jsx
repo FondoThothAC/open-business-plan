@@ -1,23 +1,31 @@
 import React, { useState } from 'react';
 import { usePlan } from '../context/PlanContext';
-import { Sparkles, Loader2, Info, Search, Brain, CheckCircle2, Lock, Unlock, BarChart3, Map as MapIcon, Network, Eye, EyeOff, HelpCircle } from 'lucide-react';
+import { Sparkles, Loader2, Info, Search, Brain, CheckCircle2, Lock, Unlock, BarChart3, Map as MapIcon, Network, Eye, EyeOff, HelpCircle, Edit3, Layout } from 'lucide-react';
 import { generateModuleContent } from '../lib/ai';
 import { BUSINESS_GUIDES, SOCIAL_GUIDES } from '../lib/field_guides';
 import MermaidViewer from './MermaidViewer';
 import HeatmapEditor from './HeatmapEditor';
 import ExpertPanel from './ExpertPanel';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 export default function ModuleWrapper({ pillar, moduleKey, title, description, fields, extraAction }) {
   const { planData, updateSection, toggleLock, toggleModuleVisibility } = usePlan();
   const [loading, setLoading] = useState(false);
   const [stage, setStage] = useState('');
   const [activeExpertField, setActiveExpertField] = useState(null);
+  const [editModes, setEditModes] = useState({});
+  const [depth, setDepth] = useState(planData.config?.ai?.depth || 1);
   
   const isLocked = (fieldKey) => planData.config.locks?.[`${pillar}.${moduleKey}.${fieldKey}`];
   const isModuleVisible = planData.config?.visibility?.[`${pillar}.${moduleKey}`] !== false;
 
   const projectType = planData.config?.projectType || 'business';
   const FIELD_GUIDES = projectType === 'social_bid' ? SOCIAL_GUIDES : BUSINESS_GUIDES;
+
+  const toggleEditMode = (fieldKey) => {
+    setEditModes(prev => ({ ...prev, [fieldKey]: !prev[fieldKey] }));
+  };
 
   const getFieldGuide = (fieldKey) => {
     const guide = FIELD_GUIDES[fieldKey];
@@ -61,11 +69,12 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
       });
 
       const currentModule = { pillar, moduleKey, title, description, fields: enrichedFields };
+      const aiConfig = { ...planData.config.ai, depth };
       
       const timer1 = setTimeout(() => setStage('IA diseñando visuales...'), 3000);
       const timer2 = setTimeout(() => setStage('Sintetizando estructura...'), 6000);
 
-      const result = await generateModuleContent(planData.config.ai, currentModule, planData);
+      const result = await generateModuleContent(aiConfig, currentModule, planData);
       
       clearTimeout(timer1);
       clearTimeout(timer2);
@@ -99,7 +108,32 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
             <Brain className="w-3 h-3 text-[#8b5cf6]" />
             <span style={{ color: 'var(--text-secondary)' }}>Mesa de Expertos activa: <strong>Analista + Crítico + Redactor</strong></span>
           </div>
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+            {/* Selector de profundidad — solo si advancedDepth está habilitado en Config */}
+            {planData.config?.ai?.advancedDepth && (
+              <div style={{ display: 'flex', background: 'rgba(0,0,0,0.3)', borderRadius: '10px', padding: '2px', border: '1px solid rgba(255,255,255,0.06)' }}>
+                {[
+                  { level: 1, icon: '⚡', label: 'Rápido',   time: '~1min'  },
+                  { level: 2, icon: '🧠', label: 'Pro',      time: '~3min'  },
+                  { level: 3, icon: '🔬', label: 'Profundo', time: '~10min' },
+                ].map(({ level, icon, label, time }) => (
+                  <button key={level}
+                    onClick={() => setDepth(level)}
+                    title={`${label} — ${time}`}
+                    style={{
+                      padding: '0.3rem 0.6rem', borderRadius: '8px', border: 'none',
+                      background: depth === level ? 'var(--accent-color)' : 'transparent',
+                      color: depth === level ? 'white' : 'var(--text-secondary)',
+                      cursor: 'pointer', fontSize: '0.75rem', fontWeight: depth === level ? 800 : 400,
+                      transition: 'all 0.2s', display: 'flex', alignItems: 'center', gap: '0.25rem'
+                    }}
+                  >
+                    <span>{icon}</span>
+                    <span style={{ display: window.innerWidth > 1200 ? 'inline' : 'none' }}>{label}</span>
+                  </button>
+                ))}
+              </div>
+            )}
             <button 
               className={`btn ${isModuleVisible ? 'btn-secondary' : 'btn-danger'}`}
               style={{ padding: '0.4rem 0.8rem', fontSize: '0.75rem', opacity: isModuleVisible ? 1 : 0.6 }}
@@ -138,7 +172,7 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
       <div className="glass-panel" style={{padding: '2rem', display: 'flex', flexDirection: 'column', gap: '2.5rem'}}>
         {fields.map(field => (
           <div key={field.key} style={{ opacity: isLocked(field.key) ? 0.8 : 1 }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
+            <div className="field-header">
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 {field.type === 'mermaid' && <Network className="w-4 h-4 text-[#8b5cf6]" />}
                 {field.type === 'heatmap' && <MapIcon className="w-4 h-4 text-emerald-400" />}
@@ -156,29 +190,49 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
                   </div>
                 </div>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <div className="tooltip-container" style={{ position: 'relative' }}>
-                  <button 
-                    onClick={() => setActiveExpertField(field)}
-                    className="btn-icon" 
-                    style={{ width: '28px', height: '28px', color: 'var(--accent-color)' }}
-                  >
-                    <Brain className="w-4 h-4" />
-                  </button>
-                  <div className="tooltip-text" style={{ right: '0', left: 'auto', marginLeft: '0', width: '340px' }}>
-                    <strong>Prompt que se envía a la IA:</strong><br/>
-                    {getPromptPreview(field.label, field.key, field.type).split('\n').map((line, i) => (
-                      <div key={i} style={{ marginBottom: '4px' }}>{line}</div>
-                    ))}
+              
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                {field.type !== 'heatmap' && (
+                  <div className="view-toggle">
+                    <button 
+                      className={!editModes[field.key] ? 'active' : ''} 
+                      onClick={() => setEditModes(prev => ({ ...prev, [field.key]: false }))}
+                    >
+                      <Layout className="w-3 h-3" /> Visualizar
+                    </button>
+                    <button 
+                      className={editModes[field.key] ? 'active' : ''} 
+                      onClick={() => setEditModes(prev => ({ ...prev, [field.key]: true }))}
+                    >
+                      <Edit3 className="w-3 h-3" /> Editar
+                    </button>
                   </div>
-                </div>
+                )}
 
-                <button 
-                  onClick={() => toggleLock(pillar, moduleKey, field.key)}
-                  style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: isLocked(field.key) ? 'var(--accent-color)' : 'var(--text-secondary)' }}
-                >
-                  {isLocked(field.key) ? <Lock className="w-4 h-4" /> : <Unlock className="w-4 h-4" />}
-                </button>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <div className="tooltip-container" style={{ position: 'relative' }}>
+                    <button 
+                      onClick={() => setActiveExpertField(field)}
+                      className="btn-icon" 
+                      style={{ width: '28px', height: '28px', color: 'var(--accent-color)' }}
+                    >
+                      <Brain className="w-4 h-4" />
+                    </button>
+                    <div className="tooltip-text" style={{ right: '0', left: 'auto', marginLeft: '0', width: '340px' }}>
+                      <strong>Prompt que se envía a la IA:</strong><br/>
+                      {getPromptPreview(field.label, field.key, field.type).split('\n').map((line, i) => (
+                        <div key={i} style={{ marginBottom: '4px' }}>{line}</div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <button 
+                    onClick={() => toggleLock(pillar, moduleKey, field.key)}
+                    style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: isLocked(field.key) ? 'var(--accent-color)' : 'var(--text-secondary)' }}
+                  >
+                    {isLocked(field.key) ? <Lock className="w-4 h-4" /> : <Unlock className="w-4 h-4" />}
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -189,18 +243,28 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
               />
             ) : (
               <div style={{ display: 'grid', gridTemplateColumns: field.type === 'mermaid' ? '1fr 1fr' : '1fr', gap: '1.5rem' }}>
-                <textarea 
-                  className="form-control" 
-                  disabled={isLocked(field.key)}
-                  placeholder={field.type === 'mermaid' ? "graph TD\n  A[Inicio] --> B(Proceso)" : "Escribe aquí..."}
-                  value={moduleData[field.key] || ''}
-                  onChange={(e) => handleChange(field.key, e.target.value)}
-                  style={{ 
-                    minHeight: field.type === 'mermaid' ? '300px' : '180px', 
-                    fontSize: '0.9rem', 
-                    fontFamily: field.type === 'mermaid' ? 'monospace' : 'inherit'
-                  }}
-                ></textarea>
+                {editModes[field.key] ? (
+                  <textarea 
+                    className="form-control" 
+                    disabled={isLocked(field.key)}
+                    placeholder={field.type === 'mermaid' ? "graph TD\n  A[Inicio] --> B(Proceso)" : "Escribe aquí..."}
+                    value={moduleData[field.key] || ''}
+                    onChange={(e) => handleChange(field.key, e.target.value)}
+                    style={{ 
+                      minHeight: field.type === 'mermaid' ? '300px' : '180px', 
+                      fontSize: '0.9rem', 
+                      fontFamily: field.type === 'mermaid' ? 'monospace' : 'inherit'
+                    }}
+                  ></textarea>
+                ) : (
+                  <div className="preview-box" onClick={() => !isLocked(field.key) && toggleEditMode(field.key)}>
+                    <div className="markdown-content">
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                        {moduleData[field.key] || '*Sin contenido. Haz clic en "Editar" o usa la IA para generar.*'}
+                      </ReactMarkdown>
+                    </div>
+                  </div>
+                )}
                 {field.type === 'mermaid' && (
                   <MermaidViewer chart={moduleData[field.key] || 'graph TD\n  Start --> End'} />
                 )}

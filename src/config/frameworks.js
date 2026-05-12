@@ -37,6 +37,7 @@ export const FRAMEWORKS = {
           { key: 'recursos', title: 'Maquinaria y Tecnología', description: 'Equipamiento, hardware y herramientas necesarias.', fields: ['maquinaria', 'equipo', 'herramientas'] },
           { key: 'insumos', title: 'Insumos y Proveedores', description: 'Materias primas y cadena de suministro.', fields: ['materia_prima', 'proveedores', 'compras'] },
           { key: 'capacidad', title: 'Capacidad e Inventarios', description: 'Capacidad instalada, manejo de stock y turnos.', fields: ['instalada', 'inventarios', 'mano_obra'] },
+          { key: 'operativa', title: 'Eficiencia Operativa', description: 'Métricas de desempeño: OTD, Rotación, DSO, DPO y Ciclo de Efectivo.', fields: ['otd', 'rotacion', 'dso', 'dpo', 'ccc'] },
           { key: 'ambiental', title: 'Impacto Ambiental', description: 'Sostenibilidad, manejo de residuos y normatividad.', fields: ['impacto', 'mitigacion', 'normatividad'] }
         ]
       },

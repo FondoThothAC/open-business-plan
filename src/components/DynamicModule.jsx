@@ -6,6 +6,7 @@ import ModuleWrapper from './ModuleWrapper';
 import ModuloFinanciero from './ModuloFinanciero';
 import StaffTable from './StaffTable';
 import InegiMap from './InegiMap';
+import ModuloOperaciones from './ModuloOperaciones';
 import ProcessTable from './ProcessTable';
 
 export default function DynamicModule() {
@@ -89,6 +90,17 @@ export default function DynamicModule() {
   if (isFinancialModule) {
     return (
       <ModuloFinanciero 
+        moduleKey={moduleId}
+        pillarId={pillarId}
+        title={moduleDef.title}
+        description={moduleDef.description}
+      />
+    );
+  }
+
+  if (pillarId === 'tecnico' && moduleId === 'operativa') {
+    return (
+      <ModuloOperaciones 
         moduleKey={moduleId}
         pillarId={pillarId}
         title={moduleDef.title}

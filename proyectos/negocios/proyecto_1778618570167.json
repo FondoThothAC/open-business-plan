@@ -1,0 +1,200 @@
+{
+  "config": {
+    "projectType": "business",
+    "locks": {},
+    "theme": "dark",
+    "visibility": {},
+    "ai": {
+      "primaryProvider": "gemini",
+      "secondaryProvider": "groq",
+      "apiKey": "AIzaSyBaAYi5LzRxxy6NnmAFPqRRXD4bhYNIn4U",
+      "groqKey": "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",
+      "endpoint": "http://localhost:11434",
+      "model": "gemma4:e2b"
+    },
+    "brandKit": {
+      "primaryColor": "#6366f1",
+      "secondaryColor": "#8b5cf6",
+      "logoUrl": "",
+      "companyName": "Sové - Postres para Eventos"
+    },
+    "externalApis": {
+      "inegiToken": "1b9e230f-2ae0-48db-bd20-8810b1db575e",
+      "banxicoToken": "da45f26edb9a72e9d18e0217de25f9d8e5c79e9a5e4c1e8b7a6d5c4b3a2"
+    },
+    "anexos": [],
+    "documents": []
+  },
+  "semilla": {},
+  "naturaleza": {
+    "introduccion": {
+      "origen": "El nombre evoca el concepto francés \"sauvé\" (salvador): entregar soluciones dulces, estéticas y cuidadas que elevar la experiencia de cada evento.",
+      "necesidad": "",
+      "propuesta_valor": "",
+      "justificacion": "En el mercado local existe una creciente necesidad de postres personalizados con diseño visual, alineados a la temática de cada evento. Pocas empresas ofrecen un nivel alto de personalización y estética cuidada.",
+      "nombre": "Sové",
+      "descripcion": "Microempresa de repostería especializada en postres personalizados para eventos: vasos de postre decorados, mini tartas, mousses temáticas, postres por temporada, presentaciones especiales."
+    },
+    "identidad": {
+      "mision": "Combinar elaboración artesanal de postres con personalización visual, temática y emocional para elevar la experiencia de eventos.",
+      "vision": "Consolidarse como marca reconocida por el detalle, buen gusto y experiencia sensorial en cada entrega.",
+      "valores": "Creatividad, Calidad artesanal, Personalización, Estética, Innovación constante.",
+      "imagen": ""
+    },
+    "objetivos": {
+      "general": "Ser el proveedor líder de postres temáticos premium en Hermosillo.",
+      "especificos": "• Cubrir 10 eventos mensuales en el primer semestre.\n• Desarrollar 5 líneas temáticas exclusivas.\n• Lograr 10,000 seguidores en redes sociales orgánicamente.",
+      "metas": "Retorno de inversión en 14 meses."
+    },
+    "foda": {
+      "fortalezas": "Alto nivel de personalización visual. Calidad artesanal. Flexibilidad para innovar en sabores y empaques.",
+      "oportunidades": "Tendencia creciente hacia productos personalizados. Expansión del mercado de eventos sociales y empresariales.",
+      "debilidades": "Capacidad de producción limitada como microempresa. Operación inicial bajo taller.",
+      "amenazas": "Competencia de repostería casera. Proveedores sin enfoque en diseño profesional."
+    },
+    "pestel": {
+      "politico": "Normas de salud e higiene (COFEPRIS).",
+      "economico": "Costos fluctuantes de materias primas importadas.",
+      "social": "Cultura de celebración y eventos sociales muy fuerte en Sonora.",
+      "tecnologico": "",
+      "ecologico": "",
+      "legal": ""
+    },
+    "legal": {
+      "constitucion": "Persona Física con Actividad Empresarial (transición futura a S. de R.L. de C.V.)",
+      "socios": "Danna Valeria Marmolejo Rodríguez, Alondra Elena Noriega Cortés",
+      "permisos": ""
+    }
+  },
+  "mercado": {
+    "analisis": {
+      "producto": "Postres artesanales temáticos: vasos decorados, mini tartas personalizadas, mousses y cremas temáticas, postres por temporada.",
+      "valor": "Diseño + sabor + personalización total. Cada celebración merece un detalle que comunique emociones.",
+      "demanda": "",
+      "cliente": "Personas organizando baby showers, cumpleaños, bodas, despedidas, eventos corporativos."
+    },
+    "segmentacion": {
+      "tam": "",
+      "sam": "",
+      "som": "",
+      "perfil": ""
+    },
+    "mapa": {
+      "heatmap_data": ""
+    },
+    "competencia": {
+      "competidores": "",
+      "ventajas": ""
+    },
+    "benchmarking": {
+      "comparativa": "",
+      "matriz": ""
+    },
+    "comercializacion": {
+      "distribucion": "",
+      "promocion": "",
+      "identidad": ""
+    },
+    "ventas": {
+      "precios": "Paquetes desde $3,500 MXN para 50 invitados hasta $15,000 MXN para eventos masivos.",
+      "estrategia": "Muestreos directos con organizadores de eventos (Wedding Planners) y alianzas con salones.",
+      "proyeccion_volumen": ""
+    }
+  },
+  "tecnico": {
+    "ubicacion": {
+      "macro": "Sonora",
+      "micro": "Hermosillo",
+      "local": "Taller de producción artesanal."
+    },
+    "operacion": {
+      "proceso": "Recepción de pedido temático, horneado, diseño decorativo, empaque personalizado, entrega.",
+      "diagrama": "",
+      "tecnologia": ""
+    },
+    "recursos": {
+      "maquinaria": "Hornos industriales, Batidoras profesionales.",
+      "equipo": "Utensilios de decoración, Cámaras de refrigeración.",
+      "herramientas": ""
+    },
+    "insumos": {
+      "materia_prima": "",
+      "proveedores": "",
+      "compras": ""
+    },
+    "capacidad": {
+      "instalada": "",
+      "inventarios": "",
+      "mano_obra": ""
+    },
+    "operativa": {
+      "otd": "",
+      "rotacion": "",
+      "dso": "",
+      "dpo": "",
+      "ccc": "",
+      "operativa_data": {
+        "pedidosTiempo": 15.6,
+        "pedidosTotales": 1080,
+        "empleados": 5,
+        "costoMercancias": 210000,
+        "inventarioPromedio": 75000,
+        "inventarioActual": 82000,
+        "cuentasCobrar": 48000,
+        "cuentasPagar": 30000,
+        "ventasAnuales": 1800000
+      }
+    },
+    "ambiental": {
+      "impacto": "",
+      "mitigacion": "",
+      "normatividad": ""
+    },
+    "processes": []
+  },
+  "organizacion": {
+    "estructura": {
+      "organigrama_visual": "",
+      "puestos": "",
+      "funciones": ""
+    },
+    "recursos_humanos": {
+      "reclutamiento": "",
+      "contratacion": "",
+      "sueldos": ""
+    },
+    "inversion": {
+      "capex": "",
+      "opex_inicial": "",
+      "financiamiento": ""
+    },
+    "costos": {
+      "fijos": "",
+      "variables": "",
+      "unitario": ""
+    },
+    "estados_financieros": {
+      "resultados": "",
+      "balance": "",
+      "flujo_caja": ""
+    },
+    "rentabilidad": {
+      "punto_equilibrio": "",
+      "indicadores": ""
+    },
+    "staff": [
+      {
+        "id": "1",
+        "role": "Directora Creativa / Repostera",
+        "salary": 12000,
+        "reportsTo": null
+      },
+      {
+        "id": "2",
+        "role": "Asistente de Producción",
+        "salary": 8000,
+        "reportsTo": "1"
+      }
+    ]
+  }
+}

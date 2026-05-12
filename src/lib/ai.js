@@ -1,142 +1,289 @@
 /**
- * AI Service for OpenPlan V2 - "Mesa de Expertos" Edition
- * Handles multi-agent reasoning loops and cross-provider synthesis with intelligent fallback.
+ * AI Service — OpenPlan v2.0 "Mesa de Expertos" Multi-Agent Orchestrator
+ *
+ * [MDD] Arquitectura de agentes definida como modelo canónico.
+ * [EDD] Cada fase emite eventos de progreso al ActivityFeed vía termLog.
+ * [DDD] Dominio: Agente, Fase, Rol, Profundidad, Swap de Modelo.
+ * [HDD] Hipótesis: mayor profundidad → mayor coherencia, a costo de tiempo.
+ *
+ * ─────────────────────────────────────────────────────────────────────────
+ *  NIVELES DE PROFUNDIDAD (Mesa de Expertos)
+ * ─────────────────────────────────────────────────────────────────────────
+ *  Nivel 1 — Rápido   : 2 agentes (Analista → Redactor).           ~30-60s
+ *  Nivel 2 — Pro      : 3 agentes (Analista → Crítico → Redactor). ~2-4 min  ← DEFAULT
+ *  Nivel 3 — Profundo : 5 agentes + Devil's Advocate.              ~8-15 min
+ *
+ * ─────────────────────────────────────────────────────────────────────────
+ *  SWAP DE MODELOS (cuando no caben todos en VRAM)
+ * ─────────────────────────────────────────────────────────────────────────
+ *  Ollama descarga automáticamente el modelo anterior de VRAM antes de
+ *  cargar el siguiente. El CONTEXTO (texto) vive en RAM, no en VRAM,
+ *  por lo que el swap conserva coherencia entre fases.
+ *
+ *  Mac (Apple Silicon): Metal unifica VRAM y RAM — no hay swap, todos
+ *  los modelos corren simultáneamente si caben en memoria unificada.
+ *
+ *  Windows/Linux (GPU dedicada): El swap toma ~2-4s entre fases.
+ *  RTX A2000 12GB puede cargar gemma4:e4b (8GB) y dejar 4GB para KV-cache.
  */
 
-/**
- * Genera contenido para un módulo completo usando la Mesa de Expertos (3 fases).
- * Los campos bloqueados se envían como CONTEXTO pero NO se regeneran.
- */
+// ─────────────────────────────────────────────────────────────────────────
+// Configuración de roles por defecto (se sobreescribe desde Configuracion.jsx)
+// ─────────────────────────────────────────────────────────────────────────
+export const DEFAULT_AGENT_CONFIG = {
+  // Nivel 1 — Rápido (sin swap, 1 solo modelo)
+  fast: {
+    analista:  { model: 'gemma4:e4b', role: 'Analista Estratégico' },
+    redactor:  { model: 'gemma4:e4b', role: 'Redactor Ejecutivo' },
+  },
+  // Nivel 2 — Pro (swap opcional entre analista y redactor)
+  pro: {
+    analista:  { model: 'gemma4:e4b', role: 'Analista Estratégico' },
+    critico:   { model: 'gemma4:e4b', role: 'Crítico Financiero' },
+    redactor:  { model: 'gemma4:pro', role: 'Redactor Senior' },
+  },
+  // Nivel 3 — Profundo (swap entre 3 modelos especializados)
+  deep: {
+    estratega:  { model: 'gemma4:e4b', role: 'Estratega de Negocio' },
+    analista:   { model: 'qwen2.5:7b', role: 'Analista de Datos' },
+    abogadoDiablo: { model: 'gemma4:e4b', role: "Devil's Advocate" },
+    critico:    { model: 'gemma4:e4b', role: 'Crítico Financiero' },
+    redactor:   { model: 'gemma4:pro', role: 'Redactor Ejecutivo Final' },
+  },
+};
+
+// ─────────────────────────────────────────────────────────────────────────
+// FUNCIÓN PRINCIPAL: generateModuleContent
+// [FDD] Feature F01 + F11: Mesa de Expertos con niveles de profundidad
+// ─────────────────────────────────────────────────────────────────────────
 export async function generateModuleContent(config, currentModule, allPlanData) {
-  const { primaryProvider, secondaryProvider, apiKey, groqKey, endpoint, model } = config;
+  const {
+    primaryProvider, secondaryProvider,
+    apiKey, groqKey, endpoint,
+    model, depth = 1,           // depth: 1=rápido, 2=pro, 3=profundo
+    agentModels = {},           // sobreescritura de modelos por rol desde config
+  } = config;
+
   const t0 = Date.now();
 
-  // Helper: envía log al terminal del servidor (silent fail)
+  // [EDD] Logger de eventos al ActivityFeed (silent fail si backend caído)
   const termLog = async (type, message, provider = '') => {
     try {
       await fetch('http://localhost:3001/api/log', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type, module: currentModule.title, message, provider, elapsed: Date.now() - t0 })
+        body: JSON.stringify({
+          type, module: currentModule.title,
+          message, provider, elapsed: Date.now() - t0
+        })
       });
-    } catch (_) { /* silencioso si backend está caído */ }
+    } catch (_) {}
   };
 
-  // 1. Preparar contexto global (incluye TODO: semilla + plan + campos bloqueados)
-  const semillaContext = allPlanData.semilla 
-    ? `\nENTREVISTA CON EL EMPRENDEDOR (Semilla):\n${JSON.stringify(allPlanData.semilla, null, 2)}\n` 
+  // Contexto global del plan (toda la información disponible)
+  const semillaContext = allPlanData.semilla
+    ? `\nENTREVISTA CON EL EMPRENDEDOR:\n${JSON.stringify(allPlanData.semilla, null, 2)}\n`
     : '';
-  
+
   const documentsContext = (allPlanData.config?.documents || []).length > 0
-    ? `\nDOCUMENTOS DE REFERENCIA PROPORCIONADOS:\n${allPlanData.config.documents.map(d => d.text).join('\n---\n').substring(0, 5000)}\n`
+    ? `\nDOCUMENTOS DE REFERENCIA:\n${allPlanData.config.documents.map(d => d.text).join('\n---\n').substring(0, 5000)}\n`
     : '';
 
   const planContext = JSON.stringify(allPlanData, null, 2);
 
-  // 2. Base Prompts — Los campos bloqueados están en planContext como CONTEXTO, pero solo se piden los desbloqueados
   const systemContext = `
-Eres un miembro de una "Mesa de Expertos" en estrategia empresarial.
-Tu objetivo es redactar una sección específica de un Plan de Negocios de 100 páginas.
+Eres un miembro de una "Mesa de Expertos" en estrategia empresarial de alto nivel.
+Tu objetivo es redactar una sección del Plan de Negocios con rigor académico y ejecutivo.
 ${semillaContext}
 ${documentsContext}
-Estado actual COMPLETO del plan (usa como referencia, NO modifiques campos que no se te pidan):
+Estado actual COMPLETO del plan (contexto de referencia):
 ${planContext}
 
 Módulo a redactar: "${currentModule.title}"
-Descripción oficial (según guía académica): ${currentModule.description}
-Campos que DEBES generar (solo estos, los demás son contexto): ${(currentModule.fields || []).map(f => f.key).join(', ')}
+Descripción: ${currentModule.description}
+Campos a generar (SOLO estos): ${(currentModule.fields || []).map(f => f.key).join(', ')}
 `;
 
-  const runChain = async (providerConfig) => {
-    await termLog('thinking', 'Fase 1/3: Analista redactando borrador...', providerConfig.provider);
-    const analystPrompt = `${systemContext}\n\nTAREA: Genera un borrador profesional y detallado SOLO para los campos indicados. Sé exhaustivo, recuerda que el plan final es de casi 100 páginas. Devuelve un JSON con SOLO las claves pedidas.`;
-    const draft = await callAiProvider(providerConfig, analystPrompt);
-    await termLog('thinking', 'Fase 2/3: Crítico revisando borrador...', providerConfig.provider);
-    const reviewerPrompt = `${systemContext}\n\nBorrador del Analista:\n${JSON.stringify(draft)}\n\nTAREA: Actúa como un inversionista crítico. Identifica qué falta o qué es débil en este borrador. Sé breve. No devuelvas JSON, solo tus críticas en español.`;
-    const critique = await callAiProvider(providerConfig, reviewerPrompt, false);
-    await termLog('thinking', 'Fase 3/3: Redactor final sintetizando...', providerConfig.provider);
-    const synthesizerPrompt = `${systemContext}\n\nBorrador Inicial:\n${JSON.stringify(draft)}\n\nCrítica de la Mesa:\n${critique}\n\nTAREA: Genera la versión final del módulo integrando las mejoras sugeridas. Asegura coherencia total con el resto del plan. DEVUELVE SOLO EL JSON FINAL con las claves: ${(currentModule.fields || []).map(f => f.key).join(', ')}`;
-    const result = await callAiProvider(providerConfig, synthesizerPrompt);
-    await termLog('success', `Módulo completado.`, providerConfig.provider);
+  // Resuelve el modelo de un agente (config usuario > default nivel)
+  const resolveModel = (role, levelConfig) => {
+    return agentModels[role]?.model || levelConfig[role]?.model || model || 'gemma4:e4b';
+  };
+
+  // Helper: construye config de proveedor para una fase
+  const makeProviderConfig = (agentModel) => ({
+    provider: 'ollama', endpoint, model: agentModel
+  });
+
+  // ─── Orquestadores por nivel ───────────────────────────────────────────
+
+  // NIVEL 1: Rápido — 2 fases, 1 modelo, sin swap
+  const runFast = async (fallbackProvider) => {
+    const agentCfg = DEFAULT_AGENT_CONFIG.fast;
+    const analista = resolveModel('analista', agentCfg);
+    const redactor = resolveModel('redactor', agentCfg);
+
+    await termLog('thinking', '⚡ Fase 1/2: Analista generando borrador...', 'ollama');
+    const draft = await callAiProvider(
+      fallbackProvider || makeProviderConfig(analista),
+      `${systemContext}\n\nTAREA: Genera un borrador profesional y detallado SOLO para los campos indicados. Devuelve JSON con exactamente las claves pedidas.`
+    );
+
+    await termLog('thinking', '⚡ Fase 2/2: Redactor finalizando...', 'ollama');
+    const result = await callAiProvider(
+      fallbackProvider || makeProviderConfig(redactor),
+      `${systemContext}\n\nBorrador:\n${JSON.stringify(draft)}\n\nTAREA: Mejora la calidad y el tono ejecutivo del borrador. Devuelve SOLO el JSON final con las claves: ${(currentModule.fields || []).map(f => f.key).join(', ')}`
+    );
+
+    await termLog('success', '✓ Módulo completado (nivel rápido).', 'ollama');
     return result;
   };
 
-  // 3. Ejecución con Fallback INTELIGENTE (avisa al usuario antes de saltar a la nube)
-  const ollamaConfig = { provider: 'ollama', endpoint, model: model || 'gemma4:e2b' };
-  const cloudProviders = [
-    { provider: 'groq', apiKey: groqKey, model: 'llama-3.3-70b-versatile' },
-    { provider: 'mistral', apiKey, model: 'mistral-large-latest' },
-    { provider: 'gemini', apiKey, model: 'gemini-1.5-flash' },
-    { provider: 'openai', apiKey, model: 'gpt-4o' }
-  ];
+  // NIVEL 2: Pro — 3 fases, swap entre analista y redactor
+  // [TDD] Contrato: retorna JSON con todas las claves de currentModule.fields
+  const runPro = async (fallbackProvider) => {
+    const agentCfg = DEFAULT_AGENT_CONFIG.pro;
+    const analista = resolveModel('analista', agentCfg);
+    const critico  = resolveModel('critico',  agentCfg);
+    const redactor = resolveModel('redactor', agentCfg);
 
-  // Paso 1: Intentar Ollama primero (local, privado, gratis)
-  try {
-    await termLog('start', `Iniciando generación...`, 'ollama');
-    const result = await runChain(ollamaConfig);
+    await termLog('thinking', '🧠 Fase 1/3: Analista redactando borrador...', analista);
+    const draft = await callAiProvider(
+      fallbackProvider || makeProviderConfig(analista),
+      `${systemContext}\n\nTAREA: Genera un borrador profesional y exhaustivo. El plan final es de 100 páginas. Devuelve JSON con SOLO las claves pedidas.`
+    );
+
+    await termLog('thinking', '🧠 Fase 2/3: Crítico revisando...', critico);
+    const critique = await callAiProvider(
+      fallbackProvider || makeProviderConfig(critico),
+      `${systemContext}\n\nBorrador:\n${JSON.stringify(draft)}\n\nTAREA: Actúa como inversor crítico. ¿Qué falta? ¿Qué es débil o impreciso? Sé breve y directo. No devuelvas JSON.`,
+      false
+    );
+
+    await termLog('thinking', '🧠 Fase 3/3: Redactor sintetizando versión final...', redactor);
+    const result = await callAiProvider(
+      fallbackProvider || makeProviderConfig(redactor),
+      `${systemContext}\n\nBorrador:\n${JSON.stringify(draft)}\n\nCrítica:\n${critique}\n\nTAREA: Integra las mejoras. Genera la versión final con tono ejecutivo. DEVUELVE SOLO JSON con claves: ${(currentModule.fields || []).map(f => f.key).join(', ')}`
+    );
+
+    await termLog('success', '✓ Módulo completado (nivel pro).', redactor);
     return result;
+  };
+
+  // NIVEL 3: Profundo — 5 agentes, múltiples modelos con swap
+  // [HDD] Hipótesis: 5 perspectivas → menor tasa de contradicciones entre módulos
+  const runDeep = async (fallbackProvider) => {
+    const agentCfg = DEFAULT_AGENT_CONFIG.deep;
+    const estratega    = resolveModel('estratega',     agentCfg);
+    const analista     = resolveModel('analista',      agentCfg);
+    const abogadoDiablo= resolveModel('abogadoDiablo', agentCfg);
+    const critico      = resolveModel('critico',       agentCfg);
+    const redactor     = resolveModel('redactor',      agentCfg);
+
+    const mkCfg = (m) => fallbackProvider || makeProviderConfig(m);
+
+    await termLog('thinking', '🔬 Fase 1/5: Estratega definiendo marco...', estratega);
+    const marco = await callAiProvider(mkCfg(estratega),
+      `${systemContext}\n\nTAREA: Define el marco estratégico y los puntos clave que DEBEN aparecer en "${currentModule.title}". No escribas el contenido final, solo la estructura. Responde en texto libre.`,
+      false
+    );
+
+    await termLog('thinking', '🔬 Fase 2/5: Analista desarrollando contenido...', analista);
+    const draft = await callAiProvider(mkCfg(analista),
+      `${systemContext}\n\nMarco estratégico:\n${marco}\n\nTAREA: Desarrolla el contenido completo basándote en el marco. Sé exhaustivo. Devuelve JSON con las claves pedidas.`
+    );
+
+    await termLog('thinking', "🔬 Fase 3/5: Devil's Advocate buscando debilidades...", abogadoDiablo);
+    const devilCritique = await callAiProvider(mkCfg(abogadoDiablo),
+      `${systemContext}\n\nContenido desarrollado:\n${JSON.stringify(draft)}\n\nTAREA: Eres un escéptico. ¿Cuáles son los 3 argumentos más débiles? ¿Qué suposiciones son peligrosas? Responde en texto libre.`,
+      false
+    );
+
+    await termLog('thinking', '🔬 Fase 4/5: Crítico financiero validando...', critico);
+    const financialCritique = await callAiProvider(mkCfg(critico),
+      `${systemContext}\n\nContenido:\n${JSON.stringify(draft)}\n\nCrítica previa:\n${devilCritique}\n\nTAREA: Valida la solidez financiera y estratégica. ¿Es viable? ¿Qué datos faltan? Texto libre.`,
+      false
+    );
+
+    await termLog('thinking', '🔬 Fase 5/5: Redactor senior sintetizando...', redactor);
+    const result = await callAiProvider(mkCfg(redactor),
+      `${systemContext}\n\nBorrador:\n${JSON.stringify(draft)}\n\nCríticas recibidas:\n${devilCritique}\n\n${financialCritique}\n\nTAREA: Genera la versión FINAL definitiva integrando todas las perspectivas. Tono ejecutivo, académico y riguroso. DEVUELVE SOLO JSON con claves: ${(currentModule.fields || []).map(f => f.key).join(', ')}`
+    );
+
+    await termLog('success', '✓ Módulo completado (nivel profundo).', redactor);
+    return result;
+  };
+
+  // ─── Selección de orquestador por nivel ────────────────────────────────
+  const orchestrators = { 1: runFast, 2: runPro, 3: runDeep };
+  const runChain = orchestrators[depth] || runFast;
+
+  // ─── Ejecución con fallback inteligente ───────────────────────────────
+  // [EDD] Primero intenta local (Ollama), luego pregunta antes de saltar a nube
+
+  // Paso 1: Ollama local (privado, sin costo)
+  try {
+    await termLog('start', `Iniciando generación (nivel ${depth === 1 ? '⚡ Rápido' : depth === 2 ? '🧠 Pro' : '🔬 Profundo'})...`, 'ollama');
+    return await runChain(null); // null = usar modelos por rol configurados
   } catch (ollamaError) {
-    await termLog('warning', `Ollama no disponible: ${ollamaError.message.substring(0,60)}`, 'ollama');
-    
-    // Paso 2: Ollama falló — AVISAR al usuario antes de saltar a la nube
+    await termLog('warning', `Ollama: ${ollamaError.message.substring(0, 60)}`, 'ollama');
+
+    // Paso 2: Avisar al usuario antes de usar nube
     const userChoice = await showFallbackDialog(ollamaError.message);
-    
-    if (userChoice === 'retry') {
-      try {
-        await termLog('stage', 'Reintentando con Ollama...', 'ollama');
-        return await runChain(ollamaConfig);
-      } catch (retryError) {
-        await termLog('warning', `Reintento Ollama falló. Saltando a nube.`, 'ollama');
-      }
-    } else if (userChoice === 'cancel') {
+    if (userChoice === 'cancel') {
       await termLog('error', 'Generación cancelada por el usuario.');
       throw new Error('Generación cancelada por el usuario.');
     }
   }
 
-  // Paso 3: Usar proveedores en la nube (con fallback secuencial)
+  // Paso 3: Nube con fallback secuencial (1 proveedor = 1 modelo, sin swap)
+  const cloudProviders = [
+    { provider: 'groq',    apiKey: groqKey, model: 'llama-3.3-70b-versatile' },
+    { provider: 'gemini',  apiKey,          model: 'gemini-1.5-flash' },
+    { provider: 'mistral', apiKey,          model: 'mistral-large-latest' },
+    { provider: 'openai',  apiKey,          model: 'gpt-4o' },
+  ];
+
   let lastError = null;
   for (const pConfig of cloudProviders) {
     try {
-      await termLog('fallback', `Intentando proveedor nube...`, pConfig.provider);
-      return await runChain(pConfig);
+      await termLog('fallback', `Intentando nube: ${pConfig.provider}...`, pConfig.provider);
+      return await runChain(pConfig); // Usa el mismo orquestador pero con proveedor nube
     } catch (error) {
-      await termLog('error', `Falla en ${pConfig.provider}: ${error.message.substring(0,50)}`, pConfig.provider);
+      await termLog('error', `${pConfig.provider}: ${error.message.substring(0, 50)}`, pConfig.provider);
       lastError = error;
     }
   }
 
-  throw new Error("Todos los proveedores de IA fallaron. Verifica tu conexión, Ollama o tus API Keys. " + (lastError?.message || ''));
+  throw new Error('Todos los proveedores fallaron. ' + (lastError?.message || ''));
 }
 
-/**
- * Genera contenido para UN SOLO campo usando un prompt específico.
- */
+// ─────────────────────────────────────────────────────────────────────────
+// Genera contenido para UN SOLO campo (Expert Panel)
+// ─────────────────────────────────────────────────────────────────────────
 export async function generateSingleField(config, fieldKey, fieldLabel, fieldGuide, allPlanData) {
   const { apiKey, groqKey, endpoint, model } = config;
-  
-  const semillaContext = allPlanData.semilla 
-    ? `Entrevista con el emprendedor:\n${JSON.stringify(allPlanData.semilla, null, 2)}\n` 
+
+  const semillaContext = allPlanData.semilla
+    ? `Entrevista con el emprendedor:\n${JSON.stringify(allPlanData.semilla, null, 2)}\n`
     : '';
 
   const prompt = `
 Eres un experto en planes de negocio profesionales.
 ${semillaContext}
-Contexto completo del plan actual:
+Contexto del plan actual:
 ${JSON.stringify(allPlanData, null, 2)}
 
 TAREA: Genera contenido SOLO para el campo "${fieldLabel}".
-Guía de este campo: ${fieldGuide.desc || ''}
-Ejemplo de referencia: ${fieldGuide.ejemplo || ''}
+Guía: ${fieldGuide.desc || ''}
+Ejemplo: ${fieldGuide.ejemplo || ''}
 
-Devuelve un JSON con UNA sola clave: "${fieldKey}" y su contenido como texto detallado y profesional.
+Devuelve un JSON con UNA sola clave: "${fieldKey}" y su contenido profesional.
 `;
 
-  // Usar el mismo fallback inteligente
   const providers = [
-    { provider: 'ollama', endpoint, model: model || 'gemma4:e2b' },
-    { provider: 'groq', apiKey: groqKey, model: 'llama-3.3-70b-versatile' },
-    { provider: 'gemini', apiKey, model: 'gemini-1.5-flash' }
+    { provider: 'ollama', endpoint, model: model || 'gemma4:e4b' },
+    { provider: 'groq',   apiKey: groqKey, model: 'llama-3.3-70b-versatile' },
+    { provider: 'gemini', apiKey,          model: 'gemini-1.5-flash' },
   ];
 
   for (const pConfig of providers) {
@@ -146,37 +293,52 @@ Devuelve un JSON con UNA sola clave: "${fieldKey}" y su contenido como texto det
       console.warn(`generateSingleField falla en ${pConfig.provider}: ${error.message}`);
     }
   }
-  throw new Error("No se pudo generar el campo. Verifica tu conexión.");
+  throw new Error('No se pudo generar el campo. Verifica tu conexión.');
 }
 
-/**
- * Diálogo de fallback: avisa al usuario que Ollama no responde y ofrece opciones.
- */
+// ─────────────────────────────────────────────────────────────────────────
+// Diálogo de fallback a nube
+// ─────────────────────────────────────────────────────────────────────────
 function showFallbackDialog(errorMsg) {
   return new Promise((resolve) => {
-    const isConnectionError = errorMsg.includes('fetch') || errorMsg.includes('Failed') || errorMsg.includes('ECONNREFUSED') || errorMsg.includes('NetworkError');
-    
-    const message = isConnectionError
-      ? `⚠️ Ollama no detectado (localhost:11434).\n\n¿Deseas usar la INTELIGENCIA EN LA NUBE (Groq/Gemini) para continuar?\n\n• OK = Usar Nube\n• Cancelar = Detener`
-      : `⚠️ Error en Ollama: ${errorMsg}\n\n¿Deseas saltar a la NUBE?\n\n• OK = Usar Nube\n• Cancelar = Detener`;
-
-    const useCloud = window.confirm(message);
-    resolve(useCloud ? 'cloud' : 'cancel');
+    const isConnection = errorMsg.includes('fetch') || errorMsg.includes('Failed') || errorMsg.includes('ECONNREFUSED');
+    const message = isConnection
+      ? `⚠️ Ollama no detectado (localhost:11434).\n\n¿Usar la NUBE (Groq/Gemini) como respaldo?\n\n• OK = Usar Nube\n• Cancelar = Detener`
+      : `⚠️ Error en Ollama: ${errorMsg}\n\n¿Saltar a la NUBE?\n\n• OK = Usar Nube\n• Cancelar = Detener`;
+    resolve(window.confirm(message) ? 'cloud' : 'cancel');
   });
 }
 
-// --- Provider Adapters ---
-
+// ─────────────────────────────────────────────────────────────────────────
+// Provider Adapters
+// ─────────────────────────────────────────────────────────────────────────
 async function callAiProvider(config, prompt, expectJson = true) {
   const { provider, apiKey, endpoint, model } = config;
+  if (provider === 'gemini')  return callGemini(apiKey, model, prompt, expectJson);
+  if (provider === 'groq')    return callGroq(apiKey, model, prompt, expectJson);
+  if (provider === 'ollama')  return callOllama(endpoint, model, prompt, expectJson);
+  if (provider === 'mistral') return callMistral(apiKey, model, prompt, expectJson);
+  if (provider === 'openai')  return callOpenAI(apiKey, model, prompt, expectJson);
+  throw new Error(`Proveedor ${provider} no soportado`);
+}
 
-  if (provider === 'gemini') return await callGemini(apiKey, model, prompt, expectJson);
-  if (provider === 'groq') return await callGroq(apiKey, model, prompt, expectJson);
-  if (provider === 'ollama') return await callOllama(endpoint, model, prompt, expectJson);
-  if (provider === 'mistral') return await callMistral(apiKey, model, prompt, expectJson);
-  if (provider === 'openai') return await callOpenAI(apiKey, model, prompt, expectJson);
-  
-  throw new Error(`Proveedor ${provider} no configurado o soportado`);
+async function callOllama(endpoint, model, prompt, expectJson) {
+  // [SDD] Ver docs/Operations_Integration_SDD.md — Ollama hace swap automático en VRAM
+  // Mac: Metal unifica RAM/VRAM, sin swap. Windows/Linux: swap ~2-4s entre modelos.
+  const url = `${endpoint || 'http://localhost:11434'}/api/generate`;
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: model || 'gemma4:e4b',
+      prompt,
+      stream: false,
+      format: expectJson ? 'json' : undefined,
+    })
+  });
+  const data = await response.json();
+  if (data.error) throw new Error(data.error);
+  return expectJson ? parseAIResponse(data.response) : data.response;
 }
 
 async function callGemini(apiKey, model, prompt, expectJson) {
@@ -195,14 +357,11 @@ async function callGemini(apiKey, model, prompt, expectJson) {
 async function callGroq(apiKey, model, prompt, expectJson) {
   const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${apiKey}`
-    },
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
     body: JSON.stringify({
       model: model || 'llama-3.3-70b-versatile',
       messages: [{ role: 'user', content: prompt }],
-      response_format: expectJson ? { type: "json_object" } : undefined
+      response_format: expectJson ? { type: 'json_object' } : undefined
     })
   });
   const data = await response.json();
@@ -211,56 +370,31 @@ async function callGroq(apiKey, model, prompt, expectJson) {
   return expectJson ? parseAIResponse(text) : text;
 }
 
-async function callOllama(endpoint, model, prompt, expectJson) {
-  const url = `${endpoint || 'http://localhost:11434'}/api/generate`;
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model: model || 'gemma4:e2b',
-      prompt: prompt,
-      stream: false,
-      format: expectJson ? 'json' : undefined
-    })
-  });
-  const data = await response.json();
-  if (data.error) throw new Error(data.error);
-  return expectJson ? parseAIResponse(data.response) : data.response;
-}
-
 async function callOpenAI(apiKey, model, prompt, expectJson) {
   const response = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${apiKey}`
-    },
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
     body: JSON.stringify({
       model: model || 'gpt-4o',
       messages: [{ role: 'user', content: prompt }],
-      response_format: expectJson ? { type: "json_object" } : undefined
+      response_format: expectJson ? { type: 'json_object' } : undefined
     })
   });
   const data = await response.json();
-  const text = data.choices[0].message.content;
-  return expectJson ? parseAIResponse(text) : text;
+  return expectJson ? parseAIResponse(data.choices[0].message.content) : data.choices[0].message.content;
 }
 
 async function callMistral(apiKey, model, prompt, expectJson) {
   const response = await fetch('https://api.mistral.ai/v1/chat/completions', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${apiKey}`
-    },
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
     body: JSON.stringify({
       model: model || 'mistral-large-latest',
       messages: [{ role: 'user', content: prompt }]
     })
   });
   const data = await response.json();
-  const text = data.choices[0].message.content;
-  return expectJson ? parseAIResponse(text) : text;
+  return expectJson ? parseAIResponse(data.choices[0].message.content) : data.choices[0].message.content;
 }
 
 function parseAIResponse(text) {
@@ -269,6 +403,6 @@ function parseAIResponse(text) {
     if (jsonMatch) return JSON.parse(jsonMatch[0]);
     return JSON.parse(text);
   } catch (e) {
-    throw new Error("La IA no devolvió un formato JSON válido.");
+    throw new Error('La IA no devolvió un formato JSON válido.');
   }
 }
