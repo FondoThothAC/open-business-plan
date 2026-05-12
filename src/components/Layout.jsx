@@ -54,7 +54,7 @@ export default function Layout() {
               <Sprout size={24} color="var(--accent-color)" />
             </div>
             <div className="logo-text">
-              <h1>OpenPlan</h1>
+              <h1>Open Business Plan</h1>
               <span>Business Engine</span>
             </div>
           </div>

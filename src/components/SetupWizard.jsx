@@ -123,7 +123,7 @@ export default function SetupWizard({ onComplete }) {
             <Brain size={32} color="white" />
           </div>
           <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '1.75rem', fontWeight: 900, marginBottom: '0.5rem' }}>
-            Bienvenido a OpenPlan
+            Bienvenido a Open Business Plan
           </h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
             Configuremos el motor de IA para tu hardware en 1 minuto
@@ -314,7 +314,7 @@ export default function SetupWizard({ onComplete }) {
               ¡Todo listo!
             </h2>
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '1.5rem' }}>
-              OpenPlan está configurado con <strong style={{ color: 'var(--accent-color)' }}>
+              Open Business Plan está configurado con <strong style={{ color: 'var(--accent-color)' }}>
                 {CTX_OPTIONS.find(o => o.value === selectedCtx)?.label} de contexto
               </strong> corriendo en modo <strong style={{ color: '#10b981' }}>{mode === 'local' ? 'Local (Ollama)' : 'Nube'}</strong>.
             </p>

@@ -1,4 +1,4 @@
-# Metodologías de Desarrollo — OpenPlan v2.0
+# Metodologías de Desarrollo — Open Business Plan v2.5.12.x
 > Guía de referencia en español para el equipo de desarrollo.  
 > Cada metodología se explica con su aplicación **concreta** dentro de este proyecto.
 
@@ -6,7 +6,7 @@
 
 ## 🧠 Mesa de Expertos — Arquitectura Multi-Agente
 
-El motor de IA de OpenPlan no usa un solo modelo: usa **múltiples agentes especializados** que debaten y sintetizan en cadena, similar a cómo trabaja un equipo de consultores de negocio.
+El motor de IA de Open Business Plan no usa un solo modelo: usa **múltiples agentes especializados** que debaten y sintetizan en cadena, similar a cómo trabaja un equipo de consultores de negocio.
 
 ### Niveles de Profundidad
 
@@ -78,7 +78,7 @@ En **Configuración > Mesa de Expertos** puedes asignar un modelo diferente a ca
 
 **Concepto**: Escribes la prueba *antes* del código. El ciclo es: 🔴 Rojo → 🟢 Verde → 🔵 Refactorizar.
 
-**En OpenPlan**: Antes de implementar `estimateMesaCost()`, definimos qué debe devolver con entradas conocidas:
+**En Open Business Plan**: Antes de implementar `estimateMesaCost()`, definimos qué debe devolver con entradas conocidas:
 ```js
 // [TDD] test: estimateMesaCost(32768, 'gemini-1.5-flash') debe retornar costUSD < 0.01
 ```
@@ -90,10 +90,10 @@ En **Configuración > Mesa de Expertos** puedes asignar un modelo diferente a ca
 
 **Concepto**: Se definen *escenarios de usuario* en lenguaje natural (Gherkin) antes de codificar.
 
-**En OpenPlan**:
+**En Open Business Plan**:
 ```
 Escenario: Wizard detecta hardware y recomienda contexto
-  Dado que el usuario abre OpenPlan por primera vez
+  Dado que el usuario abre Open Business Plan por primera vez
   Cuando el wizard consulta Ollama en localhost:11434
   Entonces recomienda 128k si la GPU tiene ≥12GB VRAM
   Y guarda la configuración en localStorage
@@ -106,7 +106,7 @@ Escenario: Wizard detecta hardware y recomienda contexto
 
 **Concepto**: Se documenta la solución técnica completa *antes* de implementar. El documento de diseño guía el código.
 
-**En OpenPlan**: El archivo `docs/Operations_Integration_SDD.md` es el artefacto SDD del módulo de operaciones. Define las fórmulas (OTD, CCC, DSO) antes de escribir `ModuloOperaciones.jsx`.
+**En Open Business Plan**: El archivo `docs/Operations_Integration_SDD.md` es el artefacto SDD del módulo de operaciones. Define las fórmulas (OTD, CCC, DSO) antes de escribir `ModuloOperaciones.jsx`.
 
 **Archivos marcados**: `docs/Operations_Integration_SDD.md`
 
@@ -116,7 +116,7 @@ Escenario: Wizard detecta hardware y recomienda contexto
 
 **Concepto**: El código refleja el lenguaje del negocio. Los objetos del sistema modelan conceptos reales del dominio.
 
-**En OpenPlan**, el dominio es:
+**En Open Business Plan**, el dominio es:
 - **Plan** → objeto raíz (`planData`)
 - **Módulo** → unidad de contenido (`{ pillar, moduleKey, fields }`)
 - **Semilla** → entrevista fundacional del emprendedor
@@ -131,7 +131,7 @@ Escenario: Wizard detecta hardware y recomienda contexto
 
 **Concepto**: El proyecto se organiza en una lista de *features* que se implementan iterativamente.
 
-**En OpenPlan** — Lista de Features v2.0:
+**En Open Business Plan** — Lista de Features v2.0:
 - [x] F01: Mesa de Expertos (3 fases de IA)
 - [x] F02: Fallback Inteligente (Ollama → Nube)
 - [x] F03: Setup Wizard con detección de hardware
@@ -148,7 +148,7 @@ Escenario: Wizard detecta hardware y recomienda contexto
 
 **Concepto**: Los criterios de aceptación del cliente se definen *antes* de codificar. El código pasa cuando cumple esos criterios.
 
-**En OpenPlan** — Criterios para el módulo de Operaciones:
+**En Open Business Plan** — Criterios para el módulo de Operaciones:
 - ✅ Los KPIs (OTD, DSO, CCC) se recalculan en tiempo real al cambiar inputs
 - ✅ El análisis IA se renderiza con Markdown (negritas, listas)  
 - ✅ Los valores NaN nunca se muestran al usuario
@@ -160,7 +160,7 @@ Escenario: Wizard detecta hardware y recomienda contexto
 
 **Concepto**: El sistema reacciona a *eventos*, no a llamadas directas. Los componentes son desacoplados.
 
-**En OpenPlan** — Flujo de eventos React:
+**En Open Business Plan** — Flujo de eventos React:
 ```
 updateSection(pillar, moduleKey, field, value)
   → PlanContext actualiza planData
@@ -175,7 +175,7 @@ updateSection(pillar, moduleKey, field, value)
 
 **Concepto**: Un *modelo* canónico define la estructura del sistema. Todo el código se genera o guía por ese modelo.
 
-**En OpenPlan**, el modelo maestro es `src/config/frameworks.js`:
+**En Open Business Plan**, el modelo maestro es `src/config/frameworks.js`:
 ```js
 // [MDD] Este archivo es el modelo canónico. 
 // Cambiar aquí afecta: sidebar, rutas, prompts de IA, estructura del plan.
@@ -189,7 +189,7 @@ Si agregas un campo aquí, aparece automáticamente en el módulo, en la IA y en
 
 **Concepto**: Cada feature es una *hipótesis* que se valida con datos. Si no mejora la métrica objetivo, se descarta.
 
-**En OpenPlan** — Hipótesis activas:
+**En Open Business Plan** — Hipótesis activas:
 | Hipótesis | Métrica | Estado |
 |---|---|---|
 | Mesa de Expertos genera mejor contenido que 1 sola llamada | Calidad percibida (encuesta) | 🔬 Testing |
@@ -202,7 +202,7 @@ Si agregas un campo aquí, aparece automáticamente en el módulo, en la IA y en
 
 **Concepto**: Documentas el componente en su README *antes* de implementarlo. El README es el contrato de la feature.
 
-**En OpenPlan** — Ejemplo para `SetupWizard.jsx`:
+**En Open Business Plan** — Ejemplo para `SetupWizard.jsx`:
 ```markdown
 ## SetupWizard
 Wizard de primera ejecución que detecta hardware y configura el motor de IA.
