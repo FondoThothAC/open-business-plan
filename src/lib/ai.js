@@ -50,6 +50,18 @@ export const DEFAULT_AGENT_CONFIG = {
     critico:    { model: 'gemma4:e4b', role: 'Crítico Financiero' },
     redactor:   { model: 'gemma4:pro', role: 'Redactor Ejecutivo Final' },
   },
+  // Nivel 4 — Industrial : 9 agentes. ~20-30 min
+  industrial: {
+    estratega:      { model: 'gemma4:e4b', role: 'Estratega Maestro' },
+    mercado:        { model: 'qwen2.5:7b', role: 'Especialista en Mercado' },
+    operaciones:    { model: 'gemma4:e4b', role: 'Analista de Operaciones' },
+    financiero:     { model: 'phi4:14b',   role: 'Especialista Financiero' },
+    abogadoDiablo:  { model: 'gemma4:e4b', role: "Devil's Advocate" },
+    coherencia:     { model: 'gemma4:e4b', role: 'Revisor de Coherencia Global' },
+    hallucination:  { model: 'gemma4:e4b', role: 'Verificador de Hechos/Alucinaciones' },
+    redactor:       { model: 'gemma4:pro', role: 'Redactor Ejecutivo Final' },
+    editor:         { model: 'gemma4:pro', role: 'Editor de Estilo Académico' },
+  },
 };
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -213,8 +225,44 @@ Campos a generar (SOLO estos): ${(currentModule.fields || []).map(f => f.key).jo
     return result;
   };
 
+  // NIVEL 4: Industrial — 9 agentes. El "Gold Standard" de la industria.
+  const runIndustrial = async (fallbackProvider) => {
+    const agentCfg = DEFAULT_AGENT_CONFIG.industrial;
+    const mkCfg = (m) => fallbackProvider || makeProviderConfig(resolveModel(m, agentCfg));
+
+    await termLog('thinking', '🏭 Fase 1/9: Estratega Maestro (Marco)', 'estratega');
+    const marco = await callAiProvider(mkCfg('estratega'), `${systemContext}\n\nDefine el marco estratégico maestro para este módulo.`, false);
+
+    await termLog('thinking', '🏭 Fase 2/9: Especialista en Mercado', 'mercado');
+    const marketIn = await callAiProvider(mkCfg('mercado'), `${systemContext}\n\nMarco: ${marco}\n\nDesarrolla la perspectiva de mercado para este módulo.`);
+
+    await termLog('thinking', '🏭 Fase 3/9: Analista de Operaciones', 'operaciones');
+    const opsIn = await callAiProvider(mkCfg('operaciones'), `${systemContext}\n\nMarco: ${marco}\n\nDesarrolla la perspectiva operativa.`);
+
+    await termLog('thinking', '🏭 Fase 4/9: Especialista Financiero', 'financiero');
+    const finIn = await callAiProvider(mkCfg('financiero'), `${systemContext}\n\nMarco: ${marco}\n\nDesarrolla la perspectiva financiera y de costos.`);
+
+    await termLog('thinking', '🏭 Fase 5/9: Devil\'s Advocate', 'abogadoDiablo');
+    const critique = await callAiProvider(mkCfg('abogadoDiablo'), `${systemContext}\n\nContenido: ${JSON.stringify({marketIn, opsIn, finIn})}\n\nEncuentra debilidades críticas.`, false);
+
+    await termLog('thinking', '🏭 Fase 6/9: Revisor de Coherencia', 'coherencia');
+    const coherence = await callAiProvider(mkCfg('coherencia'), `${systemContext}\n\nValida la coherencia entre mercado, operaciones y finanzas.`, false);
+
+    await termLog('thinking', '🏭 Fase 7/9: Verificador de Hechos', 'hallucination');
+    const check = await callAiProvider(mkCfg('hallucination'), `Valida si hay alucinaciones o datos falsos en esto: ${JSON.stringify({marketIn, opsIn, finIn})}`, false);
+
+    await termLog('thinking', '🏭 Fase 8/9: Redactor Final', 'redactor');
+    const draft = await callAiProvider(mkCfg('redactor'), `${systemContext}\n\nCríticas: ${critique}\n\nCoherencia: ${coherence}\n\nHechos: ${check}\n\nGenera el borrador final integrado.`);
+
+    await termLog('thinking', '🏭 Fase 9/9: Editor de Estilo', 'editor');
+    const result = await callAiProvider(mkCfg('editor'), `${systemContext}\n\nBorrador: ${JSON.stringify(draft)}\n\nPulido final estilo académico/ejecutivo. DEVUELVE SOLO JSON.`);
+
+    await termLog('success', '✓ Módulo completado (NIVEL INDUSTRIAL).', 'editor');
+    return result;
+  };
+
   // ─── Selección de orquestador por nivel ────────────────────────────────
-  const orchestrators = { 1: runFast, 2: runPro, 3: runDeep };
+  const orchestrators = { 1: runFast, 2: runPro, 3: runDeep, 4: runIndustrial };
   const runChain = orchestrators[depth] || runFast;
 
   // ─── Ejecución con fallback inteligente ───────────────────────────────

@@ -102,10 +102,6 @@ export const PlanProvider = ({ children }) => {
       document.documentElement.style.setProperty('--accent-color', planData.config.brandKit.primaryColor);
       document.documentElement.style.setProperty('--accent-hover', planData.config.brandKit.secondaryColor);
     }
-    // Migration: Update model name to pro (Optimized for 12GB)
-    if (planData.config?.ai?.model === 'gemma2:2b' || planData.config?.ai?.model === 'gemma4:latest' || planData.config?.ai?.model === 'gemma4:e2b' || planData.config?.ai?.model === 'gemma4:e4b') {
-      updateConfig('ai', 'model', 'gemma4:pro');
-    }
 
     // Auto-save to Local Backend (Markdown & JSON)
     const saveTimer = setTimeout(async () => {

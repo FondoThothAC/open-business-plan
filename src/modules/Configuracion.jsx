@@ -252,10 +252,12 @@ export default function Configuracion() {
                   <option value="llama3.1:8b">llama3.1:8b (~5GB) — Estructura</option>
                   <option value="mistral:7b">mistral:7b  (~4.5GB) — Multilingüe</option>
                 </optgroup>
-                <optgroup label="— Mac (Apple Silicon) —">
-                  <option value="gemma3:4b">gemma3:4b   (~3GB unificada)</option>
-                  <option value="qwen2.5:3b">qwen2.5:3b  (~2GB unificada)</option>
-                  <option value="phi3:mini">phi3:mini   (~2.3GB unificada)</option>
+                <optgroup label="— Nube (Requiere API Key) —">
+                  <option value="gemini-1.5-flash">Gemini 1.5 Flash (Google)</option>
+                  <option value="gemini-1.5-pro">Gemini 1.5 Pro (Google)</option>
+                  <option value="llama-3.3-70b-versatile">Groq Llama 3.3 70B</option>
+                  <option value="mistral-large-latest">Mistral Large</option>
+                  <option value="gpt-4o">OpenAI GPT-4o</option>
                 </optgroup>
                 {ollamaModels.filter(m => !['gemma4:e4b','gemma4:pro','gemma4:e2b','qwen2.5:7b','phi4:14b','llama3.1:8b','mistral:7b'].includes(m.name)).length > 0 && (
                   <optgroup label="— Detectados en tu Ollama —">
@@ -303,9 +305,10 @@ export default function Configuracion() {
           {planData.config?.ai?.advancedDepth && (
             <div style={{ display: 'flex', gap: '0.5rem' }}>
               {[
-                { level: 1, icon: '⚡', label: 'Rápido',   time: '~1 min',  desc: '2 agentes' },
-                { level: 2, icon: '🧠', label: 'Pro',      time: '~3 min',  desc: '3 agentes' },
-                { level: 3, icon: '🔬', label: 'Profundo', time: '~10 min', desc: '5 agentes' },
+                { level: 1, icon: '⚡', label: 'Rápido',    time: '~1 min',  desc: '2 agentes' },
+                { level: 2, icon: '🧠', label: 'Pro',       time: '~3 min',  desc: '3 agentes' },
+                { level: 3, icon: '🔬', label: 'Profundo',  time: '~10 min', desc: '5 agentes' },
+                { level: 4, icon: '🏭', label: 'Industrial', time: '~25 min', desc: '9 agentes' },
               ].map(({ level, icon, label, time, desc }) => (
                 <button key={level}
                   onClick={() => handleAiChange('depth', level)}
