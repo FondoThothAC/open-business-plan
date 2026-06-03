@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Activity, X, Minimize2, Maximize2, Bot, CheckCircle, AlertTriangle, XCircle, Zap, Cloud, Save } from 'lucide-react';
+import { usePlan } from '../context/PlanContext';
 
 const TYPE_CONFIG = {
   connected: { icon: CheckCircle, color: '#10b981', label: 'Conectado' },
@@ -63,6 +64,12 @@ function LogLine({ entry, index }) {
 }
 
 export default function ActivityFeed() {
+  const { planData } = usePlan();
+  
+  const rawName = planData?.semilla?.negocio?.nombre_marca || planData?.config?.brandKit?.companyName || '';
+  const activeProjectId = planData?.config?.projectId || (rawName ? rawName.replace(/[^a-z0-9]/gi, '_').toLowerCase() : '');
+  const activeProjectType = planData?.config?.projectType === 'social_bid' ? 'social' : 'negocios';
+
   const [logs, setLogs] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
@@ -70,16 +77,44 @@ export default function ActivityFeed() {
   const [isConnected, setIsConnected] = useState(false);
   const bottomRef = useRef(null);
   const esRef = useRef(null);
+  const retriesRef = useRef(0);
+  const activeProjectIdRef = useRef(activeProjectId);
+
+  // Sync ref with state to prevent closures in SSE
+  useEffect(() => {
+    activeProjectIdRef.current = activeProjectId;
+  }, [activeProjectId]);
+
+  // Cargar historial de logs al iniciar o cambiar de proyecto
+  useEffect(() => {
+    if (!activeProjectId) {
+      setLogs([]);
+      return;
+    }
+
+    const fetchHistory = async () => {
+      try {
+        const res = await fetch(`http://localhost:3001/api/projects/${activeProjectType}/${activeProjectId}/logs`);
+        if (res.ok) {
+          const history = await res.json();
+          setLogs(history);
+        } else {
+          setLogs([]);
+        }
+      } catch (_) {
+        setLogs([]);
+      }
+    };
+
+    fetchHistory();
+  }, [activeProjectId, activeProjectType]);
 
   // Conectar SSE al backend
-  const retriesRef = useRef(0);
-
   useEffect(() => {
     const MAX_RETRIES = 3;
     
     const connect = () => {
       if (retriesRef.current >= MAX_RETRIES) {
-        // Silently give up — server not running
         setIsConnected(false);
         return;
       }
@@ -90,18 +125,33 @@ export default function ActivityFeed() {
 
         es.onopen = () => {
           setIsConnected(true);
-          retriesRef.current = 0; // Reset retries on success
+          retriesRef.current = 0;
         };
 
         es.onmessage = (e) => {
           try {
             const entry = JSON.parse(e.data);
-            setLogs(prev => [...prev.slice(-49), { ...entry, id: Date.now() + Math.random() }]);
-            if (!isOpen || isMinimized) setHasNew(true);
-            // Auto-abrir al primer evento real de IA
-            if (entry.type === 'start') {
-              setIsOpen(true);
-              setIsMinimized(false);
+            
+            // Agregar solo si no tiene ID de proyecto o si pertenece al activo
+            if (!entry.projectId || entry.projectId === activeProjectIdRef.current) {
+              setLogs(prev => {
+                const isDup = prev.some(item => 
+                  item.message === entry.message && 
+                  item.time === entry.time && 
+                  item.type === entry.type && 
+                  item.module === entry.module
+                );
+                if (isDup) return prev;
+
+                const next = [...prev, { ...entry, id: Date.now() + Math.random() }];
+                return next.slice(-1000); // Permitir hasta 1000 eventos en pantalla
+              });
+
+              if (!isOpen || isMinimized) setHasNew(true);
+              if (entry.type === 'start') {
+                setIsOpen(true);
+                setIsMinimized(false);
+              }
             }
           } catch (_) {}
         };
@@ -111,7 +161,7 @@ export default function ActivityFeed() {
           es.close();
           retriesRef.current++;
           if (retriesRef.current < MAX_RETRIES) {
-            setTimeout(connect, 10000); // 10s entre reintentos
+            setTimeout(connect, 10000);
           }
         };
       } catch (_) {}
@@ -119,7 +169,7 @@ export default function ActivityFeed() {
 
     connect();
     return () => esRef.current?.close();
-  }, []);
+  }, [isOpen, isMinimized]);
 
   // Scroll al fondo automáticamente
   useEffect(() => {
@@ -127,6 +177,23 @@ export default function ActivityFeed() {
       bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
   }, [logs, isOpen, isMinimized]);
+
+  // Limpiar el historial permanentemente en backend y frontend
+  const handleClearLogs = async () => {
+    if (!activeProjectId) {
+      setLogs([]);
+      return;
+    }
+    
+    if (window.confirm('¿Estás seguro de que deseas eliminar permanentemente el historial de logs de este proyecto?')) {
+      try {
+        await fetch(`http://localhost:3001/api/projects/${activeProjectType}/${activeProjectId}/logs`, {
+          method: 'DELETE'
+        });
+      } catch (_) {}
+      setLogs([]);
+    }
+  };
 
   // Botón flotante
   const FloatButton = () => (
@@ -284,7 +351,7 @@ export default function ActivityFeed() {
                 )}
               </div>
             ) : (
-              logs.map((entry, i) => <LogLine key={entry.id} entry={entry} index={i} />)
+              logs.map((entry, i) => <LogLine key={entry.id || i} entry={entry} index={i} />)
             )}
             <div ref={bottomRef} />
           </div>
@@ -299,7 +366,7 @@ export default function ActivityFeed() {
             justifyContent: 'flex-end',
           }}>
             <button
-              onClick={() => setLogs([])}
+              onClick={handleClearLogs}
               style={{
                 fontSize: '0.65rem', color: 'var(--text-secondary)',
                 background: 'none', border: 'none', cursor: 'pointer',

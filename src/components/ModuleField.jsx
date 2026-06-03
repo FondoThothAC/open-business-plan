@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Lock, Unlock, Sparkles, BrainCircuit, Minimize2 } from 'lucide-react';
+import { Lock, Unlock, BrainCircuit, Minimize2 } from 'lucide-react';
 import { usePlan } from '../context/PlanContext';
 import ExpertPanel from './ExpertPanel';
+import { summarizeText } from '../lib/ai';
 
 export default function ModuleField({ pillar, module, field, label, placeholder, type = 'textarea' }) {
   const { planData, updateSection, toggleLock } = usePlan();
@@ -21,82 +22,10 @@ export default function ModuleField({ pillar, module, field, label, placeholder,
     
     setIsSummarizing(true);
     try {
-      // Usar la configuración de IA del plan
-      const config = planData.config;
-      const provider = config.aiProvider || 'ollama';
-      const ollamaModel = config.ollamaModel || 'gemma4:e2b';
-      const groqKey = config.groqApiKey;
-      const geminiKey = config.geminiApiKey;
-      
-      const systemPrompt = 'Eres un editor profesional de planes de negocios. Tu trabajo es resumir texto manteniendo la idea central, datos clave y tono profesional. Responde SOLO con el resumen, sin introducciones ni explicaciones. Máximo 3-4 oraciones claras y directas.';
-      const userPrompt = `Resume el siguiente texto de manera concisa y profesional:\n\n"${value}"`;
-
-      let result = null;
-
-      // Intento 1: Ollama local
-      if (provider === 'ollama' || !groqKey) {
-        try {
-          const ollamaEndpoint = config.ollamaEndpoint || 'http://localhost:11434';
-          const resp = await fetch(`${ollamaEndpoint}/api/generate`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              model: ollamaModel,
-              prompt: `${systemPrompt}\n\nUsuario: ${userPrompt}`,
-              stream: false,
-              options: { temperature: 0.3, num_predict: 300 }
-            })
-          });
-          if (resp.ok) {
-            const data = await resp.json();
-            result = data.response?.trim();
-          }
-        } catch (_) { /* fallback */ }
-      }
-
-      // Intento 2: Groq
-      if (!result && groqKey) {
-        try {
-          const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${groqKey}` },
-            body: JSON.stringify({
-              model: 'llama-3.3-70b-versatile',
-              messages: [
-                { role: 'system', content: systemPrompt },
-                { role: 'user', content: userPrompt }
-              ],
-              temperature: 0.3, max_tokens: 300
-            })
-          });
-          if (resp.ok) {
-            const data = await resp.json();
-            result = data.choices?.[0]?.message?.content?.trim();
-          }
-        } catch (_) { /* fallback */ }
-      }
-
-      // Intento 3: Gemini
-      if (!result && geminiKey) {
-        try {
-          const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              contents: [{ parts: [{ text: `${systemPrompt}\n\n${userPrompt}` }] }],
-              generationConfig: { temperature: 0.3, maxOutputTokens: 300 }
-            })
-          });
-          if (resp.ok) {
-            const data = await resp.json();
-            result = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
-          }
-        } catch (_) { /* fallback */ }
-      }
-
-      if (result) {
-        updateSection(pillar, module, field, result);
-      }
+      const aiConfig = planData.config?.ai;
+      if (!aiConfig) return;
+      const result = await summarizeText(aiConfig, value);
+      if (result) updateSection(pillar, module, field, result);
     } catch (err) {
       console.error('Error resumiendo:', err);
     } finally {
@@ -187,6 +116,8 @@ export default function ModuleField({ pillar, module, field, label, placeholder,
         isOpen={isExpertOpen}
         onClose={() => setIsExpertOpen(false)}
         onApply={handleApply}
+        aiConfig={planData.config?.ai}
+        planData={planData}
       />
     </div>
   );

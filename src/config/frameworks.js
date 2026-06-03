@@ -7,25 +7,26 @@ export const FRAMEWORKS = {
         key: 'naturaleza',
         title: 'Naturaleza del Proyecto',
         modules: [
-          { key: 'introduccion', title: 'Justificación y Origen', description: 'Origen, necesidad que cubre y propuesta de valor inicial.', fields: ['origen', 'necesidad', 'propuesta_valor'] },
+          { key: 'introduccion', title: 'Justificación y Origen', description: 'Origen, necesidad que cubre, modelo y propuesta de valor inicial.', fields: ['origen', 'necesidad', 'modelo_negocio', 'propuesta_valor'] },
           { key: 'identidad', title: 'Identidad Corporativa', description: 'Misión, Visión, Valores y concepto de marca.', fields: ['mision', 'vision', 'valores', 'imagen'] },
           { key: 'objetivos', title: 'Objetivos y Metas', description: 'Objetivos SMART a corto, mediano y largo plazo.', fields: ['general', 'especificos', 'metas'] },
           { key: 'foda', title: 'Análisis FODA', description: 'Fortalezas, Oportunidades, Debilidades y Amenazas.', fields: ['fortalezas', 'oportunidades', 'debilidades', 'amenazas'] },
           { key: 'pestel', title: 'Entorno (PESTEL)', description: 'Factores Políticos, Económicos, Sociales, Tecnológicos, etc.', fields: ['politico', 'economico', 'social', 'tecnologico', 'ecologico', 'legal'] },
-          { key: 'legal', title: 'Marco Legal y Socios', description: 'Estructura legal, constitución y permisos requeridos.', fields: ['constitucion', 'socios', 'permisos'] }
+          { key: 'legal', title: 'Marco Legal y Socios', description: 'Estructura legal, constitución y permisos requeridos.', fields: ['constitucion', 'socios', 'permisos'] },
+          { key: 'canvas', title: 'Modelo de Negocio Canvas', description: 'El lienzo del modelo de negocios (9 bloques esenciales) para planificar estratégicamente.', fields: ['socios_clave', 'actividades_clave', 'recursos_clave', 'propuestas_valor', 'relaciones_clientes', 'canales', 'segmentos_clientes', 'estructura_costos', 'fuentes_ingresos'] }
         ]
       },
       {
         key: 'mercado',
         title: 'El Mercado',
         modules: [
-          { key: 'analisis', title: 'Análisis de Producto y Valor', description: 'Descripción detallada del producto y beneficios.', fields: ['producto', 'valor', 'demanda', 'cliente'] },
-          { key: 'segmentacion', title: 'Segmentación y Tamaño', description: 'TAM, SAM, SOM y perfil del buyer persona.', fields: ['tam', 'sam', 'som', 'perfil'] },
-          { key: 'mapa', title: 'Mapa de Calor', description: 'Visualización geográfica de la demanda.', fields: ['heatmap_data'] },
+          { key: 'analisis', title: 'Análisis de Producto y Valor', description: 'Descripción detallada del producto y beneficios.', fields: ['producto', 'valor', 'demanda', 'cliente', 'ciclo_vida'] },
+          { key: 'segmentacion', title: 'Segmentación y Tamaño', description: 'TAM, SAM, SOM y perfil del buyer persona.', fields: ['tam', 'sam', 'som', 'perfil', 'sensibilidad_demanda'] },
+          { key: 'mapa', title: 'Mapa de Calor y Densidad', description: 'Visualización geográfica de la demanda y densidad de mercado.', fields: ['analisis_espacial'] },
           { key: 'competencia', title: 'Análisis de Competencia', description: 'Competidores directos, indirectos y ventaja competitiva.', fields: ['competidores', 'ventajas'] },
           { key: 'benchmarking', title: 'Benchmarking', description: 'Comparativa estructurada contra líderes del mercado.', fields: ['comparativa', 'matriz'] },
-          { key: 'comercializacion', title: 'Estrategia de Comercialización', description: 'Canales de distribución, marketing e identidad de ventas.', fields: ['distribucion', 'promocion', 'identidad'] },
-          { key: 'ventas', title: 'Plan de Ventas y Precios', description: 'Estrategia de pricing y proyecciones de volumen.', fields: ['precios', 'estrategia', 'proyeccion_volumen'] }
+          { key: 'comercializacion', title: 'Estrategia de Comercialización', description: 'Canales de distribución, marketing e identidad de ventas.', fields: ['distribucion', 'promocion', 'identidad', 'canales_intermediarios'] },
+          { key: 'ventas', title: 'Plan de Ventas y Precios', description: 'Estrategia de pricing y proyecciones de volumen.', fields: ['precios', 'estrategia', 'proyeccion_volumen', 'tacticas_precio'] }
         ]
       },
       {
@@ -33,10 +34,10 @@ export const FRAMEWORKS = {
         title: 'Estudio Técnico de Producción',
         modules: [
           { key: 'ubicacion', title: 'Localización y Ubicación', description: 'Macro y micro localización del negocio.', fields: ['macro', 'micro', 'local'] },
-          { key: 'operacion', title: 'Operación y Procesos', description: 'Diagrama de flujo de operaciones y tecnología.', fields: ['proceso', 'diagrama', 'tecnologia'] },
+          { key: 'operacion', title: 'Operación y Procesos', description: 'Diagrama de flujo de operaciones y tecnología.', fields: ['proceso', 'diagrama', 'tecnologia', 'economias_escala', 'tipo_proceso'] },
           { key: 'recursos', title: 'Maquinaria y Tecnología', description: 'Equipamiento, hardware y herramientas necesarias.', fields: ['maquinaria', 'equipo', 'herramientas'] },
           { key: 'insumos', title: 'Insumos y Proveedores', description: 'Materias primas y cadena de suministro.', fields: ['materia_prima', 'proveedores', 'compras'] },
-          { key: 'capacidad', title: 'Capacidad e Inventarios', description: 'Capacidad instalada, manejo de stock y turnos.', fields: ['instalada', 'inventarios', 'mano_obra'] },
+          { key: 'capacidad', title: 'Capacidad e Inventarios', description: 'Capacidad instalada, manejo de stock y turnos.', fields: ['instalada', 'inventarios', 'mano_obra', 'punto_reorden'] },
           { key: 'operativa', title: 'Eficiencia Operativa', description: 'Métricas de desempeño: OTD, Rotación, DSO, DPO y Ciclo de Efectivo.', fields: ['otd', 'rotacion', 'dso', 'dpo', 'ccc'] },
           { key: 'ambiental', title: 'Impacto Ambiental', description: 'Sostenibilidad, manejo de residuos y normatividad.', fields: ['impacto', 'mitigacion', 'normatividad'] }
         ]
@@ -47,10 +48,17 @@ export const FRAMEWORKS = {
         modules: [
           { key: 'estructura', title: 'Estructura Organizativa', description: 'Organigrama y descripción de puestos clave.', fields: ['organigrama_visual', 'puestos', 'funciones'] },
           { key: 'recursos_humanos', title: 'Gestión de Recursos Humanos', description: 'Políticas de contratación, capacitación y sueldos.', fields: ['reclutamiento', 'contratacion', 'sueldos'] },
-          { key: 'inversion', title: 'Inversión Inicial (CAPEX)', description: 'Requerimientos de capital para arranque.', fields: ['capex', 'opex_inicial', 'financiamiento'] },
+          { key: 'inversion', title: 'Inversión Inicial (CAPEX)', description: 'Requerimientos de capital para arranque.', fields: ['inversion_fija', 'inversion_diferida', 'opex_inicial', 'financiamiento'] },
           { key: 'costos', title: 'Costos y Gastos (OPEX)', description: 'Estructura de costos fijos y variables mensuales.', fields: ['fijos', 'variables', 'unitario'] },
-          { key: 'estados_financieros', title: 'Estados Financieros', description: 'Proyecciones de resultados, balance y flujo.', fields: ['resultados', 'balance', 'flujo_caja'] },
-          { key: 'rentabilidad', title: 'Rentabilidad y Análisis', description: 'TIR, VPN, Punto de Equilibrio y ROI.', fields: ['punto_equilibrio', 'indicadores'] }
+          { key: 'estados_financieros', title: 'Estados Financieros', description: 'Proyecciones de resultados, balance y flujo.', fields: ['resultados', 'balance', 'flujo_caja', 'amortizacion_creditos', 'memorias_calculo'] },
+          { key: 'rentabilidad', title: 'Rentabilidad y Análisis', description: 'TIR, VPN, Punto de Equilibrio y ROI.', fields: ['punto_equilibrio', 'indicadores', 'relacion_bc'] }
+        ]
+      },
+      {
+        key: 'simulador_financiero',
+        title: 'Simulador y Corridas',
+        modules: [
+          { key: 'simulador', title: 'Simulador Financiero', description: 'Simulador interactivo avanzado con corridas dinámicas a 5 años.', fields: ['iframe_simulador'] }
         ]
       }
     ]

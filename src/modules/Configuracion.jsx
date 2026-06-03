@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { usePlan } from '../context/PlanContext';
-import { Cpu, Palette, Save, Globe, Database, Upload, Image as ImageIcon, RefreshCw, Settings, Sliders, Activity, DollarSign, Zap, AlertTriangle, Info } from 'lucide-react';
+import { Cpu, Palette, Save, Globe, Database, Upload, Image as ImageIcon, RefreshCw, Settings, Sliders, Activity, DollarSign, Zap, AlertTriangle, Info, Plus, Trash2, BookOpen, Link, FileText } from 'lucide-react';
 import DocumentUploader from '../components/DocumentUploader';
 
 // [MDD] Modelo de precios de API (USD por 1M tokens) — se actualiza manualmente
@@ -34,7 +34,6 @@ function estimateMesaCost(contextTokens, model) {
   const costUSD = (avgInput / 1e6 * pricing.input) + (avgOutput / 1e6 * pricing.output);
   return { costUSD, tokensIn: Math.round(avgInput), tokensOut: avgOutput };
 }
-
 
 export default function Configuracion() {
   const { planData, updateConfig } = usePlan();
@@ -88,6 +87,16 @@ export default function Configuracion() {
     updateConfig('externalApis', field, value);
   };
 
+  const handleCoverChange = (field, value) => {
+    updateConfig('coverDesign', field, value);
+  };
+
+  const handleSearchConfigChange = (field, value) => {
+    updateConfig('search', field, value);
+  };
+
+  const searchConfig = planData.config?.search || { provider: 'tavily', duckDuckGoEnabled: false, apiKey: '' };
+
   const handleLogoUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -99,12 +108,81 @@ export default function Configuracion() {
     }
   };
 
+  const handleInstitutionLogoUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const current = planData.config?.coverDesign?.institutionLogos || [];
+      if (current.length >= 4) {
+        alert('Máximo 4 logos institucionales permitidos.');
+        return;
+      }
+      const newLogo = {
+        id: Date.now().toString(),
+        name: file.name.replace(/\.[^/.]+$/, ''),
+        url: reader.result
+      };
+      handleCoverChange('institutionLogos', [...current, newLogo]);
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
+  };
+
+  const removeInstitutionLogo = (logoId) => {
+    const current = planData.config?.coverDesign?.institutionLogos || [];
+    handleCoverChange('institutionLogos', current.filter(l => l.id !== logoId));
+  };
+
+  const updateInstitutionLogoName = (logoId, newName) => {
+    const current = planData.config?.coverDesign?.institutionLogos || [];
+    handleCoverChange('institutionLogos', current.map(l => l.id === logoId ? { ...l, name: newName } : l));
+  };
+
+  // --- Data Sources / Fuentes de Información ---
+  const dataSources = planData.config?.dataSources || [];
+
+  const addDataSource = () => {
+    const newSource = {
+      id: Date.now().toString(),
+      type: 'manual',
+      title: '',
+      url: '',
+      description: ''
+    };
+    updateConfig('dataSources', null, [...dataSources, newSource]);
+  };
+
+  const updateDataSource = (sourceId, field, value) => {
+    const updated = dataSources.map(s => s.id === sourceId ? { ...s, [field]: value } : s);
+    updateConfig('dataSources', null, updated);
+  };
+
+  const removeDataSource = (sourceId) => {
+    updateConfig('dataSources', null, dataSources.filter(s => s.id !== sourceId));
+  };
+
   // Datos derivados para el monitor
   const ctxSize = planData.config?.ai?.contextSize || 32768;
   const currentModel = planData.config?.ai?.model || 'gemma4:pro';
   const isLocal = ollamaOnline && currentModel.includes(':');
   const mesaEstimate = estimateMesaCost(ctxSize, 'gemini-1.5-flash');
   const ctxLabel = CTX_PRESETS.find(p => p.value === ctxSize)?.label || `${Math.round(ctxSize/1024)}k`;
+
+  const coverDesign = planData.config?.coverDesign || {
+    layout: 'classic',
+    logoSize: 'medium',
+    logoAlign: 'center',
+    titleSize: 'medium',
+    creatorName: '',
+    subtitle: 'Plan Estratégico Maestro',
+    institution: 'Formulación y Evaluación Académica 2026',
+    showDate: true,
+    customDate: '',
+    institutionLogos: []
+  };
+
+  const institutionLogos = coverDesign.institutionLogos || [];
 
   return (
     <div className="module-view">
@@ -242,7 +320,8 @@ export default function Configuracion() {
                 }}
               >
                 <optgroup label="— Tu hardware (recomendados) —">
-                  <option value="gemma4:e4b">gemma4:e4b  (~4.5-8GB VRAM) ★ Recomendado</option>
+                  <option value="nemotron">nemotron  (~4GB VRAM) ★ Recomendado</option>
+                  <option value="gemma4:e4b">gemma4:e4b  (~4.5-8GB VRAM)</option>
                   <option value="gemma4:pro">gemma4:pro  (~8GB VRAM) — Mejor calidad</option>
                   <option value="gemma4:e2b">gemma4:e2b  (~2GB VRAM) — Ultra rápido</option>
                 </optgroup>
@@ -251,6 +330,7 @@ export default function Configuracion() {
                   <option value="phi4:14b">phi4:14b    (~8GB) — Matemáticas</option>
                   <option value="llama3.1:8b">llama3.1:8b (~5GB) — Estructura</option>
                   <option value="mistral:7b">mistral:7b  (~4.5GB) — Multilingüe</option>
+                  <option value="qwen3.5:2b-mlx" disabled>qwen3.5:2b-mlx (No soportado)</option>
                 </optgroup>
                 <optgroup label="— Nube (Requiere API Key) —">
                   <option value="gemini-1.5-flash">Gemini 1.5 Flash (Google)</option>
@@ -259,10 +339,10 @@ export default function Configuracion() {
                   <option value="mistral-large-latest">Mistral Large</option>
                   <option value="gpt-4o">OpenAI GPT-4o</option>
                 </optgroup>
-                {ollamaModels.filter(m => !['gemma4:e4b','gemma4:pro','gemma4:e2b','qwen2.5:7b','phi4:14b','llama3.1:8b','mistral:7b'].includes(m.name)).length > 0 && (
+                {ollamaModels.filter(m => !['nemotron','gemma4:e4b','gemma4:pro','gemma4:e2b','qwen2.5:7b','phi4:14b','llama3.1:8b','mistral:7b', 'qwen3.5:2b-mlx'].includes(m.name)).length > 0 && (
                   <optgroup label="— Detectados en tu Ollama —">
                     {ollamaModels
-                      .filter(m => !['gemma4:e4b','gemma4:pro','gemma4:e2b','qwen2.5:7b','phi4:14b','llama3.1:8b','mistral:7b'].includes(m.name))
+                      .filter(m => !['nemotron','gemma4:e4b','gemma4:pro','gemma4:e2b','qwen2.5:7b','phi4:14b','llama3.1:8b','mistral:7b', 'qwen3.5:2b-mlx'].includes(m.name))
                       .map(m => <option key={m.name} value={m.name}>{m.name}</option>)
                     }
                   </optgroup>
@@ -342,8 +422,7 @@ export default function Configuracion() {
               className="form-control" 
               value={planData.config?.projectType || 'business'}
               onChange={(e) => {
-                // If they change methodology, update it
-                updateConfig('projectType', null, e.target.value); // Wait, updateConfig takes (category, field, value) or (field, value)? Let's check updateConfig usage.
+                updateConfig('projectType', null, e.target.value);
               }}
             >
               <option value="business">Plan de Negocios Comercial (Tradicional)</option>
@@ -510,6 +589,388 @@ export default function Configuracion() {
         </div>
       </div>
 
+      {/* Lienzo de Diseño de Portada */}
+      <div className="glass-panel" style={{ padding: '2rem', marginTop: '2rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem' }}>
+          <Palette className="text-[#8b5cf6]" />
+          <h2 style={{ fontSize: '1.25rem' }}>Lienzo de Diseño de Portada (Diseñador General)</h2>
+        </div>
+        
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 280px', gap: '2rem' }}>
+          {/* Controles de Diseño */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.2rem' }}>
+            <div className="form-group">
+              <label className="form-label">Estilo de Diseño (Layout)</label>
+              <select 
+                className="form-control" 
+                value={coverDesign.layout}
+                onChange={(e) => handleCoverChange('layout', e.target.value)}
+              >
+                <option value="classic">Clásico (Centrado)</option>
+                <option value="modern">Moderno (Franja y Contraste)</option>
+                <option value="minimalist">Minimalista (Limpio y Elegante)</option>
+                <option value="sidebar">Borde Lateral (Izquierdo)</option>
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Alineación del Logo</label>
+              <select 
+                className="form-control" 
+                value={coverDesign.logoAlign}
+                onChange={(e) => handleCoverChange('logoAlign', e.target.value)}
+              >
+                <option value="left">Izquierda</option>
+                <option value="center">Centro</option>
+                <option value="right">Derecha</option>
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Tamaño del Logo</label>
+              <select 
+                className="form-control" 
+                value={coverDesign.logoSize}
+                onChange={(e) => handleCoverChange('logoSize', e.target.value)}
+              >
+                <option value="small">Chico</option>
+                <option value="medium">Mediano</option>
+                <option value="large">Grande</option>
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Tamaño del Título</label>
+              <select 
+                className="form-control" 
+                value={coverDesign.titleSize}
+                onChange={(e) => handleCoverChange('titleSize', e.target.value)}
+              >
+                <option value="small">Chico</option>
+                <option value="medium">Mediano</option>
+                <option value="large">Grande</option>
+              </select>
+            </div>
+
+            <div className="form-group" style={{ gridColumn: 'span 2' }}>
+              <label className="form-label">Subtítulo de la Portada</label>
+              <input 
+                type="text" 
+                className="form-control" 
+                value={coverDesign.subtitle}
+                onChange={(e) => handleCoverChange('subtitle', e.target.value)}
+                placeholder="Ej. Plan Estratégico Maestro"
+              />
+            </div>
+
+            <div className="form-group" style={{ gridColumn: 'span 2' }}>
+              <label className="form-label">Institución / Organización</label>
+              <input 
+                type="text" 
+                className="form-control" 
+                value={coverDesign.institution}
+                onChange={(e) => handleCoverChange('institution', e.target.value)}
+                placeholder="Ej. Formulación y Evaluación Académica 2026"
+              />
+            </div>
+
+            <div className="form-group" style={{ gridColumn: 'span 2' }}>
+              <label className="form-label">Creador (Nombre de quien crea)</label>
+              <input 
+                type="text" 
+                className="form-control" 
+                value={coverDesign.creatorName}
+                onChange={(e) => handleCoverChange('creatorName', e.target.value)}
+                placeholder="Ej. Roberto Eduardo Celis Robles"
+              />
+            </div>
+
+            <div className="form-group" style={{ display: 'flex', alignItems: 'center', marginTop: '1.5rem' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
+                <input 
+                  type="checkbox" 
+                  checked={coverDesign.showDate !== false}
+                  onChange={(e) => handleCoverChange('showDate', e.target.checked)}
+                  style={{ width: '16px', height: '16px', accentColor: 'var(--accent-color)' }}
+                />
+                <span style={{ fontSize: '0.85rem' }}>Mostrar Fecha en Portada</span>
+              </label>
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Fecha Personalizada (Opcional)</label>
+              <input 
+                type="text" 
+                className="form-control" 
+                value={coverDesign.customDate}
+                onChange={(e) => handleCoverChange('customDate', e.target.value)}
+                placeholder="Vacío para fecha actual"
+                disabled={coverDesign.showDate === false}
+              />
+            </div>
+
+            {/* Logos Institucionales */}
+            <div className="form-group" style={{ gridColumn: 'span 2', borderTop: '1px solid var(--border-color)', paddingTop: '1.2rem', marginTop: '0.5rem' }}>
+              <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                🏛️ Logos de Instituciones Participantes
+                <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', fontWeight: 400 }}>(Máx. 4)</span>
+              </label>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '0.75rem' }}>
+                {institutionLogos.map((logo) => (
+                  <div key={logo.id} style={{
+                    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem',
+                    padding: '0.5rem', background: 'var(--bg-dark)', borderRadius: '8px',
+                    border: '1px solid var(--border-color)', width: '110px'
+                  }}>
+                    <img src={logo.url} alt={logo.name} style={{ width: '40px', height: '40px', objectFit: 'contain', borderRadius: '4px' }} />
+                    <input
+                      type="text"
+                      value={logo.name}
+                      onChange={(e) => updateInstitutionLogoName(logo.id, e.target.value)}
+                      style={{
+                        width: '100%', fontSize: '0.65rem', textAlign: 'center',
+                        background: 'transparent', border: 'none', color: 'var(--text-primary)',
+                        borderBottom: '1px solid var(--border-color)', padding: '2px 0', outline: 'none'
+                      }}
+                      placeholder="Nombre"
+                    />
+                    <button
+                      onClick={() => removeInstitutionLogo(logo.id)}
+                      style={{
+                        fontSize: '0.65rem', color: '#ef4444', background: 'transparent',
+                        border: 'none', cursor: 'pointer', padding: '2px'
+                      }}
+                      title="Eliminar logo"
+                    >
+                      <Trash2 style={{ width: '12px', height: '12px' }} />
+                    </button>
+                  </div>
+                ))}
+                {institutionLogos.length < 4 && (
+                  <label style={{
+                    width: '110px', height: '90px', display: 'flex', flexDirection: 'column',
+                    alignItems: 'center', justifyContent: 'center', gap: '0.25rem',
+                    border: '2px dashed var(--border-color)', borderRadius: '8px',
+                    cursor: 'pointer', color: 'var(--text-secondary)', fontSize: '0.7rem',
+                    transition: 'border-color 0.2s'
+                  }}>
+                    <Plus style={{ width: '20px', height: '20px' }} />
+                    <span>Agregar</span>
+                    <input type="file" accept="image/*" onChange={handleInstitutionLogoUpload} style={{ display: 'none' }} />
+                  </label>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Miniatura en Vivo */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Vista Previa Portada</span>
+            <div style={{
+              width: '220px',
+              height: '310px',
+              background: '#ffffff',
+              color: '#0f172a',
+              borderRadius: '8px',
+              border: '1px solid var(--border-color)',
+              boxShadow: '0 10px 25px rgba(0,0,0,0.3)',
+              position: 'relative',
+              overflow: 'hidden',
+              display: 'flex',
+              flexDirection: 'column',
+              padding: '1.25rem',
+              textAlign: coverDesign.layout === 'classic' ? 'center' : 'left',
+              justifyContent: 'space-between',
+              fontFamily: 'Inter, sans-serif'
+            }}>
+              {/* Sidebar border style */}
+              {coverDesign.layout === 'sidebar' && (
+                <div style={{
+                  position: 'absolute',
+                  left: 0,
+                  top: 0,
+                  width: '12px',
+                  height: '100%',
+                  background: planData.config.brandKit.primaryColor || '#6366f1'
+                }} />
+              )}
+
+              {/* Modern banner layout */}
+              {coverDesign.layout === 'modern' && (
+                <div style={{
+                  position: 'absolute',
+                  left: 0,
+                  top: '15%',
+                  width: '100%',
+                  height: '40px',
+                  background: planData.config.brandKit.primaryColor || '#6366f1',
+                  opacity: 0.15
+                }} />
+              )}
+
+              {/* Top part: Logo */}
+              <div style={{
+                display: 'flex',
+                justifyContent: coverDesign.logoAlign === 'left' ? 'flex-start' : coverDesign.logoAlign === 'right' ? 'flex-end' : 'center',
+                width: '100%',
+                paddingLeft: coverDesign.layout === 'sidebar' ? '10px' : '0'
+              }}>
+                {planData.config.brandKit.logoUrl ? (
+                  <img 
+                    src={planData.config.brandKit.logoUrl} 
+                    alt="Logo preview" 
+                    style={{
+                      width: coverDesign.logoSize === 'small' ? '30px' : coverDesign.logoSize === 'large' ? '70px' : '50px',
+                      height: 'auto',
+                      maxHeight: '40px',
+                      objectFit: 'contain'
+                    }}
+                  />
+                ) : (
+                  <div style={{
+                    width: coverDesign.logoSize === 'small' ? '30px' : coverDesign.logoSize === 'large' ? '70px' : '50px',
+                    height: '25px',
+                    borderRadius: '4px',
+                    border: '1px dashed #cbd5e1',
+                    background: '#f1f5f9',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '8px',
+                    color: '#94a3b8'
+                  }}>Logo</div>
+                )}
+              </div>
+
+              {/* Center part: Title and Subtitle */}
+              <div style={{
+                paddingLeft: coverDesign.layout === 'sidebar' ? '10px' : '0',
+                margin: 'auto 0',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.25rem'
+              }}>
+                {coverDesign.layout === 'modern' && (
+                  <div style={{ width: '30px', height: '3px', background: planData.config.brandKit.primaryColor || '#6366f1', marginBottom: '0.25rem', alignSelf: coverDesign.layout === 'classic' ? 'center' : 'flex-start' }} />
+                )}
+                <h3 style={{
+                  margin: 0,
+                  fontSize: coverDesign.titleSize === 'small' ? '10px' : coverDesign.titleSize === 'large' ? '16px' : '13px',
+                  fontWeight: 800,
+                  lineHeight: '1.2',
+                  color: '#0f172a'
+                }}>
+                  {planData.config.brandKit.companyName || 'Nombre del Proyecto'}
+                </h3>
+                <p style={{
+                  margin: 0,
+                  fontSize: '7px',
+                  color: '#64748b',
+                  fontWeight: 500,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em'
+                }}>
+                  {coverDesign.subtitle || 'Plan Estratégico Maestro'}
+                </p>
+                {coverDesign.institution && (
+                  <p style={{
+                    margin: '3px 0 0 0',
+                    fontSize: '6px',
+                    color: '#94a3b8'
+                  }}>
+                    {coverDesign.institution}
+                  </p>
+                )}
+              </div>
+
+              {/* Bottom part: Creator and Date */}
+              <div style={{
+                paddingLeft: coverDesign.layout === 'sidebar' ? '10px' : '0',
+                borderTop: '1px solid #f1f5f9',
+                paddingTop: '8px',
+                fontSize: '6.5px',
+                color: '#475569'
+              }}>
+                <div style={{ fontWeight: 600 }}>
+                  {coverDesign.creatorName ? `Creado por: ${coverDesign.creatorName}` : 'Elaborado por: [Tu Nombre]'}
+                </div>
+                {coverDesign.showDate !== false && (
+                  <div style={{ color: '#94a3b8', marginTop: '2px' }}>
+                    {coverDesign.customDate || new Date().toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' })}
+                  </div>
+                )}
+                {/* Institution logos in miniature */}
+                {institutionLogos.length > 0 && (
+                  <div style={{ display: 'flex', justifyContent: 'center', gap: '4px', marginTop: '5px', paddingTop: '4px', borderTop: '1px solid #f1f5f9' }}>
+                    {institutionLogos.map(logo => (
+                      <img key={logo.id} src={logo.url} alt={logo.name} style={{ width: '16px', height: '16px', objectFit: 'contain', borderRadius: '2px' }} />
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="glass-panel" style={{ marginTop: '2rem', padding: '2rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem' }}>
+          <Globe className="text-blue-400" />
+          <h2 style={{ fontSize: '1.25rem' }}>Investigación Web e Internet</h2>
+        </div>
+        
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', background: 'rgba(255,255,255,0.02)', padding: '1rem', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)' }}>
+             <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
+               <input 
+                 type="checkbox" 
+                 checked={searchConfig.duckDuckGoEnabled}
+                 onChange={(e) => {
+                   handleSearchConfigChange('duckDuckGoEnabled', e.target.checked);
+                   if (!e.target.checked && searchConfig.provider === 'duckduckgo') {
+                     handleSearchConfigChange('provider', 'tavily');
+                   }
+                 }}
+                 style={{ width: '1.2rem', height: '1.2rem' }}
+               />
+               <span>Habilitar DuckDuckGo Scraper (Alternativa local sin costo)</span>
+             </label>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
+            <div className="form-group">
+              <label className="form-label">Proveedor de Búsqueda Principal</label>
+              <select 
+                className="form-control"
+                value={searchConfig.provider}
+                onChange={(e) => handleSearchConfigChange('provider', e.target.value)}
+              >
+                <option value="tavily">Tavily AI (Recomendado)</option>
+                {searchConfig.duckDuckGoEnabled && (
+                  <option value="duckduckgo">DuckDuckGo Scraper</option>
+                )}
+              </select>
+              <small style={{ color: 'var(--text-secondary)', marginTop: '0.5rem', display: 'block' }}>
+                Tavily ofrece mejores resultados orientados a LLMs. DuckDuckGo es gratuito pero puede ser bloqueado.
+              </small>
+            </div>
+
+            {searchConfig.provider === 'tavily' && (
+              <div className="form-group">
+                <label className="form-label">API Key de Tavily AI</label>
+                <input 
+                  type="password" 
+                  className="form-control" 
+                  placeholder="tvly-..."
+                  value={searchConfig.apiKey}
+                  onChange={(e) => handleSearchConfigChange('apiKey', e.target.value)}
+                />
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
       <div className="glass-panel" style={{ marginTop: '2rem', padding: '2rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem' }}>
           <Database className="text-emerald-400" />
@@ -553,6 +1014,96 @@ export default function Configuracion() {
             <li style={{ marginBottom: '0.5rem' }}><strong>CFI (Corporate Finance Institute):</strong> Fórmulas estandarizadas globales para Valor Actual Neto (VAN), Tasa Interna de Retorno (TIR) y Retorno sobre Inversión (ROI).</li>
             <li><strong>INEGI y Banxico:</strong> Datos macroeconómicos integrados a través de DENUE y SieAPI para el análisis del entorno regional.</li>
           </ul>
+        </div>
+      </div>
+
+      {/* Fuentes de Información */}
+      <div className="glass-panel" style={{ padding: '2rem', marginTop: '2rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem' }}>
+          <BookOpen style={{ color: '#f59e0b' }} />
+          <h2 style={{ fontSize: '1.25rem' }}>Fuentes de Información</h2>
+        </div>
+        <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '1.5rem', lineHeight: 1.6 }}>
+          Agrega las fuentes de información consultadas para la elaboración de este plan. Se incluirán automáticamente las APIs utilizadas (DENUE, Banxico) y puedes agregar fuentes manuales (leyes, precios, estudios, etc.).
+        </p>
+
+        {/* Auto-detected sources */}
+        <div style={{ marginBottom: '1.5rem' }}>
+          <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Fuentes Automáticas Detectadas</span>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: '0.5rem' }}>
+            {planData.config?.externalApis?.inegiToken && (
+              <span style={{ fontSize: '0.75rem', padding: '4px 10px', borderRadius: '20px', background: 'rgba(16, 185, 129, 0.1)', color: '#10b981', border: '1px solid rgba(16, 185, 129, 0.2)', fontWeight: 600 }}>
+                ✓ INEGI / DENUE — Directorio Estadístico Nacional de Unidades Económicas
+              </span>
+            )}
+            {planData.config?.externalApis?.banxicoToken && (
+              <span style={{ fontSize: '0.75rem', padding: '4px 10px', borderRadius: '20px', background: 'rgba(99, 102, 241, 0.1)', color: '#6366f1', border: '1px solid rgba(99, 102, 241, 0.2)', fontWeight: 600 }}>
+                ✓ Banxico SieAPI — Indicadores Macroeconómicos
+              </span>
+            )}
+            <span style={{ fontSize: '0.75rem', padding: '4px 10px', borderRadius: '20px', background: 'rgba(245, 158, 11, 0.1)', color: '#f59e0b', border: '1px solid rgba(245, 158, 11, 0.2)', fontWeight: 600 }}>
+              ✓ INEGI WMS — Cartografía y Límites Territoriales
+            </span>
+            <span style={{ fontSize: '0.75rem', padding: '4px 10px', borderRadius: '20px', background: 'rgba(139, 92, 246, 0.1)', color: '#8b5cf6', border: '1px solid rgba(139, 92, 246, 0.2)', fontWeight: 600 }}>
+              ✓ OpenStreetMap — Base Cartográfica
+            </span>
+          </div>
+        </div>
+
+        {/* Manual sources */}
+        <div style={{ marginBottom: '1rem' }}>
+          <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Fuentes Manuales</span>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginTop: '0.75rem' }}>
+            {dataSources.map((source) => (
+              <div key={source.id} style={{
+                display: 'grid', gridTemplateColumns: '1fr 1fr 2fr auto',
+                gap: '0.5rem', alignItems: 'start',
+                padding: '0.75rem', background: 'var(--bg-dark)',
+                borderRadius: '10px', border: '1px solid var(--border-color)'
+              }}>
+                <input
+                  type="text"
+                  className="form-control"
+                  value={source.title}
+                  onChange={(e) => updateDataSource(source.id, 'title', e.target.value)}
+                  placeholder="Título de la fuente"
+                  style={{ fontSize: '0.8rem' }}
+                />
+                <input
+                  type="text"
+                  className="form-control"
+                  value={source.url}
+                  onChange={(e) => updateDataSource(source.id, 'url', e.target.value)}
+                  placeholder="URL (opcional)"
+                  style={{ fontSize: '0.8rem' }}
+                />
+                <input
+                  type="text"
+                  className="form-control"
+                  value={source.description}
+                  onChange={(e) => updateDataSource(source.id, 'description', e.target.value)}
+                  placeholder="Descripción breve (ej: Consulta de precios de materiales)"
+                  style={{ fontSize: '0.8rem' }}
+                />
+                <button
+                  onClick={() => removeDataSource(source.id)}
+                  className="btn btn-secondary"
+                  style={{ padding: '6px 10px', color: '#ef4444', fontSize: '0.75rem' }}
+                  title="Eliminar fuente"
+                >
+                  <Trash2 style={{ width: '14px', height: '14px' }} />
+                </button>
+              </div>
+            ))}
+          </div>
+          <button
+            onClick={addDataSource}
+            className="btn btn-secondary"
+            style={{ marginTop: '0.75rem', fontSize: '0.8rem' }}
+          >
+            <Plus style={{ width: '14px', height: '14px' }} />
+            <span>Agregar Fuente Manual</span>
+          </button>
         </div>
       </div>
 

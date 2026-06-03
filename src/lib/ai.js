@@ -24,45 +24,132 @@
  *  los modelos corren simultáneamente si caben en memoria unificada.
  *
  *  Windows/Linux (GPU dedicada): El swap toma ~2-4s entre fases.
- *  RTX A2000 12GB puede cargar gemma4:e4b (8GB) y dejar 4GB para KV-cache.
+ *  RTX A2000 12GB puede cargar gemma4:e2b-mlx (8GB) y dejar 4GB para KV-cache.
  */
 
 // ─────────────────────────────────────────────────────────────────────────
 // Configuración de roles por defecto (se sobreescribe desde Configuracion.jsx)
 // ─────────────────────────────────────────────────────────────────────────
+// Modelos locales de referencia:
+// - qwen3.5:2b-mlx (Soportado y operativo)
+// - nemotron-3-nano:4b (Nativo GGUF, 100% estable)
+// - gemma4:e2b-mlx (No soportado actualmente por el MLX runner debido a arquitectura)
+
 export const DEFAULT_AGENT_CONFIG = {
   // Nivel 1 — Rápido (sin swap, 1 solo modelo)
   fast: {
-    analista:  { model: 'gemma4:e4b', role: 'Analista Estratégico' },
-    redactor:  { model: 'gemma4:e4b', role: 'Redactor Ejecutivo' },
+    analista:  { model: 'nemotron', role: 'Analista Estratégico' },
+    redactor:  { model: 'nemotron', role: 'Redactor Ejecutivo' },
   },
   // Nivel 2 — Pro (swap opcional entre analista y redactor)
   pro: {
-    analista:  { model: 'gemma4:e4b', role: 'Analista Estratégico' },
-    critico:   { model: 'gemma4:e4b', role: 'Crítico Financiero' },
-    redactor:  { model: 'gemma4:pro', role: 'Redactor Senior' },
+    analista:  { model: 'nemotron', role: 'Analista Estratégico' },
+    critico:   { model: 'nemotron', role: 'Crítico Financiero' },
+    redactor:  { model: 'nemotron', role: 'Redactor Senior' },
   },
   // Nivel 3 — Profundo (swap entre 3 modelos especializados)
   deep: {
-    estratega:  { model: 'gemma4:e4b', role: 'Estratega de Negocio' },
-    analista:   { model: 'qwen2.5:7b', role: 'Analista de Datos' },
-    abogadoDiablo: { model: 'gemma4:e4b', role: "Devil's Advocate" },
-    critico:    { model: 'gemma4:e4b', role: 'Crítico Financiero' },
-    redactor:   { model: 'gemma4:pro', role: 'Redactor Ejecutivo Final' },
+    estratega:  { model: 'nemotron', role: 'Estratega de Negocio' },
+    analista:   { model: 'nemotron', role: 'Analista de Datos' },
+    abogadoDiablo: { model: 'nemotron', role: "Devil's Advocate" },
+    critico:    { model: 'nemotron', role: 'Crítico Financiero' },
+    redactor:   { model: 'nemotron', role: 'Redactor Ejecutivo Final' },
   },
   // Nivel 4 — Industrial : 9 agentes. ~20-30 min
   industrial: {
-    estratega:      { model: 'gemma4:e4b', role: 'Estratega Maestro' },
-    mercado:        { model: 'qwen2.5:7b', role: 'Especialista en Mercado' },
-    operaciones:    { model: 'gemma4:e4b', role: 'Analista de Operaciones' },
-    financiero:     { model: 'phi4:14b',   role: 'Especialista Financiero' },
-    abogadoDiablo:  { model: 'gemma4:e4b', role: "Devil's Advocate" },
-    coherencia:     { model: 'gemma4:e4b', role: 'Revisor de Coherencia Global' },
-    hallucination:  { model: 'gemma4:e4b', role: 'Verificador de Hechos/Alucinaciones' },
-    redactor:       { model: 'gemma4:pro', role: 'Redactor Ejecutivo Final' },
-    editor:         { model: 'gemma4:pro', role: 'Editor de Estilo Académico' },
+    estratega:      { model: 'nemotron', role: 'Estratega Maestro' },
+    mercado:        { model: 'nemotron', role: 'Especialista en Mercado' },
+    operaciones:    { model: 'nemotron', role: 'Analista de Operaciones' },
+    financiero:     { model: 'nemotron',   role: 'Especialista Financiero' },
+    abogadoDiablo:  { model: 'nemotron', role: "Devil's Advocate" },
+    coherencia:     { model: 'nemotron', role: 'Revisor de Coherencia Global' },
+    hallucination:  { model: 'nemotron', role: 'Verificador de Hechos/Alucinaciones' },
+    redactor:       { model: 'nemotron', role: 'Redactor Ejecutivo Final' },
+    editor:         { model: 'nemotron', role: 'Editor de Estilo Académico' },
   },
-};
+};// Helper: get list of installed Ollama models
+async function getInstalledOllamaModels(endpoint) {
+  try {
+    const res = await fetch(`${endpoint || 'http://localhost:11434'}/api/tags`);
+    if (res.ok) {
+      const data = await res.json();
+      return data && data.models ? data.models.map(m => m.name) : [];
+    }
+  } catch (e) {
+    console.warn('No se pudieron obtener los modelos de Ollama:', e);
+  }
+  return [];
+}
+
+// Helper: map a requested model name to the best installed matching model
+function findBestOllamaModel(requestedModel, installedModels) {
+  if (!installedModels || installedModels.length === 0) {
+    if (requestedModel === 'nemotron') return 'nemotron-3-nano:4b';
+    return requestedModel;
+  }
+  
+  if (installedModels.includes(requestedModel)) {
+    return requestedModel;
+  }
+  
+  if (requestedModel === 'nemotron') {
+    const match = installedModels.find(m => m.toLowerCase().includes('nemotron'));
+    if (match) return match;
+  }
+  
+  const partialMatch = installedModels.find(m => m.toLowerCase() === requestedModel.toLowerCase());
+  if (partialMatch) return partialMatch;
+  
+  const prefixMatch = installedModels.find(m => m.toLowerCase().startsWith(requestedModel.toLowerCase()));
+  if (prefixMatch) return prefixMatch;
+  
+  const includesMatch = installedModels.find(m => m.toLowerCase().includes(requestedModel.toLowerCase()) || requestedModel.toLowerCase().includes(m.toLowerCase()));
+  if (includesMatch) return includesMatch;
+  
+  return requestedModel;
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// FUNCIÓN PRINCIPAL: generateModuleContent
+// [FDD] Feature F01 + F11: Mesa de Expertos con niveles de profundidad
+// ─────────────────────────────────────────────────────────────────────────
+// Helper: clean plan data to avoid bloating AI context with large calculated matrices or base64 files
+function cleanPlanDataForAi(allPlanData) {
+  if (!allPlanData) return '';
+  try {
+    const cleanData = JSON.parse(JSON.stringify(allPlanData));
+    
+    // Delete huge calculated corridas if present
+    if (cleanData.organizacion) {
+      if (cleanData.organizacion.estados_financieros) {
+        delete cleanData.organizacion.estados_financieros.corrida_automatica;
+      }
+      if (cleanData.organizacion.rentabilidad) {
+        delete cleanData.organizacion.rentabilidad.corrida_automatica;
+      }
+    }
+    
+    // Delete documents list since it's already provided separately in documentsContext
+    if (cleanData.config) {
+      delete cleanData.config.documents;
+      
+      // Clean anexos metadata to strip base64 contents
+      if (cleanData.config.anexos && Array.isArray(cleanData.config.anexos)) {
+        cleanData.config.anexos = cleanData.config.anexos.map(anexo => ({
+          id: anexo.id,
+          name: anexo.name,
+          type: anexo.type,
+          size: anexo.size
+        }));
+      }
+    }
+    
+    return JSON.stringify(cleanData, null, 2);
+  } catch (e) {
+    console.warn('Error sanitizing plan data for AI:', e);
+    return JSON.stringify(allPlanData, null, 2);
+  }
+}
 
 // ─────────────────────────────────────────────────────────────────────────
 // FUNCIÓN PRINCIPAL: generateModuleContent
@@ -81,12 +168,17 @@ export async function generateModuleContent(config, currentModule, allPlanData) 
   // [EDD] Logger de eventos al ActivityFeed (silent fail si backend caído)
   const termLog = async (type, message, provider = '') => {
     try {
+      const rawName = allPlanData.semilla?.negocio?.nombre_marca || allPlanData.config?.brandKit?.companyName || '';
+      const projectId = allPlanData.config?.projectId || (rawName ? rawName.replace(/[^a-z0-9]/gi, '_').toLowerCase() : '');
+      const projectType = allPlanData.config?.projectType === 'social_bid' ? 'social' : 'negocios';
+
       await fetch('http://localhost:3001/api/log', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           type, module: currentModule.title,
-          message, provider, elapsed: Date.now() - t0
+          message, provider, elapsed: Date.now() - t0,
+          projectId, projectType
         })
       });
     } catch (_) {}
@@ -101,7 +193,7 @@ export async function generateModuleContent(config, currentModule, allPlanData) 
     ? `\nDOCUMENTOS DE REFERENCIA:\n${allPlanData.config.documents.map(d => d.text).join('\n---\n').substring(0, 5000)}\n`
     : '';
 
-  const planContext = JSON.stringify(allPlanData, null, 2);
+  const planContext = cleanPlanDataForAi(allPlanData);
 
   const systemContext = `
 Eres un miembro de una "Mesa de Expertos" en estrategia empresarial de alto nivel.
@@ -116,9 +208,13 @@ Descripción: ${currentModule.description}
 Campos a generar (SOLO estos): ${(currentModule.fields || []).map(f => f.key).join(', ')}
 `;
 
+  // Fetch installed models to resolve name matches
+  const installedModels = await getInstalledOllamaModels(endpoint);
+
   // Resuelve el modelo de un agente (config usuario > default nivel)
   const resolveModel = (role, levelConfig) => {
-    return agentModels[role]?.model || levelConfig[role]?.model || model || 'gemma4:e4b';
+    const raw = agentModels[role]?.model || levelConfig[role]?.model || model || 'gemma4:e2b-mlx';
+    return findBestOllamaModel(raw, installedModels);
   };
 
   // Helper: construye config de proveedor para una fase
@@ -134,13 +230,13 @@ Campos a generar (SOLO estos): ${(currentModule.fields || []).map(f => f.key).jo
     const analista = resolveModel('analista', agentCfg);
     const redactor = resolveModel('redactor', agentCfg);
 
-    await termLog('thinking', '⚡ Fase 1/2: Analista generando borrador...', 'ollama');
+    await termLog('thinking', `⚡ Fase 1/2: Analista generando borrador (${analista})...`, 'ollama');
     const draft = await callAiProvider(
       fallbackProvider || makeProviderConfig(analista),
       `${systemContext}\n\nTAREA: Genera un borrador profesional y detallado SOLO para los campos indicados. Devuelve JSON con exactamente las claves pedidas.`
     );
 
-    await termLog('thinking', '⚡ Fase 2/2: Redactor finalizando...', 'ollama');
+    await termLog('thinking', `⚡ Fase 2/2: Redactor finalizando (${redactor})...`, 'ollama');
     const result = await callAiProvider(
       fallbackProvider || makeProviderConfig(redactor),
       `${systemContext}\n\nBorrador:\n${JSON.stringify(draft)}\n\nTAREA: Mejora la calidad y el tono ejecutivo del borrador. Devuelve SOLO el JSON final con las claves: ${(currentModule.fields || []).map(f => f.key).join(', ')}`
@@ -158,20 +254,20 @@ Campos a generar (SOLO estos): ${(currentModule.fields || []).map(f => f.key).jo
     const critico  = resolveModel('critico',  agentCfg);
     const redactor = resolveModel('redactor', agentCfg);
 
-    await termLog('thinking', '🧠 Fase 1/3: Analista redactando borrador...', analista);
+    await termLog('thinking', `🧠 Fase 1/3: Analista redactando borrador (${analista})...`, analista);
     const draft = await callAiProvider(
       fallbackProvider || makeProviderConfig(analista),
       `${systemContext}\n\nTAREA: Genera un borrador profesional y exhaustivo. El plan final es de 100 páginas. Devuelve JSON con SOLO las claves pedidas.`
     );
 
-    await termLog('thinking', '🧠 Fase 2/3: Crítico revisando...', critico);
+    await termLog('thinking', `🧠 Fase 2/3: Crítico revisando (${critico})...`, critico);
     const critique = await callAiProvider(
       fallbackProvider || makeProviderConfig(critico),
       `${systemContext}\n\nBorrador:\n${JSON.stringify(draft)}\n\nTAREA: Actúa como inversor crítico. ¿Qué falta? ¿Qué es débil o impreciso? Sé breve y directo. No devuelvas JSON.`,
       false
     );
 
-    await termLog('thinking', '🧠 Fase 3/3: Redactor sintetizando versión final...', redactor);
+    await termLog('thinking', `🧠 Fase 3/3: Redactor sintetizando versión final (${redactor})...`, redactor);
     const result = await callAiProvider(
       fallbackProvider || makeProviderConfig(redactor),
       `${systemContext}\n\nBorrador:\n${JSON.stringify(draft)}\n\nCrítica:\n${critique}\n\nTAREA: Integra las mejoras. Genera la versión final con tono ejecutivo. DEVUELVE SOLO JSON con claves: ${(currentModule.fields || []).map(f => f.key).join(', ')}`
@@ -193,30 +289,30 @@ Campos a generar (SOLO estos): ${(currentModule.fields || []).map(f => f.key).jo
 
     const mkCfg = (m) => fallbackProvider || makeProviderConfig(m);
 
-    await termLog('thinking', '🔬 Fase 1/5: Estratega definiendo marco...', estratega);
+    await termLog('thinking', `🔬 Fase 1/5: Estratega definiendo marco (${estratega})...`, estratega);
     const marco = await callAiProvider(mkCfg(estratega),
       `${systemContext}\n\nTAREA: Define el marco estratégico y los puntos clave que DEBEN aparecer en "${currentModule.title}". No escribas el contenido final, solo la estructura. Responde en texto libre.`,
       false
     );
 
-    await termLog('thinking', '🔬 Fase 2/5: Analista desarrollando contenido...', analista);
+    await termLog('thinking', `🔬 Fase 2/5: Analista desarrollando contenido (${analista})...`, analista);
     const draft = await callAiProvider(mkCfg(analista),
       `${systemContext}\n\nMarco estratégico:\n${marco}\n\nTAREA: Desarrolla el contenido completo basándote en el marco. Sé exhaustivo. Devuelve JSON con las claves pedidas.`
     );
 
-    await termLog('thinking', "🔬 Fase 3/5: Devil's Advocate buscando debilidades...", abogadoDiablo);
+    await termLog('thinking', `🔬 Fase 3/5: Devil's Advocate buscando debilidades (${abogadoDiablo})...`, abogadoDiablo);
     const devilCritique = await callAiProvider(mkCfg(abogadoDiablo),
       `${systemContext}\n\nContenido desarrollado:\n${JSON.stringify(draft)}\n\nTAREA: Eres un escéptico. ¿Cuáles son los 3 argumentos más débiles? ¿Qué suposiciones son peligrosas? Responde en texto libre.`,
       false
     );
 
-    await termLog('thinking', '🔬 Fase 4/5: Crítico financiero validando...', critico);
+    await termLog('thinking', `🔬 Fase 4/5: Crítico financiero validando (${critico})...`, critico);
     const financialCritique = await callAiProvider(mkCfg(critico),
       `${systemContext}\n\nContenido:\n${JSON.stringify(draft)}\n\nCrítica previa:\n${devilCritique}\n\nTAREA: Valida la solidez financiera y estratégica. ¿Es viable? ¿Qué datos faltan? Texto libre.`,
       false
     );
 
-    await termLog('thinking', '🔬 Fase 5/5: Redactor senior sintetizando...', redactor);
+    await termLog('thinking', `🔬 Fase 5/5: Redactor senior sintetizando (${redactor})...`, redactor);
     const result = await callAiProvider(mkCfg(redactor),
       `${systemContext}\n\nBorrador:\n${JSON.stringify(draft)}\n\nCríticas recibidas:\n${devilCritique}\n\n${financialCritique}\n\nTAREA: Genera la versión FINAL definitiva integrando todas las perspectivas. Tono ejecutivo, académico y riguroso. DEVUELVE SOLO JSON con claves: ${(currentModule.fields || []).map(f => f.key).join(', ')}`
     );
@@ -228,7 +324,7 @@ Campos a generar (SOLO estos): ${(currentModule.fields || []).map(f => f.key).jo
   // NIVEL 4: Industrial — 9 agentes. El "Gold Standard" de la industria.
   const runIndustrial = async (fallbackProvider) => {
     const agentCfg = DEFAULT_AGENT_CONFIG.industrial;
-    const mkCfg = (m) => fallbackProvider || makeProviderConfig(resolveModel(m, agentCfg));
+    const mkCfg = (role) => fallbackProvider || makeProviderConfig(resolveModel(role, agentCfg));
 
     await termLog('thinking', '🏭 Fase 1/9: Estratega Maestro (Marco)', 'estratega');
     const marco = await callAiProvider(mkCfg('estratega'), `${systemContext}\n\nDefine el marco estratégico maestro para este módulo.`, false);
@@ -246,7 +342,7 @@ Campos a generar (SOLO estos): ${(currentModule.fields || []).map(f => f.key).jo
     const critique = await callAiProvider(mkCfg('abogadoDiablo'), `${systemContext}\n\nContenido: ${JSON.stringify({marketIn, opsIn, finIn})}\n\nEncuentra debilidades críticas.`, false);
 
     await termLog('thinking', '🏭 Fase 6/9: Revisor de Coherencia', 'coherencia');
-    const coherence = await callAiProvider(mkCfg('coherencia'), `${systemContext}\n\nValida la coherencia entre mercado, operaciones y finanzas.`, false);
+    const coherence = await callAiProvider(mkCfg('coherencia'), `${systemContext}\n\nValida la coherencia entre mercado, operaciones and finanzas.`, false);
 
     await termLog('thinking', '🏭 Fase 7/9: Verificador de Hechos', 'hallucination');
     const check = await callAiProvider(mkCfg('hallucination'), `Valida si hay alucinaciones o datos falsos en esto: ${JSON.stringify({marketIn, opsIn, finIn})}`, false);
@@ -268,41 +364,36 @@ Campos a generar (SOLO estos): ${(currentModule.fields || []).map(f => f.key).jo
   // ─── Ejecución con fallback inteligente ───────────────────────────────
   // [EDD] Primero intenta local (Ollama), luego pregunta antes de saltar a nube
 
-  // Paso 1: Ollama local (privado, sin costo)
+  // Paso 1: Ollama local (primera opción)
   try {
-    await termLog('start', `Iniciando generación (nivel ${depth === 1 ? '⚡ Rápido' : depth === 2 ? '🧠 Pro' : '🔬 Profundo'})...`, 'ollama');
+    const resolvedPrimary = findBestOllamaModel(model || 'nemotron', installedModels);
+    await termLog('start', `Iniciando generación (nivel ${depth === 1 ? '⚡ Rápido' : depth === 2 ? '🧠 Pro' : '🔬 Profundo'}) usando Ollama con modelo primario: ${resolvedPrimary}...`, 'ollama');
     return await runChain(null); // null = usar modelos por rol configurados
   } catch (ollamaError) {
-    await termLog('warning', `Ollama: ${ollamaError.message.substring(0, 60)}`, 'ollama');
-
-    // Paso 2: Avisar al usuario antes de usar nube
-    const userChoice = await showFallbackDialog(ollamaError.message);
-    if (userChoice === 'cancel') {
-      await termLog('error', 'Generación cancelada por el usuario.');
-      throw new Error('Generación cancelada por el usuario.');
-    }
+    await termLog('warning', `Ollama primario falló: ${ollamaError.message.substring(0, 60)}`, 'ollama');
   }
 
-  // Paso 3: Nube con fallback secuencial (1 proveedor = 1 modelo, sin swap)
-  const cloudProviders = [
-    { provider: 'groq',    apiKey: groqKey, model: 'llama-3.3-70b-versatile' },
-    { provider: 'gemini',  apiKey,          model: 'gemini-1.5-flash' },
-    { provider: 'mistral', apiKey,          model: 'mistral-large-latest' },
-    { provider: 'openai',  apiKey,          model: 'gpt-4o' },
-  ];
+  // Paso 2: Probar modelos locales alternativos (filtrados por los instalados para no colgarse con los no instalados)
+  // Priorizar GGUF ('nemotron-3-nano:4b') sobre MLX que puede colgarse
+  const defaultFallbackOrder = ['nemotron-3-nano:4b', 'qwen3.5:2b-mlx', 'gemma4:e2b-mlx'];
+  const fallbackLocalModels = defaultFallbackOrder.filter(m => installedModels.includes(m));
+  
+  // Si no hay modelos detectados pero tenemos los fallbacks, usar la lista predeterminada como último recurso
+  const actualFallbacks = fallbackLocalModels.length > 0 ? fallbackLocalModels : defaultFallbackOrder;
 
-  let lastError = null;
-  for (const pConfig of cloudProviders) {
+  for (const altModel of actualFallbacks) {
     try {
-      await termLog('fallback', `Intentando nube: ${pConfig.provider}...`, pConfig.provider);
-      return await runChain(pConfig); // Usa el mismo orquestador pero con proveedor nube
-    } catch (error) {
-      await termLog('error', `${pConfig.provider}: ${error.message.substring(0, 50)}`, pConfig.provider);
-      lastError = error;
+      await termLog('info', `Intentando modelo local alternativo: ${altModel}`, 'ollama');
+      const altConfig = makeProviderConfig(altModel);
+      return await runChain(altConfig);
+    } catch (altError) {
+      await termLog('error', `Modelo alternativo ${altModel} falló: ${altError.message.substring(0, 50)}`, 'ollama');
     }
   }
 
-  throw new Error('Todos los proveedores fallaron. ' + (lastError?.message || ''));
+  // Paso 3: Si todos los locales fallan, indicar necesidad de reinstalar el runtime MLX o descargar un modelo GGUF estable
+  await termLog('error', 'Todos los modelos locales fallaron. Por favor, descargue un modelo estable como nemotron-3-nano:4b.', 'system');
+  throw new Error('Generación abortada: Modelos locales no disponibles. Por favor instale/verifique el runtime MLX o descargue nemotron-3-nano:4b.');
 }
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -319,7 +410,7 @@ export async function generateSingleField(config, fieldKey, fieldLabel, fieldGui
 Eres un experto en planes de negocio profesionales.
 ${semillaContext}
 Contexto del plan actual:
-${JSON.stringify(allPlanData, null, 2)}
+${cleanPlanDataForAi(allPlanData)}
 
 TAREA: Genera contenido SOLO para el campo "${fieldLabel}".
 Guía: ${fieldGuide.desc || ''}
@@ -328,20 +419,31 @@ Ejemplo: ${fieldGuide.ejemplo || ''}
 Devuelve un JSON con UNA sola clave: "${fieldKey}" y su contenido profesional.
 `;
 
-  const providers = [
-    { provider: 'ollama', endpoint, model: model || 'gemma4:e4b' },
-    { provider: 'groq',   apiKey: groqKey, model: 'llama-3.3-70b-versatile' },
-    { provider: 'gemini', apiKey,          model: 'gemini-1.5-flash' },
+  const installedModels = await getInstalledOllamaModels(endpoint);
+  const resolvedModel = findBestOllamaModel(model || 'gemma4:e2b-mlx', installedModels);
+
+  // Intentar primero el modelo resuelto, luego los otros instalados en orden de estabilidad
+  const localModels = [
+    resolvedModel,
+    'nemotron-3-nano:4b',
+    'qwen3.5:2b-mlx'
   ];
 
-  for (const pConfig of providers) {
+  // Filtrar duplicados y quedarse con los instalados si es posible
+  const uniqueModels = [...new Set(localModels)];
+  const activeModels = installedModels.length > 0 
+    ? uniqueModels.filter(m => installedModels.includes(m))
+    : uniqueModels;
+
+  for (const localModel of (activeModels.length > 0 ? activeModels : uniqueModels)) {
     try {
+      const pConfig = { provider: 'ollama', endpoint, model: localModel };
       return await callAiProvider(pConfig, prompt);
     } catch (error) {
-      console.warn(`generateSingleField falla en ${pConfig.provider}: ${error.message}`);
+      console.warn(`generateSingleField falló en ollama con modelo ${localModel}: ${error.message}`);
     }
   }
-  throw new Error('No se pudo generar el campo. Verifica tu conexión.');
+  throw new Error('No se pudo generar el campo. Verifique el runtime MLX y los modelos de Ollama locales.');
 }
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -378,7 +480,7 @@ async function callOllama(endpoint, model, prompt, expectJson) {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      model: model || 'gemma4:e4b',
+      model: model || 'gemma4:e2b-mlx',
       prompt,
       stream: false,
       format: expectJson ? 'json' : undefined,
@@ -453,4 +555,116 @@ function parseAIResponse(text) {
   } catch (e) {
     throw new Error('La IA no devolvió un formato JSON válido.');
   }
+}
+
+
+// ─────────────────────────────────────────────────────────────────────────
+// Sugerencia tipo "Mesa de Expertos" para mejorar texto (UI ExpertPanel)
+// ─────────────────────────────────────────────────────────────────────────
+export async function generateExpertSuggestion(config, { expertRole, fieldLabel, currentValue, planData }) {
+  const { apiKey, groqKey, endpoint, model } = config || {};
+
+  const companyName = planData?.config?.brandKit?.companyName
+    ? `Proyecto/Empresa: ${planData.config.brandKit.companyName}\n`
+    : '';
+
+  const semillaContext = planData?.semilla
+    ? `Contexto del emprendedor (semilla):\n${JSON.stringify(planData.semilla, null, 2)}\n`
+    : '';
+
+  const prompt = `
+Eres un miembro de una "Mesa de Expertos" en planes de negocio.
+Rol: ${expertRole}
+${companyName}
+${semillaContext}
+
+Campo a mejorar: "${fieldLabel}"
+
+Texto actual:
+"""${currentValue || ''}"""
+
+TAREA:
+1) Reescribe el texto para que quede profesional, claro y accionable.
+2) Mantén el mismo idioma (español).
+3) Evita relleno; usa frases concretas y métricas cuando aplique.
+
+Responde SOLO con la versión mejorada, sin introducciones.
+`;
+
+  const installedModels = await getInstalledOllamaModels(endpoint);
+  const resolvedModel = findBestOllamaModel(model || 'gemma4:e2b-mlx', installedModels);
+
+  const localModels = [
+    resolvedModel,
+    'nemotron-3-nano:4b',
+    'qwen3.5:2b-mlx'
+  ];
+
+  // Filtrar duplicados y quedarse con los instalados si es posible
+  const uniqueModels = [...new Set(localModels)];
+  const activeModels = installedModels.length > 0 
+    ? uniqueModels.filter(m => installedModels.includes(m))
+    : uniqueModels;
+
+  let lastError = null;
+  for (const localModel of (activeModels.length > 0 ? activeModels : uniqueModels)) {
+    try {
+      const pConfig = { provider: 'ollama', endpoint, model: localModel };
+      const text = await callAiProvider(pConfig, prompt, false);
+      return (text || '').trim();
+    } catch (error) {
+      lastError = error;
+      console.warn(`generateExpertSuggestion falló en ollama con modelo ${localModel}: ${error.message}`);
+    }
+  }
+
+  throw new Error(lastError?.message || 'No se pudo generar sugerencia. Verifique el runtime MLX y los modelos de Ollama locales.');
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Resumen de texto para UI (ModuleField)
+// ─────────────────────────────────────────────────────────────────────────
+export async function summarizeText(config, text) {
+  const { apiKey, groqKey, endpoint, model } = config || {};
+
+  const prompt = `
+Eres un editor profesional de planes de negocio.
+TAREA: Resume el texto manteniendo la idea central, datos clave and tono ejecutivo.
+Reglas:
+- Responde SOLO con el resumen (sin prefacios).
+- Máximo 3–4 oraciones.
+- Conserva números, porcentajes and supuestos importantes.
+
+Texto:
+"""${text || ''}"""
+`;
+
+  const installedModels = await getInstalledOllamaModels(endpoint);
+  const resolvedModel = findBestOllamaModel(model || 'gemma4:e2b-mlx', installedModels);
+
+  const localModels = [
+    resolvedModel,
+    'nemotron-3-nano:4b',
+    'qwen3.5:2b-mlx'
+  ];
+
+  // Filtrar duplicados y quedarse con los instalados si es posible
+  const uniqueModels = [...new Set(localModels)];
+  const activeModels = installedModels.length > 0 
+    ? uniqueModels.filter(m => installedModels.includes(m))
+    : uniqueModels;
+
+  let lastError = null;
+  for (const localModel of (activeModels.length > 0 ? activeModels : uniqueModels)) {
+    try {
+      const pConfig = { provider: 'ollama', endpoint, model: localModel };
+      const out = await callAiProvider(pConfig, prompt, false);
+      return (out || '').trim();
+    } catch (error) {
+      lastError = error;
+      console.warn(`summarizeText falló en ollama con modelo ${localModel}: ${error.message}`);
+    }
+  }
+
+  throw new Error(lastError?.message || 'No se pudo resumir el texto. Verifique el runtime MLX y los modelos de Ollama locales.');
 }

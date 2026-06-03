@@ -12,6 +12,7 @@ import LeanCanvas from './modules/LeanCanvas';
 import PitchDeck from './modules/PitchDeck';
 import Semilla from './modules/Semilla';
 import DynamicModule from './components/DynamicModule';
+import ErrorBoundary from './components/ErrorBoundary';
 
 // [HDD] Primer arranque: si no hay setup en localStorage, mostramos el wizard
 function AppContent() {
@@ -43,8 +44,8 @@ function AppContent() {
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Navigate to="/semilla" replace />} />
-          <Route path="modulo/:pillarId/:moduleId" element={<DynamicModule />} />
-          <Route path="vista-previa" element={<VistaPrevia />} />
+          <Route path="modulo/:pillarId/:moduleId" element={<ErrorBoundary><DynamicModule /></ErrorBoundary>} />
+          <Route path="vista-previa" element={<ErrorBoundary><VistaPrevia /></ErrorBoundary>} />
           <Route path="preview" element={<Navigate to="/vista-previa" replace />} />
           <Route path="lean-canvas" element={<LeanCanvas />} />
           <Route path="pitch-deck" element={<PitchDeck />} />

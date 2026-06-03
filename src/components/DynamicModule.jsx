@@ -8,6 +8,54 @@ import StaffTable from './StaffTable';
 import InegiMap from './InegiMap';
 import ModuloOperaciones from './ModuloOperaciones';
 import ProcessTable from './ProcessTable';
+import OrganizationFinanceToolkit from './OrganizationFinanceToolkit';
+import TamSamSom from './TamSamSom';
+import BusinessModelCanvas from './BusinessModelCanvas';
+import HubspotBuyerPersona from './HubspotBuyerPersona';
+
+const BusinessModelSelector = ({ value, onChange }) => {
+  const models = [
+    { key: 'B2C', label: 'B2C (Empresa a Consumidor)', desc: 'Venta de productos o servicios directamente a clientes finales.', icon: '🛍️' },
+    { key: 'B2B', label: 'B2B (Empresa a Empresa)', desc: 'Venta de productos o servicios a otras empresas u organizaciones.', icon: '🏢' },
+    { key: 'Suscripcion', label: 'Suscripción / Membresía', desc: 'Cobro recurrente a cambio de acceso continuo al servicio o producto.', icon: '🔄' },
+    { key: 'Marketplace', label: 'Marketplace / Plataforma', desc: 'Conectar oferta y demanda, cobrando comisión por transacción.', icon: '🌐' },
+    { key: 'Distribuidor', label: 'Ferretería / Distribución', desc: 'Compra de stock a mayoristas y reventa con margen comercial al detalle.', icon: '📦' }
+  ];
+
+  return (
+    <div className="glass-panel" style={{ padding: '1.5rem', marginBottom: '1.5rem', background: 'rgba(99, 102, 241, 0.02)' }}>
+      <h4 style={{ margin: '0 0 1rem 0', fontSize: '0.85rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+        Selección del Tipo de Modelo de Negocio (HubSpot Sales Guide)
+      </h4>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.75rem' }}>
+        {models.map(m => {
+          const isSelected = value?.startsWith(m.label) || value?.includes(m.desc);
+          return (
+            <div
+              key={m.key}
+              onClick={() => onChange(`${m.label}: ${m.desc}\n\n[Especifica aquí cómo aplica este modelo a tu negocio...]`)}
+              style={{
+                padding: '1rem',
+                border: isSelected ? '2px solid var(--accent-color)' : '1px solid var(--border-color)',
+                borderRadius: '10px',
+                background: isSelected ? 'rgba(99, 102, 241, 0.05)' : 'rgba(255, 255, 255, 0.02)',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '4px'
+              }}
+            >
+              <div style={{ fontSize: '1.5rem' }}>{m.icon}</div>
+              <div style={{ fontWeight: 'bold', fontSize: '0.82rem', color: isSelected ? 'var(--accent-color)' : 'inherit' }}>{m.label}</div>
+              <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', lineHeight: '1.3' }}>{m.desc}</div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
 
 export default function DynamicModule() {
   const { pillarId, moduleId } = useParams();
@@ -80,12 +128,52 @@ export default function DynamicModule() {
     );
   }
 
-  // Special Case: MercCompetencia (Extra Action: InegiMap)
-  const extraAction = (pillarId === 'mercado' && moduleId === 'competencia') 
-    ? <InegiMap token={planData.config?.externalApis?.inegiToken} /> 
-    : null;
+  const locationHint =
+    planData?.tecnico?.ubicacion?.micro ||
+    planData?.tecnico?.ubicacion?.macro ||
+    planData?.semilla?.negocio?.ubicacion ||
+    'Hermosillo, Sonora';
+
+  const projectContext = planData?.semilla?.negocio?.giro || planData?.semilla?.negocio?.nombre || 'servicios profesionales';
+
+  // Especial: panel geoespacial.
+  const isMapModule = (
+    (pillarId === 'mercado' && moduleId === 'competencia') ||
+    (pillarId === 'mercado' && moduleId === 'mapa') ||
+    (pillarId === 'tecnico' && moduleId === 'ubicacion') ||
+    (pillarId === 'organizacion' && moduleId === 'estructura')
+  );
+
+  const extraAction = isMapModule ? (
+    <InegiMap
+      token={planData.config?.externalApis?.inegiToken}
+      location={locationHint}
+      mode={pillarId === 'tecnico' && moduleId === 'ubicacion' ? 'location' : 'competition'}
+      title={
+        pillarId === 'tecnico'
+          ? 'Mapa de Localización Estratégica'
+          : (moduleId === 'mapa' ? 'Mapa de Calor (Densidad y Mercado)' : 'Mapa de Competencia (Giro/SCIAN · DENUE)')
+      }
+      initialKeywords={projectContext}
+      defaultHeatmap={moduleId === 'mapa'}
+    />
+  ) : null;
 
   const isFinancialModule = pillarId === 'finanzas' || moduleId === 'estados_financieros' || moduleId === 'rentabilidad';
+
+  if (pillarId === 'simulador_financiero' && moduleId === 'simulador') {
+    return (
+      <div className="module-view" style={{ padding: 0, height: 'calc(100vh - 80px)', overflow: 'hidden' }}>
+        <div style={{ width: '100%', height: '100%', position: 'relative', borderRadius: '14px', overflow: 'hidden', border: '1px solid var(--border-color)', background: '#f8fafc' }}>
+          <iframe 
+            src="/simulador/index.html" 
+            style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}
+            title="Simulador FAPPA Cibercafe"
+          />
+        </div>
+      </div>
+    );
+  }
 
   if (isFinancialModule) {
     return (
@@ -109,8 +197,28 @@ export default function DynamicModule() {
     );
   }
 
+  if (pillarId === 'naturaleza' && moduleId === 'canvas') {
+    return (
+      <div className="module-view">
+        <div className="view-header" style={{ marginBottom: '1.5rem' }}>
+          <div>
+            <h1 className="view-title">{moduleDef.title}</h1>
+            <p className="text-secondary mt-1">{moduleDef.description}</p>
+          </div>
+        </div>
+        <BusinessModelCanvas />
+      </div>
+    );
+  }
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+      {pillarId === 'naturaleza' && moduleId === 'introduccion' && (
+        <BusinessModelSelector 
+          value={planData.naturaleza?.introduccion?.modelo_negocio} 
+          onChange={(val) => updateSection('naturaleza', 'introduccion', 'modelo_negocio', val)}
+        />
+      )}
       <ModuleWrapper 
         pillar={pillarId}
         moduleKey={moduleId}
@@ -127,6 +235,15 @@ export default function DynamicModule() {
           processes={planData.tecnico?.processes || []} 
           onChange={updateProcesses} 
         />
+      )}
+      {pillarId === 'organizacion' && ['inversion', 'costos', 'recursos_humanos'].includes(moduleId) && (
+        <OrganizationFinanceToolkit moduleKey={moduleId} />
+      )}
+      {pillarId === 'mercado' && moduleId === 'segmentacion' && (
+        <>
+          <TamSamSom data={planData.mercado?.segmentacion} />
+          <HubspotBuyerPersona value={planData.mercado?.segmentacion?.perfil} />
+        </>
       )}
     </div>
   );

@@ -2,55 +2,71 @@
  * Service for INEGI / DENUE API Integration
  */
 
-export async function searchCompetenciaDENUE(token, lat, lng, radius = 2000, keywords = 'todos') {
-  if (!token) return { success: false, error: 'Token DENUE no configurado' };
+const API_BASE = 'http://localhost:3001';
+
+export async function geocodeMx(query) {
+  if (!query || !query.trim()) return { success: false, error: 'Ubicación vacía' };
 
   try {
-    const url = `https://www.inegi.org.mx/app/api/denue/v1/consulta/Buscar/${encodeURIComponent(keywords)}/${lat},${lng}/${radius}/${token}`;
-    
-    const response = await fetch(url);
-    const data = await response.json();
-    
-    if (!Array.isArray(data)) {
-      return { success: false, error: 'Respuesta inválida de INEGI' };
-    }
-
-    return {
-      success: true,
-      total: data.length,
-      businesses: data.map(item => ({
-        nombre: item.Nombre,
-        actividad: item.Clase_actividad,
-        estrato: item.Estrato,
-        direccion: `${item.Tipo_vialidad} ${item.Calle} ${item.Num_Exterior}`,
-        ubicacion: `${item.Latitud}, ${item.Longitud}`
-      }))
-    };
+    const response = await fetch(`${API_BASE}/api/geo/geocode?q=${encodeURIComponent(query.trim())}`);
+    return await response.json();
   } catch (error) {
-    console.error("DENUE Error:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+export async function searchCompetenciaDENUE(token, lat, lng, radius = 2000, keywords = 'todos') {
+  try {
+    const params = new URLSearchParams({
+      token: token || '',
+      lat: String(lat),
+      lng: String(lng),
+      radius: String(radius),
+      keywords,
+    });
+
+    const response = await fetch(`${API_BASE}/api/inegi/denue?${params.toString()}`);
+    const data = await response.json();
+    if (!data?.success) return { success: false, error: data?.error || 'Error en consulta DENUE' };
+
+    return data;
+  } catch (error) {
+    console.error('DENUE Error:', error);
     return { success: false, error: error.message };
   }
 }
 
 export async function getInflacionBanxico(token) {
   if (!token) return { success: false, error: 'Token Banxico no configurado' };
-  
-  // Serie SP74625 = Inflación anual
-  const url = `https://www.banxico.org.mx/SieAPIRest/service/v1/series/SP74625/datos/oportuno`;
-  
+
+  const url = 'https://www.banxico.org.mx/SieAPIRest/service/v1/series/SP74625/datos/oportuno';
+
   try {
     const response = await fetch(url, {
       headers: { 'Bmx-Token': token }
     });
     const data = await response.json();
-    const dato = data.bmx.series[0].datos[0];
-    
+    const dato = data?.bmx?.series?.[0]?.datos?.[0];
+    if (!dato) return { success: false, error: 'Sin datos de inflación' };
+
     return {
       success: true,
       valor: dato.dato,
       fecha: dato.fecha
     };
   } catch (error) {
+    return { success: false, error: error.message };
+  }
+}
+
+export async function getInegiMunicipio(municipioName) {
+  if (!municipioName || !municipioName.trim()) return { success: false, error: 'Nombre de municipio vacío' };
+
+  try {
+    const response = await fetch(`${API_BASE}/api/inegi/municipio/${encodeURIComponent(municipioName.trim())}`);
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching municipal data:', error);
     return { success: false, error: error.message };
   }
 }

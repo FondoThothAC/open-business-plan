@@ -35,22 +35,43 @@ const createEmptyPlan = (projectType = 'business') => {
         primaryProvider: 'gemini', secondaryProvider: 'groq',
         apiKey: KEYS.gemini, groqKey: KEYS.groq,
         endpoint: 'http://localhost:11434',
-        model: 'gemma4:e4b',   // modelo base (nivel rápido)
+        model: 'nemotron',   // nemotron es el modelo operativo local por defecto
         depth: 1,              // 1=Rápido, 2=Pro, 3=Profundo
         contextSize: 65536,    // 64k por defecto (seguro para 8GB VRAM)
         // [DDD] Modelos por rol — sobreescriben DEFAULT_AGENT_CONFIG en ai.js
         agentModels: {
-          analista:     { model: 'gemma4:e4b', role: 'Analista Estratégico' },
-          critico:      { model: 'gemma4:e4b', role: 'Crítico Financiero' },
-          redactor:     { model: 'gemma4:e4b', role: 'Redactor Ejecutivo' },
-          estratega:    { model: 'gemma4:e4b', role: 'Estratega de Negocio' },
-          abogadoDiablo:{ model: 'gemma4:e4b', role: "Devil's Advocate" },
+          analista:     { model: 'nemotron', role: 'Analista Estratégico' },
+          critico:      { model: 'nemotron', role: 'Crítico Financiero' },
+          redactor:     { model: 'nemotron', role: 'Redactor Ejecutivo' },
+          estratega:    { model: 'nemotron', role: 'Estratega de Negocio' },
+          abogadoDiablo:{ model: 'nemotron', role: "Devil's Advocate" },
         }
       },
       brandKit: { primaryColor: '#6366f1', secondaryColor: '#8b5cf6', logoUrl: '', companyName: '' },
       externalApis: { inegiToken: KEYS.denue, banxicoToken: KEYS.banxico },
       anexos: [],
-      documents: []
+      documents: [],
+      coverDesign: {
+        layout: 'classic', // 'classic', 'modern', 'minimalist', 'sidebar'
+        logoSize: 'medium', // 'small', 'medium', 'large'
+        logoAlign: 'center', // 'left', 'center', 'right'
+        titleSize: 'medium', // 'small', 'medium', 'large'
+        creatorName: '',
+        subtitle: 'Plan Estratégico Maestro',
+        institution: 'Formulación y Evaluación Académica 2026',
+        showDate: true,
+        customDate: '',
+        institutionLogos: [] // [{ id, name, url }]
+      },
+      globalOrientation: 'portrait', // 'portrait' o 'landscape' — se puede sobreescribir por sección
+      pageOrientations: {},
+      moduleOrder: [],
+      dataSources: [], // [{ id, type: 'auto'|'manual', title, url, description }]
+      search: {
+        provider: 'tavily',
+        tavilyApiKey: '',
+        enableDdg: false
+      }
     },
     semilla: {}
   };
@@ -77,12 +98,36 @@ const createEmptyPlan = (projectType = 'business') => {
 }
 
 export const PlanProvider = ({ children }) => {
+  const getInitialGenStatus = () => {
+    const saved = localStorage.getItem('openplan_gen_status');
+    if (saved === 'running') return 'paused'; // Safe fallback on reload
+    return saved || 'idle';
+  };
+
+  const getInitialGenProgress = () => {
+    const saved = localStorage.getItem('openplan_gen_progress');
+    try {
+      return saved ? JSON.parse(saved) : { completed: 0, total: 0, currentModule: '' };
+    } catch {
+      return { completed: 0, total: 0, currentModule: '' };
+    }
+  };
+
+  const getInitialGenQueue = () => {
+    const saved = localStorage.getItem('openplan_gen_queue');
+    try {
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  };
+
   const getInitialData = () => {
     const saved = localStorage.getItem('openplan_v2_data');
     if (!saved) {
       const base = createEmptyPlan('business');
-      base.config.brandKit.companyName = 'Brújula Financiera MX';
-      return deepMerge(base, PROJECT_EXAMPLES.brujula.data);
+      base.config.brandKit.companyName = 'Ferretería y Suministros Kino';
+      return deepMerge(base, PROJECT_EXAMPLES.ferreteria_kino.data);
     }
     try {
       const parsed = JSON.parse(saved);
@@ -94,6 +139,62 @@ export const PlanProvider = ({ children }) => {
   };
 
   const [planData, setPlanData] = useState(getInitialData);
+  const [saveStatus, setSaveStatus] = useState('saved'); // 'saved' | 'saving' | 'error'
+  const [generationStatus, setGenerationStatus] = useState(getInitialGenStatus); // 'idle' | 'running' | 'paused'
+  const [generationProgress, setGenerationProgress] = useState(getInitialGenProgress);
+  const [generationQueue, setGenerationQueue] = useState(getInitialGenQueue);
+
+  // Refs for tracking synchronous state inside async loop
+  const planDataRef = React.useRef(planData);
+  useEffect(() => {
+    planDataRef.current = planData;
+  }, [planData]);
+
+  const statusRef = React.useRef(generationStatus);
+  useEffect(() => {
+    statusRef.current = generationStatus;
+  }, [generationStatus]);
+
+  const queueRef = React.useRef(generationQueue);
+  useEffect(() => {
+    queueRef.current = generationQueue;
+  }, [generationQueue]);
+
+  // Persist generation queue and status
+  useEffect(() => {
+    localStorage.setItem('openplan_gen_status', generationStatus);
+  }, [generationStatus]);
+
+  useEffect(() => {
+    localStorage.setItem('openplan_gen_progress', JSON.stringify(generationProgress));
+  }, [generationProgress]);
+
+  useEffect(() => {
+    localStorage.setItem('openplan_gen_queue', JSON.stringify(generationQueue));
+  }, [generationQueue]);
+
+  // Hook de montaje para cargar el proyecto activo directamente del backend local (resuelve bugs de recarga)
+  useEffect(() => {
+    const syncWithBackend = async () => {
+      const activeId = localStorage.getItem('openplan_active_project_id');
+      const activeType = localStorage.getItem('openplan_active_project_type') || 'negocios';
+      if (activeId) {
+        try {
+          const response = await fetch(`http://localhost:3001/api/projects/${activeType}/${activeId}`);
+          if (response.ok) {
+            const data = await response.json();
+            const fresh = createEmptyPlan(data.config?.projectType || 'business');
+            data.config = { ...data.config, projectId: activeId };
+            const merged = deepMerge(fresh, data);
+            setPlanData(merged);
+          }
+        } catch (err) {
+          console.error('Error syncing project from backend on mount:', err);
+        }
+      }
+    };
+    syncWithBackend();
+  }, []);
 
   useEffect(() => {
     localStorage.setItem('openplan_v2_data', JSON.stringify(planData));
@@ -103,21 +204,106 @@ export const PlanProvider = ({ children }) => {
       document.documentElement.style.setProperty('--accent-hover', planData.config.brandKit.secondaryColor);
     }
 
+    if (planData.config?.projectId) {
+      localStorage.setItem('openplan_active_project_id', planData.config.projectId);
+      const projectTypeRaw = planData.config?.projectType || 'business';
+      const projectType = projectTypeRaw === 'social_bid' ? 'social' : 'negocios';
+      localStorage.setItem('openplan_active_project_type', projectType);
+    }
+
     // Auto-save to Local Backend (Markdown & JSON)
+    setSaveStatus('saving');
     const saveTimer = setTimeout(async () => {
       try {
-        await fetch('http://localhost:3001/api/save', {
+        const response = await fetch('http://localhost:3001/api/save', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(planData)
         });
+        if (response.ok) {
+          const resData = await response.json();
+          if (resData.file && planData.config.projectId !== resData.file) {
+            setPlanData(prev => ({
+              ...prev,
+              config: { ...prev.config, projectId: resData.file }
+            }));
+          }
+          setSaveStatus('saved');
+        } else {
+          setSaveStatus('error');
+        }
       } catch (err) {
-        // Backend might not be running yet, silent catch
+        setSaveStatus('error');
       }
     }, 2000); // 2 second debounce
 
     return () => clearTimeout(saveTimer);
   }, [planData]);
+
+  const manualSaveProject = async (customPlanData = planData) => {
+    setSaveStatus('saving');
+    try {
+      const response = await fetch('http://localhost:3001/api/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(customPlanData)
+      });
+      if (response.ok) {
+        const resData = await response.json();
+        if (resData.file) {
+          setPlanData(prev => {
+            const next = {
+              ...prev,
+              config: { 
+                ...prev.config, 
+                projectId: resData.file,
+                brandKit: { ...prev.config.brandKit, companyName: customPlanData.config.brandKit.companyName }
+              }
+            };
+            localStorage.setItem('openplan_v2_data', JSON.stringify(next));
+            localStorage.setItem('openplan_active_project_id', resData.file);
+            const projectTypeRaw = next.config?.projectType || 'business';
+            const projectType = projectTypeRaw === 'social_bid' ? 'social' : 'negocios';
+            localStorage.setItem('openplan_active_project_type', projectType);
+            return next;
+          });
+        }
+        setSaveStatus('saved');
+        return resData.file || true;
+      } else {
+        setSaveStatus('error');
+        return false;
+      }
+    } catch (err) {
+      setSaveStatus('error');
+      return false;
+    }
+  };
+
+  const saveProjectAs = async () => {
+    const newName = window.prompt('Introduce el nuevo nombre para este proyecto (Guardar como):');
+    if (!newName || !newName.trim()) return;
+
+    const newPlanData = {
+      ...planData,
+      config: {
+        ...planData.config,
+        projectId: undefined, // Limpiamos para forzar la creación de un nuevo archivo en el backend
+        brandKit: {
+          ...planData.config.brandKit,
+          companyName: newName.trim()
+        }
+      }
+    };
+
+    setSaveStatus('saving');
+    const newFileId = await manualSaveProject(newPlanData);
+    if (newFileId) {
+      alert(`Proyecto guardado exitosamente como: "${newName.trim()}"`);
+    } else {
+      alert('Error al guardar el proyecto con el nuevo nombre.');
+    }
+  };
 
   const loadProject = (id) => {
     const example = PROJECT_EXAMPLES[id];
@@ -129,6 +315,28 @@ export const PlanProvider = ({ children }) => {
     fresh.config.externalApis = planData.config.externalApis;
     const merged = deepMerge(fresh, example.data);
     setPlanData(merged);
+  };
+
+  const loadSavedProject = async (type, id) => {
+    try {
+      const response = await fetch(`http://localhost:3001/api/projects/${type}/${id}`);
+      if (!response.ok) throw new Error('Error al cargar el proyecto.');
+      const data = await response.json();
+      
+      const fresh = createEmptyPlan(data.config?.projectType || 'business');
+      // Set the projectId so we keep saving to the same file
+      data.config = { ...data.config, projectId: id };
+      const merged = deepMerge(fresh, data);
+      setPlanData(merged);
+      
+      localStorage.setItem('openplan_active_project_id', id);
+      localStorage.setItem('openplan_active_project_type', type);
+      return true;
+    } catch (err) {
+      console.error(err);
+      alert('No se pudo cargar el proyecto guardado: ' + err.message);
+      return false;
+    }
   };
 
   const updateSection = (pillar, module, field, value) => {
@@ -179,6 +387,8 @@ export const PlanProvider = ({ children }) => {
   const createNewProject = (projectType = 'business') => {
     if (window.confirm(`¿Estás seguro de crear un nuevo proyecto (${projectType === 'business' ? 'Comercial' : 'Social BID'})? Se perderán los cambios no guardados del actual.`)) {
       localStorage.removeItem('openplan_v2_data');
+      localStorage.removeItem('openplan_active_project_id');
+      localStorage.removeItem('openplan_active_project_type');
       window.location.href = '/semilla';
     }
   };
@@ -233,44 +443,176 @@ export const PlanProvider = ({ children }) => {
     }));
   };
 
-  const autoFillProject = async (generateModuleContent) => {
-    const pillars = ['naturaleza', 'mercado', 'tecnico', 'organizacion', 'finanzas'];
-    const tasks = [];
+  const startIndustrialization = (customQueue) => {
+    // Resume if paused
+    if (statusRef.current === 'paused' && queueRef.current.length > 0) {
+      setGenerationStatus('running');
+      return;
+    }
 
-    for (const pillar of pillars) {
-      const modules = Object.keys(planData[pillar] || {});
-      for (const modKey of modules) {
-        const moduleData = planData[pillar][modKey];
-        const emptyFields = Object.keys(moduleData).filter(f => !moduleData[f] || moduleData[f].length < 10);
+    if (customQueue && Array.isArray(customQueue)) {
+      setGenerationQueue(customQueue);
+      setGenerationProgress({ completed: 0, total: customQueue.length, currentModule: '' });
+      setGenerationStatus('running');
+      return;
+    }
+
+    const projectType = planDataRef.current?.config?.projectType || 'business';
+    const framework = FRAMEWORKS[projectType] || FRAMEWORKS.business;
+    const newQueue = [];
+
+    framework.pillars.forEach(pillar => {
+      pillar.modules.forEach(mod => {
+        const moduleData = planDataRef.current[pillar.key]?.[mod.key] || {};
+        const emptyFields = mod.fields.filter(f => !moduleData[f] || String(moduleData[f]).length < 10);
         
         if (emptyFields.length > 0) {
-          tasks.push((async () => {
-            try {
-              const result = await generateModuleContent(planData.config.ai, { 
-                title: modKey, 
-                description: `Generación automática de ${modKey}`,
-                fields: emptyFields.map(f => ({ key: f })) 
-              }, planData);
-              
-              if (result) {
-                setPlanData(prev => ({
-                  ...prev,
-                  [pillar]: { ...prev[pillar], [modKey]: { ...prev[pillar][modKey], ...result } }
-                }));
-              }
-            } catch (e) {
-              console.error(`Error filling ${modKey}:`, e);
-            }
-          })());
+          newQueue.push({
+            pillar: pillar.key,
+            modKey: mod.key,
+            title: mod.title,
+            emptyFields
+          });
         }
-      }
+      });
+    });
+
+    if (newQueue.length === 0) {
+      alert('¡Todo el proyecto ya está completamente generado!');
+      return;
     }
-    await Promise.all(tasks);
+
+    setGenerationQueue(newQueue);
+    setGenerationProgress({ completed: 0, total: newQueue.length, currentModule: '' });
+    setGenerationStatus('running');
   };
 
+  const pauseIndustrialization = () => {
+    setGenerationStatus('paused');
+  };
+
+  const stopIndustrialization = () => {
+    setGenerationStatus('idle');
+    setGenerationQueue([]);
+    setGenerationProgress({ completed: 0, total: 0, currentModule: '' });
+  };
+
+  const getProjectCompletion = () => {
+    const projectType = planData?.config?.projectType || 'business';
+    const framework = FRAMEWORKS[projectType] || FRAMEWORKS.business;
+    
+    let totalFields = 0;
+    let filledFields = 0;
+
+    const isFilled = (val) => {
+      if (val === undefined || val === null || val === '') return false;
+      if (typeof val === 'number') return true;
+      if (typeof val === 'boolean') return true;
+      if (Array.isArray(val)) return val.length > 0;
+      if (typeof val === 'object') return Object.keys(val).length > 0;
+      const str = String(val).trim();
+      if (str.length === 0) return false;
+      if (!isNaN(str) || str.length >= 3) return true;
+      return false;
+    };
+
+    framework.pillars.forEach(pillar => {
+      pillar.modules.forEach(mod => {
+        const moduleData = planData[pillar.key]?.[mod.key];
+        mod.fields.forEach(field => {
+          totalFields++;
+          let value = moduleData ? moduleData[field] : undefined;
+          
+          // Soporte y migración de claves obsoletas al calcular completado
+          if (moduleData && (value === undefined || value === '')) {
+            if (field === 'analisis_espacial') {
+              value = moduleData['heatmap_data'];
+            } else if (field === 'inventarios') {
+              value = moduleData['inventario'];
+            }
+          }
+
+          if (isFilled(value)) {
+            filledFields++;
+          }
+        });
+      });
+    });
+
+    return totalFields > 0 ? Math.round((filledFields / totalFields) * 100) : 0;
+  };
+
+  useEffect(() => {
+    if (generationStatus !== 'running') return;
+    let isSubscribed = true;
+
+    const runLoop = async () => {
+      const { generateModuleContent } = await import('../lib/ai');
+
+      while (queueRef.current.length > 0 && statusRef.current === 'running' && isSubscribed) {
+        const currentItem = queueRef.current[0];
+        setGenerationProgress(prev => ({ ...prev, currentModule: currentItem.title }));
+
+        try {
+          let result;
+          const { pillar, modKey } = currentItem;
+          
+          // Módulos que son matemáticos, no los procesamos por IA sino por nuestra calculadora.
+          const isFinancialModule = ['inversion', 'costos', 'estados_financieros', 'rentabilidad', 'simulador'].includes(modKey);
+          
+          if (isFinancialModule) {
+            const { generateAutomatedFinancials } = await import('../lib/finanzas/calculadoraFinanciera');
+            // Genera la data calculada exacta de una pasada.
+            const allFinancials = generateAutomatedFinancials(planDataRef.current);
+            result = allFinancials[modKey] || {};
+            await new Promise(r => setTimeout(r, 1000)); // Delay para visual de progreso
+          } else {
+            result = await generateModuleContent(
+              planDataRef.current.config.ai,
+              {
+                title: currentItem.modKey,
+                description: `Generación automática de ${currentItem.modKey}`,
+                fields: currentItem.emptyFields.map(f => ({ key: f }))
+              },
+              planDataRef.current
+            );
+          }
+
+          if (result && statusRef.current === 'running' && isSubscribed) {
+            setPlanData(prev => ({
+              ...prev,
+              [pillar]: {
+                ...prev[pillar],
+                [modKey]: { ...prev[pillar][modKey], ...result }
+              }
+            }));
+            setGenerationQueue(prev => prev.slice(1));
+            setGenerationProgress(prev => ({ ...prev, completed: prev.completed + 1 }));
+          } else {
+            break;
+          }
+        } catch (e) {
+          console.error(`Error in queue item ${currentItem.modKey}:`, e);
+          alert(`Error al generar el módulo "${currentItem.title}": ${e.message}`);
+          setGenerationStatus('paused');
+          break;
+        }
+      }
+
+      if (queueRef.current.length === 0 && statusRef.current === 'running' && isSubscribed) {
+        setGenerationStatus('idle');
+      }
+    };
+
+    runLoop();
+    return () => {
+      isSubscribed = false;
+    };
+  }, [generationStatus]);
+
   return (
-    <PlanContext.Provider value={{ planData, updateSection, updateConfig, toggleLock, toggleModuleVisibility, updateStaff, updateProcesses, loadProject, createNewProject, updateProjectName, addAnexo, removeAnexo, updateAnexo, autoFillProject }}>
+    <PlanContext.Provider value={{ planData, updateSection, updateConfig, toggleLock, toggleModuleVisibility, updateStaff, updateProcesses, loadProject, loadSavedProject, createNewProject, updateProjectName, addAnexo, removeAnexo, updateAnexo, saveStatus, manualSaveProject, saveProjectAs, generationStatus, generationProgress, startIndustrialization, pauseIndustrialization, stopIndustrialization, getProjectCompletion, autoFillProject: startIndustrialization }}>
       {children}
     </PlanContext.Provider>
   );
-};
+}

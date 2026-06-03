@@ -426,6 +426,8 @@ export default function ModuloOperaciones({ title, description }) {
           updateSection('tecnico', 'operativa', activeExpertField.key, newText);
           setActiveExpertField(null);
         }}
+        aiConfig={planData.config?.ai}
+        planData={planData}
       />
     </div>
   );

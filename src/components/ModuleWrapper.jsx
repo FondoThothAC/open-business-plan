@@ -1,21 +1,29 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { usePlan } from '../context/PlanContext';
-import { Sparkles, Loader2, Info, Search, Brain, CheckCircle2, Lock, Unlock, BarChart3, Map as MapIcon, Network, Eye, EyeOff, HelpCircle, Edit3, Layout } from 'lucide-react';
+import { Sparkles, Loader2, Info, Search, Brain, CheckCircle2, Lock, Unlock, BarChart3, Map as MapIcon, Network, Eye, EyeOff, HelpCircle, Edit3, Layout, ArrowRight } from 'lucide-react';
 import { generateModuleContent } from '../lib/ai';
 import { BUSINESS_GUIDES, SOCIAL_GUIDES } from '../lib/field_guides';
+import { FRAMEWORKS } from '../config/frameworks';
 import MermaidViewer from './MermaidViewer';
 import HeatmapEditor from './HeatmapEditor';
 import ExpertPanel from './ExpertPanel';
+import FodaMatrix from './FodaMatrix';
+import PestelAnalysis from './PestelAnalysis';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
 export default function ModuleWrapper({ pillar, moduleKey, title, description, fields, extraAction }) {
   const { planData, updateSection, toggleLock, toggleModuleVisibility } = usePlan();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [stage, setStage] = useState('');
   const [activeExpertField, setActiveExpertField] = useState(null);
   const [editModes, setEditModes] = useState({});
   const [depth, setDepth] = useState(planData.config?.ai?.depth || 1);
+  const [fodaEditMode, setFodaEditMode] = useState(false);
+  const [pestelEditMode, setPestelEditMode] = useState(false);
+  const [isAiCompleted, setIsAiCompleted] = useState(false);
   
   const isLocked = (fieldKey) => planData.config.locks?.[`${pillar}.${moduleKey}.${fieldKey}`];
   const isModuleVisible = planData.config?.visibility?.[`${pillar}.${moduleKey}`] !== false;
@@ -47,6 +55,31 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
   const handleChange = (fieldKey, value) => {
     if (isLocked(fieldKey)) return;
     updateSection(pillar, moduleKey, fieldKey, value);
+  };
+
+  // Convierte cualquier valor a string seguro para ReactMarkdown y textarea
+  const safeStr = (val, level = 0) => {
+    if (val === null || val === undefined) return '';
+    if (typeof val === 'string') return val;
+    if (Array.isArray(val)) {
+      return val.map(v => {
+        if (typeof v === 'object') return safeStr(v, level);
+        return `${'  '.repeat(level)}- ${v}`;
+      }).join('\n');
+    }
+    if (typeof val === 'object') {
+      try {
+        return Object.entries(val).map(([k, v]) => {
+          const indent = '  '.repeat(level);
+          const keyName = k.replace(/_/g, ' ').charAt(0).toUpperCase() + k.replace(/_/g, ' ').slice(1);
+          if (typeof v === 'object' && v !== null) {
+            return `${indent}**${keyName}**:\n${safeStr(v, level + 1)}`;
+          }
+          return `${indent}**${keyName}**: ${v}`;
+        }).join('\n\n');
+      } catch(_) { return String(val); }
+    }
+    return String(val);
   };
 
   const handleAiGenerate = async () => {
@@ -84,194 +117,331 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
           handleChange(key, result[key]);
         }
       });
-      setStage('Completado');
-      setTimeout(() => setStage(''), 3000);
+      setStage('Completado exitosamente');
+      setIsAiCompleted(true);
+      setTimeout(() => setStage(''), 4000);
     } catch (error) {
       alert(error.message);
-      setStage('Error');
+      setStage('Error en generación');
     } finally {
       setLoading(false);
     }
   };
 
+  const handleNextModule = () => {
+    const fw = FRAMEWORKS[projectType] || FRAMEWORKS.business;
+    const currentPillarIdx = fw.pillars.findIndex(p => p.key === pillar);
+    if (currentPillarIdx === -1) return;
+    
+    const currentModuleIdx = fw.pillars[currentPillarIdx].modules.findIndex(m => m.key === moduleKey);
+    
+    if (currentModuleIdx < fw.pillars[currentPillarIdx].modules.length - 1) {
+      // Next module in same pillar
+      const nextMod = fw.pillars[currentPillarIdx].modules[currentModuleIdx + 1];
+      navigate(`/modulo/${pillar}/${nextMod.key}`);
+    } else if (currentPillarIdx < fw.pillars.length - 1) {
+      // First module of next pillar
+      const nextPill = fw.pillars[currentPillarIdx + 1];
+      const nextMod = nextPill.modules[0];
+      navigate(`/modulo/${nextPill.key}/${nextMod.key}`);
+    } else {
+      // End of plan
+      navigate('/preview');
+    }
+    
+    setIsAiCompleted(false);
+  };
+
   const moduleData = planData[pillar]?.[moduleKey] || {};
 
   return (
-    <div className="module-view">
-      <div className="view-header">
+    <div className="module-view" style={{ animation: 'slideUp 0.4s ease-out' }}>
+      <div className="view-header" style={{ marginBottom: '2rem' }}>
         <div>
-          <h1 className="view-title">{title}</h1>
-          <p className="text-secondary mt-1">{description}</p>
+          <h1 className="view-title" style={{ fontSize: '2.25rem', fontWeight: 800 }}>{title}</h1>
+          <p className="text-secondary mt-1" style={{ fontSize: '1rem' }}>{description}</p>
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.5rem' }}>
-          <div className="glass-panel" style={{ padding: '0.5rem 1rem', fontSize: '0.7rem', display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(99, 102, 241, 0.1)', borderColor: 'rgba(99, 102, 241, 0.2)' }}>
-            <Brain className="w-3 h-3 text-[#8b5cf6]" />
-            <span style={{ color: 'var(--text-secondary)' }}>Mesa de Expertos activa: <strong>Analista + Crítico + Redactor</strong></span>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.75rem' }}>
+          {/* Active Expert Pill */}
+          <div 
+            className="glass-panel" 
+            style={{ 
+              padding: '0.5rem 1rem', 
+              fontSize: '0.75rem', 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '0.5rem', 
+              background: 'rgba(99, 102, 241, 0.08)', 
+              borderColor: 'rgba(99, 102, 241, 0.15)',
+              borderRadius: '20px',
+              boxShadow: '0 0 10px rgba(99, 102, 241, 0.05)'
+            }}
+          >
+            <Brain className="w-3.5 h-3.5 text-[#8b5cf6] animate-pulse" />
+            <span style={{ color: 'var(--text-secondary)' }}>Mesa de Expertos activa: <strong style={{ color: 'var(--text-primary)' }}>Analista + Crítico + Redactor</strong></span>
           </div>
-          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-            {/* Selector de profundidad — solo si advancedDepth está habilitado en Config */}
+
+          <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+            {/* AI Depth Segmented Switcher */}
             {planData.config?.ai?.advancedDepth && (
-              <div style={{ display: 'flex', background: 'rgba(0,0,0,0.3)', borderRadius: '10px', padding: '2px', border: '1px solid rgba(255,255,255,0.06)' }}>
+              <div 
+                style={{ 
+                  display: 'flex', 
+                  background: 'rgba(0, 0, 0, 0.25)', 
+                  borderRadius: '12px', 
+                  padding: '3px', 
+                  border: '1px solid var(--border-color)',
+                  boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.1)'
+                }}
+              >
                 {[
                   { level: 1, icon: '⚡', label: 'Rápido',   time: '~1min'  },
                   { level: 2, icon: '🧠', label: 'Pro',      time: '~3min'  },
                   { level: 3, icon: '🔬', label: 'Profundo', time: '~10min' },
                 ].map(({ level, icon, label, time }) => (
-                  <button key={level}
+                  <button 
+                    key={level}
                     onClick={() => setDepth(level)}
                     title={`${label} — ${time}`}
                     style={{
-                      padding: '0.3rem 0.6rem', borderRadius: '8px', border: 'none',
+                      padding: '0.4rem 0.8rem', 
+                      borderRadius: '9px', 
+                      border: 'none',
                       background: depth === level ? 'var(--accent-color)' : 'transparent',
                       color: depth === level ? 'white' : 'var(--text-secondary)',
-                      cursor: 'pointer', fontSize: '0.75rem', fontWeight: depth === level ? 800 : 400,
-                      transition: 'all 0.2s', display: 'flex', alignItems: 'center', gap: '0.25rem'
+                      cursor: 'pointer', 
+                      fontSize: '0.75rem', 
+                      fontWeight: depth === level ? 700 : 500,
+                      transition: 'all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1)', 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      gap: '0.35rem',
+                      boxShadow: depth === level ? '0 2px 8px rgba(99, 102, 241, 0.4)' : 'none'
                     }}
                   >
                     <span>{icon}</span>
-                    <span style={{ display: window.innerWidth > 1200 ? 'inline' : 'none' }}>{label}</span>
+                    <span>{label}</span>
                   </button>
                 ))}
               </div>
             )}
+            
             <button 
               className={`btn ${isModuleVisible ? 'btn-secondary' : 'btn-danger'}`}
-              style={{ padding: '0.4rem 0.8rem', fontSize: '0.75rem', opacity: isModuleVisible ? 1 : 0.6 }}
+              style={{ padding: '0.5rem 1rem', fontSize: '0.85rem' }}
               onClick={() => toggleModuleVisibility(pillar, moduleKey)}
               title={isModuleVisible ? "Incluir en Reporte" : "Excluido del Reporte"}
             >
               {isModuleVisible ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
               <span>{isModuleVisible ? "Visible" : "Oculto"}</span>
             </button>
+
             {extraAction}
+
             <button 
               className="btn btn-ia" 
               onClick={handleAiGenerate}
               disabled={loading}
               style={{ 
-                background: loading ? 'rgba(99, 102, 241, 0.2)' : 'var(--accent-color)',
-                boxShadow: loading ? 'none' : '0 0 15px var(--accent-color)',
+                padding: '0.5rem 1.25rem',
+                fontSize: '0.85rem',
                 opacity: loading ? 0.7 : 1, 
                 cursor: loading ? 'not-allowed' : 'pointer',
-                minWidth: '120px'
+                minWidth: '130px'
               }}
             >
               {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
-              <span>{loading ? 'IA...' : 'IA'}</span>
+              <span>{loading ? 'IA Generando...' : 'Generar con IA'}</span>
             </button>
+            
+            {isAiCompleted && (
+              <button 
+                className="btn btn-primary"
+                onClick={handleNextModule}
+                style={{ 
+                  padding: '0.5rem 1.25rem',
+                  fontSize: '0.85rem',
+                  background: 'var(--success-color)',
+                  animation: 'pulse 2s infinite',
+                  display: 'flex', alignItems: 'center', gap: '0.5rem'
+                }}
+              >
+                <span>Continuar</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            )}
           </div>
           {stage && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.75rem', color: 'var(--accent-color)' }}>
-              {stage.includes('Completado') ? <CheckCircle2 className="w-3 h-3" /> : <Brain className="w-3 h-3 animate-pulse" />}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.75rem', color: stage.includes('Error') ? '#ef4444' : 'var(--accent-color)', fontWeight: 600 }}>
+              {stage.includes('Completado') ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> : stage.includes('Error') ? null : <Brain className="w-3.5 h-3.5 animate-pulse" />}
               <span>{stage}</span>
             </div>
           )}
         </div>
       </div>
 
-      <div className="glass-panel" style={{padding: '2rem', display: 'flex', flexDirection: 'column', gap: '2.5rem'}}>
-        {fields.map(field => (
-          <div key={field.key} style={{ opacity: isLocked(field.key) ? 0.8 : 1 }}>
-            <div className="field-header">
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                {field.type === 'mermaid' && <Network className="w-4 h-4 text-[#8b5cf6]" />}
-                {field.type === 'heatmap' && <MapIcon className="w-4 h-4 text-emerald-400" />}
-                <label className="form-label" style={{ marginBottom: 0, fontWeight: '600', color: 'white' }}>{field.label}</label>
-                <div className="tooltip-container" style={{ position: 'relative', cursor: 'help' }}>
-                  <HelpCircle className="w-3.5 h-3.5 text-secondary" />
-                  <div className="tooltip-text">
-                    <strong>¿Qué es este campo?</strong><br/>
-                    {getFieldGuide(field.key).desc}
-                    {getFieldGuide(field.key).ejemplo && (
-                      <div style={{ marginTop: '8px', padding: '6px 8px', background: 'rgba(99, 102, 241, 0.15)', borderRadius: '6px', fontSize: '0.7rem', lineHeight: '1.4' }}>
-                        {getFieldGuide(field.key).ejemplo}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-              
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                {field.type !== 'heatmap' && (
-                  <div className="view-toggle">
-                    <button 
-                      className={!editModes[field.key] ? 'active' : ''} 
-                      onClick={() => setEditModes(prev => ({ ...prev, [field.key]: false }))}
-                    >
-                      <Layout className="w-3 h-3" /> Visualizar
-                    </button>
-                    <button 
-                      className={editModes[field.key] ? 'active' : ''} 
-                      onClick={() => setEditModes(prev => ({ ...prev, [field.key]: true }))}
-                    >
-                      <Edit3 className="w-3 h-3" /> Editar
-                    </button>
-                  </div>
-                )}
-
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <div className="tooltip-container" style={{ position: 'relative' }}>
-                    <button 
-                      onClick={() => setActiveExpertField(field)}
-                      className="btn-icon" 
-                      style={{ width: '28px', height: '28px', color: 'var(--accent-color)' }}
-                    >
-                      <Brain className="w-4 h-4" />
-                    </button>
-                    <div className="tooltip-text" style={{ right: '0', left: 'auto', marginLeft: '0', width: '340px' }}>
-                      <strong>Prompt que se envía a la IA:</strong><br/>
-                      {getPromptPreview(field.label, field.key, field.type).split('\n').map((line, i) => (
-                        <div key={i} style={{ marginBottom: '4px' }}>{line}</div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <button 
-                    onClick={() => toggleLock(pillar, moduleKey, field.key)}
-                    style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: isLocked(field.key) ? 'var(--accent-color)' : 'var(--text-secondary)' }}
-                  >
-                    {isLocked(field.key) ? <Lock className="w-4 h-4" /> : <Unlock className="w-4 h-4" />}
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {field.type === 'heatmap' ? (
-              <HeatmapEditor 
-                value={moduleData[field.key]} 
-                onChange={(val) => handleChange(field.key, val)} 
-              />
-            ) : (
-              <div style={{ display: 'grid', gridTemplateColumns: field.type === 'mermaid' ? '1fr 1fr' : '1fr', gap: '1.5rem' }}>
-                {editModes[field.key] ? (
-                  <textarea 
-                    className="form-control" 
-                    disabled={isLocked(field.key)}
-                    placeholder={field.type === 'mermaid' ? "graph TD\n  A[Inicio] --> B(Proceso)" : "Escribe aquí..."}
-                    value={moduleData[field.key] || ''}
-                    onChange={(e) => handleChange(field.key, e.target.value)}
-                    style={{ 
-                      minHeight: field.type === 'mermaid' ? '300px' : '180px', 
-                      fontSize: '0.9rem', 
-                      fontFamily: field.type === 'mermaid' ? 'monospace' : 'inherit'
-                    }}
-                  ></textarea>
-                ) : (
-                  <div className="preview-box" onClick={() => !isLocked(field.key) && toggleEditMode(field.key)}>
-                    <div className="markdown-content">
-                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                        {moduleData[field.key] || '*Sin contenido. Haz clic en "Editar" o usa la IA para generar.*'}
-                      </ReactMarkdown>
-                    </div>
-                  </div>
-                )}
-                {field.type === 'mermaid' && (
-                  <MermaidViewer chart={moduleData[field.key] || 'graph TD\n  Start --> End'} />
-                )}
-              </div>
-            )}
+      {/* SWOT Mode Toggle */}
+      {moduleKey === 'foda' && (
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem' }}>
+          <div className="view-toggle">
+            <button className={!fodaEditMode ? 'active' : ''} onClick={() => setFodaEditMode(false)}>
+              <Layout className="w-3.5 h-3.5" /> Matriz Colorida
+            </button>
+            <button className={fodaEditMode ? 'active' : ''} onClick={() => setFodaEditMode(true)}>
+              <Edit3 className="w-3.5 h-3.5" /> Editar Campos
+            </button>
           </div>
-        ))}
+        </div>
+      )}
+
+      {/* PESTEL Mode Toggle */}
+      {moduleKey === 'pestel' && (
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem' }}>
+          <div className="view-toggle">
+            <button className={!pestelEditMode ? 'active' : ''} onClick={() => setPestelEditMode(false)}>
+              <Layout className="w-3.5 h-3.5" /> Vista Infografía
+            </button>
+            <button className={pestelEditMode ? 'active' : ''} onClick={() => setPestelEditMode(true)}>
+              <Edit3 className="w-3.5 h-3.5" /> Editar Campos
+            </button>
+          </div>
+        </div>
+      )}
+
+      <div className="glass-panel" style={{ padding: '2.5rem', display: 'flex', flexDirection: 'column', gap: '3rem', border: '1px solid var(--border-color)', borderRadius: '20px' }}>
+        {moduleKey === 'foda' && !fodaEditMode ? (
+          <FodaMatrix data={moduleData} />
+        ) : moduleKey === 'pestel' && !pestelEditMode ? (
+          <PestelAnalysis data={moduleData} />
+        ) : (
+          fields.map(field => (
+            <div key={field.key} style={{ opacity: isLocked(field.key) ? 0.75 : 1, transition: 'opacity 0.2s' }}>
+              <div className="field-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                  {field.type === 'mermaid' && <Network className="w-4 h-4 text-[#8b5cf6]" />}
+                  {field.type === 'heatmap' && <MapIcon className="w-4 h-4 text-emerald-400" />}
+                  <label className="form-label" style={{ marginBottom: 0, fontWeight: '700', color: 'var(--text-primary)', fontSize: '0.95rem' }}>{field.label}</label>
+                  <div className="tooltip-container" style={{ position: 'relative', cursor: 'help' }}>
+                    <HelpCircle className="w-4 h-4 text-secondary" style={{ opacity: 0.7 }} />
+                    <div className="tooltip-text">
+                      <strong>¿Qué es este campo?</strong><br/>
+                      {getFieldGuide(field.key).desc}
+                      {getFieldGuide(field.key).ejemplo && (
+                        <div style={{ marginTop: '8px', padding: '8px 10px', background: 'rgba(99, 102, 241, 0.15)', borderRadius: '8px', fontSize: '0.7rem', lineHeight: '1.4', border: '1px solid rgba(99, 102, 241, 0.2)' }}>
+                          <strong>Ejemplo:</strong> {getFieldGuide(field.key).ejemplo}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                  {field.type !== 'heatmap' && (
+                    <div className="view-toggle">
+                      <button 
+                        className={!editModes[field.key] ? 'active' : ''} 
+                        onClick={() => setEditModes(prev => ({ ...prev, [field.key]: false }))}
+                      >
+                        <Layout className="w-3.5 h-3.5" /> Visualizar
+                      </button>
+                      <button 
+                        className={editModes[field.key] ? 'active' : ''} 
+                        onClick={() => setEditModes(prev => ({ ...prev, [field.key]: true }))}
+                      >
+                        <Edit3 className="w-3.5 h-3.5" /> Editar
+                      </button>
+                    </div>
+                  )}
+
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                    <div className="tooltip-container" style={{ position: 'relative' }}>
+                      <button 
+                        onClick={() => setActiveExpertField(field)}
+                        className="btn-icon" 
+                        style={{ width: '30px', height: '30px', color: 'var(--accent-color)' }}
+                      >
+                        <Brain className="w-4 h-4" />
+                      </button>
+                      <div className="tooltip-text" style={{ right: '0', left: 'auto', marginLeft: '0', width: '340px' }}>
+                        <strong>Prompt de IA mesa de expertos:</strong><br/>
+                        {getPromptPreview(field.label, field.key, field.type).split('\n').map((line, i) => (
+                          <div key={i} style={{ marginBottom: '4px' }}>{line}</div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <button 
+                      onClick={() => toggleLock(pillar, moduleKey, field.key)}
+                      className="btn-icon"
+                      style={{ 
+                        width: '30px', 
+                        height: '30px', 
+                        border: '1px solid transparent', 
+                        background: 'transparent',
+                        color: isLocked(field.key) ? 'var(--accent-color)' : 'var(--text-secondary)'
+                      }}
+                      title={isLocked(field.key) ? "Desbloquear edición de IA" : "Bloquear edición de IA"}
+                    >
+                      {isLocked(field.key) ? <Lock className="w-4 h-4" /> : <Unlock className="w-4 h-4" />}
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {field.type === 'heatmap' ? (
+                <HeatmapEditor 
+                  value={moduleData[field.key]} 
+                  onChange={(val) => handleChange(field.key, val)} 
+                />
+              ) : (
+                <div style={{ display: 'grid', gridTemplateColumns: field.type === 'mermaid' ? '1fr 1fr' : '1fr', gap: '1.5rem' }}>
+                  {editModes[field.key] ? (
+                    <textarea 
+                      className="form-control" 
+                      disabled={isLocked(field.key)}
+                      placeholder={field.type === 'mermaid' ? "graph TD\n  A[Inicio] --> B(Proceso)" : "Escribe aquí..."}
+                      value={safeStr(moduleData[field.key])}
+                      onChange={(e) => handleChange(field.key, e.target.value)}
+                      style={{ 
+                        minHeight: field.type === 'mermaid' ? '350px' : '220px', 
+                        fontSize: '0.9rem', 
+                        lineHeight: '1.6',
+                        fontFamily: field.type === 'mermaid' ? 'monospace' : 'inherit'
+                      }}
+                    ></textarea>
+                  ) : (
+                    <div 
+                      className="preview-box glass-panel" 
+                      onClick={() => !isLocked(field.key) && toggleEditMode(field.key)}
+                      style={{
+                        background: 'rgba(0,0,0,0.15)',
+                        padding: '1.5rem',
+                        borderRadius: '12px',
+                        border: '1px solid var(--border-color)',
+                        transition: 'all 0.25s ease',
+                        cursor: 'text',
+                        minHeight: field.type === 'mermaid' ? '350px' : '220px'
+                      }}
+                    >
+                      <div className="markdown-content">
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                          {safeStr(moduleData[field.key]) || '*Sin contenido. Haz clic en "Editar" o usa la IA para generar.*'}
+                        </ReactMarkdown>
+                      </div>
+                    </div>
+                  )}
+                  {field.type === 'mermaid' && (
+                    <MermaidViewer 
+                      chart={moduleData[field.key] || 'graph TD\n  Start --> End'} 
+                      onChange={(val) => handleChange(field.key, val)}
+                      theme={planData.config?.theme}
+                    />
+                  )}
+                </div>
+              )}
+            </div>
+          ))
+        )}
       </div>
 
       <ExpertPanel 

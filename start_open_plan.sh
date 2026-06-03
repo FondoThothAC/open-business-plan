@@ -91,12 +91,17 @@ fi
 echo ""
 echo "[+] Levantando Infraestructura..."
 
-# Iniciar Backend en segundo plano
-echo "[1/2] Iniciando Servidor de Datos..."
+# [1/3] Activar Cerebro IA (Ollama) en background
+echo "[1/3] Activando Cerebro IA..."
+bash "$DIR/activar_cerebro.sh" &
+sleep 3
+
+# [2/3] Iniciar Backend en segundo plano
+echo "[2/3] Iniciando Servidor de Datos (Puerto 3001)..."
 npm run server &
 
-# Iniciar Frontend
-echo "[2/2] Iniciando Interface Industrial..."
+# [3/3] Iniciar Frontend
+echo "[3/3] Iniciando Interface Industrial (Vite)..."
 echo ""
 echo "=========================================================="
 echo "   SISTEMA ACTIVO. ACCEDE EN: http://localhost:5173"
