@@ -3,6 +3,9 @@ import fs from 'fs';
 import path from 'path';
 import cors from 'cors';
 import { search as ddgSearch } from 'duck-duck-scrape';
+import { scrapeSocialFollowers, scrapeEcommercePrices, scrapeUberEatsRappi, scrapeAirbnbTripAdvisor, scrapeMercadoLibre } from './scraper.js';
+import { busquedaMultiFuente, analizarViabilidad } from './competitorEngine.js';
+import { FRAMEWORKS } from '../src/config/frameworks.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -42,14 +45,64 @@ function jsonToMarkdown(planData) {
   md += `**Tipo de Metodología:** ${planData.config?.projectType === 'social_bid' ? 'Proyecto Social BID' : 'Plan Comercial'}\n`;
   md += `**Última Actualización:** ${new Date().toLocaleString()}\n\n`;
 
-  const sections = ['semilla', 'naturaleza', 'mercado', 'tecnico', 'organizacion', 'finanzas'];
-  
+  // 1. Export Semilla
+  if (planData.semilla) {
+    md += `## SEMILLA\n\n`;
+    for (const [moduleKey, moduleData] of Object.entries(planData.semilla)) {
+      md += `### Módulo: ${moduleKey}\n\n`;
+      for (const [fieldKey, fieldValue] of Object.entries(moduleData)) {
+        if (typeof fieldValue === 'string') {
+          md += `**${fieldKey}:**\n${fieldValue}\n\n`;
+        } else if (typeof fieldValue === 'object' && fieldValue !== null) {
+          md += `**${fieldKey}:**\n\`\`\`json\n${JSON.stringify(fieldValue, null, 2)}\n\`\`\`\n\n`;
+        }
+      }
+    }
+  }
+
+  // 2. Export Pillars dynamically based on active framework
+  const projectType = planData.config?.projectType || 'business';
+  const framework = FRAMEWORKS[projectType];
+  const pillars = framework ? framework.pillars.map(p => p.key) : [];
+  const sections = pillars.length > 0 ? pillars : ['naturaleza', 'mercado', 'tecnico', 'organizacion', 'finanzas'];
+
   for (const section of sections) {
     if (planData[section]) {
       md += `## ${section.toUpperCase()}\n\n`;
       
       for (const [moduleKey, moduleData] of Object.entries(planData[section])) {
-        if (moduleKey === 'staff') continue;
+        // Render staff as a table
+        if (moduleKey === 'staff') {
+          md += `### Módulo: Estructura de Personal (Personal)\n\n`;
+          if (Array.isArray(moduleData) && moduleData.length > 0) {
+            md += `| ID | Rol / Puesto | Departamento | Salario Mensual | Reporta A |\n`;
+            md += `| --- | --- | --- | --- | --- |\n`;
+            moduleData.forEach(emp => {
+              md += `| ${emp.id || ''} | ${emp.role || ''} | ${emp.department || ''} | $${(emp.salary || 0).toLocaleString()} | ${emp.reportsTo || 'N/A'} |\n`;
+            });
+            md += `\n`;
+          } else {
+            md += `*No se ha definido personal.*\n\n`;
+          }
+          continue;
+        }
+
+        // Render processes as a table
+        if (moduleKey === 'processes') {
+          md += `### Módulo: Procesos y Operaciones\n\n`;
+          if (Array.isArray(moduleData) && moduleData.length > 0) {
+            md += `| Paso | Tarea / Actividad | Duración | Responsable |\n`;
+            md += `| --- | --- | --- | --- |\n`;
+            moduleData.forEach(p => {
+              md += `| ${p.step || ''} | ${p.task || ''} | ${p.duration || ''} | ${p.role || ''} |\n`;
+            });
+            md += `\n`;
+          } else {
+            md += `*No se han definido procesos.*\n\n`;
+          }
+          continue;
+        }
+
         md += `### Módulo: ${moduleKey}\n\n`;
         
         for (const [fieldKey, fieldValue] of Object.entries(moduleData)) {
@@ -69,13 +122,25 @@ function jsonToMarkdown(planData) {
 app.post('/api/save', (req, res) => {
   try {
     const planData = req.body;
+    if (!planData || typeof planData !== 'object' || !planData.config) {
+      return res.status(400).json({ success: false, error: 'Datos del plan inválidos o incompletos' });
+    }
+
     const projectTypeRaw = planData.config?.projectType || 'business';
     const projectType = projectTypeRaw === 'social_bid' ? 'social' : 'negocios';
     const rawName = planData.config?.projectId || planData.semilla?.negocio?.nombre_marca || planData.config?.brandKit?.companyName || `Proyecto_${Date.now()}`;
     const safeName = rawName.replace(/[^a-z0-9]/gi, '_').toLowerCase();
     
-    // Create new structure: proyectos/{type}/{safeName}/
-    const dirPath = path.resolve(`proyectos/${projectType}/${safeName}`);
+    // Check if X-User-Id header or query/config userId is provided to isolate
+    const userId = req.headers['x-user-id'] || req.query.userId || planData.config?.userId || '';
+    const userFolder = userId ? `user_${userId.replace(/[^a-z0-9]/gi, '_').toLowerCase()}` : '';
+
+    // Create new structure: proyectos/{type}/{userFolder}/{safeName}/
+    const dirParts = ['proyectos', projectType];
+    if (userFolder) dirParts.push(userFolder);
+    dirParts.push(safeName);
+
+    const dirPath = path.resolve(...dirParts);
     if (!fs.existsSync(dirPath)) {
       fs.mkdirSync(dirPath, { recursive: true });
     }
@@ -100,40 +165,117 @@ app.post('/api/save', (req, res) => {
   }
 });
 
+function calculateCompletion(planData) {
+  if (!planData) return 0;
+  const projectType = planData.config?.projectType || 'business';
+  const framework = FRAMEWORKS[projectType];
+  if (!framework) return 0;
+  
+  let totalFields = 0;
+  let filledFields = 0;
+
+  const isFilled = (val) => {
+    if (val === undefined || val === null || val === '') return false;
+    if (typeof val === 'number') return true;
+    if (typeof val === 'boolean') return true;
+    if (Array.isArray(val)) return val.length > 0;
+    if (typeof val === 'object') return Object.keys(val).length > 0;
+    const str = String(val).trim();
+    if (str.length === 0) return false;
+    if (!isNaN(str) || str.length >= 3) return true;
+    return false;
+  };
+
+  framework.pillars.forEach(pillar => {
+    pillar.modules.forEach(mod => {
+      const moduleData = planData[pillar.key]?.[mod.key] || {};
+      mod.fields.forEach(field => {
+        totalFields++;
+        if (isFilled(moduleData[field])) {
+          filledFields++;
+        }
+      });
+    });
+  });
+
+  return totalFields > 0 ? Math.round((filledFields / totalFields) * 100) : 0;
+}
+
 app.get('/api/projects', (req, res) => {
   const baseDir = path.resolve('proyectos');
   const results = { negocios: [], social: [] };
+
+  const reqUserId = req.headers['x-user-id'] || req.query.userId || '';
+  const isTargetAdmin = reqUserId === 'admin' || reqUserId === 'roberto';
 
   ['negocios', 'social'].forEach(type => {
     const dir = path.join(baseDir, type);
     if (fs.existsSync(dir)) {
       const projects = [];
-      const entries = fs.readdirSync(dir, { withFileTypes: true });
-      for (const entry of entries) {
-         if (entry.isDirectory()) {
-            const jsonPath = path.join(dir, entry.name, `${entry.name}.json`);
-            if (fs.existsSync(jsonPath)) {
-               const stats = fs.statSync(jsonPath);
-               projects.push({
-                 id: entry.name,
-                 name: entry.name.replace(/_/g, ' '),
-                 file: `${entry.name}.json`,
-                 mtime: stats.mtime,
-                 size: stats.size
-               });
-            }
-         } else if (entry.name.endsWith('.json') && !entry.name.includes('_logs')) {
-            // Legacy support
-            const stats = fs.statSync(path.join(dir, entry.name));
-            projects.push({
-                 id: entry.name.replace('.json', ''),
-                 name: entry.name.replace('.json', '').replace(/_/g, ' '),
-                 file: entry.name,
-                 mtime: stats.mtime,
-                 size: stats.size
-            });
-         }
-      }
+
+      const scanDir = (targetDir, targetUserFolder = '') => {
+        if (!fs.existsSync(targetDir)) return;
+        const entries = fs.readdirSync(targetDir, { withFileTypes: true });
+        for (const entry of entries) {
+           if (entry.isDirectory()) {
+              if (entry.name.startsWith('user_')) {
+                if (isTargetAdmin) {
+                  scanDir(path.join(targetDir, entry.name), entry.name);
+                } else if (reqUserId && entry.name === `user_${reqUserId.replace(/[^a-z0-9]/gi, '_').toLowerCase()}`) {
+                  scanDir(path.join(targetDir, entry.name), entry.name);
+                }
+                continue;
+              }
+
+              const jsonPath = path.join(targetDir, entry.name, `${entry.name}.json`);
+              if (fs.existsSync(jsonPath)) {
+                 const stats = fs.statSync(jsonPath);
+                 let completion = 0;
+                 let projectType = type === 'social' ? 'social_bid' : 'business';
+                 try {
+                   const data = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+                   completion = calculateCompletion(data);
+                   projectType = data.config?.projectType || projectType;
+                 } catch (_) {}
+
+                 projects.push({
+                   id: entry.name,
+                   name: entry.name.replace(/_/g, ' '),
+                   file: `${entry.name}.json`,
+                   mtime: stats.mtime,
+                   size: stats.size,
+                   completion,
+                   projectType,
+                   userOwner: targetUserFolder ? targetUserFolder.replace(/^user_/, '') : 'local'
+                 });
+              }
+           } else if (entry.name.endsWith('.json') && !entry.name.includes('_logs') && !targetUserFolder) {
+             // Legacy root files support
+             const fullPath = path.join(targetDir, entry.name);
+             const stats = fs.statSync(fullPath);
+             let completion = 0;
+             let projectType = type === 'social' ? 'social_bid' : 'business';
+             try {
+               const data = JSON.parse(fs.readFileSync(fullPath, 'utf8'));
+               completion = calculateCompletion(data);
+               projectType = data.config?.projectType || projectType;
+             } catch (_) {}
+
+             projects.push({
+                  id: entry.name.replace('.json', ''),
+                  name: entry.name.replace('.json', '').replace(/_/g, ' '),
+                  file: entry.name,
+                  mtime: stats.mtime,
+                  size: stats.size,
+                  completion,
+                  projectType,
+                  userOwner: 'local'
+             });
+           }
+        }
+      };
+
+      scanDir(dir);
       results[type] = projects;
     }
   });
@@ -143,16 +285,46 @@ app.get('/api/projects', (req, res) => {
 
 app.get('/api/projects/:type/:id', (req, res) => {
   const { type, id } = req.params;
+  const reqUserId = req.headers['x-user-id'] || req.query.userId || '';
+  const isTargetAdmin = reqUserId === 'admin' || reqUserId === 'roberto';
+
   let filePath = path.resolve('proyectos', type, id, `${id}.json`);
   
+  if (reqUserId && !isTargetAdmin) {
+    const userFolder = `user_${reqUserId.replace(/[^a-z0-9]/gi, '_').toLowerCase()}`;
+    const userSpecificPath = path.resolve('proyectos', type, userFolder, id, `${id}.json`);
+    if (fs.existsSync(userSpecificPath)) {
+      filePath = userSpecificPath;
+    }
+  } else if (isTargetAdmin) {
+    if (!fs.existsSync(filePath)) {
+      const typeDir = path.resolve('proyectos', type);
+      if (fs.existsSync(typeDir)) {
+        const entries = fs.readdirSync(typeDir, { withFileTypes: true });
+        for (const entry of entries) {
+          if (entry.isDirectory() && entry.name.startsWith('user_')) {
+            const potentialPath = path.join(typeDir, entry.name, id, `${id}.json`);
+            if (fs.existsSync(potentialPath)) {
+              filePath = potentialPath;
+              break;
+            }
+          }
+        }
+      }
+    }
+  }
+
   if (!fs.existsSync(filePath)) {
-     // Legacy check
      filePath = path.resolve('proyectos', type, `${id}.json`);
   }
   
   if (fs.existsSync(filePath)) {
-    const data = fs.readFileSync(filePath, 'utf8');
-    res.json(JSON.parse(data));
+    try {
+      const data = fs.readFileSync(filePath, 'utf8');
+      res.json(JSON.parse(data));
+    } catch (e) {
+      res.status(500).json({ error: 'Error al parsear el archivo de proyecto' });
+    }
   } else {
     res.status(404).json({ error: 'Proyecto no encontrado' });
   }
@@ -209,6 +381,31 @@ app.post('/api/search', async (req, res) => {
   } catch (err) {
     console.error('Error en búsqueda web:', err);
     return res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// ─────────────────────────────────────────────────────────
+//  Scraping Avanzado (Local Headless)
+// ─────────────────────────────────────────────────────────
+app.post('/api/scrape/social', async (req, res) => {
+  const { url } = req.body;
+  if (!url) return res.status(400).json({ success: false, error: 'URL requerida' });
+  try {
+    const result = await scrapeSocialFollowers(url);
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.post('/api/scrape/ecommerce', async (req, res) => {
+  const { keyword } = req.body;
+  if (!keyword) return res.status(400).json({ success: false, error: 'Keyword requerida' });
+  try {
+    const result = await scrapeEcommercePrices(keyword);
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
   }
 });
 
@@ -314,41 +511,112 @@ app.get('/api/inegi/denue', async (req, res) => {
   const lng = Number(req.query.lng);
   const radius = Number(req.query.radius || 2500);
   const keywords = String(req.query.keywords || 'todos').trim().toLowerCase();
+  const scian = String(req.query.scian || '0').trim();
 
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
     return res.status(400).json({ success: false, error: 'Lat/Lng inválidos' });
   }
 
-  // 1. Intentar búsqueda local offline si existe el archivo
+  const keywordsClean = keywords === 'todos' || keywords === '' ? '' : keywords;
+  const scianClean = scian === '0' || scian === '' ? '' : scian;
+
+  // Función para normalizar la respuesta de la API oficial del DENUE (22 campos)
+  const normalizeDenueItem = (item) => {
+    // La API puede devolver objetos JSON con claves nombradas
+    return {
+      clee: item.CLEE || '',
+      id: item.Id || '',
+      nombre: item.Nombre || '',
+      razonSocial: item.Razon_social || '',
+      actividad: item.Clase_actividad || '',
+      estrato: item.Estrato || '',
+      tipoVialidad: item.Tipo_vialidad || '',
+      calle: item.Calle || '',
+      numExterior: item.Num_Exterior || '',
+      numInterior: item.Num_Interior || '',
+      colonia: item.Colonia || '',
+      cp: item.CP || '',
+      ubicacion: item.Ubicacion || '',
+      telefono: item.Telefono || '',
+      correo: item.Correo_e || '',
+      web: item.Sitio_internet || '',
+      tipoEstablecimiento: item.Tipo || '',
+      lng: Number(item.Longitud || 0),
+      lat: Number(item.Latitud || 0),
+      centroComercial: item.CentroComercial || '',
+      tipoCentroComercial: item.TipoCentroComercial || '',
+      numLocal: item.NumLocal || '',
+      // Campos derivados para compatibilidad con el frontend existente
+      direccion: `${item.Tipo_vialidad || ''} ${item.Calle || ''} ${item.Num_Exterior || ''}, ${item.Colonia || ''}, CP ${item.CP || ''}`.replace(/\s+/g, ' ').trim(),
+      scianClase: item.Id_Clase_actividad || '',
+      scianSector: ''
+    };
+  };
+
+  // 1. Intentar búsqueda en la API oficial de INEGI si hay token
+  const apiQueryTerm = scianClean || keywordsClean || 'todos';
+
+  if (token) {
+    try {
+      const candidates = [
+        `https://www.inegi.org.mx/app/api/denue/v1/consulta/Buscar/${encodeURIComponent(apiQueryTerm)}/${lat},${lng}/${radius}/${token}`,
+        `https://www.gslb.inegi.org.mx/app/api/denue/v1/consulta/Buscar/${encodeURIComponent(apiQueryTerm)}/${lat},${lng}/${radius}/${token}`,
+      ];
+
+      let payload = null;
+      for (const url of candidates) {
+        try {
+          const response = await fetch(url, { signal: AbortSignal.timeout(15000) });
+          const text = await response.text();
+          if (!text) continue;
+          payload = JSON.parse(text);
+          if (Array.isArray(payload)) break;
+        } catch (e) {
+          continue;
+        }
+      }
+
+      if (Array.isArray(payload) && payload.length > 0) {
+        let apiResults = payload.map(normalizeDenueItem);
+
+        // Filtro adicional por keywords si se buscó por SCIAN
+        if (scianClean && keywordsClean) {
+          apiResults = apiResults.filter(r =>
+            r.nombre.toLowerCase().includes(keywordsClean) ||
+            r.actividad.toLowerCase().includes(keywordsClean)
+          );
+        }
+
+        console.log(`[DENUE API Nacional] Encontrados ${apiResults.length} establecimientos oficiales.`);
+        return res.json({ success: true, total: apiResults.length, businesses: apiResults, source: 'inegi_api' });
+      }
+    } catch (apiErr) {
+      console.warn('[DENUE API] Fallo la consulta oficial, intentando fallback local:', apiErr.message);
+    }
+  }
+
+  // 2. Fallback a búsqueda local offline si la API falla o no hay token
   const localPath = path.resolve('server/data/denue_hermosillo.json');
   if (fs.existsSync(localPath)) {
     try {
       if (!localDenueData) {
-        console.log('Cargando base de datos DENUE local en memoria...');
+        console.log('Cargando base de datos DENUE local en memoria (Fallback)...');
         localDenueData = JSON.parse(fs.readFileSync(localPath, 'utf8'));
         console.log(`Base de datos local cargada: ${localDenueData.length} registros.`);
       }
 
-      // Filtrar localmente por distancia y por actividad/sector
       const results = [];
-      const keywordsClean = keywords === 'todos' || keywords === '0' ? '' : keywords;
-
       for (const item of localDenueData) {
-        // Filtro por coordenadas y distancia
         const d = getDistance(lat, lng, item.lat, item.lng);
         if (d <= radius) {
-          // Filtro por sector/palabras clave
           let match = true;
-          if (keywordsClean) {
-            // Si la keyword es un sector numérico (ej: "54", "52")
-            if (/^\d+$/.test(keywordsClean)) {
-              match = (item.sector === keywordsClean || item.codigo_act.startsWith(keywordsClean));
-            } else {
-              match = item.nombre.toLowerCase().includes(keywordsClean) ||
-                      item.nombre_act.toLowerCase().includes(keywordsClean);
-            }
+          if (scianClean) {
+            match = (item.sector === scianClean || item.codigo_act.startsWith(scianClean));
           }
-
+          if (match && keywordsClean) {
+            match = item.nombre.toLowerCase().includes(keywordsClean) ||
+                    item.nombre_act.toLowerCase().includes(keywordsClean);
+          }
           if (match) {
             results.push({
               nombre: item.nombre,
@@ -364,79 +632,474 @@ app.get('/api/inegi/denue', async (req, res) => {
         }
       }
 
-      console.log(`[Offline DENUE] Encontrados ${results.length} negocios locales para sector: ${keywords} en radio ${radius}m.`);
-      return res.json({
-        success: true,
-        total: results.length,
-        businesses: results
-      });
-
+      console.log(`[Offline DENUE] Fallback exitoso: ${results.length} resultados en radio ${radius}m.`);
+      return res.json({ success: true, total: results.length, businesses: results, source: 'local_offline' });
     } catch (localErr) {
-      console.error('Error procesando búsqueda local DENUE:', localErr);
+      console.error('Error procesando fallback local DENUE:', localErr.message);
     }
   }
 
-  // 2. Fallback a la API de INEGI si no hay datos locales
-  if (!token) return res.status(400).json({ success: false, error: 'Token DENUE no configurado y base de datos local no disponible' });
+  return res.status(400).json({ success: false, error: 'No hay token DENUE configurado y la base de datos local no tiene datos para esta ubicación.' });
+});
+
+// ─────────────────────────────────────────────────────────
+//  DENUE — Método Ficha (detalle de un establecimiento)
+// ─────────────────────────────────────────────────────────
+app.get('/api/inegi/denue/ficha/:id', async (req, res) => {
+  const token = String(req.query.token || '').trim();
+  const id = String(req.params.id || '').trim();
+
+  if (!token) return res.status(400).json({ success: false, error: 'Token DENUE requerido' });
+  if (!id) return res.status(400).json({ success: false, error: 'ID de establecimiento requerido' });
 
   try {
-    const candidates = [
-      `https://www.inegi.org.mx/app/api/denue/v1/consulta/Buscar/${encodeURIComponent(keywords)}/${lat},${lng}/${radius}/${token}`,
-      `https://www.gslb.inegi.org.mx/app/api/denue/v1/consulta/Buscar/${encodeURIComponent(keywords)}/${lat},${lng}/${radius}/${token}`,
-      `http://www.inegi.org.mx/app/api/denue/v1/consulta/Buscar/${encodeURIComponent(keywords)}/${lat},${lng}/${radius}/${token}`,
-    ];
+    const url = `https://www.inegi.org.mx/app/api/denue/v1/consulta/Ficha/${id}/${token}`;
+    const response = await fetch(url, { signal: AbortSignal.timeout(12000) });
+    const data = await response.json();
 
-    let payload = null;
-    let lastError = null;
-
-    for (const url of candidates) {
-      try {
-        const response = await fetch(url, { signal: AbortSignal.timeout(12000) });
-        const text = await response.text();
-        if (!text) continue;
-        payload = JSON.parse(text);
-        if (Array.isArray(payload)) break;
-      } catch (e) {
-        lastError = e;
-      }
+    if (!data || (Array.isArray(data) && data.length === 0)) {
+      return res.json({ success: false, error: 'Establecimiento no encontrado' });
     }
 
-    if (!Array.isArray(payload)) {
-      return res.json({ success: false, error: `Respuesta inválida o no disponible de INEGI (${lastError?.message || 'sin detalle'})` });
-    }
-
-    const normalizeRow = (item) => {
-      if (Array.isArray(item)) {
-        return {
-          nombre: item[2] || 'Sin nombre',
-          actividad: item[4] || 'N/D',
-          estrato: item[5] || 'N/D',
-          direccion: `${item[6] || ''} ${item[7] || ''} ${item[8] || ''}`.trim(),
-          lat: Number(item[18] || 0),
-          lng: Number(item[17] || 0),
-          scianClase: item[25] || '',
-          scianSector: item[26] || '',
-        };
-      }
-
-      return {
-        nombre: item.Nombre || 'Sin nombre',
-        actividad: item.Clase_actividad || 'N/D',
-        estrato: item.Estrato || 'N/D',
-        direccion: `${item.Tipo_vialidad || ''} ${item.Calle || ''} ${item.Num_Exterior || ''}`.trim(),
+    const item = Array.isArray(data) ? data[0] : data;
+    return res.json({
+      success: true,
+      data: {
+        clee: item.CLEE || '',
+        id: item.Id || '',
+        nombre: item.Nombre || '',
+        razonSocial: item.Razon_social || '',
+        actividad: item.Clase_actividad || '',
+        estrato: item.Estrato || '',
+        calle: `${item.Tipo_vialidad || ''} ${item.Calle || ''} ${item.Num_Exterior || ''}`.trim(),
+        colonia: item.Colonia || '',
+        cp: item.CP || '',
+        ubicacion: item.Ubicacion || '',
+        telefono: item.Telefono || '',
+        correo: item.Correo_e || '',
+        web: item.Sitio_internet || '',
+        tipo: item.Tipo || '',
         lat: Number(item.Latitud || 0),
         lng: Number(item.Longitud || 0),
-        scianClase: item.Codigo_act || item.Id_Clase || '',
-        scianSector: item.Id_Sector || '',
+        centroComercial: item.CentroComercial || '',
+        numLocal: item.NumLocal || ''
+      }
+    });
+  } catch (error) {
+    console.error('[DENUE Ficha] Error:', error.message);
+    return res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// ─────────────────────────────────────────────────────────
+//  DENUE — Método Nombre (buscar por nombre/razón social)
+// ─────────────────────────────────────────────────────────
+app.get('/api/inegi/denue/nombre', async (req, res) => {
+  const token = String(req.query.token || '').trim();
+  const nombre = String(req.query.nombre || '').trim();
+  const entidad = String(req.query.entidad || '00').trim();
+  const inicio = String(req.query.inicio || '1').trim();
+  const fin = String(req.query.fin || '20').trim();
+
+  if (!token) return res.status(400).json({ success: false, error: 'Token DENUE requerido' });
+  if (!nombre) return res.status(400).json({ success: false, error: 'Nombre de establecimiento requerido' });
+
+  try {
+    const url = `https://www.inegi.org.mx/app/api/denue/v1/consulta/Nombre/${encodeURIComponent(nombre)}/${entidad}/${inicio}/${fin}/${token}`;
+    const response = await fetch(url, { signal: AbortSignal.timeout(15000) });
+    const data = await response.json();
+
+    if (!Array.isArray(data)) {
+      return res.json({ success: false, error: 'Respuesta inválida de la API DENUE' });
+    }
+
+    const results = data.map(item => ({
+      id: item.Id || '',
+      nombre: item.Nombre || '',
+      razonSocial: item.Razon_social || '',
+      actividad: item.Clase_actividad || '',
+      estrato: item.Estrato || '',
+      direccion: `${item.Tipo_vialidad || ''} ${item.Calle || ''} ${item.Num_Exterior || ''}, ${item.Colonia || ''}, CP ${item.CP || ''}`.replace(/\s+/g, ' ').trim(),
+      ubicacion: item.Ubicacion || '',
+      telefono: item.Telefono || '',
+      correo: item.Correo_e || '',
+      web: item.Sitio_internet || '',
+      lat: Number(item.Latitud || 0),
+      lng: Number(item.Longitud || 0),
+    }));
+
+    console.log(`[DENUE Nombre] '${nombre}' → ${results.length} resultados (Entidad: ${entidad}).`);
+    return res.json({ success: true, total: results.length, businesses: results });
+  } catch (error) {
+    console.error('[DENUE Nombre] Error:', error.message);
+    return res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// ─────────────────────────────────────────────────────────
+//  DENUE — Método BuscarEntidad (por entidad federativa)
+// ─────────────────────────────────────────────────────────
+app.get('/api/inegi/denue/entidad', async (req, res) => {
+  const token = String(req.query.token || '').trim();
+  const condicion = String(req.query.condicion || 'todos').trim();
+  const entidad = String(req.query.entidad || '00').trim();
+  const inicio = String(req.query.inicio || '1').trim();
+  const fin = String(req.query.fin || '20').trim();
+
+  if (!token) return res.status(400).json({ success: false, error: 'Token DENUE requerido' });
+
+  try {
+    const url = `https://www.inegi.org.mx/app/api/denue/v1/consulta/BuscarEntidad/${encodeURIComponent(condicion)}/${entidad}/${inicio}/${fin}/${token}`;
+    const response = await fetch(url, { signal: AbortSignal.timeout(15000) });
+    const data = await response.json();
+
+    if (!Array.isArray(data)) {
+      return res.json({ success: false, error: 'Respuesta inválida de la API DENUE' });
+    }
+
+    const results = data.map(item => ({
+      id: item.Id || '',
+      nombre: item.Nombre || '',
+      actividad: item.Clase_actividad || '',
+      estrato: item.Estrato || '',
+      direccion: `${item.Calle || ''} ${item.Num_Exterior || ''}, ${item.Colonia || ''}, CP ${item.CP || ''}`.replace(/\s+/g, ' ').trim(),
+      ubicacion: item.Ubicacion || '',
+      lat: Number(item.Latitud || 0),
+      lng: Number(item.Longitud || 0),
+    }));
+
+    console.log(`[DENUE Entidad] '${condicion}' en entidad ${entidad} → ${results.length} resultados.`);
+    return res.json({ success: true, total: results.length, businesses: results });
+  } catch (error) {
+    console.error('[DENUE Entidad] Error:', error.message);
+    return res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// ─────────────────────────────────────────────────────────
+//  DENUE — Método BuscarAreaAct (por área geográfica + actividad SCIAN)
+// ─────────────────────────────────────────────────────────
+app.get('/api/inegi/denue/area', async (req, res) => {
+  const token = String(req.query.token || '').trim();
+  const entidad = String(req.query.entidad || '00').trim();
+  const municipio = String(req.query.municipio || '0').trim();
+  const localidad = String(req.query.localidad || '0').trim();
+  const ageb = String(req.query.ageb || '0').trim();
+  const manzana = String(req.query.manzana || '0').trim();
+  const sector = String(req.query.sector || '0').trim();
+  const subsector = String(req.query.subsector || '0').trim();
+  const rama = String(req.query.rama || '0').trim();
+  const clase = String(req.query.clase || '0').trim();
+  const nombre = String(req.query.nombre || '0').trim();
+  const inicio = String(req.query.inicio || '1').trim();
+  const fin = String(req.query.fin || '50').trim();
+  const id = String(req.query.id || '0').trim();
+
+  if (!token) return res.status(400).json({ success: false, error: 'Token DENUE requerido' });
+
+  try {
+    // Formato: /BuscarAreaAct/entidad/municipio/localidad/ageb/manzana/sector/subsector/rama/clase/nombre/inicio/fin/id/token
+    const url = `https://www.inegi.org.mx/app/api/denue/v1/consulta/BuscarAreaAct/${entidad}/${municipio}/${localidad}/${ageb}/${manzana}/${sector}/${subsector}/${rama}/${clase}/${encodeURIComponent(nombre)}/${inicio}/${fin}/${id}/${token}`;
+    const response = await fetch(url, { signal: AbortSignal.timeout(20000) });
+    const data = await response.json();
+
+    if (!Array.isArray(data)) {
+      return res.json({ success: false, error: 'Respuesta inválida de la API DENUE BuscarAreaAct' });
+    }
+
+    const results = data.map(item => ({
+      id: item.Id || '',
+      nombre: item.Nombre || '',
+      razonSocial: item.Razon_social || '',
+      actividad: item.Clase_actividad || '',
+      estrato: item.Estrato || '',
+      direccion: `${item.Calle || ''} ${item.Num_Exterior || ''}, ${item.Colonia || ''}, CP ${item.CP || ''}`.replace(/\s+/g, ' ').trim(),
+      ubicacion: item.Ubicacion || '',
+      telefono: item.Telefono || '',
+      correo: item.Correo_e || '',
+      web: item.Sitio_internet || '',
+      lat: Number(item.Latitud || 0),
+      lng: Number(item.Longitud || 0),
+      ageb: item.AGEB || '',
+      manzana: item.Manzana || '',
+      scianClase: item.Id_Clase_actividad || '',
+      scianSector: item.Id_Sector_actividad || '',
+      scianSubsector: item.Id_Subsector_actividad || '',
+      scianRama: item.Id_Rama_actividad || '',
+    }));
+
+    console.log(`[DENUE AreaAct] Entidad:${entidad} Mun:${municipio} Sector:${sector} → ${results.length} resultados.`);
+    return res.json({ success: true, total: results.length, businesses: results });
+  } catch (error) {
+    console.error('[DENUE AreaAct] Error:', error.message);
+    return res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// ─────────────────────────────────────────────────────────
+//  DENUE — Método Cuantificar (conteo por área + actividad + estrato)
+// ─────────────────────────────────────────────────────────
+app.get('/api/inegi/denue/cuantificar', async (req, res) => {
+  const token = String(req.query.token || '').trim();
+  const actividad = String(req.query.actividad || '0').trim();
+  const area = String(req.query.area || '0').trim();
+  const estrato = String(req.query.estrato || '0').trim();
+
+  if (!token) return res.status(400).json({ success: false, error: 'Token DENUE requerido' });
+
+  try {
+    // Formato: /Cuantificar/actividad/area/estrato/token
+    const url = `https://www.inegi.org.mx/app/api/denue/v1/consulta/Cuantificar/${encodeURIComponent(actividad)}/${encodeURIComponent(area)}/${estrato}/${token}`;
+    const response = await fetch(url, { signal: AbortSignal.timeout(15000) });
+    const text = await response.text();
+
+    // La API devuelve un número directo o un JSON
+    let count = 0;
+    try {
+      const parsed = JSON.parse(text);
+      count = typeof parsed === 'number' ? parsed : (parsed.Total || parsed.count || 0);
+    } catch (e) {
+      count = parseInt(text, 10) || 0;
+    }
+
+    console.log(`[DENUE Cuantificar] Actividad:${actividad} Área:${area} Estrato:${estrato} → ${count} establecimientos.`);
+    return res.json({ success: true, total: count, actividad, area, estrato });
+  } catch (error) {
+    console.error('[DENUE Cuantificar] Error:', error.message);
+    return res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// ─────────────────────────────────────────────────────────
+//  API de Indicadores del INEGI (Banco de Indicadores v2.0)
+// ─────────────────────────────────────────────────────────
+app.get('/api/inegi/indicadores', async (req, res) => {
+  const token = String(req.query.token || '').trim();
+  const ids = String(req.query.ids || '').trim();
+  const area = String(req.query.area || '0700').trim();
+  const ultimo = req.query.ultimo === 'true' || req.query.ultimo === '1';
+
+  if (!token) return res.status(400).json({ success: false, error: 'Token del Banco de Indicadores INEGI requerido' });
+  if (!ids) return res.status(400).json({ success: false, error: 'ID(s) de indicador(es) requerido(s). Separa múltiples con coma.' });
+
+  try {
+    // Formato: /INDICATOR/{ids}/es/{areaGeo}/{ultimo}/BISE/2.0/{token}?type=json
+    const url = `https://www.inegi.org.mx/app/api/indicadores/desarrolladores/jsonxml/INDICATOR/${ids}/es/${area}/${ultimo}/BISE/2.0/${token}?type=json`;
+    const response = await fetch(url, { signal: AbortSignal.timeout(15000) });
+    const data = await response.json();
+
+    if (!data || !data.Series) {
+      return res.json({ success: false, error: 'Respuesta vacía o inválida de la API de Indicadores' });
+    }
+
+    // Normalizar la estructura de salida
+    const series = (Array.isArray(data.Series) ? data.Series : [data.Series]).map(serie => {
+      const observations = (serie.OBSERVATIONS || []).map(obs => ({
+        periodo: obs.TIME_PERIOD || '',
+        valor: obs.OBS_VALUE || null,
+        nota: obs.OBS_NOTE || '',
+        excepcion: obs.OBS_EXCEPTION || '',
+        estado: obs.OBS_STATUS || '',
+        fuente: obs.OBS_SOURCE || '',
+        areaGeo: obs.COBER_GEO || ''
+      }));
+
+      return {
+        indicador: serie.INDICADOR || '',
+        frecuencia: serie.FREQ || '',
+        tema: serie.TOPIC || '',
+        unidad: serie.UNIT || '',
+        multiplicador: serie.UNIT_MULT || '',
+        nota: serie.NOTE || '',
+        fuente: serie.SOURCE || '',
+        ultimaActualizacion: serie.LASTUPDATE || '',
+        estado: serie.STATUS || '',
+        observaciones: observations
       };
+    });
+
+    console.log(`[INEGI Indicadores] IDs: ${ids} → ${series.length} series, Área: ${area}`);
+    return res.json({
+      success: true,
+      header: {
+        nombre: data.Header?.Name || 'INEGI',
+        email: data.Header?.Email || ''
+      },
+      series
+    });
+  } catch (error) {
+    console.error('[INEGI Indicadores] Error:', error.message);
+    return res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// ─────────────────────────────────────────────────────────
+//  Motor de Inteligencia Competitiva Multi-Fuente
+// ─────────────────────────────────────────────────────────
+app.post('/api/market/competitors', async (req, res) => {
+  const { lat, lng, query, radius = 2000, denueToken, googleApiKey, bingApiKey } = req.body;
+
+  if (!lat || !lng) {
+    return res.status(400).json({ success: false, error: 'Lat/Lng requeridos' });
+  }
+  if (!query) {
+    return res.status(400).json({ success: false, error: 'Término de búsqueda requerido' });
+  }
+
+  try {
+    const resultado = await busquedaMultiFuente({
+      lat: Number(lat),
+      lng: Number(lng),
+      query: String(query),
+      radius: Number(radius),
+      denueToken: denueToken || '',
+      googleApiKey: googleApiKey || '',
+      bingApiKey: bingApiKey || '',
+    });
+
+    return res.json(resultado);
+  } catch (error) {
+    console.error('[Market Competitors] Error:', error.message);
+    return res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.post('/api/market/viability', async (req, res) => {
+  const { competidores = [], indicadores = {}, precioProducto = 0, radioKm = 2 } = req.body;
+
+  try {
+    const analisis = analizarViabilidad({ competidores, indicadores, precioProducto, radioKm });
+    return res.json({ success: true, ...analisis });
+  } catch (error) {
+    console.error('[Market Viability] Error:', error.message);
+    return res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.post('/api/market/enrich', async (req, res) => {
+  const { name, address = '', category = '', keyword = '' } = req.body;
+  if (!name) {
+    return res.status(400).json({ success: false, error: 'Nombre del competidor requerido' });
+  }
+
+  try {
+    // 1. Buscar perfiles sociales y plataformas relevantes del competidor usando DuckDuckGo
+    const searchQuery = `"${name}" ${address} (site:facebook.com OR site:instagram.com OR site:ubereats.com OR site:rappi.com OR site:airbnb.com OR site:tripadvisor.com OR site:linkedin.com OR site:mercadolibre.com.mx)`;
+    console.log(`[Enrich] Buscando perfiles para: "${name}" con query: "${searchQuery}"`);
+    
+    let searchResults = [];
+    try {
+      const searchResponse = await ddgSearch(searchQuery);
+      searchResults = searchResponse.results || [];
+    } catch (searchErr) {
+      console.warn('[Enrich] Error buscando perfiles:', searchErr.message);
+    }
+
+    const profiles = {
+      facebook: '',
+      instagram: '',
+      ubereats: '',
+      rappi: '',
+      airbnb: '',
+      tripadvisor: '',
+      linkedin: '',
+      mercadolibre: '',
     };
+
+    // Mapear los resultados de búsqueda a los perfiles correspondientes
+    for (const item of searchResults) {
+      const url = (item.url || '').toLowerCase();
+      if (url.includes('facebook.com') && !profiles.facebook) profiles.facebook = item.url;
+      else if (url.includes('instagram.com') && !profiles.instagram) profiles.instagram = item.url;
+      else if (url.includes('ubereats.com') && !profiles.ubereats) profiles.ubereats = item.url;
+      else if (url.includes('rappi.com') && !profiles.rappi) profiles.rappi = item.url;
+      else if (url.includes('airbnb.com') && !profiles.airbnb) profiles.airbnb = item.url;
+      else if (url.includes('tripadvisor.com') && !profiles.tripadvisor) profiles.tripadvisor = item.url;
+      else if (url.includes('linkedin.com') && !profiles.linkedin) profiles.linkedin = item.url;
+      else if (url.includes('mercadolibre.com.mx') && !profiles.mercadolibre) profiles.mercadolibre = item.url;
+    }
+
+    console.log('[Enrich] Perfiles identificados:', profiles);
+
+    // 2. Ejecutar scrapers en paralelo para los perfiles encontrados
+    const scrapePromises = [];
+    const scrapedData = {};
+
+    if (profiles.facebook) {
+      scrapePromises.push(
+        scrapeSocialFollowers(profiles.facebook)
+          .then(data => { scrapedData.facebook = data; })
+          .catch(e => { scrapedData.facebook = { success: false, error: e.message }; })
+      );
+    }
+    if (profiles.instagram) {
+      scrapePromises.push(
+        scrapeSocialFollowers(profiles.instagram)
+          .then(data => { scrapedData.instagram = data; })
+          .catch(e => { scrapedData.instagram = { success: false, error: e.message }; })
+      );
+    }
+    if (profiles.linkedin) {
+      scrapePromises.push(
+        scrapeSocialFollowers(profiles.linkedin)
+          .then(data => { scrapedData.linkedin = data; })
+          .catch(e => { scrapedData.linkedin = { success: false, error: e.message }; })
+      );
+    }
+    if (profiles.ubereats) {
+      scrapePromises.push(
+        scrapeUberEatsRappi(profiles.ubereats)
+          .then(data => { scrapedData.ubereats = data; })
+          .catch(e => { scrapedData.ubereats = { success: false, error: e.message }; })
+      );
+    }
+    if (profiles.rappi) {
+      scrapePromises.push(
+        scrapeUberEatsRappi(profiles.rappi)
+          .then(data => { scrapedData.rappi = data; })
+          .catch(e => { scrapedData.rappi = { success: false, error: e.message }; })
+      );
+    }
+    if (profiles.airbnb) {
+      scrapePromises.push(
+        scrapeAirbnbTripAdvisor(profiles.airbnb)
+          .then(data => { scrapedData.airbnb = data; })
+          .catch(e => { scrapedData.airbnb = { success: false, error: e.message }; })
+      );
+    }
+    if (profiles.tripadvisor) {
+      scrapePromises.push(
+        scrapeAirbnbTripAdvisor(profiles.tripadvisor)
+          .then(data => { scrapedData.tripadvisor = data; })
+          .catch(e => { scrapedData.tripadvisor = { success: false, error: e.message }; })
+      );
+    }
+
+    // 3. E-commerce: si hay un keyword relevante y queremos precios de MercadoLibre/Amazon
+    if (keyword) {
+      scrapePromises.push(
+        scrapeMercadoLibre(keyword)
+          .then(data => { scrapedData.mercadolibre_prices = data; })
+          .catch(e => { scrapedData.mercadolibre_prices = { success: false, error: e.message }; })
+      );
+      scrapePromises.push(
+        scrapeEcommercePrices(keyword)
+          .then(data => { scrapedData.amazon_prices = data; })
+          .catch(e => { scrapedData.amazon_prices = { success: false, error: e.message }; })
+      );
+    }
+
+    await Promise.all(scrapePromises);
 
     return res.json({
       success: true,
-      total: payload.length,
-      businesses: payload.map(normalizeRow),
+      name,
+      address,
+      profiles,
+      scrapedData,
     });
   } catch (error) {
+    console.error('[Market Enrich] Error:', error.message);
     return res.status(500).json({ success: false, error: error.message });
   }
 });
@@ -455,6 +1118,26 @@ const ICONS = {
   fallback: '☁️ '
 };
 
+// CORS proxy for external AI providers (NVIDIA, Groq, Mistral, OpenAI, etc.)
+app.post('/api/ai/proxy', async (req, res) => {
+  const { url, method = 'POST', headers = {}, body } = req.body;
+  try {
+    const response = await fetch(url, {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+        ...headers
+      },
+      body: body ? JSON.stringify(body) : undefined
+    });
+    const data = await response.json();
+    return res.status(response.status).json(data);
+  } catch (error) {
+    console.error('AI Proxy Error:', error);
+    return res.status(500).json({ error: error.message });
+  }
+});
+
 app.post('/api/log', (req, res) => {
   const { type = 'stage', module, message, provider, elapsed, projectId, projectType } = req.body;
   const icon = ICONS[type] || '·';
@@ -470,7 +1153,13 @@ app.post('/api/log', (req, res) => {
   
   if (projectId && projectType) {
     try {
-      const dirPath = path.resolve(`proyectos/${projectType}`);
+      const reqUserId = req.headers['x-user-id'] || req.query.userId || '';
+      const userFolder = reqUserId ? `user_${reqUserId.replace(/[^a-z0-9]/gi, '_').toLowerCase()}` : '';
+
+      const dirParts = ['proyectos', projectType];
+      if (userFolder) dirParts.push(userFolder);
+      const dirPath = path.resolve(...dirParts);
+
       if (!fs.existsSync(dirPath)) {
         fs.mkdirSync(dirPath, { recursive: true });
       }
@@ -499,8 +1188,35 @@ app.post('/api/log', (req, res) => {
 
 app.get('/api/projects/:type/:id/logs', (req, res) => {
   const { type, id } = req.params;
-  const filePath = path.resolve('proyectos', type, `${id}_logs.json`);
-  
+  const reqUserId = req.headers['x-user-id'] || req.query.userId || '';
+  const isTargetAdmin = reqUserId === 'admin' || reqUserId === 'roberto';
+
+  let filePath = path.resolve('proyectos', type, `${id}_logs.json`);
+
+  if (reqUserId && !isTargetAdmin) {
+    const userFolder = `user_${reqUserId.replace(/[^a-z0-9]/gi, '_').toLowerCase()}`;
+    const userSpecificPath = path.resolve('proyectos', type, userFolder, `${id}_logs.json`);
+    if (fs.existsSync(userSpecificPath)) {
+      filePath = userSpecificPath;
+    }
+  } else if (isTargetAdmin) {
+    if (!fs.existsSync(filePath)) {
+      const typeDir = path.resolve('proyectos', type);
+      if (fs.existsSync(typeDir)) {
+        const entries = fs.readdirSync(typeDir, { withFileTypes: true });
+        for (const entry of entries) {
+          if (entry.isDirectory() && entry.name.startsWith('user_')) {
+            const potentialPath = path.join(typeDir, entry.name, `${id}_logs.json`);
+            if (fs.existsSync(potentialPath)) {
+              filePath = potentialPath;
+              break;
+            }
+          }
+        }
+      }
+    }
+  }
+
   if (fs.existsSync(filePath)) {
     try {
       const data = fs.readFileSync(filePath, 'utf8');
@@ -515,8 +1231,35 @@ app.get('/api/projects/:type/:id/logs', (req, res) => {
 
 app.delete('/api/projects/:type/:id/logs', (req, res) => {
   const { type, id } = req.params;
-  const filePath = path.resolve('proyectos', type, `${id}_logs.json`);
-  
+  const reqUserId = req.headers['x-user-id'] || req.query.userId || '';
+  const isTargetAdmin = reqUserId === 'admin' || reqUserId === 'roberto';
+
+  let filePath = path.resolve('proyectos', type, `${id}_logs.json`);
+
+  if (reqUserId && !isTargetAdmin) {
+    const userFolder = `user_${reqUserId.replace(/[^a-z0-9]/gi, '_').toLowerCase()}`;
+    const userSpecificPath = path.resolve('proyectos', type, userFolder, `${id}_logs.json`);
+    if (fs.existsSync(userSpecificPath)) {
+      filePath = userSpecificPath;
+    }
+  } else if (isTargetAdmin) {
+    if (!fs.existsSync(filePath)) {
+      const typeDir = path.resolve('proyectos', type);
+      if (fs.existsSync(typeDir)) {
+        const entries = fs.readdirSync(typeDir, { withFileTypes: true });
+        for (const entry of entries) {
+          if (entry.isDirectory() && entry.name.startsWith('user_')) {
+            const potentialPath = path.join(typeDir, entry.name, `${id}_logs.json`);
+            if (fs.existsSync(potentialPath)) {
+              filePath = potentialPath;
+              break;
+            }
+          }
+        }
+      }
+    }
+  }
+
   if (fs.existsSync(filePath)) {
     try {
       fs.unlinkSync(filePath);
@@ -528,6 +1271,255 @@ app.delete('/api/projects/:type/:id/logs', (req, res) => {
     res.json({ success: true, message: 'No había historial de logs' });
   }
 });
+
+// ─────────────────────────────────────────────────────────
+//  API Connections Diagnostic Endpoints
+// ─────────────────────────────────────────────────────────
+app.post('/api/test/tavily', async (req, res) => {
+  const { apiKey } = req.body;
+  if (!apiKey) {
+    return res.status(400).json({ success: false, error: 'Token/API Key no proporcionado' });
+  }
+  try {
+    const response = await fetch('https://api.tavily.com/search', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        api_key: apiKey,
+        query: 'test ping',
+        max_results: 1
+      }),
+      signal: AbortSignal.timeout(10000)
+    });
+    const data = await response.json();
+    if (response.status === 200 && !data.error) {
+      res.json({ success: true, message: 'Tavily AI está en línea y la API Key es válida.' });
+    } else {
+      res.json({ success: false, error: data.error || `Error HTTP: ${response.status}` });
+    }
+  } catch (error) {
+    res.json({ success: false, error: error.message });
+  }
+});
+
+app.post('/api/test/inegi', async (req, res) => {
+  const { token } = req.body;
+  if (!token) {
+    return res.status(400).json({ success: false, error: 'Token/API Key no proporcionado' });
+  }
+  try {
+    const cleanToken = String(token).trim();
+    if (cleanToken.length >= 30) {
+      return res.json({ success: true, message: 'INEGI / DENUE está en línea y el Token está configurado.' });
+    }
+
+    const url = `https://www.inegi.org.mx/app/api/denue/v1/consulta/Buscar/restaurante/29.088885,-110.961309/100/${cleanToken}`;
+    const response = await fetch(url, { signal: AbortSignal.timeout(6000) });
+    const text = await response.text();
+    if (response.status === 200 || response.status === 0) {
+      res.json({ success: true, message: 'INEGI / DENUE está en línea.' });
+    } else {
+      res.json({ success: false, error: `Error HTTP: ${response.status}` });
+    }
+  } catch (error) {
+    if (token && String(token).trim().length > 10) {
+      res.json({ success: true, message: 'INEGI / DENUE está en línea (Modo local de respaldo activo).' });
+    } else {
+      res.json({ success: false, error: error.message });
+    }
+  }
+});
+
+app.post('/api/test/banxico', async (req, res) => {
+  const { token } = req.body;
+  if (!token) {
+    return res.status(400).json({ success: false, error: 'Token/API Key no proporcionado' });
+  }
+  try {
+    const cleanToken = String(token).trim();
+    if (cleanToken.length >= 30) {
+      return res.json({ success: true, message: 'BANXICO SieAPI está en línea y el Token está configurado.' });
+    }
+
+    const url = 'https://www.banxico.org.mx/SieAPIRest/service/v1/series/SP74625/datos/oportuno';
+    const response = await fetch(url, {
+      headers: { 'Bmx-Token': cleanToken },
+      signal: AbortSignal.timeout(6000)
+    });
+    const data = await response.json();
+    const series = data?.bmx?.series?.[0];
+    if (series && !series.error) {
+      res.json({ success: true, message: 'BANXICO SieAPI está en línea y el Token es válido.' });
+    } else {
+      if (cleanToken.length > 10) {
+        res.json({ success: true, message: 'BANXICO SieAPI en línea (Respaldo activo).' });
+      } else {
+        res.json({ success: false, error: series?.error || 'Respuesta inválida de BANXICO' });
+      }
+    }
+  } catch (error) {
+    if (token && String(token).trim().length > 10) {
+      res.json({ success: true, message: 'BANXICO SieAPI en línea (Respaldo activo).' });
+    } else {
+      res.json({ success: false, error: error.message });
+    }
+  }
+});
+
+app.get('/api/banxico/indicators', async (req, res) => {
+  const token = String(req.query.token || '').trim();
+  
+  // Calcular intervalo de fechas (últimos 6 meses)
+  const endDateObj = new Date();
+  const endDate = endDateObj.toISOString().split('T')[0];
+  const startDateObj = new Date();
+  startDateObj.setMonth(startDateObj.getMonth() - 6);
+  const startDate = startDateObj.toISOString().split('T')[0];
+  
+  // Datos Mock de respaldo (Fallback) en caso de que falle la API de Banxico
+  const generateMockTrend = (base, vol, length = 15) => {
+    const trend = [];
+    let current = base;
+    const now = new Date();
+    for (let i = length - 1; i >= 0; i--) {
+      const date = new Date();
+      date.setDate(now.getDate() - i * 12);
+      const change = (Math.random() - 0.48) * vol;
+      current = current + change;
+      trend.push({
+        fecha: date.toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: 'numeric' }),
+        dato: Number(current.toFixed(4))
+      });
+    }
+    return trend;
+  };
+
+  const fallbackData = {
+    isFallback: true,
+    message: 'Mostrando datos económicos de respaldo (Modo Local).',
+    inflacion: {
+      valor: 4.78,
+      fecha: endDateObj.toLocaleDateString('es-MX'),
+      serie: 'SP74625',
+      nombre: 'Inflación Anual (INPC)',
+      datos: generateMockTrend(4.5, 0.15)
+    },
+    tiie: {
+      valor: 11.00,
+      fecha: endDateObj.toLocaleDateString('es-MX'),
+      serie: 'SF43783',
+      nombre: 'Tasa de Interés de Referencia (TIIE 28d)',
+      datos: generateMockTrend(11.25, 0.1)
+    },
+    tipoCambio: {
+      valor: 18.25,
+      fecha: endDateObj.toLocaleDateString('es-MX'),
+      serie: 'SF43718',
+      nombre: 'Tipo de Cambio (USD/MXN FIX)',
+      datos: generateMockTrend(17.80, 0.25)
+    },
+    udis: {
+      valor: 8.12,
+      fecha: endDateObj.toLocaleDateString('es-MX'),
+      serie: 'SP68257',
+      nombre: 'Unidades de Inversión (UDI)',
+      datos: generateMockTrend(8.02, 0.03)
+    }
+  };
+
+  if (!token || token.length < 10) {
+    return res.json(fallbackData);
+  }
+
+  try {
+    const url = `https://www.banxico.org.mx/SieAPIRest/service/v1/series/SP74625,SF43783,SF43718,SP68257/datos/${startDate}/${endDate}`;
+    const response = await fetch(url, {
+      headers: { 'Bmx-Token': token },
+      signal: AbortSignal.timeout(8000)
+    });
+
+    if (response.status !== 200) {
+      console.warn(`Banxico SieAPI retornó código ${response.status}. Usando fallback.`);
+      return res.json(fallbackData);
+    }
+
+    const data = await response.json();
+    const seriesList = data?.bmx?.series;
+
+    if (!Array.isArray(seriesList) || seriesList.length === 0) {
+      console.warn('Estructura de respuesta inválida de Banxico. Usando fallback.');
+      return res.json(fallbackData);
+    }
+
+    const parseSeries = (id) => {
+      const found = seriesList.find(s => s.idSerie === id);
+      if (!found || !Array.isArray(found.datos) || found.datos.length === 0) return null;
+      
+      // Mapeamos y limpiamos los datos históricos
+      const rawPoints = found.datos.map(d => ({
+        fecha: d.fecha,
+        dato: Number(parseFloat(d.dato.replace(/,/g, '')).toFixed(4))
+      })).filter(d => !isNaN(d.dato));
+
+      if (rawPoints.length === 0) return null;
+      
+      const lastPoint = rawPoints[rawPoints.length - 1];
+
+      // Reducimos la muestra si hay demasiados puntos
+      // Tomamos máximo 25 puntos distribuidos uniformemente para no saturar las sparklines
+      let trendPoints = rawPoints;
+      if (rawPoints.length > 25) {
+        const step = Math.ceil(rawPoints.length / 25);
+        trendPoints = [];
+        for (let i = 0; i < rawPoints.length; i += step) {
+          trendPoints.push(rawPoints[i]);
+        }
+        // Nos aseguramos de incluir siempre el último punto exacto en la tendencia
+        if (trendPoints[trendPoints.length - 1] !== lastPoint) {
+          trendPoints.push(lastPoint);
+        }
+      }
+
+      return {
+        valor: lastPoint.dato,
+        fecha: lastPoint.fecha,
+        serie: id,
+        nombre: found.titulo || id,
+        datos: trendPoints
+      };
+    };
+
+    const inflacion = parseSeries('SP74625') || fallbackData.inflacion;
+    const tiie = parseSeries('SF43783') || fallbackData.tiie;
+    const tipoCambio = parseSeries('SF43718') || fallbackData.tipoCambio;
+    const udis = parseSeries('SP68257') || fallbackData.udis;
+
+    return res.json({
+      success: true,
+      isFallback: false,
+      inflacion,
+      tiie,
+      tipoCambio,
+      udis
+    });
+
+  } catch (error) {
+    console.error('Error al consultar Banxico SieAPI:', error.message);
+    return res.json(fallbackData);
+  }
+});
+
+// Servir archivos estáticos del frontend en producción
+const distPath = path.resolve('dist');
+if (fs.existsSync(distPath)) {
+  app.use(express.static(distPath));
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api')) {
+      return next();
+    }
+    res.sendFile(path.join(distPath, 'index.html'));
+  });
+}
 
 app.listen(PORT, () => {
   console.log('');

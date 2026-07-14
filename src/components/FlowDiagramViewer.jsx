@@ -88,13 +88,23 @@ const getLayoutedElements = (nodes, edges, direction = 'TB') => {
 // Parser to convert Mermaid syntax to React Flow Nodes/Edges
 function parseMermaid(chartText) {
   const safeChart = typeof chartText === 'string' ? chartText : (chartText && typeof chartText === 'object' ? JSON.stringify(chartText) : String(chartText || ''));
-  const lines = safeChart.split('\n');
+  
+  // Normalize arrows and spacing
+  let normalizedChart = safeChart.replace(/\r\n/g, '\n');
+  normalizedChart = normalizedChart
+    .replace(/(?:-\s*)+>\s*/g, ' --> ')
+    .replace(/(?:-\s*)+→\s*/g, ' --> ')
+    .replace(/→/g, ' --> ')
+    .replace(/—>/g, ' --> ')
+    .replace(/=>/g, ' --> ');
+
+  const lines = normalizedChart.split('\n');
   const nodes = [];
   const edges = [];
   const nodeMap = new Map();
   
   let direction = 'TB';
-  const dirMatch = safeChart.match(/^(?:graph|flowchart)\s+(TD|LR|TB|BT|RL)/i);
+  const dirMatch = normalizedChart.match(/^(?:graph|flowchart)\s+(TD|LR|TB|BT|RL)/i);
   if (dirMatch) {
     direction = dirMatch[1].toUpperCase();
     if (direction === 'TD') direction = 'TB';
@@ -111,19 +121,24 @@ function parseMermaid(chartText) {
     let match;
     while ((match = nodeDefRegex.exec(cleanLine)) !== null) {
       const id = match[1];
-      const label = match[2] || match[3] || match[4] || match[5] || id;
+      let label = match[2] || match[3] || match[4] || match[5] || id;
+      // Clean up surrounding quotes from the label
+      label = label.replace(/^["']|["']$/g, '').trim();
       nodeMap.set(id, { id, label });
     }
     
-    // Normalize line to just IDs for parsing connections easily
+    // Normalize line to just IDs and connections for parsing connections easily
     const cleanLineForEdges = cleanLine.replace(/(?:\[.*?\]|\(.*?\)|\{.*?\}|\(\(.*?\)\))/g, '').trim();
     
-    // 2. Match connections (e.g. A --> B or A -->|text| B)
-    const edgeRegex = /([A-Za-z0-9_-]+)\s*(?:--\s*(.*?)\s*-->|-->)\s*([A-Za-z0-9_-]+)/g;
-    let edgeMatch;
-    while ((edgeMatch = edgeRegex.exec(cleanLineForEdges)) !== null) {
+    // 2. Iteratively parse all connections on this line
+    let tempLine = cleanLineForEdges;
+    while (true) {
+      const edgeRegex = /([A-Za-z0-9_-]+)\s*(?:--\s*\|?([^|]*?)\|?\s*-->|-->)\s*([A-Za-z0-9_-]+)/;
+      const edgeMatch = tempLine.match(edgeRegex);
+      if (!edgeMatch) break;
+      
       const source = edgeMatch[1];
-      const label = edgeMatch[2] || '';
+      const label = (edgeMatch[2] || '').replace(/^["']|["']$/g, '').trim();
       const target = edgeMatch[3];
       
       const edgeId = `e-${source}-${target}-${Math.random().toString(36).substr(2, 4)}`;
@@ -139,6 +154,9 @@ function parseMermaid(chartText) {
       
       if (!nodeMap.has(source)) nodeMap.set(source, { id: source, label: source });
       if (!nodeMap.has(target)) nodeMap.set(target, { id: target, label: target });
+      
+      // Advance by replacing the transition with just the target node ID
+      tempLine = tempLine.substring(edgeMatch.index + edgeMatch[0].length - target.length);
     }
   });
   
@@ -252,6 +270,7 @@ export default function FlowDiagramViewer({ chart, onChange, theme = 'light' }) 
     >
       {/* Node creation controls */}
       <div 
+        className="no-print"
         style={{
           display: 'flex',
           alignItems: 'center',
@@ -308,6 +327,7 @@ export default function FlowDiagramViewer({ chart, onChange, theme = 'light' }) 
 
         {/* Tip pill */}
         <div 
+          className="no-print"
           style={{
             position: 'absolute',
             bottom: '0.75rem',

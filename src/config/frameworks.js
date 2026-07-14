@@ -107,5 +107,299 @@ export const FRAMEWORKS = {
         ]
       }
     ]
+  },
+  agile_startup: {
+    id: 'agile_startup',
+    name: 'Agile Startup (Lean MVP)',
+    pillars: [
+      {
+        key: 'validacion',
+        title: 'Validación y Lienzo (Lean Canvas)',
+        modules: [
+          { key: 'canvas', title: 'Lienzo Lean Canvas', description: 'Los 9 bloques simplificados del modelo de negocios ágil para enfocar la propuesta de valor.', fields: ['problema', 'segmentos_clientes', 'propuesta_valor', 'solucion', 'canales', 'flujos_ingresos', 'estructura_costos', 'metricas_clave', 'ventaja_especial'] },
+          { key: 'buyer_persona', title: 'Cliente y Empatía', description: 'Creación detallada del Buyer Persona o avatar de cliente y su mapa de empatía.', fields: ['avatar_cliente', 'que_piensa', 'que_ve', 'que_oye', 'que_dice_hace', 'dolores', 'necesidades'] }
+        ]
+      },
+      {
+        key: 'experimento',
+        title: 'Diseño de Experimentos y MVP',
+        modules: [
+          { key: 'mvp_design', title: 'Diseño del MVP', description: 'Especificación técnica y operativa del Producto Mínimo Viable a construir.', fields: ['especificacion_mvp', 'recursos_construccion', 'tiempo_estimado_desarrollo'] },
+          { key: 'critical_hypotheses', title: 'Hipótesis y Métricas', description: 'Identificación de las dos hipótesis más críticas de valor y crecimiento, y sus métricas.', fields: ['hipotesis_valor', 'hipotesis_crecimiento', 'metrica_exito', 'canal_validacion'] }
+        ]
+      },
+      {
+        key: 'aprendizaje',
+        title: 'Tracción y Aprendizaje',
+        modules: [
+          { key: 'pilot_results', title: 'Resultados del Piloto', description: 'Resultados cuantitativos y cualitativos obtenidos durante las pruebas con clientes reales.', fields: ['datos_traccion', 'comentarios_early_adopters', 'aprendizajes_clave'] },
+          { key: 'pivot_persevere', title: 'Pivotar o Perseverar', description: 'Decisión estratégica de negocio basada en datos reales de tracción para pivotar o seguir escalando.', fields: ['decision_estrategica', 'justificacion_datos', 'siguientes_pasos'] }
+        ]
+      },
+      {
+        key: 'finanzas_agiles',
+        title: 'Finanzas y Métricas Unitarias',
+        modules: [
+          { key: 'unit_economics', title: 'Unit Economics', description: 'Estructura detallada de costos e ingresos unitarios.', fields: ['cac_adquisicion', 'ltv_vida_cliente', 'margen_contribucion_unitario', 'retorno_inversion_marketing'] },
+          { key: 'burn_rate', title: 'Runway y Burn Rate', description: 'Monitoreo de flujo mensual y supervivencia de caja.', fields: ['burn_rate_mensual', 'runway_meses', 'capital_supervivencia'] }
+        ]
+      }
+    ]
+  },
+  technology_id: {
+    id: 'technology_id',
+    name: 'Plan de Negocios de Base Tecnológica e Innovación (I+D)',
+    pillars: [
+      {
+        key: 'innovacion',
+        title: 'Innovación y Propiedad Intelectual',
+        modules: [
+          { key: 'tech_invention', title: 'Tecnología e Invención', description: 'Descripción detallada de la tecnología, su novedad científica y nivel de maduración TRL (Technology Readiness Level).', fields: ['descripcion_tecnologia', 'novedad_cientifica', 'nivel_trl', 'ventaja_tecnologica'] },
+          { key: 'property_intellectual', title: 'Propiedad Intelectual', description: 'Estrategia legal de registro de marcas, secretos industriales y patentes nacionales o internacionales.', fields: ['estado_del_arte', 'estrategia_patentes', 'clasificacion_patentes_ipc', 'secretos_industriales'] }
+        ]
+      },
+      {
+        key: 'viabilidad_tecnica',
+        title: 'Estudio de Viabilidad Técnica',
+        modules: [
+          { key: 'technical_id', title: 'Ingeniería e I+D', description: 'Escalamiento técnico de laboratorio a planta piloto y especificaciones científicas de producción.', fields: ['escalamiento_produccion', 'infraestructura_cientifica', 'normativas_tecnicas_calidad'] },
+          { key: 'prototyping', title: 'Prototipado y Pruebas', description: 'Cronograma y resultados de pruebas de concepto, maquetas físicas o prototipos alpha/beta.', fields: ['especificaciones_prototipo', 'bitacora_pruebas', 'certificaciones_necesarias'] }
+        ]
+      },
+      {
+        key: 'mercado_tecnologico',
+        title: 'Mercado Científico y Transferencia',
+        modules: [
+          { key: 'tech_market', title: 'Mercado Tecnológico', description: 'Identificación de licenciatarios, análisis B2B o B2G, y alianzas estratégicas de co-desarrollo.', fields: ['clientes_industriales', 'tamaño_mercado_tecnologico', 'alianzas_codesarrollo'] },
+          { key: 'transfer_model', title: 'Modelo de Transferencia', description: 'Esquema de monetización: cobro de royalties, cesión de patentes o constitución de spin-off.', fields: ['esquema_royalties', 'constitucion_spinoff', 'estrategia_comercializacion_id'] }
+        ]
+      },
+      {
+        key: 'responsabilidad_social',
+        title: 'Impacto Social y Ecológico (RSE)',
+        modules: [
+          { key: 'rse_impact', title: 'Responsabilidad Social (RSE)', description: 'Evaluación del impacto ético, social y ambiental directo del desarrollo tecnológico.', fields: ['impacto_socioambiental', 'generacion_empleo_calificado', 'politica_rse'] },
+          { key: 'circular_economy', title: 'Economía Circular', description: 'Ecodiseño, ciclo de vida del producto tecnológico y manejo sostenible de insumos/residuos.', fields: ['analisis_ciclo_vida', 'estrategia_economia_circular', 'sustentabilidad_energetica'] }
+        ]
+      }
+    ]
+  },
+  micro_business: {
+    id: 'micro_business',
+    name: 'Plan para Microempresa y Autoempleo (Simplificado)',
+    pillars: [
+      {
+        key: 'naturaleza',
+        title: 'Presentación Básica',
+        modules: [
+          { key: 'introduccion', title: 'Sumario Ejecutivo', description: 'Idea del negocio y objetivo principal.', fields: ['idea_negocio', 'objetivo_basico'] },
+          { key: 'identidad', title: 'Presentación de la Empresa', description: 'Nombre, quiénes somos y qué ofrecemos.', fields: ['nombre', 'quienes_somos', 'que_ofrecemos'] }
+        ]
+      },
+      {
+        key: 'mercado',
+        title: 'Mercadeo Simplificado',
+        modules: [
+          { key: 'clientes', title: '¿A quién le vendemos?', description: 'Quiénes son nuestros clientes y dónde están.', fields: ['perfil_cliente', 'ubicacion_clientes'] },
+          { key: 'competencia', title: 'La Competencia Local', description: 'Quién más hace lo mismo cerca de nosotros.', fields: ['competidores_locales', 'nuestra_ventaja'] },
+          { key: 'comercializacion', title: 'Precios y Promoción', description: 'Cómo calculamos el precio y cómo nos damos a conocer.', fields: ['lista_precios', 'como_promocionamos'] }
+        ]
+      },
+      {
+        key: 'tecnico',
+        title: 'Producción y Operaciones',
+        modules: [
+          { key: 'operacion', title: '¿Cómo trabajamos?', description: 'Paso a paso de lo que hacemos en un día normal.', fields: ['paso_a_paso_diario'] },
+          { key: 'recursos', title: 'Equipos y Herramientas', description: 'Lo que necesitamos comprar o tener para empezar.', fields: ['herramientas_necesarias', 'materiales_basicos'] },
+          { key: 'croquis', title: 'Croquis del Local', description: 'Distribución física del espacio de trabajo.', fields: ['descripcion_espacio', 'distribucion_areas'] }
+        ]
+      },
+      {
+        key: 'organizacion',
+        title: 'Plan Financiero Básico',
+        modules: [
+          { key: 'inversion', title: '¿Cuánto ocupamos para iniciar?', description: 'Dinero necesario para arrancar el negocio.', fields: ['total_inversion', 'de_donde_sale'] },
+          { key: 'costos', title: 'Gastos de cada mes', description: 'Lista de pagos fijos como luz, agua, renta y sueldos.', fields: ['lista_gastos_mensuales', 'costos_por_producto'] }
+        ]
+      }
+    ]
+  },
+  investment_project: {
+    id: 'investment_project',
+    name: 'Proyecto de Inversión (Ingeniería y Finanzas)',
+    pillars: [
+      {
+        key: 'mercado_cuantitativo',
+        title: 'Estudio de Mercado Cuantitativo',
+        modules: [
+          { key: 'demanda', title: 'Análisis de Demanda', description: 'Datos duros, elasticidad y comportamiento histórico.', fields: ['demanda_historica', 'elasticidad'] },
+          { key: 'oferta', title: 'Proyección de Oferta', description: 'Modelos de proyección para oferta, déficit y demanda futura.', fields: ['proyeccion_oferta'] }
+        ]
+      },
+      {
+        key: 'ingenieria_tecnica',
+        title: 'Ingeniería del Proyecto',
+        modules: [
+          { key: 'ingenieria', title: 'Ingeniería Básica', description: 'Diseño macro, tecnología y memorias de cálculo.', fields: ['ingenieria_basica', 'memoria_calculo'] },
+          { key: 'layout', title: 'Instalaciones y Lay-out', description: 'Distribución física, terreno y obras.', fields: ['layout_industrial'] }
+        ]
+      },
+      {
+        key: 'presupuesto_obra',
+        title: 'Presupuesto Base de Obra (CAPEX)',
+        modules: [
+          { key: 'presupuesto', title: 'Catálogo y Costos', description: 'Catálogo de conceptos y explosión de insumos físicos.', fields: ['catalogo_conceptos', 'explosion_insumos'] },
+          { key: 'cronograma', title: 'Cronograma Físico-Financiero', description: 'Avance de obra vs. desembolso de capital mensual.', fields: ['cronograma_fisico_financiero'] }
+        ]
+      },
+      {
+        key: 'estructura_capital',
+        title: 'Estructura de Capital',
+        modules: [
+          { key: 'capital', title: 'Costo de Capital (WACC)', description: 'Cálculo del Costo Promedio Ponderado de Capital.', fields: ['wacc'] },
+          { key: 'deuda', title: 'Apalancamiento y Deuda', description: 'Estructura del crédito y amortizaciones.', fields: ['apalancamiento', 'servicio_deuda'] }
+        ]
+      },
+      {
+        key: 'riesgo_matematico',
+        title: 'Riesgo Matemático y Sensibilidad',
+        modules: [
+          { key: 'sensibilidad', title: 'Análisis de Sensibilidad', description: 'Sensibilidad unidimensional y multivariable.', fields: ['sensibilidad_unidimensional', 'escenarios'] },
+          { key: 'probabilidad', title: 'Simulación de Riesgo', description: 'Simulación probabilística tipo Monte Carlo.', fields: ['simulacion_montecarlo'] }
+        ]
+      }
+    ]
+  },
+  zopp: {
+    id: 'zopp',
+    name: 'ZOPP / Marco Lógico (Enfoque Alemán-BID)',
+    pillars: [
+      {
+        key: 'analisis_situacion',
+        title: 'Análisis de la Situación',
+        modules: [
+          { key: 'participacion', title: 'Matriz de Participación', description: 'Identificación de involucrados.', fields: ['matriz_participacion'] },
+          { key: 'problemas', title: 'Árbol de Problemas', description: 'Análisis de causas y efectos.', fields: ['analisis_problemas'] }
+        ]
+      },
+      {
+        key: 'planificacion_mpp',
+        title: 'Matriz de Planificación (MPP)',
+        modules: [
+          { key: 'objetivos', title: 'Árbol de Objetivos', description: 'De problemas a soluciones.', fields: ['analisis_objetivos'] },
+          { key: 'matriz_logica', title: 'Matriz Lógica', description: 'Resumen narrativo y supuestos.', fields: ['mpp'] }
+        ]
+      }
+    ]
+  },
+  horizon_europe: {
+    id: 'horizon_europe',
+    name: 'Horizon Europe (Unión Europea)',
+    pillars: [
+      {
+        key: 'excelencia_cientifica',
+        title: 'Excelencia y Ciencia Abierta',
+        modules: [
+          { key: 'consorcio', title: 'Consorcio', description: 'Estructura de partners.', fields: ['consorcio_multinacional'] },
+          { key: 'ciencia_abierta', title: 'Open Science', description: 'Plan de gestión de datos.', fields: ['open_science'] }
+        ]
+      },
+      {
+        key: 'impacto_sostenibilidad',
+        title: 'Impacto y Sostenibilidad',
+        modules: [
+          { key: 'dnsh_principle', title: 'Principio DNSH', description: 'No causar daño significativo.', fields: ['dnsh'] },
+          { key: 'impacto', title: 'Impacto Global', description: 'Impacto más allá del estado del arte.', fields: ['excelencia'] }
+        ]
+      }
+    ]
+  },
+  hoshin_kanri: {
+    id: 'hoshin_kanri',
+    name: 'Hoshin Kanri (Japón - Planificación Estratégica)',
+    pillars: [
+      {
+        key: 'vision_largo_plazo',
+        title: 'Visión y Breakthroughs',
+        modules: [
+          { key: 'norte_verdadero', title: 'True North', description: 'Visión a largo plazo.', fields: ['true_north'] },
+          { key: 'disrupcion', title: 'Breakthroughs', description: 'Objetivos disruptivos.', fields: ['breakthroughs'] }
+        ]
+      },
+      {
+        key: 'alineacion_ejecucion',
+        title: 'Alineación y Ejecución',
+        modules: [
+          { key: 'matriz_x', title: 'Matriz X', description: 'Despliegue de objetivos.', fields: ['matriz_x'] },
+          { key: 'seguimiento', title: 'Bowler Charts', description: 'Revisión visual.', fields: ['bowler'] }
+        ]
+      }
+    ]
+  },
+  amoeba_management: {
+    id: 'amoeba_management',
+    name: 'Amoeba Management (Kyocera - Micro-Ganancias)',
+    pillars: [
+      {
+        key: 'estructuracion_celulas',
+        title: 'Estructuración',
+        modules: [
+          { key: 'celulas', title: 'Mapeo de Células', description: 'Centros de ganancia independientes.', fields: ['mapeo_celulas'] },
+          { key: 'filosofia_corp', title: 'Filosofía', description: 'Alineación de valores.', fields: ['filosofia'] }
+        ]
+      },
+      {
+        key: 'economia_interna',
+        title: 'Economía Interna',
+        modules: [
+          { key: 'precios', title: 'Precios de Transferencia', description: 'Ventas entre células.', fields: ['precios_transferencia'] },
+          { key: 'rentabilidad', title: 'Rentabilidad por Hora', description: 'Cálculo de utilidad.', fields: ['rentabilidad_hora'] }
+        ]
+      }
+    ]
+  },
+  guanxi_plan: {
+    id: 'guanxi_plan',
+    name: 'Metodología Guanxi (China - Redes de Relaciones)',
+    pillars: [
+      {
+        key: 'redes_estado',
+        title: 'Conexiones y Estado',
+        modules: [
+          { key: 'mapa_relacional', title: 'Mapa de Relaciones', description: 'Conexiones estratégicas.', fields: ['mapa_relaciones'] },
+          { key: 'alineacion_estado', title: 'Plan Quinquenal', description: 'Alineación con el Estado.', fields: ['alineacion_quinquenal'] }
+        ]
+      },
+      {
+        key: 'manejo_conflictos',
+        title: 'Reciprocidad y Armonía',
+        modules: [
+          { key: 'favores', title: 'Reciprocidad', description: 'Beneficios mutuos.', fields: ['reciprocidad'] },
+          { key: 'mianzi', title: 'Armonía (Mianzi)', description: 'Resolución de conflictos.', fields: ['armonia'] }
+        ]
+      }
+    ]
+  },
+  onudi_project: {
+    id: 'onudi_project',
+    name: 'Estudio de Factibilidad ONUDI (Industrial Global)',
+    pillars: [
+      {
+        key: 'ingenieria_industrial',
+        title: 'Ingeniería',
+        modules: [
+          { key: 'tecnologia', title: 'Ingeniería Base', description: 'Origen y viabilidad.', fields: ['ingenieria_base'] }
+        ]
+      },
+      {
+        key: 'financiamiento_global',
+        title: 'Evaluación Financiera Global',
+        modules: [
+          { key: 'costo_capital', title: 'WACC ONUDI', description: 'Costo de capital internacional.', fields: ['wacc_onudi'] },
+          { key: 'flujo_firma', title: 'FCFF', description: 'Flujo de caja para la firma.', fields: ['fcff'] },
+          { key: 'riesgo', title: 'Sensibilidad', description: 'Análisis de riesgo global.', fields: ['sensibilidad_riesgo'] }
+        ]
+      }
+    ]
   }
 };

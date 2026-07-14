@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { usePlan } from '../context/PlanContext';
-import { Cpu, Palette, Save, Globe, Database, Upload, Image as ImageIcon, RefreshCw, Settings, Sliders, Activity, DollarSign, Zap, AlertTriangle, Info, Plus, Trash2, BookOpen, Link, FileText } from 'lucide-react';
+import { Cpu, Palette, Save, Globe, Database, Upload, Image as ImageIcon, RefreshCw, Settings, Sliders, Activity, DollarSign, Zap, AlertTriangle, Info, Plus, Trash2, BookOpen, Link, FileText, CheckCircle, XCircle } from 'lucide-react';
 import DocumentUploader from '../components/DocumentUploader';
+import { FRAMEWORKS } from '../config/frameworks';
 
 // [MDD] Modelo de precios de API (USD por 1M tokens) — se actualiza manualmente
 const API_COSTS = {
@@ -21,22 +22,239 @@ const CTX_PRESETS = [
   { label: '256k', value: 262144 },
 ];
 
+const PROVIDER_PRESETS = {
+  ollama: [
+    { value: 'qwen3.5:4b-mlx', label: 'qwen3.5:4b-mlx (Recomendado)' },
+    { value: 'nemotron-3-nano:4b', label: 'nemotron-3-nano:4b' },
+    { value: 'qwen3.5:2b-mlx', label: 'qwen3.5:2b-mlx' },
+    { value: 'gemma4:e2b-mlx', label: 'gemma4:e2b-mlx' },
+    { value: 'kimi-k2.6:cloud', label: 'kimi-k2.6:cloud (Nube - Gratuito)' },
+    { value: 'glm-5.1:cloud', label: 'glm-5.1:cloud (Nube - Gratuito)' },
+    { value: 'qwen3.5:cloud', label: 'qwen3.5:cloud (Nube - Gratuito)' },
+    { value: 'nemotron-3-super:cloud', label: 'nemotron-3-super:cloud (Nube - Gratuito)' },
+    { value: 'gemma4:31b-cloud', label: 'gemma4:31b-cloud (Nube - Gratuito)' },
+    { value: 'minimax-m3:cloud', label: 'minimax-m3:cloud (Nube - Gratuito)' },
+  ],
+  lmstudio: [
+    { value: 'local-model', label: 'Local Model (Predeterminado)' },
+  ],
+  nvidia: [
+    { value: 'nvidia/llama-3.1-nemotron-70b-instruct', label: 'NVIDIA NIM: Nemotron 70B' },
+    { value: 'google/gemma-2-27b-it', label: 'NVIDIA NIM: Gemma 2 27B' },
+  ],
+  groq: [
+    { value: 'llama-3.3-70b-versatile', label: 'Groq: Llama 3.3 70B' },
+    { value: 'gemma2-9b-it', label: 'Groq: Gemma 2 9B' },
+    { value: 'llama-3.1-8b-instant', label: 'Groq: Llama 3.1 8B' },
+  ],
+  gemini: [
+    { value: 'gemini-1.5-flash', label: 'Google: Gemini 1.5 Flash' },
+    { value: 'gemini-1.5-pro', label: 'Google: Gemini 1.5 Pro' },
+    { value: 'gemini-2.0-flash-exp', label: 'Google: Gemini 2.0 Flash (Exp)' },
+  ],
+  openai: [
+    { value: 'gpt-4o', label: 'OpenAI: GPT-4o' },
+    { value: 'gpt-4o-mini', label: 'OpenAI: GPT-4o Mini' },
+  ],
+  mistral: [
+    { value: 'mistral-large-latest', label: 'Mistral Large' },
+    { value: 'open-mixtral-8x22b', label: 'Mixtral 8x22B' },
+  ]
+};
+
+const getModelLabel = (p) => {
+  if (p === 'ollama') return 'Modelo Local (Ollama)';
+  if (p === 'lmstudio') return 'Modelo Local (LM Studio)';
+  if (p === 'nvidia') return 'Modelo Cloud (NVIDIA NIM)';
+  if (p === 'groq') return 'Modelo Cloud (Groq)';
+  if (p === 'gemini') return 'Modelo Cloud (Gemini)';
+  if (p === 'openai') return 'Modelo Cloud (OpenAI)';
+  if (p === 'mistral') return 'Modelo Cloud (Mistral)';
+  return 'Modelo de IA';
+};
+
 // [TDD] Función pura: estima costo de una generación de módulo completa (3 fases Mesa de Expertos)
 function estimateMesaCost(contextTokens, model) {
   const pricing = API_COSTS[model];
   if (!pricing) return null;
-  // Mesa de Expertos: 3 llamadas, cada una envía el contexto + respuesta
-  // Fase 1 (Analista): ctx_in + 800 out
-  // Fase 2 (Crítico): ctx_in + draft_in + 400 out  
-  // Fase 3 (Redactor): ctx_in + draft_in + critique_in + 1200 out
   const avgInput  = contextTokens * 2.5; // promedio de tokens entrada entre 3 fases
   const avgOutput = 2400;
   const costUSD = (avgInput / 1e6 * pricing.input) + (avgOutput / 1e6 * pricing.output);
   return { costUSD, tokensIn: Math.round(avgInput), tokensOut: avgOutput };
 }
 
+// ─────────────────────────────────────────────────────────
+//  Hook & Component to test API Connections
+// ─────────────────────────────────────────────────────────
+function useApiStatus(planData) {
+  const [tavilyStatus, setTavilyStatus] = useState({ state: 'idle', message: '' });
+  const [inegiStatus, setInegiStatus] = useState({ state: 'idle', message: '' });
+  const [banxicoStatus, setBanxicoStatus] = useState({ state: 'idle', message: '' });
+
+  const testTavily = async (forcedKey = null) => {
+    const key = forcedKey !== null ? forcedKey : (planData.config?.search?.apiKey || '');
+    if (!key) {
+      setTavilyStatus({ state: 'idle', message: 'No configurado' });
+      return;
+    }
+    setTavilyStatus({ state: 'checking', message: 'Probando...' });
+    try {
+      const res = await fetch('http://localhost:3001/api/test/tavily', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ apiKey: key })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setTavilyStatus({ state: 'online', message: 'En línea ✓' });
+      } else {
+        setTavilyStatus({ state: 'offline', message: data.error || 'Error de conexión' });
+      }
+    } catch (err) {
+      setTavilyStatus({ state: 'offline', message: err.message });
+    }
+  };
+
+  const testInegi = async (forcedToken = null) => {
+    const token = forcedToken !== null ? forcedToken : (planData.config?.externalApis?.inegiToken || '');
+    if (!token) {
+      setInegiStatus({ state: 'idle', message: 'No configurado' });
+      return;
+    }
+    setInegiStatus({ state: 'checking', message: 'Probando...' });
+    try {
+      const res = await fetch('http://localhost:3001/api/test/inegi', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setInegiStatus({ state: 'online', message: 'En línea ✓' });
+      } else {
+        setInegiStatus({ state: 'offline', message: data.error || 'Token inválido' });
+      }
+    } catch (err) {
+      setInegiStatus({ state: 'offline', message: err.message });
+    }
+  };
+
+  const testBanxico = async (forcedToken = null) => {
+    const token = forcedToken !== null ? forcedToken : (planData.config?.externalApis?.banxicoToken || '');
+    if (!token) {
+      setBanxicoStatus({ state: 'idle', message: 'No configurado' });
+      return;
+    }
+    setBanxicoStatus({ state: 'checking', message: 'Probando...' });
+    try {
+      const res = await fetch('http://localhost:3001/api/test/banxico', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setBanxicoStatus({ state: 'online', message: 'En línea ✓' });
+      } else {
+        setBanxicoStatus({ state: 'offline', message: data.error || 'Token inválido' });
+      }
+    } catch (err) {
+      setBanxicoStatus({ state: 'offline', message: err.message });
+    }
+  };
+
+  useEffect(() => {
+    if (planData?.config?.search?.apiKey) {
+      testTavily(planData.config.search.apiKey);
+    }
+    if (planData?.config?.externalApis?.inegiToken) {
+      testInegi(planData.config.externalApis.inegiToken);
+    }
+    if (planData?.config?.externalApis?.banxicoToken) {
+      testBanxico(planData.config.externalApis.banxicoToken);
+    }
+  }, []);
+
+  return {
+    tavilyStatus, setTavilyStatus, testTavily,
+    inegiStatus, setInegiStatus, testInegi,
+    banxicoStatus, setBanxicoStatus, testBanxico
+  };
+}
+
+function ApiStatusBadge({ status, onTest, disabled }) {
+  let badgeStyle = {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '0.25rem',
+    fontSize: '0.75rem',
+    padding: '2px 8px',
+    borderRadius: '12px',
+    fontWeight: 700,
+    border: '1px solid',
+    transition: 'all 0.2s ease-in-out'
+  };
+  
+  if (status.state === 'checking') {
+    badgeStyle = {
+      ...badgeStyle,
+      background: 'rgba(245, 158, 11, 0.1)',
+      color: '#f59e0b',
+      borderColor: '#f59e0b'
+    };
+  } else if (status.state === 'online') {
+    badgeStyle = {
+      ...badgeStyle,
+      background: 'rgba(16, 185, 129, 0.1)',
+      color: '#10b981',
+      borderColor: '#10b981',
+      boxShadow: '0 0 8px rgba(16, 185, 129, 0.2)'
+    };
+  } else if (status.state === 'offline') {
+    badgeStyle = {
+      ...badgeStyle,
+      background: 'rgba(239, 68, 68, 0.1)',
+      color: '#ef4444',
+      borderColor: '#ef4444'
+    };
+  } else {
+    badgeStyle = {
+      ...badgeStyle,
+      background: 'rgba(156, 163, 175, 0.1)',
+      color: '#9ca3af',
+      borderColor: '#9ca3af'
+    };
+  }
+
+  return (
+    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.4rem', flexWrap: 'wrap' }}>
+      <span style={badgeStyle}>
+        {status.state === 'checking' && <RefreshCw size={12} className="animate-spin" />}
+        {status.state === 'online' && <CheckCircle size={12} />}
+        {status.state === 'offline' && <XCircle size={12} />}
+        {status.message || 'Sin verificar'}
+      </span>
+      <button
+        type="button"
+        onClick={onTest}
+        disabled={disabled || status.state === 'checking'}
+        className="btn btn-secondary"
+        style={{ padding: '2px 8px', fontSize: '0.7rem', height: 'auto', border: '1px solid var(--border-color)', background: 'var(--bg-panel-hover)' }}
+      >
+        Probar Conexión
+      </button>
+      {status.state === 'offline' && (
+        <span style={{ fontSize: '0.65rem', color: '#ef4444', marginLeft: '0.25rem' }} title={status.message}>
+          ({status.message.slice(0, 60)})
+        </span>
+      )}
+    </div>
+  );
+}
+
 export default function Configuracion() {
   const { planData, updateConfig } = usePlan();
+  const apiStatus = useApiStatus(planData);
   const [ollamaModels, setOllamaModels] = useState([]);
   const [isFetchingModels, setIsFetchingModels] = useState(false);
   const [ollamaOnline, setOllamaOnline] = useState(false);
@@ -44,6 +262,21 @@ export default function Configuracion() {
   const [sessionTokens, setSessionTokens] = useState(() => {
     return parseInt(localStorage.getItem('op_session_tokens') || '0');
   });
+
+  const [cloudUserId, setCloudUserId] = useState(() => {
+    return localStorage.getItem('openplan_user_id') || '';
+  });
+
+  const [showSshGuide, setShowSshGuide] = useState(false);
+
+  const handleCloudUserIdChange = (val) => {
+    setCloudUserId(val);
+    if (val.trim()) {
+      localStorage.setItem('openplan_user_id', val.trim());
+    } else {
+      localStorage.removeItem('openplan_user_id');
+    }
+  };
 
   const fetchOllamaModels = async () => {
     setIsFetchingModels(true);
@@ -139,7 +372,6 @@ export default function Configuracion() {
     handleCoverChange('institutionLogos', current.map(l => l.id === logoId ? { ...l, name: newName } : l));
   };
 
-  // --- Data Sources / Fuentes de Información ---
   const dataSources = planData.config?.dataSources || [];
 
   const addDataSource = () => {
@@ -162,10 +394,11 @@ export default function Configuracion() {
     updateConfig('dataSources', null, dataSources.filter(s => s.id !== sourceId));
   };
 
-  // Datos derivados para el monitor
   const ctxSize = planData.config?.ai?.contextSize || 32768;
-  const currentModel = planData.config?.ai?.model || 'gemma4:pro';
-  const isLocal = ollamaOnline && currentModel.includes(':');
+  const currentModelValue = planData.config?.ai?.model || '';
+  const provider = planData.config?.ai?.primaryProvider || 'ollama';
+
+  const isLocal = ollamaOnline && currentModelValue.includes(':');
   const mesaEstimate = estimateMesaCost(ctxSize, 'gemini-1.5-flash');
   const ctxLabel = CTX_PRESETS.find(p => p.value === ctxSize)?.label || `${Math.round(ctxSize/1024)}k`;
 
@@ -184,6 +417,25 @@ export default function Configuracion() {
 
   const institutionLogos = coverDesign.institutionLogos || [];
 
+  // Calcular opciones basadas en el proveedor
+  let providerOptions = [];
+  if (provider === 'ollama') {
+    const fetchedNames = ollamaModels.map(m => m.name);
+    providerOptions = ollamaModels.map(m => ({
+      value: m.name,
+      label: `${m.name} ${m.details?.parameter_size ? `(${m.details.parameter_size})` : ''}`
+    }));
+    PROVIDER_PRESETS.ollama.forEach(d => {
+      if (!fetchedNames.includes(d.value)) {
+        providerOptions.push(d);
+      }
+    });
+  } else {
+    providerOptions = [...(PROVIDER_PRESETS[provider] || [])];
+  }
+
+  const isCustomModel = currentModelValue !== '' && !providerOptions.some(opt => opt.value === currentModelValue);
+
   return (
     <div className="module-view">
       <div className="view-header">
@@ -197,7 +449,7 @@ export default function Configuracion() {
       </div>
 
       {/* Monitor de Uso y Costos */}
-      <div className="glass-panel" style={{ padding: '1.5rem', marginBottom: '2rem', border: '1px solid rgba(99,102,241,0.2)' }}>
+      <div className="glass-panel" style={{ padding: '1.5rem', marginBottom: '2rem', border: '1px solid var(--border-color)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.25rem' }}>
           <Activity style={{ color: 'var(--accent-color)' }} size={18} />
           <h2 style={{ fontSize: '1.1rem' }}>Monitor de IA — Uso y Costos</h2>
@@ -212,7 +464,7 @@ export default function Configuracion() {
             { icon: Activity, label: 'Tokens/módulo est.', value: mesaEstimate ? `~${(mesaEstimate.tokensIn/1000).toFixed(0)}k` : '--', color: '#6366f1' },
             { icon: DollarSign, label: 'Costo nube/módulo', value: mesaEstimate ? `$${mesaEstimate.costUSD.toFixed(4)} USD` : 'Local ✓', color: '#10b981' },
           ].map(({ icon: Icon, label, value, color }) => (
-            <div key={label} style={{ padding: '0.875rem', borderRadius: '12px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.05)', textAlign: 'center' }}>
+            <div key={label} style={{ padding: '0.875rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: '1px solid var(--border-color)', textAlign: 'center' }}>
               <Icon size={16} style={{ color, margin: '0 auto 0.4rem' }} />
               <div style={{ fontSize: '1rem', fontWeight: 800, fontFamily: 'var(--font-display)', color }}>{value}</div>
               <div style={{ fontSize: '0.6rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '0.2rem' }}>{label}</div>
@@ -229,7 +481,7 @@ export default function Configuracion() {
             {Object.entries(API_COSTS).map(([key, val]) => {
               const est = estimateMesaCost(ctxSize, key);
               return (
-                <div key={key} style={{ padding: '0.5rem', borderRadius: '8px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', textAlign: 'center' }}>
+                <div key={key} style={{ padding: '0.5rem', borderRadius: '8px', background: 'var(--bg-panel-hover)', border: '1px solid var(--border-color)', textAlign: 'center' }}>
                   <div style={{ fontWeight: 700, fontSize: '0.7rem', marginBottom: '0.25rem' }}>{val.name}</div>
                   <div style={{ color: est && est.costUSD > 0.05 ? '#f59e0b' : '#10b981', fontWeight: 800, fontSize: '0.85rem' }}>
                     {est ? `$${est.costUSD.toFixed(4)}` : '--'}
@@ -260,7 +512,7 @@ export default function Configuracion() {
               style={{
                 padding: '0.4rem 0.875rem', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 800,
                 border: '1px solid', cursor: 'pointer', transition: 'all 0.2s',
-                borderColor: ctxSize === p.value ? 'var(--accent-color)' : 'rgba(255,255,255,0.1)',
+                borderColor: ctxSize === p.value ? 'var(--accent-color)' : 'var(--border-color)',
                 background: ctxSize === p.value ? 'rgba(99,102,241,0.15)' : 'transparent',
                 color: ctxSize === p.value ? 'var(--accent-color)' : 'var(--text-secondary)',
               }}>
@@ -280,12 +532,42 @@ export default function Configuracion() {
         </div>
       </div>
 
+      {/* Control de Nivel de Detalle */}
+      <div className="glass-panel" style={{ padding: '1.5rem', marginBottom: '2rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
+          <span style={{ fontSize: '1.1rem' }}>📝</span>
+          <h2 style={{ fontSize: '1.1rem' }}>Nivel de Detalle (Extensión)</h2>
+        </div>
+        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+          {[
+            { value: 'conciso', label: 'Conciso (Viñetas / Resumen)' },
+            { value: 'normal', label: 'Normal (Equilibrado)' },
+            { value: 'detallado', label: 'Extenso (Académico / Detallado)' }
+          ].map(p => {
+            const isActive = (planData.config?.ai?.verbosity || 'normal') === p.value;
+            return (
+              <button key={p.value}
+                onClick={() => handleAiChange('verbosity', p.value)}
+                style={{
+                  padding: '0.6rem 1rem', borderRadius: '8px', fontSize: '0.85rem', fontWeight: 700,
+                  border: '1px solid', cursor: 'pointer', transition: 'all 0.2s', flex: 1,
+                  borderColor: isActive ? 'var(--accent-color)' : 'var(--border-color)',
+                  background: isActive ? 'rgba(99,102,241,0.15)' : 'transparent',
+                  color: isActive ? 'var(--accent-color)' : 'var(--text-secondary)',
+                }}>
+                {p.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
       {/* ─── Mesa de Expertos ─────────────────────────────────────── */}
-      <div className="glass-panel" style={{ padding: '1.5rem', marginBottom: '2rem', border: '1px solid rgba(139,92,246,0.2)' }}>
+      <div className="glass-panel" style={{ padding: '1.5rem', marginBottom: '2rem', border: '1px solid var(--border-color)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.25rem' }}>
           <span style={{ fontSize: '1.1rem' }}>🧠</span>
           <h2 style={{ fontSize: '1.1rem' }}>Mesa de Expertos — Agentes y Modelos</h2>
-          <span style={{ marginLeft: 'auto', fontSize: '0.65rem', background: 'rgba(139,92,246,0.1)', color: '#8b5cf6', border: '1px solid rgba(139,92,246,0.3)', borderRadius: '20px', padding: '2px 10px', fontWeight: 800 }}>
+          <span style={{ marginLeft: 'auto', fontSize: '0.65rem', background: 'var(--bg-panel-hover)', color: 'var(--accent-color)', border: '1px solid var(--border-color)', borderRadius: '20px', padding: '2px 10px', fontWeight: 800 }}>
             ⚡ Nivel 1 Activo por defecto
           </span>
         </div>
@@ -298,15 +580,15 @@ export default function Configuracion() {
           { rol: 'estratega',     emoji: '🗺️', label: 'Estratega',              hint: 'Define el marco. Solo nivel 3 (Profundo).' },
           { rol: 'abogadoDiablo', emoji: '😈', label: "Devil's Advocate",       hint: 'Contraargumenta. Solo nivel 3 (Profundo).' },
         ].map(({ rol, emoji, label, hint }) => {
-          const current = planData.config?.ai?.agentModels?.[rol]?.model || 'gemma4:e4b';
+          const current = planData.config?.ai?.agentModels?.[rol]?.model || 'nemotron-3-nano:4b';
           const isDeepOnly = rol === 'estratega' || rol === 'abogadoDiablo';
           return (
-            <div key={rol} style={{ display: 'grid', gridTemplateColumns: '180px 1fr 160px', gap: '0.75rem', alignItems: 'center', padding: '0.6rem 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+            <div key={rol} style={{ display: 'grid', gridTemplateColumns: '180px 1fr 160px', gap: '0.75rem', alignItems: 'center', padding: '0.6rem 0', borderBottom: '1px solid var(--border-color)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <span>{emoji}</span>
                 <div>
                   <div style={{ fontSize: '0.8rem', fontWeight: 700 }}>{label}</div>
-                  {isDeepOnly && <div style={{ fontSize: '0.6rem', color: '#8b5cf6' }}>🔬 Solo nivel Profundo</div>}
+                  {isDeepOnly && <div style={{ fontSize: '0.6rem', color: 'var(--accent-color)' }}>🔬 Solo nivel Profundo</div>}
                 </div>
               </div>
               <select
@@ -319,30 +601,37 @@ export default function Configuracion() {
                   handleAiChange('agentModels', newModels);
                 }}
               >
-                <optgroup label="— Tu hardware (recomendados) —">
-                  <option value="nemotron">nemotron  (~4GB VRAM) ★ Recomendado</option>
-                  <option value="gemma4:e4b">gemma4:e4b  (~4.5-8GB VRAM)</option>
-                  <option value="gemma4:pro">gemma4:pro  (~8GB VRAM) — Mejor calidad</option>
-                  <option value="gemma4:e2b">gemma4:e2b  (~2GB VRAM) — Ultra rápido</option>
-                </optgroup>
-                <optgroup label="— Otros modelos Ollama —">
-                  <option value="qwen2.5:7b">qwen2.5:7b  (~4.5GB) — Datos numéricos</option>
-                  <option value="phi4:14b">phi4:14b    (~8GB) — Matemáticas</option>
+                <optgroup label="📍 Locales (Ollama / LM Studio)">
+                  <option value="qwen3.5:4b-mlx">qwen3.5:4b-mlx (~4GB VRAM) ★ Recomendado</option>
+                  <option value="nemotron">nemotron-3-nano:4b (~4GB VRAM)</option>
+                  <option value="gemma4:e4b">gemma4:e4b (~4.5-8GB VRAM)</option>
+                  <option value="gemma4:pro">gemma4:pro (~8GB VRAM)</option>
+                  <option value="qwen2.5:7b">qwen2.5:7b (~4.5GB) — Numérico</option>
                   <option value="llama3.1:8b">llama3.1:8b (~5GB) — Estructura</option>
-                  <option value="mistral:7b">mistral:7b  (~4.5GB) — Multilingüe</option>
-                  <option value="qwen3.5:2b-mlx" disabled>qwen3.5:2b-mlx (No soportado)</option>
                 </optgroup>
-                <optgroup label="— Nube (Requiere API Key) —">
-                  <option value="gemini-1.5-flash">Gemini 1.5 Flash (Google)</option>
-                  <option value="gemini-1.5-pro">Gemini 1.5 Pro (Google)</option>
-                  <option value="llama-3.3-70b-versatile">Groq Llama 3.3 70B</option>
+                <optgroup label="☁️ Ollama Cloud / Híbridos (Capa Gratuita)">
+                  <option value="kimi-k2.6:cloud">kimi-k2.6:cloud (Nube - Gratuito)</option>
+                  <option value="glm-5.1:cloud">glm-5.1:cloud (Nube - Gratuito)</option>
+                  <option value="qwen3.5:cloud">qwen3.5:cloud (Nube - Gratuito)</option>
+                  <option value="nemotron-3-super:cloud">nemotron-3-super:cloud (Nube - Gratuito)</option>
+                  <option value="gemma4:31b-cloud">gemma4:31b-cloud (Nube - Gratuito)</option>
+                  <option value="minimax-m3:cloud">minimax-m3:cloud (Nube - Gratuito)</option>
+                </optgroup>
+                <optgroup label="☁️ Nube (Capa Gratuita)">
+                  <option value="nvidia/llama-3.1-nemotron-70b-instruct">NVIDIA NIM: Nemotron 70B</option>
+                  <option value="google/gemma-2-27b-it">NVIDIA NIM: Gemma 2 27B</option>
+                  <option value="llama-3.3-70b-versatile">Groq: Llama 3.3 70B</option>
+                  <option value="gemini-1.5-flash">Google: Gemini 1.5 Flash</option>
+                </optgroup>
+                <optgroup label="💎 Nube (Premium / De Pago)">
+                  <option value="gpt-4o">OpenAI: GPT-4o</option>
+                  <option value="gemini-1.5-pro">Google: Gemini 1.5 Pro</option>
                   <option value="mistral-large-latest">Mistral Large</option>
-                  <option value="gpt-4o">OpenAI GPT-4o</option>
                 </optgroup>
-                {ollamaModels.filter(m => !['nemotron','gemma4:e4b','gemma4:pro','gemma4:e2b','qwen2.5:7b','phi4:14b','llama3.1:8b','mistral:7b', 'qwen3.5:2b-mlx'].includes(m.name)).length > 0 && (
+                {ollamaModels.filter(m => !['nemotron','gemma4:e4b','gemma4:pro','gemma4:e2b','qwen2.5:7b','phi4:14b','llama3.1:8b','mistral:7b', 'qwen3.5:2b-mlx', 'qwen3.5:4b-mlx', 'kimi-k2.6:cloud', 'glm-5.1:cloud', 'qwen3.5:cloud', 'nemotron-3-super:cloud', 'gemma4:31b-cloud', 'minimax-m3:cloud'].includes(m.name)).length > 0 && (
                   <optgroup label="— Detectados en tu Ollama —">
                     {ollamaModels
-                      .filter(m => !['nemotron','gemma4:e4b','gemma4:pro','gemma4:e2b','qwen2.5:7b','phi4:14b','llama3.1:8b','mistral:7b', 'qwen3.5:2b-mlx'].includes(m.name))
+                      .filter(m => !['nemotron','gemma4:e4b','gemma4:pro','gemma4:e2b','qwen2.5:7b','phi4:14b','llama3.1:8b','mistral:7b', 'qwen3.5:2b-mlx', 'qwen3.5:4b-mlx', 'kimi-k2.6:cloud', 'glm-5.1:cloud', 'qwen3.5:cloud', 'nemotron-3-super:cloud', 'gemma4:31b-cloud', 'minimax-m3:cloud'].includes(m.name))
                       .map(m => <option key={m.name} value={m.name}>{m.name}</option>)
                     }
                   </optgroup>
@@ -354,7 +643,7 @@ export default function Configuracion() {
         })}
 
         {/* Profundidad global — Feature avanzada desbloqueada */}
-        <div style={{ marginTop: '1.25rem', padding: '1rem', borderRadius: '12px', background: 'rgba(0,0,0,0.2)', border: '1px dashed rgba(255,255,255,0.08)' }}>
+        <div style={{ marginTop: '1.25rem', padding: '1rem', borderRadius: '8px', background: 'var(--bg-panel-hover)', border: '1px dashed var(--border-color)' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
             <div>
               <div style={{ fontSize: '0.85rem', fontWeight: 700 }}>🔓 Profundidad Global (Avanzado)</div>
@@ -370,7 +659,7 @@ export default function Configuracion() {
                 onClick={() => handleAiChange('advancedDepth', !planData.config?.ai?.advancedDepth)}
                 style={{
                   width: 40, height: 22, borderRadius: 11, cursor: 'pointer', transition: 'all 0.3s',
-                  background: planData.config?.ai?.advancedDepth ? 'var(--accent-color)' : 'rgba(255,255,255,0.1)',
+                  background: planData.config?.ai?.advancedDepth ? 'var(--accent-color)' : 'var(--border-color)',
                   position: 'relative'
                 }}
               >
@@ -394,7 +683,7 @@ export default function Configuracion() {
                   onClick={() => handleAiChange('depth', level)}
                   style={{
                     flex: 1, padding: '0.75rem 0.5rem', borderRadius: '10px', border: '1px solid',
-                    borderColor: (planData.config?.ai?.depth || 1) === level ? 'var(--accent-color)' : 'rgba(255,255,255,0.08)',
+                    borderColor: (planData.config?.ai?.depth || 1) === level ? 'var(--accent-color)' : 'var(--border-color)',
                     background: (planData.config?.ai?.depth || 1) === level ? 'rgba(99,102,241,0.15)' : 'transparent',
                     cursor: 'pointer', color: 'var(--text-primary)', transition: 'all 0.2s'
                   }}
@@ -417,20 +706,74 @@ export default function Configuracion() {
             <h2 style={{ fontSize: '1.25rem' }}>Metodología del Proyecto</h2>
           </div>
           <div className="form-group">
-            <label className="form-label">Tipo de Proyecto</label>
-            <select 
-              className="form-control" 
-              value={planData.config?.projectType || 'business'}
-              onChange={(e) => {
-                updateConfig('projectType', null, e.target.value);
-              }}
-            >
-              <option value="business">Plan de Negocios Comercial (Tradicional)</option>
-              <option value="social_bid">Proyecto Social (Metodología BID)</option>
-            </select>
-            <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.5rem' }}>
-              Cambiar este valor adaptará automáticamente toda la plataforma (Semilla, Menús, Módulos e Inteligencia Artificial) a la metodología seleccionada.
-            </p>
+            <label className="form-label" style={{ fontWeight: 'bold', display: 'block', marginBottom: '0.75rem' }}>Metodologías Activas para el Proyecto</label>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
+              {Object.entries(FRAMEWORKS).map(([key, fw]) => {
+                const activeList = planData.config?.activeMethodologies || [planData.config?.projectType || 'business'];
+                const isActive = activeList.includes(key);
+                return (
+                  <label key={key} style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.75rem',
+                    padding: '0.75rem 1rem',
+                    background: isActive ? 'rgba(99, 102, 241, 0.08)' : 'var(--bg-panel-hover)',
+                    border: `1.5px solid ${isActive ? 'var(--accent-color)' : 'var(--border-color)'}`,
+                    borderRadius: '10px',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s'
+                  }}>
+                    <input
+                      type="checkbox"
+                      checked={isActive}
+                      style={{ accentColor: 'var(--accent-color)', width: '16px', height: '16px' }}
+                      onChange={(e) => {
+                        let newList = [...activeList];
+                        if (e.target.checked) {
+                          if (!newList.includes(key)) newList.push(key);
+                        } else {
+                          if (newList.length > 1) {
+                            newList = newList.filter(k => k !== key);
+                          } else {
+                            alert("Debes tener al menos una metodología activa.");
+                            return;
+                          }
+                        }
+                        updateConfig('activeMethodologies', null, newList);
+                        
+                        // Si la metodología desmarcada era la actual, cambiamos a otra activa
+                        if (!e.target.checked && planData.config?.projectType === key) {
+                          const fallback = newList[0];
+                          updateConfig('projectType', null, fallback);
+                        }
+                      }}
+                    />
+                    <div>
+                      <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)' }}>{fw.name}</div>
+                      <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>{fw.pillars?.length || 0} pilares académicos</div>
+                    </div>
+                  </label>
+                );
+              })}
+            </div>
+
+            <div className="form-group" style={{ maxWidth: '400px' }}>
+              <label className="form-label">Metodología Principal (Vista Activa)</label>
+              <select
+                className="form-control"
+                value={planData.config?.projectType || 'business'}
+                onChange={(e) => {
+                  updateConfig('projectType', null, e.target.value);
+                }}
+              >
+                {(planData.config?.activeMethodologies || [planData.config?.projectType || 'business']).map(key => (
+                  <option key={key} value={key}>{FRAMEWORKS[key]?.name || key}</option>
+                ))}
+              </select>
+              <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '0.5rem' }}>
+                Establece cuál de las metodologías activas se muestra actualmente en la barra lateral del editor.
+              </p>
+            </div>
           </div>
         </div>
 
@@ -449,71 +792,130 @@ export default function Configuracion() {
                 value={planData.config.ai.primaryProvider}
                 onChange={(e) => handleAiChange('primaryProvider', e.target.value)}
               >
-                <option value="gemini">Gemini</option>
-                <option value="groq">Groq</option>
-                <option value="ollama">Ollama (Local)</option>
+                <optgroup label="📍 Locales (100% Gratis y Privados)">
+                  <option value="ollama">Ollama (Local)</option>
+                  <option value="lmstudio">LM Studio (Local)</option>
+                </optgroup>
+                <optgroup label="☁️ Nube (Capa Gratuita)">
+                  <option value="nvidia">NVIDIA NIM (Nemotron, Gemma)</option>
+                  <option value="groq">Groq (Llama, Gemma)</option>
+                  <option value="gemini">Google Gemini (Flash)</option>
+                </optgroup>
+                <optgroup label="💎 Nube (Premium / De Pago)">
+                  <option value="openai">OpenAI (GPT-4o)</option>
+                  <option value="mistral">Mistral API</option>
+                </optgroup>
               </select>
             </div>
             <div className="form-group">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                <label className="form-label" style={{ marginBottom: 0 }}>Modelo Local (Ollama)</label>
-                <button 
-                  onClick={fetchOllamaModels} 
-                  className="btn btn-secondary" 
-                  style={{ padding: '2px 8px', fontSize: '0.7rem' }}
-                  title="Refrescar modelos"
-                  disabled={isFetchingModels}
-                >
-                  <RefreshCw className={`w-3 h-3 ${isFetchingModels ? 'animate-spin' : ''}`} />
-                </button>
+                <label className="form-label" style={{ marginBottom: 0 }}>{getModelLabel(provider)}</label>
+                {provider === 'ollama' && (
+                  <button 
+                    onClick={fetchOllamaModels} 
+                    className="btn btn-secondary" 
+                    style={{ padding: '2px 8px', fontSize: '0.7rem' }}
+                    title="Refrescar modelos"
+                    disabled={isFetchingModels}
+                  >
+                    <RefreshCw className={`w-3 h-3 ${isFetchingModels ? 'animate-spin' : ''}`} />
+                  </button>
+                )}
               </div>
               <select 
-                value={planData.config.ai.model} 
-                onChange={(e) => handleAiChange('model', e.target.value)}
+                value={isCustomModel ? 'custom' : currentModelValue} 
+                onChange={(e) => {
+                  const val = e.target.value;
+                  if (val === 'custom') {
+                    handleAiChange('model', 'custom-model');
+                  } else {
+                    handleAiChange('model', val);
+                  }
+                }}
                 className="form-control"
               >
-                {ollamaModels.length > 0 ? (
-                  ollamaModels.map(model => (
-                    <option key={model.name} value={model.name}>
-                      {model.name} {model.details?.parameter_size ? `(${model.details.parameter_size})` : ''}
-                    </option>
-                  ))
-                ) : (
-                  <option value="">No se detectaron modelos</option>
-                )}
+                {providerOptions.map(opt => (
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))}
+                <option value="custom">Otro (Especificar manualmente...)</option>
               </select>
             </div>
+
+            {isCustomModel && (
+              <div className="form-group" style={{ gridColumn: 'span 2', marginTop: '0.5rem' }}>
+                <label className="form-label">Nombre del Modelo Personalizado</label>
+                <input 
+                  type="text" 
+                  className="form-control" 
+                  value={currentModelValue === 'custom-model' ? '' : currentModelValue}
+                  onChange={(e) => handleAiChange('model', e.target.value)}
+                  placeholder="Escribe el nombre del modelo (ej. my-custom-model:latest)"
+                />
+              </div>
+            )}
           </div>
 
-          <div className="form-group">
-            <label className="form-label">API Key (Gemini/OpenAI/Mistral)</label>
-            <input 
-              type="password" 
-              className="form-control" 
-              value={planData.config.ai.apiKey}
-              onChange={(e) => handleAiChange('apiKey', e.target.value)}
-            />
-          </div>
+          {(planData.config.ai.primaryProvider === 'gemini' || planData.config.ai.primaryProvider === 'mistral' || planData.config.ai.primaryProvider === 'openai' || planData.config.ai.primaryProvider === 'lmstudio') && (
+            <div className="form-group" style={{ marginTop: '1rem' }}>
+              <label className="form-label">API Key (Gemini/OpenAI/Mistral/LM Studio/Hugging Face)</label>
+              <input 
+                type="password" 
+                className="form-control" 
+                value={planData.config.ai.apiKey || ''}
+                onChange={(e) => handleAiChange('apiKey', e.target.value)}
+                placeholder={planData.config.ai.primaryProvider === 'lmstudio' ? 'hf_... (para Hugging Face) o tu API Key' : ''}
+              />
+            </div>
+          )}
 
-          <div className="form-group">
-            <label className="form-label">API Key (Groq)</label>
-            <input 
-              type="password" 
-              className="form-control" 
-              value={planData.config.ai.groqKey}
-              onChange={(e) => handleAiChange('groqKey', e.target.value)}
-            />
-          </div>
+          {planData.config.ai.primaryProvider === 'groq' && (
+            <div className="form-group" style={{ marginTop: '1rem' }}>
+              <label className="form-label">API Key (Groq)</label>
+              <input 
+                type="password" 
+                className="form-control" 
+                value={planData.config.ai.groqKey || ''}
+                onChange={(e) => handleAiChange('groqKey', e.target.value)}
+              />
+            </div>
+          )}
 
-          <div className="form-group">
-            <label className="form-label">Ollama Endpoint</label>
-            <input 
-              type="text" 
-              className="form-control" 
-              value={planData.config.ai.endpoint || 'http://localhost:11434'}
-              onChange={(e) => handleAiChange('endpoint', e.target.value)}
-            />
-          </div>
+          {planData.config.ai.primaryProvider === 'nvidia' && (
+            <div className="form-group" style={{ marginTop: '1rem' }}>
+              <label className="form-label">API Key (NVIDIA NIM)</label>
+              <input 
+                type="password" 
+                className="form-control" 
+                value={planData.config.ai.nvidiaKey || ''}
+                onChange={(e) => handleAiChange('nvidiaKey', e.target.value)}
+                placeholder="nvapi-..."
+              />
+            </div>
+          )}
+
+          {planData.config.ai.primaryProvider === 'ollama' && (
+            <div className="form-group" style={{ marginTop: '1rem' }}>
+              <label className="form-label">Ollama Endpoint</label>
+              <input 
+                type="text" 
+                className="form-control" 
+                value={planData.config.ai.endpoint || 'http://localhost:11434'}
+                onChange={(e) => handleAiChange('endpoint', e.target.value)}
+              />
+            </div>
+          )}
+
+          {planData.config.ai.primaryProvider === 'lmstudio' && (
+            <div className="form-group" style={{ marginTop: '1rem' }}>
+              <label className="form-label">LM Studio Endpoint</label>
+              <input 
+                type="text" 
+                className="form-control" 
+                value={planData.config.ai.lmStudioEndpoint || 'http://localhost:1234/v1'}
+                onChange={(e) => handleAiChange('lmStudioEndpoint', e.target.value)}
+              />
+            </div>
+          )}
         </div>
 
         <div className="glass-panel" style={{ padding: '2rem' }}>
@@ -538,12 +940,12 @@ export default function Configuracion() {
               <div style={{ 
                 width: '60px', 
                 height: '60px', 
-                border: '1px dashed var(--border-color)', 
+                border: '1px solid var(--border-color)', 
                 borderRadius: '8px', 
                 display: 'flex',
                 alignItems: 'center', 
                 justifyContent: 'center',
-                background: 'var(--input-bg)',
+                background: 'var(--bg-panel-hover)',
                 overflow: 'hidden'
               }}>
                 {planData.config.brandKit.logoUrl ? (
@@ -773,7 +1175,7 @@ export default function Configuracion() {
               color: '#0f172a',
               borderRadius: '8px',
               border: '1px solid var(--border-color)',
-              boxShadow: '0 10px 25px rgba(0,0,0,0.3)',
+              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
               position: 'relative',
               overflow: 'hidden',
               display: 'flex',
@@ -920,7 +1322,7 @@ export default function Configuracion() {
         </div>
         
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', background: 'rgba(255,255,255,0.02)', padding: '1rem', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', background: 'var(--bg-panel-hover)', padding: '1rem', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
              <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
                <input 
                  type="checkbox" 
@@ -963,7 +1365,15 @@ export default function Configuracion() {
                   className="form-control" 
                   placeholder="tvly-..."
                   value={searchConfig.apiKey}
-                  onChange={(e) => handleSearchConfigChange('apiKey', e.target.value)}
+                  onChange={(e) => {
+                    handleSearchConfigChange('apiKey', e.target.value);
+                    apiStatus.setTavilyStatus({ state: 'idle', message: '' });
+                  }}
+                />
+                <ApiStatusBadge 
+                  status={apiStatus.tavilyStatus} 
+                  onTest={() => apiStatus.testTavily(searchConfig.apiKey)} 
+                  disabled={!searchConfig.apiKey} 
                 />
               </div>
             )}
@@ -983,7 +1393,15 @@ export default function Configuracion() {
               type="password" 
               className="form-control" 
               value={planData.config.externalApis.inegiToken}
-              onChange={(e) => handleExternalChange('inegiToken', e.target.value)}
+              onChange={(e) => {
+                handleExternalChange('inegiToken', e.target.value);
+                apiStatus.setInegiStatus({ state: 'idle', message: '' });
+              }}
+            />
+            <ApiStatusBadge 
+              status={apiStatus.inegiStatus} 
+              onTest={() => apiStatus.testInegi(planData.config.externalApis.inegiToken)} 
+              disabled={!planData.config.externalApis.inegiToken} 
             />
           </div>
           <div className="form-group">
@@ -992,7 +1410,138 @@ export default function Configuracion() {
               type="password" 
               className="form-control" 
               value={planData.config.externalApis.banxicoToken}
-              onChange={(e) => handleExternalChange('banxicoToken', e.target.value)}
+              onChange={(e) => {
+                handleExternalChange('banxicoToken', e.target.value);
+                apiStatus.setBanxicoStatus({ state: 'idle', message: '' });
+              }}
+            />
+            <ApiStatusBadge 
+              status={apiStatus.banxicoStatus} 
+              onTest={() => apiStatus.testBanxico(planData.config.externalApis.banxicoToken)} 
+              disabled={!planData.config.externalApis.banxicoToken} 
+            />
+          </div>
+        </div>
+        
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', marginTop: '2rem' }}>
+          <div className="form-group">
+            <label className="form-label">API Key: Google (Places & Custom Search)</label>
+            <input 
+              type="password" 
+              className="form-control" 
+              placeholder="Opcional. Para análisis de competencia."
+              value={planData.config.externalApis?.googleApiKey || ''}
+              onChange={(e) => handleExternalChange('googleApiKey', e.target.value)}
+            />
+          </div>
+          <div className="form-group">
+            <label className="form-label">Google Custom Search ID (CX)</label>
+            <input 
+              type="password" 
+              className="form-control" 
+              placeholder="Opcional. Para escanear redes sociales."
+              value={planData.config.externalApis?.googleCx || ''}
+              onChange={(e) => handleExternalChange('googleCx', e.target.value)}
+            />
+          </div>
+        </div>
+
+        <div style={{ marginTop: '2rem', paddingTop: '2rem', borderTop: '1px dashed var(--border-color)' }}>
+          <h4 style={{ marginBottom: '1rem', color: 'var(--text-primary)' }}>Motor de Web Scraping Avanzado</h4>
+          <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '1rem' }}>
+            Habilita la extracción profunda de datos (precios de E-commerce, seguidores en RRSS y evasión de bots).
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
+            <div className="form-group">
+              <label className="form-label">Proveedor de Scraping</label>
+              <select 
+                className="form-control"
+                value={planData.config.externalApis?.scraperEngine || 'local'}
+                onChange={(e) => handleExternalChange('scraperEngine', e.target.value)}
+              >
+                <option value="local">Local Headless (Gratis - Puppeteer Stealth)</option>
+                <option value="apify">Apify Cloud ($5/mes o Capa Gratis)</option>
+                <option value="gridpanel">GridPanel Cloud</option>
+              </select>
+            </div>
+            
+            {planData.config.externalApis?.scraperEngine === 'apify' && (
+              <div className="form-group">
+                <label className="form-label">Apify API Token</label>
+                <input 
+                  type="password" 
+                  className="form-control" 
+                  placeholder="apify_api_..."
+                  value={planData.config.externalApis?.apifyToken || ''}
+                  onChange={(e) => handleExternalChange('apifyToken', e.target.value)}
+                />
+              </div>
+            )}
+
+            {planData.config.externalApis?.scraperEngine === 'gridpanel' && (
+              <div className="form-group">
+                <label className="form-label">GridPanel API Key</label>
+                <input 
+                  type="password" 
+                  className="form-control" 
+                  placeholder="sk_..."
+                  value={planData.config.externalApis?.gridPanelKey || ''}
+                  onChange={(e) => handleExternalChange('gridPanelKey', e.target.value)}
+                />
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Conexiones Gemelo Digital */}
+      <div className="glass-panel" style={{ marginTop: '2rem', padding: '2rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem' }}>
+          <Activity className="text-[#f59e0b]" />
+          <h2 style={{ fontSize: '1.25rem' }}>Conexiones de Datos en Tiempo Real (Gemelo Digital)</h2>
+        </div>
+        <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '1.5rem', lineHeight: 1.6 }}>
+          Ingresa tus llaves de API para automatizar cálculos matemáticos con datos en vivo (WACC, Bonos del Tesoro, Impacto Ambiental y Sentimiento del Mercado).
+        </p>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
+          <div className="form-group">
+            <label className="form-label">API Key: Yahoo Finance</label>
+            <input 
+              type="password" 
+              className="form-control" 
+              placeholder="Opcional. Para cálculo de WACC y Beta."
+              value={planData.config.externalApis?.yahooFinanceKey || ''}
+              onChange={(e) => handleExternalChange('yahooFinanceKey', e.target.value)}
+            />
+          </div>
+          <div className="form-group">
+            <label className="form-label">API Key: FRED (Reserva Federal)</label>
+            <input 
+              type="password" 
+              className="form-control" 
+              placeholder="Opcional. Para Tasa Libre de Riesgo."
+              value={planData.config.externalApis?.fredKey || ''}
+              onChange={(e) => handleExternalChange('fredKey', e.target.value)}
+            />
+          </div>
+          <div className="form-group">
+            <label className="form-label">API Key: Google Trends / Baidu</label>
+            <input 
+              type="password" 
+              className="form-control" 
+              placeholder="Opcional. Para método Guanxi (Sentimiento)."
+              value={planData.config.externalApis?.googleTrendsKey || ''}
+              onChange={(e) => handleExternalChange('googleTrendsKey', e.target.value)}
+            />
+          </div>
+          <div className="form-group">
+            <label className="form-label">API Key: Copernicus / OpenWeather</label>
+            <input 
+              type="password" 
+              className="form-control" 
+              placeholder="Opcional. Para método Horizon Europe."
+              value={planData.config.externalApis?.copernicusKey || ''}
+              onChange={(e) => handleExternalChange('copernicusKey', e.target.value)}
             />
           </div>
         </div>
@@ -1059,7 +1608,7 @@ export default function Configuracion() {
                 display: 'grid', gridTemplateColumns: '1fr 1fr 2fr auto',
                 gap: '0.5rem', alignItems: 'start',
                 padding: '0.75rem', background: 'var(--bg-dark)',
-                borderRadius: '10px', border: '1px solid var(--border-color)'
+                borderRadius: '8px', border: '1px solid var(--border-color)'
               }}>
                 <input
                   type="text"
@@ -1088,7 +1637,7 @@ export default function Configuracion() {
                 <button
                   onClick={() => removeDataSource(source.id)}
                   className="btn btn-secondary"
-                  style={{ padding: '6px 10px', color: '#ef4444', fontSize: '0.75rem' }}
+                  style={{ padding: '6px 10px', color: '#ef4444', fontSize: '0.75rem', height: '2.5rem' }}
                   title="Eliminar fuente"
                 >
                   <Trash2 style={{ width: '14px', height: '14px' }} />
@@ -1109,6 +1658,79 @@ export default function Configuracion() {
 
       <div style={{ marginTop: '2rem' }}>
         <DocumentUploader />
+      </div>
+
+      <div className="glass-panel" style={{ padding: '2rem', marginTop: '2rem', border: '1px solid var(--border-color)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem' }}>
+          <Globe style={{ color: 'var(--accent-color)' }} size={20} />
+          <h2 style={{ fontSize: '1.25rem' }}>Fondo Thoth Cloud (Integración Externa)</h2>
+        </div>
+        <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
+          Configura tus credenciales del entorno web de Fondo Thoth para sincronizar y aislar tus proyectos en el servidor local.
+        </p>
+        
+        <div style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap', alignItems: 'flex-start' }}>
+          <div className="form-group" style={{ flex: '1 1 300px', maxWidth: '450px' }}>
+            <label className="form-label" style={{ fontWeight: 'bold' }}>ID / Token de Usuario</label>
+            <input 
+              type="text" 
+              className="form-control" 
+              value={cloudUserId}
+              onChange={(e) => handleCloudUserIdChange(e.target.value)}
+              placeholder="Ej: roberto, usuario_123, etc."
+            />
+            <small style={{ color: 'var(--text-secondary)', marginTop: '0.4rem', display: 'block' }}>
+              {cloudUserId ? `Sincronizando proyectos en carpeta aislada: user_${cloudUserId.replace(/[^a-z0-9]/gi, '_').toLowerCase()}` : 'Usando espacio de almacenamiento local compartido por defecto.'}
+            </small>
+          </div>
+
+          <div style={{ flex: '1 1 300px', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            <button 
+              className="btn btn-secondary" 
+              onClick={() => setShowSshGuide(!showSshGuide)}
+              style={{ fontSize: '0.8rem', alignSelf: 'flex-start' }}
+            >
+              {showSshGuide ? 'Ocultar Guía de Túnel SSH' : 'Mostrar Guía de Túnel SSH para Ollama (VPS)'}
+            </button>
+            <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+              Permite conectar tu servidor VPS con tu máquina local de IA con RTX mediante SSH.
+            </span>
+          </div>
+        </div>
+
+        {showSshGuide && (
+          <div style={{ marginTop: '1.5rem', padding: '1.25rem', background: 'var(--bg-panel-hover)', borderRadius: '8px', border: '1px solid var(--border-color)', animation: 'fadeIn 0.2s ease-out' }}>
+            <h3 style={{ fontSize: '0.9rem', color: 'var(--accent-color)', fontWeight: 800, marginBottom: '0.75rem' }}>
+              🔑 Guía para crear el Túnel Seguro SSH (Ollama Local ⇆ VPS)
+            </h3>
+            <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', lineHeight: 1.5, marginBottom: '1rem' }}>
+              Sigue estos comandos en tu máquina local para conectar el puerto local de Ollama (11434) con el servidor VPS remoto de Fondo Thoth de forma directa, encriptada y omitiendo bloqueos de red universitarios:
+            </p>
+            <ol style={{ fontSize: '0.8rem', color: 'var(--text-primary)', paddingLeft: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              <li>
+                <strong>Generar llaves SSH locales (si no tienes una):</strong>
+                <pre style={{ background: '#09090b', color: '#10b981', padding: '0.5rem', borderRadius: '6px', fontSize: '0.75rem', marginTop: '0.25rem', overflowX: 'auto' }}>
+                  ssh-keygen -t ed25519
+                </pre>
+              </li>
+              <li>
+                <strong>Copiar la llave al VPS (autorizar conexión sin contraseña):</strong>
+                <pre style={{ background: '#09090b', color: '#10b981', padding: '0.5rem', borderRadius: '6px', fontSize: '0.75rem', marginTop: '0.25rem', overflowX: 'auto' }}>
+                  ssh-copy-id usuario@ip_del_vps
+                </pre>
+              </li>
+              <li>
+                <strong>Crear el túnel reverso del puerto 11434:</strong>
+                <pre style={{ background: '#09090b', color: '#10b981', padding: '0.5rem', borderRadius: '6px', fontSize: '0.75rem', marginTop: '0.25rem', overflowX: 'auto' }}>
+                  ssh -N -R 11434:localhost:11434 usuario@ip_del_vps
+                </pre>
+              </li>
+            </ol>
+            <div style={{ marginTop: '1rem', padding: '0.5rem 0.75rem', background: 'rgba(16, 185, 129, 0.08)', border: '1px solid rgba(16, 185, 129, 0.2)', borderRadius: '6px', color: '#10b981', fontSize: '0.75rem' }}>
+              💡 <strong>Tip:</strong> El flag <code>-N</code> mantiene la conexión de puertos sin abrir una terminal interactiva y <code>-R</code> redirige de forma segura las peticiones del VPS a tu máquina local con GPU RTX.
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="glass-panel" style={{ padding: '2rem', marginTop: '2rem', border: '1px solid rgba(239, 68, 68, 0.2)', background: 'rgba(239, 68, 68, 0.02)' }}>
@@ -1135,7 +1757,7 @@ export default function Configuracion() {
       </div>
 
       <div style={{ marginTop: '2rem', textAlign: 'right' }}>
-        <button className="btn btn-primary" onClick={() => alert('Industrialización Guardada')}>
+        <button className="btn btn-primary" onClick={() => alert('Configuración Guardada')}>
           <Save className="w-4 h-4" />
           <span>Guardar Configuración</span>
         </button>

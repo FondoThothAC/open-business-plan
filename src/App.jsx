@@ -10,7 +10,7 @@ import Configuracion from './modules/Configuracion';
 import Anexos from './modules/Anexos';
 import LeanCanvas from './modules/LeanCanvas';
 import PitchDeck from './modules/PitchDeck';
-import Semilla from './modules/Semilla';
+import Anteproyecto from './components/Anteproyecto';
 import DynamicModule from './components/DynamicModule';
 import ErrorBoundary from './components/ErrorBoundary';
 
@@ -49,7 +49,7 @@ function AppContent() {
           <Route path="preview" element={<Navigate to="/vista-previa" replace />} />
           <Route path="lean-canvas" element={<LeanCanvas />} />
           <Route path="pitch-deck" element={<PitchDeck />} />
-          <Route path="semilla" element={<Semilla />} />
+          <Route path="semilla" element={<Anteproyecto />} />
           <Route path="anexos" element={<Anexos />} />
           <Route path="configuracion" element={<Configuracion />} />
         </Route>

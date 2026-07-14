@@ -1,6 +1,7 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { usePlan } from '../context/PlanContext';
-import { Printer, FileText, Check, AlertTriangle, ShieldCheck, HelpCircle } from 'lucide-react';
+import { Printer, FileText, Check, AlertTriangle, ShieldCheck, HelpCircle, MessageSquare, Sparkles, Wand2, Bot, BrainCircuit, RefreshCw } from 'lucide-react';
+import { refactorFieldWithComments } from '../lib/ai';
 import FinancialCharts, { PrintableFinancialReports } from '../components/FinancialCharts';
 import MermaidViewer from '../components/MermaidViewer';
 import FodaMatrix from '../components/FodaMatrix';
@@ -14,6 +15,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { safeStr } from '../utils/formatters';
 import { FRAMEWORKS } from '../config/frameworks';
+import { calculateFinancialProjections } from '../lib/finanzas/financial-calculations';
 
 function readJson(raw, fallback) {
   if (!raw || typeof raw !== 'string') return fallback;
@@ -846,9 +848,446 @@ function BalanceGeneralEstandar({ projections, planData }) {
   );
 }
 
+const FieldCommentSection = ({ pillarKey, moduleKey, fieldKey, planData, addComment, deleteComment }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [newCommentText, setNewCommentText] = useState('');
+
+  const commentKey = `${pillarKey}.${moduleKey}.${fieldKey}`;
+  const comments = planData?.config?.comments?.[commentKey] || [];
+
+  const handleAdd = () => {
+    if (!newCommentText.trim()) return;
+    addComment(pillarKey, moduleKey, fieldKey, newCommentText.trim());
+    setNewCommentText('');
+  };
+
+  return (
+    <div className="no-print" style={{ marginTop: '0.5rem', marginBottom: '0.8rem' }}>
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '0.35rem',
+          background: comments.length > 0 ? 'rgba(99, 102, 241, 0.08)' : 'transparent',
+          border: `1px solid ${comments.length > 0 ? 'rgba(99, 102, 241, 0.3)' : 'var(--border-color)'}`,
+          color: comments.length > 0 ? 'var(--accent-color)' : 'var(--text-secondary)',
+          borderRadius: '20px',
+          padding: '4px 12px',
+          fontSize: '0.72rem',
+          fontWeight: 600,
+          cursor: 'pointer',
+          transition: 'all 0.2s'
+        }}
+      >
+        <MessageSquare size={12} />
+        <span>
+          {comments.length > 0 ? `Correcciones (${comments.length})` : 'Agregar Nota de Corrección'}
+        </span>
+      </button>
+
+      {isOpen && (
+        <div style={{
+          marginTop: '0.5rem',
+          padding: '0.75rem',
+          background: 'var(--bg-panel-hover)',
+          border: '1px solid var(--border-color)',
+          borderRadius: '8px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '0.5rem',
+          maxWidth: '500px'
+        }}>
+          {comments.length > 0 && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', maxHeight: '150px', overflowY: 'auto', marginBottom: '0.25rem' }}>
+              {comments.map(c => (
+                <div key={c.id} style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'start',
+                  padding: '6px 10px',
+                  background: 'var(--bg-panel)',
+                  border: '1px solid var(--border-color)',
+                  borderRadius: '6px',
+                  fontSize: '0.75rem'
+                }}>
+                  <div style={{ flex: 1, paddingRight: '0.5rem' }}>
+                    <div style={{ fontWeight: 700, color: 'var(--text-primary)', display: 'flex', gap: '0.5rem', fontSize: '0.65rem', marginBottom: '2px' }}>
+                      <span>{c.author}</span>
+                      <span style={{ color: 'var(--text-secondary)', fontWeight: 400 }}>
+                        {c.date ? new Date(c.date).toLocaleDateString('es-MX', { hour: '2-digit', minute: '2-digit' }) : ''}
+                      </span>
+                    </div>
+                    <div style={{ color: 'var(--text-primary)', whiteSpace: 'pre-wrap', lineHeight: '1.4' }}>{c.text}</div>
+                  </div>
+                  <button
+                    onClick={() => deleteComment(pillarKey, moduleKey, fieldKey, c.id)}
+                    style={{
+                      background: 'transparent',
+                      border: 'none',
+                      color: '#ef4444',
+                      cursor: 'pointer',
+                      fontSize: '0.8rem',
+                      padding: '2px',
+                      fontWeight: 'bold',
+                      lineHeight: 1
+                    }}
+                    title="Eliminar corrección"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <input
+              type="text"
+              value={newCommentText}
+              onChange={(e) => setNewCommentText(e.target.value)}
+              placeholder="Indica qué corregir (ej. Cambiar precios a MXN)..."
+              style={{
+                flex: 1,
+                background: 'var(--bg-panel)',
+                border: '1px solid var(--border-color)',
+                color: 'var(--text-primary)',
+                borderRadius: '6px',
+                padding: '4px 8px',
+                fontSize: '0.75rem',
+                outline: 'none'
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') handleAdd();
+              }}
+            />
+            <button
+              onClick={handleAdd}
+              className="btn btn-primary"
+              style={{ padding: '4px 10px', fontSize: '0.7rem', height: '28px', whiteSpace: 'nowrap' }}
+            >
+              Guardar
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const cleanMarkdownResponse = (text) => {
+  if (!text) return '';
+  let cleaned = text.trim();
+  
+  // Quitar bloques de código triple ```markdown y ``` si el LLM envolvió toda la respuesta
+  cleaned = cleaned.replace(/^```markdown\s*/i, '');
+  cleaned = cleaned.replace(/^```\s*/i, '');
+  cleaned = cleaned.replace(/```$/, '');
+  
+  // Quitar sangrías de 4 o más espacios al inicio de las líneas si no corresponden a listas markdown,
+  // previniendo bloques preformateados <pre> no deseados
+  cleaned = cleaned.split('\n').map(line => {
+    if (/^\s{4,}/.test(line) && !/^\s*[*+-]\s+/.test(line) && !/^\s*\d+\.\s+/.test(line)) {
+      return line.trimStart();
+    }
+    return line;
+  }).join('\n');
+
+  return cleaned.trim();
+};
+
+const getModuleFields = (pillarKey, moduleKey) => {
+  for (const fw of Object.values(FRAMEWORKS)) {
+    const p = fw.pillars?.find(pil => pil.key === pillarKey);
+    if (p) {
+      const m = p.modules?.find(mod => mod.key === moduleKey);
+      if (m && m.fields) return m.fields;
+    }
+  }
+  return [];
+};
+
+const ModuleRefinementPanel = ({ pillarKey, moduleKey, fields, planData, updateSection, manualSaveProject, addComment, deleteComment }) => {
+  const [selectedField, setSelectedField] = useState(fields && fields[0] ? fields[0] : '');
+  const [feedback, setFeedback] = useState('');
+  const [isGenerating, setIsGenerating] = useState(false);
+
+  useEffect(() => {
+    if (fields && fields.length > 0) {
+      setSelectedField(fields[0]);
+    }
+  }, [fields]);
+
+  if (!fields || fields.length === 0) return null;
+
+  const handleRefine = async () => {
+    if (!feedback.trim()) {
+      alert('Por favor introduce un comentario o instrucción de retroalimentación.');
+      return;
+    }
+    setIsGenerating(true);
+    try {
+      const currentValue = planData[pillarKey]?.[moduleKey]?.[selectedField] || '';
+      const fieldLabel = selectedField.charAt(0).toUpperCase() + selectedField.slice(1).replace(/_/g, ' ');
+      const config = planData.config || {};
+      const comments = [{ author: 'Usuario', text: feedback }];
+      
+      const newValue = await refactorFieldWithComments(config.ai || {}, {
+        fieldLabel,
+        currentValue,
+        comments,
+        planData
+      });
+
+      if (!newValue) {
+        throw new Error('La IA no devolvió ningún contenido.');
+      }
+
+      const cleanedVal = cleanMarkdownResponse(newValue);
+      updateSection(pillarKey, moduleKey, selectedField, cleanedVal);
+      
+      if (manualSaveProject) {
+        await manualSaveProject();
+      }
+
+      setFeedback('');
+      alert('Sección refinada con éxito por la IA y guardada.');
+    } catch (err) {
+      console.error(err);
+      alert('Error al refinar con IA: ' + err.message);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  return (
+    <div className="no-print" style={{
+      marginTop: '2rem',
+      padding: '1.25rem',
+      background: 'var(--bg-panel-hover)',
+      border: '1px solid var(--border-color)',
+      borderRadius: '10px',
+      fontSize: '0.85rem',
+      fontFamily: 'Inter, sans-serif'
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
+        <Bot size={16} style={{ color: 'var(--accent-color)' }} />
+        <strong style={{ color: 'var(--text-primary)' }}>Refinar Sección / Campo con IA</strong>
+      </div>
+      
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <span style={{ color: 'var(--text-secondary)' }}>Campo a corregir:</span>
+          <select 
+            value={selectedField}
+            onChange={(e) => setSelectedField(e.target.value)}
+            style={{
+              background: 'var(--bg-panel)',
+              border: '1px solid var(--border-color)',
+              color: 'var(--text-primary)',
+              borderRadius: '6px',
+              padding: '4px 8px',
+              fontSize: '0.8rem',
+              fontWeight: 600,
+              cursor: 'pointer'
+            }}
+          >
+            {fields.map(f => (
+              <option key={f} value={f}>{f.charAt(0).toUpperCase() + f.slice(1).replace(/_/g, ' ')}</option>
+            ))}
+          </select>
+        </div>
+
+        {selectedField && (
+          <div style={{ borderLeft: '3px solid var(--accent-color)', paddingLeft: '0.75rem', margin: '0.25rem 0' }}>
+            <FieldCommentSection 
+              pillarKey={pillarKey}
+              moduleKey={moduleKey}
+              fieldKey={selectedField}
+              planData={planData}
+              addComment={addComment}
+              deleteComment={deleteComment}
+            />
+          </div>
+        )}
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+          <span style={{ color: 'var(--text-secondary)', fontSize: '0.75rem' }}>Retroalimentación / Instrucciones para corregir este campo:</span>
+          <textarea
+            value={feedback}
+            onChange={(e) => setFeedback(e.target.value)}
+            placeholder="Ej: Agrega el aspecto tecnológico mencionando la integración de servidores locales y base de datos relacional..."
+            disabled={isGenerating}
+            rows={2}
+            style={{
+              width: '100%',
+              background: 'var(--bg-panel)',
+              border: '1px solid var(--border-color)',
+              color: 'var(--text-primary)',
+              borderRadius: '8px',
+              padding: '0.5rem 0.75rem',
+              fontSize: '0.85rem',
+              resize: 'vertical',
+              outline: 'none'
+            }}
+          />
+        </div>
+
+        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <button
+            onClick={handleRefine}
+            disabled={isGenerating}
+            className="btn btn-ia"
+            style={{
+              padding: '0.4rem 1rem',
+              fontSize: '0.75rem',
+              height: '32px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.4rem'
+            }}
+          >
+            {isGenerating ? (
+              <>
+                <RefreshCw size={12} className="animate-spin" />
+                <span>Refinando...</span>
+              </>
+            ) : (
+              <>
+                <BrainCircuit size={12} />
+                <span>Enviar Corrección</span>
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export default function VistaPrevia() {
-  const { planData, updateConfig } = usePlan();
+  const { planData, updateConfig, manualSaveProject, updateSection, addComment, deleteComment } = usePlan();
   const [printMargin, setPrintMargin] = React.useState(0.8); // Margen en cm
+  const [refactorStatus, setRefactorStatus] = React.useState({ active: false, total: 0, completed: 0, currentField: '' });
+
+  const commentedFieldsCount = useMemo(() => {
+    const commentsObj = planData.config?.comments || {};
+    return Object.values(commentsObj).filter(arr => Array.isArray(arr) && arr.length > 0).length;
+  }, [planData.config?.comments]);
+
+  const handleRefactorWithComments = async () => {
+    const commentsObj = planData.config?.comments || {};
+    const activeCommentedFields = [];
+
+    Object.entries(commentsObj).forEach(([key, comments]) => {
+      if (Array.isArray(comments) && comments.length > 0) {
+        activeCommentedFields.push({ key, comments });
+      }
+    });
+
+    if (activeCommentedFields.length === 0) return;
+
+    const confirmMsg = `Se guardará la versión actual y se creará una NUEVA versión con las correcciones sugeridas en los ${activeCommentedFields.length} campos comentados.\n\n¿Deseas continuar?`;
+    if (!window.confirm(confirmMsg)) return;
+
+    setRefactorStatus({
+      active: true,
+      total: activeCommentedFields.length,
+      completed: 0,
+      currentField: 'Guardando versión actual...'
+    });
+
+    try {
+      await manualSaveProject(planData);
+
+      const currentName = planData.config?.brandKit?.companyName || 'Proyecto';
+      let newName = '';
+      const match = currentName.match(/(.+?)\s+v(\d+)$/i);
+      if (match) {
+        const baseName = match[1];
+        const version = parseInt(match[2], 10) + 1;
+        newName = `${baseName} v${version}`;
+      } else {
+        newName = `${currentName} v2`;
+      }
+
+      const newPlanData = JSON.parse(JSON.stringify(planData));
+      newPlanData.config.brandKit.companyName = newName;
+      newPlanData.config.projectId = undefined; // Forzar creación de nuevo archivo en backend
+
+      const { refactorFieldWithComments } = await import('../lib/ai');
+
+      let count = 0;
+      for (const item of activeCommentedFields) {
+        const parts = item.key.split('.');
+        if (parts.length === 3) {
+          const [pillar, moduleKey, fieldKey] = parts;
+          const currentValue = planData[pillar]?.[moduleKey]?.[fieldKey] || '';
+          
+          const framework = FRAMEWORKS[planData.config?.projectType || 'business'] || FRAMEWORKS.business;
+          let fieldLabel = fieldKey;
+          const p = framework.pillars.find(pil => pil.key === pillar);
+          if (p) {
+            const m = p.modules.find(mod => mod.key === moduleKey);
+            if (m) {
+              fieldLabel = `${m.title} - ${fieldKey.replace(/_/g, ' ')}`;
+            }
+          }
+
+          setRefactorStatus(prev => ({
+            ...prev,
+            currentField: `Refactorizando: ${fieldLabel}...`
+          }));
+
+          try {
+            const correctedText = await refactorFieldWithComments(planData.config.ai, {
+              fieldLabel,
+              currentValue,
+              comments: item.comments,
+              planData
+            });
+
+            if (correctedText) {
+              const cleanedText = cleanMarkdownResponse(correctedText);
+              if (newPlanData[pillar] && newPlanData[pillar][moduleKey]) {
+                newPlanData[pillar][moduleKey][fieldKey] = cleanedText;
+              }
+              if (newPlanData.config?.comments?.[item.key]) {
+                delete newPlanData.config.comments[item.key];
+              }
+            }
+          } catch (err) {
+            console.error(`Error refactorizando campo ${item.key}:`, err);
+            alert(`Fallo en el campo "${fieldLabel}": ${err.message}. Se conservará el texto original.`);
+          }
+        }
+        count++;
+        setRefactorStatus(prev => ({
+          ...prev,
+          completed: count
+        }));
+      }
+
+      setRefactorStatus(prev => ({
+        ...prev,
+        currentField: 'Guardando nueva versión...'
+      }));
+
+      const newFileId = await manualSaveProject(newPlanData);
+      
+      setRefactorStatus({ active: false, total: 0, completed: 0, currentField: '' });
+      
+      if (newFileId) {
+        alert(`¡Corrección completada con éxito!\nSe ha creado y guardado la nueva versión: "${newName}"`);
+      } else {
+        alert('Se procesaron las correcciones en memoria, pero hubo un error al guardarlas en disco.');
+      }
+    } catch (error) {
+      console.error('Error general en el proceso de refactorización:', error);
+      alert(`Ocurrió un error inesperado: ${error.message}`);
+      setRefactorStatus({ active: false, total: 0, completed: 0, currentField: '' });
+    }
+  };
 
   // Orientación global desde config (persistente)
   const globalOrientation = planData.config?.globalOrientation || 'portrait';
@@ -857,12 +1296,135 @@ export default function VistaPrevia() {
   const previewFinancialData = useMemo(() => {
     try {
       const raw = planData?.organizacion?.estados_financieros?.corrida_automatica;
-      if (!raw || typeof raw !== 'string') return null;
-      return JSON.parse(raw);
-    } catch (_) {
+      if (raw && typeof raw === 'string') {
+        return JSON.parse(raw);
+      }
+    } catch (_) {}
+
+    // Fallback: calcular corrida financiera al vuelo si no existe
+    try {
+      const banxicoData = planData.naturaleza?.pestel?.indicadores_banxico || {};
+      const currentInflation = banxicoData.inflacion ? parseFloat(banxicoData.inflacion) : 4.5;
+      const currentTIIE = banxicoData.tiie ? parseFloat(banxicoData.tiie) : 10;
+      const estimatedWACC = currentTIIE + 2.0;
+
+      const capexRows = readJson(planData.organizacion?.inversion?.desglose_capex_json, []);
+      const opexRows = readJson(planData.organizacion?.costos?.desglose_opex_json, []);
+      const revenueRows = readJson(planData.organizacion?.estados_financieros?.ingresos_json, []);
+
+      // Intentar extraer cifras de los textos descriptivos
+      let initialInvestmentVal = 120000;
+      let annualSalesGoalVal = 500000;
+      let monthlyFixedCostsVal = 15000;
+      let monthlyVariableCostsVal = 8000;
+
+      // Buscar si hay números en el texto de inversión
+      const inversionTexto = planData.organizacion?.inversion?.monto_total || '';
+      const invMatch = inversionTexto.match(/\$?([0-9,]+)/);
+      if (invMatch) {
+        initialInvestmentVal = Number(invMatch[1].replace(/,/g, '')) || 120000;
+      }
+
+      // Buscar si hay números en costos fijos
+      const fijosTexto = planData.organizacion?.costos?.fijos || '';
+      const fijosMatch = fijosTexto.match(/\$?([0-9,]+)/);
+      if (fijosMatch) {
+        monthlyFixedCostsVal = Math.round(Number(fijosMatch[1].replace(/,/g, '')) / 12) || 15000;
+      }
+
+      // Buscar si hay números en costos variables
+      const variablesTexto = planData.organizacion?.costos?.variables || '';
+      const varMatch = variablesTexto.match(/\$?([0-9,]+)/);
+      if (varMatch) {
+        monthlyVariableCostsVal = Math.round(Number(varMatch[1].replace(/,/g, '')) / 12) || 8000;
+      }
+
+      // Buscar si hay números en resultados de ventas
+      const resultadosTexto = planData.organizacion?.estados_financieros?.resultados || '';
+      const ventasMatch = resultadosTexto.match(/Ventas\s*\$?([0-9,]+)/i);
+      if (ventasMatch) {
+        annualSalesGoalVal = Number(ventasMatch[1].replace(/,/g, '')) || 500000;
+      }
+
+      const financeData = {
+        projectDuration: 5,
+        taxRate: 30,
+        discountRate: estimatedWACC,
+        inflationRate: currentInflation,
+        annualSalesGoal: annualSalesGoalVal,
+        annualSalesGrowth: 5,
+        monthlyFixedCosts: monthlyFixedCostsVal,
+        monthlyVariableCosts: monthlyVariableCostsVal,
+        annualCostGrowth: 3,
+        initialInvestment: initialInvestmentVal,
+      };
+
+      const investmentItems = capexRows.length > 0
+        ? capexRows.map((row, index) => ({
+            id: index + 1,
+            name: row.concepto || `Inversión ${index + 1}`,
+            amount: Number(row.monto || 0),
+            type: ['Activo Fijo', 'Activo Diferido', 'Capital de Trabajo'].includes(row.tipo) ? row.tipo : 'Activo Fijo',
+            acquisitionSource: 'Aportación (Nuevo)',
+          })).filter((row) => row.amount > 0)
+        : [{ id: 1, name: 'Inversión Inicial Base', amount: financeData.initialInvestment, type: 'Activo Fijo', acquisitionSource: 'Aportación (Nuevo)' }];
+
+      const recurringRevenues = revenueRows.length > 0
+        ? revenueRows.map((row, index) => ({
+            id: index + 1,
+            name: row.concepto || `Ingreso ${index + 1}`,
+            initialMonthlyAmount: Number(row.mensual || (Number(row.anual || 0) / 12) || 0),
+            annualGrowthRates: Array(financeData.projectDuration).fill(Number(row.crecimiento || financeData.annualSalesGrowth || 0)),
+          })).filter((row) => row.initialMonthlyAmount > 0)
+        : [{ id: 1, name: 'Ventas Proyectadas', initialMonthlyAmount: financeData.annualSalesGoal / 12, annualGrowthRates: Array(financeData.projectDuration).fill(financeData.annualSalesGrowth) }];
+
+      const recurringExpenses = opexRows.length > 0
+        ? opexRows.map((row, index) => ({
+            id: index + 1,
+            name: row.concepto || `Gasto ${index + 1}`,
+            type: isVariableOpex(row) ? 'Variable' : 'Fijo',
+            initialMonthlyAmount: Number(row.mensual || 0),
+            growthType: 'annual',
+            monthlyGrowthRate: 0,
+            annualGrowthRates: Array(financeData.projectDuration).fill(financeData.annualCostGrowth),
+          })).filter((row) => row.initialMonthlyAmount > 0)
+        : [
+            { id: 1, name: 'Costos Fijos Operativos', type: 'Fijo', initialMonthlyAmount: financeData.monthlyFixedCosts, growthType: 'annual', monthlyGrowthRate: 0, annualGrowthRates: Array(financeData.projectDuration).fill(financeData.annualCostGrowth) },
+            { id: 2, name: 'Costos Variables Estimados', type: 'Variable', initialMonthlyAmount: financeData.monthlyVariableCosts, growthType: 'annual', monthlyGrowthRate: 0, annualGrowthRates: Array(financeData.projectDuration).fill(financeData.annualCostGrowth) },
+          ];
+
+      const projData = {
+        projectDuration: financeData.projectDuration,
+        taxRate: financeData.taxRate,
+        discountRate: financeData.discountRate,
+        inflationRate: financeData.inflationRate,
+        minimumAcceptableIRR: financeData.discountRate,
+        investmentItems,
+        depreciableAssets: [],
+        recurringRevenues,
+        recurringExpenses,
+        loans: [],
+        payrollConfig: {
+          positions: [],
+          temporaryEmployees: 0,
+          temporaryEmployeeSalary: 0,
+          dailyMinimumWage: 250,
+          vacationDaysPerYear: 12,
+          vacationBonusRate: 25,
+          socialChargesRate: 30,
+          annualSalaryGrowthRate: 5,
+        },
+        workingCapitalConfig: { requiredMonthsOfFixedCosts: 3 },
+        advancedConfig: { products: [] },
+      };
+
+      const result = calculateFinancialProjections(projData, 'years');
+      return result;
+    } catch (e) {
+      console.error("Error calculating fallback projections in VistaPrevia: ", e);
       return null;
     }
-  }, [planData?.organizacion?.estados_financieros?.corrida_automatica]);
+  }, [planData]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -987,7 +1549,7 @@ export default function VistaPrevia() {
   };
 
   // Componente de Sección con numeración recibida dinámicamente
-  const Section = ({ number, title, data }) => {
+  const Section = ({ number, title, data, pillarKey, moduleKey }) => {
     if (!data) return null;
     
     // Filtrar solo campos con contenido y excluir estructuras JSON internas
@@ -1022,6 +1584,10 @@ export default function VistaPrevia() {
                 displayValue = safeStr(value);
               }
 
+              if (typeof displayValue === 'string') {
+                displayValue = displayValue.replace(/\\n/g, '\n');
+              }
+
               const looksLikeMermaid = typeof displayValue === 'string' && /^(graph|flowchart)\s+/i.test(displayValue.trim());
               if (key.includes('visual') || key === 'diagrama' || looksLikeMermaid) {
                 return (
@@ -1041,6 +1607,16 @@ export default function VistaPrevia() {
                       {displayValue}
                     </ReactMarkdown>
                   </div>
+                  
+                  {/* Comentarios de corrección para este aspecto específico */}
+                  <FieldCommentSection 
+                    pillarKey={pillarKey}
+                    moduleKey={moduleKey}
+                    fieldKey={key}
+                    planData={planData}
+                    addComment={addComment}
+                    deleteComment={deleteComment}
+                  />
                 </div>
               );
             })}
@@ -1174,6 +1750,11 @@ export default function VistaPrevia() {
           color: '#0f172a',
           fontFamily: 'Inter, sans-serif',
           pageBreakAfter: 'always',
+          maxWidth: '760px',
+          margin: '0 auto 2.5rem auto',
+          borderRadius: '12px',
+          boxShadow: '0 10px 30px rgba(0, 0, 0, 0.04)',
+          border: '1px solid #e2e8f0'
         }}
       >
         {isSidebar && (
@@ -1417,6 +1998,26 @@ export default function VistaPrevia() {
             />
           </div>
 
+          {commentedFieldsCount > 0 && (
+            <button 
+              className="btn btn-primary" 
+              onClick={handleRefactorWithComments} 
+              disabled={refactorStatus.active}
+              style={{ 
+                height: '42px', 
+                background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)', 
+                border: 'none',
+                boxShadow: '0 4px 12px rgba(99, 102, 241, 0.3)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem'
+              }}
+            >
+              <Wand2 className="w-4 h-4" />
+              <span>Corregir con IA ({commentedFieldsCount})</span>
+            </button>
+          )}
+
           <button className="btn btn-primary" onClick={() => window.print()} style={{ height: '42px' }}>
             <Printer className="w-4 h-4" />
             <span>Imprimir / PDF</span>
@@ -1424,16 +2025,12 @@ export default function VistaPrevia() {
         </div>
       </div>
 
-      <div className="preview-document glass-panel print-preview-mode" style={{ 
-        padding: `${printMargin}cm`, 
-        background: 'white', 
+      <div className="preview-document print-preview-mode" style={{ 
+        background: 'transparent', 
         color: '#1e293b', 
-        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.1)',
         maxWidth: '100%',
         margin: '0 auto',
-        borderRadius: '8px',
-        transition: 'all 0.3s ease',
-        border: '1px solid rgba(255,255,255,0.05)'
+        transition: 'all 0.3s ease'
       }}>
         
         {/* Render de la Portada Personalizada */}
@@ -1445,7 +2042,12 @@ export default function VistaPrevia() {
           padding: '4rem 2rem', 
           pageBreakBefore: 'always', 
           fontFamily: 'Inter, sans-serif',
-          background: '#ffffff'
+          background: '#ffffff',
+          maxWidth: '760px',
+          margin: '0 auto 2.5rem auto',
+          borderRadius: '12px',
+          boxShadow: '0 10px 30px rgba(0, 0, 0, 0.04)',
+          border: '1px solid #e2e8f0'
         }}>
           <h2 style={{ fontSize: '2rem', color: '#0f172a', borderBottom: '2px solid #e2e8f0', paddingBottom: '1rem', marginBottom: '3rem', fontWeight: 800 }}>
             Índice de Contenido
@@ -1525,6 +2127,10 @@ export default function VistaPrevia() {
                 maxWidth: isLandscape ? '1080px' : '760px',
                 margin: '0 auto 2.5rem auto',
                 background: '#ffffff',
+                padding: `${printMargin}cm`,
+                borderRadius: '12px',
+                boxShadow: '0 10px 30px rgba(0, 0, 0, 0.04)',
+                border: '1px solid #e2e8f0',
                 transition: 'all 0.3s ease',
                 pageBreakBefore: 'always',
                 pageBreakInside: 'avoid'
@@ -1613,6 +2219,8 @@ export default function VistaPrevia() {
                       number={sectionNumber}
                       title={mod.title} 
                       data={planData?.[mod.pillarKey]?.[mod.key]} 
+                      pillarKey={mod.pillarKey}
+                      moduleKey={mod.key}
                     />
                     <BrandBoard data={planData?.naturaleza?.identidad} />
                   </div>
@@ -1629,6 +2237,8 @@ export default function VistaPrevia() {
                       number={sectionNumber}
                       title={mod.title} 
                       data={planData?.[mod.pillarKey]?.[mod.key]} 
+                      pillarKey={mod.pillarKey}
+                      moduleKey={mod.key}
                     />
                     <MaquinariaTable data={planData?.tecnico?.recursos} />
                   </div>
@@ -1638,6 +2248,8 @@ export default function VistaPrevia() {
                       number={sectionNumber}
                       title={mod.title} 
                       data={planData?.[mod.pillarKey]?.[mod.key]} 
+                      pillarKey={mod.pillarKey}
+                      moduleKey={mod.key}
                     />
                     <InsumosTable data={planData?.tecnico?.insumos} />
                   </div>
@@ -1647,6 +2259,8 @@ export default function VistaPrevia() {
                       number={sectionNumber}
                       title={mod.title} 
                       data={planData?.[mod.pillarKey]?.[mod.key]} 
+                      pillarKey={mod.pillarKey}
+                      moduleKey={mod.key}
                     />
                     <CapacidadInventarioWidget data={planData?.tecnico?.capacidad} />
                   </div>
@@ -1656,6 +2270,8 @@ export default function VistaPrevia() {
                       number={sectionNumber}
                       title={mod.title} 
                       data={planData?.[mod.pillarKey]?.[mod.key]} 
+                      pillarKey={mod.pillarKey}
+                      moduleKey={mod.key}
                     />
                     <ImpactoAmbientalWidget data={planData?.tecnico?.ambiental} />
                   </div>
@@ -1665,6 +2281,8 @@ export default function VistaPrevia() {
                       number={sectionNumber}
                       title={mod.title} 
                       data={planData?.[mod.pillarKey]?.[mod.key]} 
+                      pillarKey={mod.pillarKey}
+                      moduleKey={mod.key}
                     />
                     <BreakEvenChart planData={planData} />
                   </div>
@@ -1674,6 +2292,8 @@ export default function VistaPrevia() {
                       number={sectionNumber}
                       title={mod.title} 
                       data={planData?.[mod.pillarKey]?.[mod.key]} 
+                      pillarKey={mod.pillarKey}
+                      moduleKey={mod.key}
                     />
                     {hasContent(planData?.[mod.pillarKey]?.[mod.key]) && (
                       <>
@@ -1735,6 +2355,8 @@ export default function VistaPrevia() {
                       number={sectionNumber}
                       title={mod.title} 
                       data={planData?.[mod.pillarKey]?.[mod.key]} 
+                      pillarKey={mod.pillarKey}
+                      moduleKey={mod.key}
                     />
                     <div style={{ marginTop: '1rem', padding: '1rem', background: '#ffffff', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
                       <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#0f172a', marginBottom: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
@@ -1760,6 +2382,8 @@ export default function VistaPrevia() {
                       number={sectionNumber}
                       title={mod.title} 
                       data={planData?.[mod.pillarKey]?.[mod.key]} 
+                      pillarKey={mod.pillarKey}
+                      moduleKey={mod.key}
                     />
                     <div style={{ marginTop: '1rem', padding: '1rem', background: '#ffffff', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
                       <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#0f172a', marginBottom: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
@@ -1785,6 +2409,8 @@ export default function VistaPrevia() {
                     number={sectionNumber}
                     title={mod.title} 
                     data={planData?.[mod.pillarKey]?.[mod.key]} 
+                    pillarKey={mod.pillarKey}
+                    moduleKey={mod.key}
                   />
                 )}
 
@@ -1811,6 +2437,24 @@ export default function VistaPrevia() {
                   <span>{planData?.config?.brandKit?.companyName || 'Plan Estratégico'}</span>
                   <span>Página {pageNum}</span>
                 </div>
+              </div>
+
+              {/* Panel de Refinamiento de IA por módulo individual (oculto al imprimir y fuera de la página) */}
+              <div className="no-print" style={{ 
+                maxWidth: isLandscape ? '1080px' : '760px', 
+                margin: '1.5rem auto 3rem auto',
+                padding: '0 0.5rem' 
+              }}>
+                <ModuleRefinementPanel 
+                  pillarKey={mod.pillarKey}
+                  moduleKey={mod.key}
+                  fields={getModuleFields(mod.pillarKey, mod.key)}
+                  planData={planData}
+                  updateSection={updateSection}
+                  manualSaveProject={manualSaveProject}
+                  addComment={addComment}
+                  deleteComment={deleteComment}
+                />
               </div>
             </React.Fragment>
           );
@@ -2052,6 +2696,80 @@ export default function VistaPrevia() {
           <p>© 2026 {planData?.config?.brandKit?.companyName}</p>
         </footer>
       </div>
+
+      {/* Refactor/Correction Progress Overlay */}
+      {refactorStatus.active && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(15, 23, 42, 0.8)',
+          backdropFilter: 'blur(8px)',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 9999,
+          color: '#ffffff',
+          fontFamily: 'Inter, sans-serif'
+        }}>
+          <div style={{
+            background: '#1e293b',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            padding: '2.5rem',
+            borderRadius: '16px',
+            maxWidth: '450px',
+            width: '90%',
+            textAlign: 'center',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)'
+          }}>
+            <div style={{
+              width: '60px',
+              height: '60px',
+              borderRadius: '50%',
+              background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              margin: '0 auto 1.5rem auto',
+              boxShadow: '0 0 20px rgba(99, 102, 241, 0.5)',
+              animation: 'pulse 2s infinite'
+            }}>
+              <Sparkles className="w-8 h-8 text-white animate-pulse" />
+            </div>
+            
+            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '0.5rem' }}>
+              Refactorizando Proyecto
+            </h3>
+            <p style={{ color: '#94a3b8', fontSize: '0.875rem', marginBottom: '1.5rem' }}>
+              Corrigiendo campos comentados y creando una nueva versión...
+            </p>
+
+            {/* Progress Bar */}
+            <div style={{ background: 'rgba(255, 255, 255, 0.1)', height: '8px', borderRadius: '4px', overflow: 'hidden', marginBottom: '1rem' }}>
+              <div style={{ 
+                background: 'linear-gradient(90deg, #6366f1, #a855f7)', 
+                height: '100%', 
+                width: `${refactorStatus.total > 0 ? (refactorStatus.completed / refactorStatus.total) * 100 : 0}%`,
+                transition: 'width 0.4s ease'
+              }} />
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: '#94a3b8', marginBottom: '1.5rem' }}>
+              <span>Progreso: ${refactorStatus.completed} de ${refactorStatus.total}</span>
+              <span>${Math.round(refactorStatus.total > 0 ? (refactorStatus.completed / refactorStatus.total) * 100 : 0)}%</span>
+            </div>
+
+            <div style={{ background: 'rgba(15, 23, 42, 0.3)', padding: '0.75rem', borderRadius: '8px', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
+              <span style={{ fontSize: '0.8rem', color: '#38bdf8', fontWeight: 600 }}>
+                ${refactorStatus.currentField || 'Preparando...'}
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

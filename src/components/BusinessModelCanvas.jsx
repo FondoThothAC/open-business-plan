@@ -8,63 +8,54 @@ const CANVAS_BLOCKS = {
     title: 'Socios Clave',
     icon: Users,
     desc: '¿Quiénes son nuestros socios clave y proveedores? ¿Qué recursos clave adquirimos de ellos?',
-    color: '#eff6ff',
     border: '#3b82f6'
   },
   actividades_clave: {
     title: 'Actividades Clave',
     icon: CheckSquare,
     desc: '¿Qué actividades clave requieren nuestras propuestas de valor, canales, relaciones y flujos de ingresos?',
-    color: '#f0fdf4',
     border: '#22c55e'
   },
   recursos_clave: {
     title: 'Recursos Clave',
     icon: Layers,
     desc: '¿Qué recursos clave requieren nuestras propuestas de valor, canales, relaciones y flujos de ingresos?',
-    color: '#fbf7ed',
     border: '#d97706'
   },
   propuestas_valor: {
     title: 'Propuesta de Valor',
     icon: Gift,
     desc: '¿Qué valor entregamos al cliente? ¿Qué problemas ayudamos a resolver? ¿Qué necesidades satisfacemos?',
-    color: '#fdf2f8',
     border: '#ec4899'
   },
   relaciones_clientes: {
     title: 'Relaciones con Clientes',
     icon: Heart,
     desc: '¿Qué tipo de relación espera cada uno de nuestros segmentos de clientes que establezcamos?',
-    color: '#faf5ff',
     border: '#a855f7'
   },
   canales: {
     title: 'Canales',
     icon: Truck,
     desc: '¿A través de qué canales quieren ser contactados nuestros segmentos de clientes?',
-    color: '#f0fdfa',
     border: '#14b8a6'
   },
   segmentos_clientes: {
     title: 'Segmentos de Clientes',
     icon: UserCheck,
     desc: '¿Para quién estamos creando valor? ¿Quiénes son nuestros clientes más importantes?',
-    color: '#fff1f2',
     border: '#f43f5e'
   },
   estructura_costos: {
     title: 'Estructura de Costos',
     icon: Percent,
     desc: '¿Cuáles son los costos más importantes inherentes a nuestro modelo de negocio?',
-    color: '#f8fafc',
     border: '#64748b'
   },
   fuentes_ingresos: {
     title: 'Fuentes de Ingresos',
     icon: DollarSign,
     desc: '¿Por qué valor están dispuestos a pagar nuestros clientes? ¿Cómo y cuánto pagan actualmente?',
-    color: '#f0fdf4',
     border: '#16a34a'
   }
 };
@@ -105,32 +96,24 @@ export default function BusinessModelCanvas({ readOnly = false }) {
         style={{
           gridRow,
           gridColumn,
-          background: block.color,
-          border: `2px solid ${block.border}`,
-          borderRadius: '12px',
-          padding: '1.25rem',
           cursor: readOnly ? 'default' : 'pointer',
-          position: 'relative',
-          transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '120px'
+          position: 'relative'
         }}
-        className="canvas-block-hover"
+        className={`canvas-block ${key}`}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem', color: '#1e293b' }} className="canvas-block-header">
-          <div style={{ padding: '0.4rem', borderRadius: '8px', background: 'rgba(255, 255, 255, 0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center' }} className="canvas-icon-wrapper">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem', color: 'var(--text-primary)' }} className="canvas-block-header">
+          <div style={{ padding: '0.4rem', borderRadius: '8px', background: `${block.border}15`, display: 'flex', alignItems: 'center', justifyContent: 'center' }} className="canvas-icon-wrapper">
             <Icon size={16} style={{ color: block.border }} className="canvas-icon" />
           </div>
           <span style={{ fontWeight: '800', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.05em' }} className="canvas-block-title">{block.title}</span>
           {!readOnly && (
-            <Edit3 size={13} style={{ marginLeft: 'auto', opacity: 0.4, color: '#64748b' }} className="edit-indicator" />
+            <Edit3 size={13} style={{ marginLeft: 'auto', opacity: 0.4, color: 'var(--text-secondary)' }} className="edit-indicator" />
           )}
         </div>
         
-        <div style={{ fontSize: '0.82rem', color: '#334155', lineHeight: '1.5', overflowY: 'auto', flex: 1, whiteSpace: 'pre-wrap' }} className="canvas-block-content">
+        <div style={{ fontSize: '0.82rem', lineHeight: '1.5', overflowY: 'auto', flex: 1, whiteSpace: 'pre-wrap' }} className="canvas-block-content">
           {value ? value : (
-            <span style={{ color: '#94a3b8', fontStyle: 'italic', fontSize: '0.76rem' }}>
+            <span style={{ color: 'var(--text-secondary)', opacity: 0.6, fontStyle: 'italic', fontSize: '0.76rem' }}>
               {readOnly ? 'Sin redactar' : `Haz click para agregar ${block.title.toLowerCase()}...`}
             </span>
           )}
@@ -157,7 +140,7 @@ export default function BusinessModelCanvas({ readOnly = false }) {
             min-width: 100% !important;
             width: 100% !important;
           }
-          .canvas-block-hover {
+          .canvas-block {
             padding: 0.75rem !important;
             border-radius: 8px !important;
             min-height: auto !important;
@@ -240,31 +223,32 @@ export default function BusinessModelCanvas({ readOnly = false }) {
             style={{
               width: '100%',
               maxWidth: '560px',
-              background: '#ffffff',
+              background: 'var(--bg-panel)',
               borderRadius: '16px',
-              boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)',
+              boxShadow: '0 20px 25px -5px rgba(0,0,0,0.3)',
               overflow: 'hidden',
               display: 'flex',
-              flexDirection: 'column'
+              flexDirection: 'column',
+              borderColor: 'var(--border-color)'
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '1.25rem 1.5rem', borderBottom: '1px solid #e2e8f0' }}>
-              <div style={{ padding: '0.4rem', borderRadius: '6px', background: CANVAS_BLOCKS[editingBlock].color }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '1.25rem 1.5rem', borderBottom: '1px solid var(--border-color)' }}>
+              <div style={{ padding: '0.4rem', borderRadius: '6px', background: `${CANVAS_BLOCKS[editingBlock].border}15` }}>
                 {React.createElement(CANVAS_BLOCKS[editingBlock].icon, { size: 16, style: { color: CANVAS_BLOCKS[editingBlock].border } })}
               </div>
-              <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>
                 Editar {CANVAS_BLOCKS[editingBlock].title}
               </h3>
               <button 
                 onClick={() => setEditingBlock(null)}
-                style={{ marginLeft: 'auto', border: 'none', background: 'transparent', cursor: 'pointer', color: '#94a3b8' }}
+                style={{ marginLeft: 'auto', border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--text-secondary)' }}
               >
                 <X size={18} />
               </button>
             </div>
             
             <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <p style={{ margin: 0, fontSize: '0.82rem', color: '#64748b', fontStyle: 'italic', lineHeight: 1.5 }}>
+              <p style={{ margin: 0, fontSize: '0.82rem', color: 'var(--text-secondary)', fontStyle: 'italic', lineHeight: 1.5 }}>
                 {CANVAS_BLOCKS[editingBlock].desc}
               </p>
               <textarea
@@ -277,7 +261,7 @@ export default function BusinessModelCanvas({ readOnly = false }) {
               />
             </div>
             
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', padding: '1rem 1.5rem', background: '#f8fafc', borderTop: '1px solid #e2e8f0' }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', padding: '1rem 1.5rem', background: 'var(--bg-panel-hover)', borderTop: '1px solid var(--border-color)' }}>
               <button className="btn btn-secondary" onClick={() => setEditingBlock(null)} style={{ padding: '0.4rem 1rem' }}>Cancelar</button>
               <button 
                 className="btn" 

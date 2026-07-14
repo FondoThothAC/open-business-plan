@@ -2,6 +2,25 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 import { PROJECT_EXAMPLES } from '../lib/projects_db';
 import { FRAMEWORKS } from '../config/frameworks';
 
+const EXAMPLE_FRAMEWORK_MAP = {
+  brujula: 'business',
+  agrorio: 'investment_project',
+  assetmanager: 'technology_id',
+  sove: 'micro_business',
+  mixroom: 'micro_business',
+  gtcapital: 'business',
+  juvicred: 'investment_project',
+  jubilus: 'business',
+  patriplan: 'business',
+  mexitaco: 'agile_startup',
+  hipocredito: 'business',
+  impulsa: 'business',
+  edufin: 'business',
+  fincontrol: 'technology_id',
+  cibercafe: 'social_bid',
+  ferreteria: 'business',
+};
+
 const PlanContext = createContext();
 export const usePlan = () => useContext(PlanContext);
 
@@ -29,12 +48,14 @@ const createEmptyPlan = (projectType = 'business') => {
   const plan = {
     config: {
       projectType,
+      activeMethodologies: [projectType],
       locks: {}, theme: 'light',
       visibility: {},
+      comments: {},
       ai: {
         primaryProvider: 'gemini', secondaryProvider: 'groq',
-        apiKey: KEYS.gemini, groqKey: KEYS.groq,
-        endpoint: 'http://localhost:11434',
+        apiKey: KEYS.gemini, groqKey: KEYS.groq, nvidiaKey: '',
+        endpoint: 'http://localhost:11434', lmStudioEndpoint: 'http://localhost:1234/v1',
         model: 'nemotron',   // nemotron es el modelo operativo local por defecto
         depth: 1,              // 1=Rápido, 2=Pro, 3=Profundo
         contextSize: 65536,    // 64k por defecto (seguro para 8GB VRAM)
@@ -71,6 +92,12 @@ const createEmptyPlan = (projectType = 'business') => {
         provider: 'tavily',
         tavilyApiKey: '',
         enableDdg: false
+      },
+      regionalSettings: {
+        country: 'Mexico',
+        economicBloc: 'NAFTA',
+        classificationSystem: 'SCIAN', // Ej. SCIAN, NAICS, CNAE (Mercosur), NACE (Europa), ISIC
+        currency: 'MXN'
       }
     },
     semilla: {}
@@ -95,7 +122,7 @@ const createEmptyPlan = (projectType = 'business') => {
   }
 
   return plan;
-}
+};
 
 export const PlanProvider = ({ children }) => {
   const getInitialGenStatus = () => {
@@ -123,16 +150,32 @@ export const PlanProvider = ({ children }) => {
   };
 
   const getInitialData = () => {
+    const isNew = localStorage.getItem('openplan_new_project_flag') === 'true';
     const saved = localStorage.getItem('openplan_v2_data');
+    
+    if (isNew) {
+      const base = createEmptyPlan('business');
+      base.config.brandKit.companyName = 'Proyecto Nuevo';
+      return base; // Totalmente limpio para un proyecto nuevo
+    }
+
     if (!saved) {
       const base = createEmptyPlan('business');
       base.config.brandKit.companyName = 'Ferretería y Suministros Kino';
-      return deepMerge(base, PROJECT_EXAMPLES.ferreteria_kino.data);
+      const merged = deepMerge(base, PROJECT_EXAMPLES.ferreteria_kino.data);
+      if (!merged.config.activeMethodologies) {
+        merged.config.activeMethodologies = [merged.config.projectType || 'business'];
+      }
+      return merged;
     }
     try {
       const parsed = JSON.parse(saved);
       const base = createEmptyPlan(parsed.config?.projectType || 'business');
-      return deepMerge(base, parsed);
+      const merged = deepMerge(base, parsed);
+      if (!merged.config.activeMethodologies) {
+        merged.config.activeMethodologies = [merged.config.projectType || 'business'];
+      }
+      return merged;
     } catch (e) {
       return createEmptyPlan('business');
     }
@@ -176,9 +219,58 @@ export const PlanProvider = ({ children }) => {
   // Hook de montaje para cargar el proyecto activo directamente del backend local (resuelve bugs de recarga)
   useEffect(() => {
     const syncWithBackend = async () => {
-      const activeId = localStorage.getItem('openplan_active_project_id');
-      const activeType = localStorage.getItem('openplan_active_project_type') || 'negocios';
+      let activeId = localStorage.getItem('openplan_active_project_id');
+      let activeType = localStorage.getItem('openplan_active_project_type') || 'negocios';
+
+      // Si se solicitó explícitamente un proyecto nuevo, no auto-cargamos nada y limpiamos la bandera
+      const isNewProject = localStorage.getItem('openplan_new_project_flag') === 'true';
+      if (isNewProject) {
+        localStorage.removeItem('openplan_new_project_flag');
+        return;
+      }
+
+      // Si es un proyecto nuevo no guardado aún, respetamos el lienzo limpio y no auto-cargamos nada
+      if (localStorage.getItem('openplan_is_unsaved_new') === 'true') {
+        console.log('Proyecto nuevo en edición (aún no guardado en backend). Omitiendo auto-carga.');
+        return;
+      }
+
+      // Si no hay proyecto activo, intentamos auto-cargar el último modificado en el backend
+      if (!activeId) {
+        try {
+          const listRes = await fetch('http://localhost:3001/api/projects');
+          if (listRes.ok) {
+            const projectsObj = await listRes.json();
+            const allProjects = [];
+            if (projectsObj.negocios) {
+              projectsObj.negocios.forEach(p => allProjects.push({ ...p, type: 'negocios' }));
+            }
+            if (projectsObj.social) {
+              projectsObj.social.forEach(p => allProjects.push({ ...p, type: 'social' }));
+            }
+            
+            if (allProjects.length > 0) {
+              // Ordenar por fecha de modificación mtime descendente (el más reciente primero)
+              allProjects.sort((a, b) => new Date(b.mtime) - new Date(a.mtime));
+              activeId = allProjects[0].id;
+              activeType = allProjects[0].type;
+              localStorage.setItem('openplan_active_project_id', activeId);
+              localStorage.setItem('openplan_active_project_type', activeType);
+            }
+          }
+        } catch (listErr) {
+          console.error('Error listing projects for auto-load on mount:', listErr);
+        }
+      }
+
       if (activeId) {
+        // Para evitar condiciones de carrera donde el backend pise cambios locales de localStorage síncronos
+        // que aún no se han guardado con debounce, si el ID coincide con el que ya tenemos en memoria, no hacemos fetch.
+        if (planDataRef.current?.config?.projectId === activeId) {
+          console.log('El proyecto activo ya está cargado en memoria desde localStorage.');
+          return;
+        }
+
         try {
           const response = await fetch(`http://localhost:3001/api/projects/${activeType}/${activeId}`);
           if (response.ok) {
@@ -186,7 +278,11 @@ export const PlanProvider = ({ children }) => {
             const fresh = createEmptyPlan(data.config?.projectType || 'business');
             data.config = { ...data.config, projectId: activeId };
             const merged = deepMerge(fresh, data);
+            if (!merged.config.activeMethodologies) {
+              merged.config.activeMethodologies = [merged.config.projectType || 'business'];
+            }
             setPlanData(merged);
+            localStorage.setItem('openplan_v2_data', JSON.stringify(merged));
           }
         } catch (err) {
           console.error('Error syncing project from backend on mount:', err);
@@ -227,6 +323,8 @@ export const PlanProvider = ({ children }) => {
               ...prev,
               config: { ...prev.config, projectId: resData.file }
             }));
+            localStorage.setItem('openplan_active_project_id', resData.file);
+            localStorage.removeItem('openplan_is_unsaved_new');
           }
           setSaveStatus('saved');
         } else {
@@ -251,6 +349,7 @@ export const PlanProvider = ({ children }) => {
       if (response.ok) {
         const resData = await response.json();
         if (resData.file) {
+          localStorage.removeItem('openplan_is_unsaved_new');
           setPlanData(prev => {
             const next = {
               ...prev,
@@ -308,12 +407,17 @@ export const PlanProvider = ({ children }) => {
   const loadProject = (id) => {
     const example = PROJECT_EXAMPLES[id];
     if (!example) return;
-    const fresh = createEmptyPlan('business');
+    const type = example.projectType || example.data?.config?.projectType || EXAMPLE_FRAMEWORK_MAP[id] || 'business';
+    const fresh = createEmptyPlan(type);
     fresh.config.brandKit.companyName = example.name;
+    fresh.config.projectId = id;
     fresh.config.ai = planData.config.ai;
     fresh.config.theme = planData.config.theme;
     fresh.config.externalApis = planData.config.externalApis;
     const merged = deepMerge(fresh, example.data);
+    if (!merged.config.activeMethodologies) {
+      merged.config.activeMethodologies = [merged.config.projectType || 'business'];
+    }
     setPlanData(merged);
   };
 
@@ -327,10 +431,14 @@ export const PlanProvider = ({ children }) => {
       // Set the projectId so we keep saving to the same file
       data.config = { ...data.config, projectId: id };
       const merged = deepMerge(fresh, data);
+      if (!merged.config.activeMethodologies) {
+        merged.config.activeMethodologies = [merged.config.projectType || 'business'];
+      }
       setPlanData(merged);
       
       localStorage.setItem('openplan_active_project_id', id);
       localStorage.setItem('openplan_active_project_type', type);
+      localStorage.removeItem('openplan_is_unsaved_new');
       return true;
     } catch (err) {
       console.error(err);
@@ -384,11 +492,32 @@ export const PlanProvider = ({ children }) => {
     }));
   };
 
-  const createNewProject = (projectType = 'business') => {
-    if (window.confirm(`¿Estás seguro de crear un nuevo proyecto (${projectType === 'business' ? 'Comercial' : 'Social BID'})? Se perderán los cambios no guardados del actual.`)) {
+  const updateSemilla = (field, value) => {
+    setPlanData(prev => {
+      const next = {
+        ...prev,
+        semilla: { ...prev.semilla, [field]: value }
+      };
+      if (field === 'nombre_proyecto') {
+        next.config = {
+          ...next.config,
+          brandKit: {
+            ...next.config.brandKit,
+            companyName: value
+          }
+        };
+      }
+      return next;
+    });
+  };
+
+  const createNewProject = () => {
+    if (window.confirm(`¿Estás seguro de crear un nuevo proyecto? Se perderán los cambios no guardados del actual.`)) {
       localStorage.removeItem('openplan_v2_data');
       localStorage.removeItem('openplan_active_project_id');
       localStorage.removeItem('openplan_active_project_type');
+      localStorage.setItem('openplan_new_project_flag', 'true');
+      localStorage.setItem('openplan_is_unsaved_new', 'true'); // Flag to prevent auto-loading of the last edited project
       window.location.href = '/semilla';
     }
   };
@@ -441,6 +570,43 @@ export const PlanProvider = ({ children }) => {
         anexos: prev.config.anexos.map(a => a.id === id ? { ...a, ...updates } : a)
       }
     }));
+  };
+
+  const addComment = (pillar, moduleKey, fieldKey, text, author = 'Usuario') => {
+    const key = `${pillar}.${moduleKey}.${fieldKey}`;
+    const newComment = { id: Date.now().toString(), text, author, date: new Date().toISOString() };
+    setPlanData(prev => {
+      const currentComments = prev.config.comments || {};
+      const fieldComments = currentComments[key] || [];
+      return {
+        ...prev,
+        config: {
+          ...prev.config,
+          comments: {
+            ...currentComments,
+            [key]: [...fieldComments, newComment]
+          }
+        }
+      };
+    });
+  };
+
+  const deleteComment = (pillar, moduleKey, fieldKey, commentId) => {
+    const key = `${pillar}.${moduleKey}.${fieldKey}`;
+    setPlanData(prev => {
+      const currentComments = prev.config.comments || {};
+      const fieldComments = currentComments[key] || [];
+      return {
+        ...prev,
+        config: {
+          ...prev.config,
+          comments: {
+            ...currentComments,
+            [key]: fieldComments.filter(c => c.id !== commentId)
+          }
+        }
+      };
+    });
   };
 
   const startIndustrialization = (customQueue) => {
@@ -563,7 +729,7 @@ export const PlanProvider = ({ children }) => {
           if (isFinancialModule) {
             const { generateAutomatedFinancials } = await import('../lib/finanzas/calculadoraFinanciera');
             // Genera la data calculada exacta de una pasada.
-            const allFinancials = generateAutomatedFinancials(planDataRef.current);
+            const allFinancials = await generateAutomatedFinancials(planDataRef.current);
             result = allFinancials[modKey] || {};
             await new Promise(r => setTimeout(r, 1000)); // Delay para visual de progreso
           } else {
@@ -611,8 +777,8 @@ export const PlanProvider = ({ children }) => {
   }, [generationStatus]);
 
   return (
-    <PlanContext.Provider value={{ planData, updateSection, updateConfig, toggleLock, toggleModuleVisibility, updateStaff, updateProcesses, loadProject, loadSavedProject, createNewProject, updateProjectName, addAnexo, removeAnexo, updateAnexo, saveStatus, manualSaveProject, saveProjectAs, generationStatus, generationProgress, startIndustrialization, pauseIndustrialization, stopIndustrialization, getProjectCompletion, autoFillProject: startIndustrialization }}>
+    <PlanContext.Provider value={{ planData, updateSection, updateConfig, toggleLock, toggleModuleVisibility, updateStaff, updateProcesses, loadProject, loadSavedProject, createNewProject, updateProjectName, addAnexo, removeAnexo, updateAnexo, addComment, deleteComment, saveStatus, manualSaveProject, saveProjectAs, generationStatus, generationProgress, startIndustrialization, pauseIndustrialization, stopIndustrialization, getProjectCompletion, autoFillProject: startIndustrialization, updateSemilla }}>
       {children}
     </PlanContext.Provider>
   );
-}
+};

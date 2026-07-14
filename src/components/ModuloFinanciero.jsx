@@ -4,6 +4,7 @@ import { calculateFinancialProjections } from '../lib/finanzas/financial-calcula
 import { Calculator, Settings, RefreshCw, BarChart, TrendingUp, Wallet, FileText, CheckCircle2 } from 'lucide-react';
 import ExpertPanel from './ExpertPanel';
 import FinancialCharts, { CashFlowChart, ProfitGauge } from './FinancialCharts';
+import MonteCarloSimulator from './MonteCarloSimulator';
 import {
   CIBERCAFE_CORRIDA,
   applyCorridaToPlan,
@@ -37,12 +38,17 @@ function isVariableExpense(row) {
 }
 
 function buildInitialFinanceData(planData, importedCorrida) {
+  const banxicoData = planData.naturaleza?.pestel?.indicadores_banxico || {};
+  const currentInflation = banxicoData.inflacion ? parseFloat(banxicoData.inflacion) : 4.5;
+  const currentTIIE = banxicoData.tiie ? parseFloat(banxicoData.tiie) : 10;
+  const estimatedWACC = currentTIIE + 2.0; // TIIE + prima de riesgo base
+
   if (importedCorrida) {
     return {
       projectDuration: importedCorrida.durationYears || 5,
       taxRate: importedCorrida.taxRate || 10,
-      discountRate: importedCorrida.discountRate || 10,
-      inflationRate: 0,
+      discountRate: importedCorrida.discountRate || estimatedWACC,
+      inflationRate: currentInflation,
       initialInvestment: importedCorrida.initialInvestment || 0,
       monthlyFixedCosts: (importedCorrida.fixedCostLines || []).reduce((sum, row) => sum + Number(row.monthly || 0), 0),
       annualSalesGoal: importedCorrida.annualRows?.[0]?.sales || 0,
@@ -66,8 +72,8 @@ function buildInitialFinanceData(planData, importedCorrida) {
   return {
     projectDuration: 5,
     taxRate: 30,
-    discountRate: 12,
-    inflationRate: 4.5,
+    discountRate: estimatedWACC,
+    inflationRate: currentInflation,
     initialInvestment: parseNum(inver),
     monthlyFixedCosts: parseNum(fijos),
     annualSalesGoal: parseNum(meta),
@@ -266,6 +272,7 @@ export default function ModuloFinanciero({ title, description, moduleKey, pillar
 
   const [results, setResults] = useState(null);
   const [activeExpertField, setActiveExpertField] = useState(null);
+  const [activeSubTab, setActiveSubTab] = useState('corrida'); // Pestaña de navegación interna
 
   useEffect(() => {
     if (activeCorrida) setFinanceData(buildInitialFinanceData(planData, activeCorrida));
@@ -354,19 +361,6 @@ export default function ModuloFinanciero({ title, description, moduleKey, pillar
     return () => window.removeEventListener('message', handleMessage);
   }, [activeCorrida]);
 
-  const handleLoadTemplate = () => {
-    applyCorridaToPlan(updateSection, CIBERCAFE_CORRIDA);
-    setFinanceData(buildInitialFinanceData(planData, CIBERCAFE_CORRIDA));
-    const proj = buildProjectionFromCorrida(CIBERCAFE_CORRIDA);
-    setResults(proj);
-    persistProjection(proj);
-  };
-
-  const handleClearTemplate = () => {
-    updateSection('organizacion', 'estados_financieros', 'corrida_importada', '');
-    runCalculations(null);
-  };
-
   const chartData = useMemo(() => {
     if (!results || !Array.isArray(results.annualCashFlowData)) return [];
     return results.annualCashFlowData.map((row) => {
@@ -389,134 +383,183 @@ export default function ModuloFinanciero({ title, description, moduleKey, pillar
         </div>
       </div>
 
-
-
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: '2rem' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
-            <div className="glass-panel" style={{ padding: '2rem' }}>
-              <h3 style={{ fontSize: '1.1rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Settings className="w-5 h-5 text-accent" /> Parámetros Manuales
-              </h3>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                <div className="form-group">
-                  <label className="form-label" style={{ fontSize: '0.7rem' }}>Inversión ($)</label>
-                  <input type="number" className="form-control" disabled={!!activeCorrida} value={financeData.initialInvestment} onChange={(e) => handleDataChange('initialInvestment', e.target.value)} />
-                </div>
-                <div className="form-group">
-                  <label className="form-label" style={{ fontSize: '0.7rem' }}>Ventas Año 1 ($)</label>
-                  <input type="number" className="form-control" disabled={!!activeCorrida} value={financeData.annualSalesGoal} onChange={(e) => handleDataChange('annualSalesGoal', e.target.value)} />
-                </div>
-                <div className="form-group">
-                  <label className="form-label" style={{ fontSize: '0.7rem' }}>Costos Fijos ($)</label>
-                  <input type="number" className="form-control" disabled={!!activeCorrida} value={financeData.monthlyFixedCosts} onChange={(e) => handleDataChange('monthlyFixedCosts', e.target.value)} />
-                </div>
-                <div className="form-group">
-                  <label className="form-label" style={{ fontSize: '0.7rem' }}>Crecimiento (%)</label>
-                  <input type="number" className="form-control" disabled={!!activeCorrida} value={financeData.annualSalesGrowth} onChange={(e) => handleDataChange('annualSalesGrowth', e.target.value)} />
-                </div>
-              </div>
-              {activeCorrida && (
-                <p style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', marginTop: '0.75rem' }}>
-                  Los parámetros están bloqueados porque la corrida XLS está activa. Usa "datos manuales" para editarlos.
-                </p>
-              )}
-              <button className="btn btn-primary w-full mt-4" onClick={() => runCalculations(activeCorrida)}>
-                <RefreshCw className="w-4 h-4" /> {activeCorrida ? 'Sincronizar corrida' : 'Recalcular'}
-              </button>
-            </div>
-
-            <div className="glass-panel" style={{ padding: '2rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                <h3 style={{ fontSize: '1.1rem', margin: 0 }}>Análisis IA</h3>
-                <button
-                  onClick={() => setActiveExpertField({ key: 'analisis_ejecutivo', label: isEstados ? 'Análisis de Estados Financieros' : 'Análisis de Rentabilidad' })}
-                  className="btn btn-ia"
-                  style={{ padding: '4px 8px', fontSize: '0.7rem' }}
-                >
-                  <Calculator className="w-3 h-3" /> <span>Redactar</span>
-                </button>
-              </div>
-              <textarea
-                className="form-control"
-                style={{ minHeight: '130px', fontSize: '0.85rem' }}
-                placeholder={isEstados ? 'La IA analizará estado de resultados, balance y flujo...' : 'La IA analizará TIR, VAN, ROI y punto de equilibrio...'}
-                value={planData[pillarId]?.[moduleKey]?.analisis_ejecutivo || ''}
-                onChange={(e) => updateSection(pillarId, moduleKey, 'analisis_ejecutivo', e.target.value)}
-              />
-            </div>
-          </div>
-          
-          <div className="glass-panel" style={{ padding: '2rem', marginTop: '2rem' }}>
-            <h3 style={{ fontSize: '1.1rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <BarChart className="w-5 h-5 text-accent" /> Proyección de Flujo de Caja (5 Años)
-            </h3>
-            <CashFlowChart data={chartData} />
-          </div>
-        </div>
-
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          <div className="glass-panel" style={{ padding: '1.5rem', textAlign: 'center' }}>
-            <h3 style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '1rem' }}>
-              {isEstados ? 'SALUD DEL PROYECTO (TIR)' : 'RENTABILIDAD GLOBAL'}
-            </h3>
-            <ProfitGauge value={Number(results?.financialMetrics?.irr || 0)} label="TIR Anual" />
-          </div>
-
-          <div className="glass-panel" style={{ padding: '1.5rem' }}>
-            <div style={{ marginBottom: '1.5rem' }}>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>VAN (Valor Actual Neto)</div>
-              <div style={{ fontSize: '1.4rem', fontWeight: 'bold', color: (results?.financialMetrics?.npv || 0) > 0 ? 'var(--success-color)' : '#ef4444' }}>
-                {results ? formatCurrency(results.financialMetrics.npv || 0) : '$0.00'}
-              </div>
-            </div>
-
-            <div style={{ marginBottom: '1.5rem' }}>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>ROI Proyectado</div>
-              <div style={{ fontSize: '1.4rem', fontWeight: 'bold' }}>
-                {results?.financialMetrics?.roi ? `${Number(results.financialMetrics.roi).toFixed(1)}%` : '0%'}
-              </div>
-            </div>
-
-            <div style={{ padding: '0.75rem', background: 'rgba(255,255,255,0.03)', borderRadius: '8px' }}>
-              <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>{isEstados ? 'Periodo de Recuperación' : 'Punto de Equilibrio'}</div>
-              <div style={{ fontSize: '0.9rem', fontWeight: '600', marginTop: '4px' }}>
-                {(results?.financialMetrics?.paybackPeriod || '').replace(/\|/g, ' ') || 'Calculando...'}
-              </div>
-            </div>
-          </div>
-
-          {!isEstados && (
-            <div className="glass-panel" style={{ padding: '1.25rem' }}>
-              <h4 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
-                <TrendingUp size={16} /> Indicadores de Rentabilidad
-              </h4>
-              <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
-                CBR estimado: <strong>{Number(results?.financialMetrics?.cbr || 0).toFixed(2)}</strong>
-              </p>
-              <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                Inversión inicial: <strong>{formatCurrency(results?.netInitialInvestment || 0)}</strong>
-              </p>
-            </div>
-          )}
-
-          {isEstados && (
-            <div className="glass-panel" style={{ padding: '1.25rem' }}>
-              <h4 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
-                <Wallet size={16} /> Estado Resumido
-              </h4>
-              <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                Corrida guardada automáticamente en el módulo para exportación en vista previa.
-              </p>
-            </div>
-          )}
-        </div>
+      {/* Tabs de Navegación del Módulo Financiero */}
+      <div style={{ display: 'flex', gap: '1rem', borderBottom: '1px solid var(--border-color)', marginBottom: '1.5rem', paddingBottom: '0.5rem' }}>
+        <button 
+          onClick={() => setActiveSubTab('corrida')} 
+          style={{
+            background: 'transparent',
+            border: 'none',
+            borderBottom: activeSubTab === 'corrida' ? '2px solid var(--accent-color)' : '2px solid transparent',
+            color: activeSubTab === 'corrida' ? 'var(--text-primary)' : 'var(--text-secondary)',
+            padding: '0.5rem 1rem',
+            fontSize: '0.85rem',
+            fontWeight: 700,
+            cursor: 'pointer',
+            transition: 'all 0.2s'
+          }}
+        >
+          Corrida Financiera y Proyecciones
+        </button>
+        <button 
+          onClick={() => setActiveSubTab('montecarlo')} 
+          style={{
+            background: 'transparent',
+            border: 'none',
+            borderBottom: activeSubTab === 'montecarlo' ? '2px solid var(--accent-color)' : '2px solid transparent',
+            color: activeSubTab === 'montecarlo' ? 'var(--text-primary)' : 'var(--text-secondary)',
+            padding: '0.5rem 1rem',
+            fontSize: '0.85rem',
+            fontWeight: 700,
+            cursor: 'pointer',
+            transition: 'all 0.2s'
+          }}
+        >
+          Simulador de Riesgo Monte Carlo
+        </button>
       </div>
 
-      {isEstados && (
-        <div style={{ marginTop: '2rem', width: '100%', overflowX: 'auto' }}>
-          <FinancialCharts projections={results} showTables={true} />
-        </div>
+      {activeSubTab === 'montecarlo' ? (
+        <MonteCarloSimulator 
+          initialInvestment={financeData.initialInvestment}
+          baseRevenue={financeData.annualSalesGoal}
+          baseCost={(financeData.monthlyFixedCosts + financeData.monthlyVariableCosts) * 12}
+          wacc={financeData.discountRate}
+          onExport={(simResults) => {
+            updateSection('organizacion', 'rentabilidad', 'simulacion_montecarlo', simResults.conclusion);
+            alert('¡Conclusiones de la simulación de Monte Carlo exportadas con éxito al plan de negocios!');
+          }}
+        />
+      ) : (
+        <>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: '2rem' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
+                <div className="glass-panel" style={{ padding: '2rem' }}>
+                  <h3 style={{ fontSize: '1.1rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <Settings className="w-5 h-5 text-accent" /> Parámetros Manuales
+                  </h3>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                    <div className="form-group">
+                      <label className="form-label" style={{ fontSize: '0.7rem' }}>Inversión ($)</label>
+                      <input type="number" className="form-control" disabled={!!activeCorrida} value={financeData.initialInvestment} onChange={(e) => handleDataChange('initialInvestment', e.target.value)} />
+                    </div>
+                    <div className="form-group">
+                      <label className="form-label" style={{ fontSize: '0.7rem' }}>Ventas Año 1 ($)</label>
+                      <input type="number" className="form-control" disabled={!!activeCorrida} value={financeData.annualSalesGoal} onChange={(e) => handleDataChange('annualSalesGoal', e.target.value)} />
+                    </div>
+                    <div className="form-group">
+                      <label className="form-label" style={{ fontSize: '0.7rem' }}>Costos Fijos ($)</label>
+                      <input type="number" className="form-control" disabled={!!activeCorrida} value={financeData.monthlyFixedCosts} onChange={(e) => handleDataChange('monthlyFixedCosts', e.target.value)} />
+                    </div>
+                    <div className="form-group">
+                      <label className="form-label" style={{ fontSize: '0.7rem' }}>Crecimiento (%)</label>
+                      <input type="number" className="form-control" disabled={!!activeCorrida} value={financeData.annualSalesGrowth} onChange={(e) => handleDataChange('annualSalesGrowth', e.target.value)} />
+                    </div>
+                  </div>
+                  {activeCorrida && (
+                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', marginTop: '0.75rem' }}>
+                      Los parámetros están bloqueados porque la corrida XLS está activa. Usa "datos manuales" para editarlos.
+                    </p>
+                  )}
+                  <button className="btn btn-primary w-full mt-4" onClick={() => runCalculations(activeCorrida)}>
+                    <RefreshCw className="w-4 h-4" /> {activeCorrida ? 'Sincronizar corrida' : 'Recalcular'}
+                  </button>
+                </div>
+
+                <div className="glass-panel" style={{ padding: '2rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                    <h3 style={{ fontSize: '1.1rem', margin: 0 }}>Análisis IA</h3>
+                    <button
+                      onClick={() => setActiveExpertField({ key: 'analisis_ejecutivo', label: isEstados ? 'Análisis de Estados Financieros' : 'Análisis de Rentabilidad' })}
+                      className="btn btn-ia"
+                      style={{ padding: '4px 8px', fontSize: '0.7rem' }}
+                    >
+                      <Calculator className="w-3 h-3" /> <span>Redactar</span>
+                    </button>
+                  </div>
+                  <textarea
+                    className="form-control"
+                    style={{ minHeight: '130px', fontSize: '0.85rem' }}
+                    placeholder={isEstados ? 'La IA analizará estado de resultados, balance y flujo...' : 'La IA analizará TIR, VAN, ROI y punto de equilibrio...'}
+                    value={planData[pillarId]?.[moduleKey]?.analisis_ejecutivo || ''}
+                    onChange={(e) => updateSection(pillarId, moduleKey, 'analisis_ejecutivo', e.target.value)}
+                  />
+                </div>
+              </div>
+              
+              <div className="glass-panel" style={{ padding: '2rem', marginTop: '2rem' }}>
+                <h3 style={{ fontSize: '1.1rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <BarChart className="w-5 h-5 text-accent" /> Proyección de Flujo de Caja (5 Años)
+                </h3>
+                <CashFlowChart data={chartData} />
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+              <div className="glass-panel" style={{ padding: '1.5rem', textAlign: 'center' }}>
+                <h3 style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '1rem' }}>
+                  {isEstados ? 'SALUD DEL PROYECTO (TIR)' : 'RENTABILIDAD GLOBAL'}
+                </h3>
+                <ProfitGauge value={Number(results?.financialMetrics?.irr || 0)} label="TIR Anual" />
+              </div>
+
+              <div className="glass-panel" style={{ padding: '1.5rem' }}>
+                <div style={{ marginBottom: '1.5rem' }}>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>VAN (Valor Actual Neto)</div>
+                  <div style={{ fontSize: '1.4rem', fontWeight: 'bold', color: (results?.financialMetrics?.npv || 0) > 0 ? 'var(--success-color)' : '#ef4444' }}>
+                    {results ? formatCurrency(results.financialMetrics.npv || 0) : '$0.00'}
+                  </div>
+                </div>
+
+                <div style={{ marginBottom: '1.5rem' }}>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>ROI Proyectado</div>
+                  <div style={{ fontSize: '1.4rem', fontWeight: 'bold' }}>
+                    {results?.financialMetrics?.roi ? `${Number(results.financialMetrics.roi).toFixed(1)}%` : '0%'}
+                  </div>
+                </div>
+
+                <div style={{ padding: '0.75rem', background: 'rgba(255,255,255,0.03)', borderRadius: '8px' }}>
+                  <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>{isEstados ? 'Periodo de Recuperación' : 'Punto de Equilibrio'}</div>
+                  <div style={{ fontSize: '0.9rem', fontWeight: '600', marginTop: '4px' }}>
+                    {(results?.financialMetrics?.paybackPeriod || '').replace(/\|/g, ' ') || 'Calculando...'}
+                  </div>
+                </div>
+              </div>
+
+              {!isEstados && (
+                <div className="glass-panel" style={{ padding: '1.25rem' }}>
+                  <h4 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
+                    <TrendingUp size={16} /> Indicadores de Rentabilidad
+                  </h4>
+                  <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
+                    CBR estimado: <strong>{Number(results?.financialMetrics?.cbr || 0).toFixed(2)}</strong>
+                  </p>
+                  <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                    Inversión inicial: <strong>{formatCurrency(results?.netInitialInvestment || 0)}</strong>
+                  </p>
+                </div>
+              )}
+
+              {isEstados && (
+                <div className="glass-panel" style={{ padding: '1.25rem' }}>
+                  <h4 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
+                    <Wallet size={16} /> Estado Resumido
+                  </h4>
+                  <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                    Corrida guardada automáticamente en el módulo para exportación en vista previa.
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {isEstados && (
+            <div style={{ marginTop: '2rem', width: '100%', overflowX: 'auto' }}>
+              <FinancialCharts projections={results} showTables={true} />
+            </div>
+          )}
+        </>
       )}
 
       <ExpertPanel

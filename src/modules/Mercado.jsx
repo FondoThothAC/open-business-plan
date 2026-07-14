@@ -1,5 +1,6 @@
 import React from 'react';
 import { usePlan } from '../context/PlanContext';
+import AnalisisCompetenciaGoogle from '../components/AnalisisCompetenciaGoogle';
 
 export default function Mercado() {
   const { planData, updateSection } = usePlan();
@@ -64,6 +65,8 @@ export default function Mercado() {
               <p className="text-xs text-secondary mt-2">Mapa referencial de impacto de mercado.</p>
             </div>
           </div>
+          
+          <AnalisisCompetenciaGoogle />
         </div>
       </div>
     </div>

@@ -94,7 +94,10 @@ export default function PestelAnalysis({ data }) {
               gap: '0.8rem',
               transition: 'all 0.3s ease',
               textAlign: 'center',
-              position: 'relative'
+              position: 'relative',
+              minWidth: 0,
+              wordWrap: 'break-word',
+              overflowWrap: 'break-word'
             }}
           >
             {/* Top Icon Circle */}

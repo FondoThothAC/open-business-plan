@@ -1,111 +1,244 @@
 #!/bin/bash
+# ============================================================
+#  OpenBusinessPlan v3.0 — Lanzador Inteligente Mac/Linux
+#  [SDD] Script de arranque con auto-instalación de dependencias
+#  [TDD] Verifica: Node.js, NPM, node_modules, Ollama
+#  [UXDD] Colores ANSI, progreso visual, apertura automática de browser
+# ============================================================
 
-# [SDD] Script de arranque industrial para Linux/Mac
-# [TDD] Verifica: Node.js, NPM, Ollama y node_modules
+# ── Colores ANSI ─────────────────────────────────────────────
+RESET='\033[0m'
+BOLD='\033[1m'
+GREEN='\033[0;32m'
+CYAN='\033[0;36m'
+YELLOW='\033[1;33m'
+RED='\033[0;31m'
+BLUE='\033[0;34m'
+MAGENTA='\033[0;35m'
 
-echo "=========================================================="
-echo "   OPENPLAN v2.5.12 - SISTEMA DE INDUSTRIALIZACION"
-echo "=========================================================="
-echo ""
+# ── Detección de OS ──────────────────────────────────────────
+OS_TYPE="linux"
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  OS_TYPE="mac"
+fi
 
-# Obtener ruta del script
+# ── Ruta base del proyecto ───────────────────────────────────
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 cd "$DIR"
 
-# 1. VERIFICAR DEPENDENCIAS CORE
-echo "[+] Verificando entorno..."
+# ── Banner ───────────────────────────────────────────────────
+clear
+echo ""
+echo -e "${BOLD}${BLUE}╔══════════════════════════════════════════════════════╗${RESET}"
+echo -e "${BOLD}${BLUE}║${RESET}  ${BOLD}${CYAN}📊  OpenBusinessPlan  v3.0${RESET}                          ${BOLD}${BLUE}║${RESET}"
+echo -e "${BOLD}${BLUE}║${RESET}  ${MAGENTA}Sistema de Planeación Empresarial con IA${RESET}            ${BOLD}${BLUE}║${RESET}"
+echo -e "${BOLD}${BLUE}╚══════════════════════════════════════════════════════╝${RESET}"
+echo ""
 
-if ! command -v node &> /dev/null; then
-    echo "[ERROR] Node.js no detectado. Instala Node.js (v18+)."
-    exit 1
+# ── Función: instalar Node.js automáticamente ────────────────
+install_node() {
+  echo -e "${YELLOW}[!] Node.js no encontrado. Instalando automáticamente...${RESET}"
+  echo ""
+
+  if [[ "$OS_TYPE" == "mac" ]]; then
+    # Intentar con Homebrew primero
+    if command -v brew &>/dev/null; then
+      echo -e "${CYAN}[+] Usando Homebrew para instalar Node.js...${RESET}"
+      brew install node
+    elif command -v curl &>/dev/null; then
+      # Instalar NVM y luego Node.js
+      echo -e "${CYAN}[+] Instalando NVM y Node.js LTS...${RESET}"
+      curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+      export NVM_DIR="$HOME/.nvm"
+      # shellcheck source=/dev/null
+      [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+      nvm install --lts
+      nvm use --lts
+    else
+      echo -e "${RED}[ERROR] No se pudo instalar Node.js automáticamente.${RESET}"
+      echo -e "  Descarga manualmente: ${BOLD}https://nodejs.org/es/download/${RESET}"
+      open "https://nodejs.org/es/download/" 2>/dev/null || true
+      exit 1
+    fi
+
+  else
+    # Linux: usar apt, dnf o nvm
+    if command -v apt &>/dev/null; then
+      echo -e "${CYAN}[+] Instalando Node.js via apt (Ubuntu/Debian)...${RESET}"
+      curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+      sudo apt-get install -y nodejs
+    elif command -v dnf &>/dev/null; then
+      echo -e "${CYAN}[+] Instalando Node.js via dnf (Fedora/RHEL)...${RESET}"
+      sudo dnf install -y nodejs
+    elif command -v pacman &>/dev/null; then
+      echo -e "${CYAN}[+] Instalando Node.js via pacman (Arch)...${RESET}"
+      sudo pacman -S --noconfirm nodejs npm
+    elif command -v curl &>/dev/null; then
+      echo -e "${CYAN}[+] Instalando NVM y Node.js LTS...${RESET}"
+      curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+      export NVM_DIR="$HOME/.nvm"
+      [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+      nvm install --lts
+      nvm use --lts
+    else
+      echo -e "${RED}[ERROR] No se pudo instalar Node.js automáticamente.${RESET}"
+      echo -e "  Descarga manualmente: ${BOLD}https://nodejs.org/es/download/${RESET}"
+      exit 1
+    fi
+  fi
+
+  # Recargar PATH
+  export PATH="$PATH:/usr/local/bin:/usr/bin"
+  export NVM_DIR="$HOME/.nvm"
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+}
+
+# ── Función: abrir browser ───────────────────────────────────
+open_browser() {
+  local url="$1"
+  sleep 2
+  if [[ "$OS_TYPE" == "mac" ]]; then
+    open "$url"
+  elif command -v xdg-open &>/dev/null; then
+    xdg-open "$url"
+  elif command -v sensible-browser &>/dev/null; then
+    sensible-browser "$url"
+  fi
+}
+
+# ─────────────────────────────────────────────────────────────
+#  PASO 1: Verificar Node.js
+# ─────────────────────────────────────────────────────────────
+echo -e "${BOLD}[1/4] Verificando entorno...${RESET}"
+
+# Cargar NVM si existe (instalaciones previas)
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+if ! command -v node &>/dev/null; then
+  install_node
 fi
 
-if ! command -v npm &> /dev/null; then
-    echo "[ERROR] NPM no detectado."
-    exit 1
+if ! command -v node &>/dev/null; then
+  echo -e "${RED}[ERROR] Node.js sigue sin encontrarse. Instálalo manualmente: https://nodejs.org${RESET}"
+  exit 1
 fi
 
-# 2. VERIFICAR NODE_MODULES
+NODE_VER=$(node -v)
+NPM_VER=$(npm -v)
+echo -e "${GREEN}    ✔ Node.js ${NODE_VER} — NPM ${NPM_VER}${RESET}"
+
+# ─────────────────────────────────────────────────────────────
+#  PASO 2: Instalar dependencias si faltan
+# ─────────────────────────────────────────────────────────────
+echo -e "${BOLD}[2/4] Verificando dependencias del proyecto...${RESET}"
+
 if [ ! -d "node_modules" ]; then
-    echo "[!] Dependencias no encontradas. Instalando..."
-    npm install
+  echo -e "${YELLOW}    [!] Instalando paquetes (primera vez, puede tardar ~3 min)...${RESET}"
+  npm install
+  if [ $? -ne 0 ]; then
+    echo -e "${RED}[ERROR] Falló la instalación de dependencias. Revisa tu conexión a internet.${RESET}"
+    exit 1
+  fi
+fi
+echo -e "${GREEN}    ✔ Dependencias listas${RESET}"
+
+# ─────────────────────────────────────────────────────────────
+#  PASO 3: Verificar Ollama (IA Local) — opcional
+# ─────────────────────────────────────────────────────────────
+echo -e "${BOLD}[3/4] Verificando IA Local (Ollama)...${RESET}"
+
+if command -v ollama &>/dev/null; then
+  echo -e "${GREEN}    ✔ Ollama detectado${RESET}"
+  # Iniciar Ollama en background si no está corriendo
+  if ! pgrep -x "ollama" > /dev/null 2>&1; then
+    bash "$DIR/activar_cerebro.sh" &
+    sleep 2
+  fi
+else
+  echo -e "${YELLOW}    ⚠ Ollama no detectado — La IA Local no estará disponible.${RESET}"
+  echo -e "    Descárgalo en: ${CYAN}https://ollama.com/${RESET}"
 fi
 
-# 3. VERIFICAR OLLAMA
-if ! command -v ollama &> /dev/null; then
-    echo "[ADVERTENCIA] Ollama no detectado. La IA Local no funcionará."
-fi
-
-# 4. CONFIGURACION DE PRIMERA VEZ (Auto-start opcional)
+# ─────────────────────────────────────────────────────────────
+#  PASO 4: Configuración primera vez (auto-inicio)
+# ─────────────────────────────────────────────────────────────
 if [ ! -f ".installed" ]; then
-    echo ""
-    echo "=========================================================="
-    echo "   CONFIGURACION DE PRIMERA VEZ"
-    echo "=========================================================="
-    read -p "¿Deseas habilitar el arranque automático al iniciar sesión? (s/n): " choice
-    if [[ "$choice" == "s" || "$choice" == "S" ]]; then
-        if [[ "$OSTYPE" == "darwin"* ]]; then
-            # Mac Auto-start (LaunchAgent)
-            PLIST_PATH="$HOME/Library/LaunchAgents/com.openplan.start.plist"
-            cat <<EOF > "$PLIST_PATH"
+  echo ""
+  echo -e "${BOLD}${MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+  echo -e "${BOLD}  🎉 ¡Primera vez! Configuración inicial${RESET}"
+  echo -e "${BOLD}${MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+  echo ""
+  read -p "  ¿Habilitar arranque automático al iniciar sesión? (s/n): " choice
+  if [[ "$choice" == "s" || "$choice" == "S" ]]; then
+    if [[ "$OS_TYPE" == "mac" ]]; then
+      PLIST_PATH="$HOME/Library/LaunchAgents/com.openplan.start.plist"
+      cat <<PLIST_EOF > "$PLIST_PATH"
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>Label</key>
-    <string>com.openplan.start</string>
-    <key>ProgramArguments</key>
-    <array>
-        <string>/usr/bin/open</string>
-        <string>-a</string>
-        <string>Terminal</string>
-        <string>$DIR/start_open_plan.sh</string>
-    </array>
-    <key>RunAtLoad</key>
-    <true/>
+  <key>Label</key><string>com.openplan.start</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/usr/bin/open</string>
+    <string>-a</string>
+    <string>Terminal</string>
+    <string>${DIR}/start_open_plan.sh</string>
+  </array>
+  <key>RunAtLoad</key><true/>
 </dict>
 </plist>
-EOF
-            launchctl load "$PLIST_PATH"
-            echo "[OK] OpenPlan configurado para arrancar en el inicio de sesión de Mac."
-        else
-            # Linux Auto-start (.desktop)
-            mkdir -p ~/.config/autostart
-            cat <<EOF > ~/.config/autostart/openplan.desktop
+PLIST_EOF
+      launchctl load "$PLIST_PATH" 2>/dev/null
+      echo -e "${GREEN}  ✔ OpenPlan arrancará automáticamente en Mac.${RESET}"
+    else
+      mkdir -p ~/.config/autostart
+      cat <<DESK_EOF > ~/.config/autostart/openplan.desktop
 [Desktop Entry]
 Type=Application
-Exec=gnome-terminal -- bash -c "$DIR/start_open_plan.sh"
+Exec=bash "${DIR}/start_open_plan.sh"
 Hidden=false
 NoDisplay=false
 X-GNOME-Autostart-enabled=true
 Name=OpenPlan
 Comment=Startup OpenPlan Business Engine
-EOF
-            echo "[OK] OpenPlan configurado para arrancar en el inicio de sesión de Linux."
-        fi
+DESK_EOF
+      echo -e "${GREEN}  ✔ OpenPlan arrancará automáticamente en Linux.${RESET}"
     fi
-    touch .installed
+  fi
+  touch .installed
 fi
 
-# 5. INICIAR SISTEMA
+# ─────────────────────────────────────────────────────────────
+#  INICIO DEL SISTEMA
+# ─────────────────────────────────────────────────────────────
 echo ""
-echo "[+] Levantando Infraestructura..."
+echo -e "${BOLD}[4/4] Levantando sistema...${RESET}"
+echo ""
 
-# [1/3] Activar Cerebro IA (Ollama) en background
-echo "[1/3] Activando Cerebro IA..."
-bash "$DIR/activar_cerebro.sh" &
-sleep 3
+APP_URL="http://localhost:5173"
 
-# [2/3] Iniciar Backend en segundo plano
-echo "[2/3] Iniciando Servidor de Datos (Puerto 3001)..."
+# Iniciar backend en segundo plano
+echo -e "${CYAN}  → Servidor de datos (Puerto 3001)...${RESET}"
 npm run server &
+SERVER_PID=$!
+sleep 2
 
-# [3/3] Iniciar Frontend
-echo "[3/3] Iniciando Interface Industrial (Vite)..."
+# Abrir browser automáticamente en segundo plano
+open_browser "$APP_URL" &
+
+# Iniciar frontend (Vite, bloquea el terminal)
+echo -e "${CYAN}  → Interfaz web (Puerto 5173)...${RESET}"
 echo ""
-echo "=========================================================="
-echo "   SISTEMA ACTIVO. ACCEDE EN: http://localhost:5173"
-echo "=========================================================="
+echo -e "${BOLD}${GREEN}╔══════════════════════════════════════════════════════╗${RESET}"
+echo -e "${BOLD}${GREEN}║  ✅  SISTEMA ACTIVO                                  ║${RESET}"
+echo -e "${BOLD}${GREEN}║  🌐  Abre tu browser en: ${CYAN}${APP_URL}${GREEN}        ║${RESET}"
+echo -e "${BOLD}${GREEN}║  ⛔  Presiona Ctrl+C para detener                   ║${RESET}"
+echo -e "${BOLD}${GREEN}╚══════════════════════════════════════════════════════╝${RESET}"
 echo ""
+
+# Trampa para limpiar al salir con Ctrl+C
+trap "echo ''; echo -e '${YELLOW}Cerrando OpenPlan...${RESET}'; kill $SERVER_PID 2>/dev/null; exit 0" INT TERM
 
 npm run dev

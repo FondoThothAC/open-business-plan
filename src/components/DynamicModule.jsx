@@ -12,6 +12,8 @@ import OrganizationFinanceToolkit from './OrganizationFinanceToolkit';
 import TamSamSom from './TamSamSom';
 import BusinessModelCanvas from './BusinessModelCanvas';
 import HubspotBuyerPersona from './HubspotBuyerPersona';
+import MacroDashboard from './MacroDashboard';
+import OrganigramaInteractivo from './OrganigramaInteractivo';
 
 const BusinessModelSelector = ({ value, onChange }) => {
   const models = [
@@ -144,6 +146,8 @@ export default function DynamicModule() {
     (pillarId === 'organizacion' && moduleId === 'estructura')
   );
 
+  const isPESTELModule = pillarId === 'naturaleza' && moduleId === 'pestel';
+
   const extraAction = isMapModule ? (
     <InegiMap
       token={planData.config?.externalApis?.inegiToken}
@@ -157,6 +161,8 @@ export default function DynamicModule() {
       initialKeywords={projectContext}
       defaultHeatmap={moduleId === 'mapa'}
     />
+  ) : isPESTELModule ? (
+    <MacroDashboard token={planData.config?.externalApis?.banxicoToken} />
   ) : null;
 
   const isFinancialModule = pillarId === 'finanzas' || moduleId === 'estados_financieros' || moduleId === 'rentabilidad';
@@ -228,7 +234,10 @@ export default function DynamicModule() {
         extraAction={extraAction}
       />
       {pillarId === 'organizacion' && moduleId === 'estructura' && (
-        <StaffTable staff={planData.organizacion?.staff || []} onChange={updateStaff} />
+        <>
+          <OrganigramaInteractivo staff={planData.organizacion?.staff || []} onChange={updateStaff} />
+          <StaffTable staff={planData.organizacion?.staff || []} onChange={updateStaff} />
+        </>
       )}
       {pillarId === 'tecnico' && moduleId === 'operacion' && (
         <ProcessTable 

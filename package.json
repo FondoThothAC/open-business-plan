@@ -1,24 +1,34 @@
 {
   "name": "openplan",
   "private": true,
-  "version": "2.6.2.1",
+  "version": "3.0.0",
   "type": "module",
+  "main": "electron/main.cjs",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "server": "node server/index.js",
-    "start": "npm run server & npm run dev"
+    "start": "npm run server & npm run dev",
+    "electron:dev": "concurrently \"npm run server\" \"vite\" \"wait-on http://localhost:5173 && electron . --dev\"",
+    "electron:build": "npm run build && electron-builder",
+    "electron:build:mac": "npm run build && electron-builder --mac",
+    "electron:build:linux": "npm run build && electron-builder --linux",
+    "electron:build:all": "npm run build && electron-builder --mac --linux"
   },
   "dependencies": {
     "cors": "^2.8.6",
     "dagre": "^0.8.5",
+    "diff": "^9.0.0",
     "duck-duck-scrape": "^2.2.7",
     "express": "^4.22.1",
     "lucide-react": "^0.263.1",
     "mammoth": "^1.12.0",
     "pdfjs-dist": "^5.7.284",
+    "puppeteer": "^25.2.1",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-markdown": "^10.1.0",
@@ -26,10 +36,89 @@
     "reactflow": "^11.11.4",
     "remark-gfm": "^4.0.1",
     "tesseract.js": "^7.0.0",
-    "turndown": "^7.2.4"
+    "turndown": "^7.2.4",
+    "wait-on": "^9.0.10"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.2.1",
+    "concurrently": "^10.0.3",
+    "electron": "^42.3.2",
+    "electron-builder": "^26.8.1",
     "vite": "^5.1.0"
+  },
+  "build": {
+    "appId": "com.fondothoth.openplan",
+    "productName": "OpenBusinessPlan",
+    "copyright": "Copyright © 2024 Fondo Thoth AC",
+    "directories": {
+      "output": "dist_electron",
+      "buildResources": "build-resources"
+    },
+    "files": [
+      "dist/**/*",
+      "server/**/*",
+      "electron/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "server",
+        "to": "server",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ],
+      "icon": "build-resources/icon.icns",
+      "category": "public.app-category.business",
+      "darkModeSupport": true
+    },
+    "linux": {
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "deb",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build-resources/icons",
+      "category": "Office",
+      "description": "Open Business Plan - Sistema de Planeación de Negocios"
+    },
+    "dmg": {
+      "title": "OpenBusinessPlan ${version}",
+      "contents": [
+        {
+          "x": 130,
+          "y": 220
+        },
+        {
+          "x": 410,
+          "y": 220,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    },
+    "win": {
+      "target": "nsis"
+    }
   }
 }
