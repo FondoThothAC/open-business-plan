@@ -6,6 +6,7 @@ import { search as ddgSearch } from 'duck-duck-scrape';
 import { scrapeSocialFollowers, scrapeEcommercePrices, scrapeUberEatsRappi, scrapeAirbnbTripAdvisor, scrapeMercadoLibre } from './scraper.js';
 import { busquedaMultiFuente, analizarViabilidad } from './competitorEngine.js';
 import { FRAMEWORKS } from '../src/config/frameworks.js';
+import { swarmOrchestrator } from './swarm/SwarmOrchestrator.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -1506,6 +1507,58 @@ app.get('/api/banxico/indicators', async (req, res) => {
   } catch (error) {
     console.error('Error al consultar Banxico SieAPI:', error.message);
     return res.json(fallbackData);
+  }
+});
+
+// ─────────────────────────────────────────────────────────
+//  Swarm Engine Multi-Agente Endpoints
+// ─────────────────────────────────────────────────────────
+
+// 1. Fase 1: Diagnóstico e Entrevista de la Idea de Negocio
+app.post('/api/swarm/interview', async (req, res) => {
+  try {
+    const { ideaText } = req.body;
+    const result = await swarmOrchestrator.runInterview(ideaText || '');
+    return res.json({ success: true, ...result });
+  } catch (error) {
+    console.error('Error en /api/swarm/interview:', error);
+    return res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 2. Transmisión SSE de eventos del enjambre por sesión
+app.get('/api/swarm/stream/:sessionId', (req, res) => {
+  const { sessionId } = req.params;
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.flushHeaders();
+
+  swarmOrchestrator.registerSessionStream(sessionId, res);
+
+  req.on('close', () => {
+    swarmOrchestrator.closeSession(sessionId);
+  });
+});
+
+// 3. Fase 2: Industrialización Multi-Agente
+app.post('/api/swarm/industrialize', async (req, res) => {
+  try {
+    const { sessionId, context } = req.body;
+    if (!sessionId) {
+      return res.status(400).json({ success: false, error: 'sessionId es requerido' });
+    }
+
+    // Ejecución en segundo plano con streaming SSE
+    swarmOrchestrator.runIndustrialization(sessionId, context || {}).catch(err => {
+      console.error('Error en ejecución del enjambre:', err);
+    });
+
+    return res.json({ success: true, message: 'Enjambre activado en segundo plano.' });
+  } catch (error) {
+    console.error('Error en /api/swarm/industrialize:', error);
+    return res.status(500).json({ success: false, error: error.message });
   }
 });
 

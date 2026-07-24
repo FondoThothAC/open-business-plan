@@ -2,10 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import { usePlan } from '../context/PlanContext';
 import { FRAMEWORKS } from '../config/frameworks';
 import { extractSeedFromText, askFieldDoubt } from '../lib/ai';
-import { Mic, MicOff, BrainCircuit, CheckCircle, ChevronRight, Loader2, MessageSquare, AlertCircle, ArrowRight } from 'lucide-react';
+import { Mic, MicOff, BrainCircuit, CheckCircle, ChevronRight, Loader2, MessageSquare, AlertCircle, ArrowRight, Sparkles, Cpu } from 'lucide-react';
+import { PixelSwarmViewer } from './swarm/PixelSwarmViewer';
+import { SwarmInterviewModal } from './swarm/SwarmInterviewModal';
 
 export default function Anteproyecto() {
-  const { planData, updateSemilla, updateConfig } = usePlan();
+  const { planData, updateSemilla, updateConfig, setPlanData } = usePlan();
   
   // Si la semilla ya tiene datos cargados en el plan, mostramos directamente el paso de revisión (3)
   const [step, setStep] = useState(() => {
@@ -19,13 +21,21 @@ export default function Anteproyecto() {
   const [isRecording, setIsRecording] = useState(false);
   const [error, setError] = useState('');
   
-  // Asistencia IA
+  // Asistencia IA por campo
   const [activeDoubtField, setActiveDoubtField] = useState(null);
   const [doubtText, setDoubtText] = useState('');
   const [aiResponse, setAiResponse] = useState('');
   const [isAsking, setIsAsking] = useState(false);
 
+  // Estados del Swarm Engine & Pixel Swarm Office
+  const [isInterviewOpen, setIsInterviewOpen] = useState(false);
+  const [isSwarmRunning, setIsSwarmRunning] = useState(false);
+  const [activeAgents, setActiveAgents] = useState([]);
+  const [agentLogs, setAgentLogs] = useState([]);
+  const [globalProgress, setGlobalProgress] = useState(0);
+
   const recognitionRef = useRef(null);
+  const eventSourceRef = useRef(null);
 
   useEffect(() => {
     // Inicializar Web Speech API
@@ -57,7 +67,6 @@ export default function Anteproyecto() {
       };
 
       recognitionRef.current.onend = () => {
-        // Reiniciar si sigue grabando (continuous sometimes stops)
         if (isRecording && recognitionRef.current) {
           try {
             recognitionRef.current.start();
@@ -71,6 +80,9 @@ export default function Anteproyecto() {
     return () => {
       if (recognitionRef.current) {
         recognitionRef.current.stop();
+      }
+      if (eventSourceRef.current) {
+        eventSourceRef.current.close();
       }
     };
   }, [isRecording]);
@@ -107,7 +119,6 @@ export default function Anteproyecto() {
     
     try {
       const seedData = await extractSeedFromText(planData.config.ai, rawText);
-      // Guardar en el contexto global
       updateSemilla('nombre_proyecto', seedData.nombre_proyecto || '');
       updateSemilla('cobertura', seedData.cobertura || '');
       updateSemilla('problema', seedData.problema || '');
@@ -119,6 +130,67 @@ export default function Anteproyecto() {
     } catch (err) {
       setError(err.message);
       setStep(1);
+    }
+  };
+
+  // Lanzar la industrialización con el Swarm Engine y SSE
+  const handleLaunchSwarmSession = async ({ frameworkId, answers, ideaText }) => {
+    setIsSwarmRunning(true);
+    setGlobalProgress(10);
+    setAgentLogs([{ agentId: 'system', message: 'Iniciando conexión con Swarm Engine...', timestamp: new Date().toISOString() }]);
+
+    const sessionId = `swarm_${Date.now()}`;
+
+    // Suscripción SSE a los eventos del enjambre
+    const es = new EventSource(`http://localhost:3001/api/swarm/stream/${sessionId}`);
+    eventSourceRef.current = es;
+
+    es.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        
+        if (data.type === 'swarm_started') {
+          setActiveAgents(data.agentsMeta ? data.agentsMeta.map(a => a.id) : []);
+          setGlobalProgress(15);
+        } else if (data.type === 'agent_progress') {
+          setAgentLogs(prev => [...prev, { agentId: data.agentId, message: data.message, timestamp: data.timestamp }]);
+          setGlobalProgress(prev => Math.min(prev + 10, 90));
+        } else if (data.type === 'agent_completed') {
+          setAgentLogs(prev => [...prev, { agentId: data.agentId, message: `✅ Tareas de ${data.name} completadas exitosamente.`, timestamp: new Date().toISOString() }]);
+        } else if (data.type === 'swarm_completed') {
+          setGlobalProgress(100);
+          setIsSwarmRunning(false);
+          setAgentLogs(prev => [...prev, { agentId: 'system', message: '🎉 Enjambre Multi-Agente finalizado. Documento compilado.', timestamp: new Date().toISOString() }]);
+          
+          if (data.finalDoc) {
+            updateConfig('projectType', null, frameworkId);
+          }
+          es.close();
+        }
+      } catch (err) {
+        console.error("Error al procesar mensaje SSE:", err);
+      }
+    };
+
+    // Disparar la ejecución en el backend Express
+    try {
+      await fetch('http://localhost:3001/api/swarm/industrialize', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sessionId,
+          context: {
+            ideaText,
+            answers,
+            frameworkId,
+            sector: planData.semilla?.cobertura || 'General',
+            ubicacion: planData.semilla?.cobertura || 'Nacional'
+          }
+        })
+      });
+    } catch (err) {
+      console.error("Error al activar industrialización Swarm:", err);
+      setIsSwarmRunning(false);
     }
   };
 
@@ -148,21 +220,21 @@ export default function Anteproyecto() {
   ];
 
   return (
-    <div className="module-container" style={{ maxWidth: 800, margin: '0 auto', padding: '2rem 2rem 6rem 2rem' }}>
+    <div className="module-container" style={{ maxWidth: 900, margin: '0 auto', padding: '2rem 2rem 6rem 2rem' }}>
       
       {/* Header */}
-      <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+      <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
         <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '2.5rem', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem' }}>
           <BrainCircuit style={{ color: 'var(--accent-color)' }} size={36} />
-          Anteproyecto (Semilla)
+          Anteproyecto (Semilla & Swarm Engine)
         </h1>
         <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem' }}>
-          Cuéntale tu idea a la IA y nosotros la estructuraremos por ti.
+          Cuéntale tu idea a la IA y activa nuestra Oficina Virtual de Consultores Multi-Agente.
         </p>
       </div>
 
       {/* Stepper */}
-      <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginBottom: '3rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginBottom: '2.5rem' }}>
         {[1, 2, 3, 4].map(i => (
           <div key={i} style={{
             width: 40, height: 40, borderRadius: '50%',
@@ -184,6 +256,16 @@ export default function Anteproyecto() {
         </div>
       )}
 
+      {/* Visualizador Pixel Swarm Office en vivo si el enjambre está activo */}
+      {(isSwarmRunning || agentLogs.length > 0) && (
+        <PixelSwarmViewer
+          activeAgents={activeAgents}
+          agentLogs={agentLogs}
+          globalProgress={globalProgress}
+          isRunning={isSwarmRunning}
+        />
+      )}
+
       {/* STEP 1: Brain Dump */}
       {step === 1 && (
         <div style={{ animation: 'fadeIn 0.4s ease' }}>
@@ -192,7 +274,7 @@ export default function Anteproyecto() {
             border: '1px solid var(--border-color)', boxShadow: '0 10px 30px rgba(0,0,0,0.05)'
           }}>
             <h2 style={{ fontSize: '1.25rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              Paso 1: Vaciado de Cerebro
+              Paso 1: Vaciado de Cerebro & Enjambre de Consultores
             </h2>
             <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem', fontSize: '0.95rem' }}>
               Usa el micrófono o escribe libremente. No te preocupes por el formato, la gramática o el orden. Simplemente cuéntanos: <strong>¿Qué quieres hacer?, ¿Para quién? y ¿Cómo vas a ganar dinero?</strong>
@@ -202,7 +284,7 @@ export default function Anteproyecto() {
               <textarea
                 className="form-control"
                 style={{ 
-                  height: '250px', fontSize: '1.1rem', lineHeight: '1.6', 
+                  height: '220px', fontSize: '1.1rem', lineHeight: '1.6', 
                   padding: '1.5rem', borderRadius: '12px', resize: 'vertical',
                   borderColor: isRecording ? 'var(--accent-color)' : 'var(--border-color)',
                   boxShadow: isRecording ? '0 0 0 4px rgba(99, 102, 241, 0.1)' : 'none'
@@ -230,14 +312,29 @@ export default function Anteproyecto() {
               </button>
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap' }}>
               <button 
-                className="btn btn-ia" 
+                className="btn btn-secondary" 
                 onClick={processText}
                 disabled={rawText.length < 10 || isRecording}
-                style={{ padding: '0.75rem 2rem', fontSize: '1.1rem' }}
+                style={{ padding: '0.75rem 1.5rem', fontSize: '1rem' }}
               >
-                <BrainCircuit size={20} /> Extraer Semilla
+                <BrainCircuit size={18} /> Extraer Semilla Estándar
+              </button>
+
+              <button 
+                className="btn" 
+                onClick={() => setIsInterviewOpen(true)}
+                disabled={rawText.length < 10 || isRecording}
+                style={{ 
+                  padding: '0.75rem 2rem', fontSize: '1rem',
+                  background: 'linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%)',
+                  color: 'white', border: 'none', borderRadius: '12px',
+                  boxShadow: '0 4px 15px rgba(124, 58, 237, 0.3)',
+                  display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 'bold'
+                }}
+              >
+                <Cpu size={20} /> Entrevistar e Industrializar con Swarm IA
               </button>
             </div>
           </div>
@@ -259,8 +356,7 @@ export default function Anteproyecto() {
           <div style={{ marginBottom: '2rem' }}>
             <h2 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>Paso 2: Revisa tu Semilla Universal</h2>
             <p style={{ color: 'var(--text-secondary)' }}>
-              Esta es la información que la IA extrajo. Modifica lo que creas necesario. 
-              Si tienes dudas sobre qué poner en algún campo, ¡pídele ayuda a la IA!
+              Esta es la información que la IA extrajo. Modifica lo que creas necesario.
             </p>
           </div>
 
@@ -299,7 +395,6 @@ export default function Anteproyecto() {
                   onChange={(e) => updateSemilla(field.id, e.target.value)}
                 />
 
-                {/* AI Assistant per field */}
                 {activeDoubtField === field.id && (
                   <div style={{ 
                     marginTop: '1rem', background: 'var(--bg-panel-hover)', 
@@ -342,7 +437,7 @@ export default function Anteproyecto() {
           <div style={{ marginTop: '3rem', padding: '2rem', background: 'var(--bg-panel-hover)', borderRadius: '12px', border: '1px dashed var(--accent-color)', textAlign: 'center' }}>
             <h3 style={{ fontSize: '1.25rem', marginBottom: '0.5rem' }}>¡Semilla Lista!</h3>
             <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
-              Con esta información base, la IA podrá estructurar tu idea en cualquiera de los frameworks profesionales (Canvas, Lean, Y Combinator, etc).
+              Con esta información base, la IA podrá estructurar tu idea en cualquiera de los frameworks profesionales.
             </p>
             <button 
               className="btn btn-ia" 
@@ -371,8 +466,6 @@ export default function Anteproyecto() {
                 key={key}
                 onClick={() => {
                   updateConfig('projectType', null, key);
-                  
-                  // Redireccionar al primer módulo de la metodología seleccionada
                   const firstPillar = framework.pillars?.[0];
                   const firstModule = firstPillar?.modules?.[0];
                   if (firstPillar && firstModule) {
@@ -394,14 +487,6 @@ export default function Anteproyecto() {
                   gap: '0.75rem',
                   boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)'
                 }}
-                onMouseOver={(e) => {
-                  e.currentTarget.style.borderColor = 'var(--accent-color)';
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.borderColor = 'var(--border-color)';
-                  e.currentTarget.style.transform = 'none';
-                }}
               >
                 <h3 style={{ fontSize: '1.1rem', margin: 0, color: 'var(--text-primary)' }}>{framework.name || key}</h3>
                 <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.4 }}>
@@ -413,6 +498,13 @@ export default function Anteproyecto() {
         </div>
       )}
 
+      {/* Modal de Entrevista Contextual y Selección de Documento */}
+      <SwarmInterviewModal
+        isOpen={isInterviewOpen}
+        onClose={() => setIsInterviewOpen(false)}
+        ideaText={rawText}
+        onConfirmSwarm={handleLaunchSwarmSession}
+      />
     </div>
   );
 }
