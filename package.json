@@ -1,7 +1,7 @@
 {
   "name": "openplan",
   "private": true,
-  "version": "2.6.26.7.19",
+  "version": "2.6.26.7.24",
   "type": "module",
   "main": "electron/main.cjs",
   "scripts": {
@@ -13,9 +13,10 @@
     "start": "npm run server & npm run dev",
     "electron:dev": "concurrently \"npm run server\" \"vite\" \"wait-on http://localhost:5173 && electron . --dev\"",
     "electron:build": "npm run build && electron-builder",
+    "electron:build:win": "npm run build && electron-builder --win",
     "electron:build:mac": "npm run build && electron-builder --mac",
     "electron:build:linux": "npm run build && electron-builder --linux",
-    "electron:build:all": "npm run build && electron-builder --mac --linux"
+    "electron:build:all": "npm run build && electron-builder --mac --win --linux"
   },
   "dependencies": {
     "cors": "^2.8.6",
@@ -118,7 +119,22 @@
       ]
     },
     "win": {
-      "target": "nsis"
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "public/favicon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "OpenBusinessPlan"
     }
   }
 }

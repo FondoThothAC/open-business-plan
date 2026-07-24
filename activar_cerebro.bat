@@ -1,53 +1,51 @@
 @echo off
-TITLE Open Plan: Activador de Cerebro IA
+TITLE OpenPlan - Activador de Cerebro IA Local (Ollama)
 COLOR 0D
 
 echo ===================================================
-echo   ACTIVANDO CEREBRO DE IA (OLLAMA)
+echo   ACTIVANDO CEREBRO DE IA LOCAL (OLLAMA)
 echo ===================================================
 echo.
 
-:: 1. Verificar si Ollama está instalado
+:: 1. Verificar si Ollama esta instalado
 ollama --version >nul 2>&1
 if %errorlevel% neq 0 (
-    echo [ERROR] Ollama no esta instalado en este sistema.
-    echo Por favor, descargalo de: https://ollama.com
-    pause
-    exit /b
+    echo [ADVERTENCIA] Ollama no esta instalado en este sistema.
+    echo Por favor, instalalo ejecutando install_windows.bat o desde https://ollama.com
+    timeout /t 5
+    exit /b 0
 )
 
 :: 2. Intentar iniciar el servicio (si no esta corriendo)
 echo [*] Verificando servicio Ollama...
 ollama list >nul 2>&1
 if %errorlevel% neq 0 (
-    echo [!] Ollama no esta respondiendo. Iniciando servidor...
+    echo [!] Ollama no esta respondiendo. Iniciando servidor en segundo plano...
     start "" ollama serve
     timeout /t 5
 )
 
-:: 3. Configurar entorno optimizado para RTX A2000 12GB
+:: 3. Configurar entorno optimizado
 set OLLAMA_FLASH_ATTENTION=1
 set OLLAMA_KV_CACHE_TYPE=q4_0
 set OLLAMA_NUM_PARALLEL=1
 
-:: 4. Verificar el modelo especializado
-echo [*] Verificando modelo gemma4:pro (256k ctx / RTX A2000 + 128GB RAM)...
-ollama list | findstr "gemma4:pro" >nul
+:: 4. Verificar modelos disponibles
+echo [*] Verificando modelo de IA local para OpenBusinessPlan...
+ollama list | findstr "nemotron-3-nano gemma4 qwen3.5" >nul
 if %errorlevel% neq 0 (
-    echo [!] El modelo especializado no existe. Creandolo con 256k de contexto...
-    echo FROM gemma4:e4b > Modelfile.tmp
-    echo PARAMETER num_ctx 262144 >> Modelfile.tmp
-    echo PARAMETER stop "<|file_separator|>" >> Modelfile.tmp
-    ollama create gemma4:pro -f Modelfile.tmp
-    del Modelfile.tmp
-    echo [OK] Modelo gemma4:pro creado con 256k tokens de contexto.
+    echo [!] No se detecto un modelo base. Intentando descargar nemotron-3-nano:4b...
+    ollama pull nemotron-3-nano:4b
+    if %errorlevel% neq 0 (
+        echo [!] No se pudo descargar nemotron-3-nano:4b. Intentando qwen2.5:3b...
+        ollama pull qwen2.5:3b
+    )
 ) else (
-    echo [OK] Modelo gemma4:pro ya existe.
+    echo [OK] Modelo de IA local detectado y disponible.
 )
 
 echo.
 echo ===================================================
-echo   [OK] EL CEREBRO ESTA LISTO Y CARGADO.
-echo   Manten esta ventana abierta o minimizada.
+echo   [OK] CEREBRO IA CONFIGURADO Y OPERATIVO.
 echo ===================================================
-timeout /t 5
+timeout /t 3
