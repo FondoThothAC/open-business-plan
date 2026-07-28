@@ -2,14 +2,19 @@ import React, { useState, useEffect, useRef } from 'react';
 import { usePlan } from '../context/PlanContext';
 import { FRAMEWORKS } from '../config/frameworks';
 import { extractSeedFromText, askFieldDoubt } from '../lib/ai';
-import { Mic, MicOff, BrainCircuit, CheckCircle, ChevronRight, Loader2, MessageSquare, AlertCircle, ArrowRight, Sparkles, Cpu } from 'lucide-react';
+import { classifyProject } from '../lib/classifyProject';
+import { matchIndustry } from '../lib/benchmarkMatcher';
+import { evaluateQuantumProfile } from '../lib/quantumDiagnostic';
+import QuantumProfileCard from './QuantumProfileCard';
+import AdaptiveSeedForm from './AdaptiveSeedForm';
+import { Mic, MicOff, BrainCircuit, CheckCircle, ChevronRight, Loader2, MessageSquare, AlertCircle, ArrowRight, Sparkles, Cpu, Building2, HelpCircle } from 'lucide-react';
 import { PixelSwarmViewer } from './swarm/PixelSwarmViewer';
 import { SwarmInterviewModal } from './swarm/SwarmInterviewModal';
 
 export default function Anteproyecto() {
   const { planData, updateSemilla, updateConfig, setPlanData } = usePlan();
   
-  // Si la semilla ya tiene datos cargados en el plan, mostramos directamente el paso de revisión (3)
+  // Si la semilla ya tiene datos cargados en el plan, mostramos el paso de revisión (3)
   const [step, setStep] = useState(() => {
     if (planData?.semilla && Object.keys(planData.semilla).some(k => planData.semilla[k] && String(planData.semilla[k]).trim().length > 3)) {
       return 3;
@@ -21,6 +26,11 @@ export default function Anteproyecto() {
   const [isRecording, setIsRecording] = useState(false);
   const [error, setError] = useState('');
   
+  // Estados de Inferencia, Benchmarks y Diagnóstico Cuántico
+  const [frameworkInference, setFrameworkInference] = useState(null);
+  const [benchmarkMatch, setBenchmarkMatch] = useState(null);
+  const [quantumDiagnostic, setQuantumDiagnostic] = useState(null);
+
   // Asistencia IA por campo
   const [activeDoubtField, setActiveDoubtField] = useState(null);
   const [doubtText, setDoubtText] = useState('');
@@ -38,7 +48,7 @@ export default function Anteproyecto() {
   const eventSourceRef = useRef(null);
 
   useEffect(() => {
-    // Inicializar Web Speech API
+    // Inicializar Web Speech API si está disponible en el navegador
     if (window.SpeechRecognition || window.webkitSpeechRecognition) {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       recognitionRef.current = new SpeechRecognition();
@@ -108,9 +118,10 @@ export default function Anteproyecto() {
     }
   };
 
+  // Procesamiento Inteligente Adaptativo
   const processText = async () => {
-    if (!rawText.trim() || rawText.length < 20) {
-      setError("Por favor cuéntanos un poco más sobre tu idea (mínimo 20 caracteres).");
+    if (!rawText.trim() || rawText.length < 15) {
+      setError("Por favor cuéntanos un poco más sobre tu idea (mínimo 15 caracteres).");
       return;
     }
     
@@ -118,7 +129,19 @@ export default function Anteproyecto() {
     setError('');
     
     try {
-      const seedData = await extractSeedFromText(planData.config.ai, rawText);
+      const aiConfig = planData?.config?.ai;
+
+      // Ejecutar extracción, inferencia, match de industria y diagnóstico cuántico en paralelo
+      const [seedData, inferenceRes, benchmarkRes] = await Promise.all([
+        extractSeedFromText(aiConfig, rawText),
+        classifyProject(aiConfig, rawText),
+        matchIndustry(rawText, planData?.semilla, aiConfig)
+      ]);
+
+      // Evaluar perfil cuántico del fundador
+      const quantumRes = await evaluateQuantumProfile(aiConfig, seedData, rawText);
+
+      // Actualizar estado global del plan
       updateSemilla('nombre_proyecto', seedData.nombre_proyecto || '');
       updateSemilla('cobertura', seedData.cobertura || '');
       updateSemilla('problema', seedData.problema || '');
@@ -126,11 +149,27 @@ export default function Anteproyecto() {
       updateSemilla('mercado_objetivo', seedData.mercado_objetivo || '');
       updateSemilla('modelo_ingresos', seedData.modelo_ingresos || '');
       updateSemilla('ventaja_injusta', seedData.ventaja_injusta || '');
+
+      setFrameworkInference(inferenceRes);
+      setBenchmarkMatch(benchmarkRes);
+      setQuantumDiagnostic(quantumRes);
+
+      // Configurar el framework inferido como activo
+      if (inferenceRes?.frameworkId && FRAMEWORKS[inferenceRes.frameworkId]) {
+        updateConfig('projectType', null, inferenceRes.frameworkId);
+      }
+
       setStep(3);
     } catch (err) {
-      setError(err.message);
+      console.error("Error al procesar el anteproyecto:", err);
+      setError(err.message || 'Error al analizar la idea.');
       setStep(1);
     }
+  };
+
+  // Actualizar un campo individual de la semilla
+  const handleUpdateSeedField = (key, value) => {
+    updateSemilla(key, value);
   };
 
   // Lanzar la industrialización con el Swarm Engine y SSE
@@ -182,7 +221,8 @@ export default function Anteproyecto() {
           context: {
             ideaText,
             answers,
-            frameworkId,
+            frameworkId: frameworkId || frameworkInference?.frameworkId || 'business',
+            aiConfig: planData?.config?.ai,
             sector: planData.semilla?.cobertura || 'General',
             ubicacion: planData.semilla?.cobertura || 'Nacional'
           }
@@ -209,27 +249,17 @@ export default function Anteproyecto() {
     }
   };
 
-  const SEED_FIELDS = [
-    { id: 'nombre_proyecto', label: 'Nombre del Proyecto', desc: '¿Cómo se llama tu idea o negocio?' },
-    { id: 'cobertura', label: 'Ubicación o Alcance Geográfico', desc: '¿Dónde operará físicamente (ej. Hermosillo, Sonora) o es un servicio digital / en la nube?' },
-    { id: 'problema', label: 'El Problema', desc: '¿Qué problema, dolor o necesidad estás resolviendo?' },
-    { id: 'solucion', label: 'La Solución', desc: '¿Cuál es tu producto o servicio y cómo resuelve el problema?' },
-    { id: 'mercado_objetivo', label: 'Mercado Objetivo', desc: '¿Quiénes son tus clientes o usuarios? (Demografía, perfil)' },
-    { id: 'modelo_ingresos', label: 'Modelo de Ingresos', desc: '¿Cómo planeas ganar dinero? (Suscripción, venta directa, freemium...)' },
-    { id: 'ventaja_injusta', label: 'Ventaja Injusta', desc: '¿Qué tienes tú que no puede ser copiado o comprado fácilmente?' },
-  ];
-
   return (
-    <div className="module-container" style={{ maxWidth: 900, margin: '0 auto', padding: '2rem 2rem 6rem 2rem' }}>
+    <div className="module-container" style={{ maxWidth: 960, margin: '0 auto', padding: '2rem 2rem 6rem 2rem' }}>
       
-      {/* Header */}
+      {/* Header Central */}
       <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
-        <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '2.5rem', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem' }}>
+        <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '2.4rem', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem' }}>
           <BrainCircuit style={{ color: 'var(--accent-color)' }} size={36} />
-          Anteproyecto (Semilla & Swarm Engine)
+          Anteproyecto & Semilla Adaptativa v2.0
         </h1>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem' }}>
-          Cuéntale tu idea a la IA y activa nuestra Oficina Virtual de Consultores Multi-Agente.
+        <p style={{ color: 'var(--text-secondary)', fontSize: '1.05rem', maxWidth: '700px', margin: '0 auto' }}>
+          Cuéntanos tu idea por voz o texto. La IA clasificará automáticamente la metodología, cargará los benchmarks de tu industria y evaluará tu perfil cuántico.
         </p>
       </div>
 
@@ -266,7 +296,7 @@ export default function Anteproyecto() {
         />
       )}
 
-      {/* STEP 1: Brain Dump */}
+      {/* STEP 1: Vaciado de Cerebro (Brain Dump) */}
       {step === 1 && (
         <div style={{ animation: 'fadeIn 0.4s ease' }}>
           <div style={{ 
@@ -274,10 +304,10 @@ export default function Anteproyecto() {
             border: '1px solid var(--border-color)', boxShadow: '0 10px 30px rgba(0,0,0,0.05)'
           }}>
             <h2 style={{ fontSize: '1.25rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              Paso 1: Vaciado de Cerebro & Enjambre de Consultores
+              Paso 1: Explica tu Idea (Audio o Texto)
             </h2>
             <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem', fontSize: '0.95rem' }}>
-              Usa el micrófono o escribe libremente. No te preocupes por el formato, la gramática o el orden. Simplemente cuéntanos: <strong>¿Qué quieres hacer?, ¿Para quién? y ¿Cómo vas a ganar dinero?</strong>
+              Presiona el micrófono o escribe libremente. Ejemplo: <em>"Tengo la idea de abrir una tortillería de maíz en mi colonia con servicio a domicilio..."</em> o <em>"Quiero hacer un proyecto social para..."</em>
             </p>
 
             <div style={{ position: 'relative', marginBottom: '1.5rem' }}>
@@ -289,7 +319,7 @@ export default function Anteproyecto() {
                   borderColor: isRecording ? 'var(--accent-color)' : 'var(--border-color)',
                   boxShadow: isRecording ? '0 0 0 4px rgba(99, 102, 241, 0.1)' : 'none'
                 }}
-                placeholder="Hola, mi idea es hacer una aplicación que..."
+                placeholder="Hola, mi idea es..."
                 value={rawText}
                 onChange={(e) => setRawText(e.target.value)}
               />
@@ -319,7 +349,7 @@ export default function Anteproyecto() {
                 disabled={rawText.length < 10 || isRecording}
                 style={{ padding: '0.75rem 1.5rem', fontSize: '1rem' }}
               >
-                <BrainCircuit size={18} /> Extraer Semilla Estándar
+                <BrainCircuit size={18} /> Procesar con Inferencia e IA
               </button>
 
               <button 
@@ -341,159 +371,135 @@ export default function Anteproyecto() {
         </div>
       )}
 
-      {/* STEP 2: Processing */}
+      {/* STEP 2: Procesamiento e Inferencia */}
       {step === 2 && (
         <div style={{ textAlign: 'center', padding: '4rem 2rem', animation: 'fadeIn 0.3s ease' }}>
           <Loader2 size={64} style={{ color: 'var(--accent-color)', animation: 'spin 1.5s linear infinite', margin: '0 auto 1.5rem' }} />
-          <h2 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>Estructurando tu idea...</h2>
-          <p style={{ color: 'var(--text-secondary)' }}>La Mesa de Expertos está analizando tu proyecto para extraer los pilares fundamentales.</p>
+          <h2 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>Analizando tu anteproyecto...</h2>
+          <p style={{ color: 'var(--text-secondary)' }}>
+            Clasificando la metodología óptima, consultando la base de benchmarks de industria y diagnosticando tu perfil cuántico...
+          </p>
         </div>
       )}
 
-      {/* STEP 3: Review */}
+      {/* STEP 3: Semilla Adaptativa & Diagnóstico Cuántico */}
       {step === 3 && (
         <div style={{ animation: 'fadeIn 0.4s ease' }}>
-          <div style={{ marginBottom: '2rem' }}>
-            <h2 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>Paso 2: Revisa tu Semilla Universal</h2>
-            <p style={{ color: 'var(--text-secondary)' }}>
-              Esta es la información que la IA extrajo. Modifica lo que creas necesario.
-            </p>
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-            {SEED_FIELDS.map(field => (
-              <div key={field.id} style={{ 
-                background: 'var(--bg-panel)', padding: '1.5rem', borderRadius: '12px',
-                border: '1px solid var(--border-color)',
-                boxShadow: activeDoubtField === field.id ? '0 0 0 2px var(--accent-color)' : 'none',
-                transition: 'all 0.2s'
-              }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
-                  <div>
-                    <label style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-primary)', display: 'block' }}>
-                      {field.label}
-                    </label>
-                    <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{field.desc}</span>
-                  </div>
-                  <button 
-                    className="btn btn-secondary" 
-                    style={{ fontSize: '0.8rem', padding: '0.4rem 0.8rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
-                    onClick={() => {
-                      setActiveDoubtField(activeDoubtField === field.id ? null : field.id);
-                      setDoubtText('');
-                      setAiResponse('');
-                    }}
-                  >
-                    <MessageSquare size={14} /> Asistente IA
-                  </button>
+          
+          {/* Recomendación de Framework Inferido */}
+          {frameworkInference && (
+            <div style={{
+              background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(139, 92, 246, 0.1) 100%)',
+              border: '1px solid rgba(99, 102, 241, 0.3)',
+              borderRadius: '16px',
+              padding: '1.5rem',
+              marginBottom: '2rem',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              flexWrap: 'wrap',
+              gap: '1rem'
+            }}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <Sparkles size={20} style={{ color: 'var(--accent-color)' }} />
+                  <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--accent-color)', textTransform: 'uppercase' }}>
+                    Metodología Inferred por IA ({Math.round(frameworkInference.confidence * 100)}% Confianza)
+                  </span>
                 </div>
-
-                <textarea
-                  className="form-control"
-                  style={{ minHeight: '80px', marginTop: '1rem', resize: 'vertical' }}
-                  value={planData.semilla[field.id] || ''}
-                  onChange={(e) => updateSemilla(field.id, e.target.value)}
-                />
-
-                {activeDoubtField === field.id && (
-                  <div style={{ 
-                    marginTop: '1rem', background: 'var(--bg-panel-hover)', 
-                    padding: '1rem', borderRadius: '8px', borderLeft: '4px solid var(--accent-color)' 
-                  }}>
-                    <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
-                      <input 
-                        type="text" 
-                        className="form-control" 
-                        placeholder="Ej. No estoy seguro de la diferencia entre cliente y consumidor..."
-                        value={doubtText}
-                        onChange={(e) => setDoubtText(e.target.value)}
-                        onKeyDown={(e) => e.key === 'Enter' && askAi(field.label)}
-                      />
-                      <button 
-                        className="btn btn-ia" 
-                        onClick={() => askAi(field.label)}
-                        disabled={isAsking || !doubtText.trim()}
-                      >
-                        {isAsking ? <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} /> : 'Preguntar'}
-                      </button>
-                    </div>
-                    
-                    {aiResponse && (
-                      <div style={{ 
-                        background: 'var(--bg-panel)', padding: '1rem', borderRadius: '8px',
-                        fontSize: '0.95rem', lineHeight: '1.5', color: 'var(--text-primary)',
-                        border: '1px solid var(--border-color)'
-                      }}>
-                        <strong style={{ color: 'var(--accent-color)', display: 'block', marginBottom: '0.5rem' }}>Respuesta de IA:</strong>
-                        {aiResponse}
-                      </div>
-                    )}
-                  </div>
-                )}
+                <h3 style={{ fontSize: '1.3rem', fontWeight: 800, margin: '0.3rem 0', color: 'var(--text-primary)' }}>
+                  {FRAMEWORKS[frameworkInference.frameworkId]?.name || frameworkInference.frameworkId}
+                </h3>
+                <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.4 }}>
+                  {frameworkInference.reasoning}
+                </p>
               </div>
-            ))}
-          </div>
 
-          <div style={{ marginTop: '3rem', padding: '2rem', background: 'var(--bg-panel-hover)', borderRadius: '12px', border: '1px dashed var(--accent-color)', textAlign: 'center' }}>
-            <h3 style={{ fontSize: '1.25rem', marginBottom: '0.5rem' }}>¡Semilla Lista!</h3>
-            <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
-              Con esta información base, la IA podrá estructurar tu idea en cualquiera de los frameworks profesionales.
-            </p>
-            <button 
-              className="btn btn-ia" 
-              style={{ padding: '1rem 2.5rem', fontSize: '1.1rem', borderRadius: '30px' }}
-              onClick={() => setStep(4)}
-            >
-              Siguiente: Elegir Metodología <ArrowRight size={20} />
-            </button>
-          </div>
+              <button
+                className="btn btn-secondary"
+                style={{ fontSize: '0.85rem', padding: '0.5rem 1rem' }}
+                onClick={() => setStep(4)}
+              >
+                Cambiar Metodología
+              </button>
+            </div>
+          )}
+
+          {/* Diagnóstico Cuántico del Fundador */}
+          {quantumDiagnostic && (
+            <QuantumProfileCard diagnosticData={quantumDiagnostic} />
+          )}
+
+          {/* Formulario Adaptativo (Check Rápido o Entrevista) */}
+          <AdaptiveSeedForm
+            seedData={planData.semilla}
+            benchmarkMatch={benchmarkMatch}
+            frameworkInference={frameworkInference}
+            onUpdateField={handleUpdateSeedField}
+            onConfirmSeed={() => setStep(4)}
+          />
+
         </div>
       )}
 
-      {/* STEP 4: Choose Framework */}
+      {/* STEP 4: Confirmación y Elección de Framework */}
       {step === 4 && (
         <div style={{ animation: 'fadeIn 0.4s ease' }}>
           <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-            <h2 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>Paso 3: Elige la Metodología</h2>
+            <h2 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>Paso 3: Confirma la Metodología Estratégica</h2>
             <p style={{ color: 'var(--text-secondary)' }}>
-              Selecciona el marco de trabajo estratégico con el que quieres industrializar tu Semilla.
+              Selecciona el marco con el que la Oficina Virtual de Consultores (Swarm) industrializará tu proyecto.
             </p>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
-            {Object.entries(FRAMEWORKS).map(([key, framework]) => (
-              <button
-                key={key}
-                onClick={() => {
-                  updateConfig('projectType', null, key);
-                  const firstPillar = framework.pillars?.[0];
-                  const firstModule = firstPillar?.modules?.[0];
-                  if (firstPillar && firstModule) {
-                    window.location.href = `/modulo/${firstPillar.key}/${firstModule.key}`;
-                  } else {
-                    window.location.href = '/';
-                  }
-                }}
-                style={{
-                  background: 'var(--bg-panel)',
-                  border: '1px solid var(--border-color)',
-                  borderRadius: '12px',
-                  padding: '1.5rem',
-                  textAlign: 'left',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '0.75rem',
-                  boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)'
-                }}
-              >
-                <h3 style={{ fontSize: '1.1rem', margin: 0, color: 'var(--text-primary)' }}>{framework.name || key}</h3>
-                <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.4 }}>
-                  {framework.pillars?.length || 0} pilares académicos con {framework.pillars?.reduce((acc, p) => acc + (p.modules?.length || 0), 0) || 0} módulos especializados.
-                </p>
-              </button>
-            ))}
+            {Object.entries(FRAMEWORKS).map(([key, framework]) => {
+              const isRecommended = frameworkInference?.frameworkId === key;
+              return (
+                <button
+                  key={key}
+                  onClick={() => {
+                    updateConfig('projectType', null, key);
+                    const firstPillar = framework.pillars?.[0];
+                    const firstModule = firstPillar?.modules?.[0];
+                    if (firstPillar && firstModule) {
+                      window.location.href = `/modulo/${firstPillar.key}/${firstModule.key}`;
+                    } else {
+                      window.location.href = '/';
+                    }
+                  }}
+                  style={{
+                    background: isRecommended ? 'linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.05) 100%)' : 'var(--bg-panel)',
+                    border: isRecommended ? '2px solid var(--accent-color)' : '1px solid var(--border-color)',
+                    borderRadius: '12px',
+                    padding: '1.5rem',
+                    textAlign: 'left',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '0.75rem',
+                    position: 'relative',
+                    boxShadow: isRecommended ? '0 10px 25px -5px rgba(99, 102, 241, 0.2)' : '0 4px 6px -1px rgba(0,0,0,0.05)'
+                  }}
+                >
+                  {isRecommended && (
+                    <span style={{
+                      position: 'absolute', top: '-10px', right: '12px',
+                      background: 'var(--accent-color)', color: 'white',
+                      fontSize: '0.7rem', fontWeight: 800, padding: '0.2rem 0.6rem',
+                      borderRadius: '10px', textTransform: 'uppercase'
+                    }}>
+                      Recomendado ({Math.round(frameworkInference.confidence * 100)}%)
+                    </span>
+                  )}
+                  <h3 style={{ fontSize: '1.1rem', margin: 0, color: 'var(--text-primary)' }}>{framework.name || key}</h3>
+                  <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.4 }}>
+                    {framework.pillars?.length || 0} pilares académicos con {framework.pillars?.reduce((acc, p) => acc + (p.modules?.length || 0), 0) || 0} módulos especializados.
+                  </p>
+                </button>
+              );
+            })}
           </div>
         </div>
       )}
