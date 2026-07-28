@@ -13,7 +13,7 @@ import { SwarmInterviewModal } from './swarm/SwarmInterviewModal';
 
 export default function Anteproyecto() {
   const { planData, updateSemilla, updateConfig, setPlanData } = usePlan();
-  
+
   // Si la semilla ya tiene datos cargados en el plan, mostramos el paso de revisión (3)
   const [step, setStep] = useState(() => {
     if (planData?.semilla && Object.keys(planData.semilla).some(k => planData.semilla[k] && String(planData.semilla[k]).trim().length > 3)) {
@@ -21,11 +21,11 @@ export default function Anteproyecto() {
     }
     return 1;
   });
-  
+
   const [rawText, setRawText] = useState('');
   const [isRecording, setIsRecording] = useState(false);
   const [error, setError] = useState('');
-  
+
   // Estados de Inferencia, Benchmarks y Diagnóstico Cuántico
   const [frameworkInference, setFrameworkInference] = useState(null);
   const [benchmarkMatch, setBenchmarkMatch] = useState(null);
@@ -80,7 +80,7 @@ export default function Anteproyecto() {
         if (isRecording && recognitionRef.current) {
           try {
             recognitionRef.current.start();
-          } catch (e) {}
+          } catch (e) { }
         }
       };
     } else {
@@ -102,7 +102,7 @@ export default function Anteproyecto() {
       alert("Reconocimiento de voz no soportado en este navegador.");
       return;
     }
-    
+
     if (isRecording) {
       recognitionRef.current.stop();
       setIsRecording(false);
@@ -124,10 +124,10 @@ export default function Anteproyecto() {
       setError("Por favor cuéntanos un poco más sobre tu idea (mínimo 15 caracteres).");
       return;
     }
-    
+
     setStep(2);
     setError('');
-    
+
     try {
       const aiConfig = planData?.config?.ai;
 
@@ -187,7 +187,7 @@ export default function Anteproyecto() {
     es.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
-        
+
         if (data.type === 'swarm_started') {
           setActiveAgents(data.agentsMeta ? data.agentsMeta.map(a => a.id) : []);
           setGlobalProgress(15);
@@ -200,7 +200,7 @@ export default function Anteproyecto() {
           setGlobalProgress(100);
           setIsSwarmRunning(false);
           setAgentLogs(prev => [...prev, { agentId: 'system', message: '🎉 Enjambre Multi-Agente finalizado. Documento compilado.', timestamp: new Date().toISOString() }]);
-          
+
           if (data.finalDoc) {
             updateConfig('projectType', null, frameworkId);
           }
@@ -238,7 +238,7 @@ export default function Anteproyecto() {
     if (!doubtText.trim()) return;
     setIsAsking(true);
     setAiResponse('');
-    
+
     try {
       const response = await askFieldDoubt(planData.config.ai, fieldName, doubtText, planData.semilla);
       setAiResponse(response);
@@ -251,7 +251,7 @@ export default function Anteproyecto() {
 
   return (
     <div className="module-container" style={{ maxWidth: 960, margin: '0 auto', padding: '2rem 2rem 6rem 2rem' }}>
-      
+
       {/* Header Central */}
       <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
         <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '2.4rem', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem' }}>
@@ -299,8 +299,8 @@ export default function Anteproyecto() {
       {/* STEP 1: Vaciado de Cerebro (Brain Dump) */}
       {step === 1 && (
         <div style={{ animation: 'fadeIn 0.4s ease' }}>
-          <div style={{ 
-            background: 'var(--bg-panel)', padding: '2rem', borderRadius: '16px', 
+          <div style={{
+            background: 'var(--bg-panel)', padding: '2rem', borderRadius: '16px',
             border: '1px solid var(--border-color)', boxShadow: '0 10px 30px rgba(0,0,0,0.05)'
           }}>
             <h2 style={{ fontSize: '1.25rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -313,8 +313,8 @@ export default function Anteproyecto() {
             <div style={{ position: 'relative', marginBottom: '1.5rem' }}>
               <textarea
                 className="form-control"
-                style={{ 
-                  height: '220px', fontSize: '1.1rem', lineHeight: '1.6', 
+                style={{
+                  height: '220px', fontSize: '1.1rem', lineHeight: '1.6',
                   padding: '1.5rem', borderRadius: '12px', resize: 'vertical',
                   borderColor: isRecording ? 'var(--accent-color)' : 'var(--border-color)',
                   boxShadow: isRecording ? '0 0 0 4px rgba(99, 102, 241, 0.1)' : 'none'
@@ -323,7 +323,7 @@ export default function Anteproyecto() {
                 value={rawText}
                 onChange={(e) => setRawText(e.target.value)}
               />
-              
+
               <button
                 onClick={toggleRecording}
                 title={isRecording ? "Detener grabación" : "Iniciar dictado por voz"}
@@ -343,8 +343,8 @@ export default function Anteproyecto() {
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap' }}>
-              <button 
-                className="btn btn-secondary" 
+              <button
+                className="btn btn-secondary"
                 onClick={processText}
                 disabled={rawText.length < 10 || isRecording}
                 style={{ padding: '0.75rem 1.5rem', fontSize: '1rem' }}
@@ -352,11 +352,11 @@ export default function Anteproyecto() {
                 <BrainCircuit size={18} /> Procesar con Inferencia e IA
               </button>
 
-              <button 
-                className="btn" 
+              <button
+                className="btn"
                 onClick={() => setIsInterviewOpen(true)}
                 disabled={rawText.length < 10 || isRecording}
-                style={{ 
+                style={{
                   padding: '0.75rem 2rem', fontSize: '1rem',
                   background: 'linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%)',
                   color: 'white', border: 'none', borderRadius: '12px',
@@ -385,7 +385,7 @@ export default function Anteproyecto() {
       {/* STEP 3: Semilla Adaptativa & Diagnóstico Cuántico */}
       {step === 3 && (
         <div style={{ animation: 'fadeIn 0.4s ease' }}>
-          
+
           {/* Recomendación de Framework Inferido */}
           {frameworkInference && (
             <div style={{
