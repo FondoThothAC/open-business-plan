@@ -1,4 +1,4 @@
-import { callAiProvider } from './ai';
+import { callAiProvider } from './ai.js';
 
 /**
  * Módulo de Evaluación de Empresas Cuánticas (Fondo Thoth AC)

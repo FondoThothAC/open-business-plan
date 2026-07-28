@@ -1,5 +1,5 @@
-import { findBenchmarkByText } from '../config/industry_benchmarks';
-import { callAiProvider } from './ai';
+import { findBenchmarkByText } from '../config/industry_benchmarks.js';
+import { callAiProvider } from './ai.js';
 
 /**
  * Matcher e Inferencia Dinámica de Benchmarks de Industria

@@ -1,5 +1,5 @@
-import { FRAMEWORKS } from '../config/frameworks';
-import { callAiProvider } from './ai';
+import { FRAMEWORKS } from '../config/frameworks.js';
+import { callAiProvider } from './ai.js';
 
 /**
  * Motor de Inferencia de Frameworks para Open Business Plan v2.0
