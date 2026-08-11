@@ -41,7 +41,7 @@ if not exist "node_modules\" (
 
 :: 3. PREPARAR CEREBRO DE IA (OLLAMA)
 echo [+] Verificando Inteligencia Artificial Local (Ollama)...
-start /b call activar_cerebro.bat
+start /b cmd /c "activar_cerebro.bat"
 
 :: 4. INICIAR BACKEND NODE.JS
 echo [+] Iniciando Servidor de Datos Backend (Puerto 3001)...
