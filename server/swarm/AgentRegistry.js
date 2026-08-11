@@ -1,8 +1,9 @@
 /**
- * AgentRegistry.js - Registro Dinámico de Agentes Reutilizables
+ * AgentRegistry.js - Registro Dinámico y Gestor Evolutivo de Agentes
  * 
- * Mapea los 12 frameworks de Open Business Plan con su pool dinámico
- * de agentes especialistas asignados, incluyendo el QuantumDiagnosticAgent.
+ * Conecta el catálogo de frameworks con el AgentStore persistente, el SkillMatcher
+ * semántico y el AgentGenerator para proporcionar un pool de agentes especialistas
+ * optimizado para cada anteproyecto.
  */
 
 import { InterviewerAgent } from './agents/InterviewerAgent.js';
@@ -15,6 +16,9 @@ import { LeanMvpAgent } from './agents/LeanMvpAgent.js';
 import { StrategyAgent } from './agents/StrategyAgent.js';
 import { QuantumDiagnosticAgent } from './agents/QuantumDiagnosticAgent.js';
 import { SynthesizerAgent } from './agents/SynthesizerAgent.js';
+import { agentStore } from './AgentStore.js';
+import { SkillMatcher } from './SkillMatcher.js';
+import { AgentGenerator } from './AgentGenerator.js';
 
 export class AgentRegistry {
   /**
@@ -26,9 +30,9 @@ export class AgentRegistry {
   }
 
   /**
-   * Retorna el conjunto de agentes especialistas para un framework dado.
-   * @param {string} frameworkId - Identificador del framework (ej: 'business', 'social_bid', 'technology_id')
-   * @returns {Array<Object>} Lista de instancias de agentes especialistas.
+   * Retorna el conjunto base de agentes especialistas para un framework dado.
+   * @param {string} frameworkId 
+   * @returns {Array<Object>}
    */
   static getAgentsForFramework(frameworkId) {
     const agentsMap = {
@@ -113,5 +117,83 @@ export class AgentRegistry {
     };
 
     return agentsMap[frameworkId] || agentsMap.business;
+  }
+
+  /**
+   * Resuelve dinámicamente el pool de agentes evaluando coincidencias semánticas,
+   * reutilizando agentes del store o auto-generando especialistas con auto-reflexión.
+   * @param {Object} context - Contexto del anteproyecto e idea
+   * @returns {Promise<Object>} { agents: Array, matchingReport: Array }
+   */
+  static async resolveDynamicPool(context) {
+    await agentStore.initialize();
+    const catalog = agentStore.getAllAgents();
+    const matcher = new SkillMatcher(catalog);
+    const generator = new AgentGenerator(agentStore);
+
+    const baseAgents = this.getAgentsForFramework(context.frameworkId || 'business');
+    const matchingReport = [];
+    const dynamicAgents = [];
+
+    for (const baseAgent of baseAgents) {
+      if (baseAgent.id === 'synthesizer') {
+        dynamicAgents.push(baseAgent);
+        continue;
+      }
+
+      const matchResult = matcher.findBestMatch({
+        description: `${context.ideaText || ''} ${context.sector || ''}`,
+        domainKeywords: [baseAgent.id, context.sector || '']
+      });
+
+      if (matchResult.action === 'reuse') {
+        // Reutilizar agente del store
+        matchingReport.push({
+          agentId: baseAgent.id,
+          name: baseAgent.name,
+          status: 'reused',
+          badgeText: '⚡ Reutilizado (0 Tokens)',
+          tokensSaved: 4500,
+          matchScore: matchResult.score
+        });
+        await agentStore.recordAgentUsage(baseAgent.id, { tokensSaved: 4500 });
+        dynamicAgents.push(baseAgent);
+      } else if (matchResult.action === 'specialize') {
+        // Especializar agente base
+        const specResult = await generator.specializeAgent(baseAgent, {
+          sector: context.sector || 'Especializado',
+          description: context.ideaText
+        });
+        matchingReport.push({
+          agentId: specResult.agent.id,
+          name: specResult.agent.name,
+          status: 'specialized',
+          badgeText: '🧬 Especializado (~30% Ahorro)',
+          tokensSaved: 2000,
+          matchScore: matchResult.score
+        });
+        dynamicAgents.push(baseAgent);
+      } else {
+        // Auto-generar nuevo agente especialista
+        const newSpecResult = await generator.generateNewSpecialist({
+          sector: context.sector || 'Nuevo Sector',
+          description: context.ideaText
+        });
+        matchingReport.push({
+          agentId: newSpecResult.agent.id,
+          name: newSpecResult.agent.name,
+          status: 'generated_new',
+          badgeText: '✨ Nuevo Agente Creado',
+          tokensSaved: 0,
+          matchScore: matchResult.score
+        });
+        dynamicAgents.push(baseAgent);
+      }
+    }
+
+    return {
+      agents: dynamicAgents,
+      matchingReport
+    };
   }
 }

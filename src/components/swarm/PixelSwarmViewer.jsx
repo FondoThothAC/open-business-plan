@@ -3,28 +3,32 @@
  * 
  * Renderiza en un lienzo HTML5 Canvas la oficina de consultoría virtual
  * donde sprites pixel-art representando a los agentes activos trabajan en vivo.
- * Inspirado en la estética y UX de Pixel Agents.
+ * Incluye soporte para agentes auto-generados, badges de ahorro de tokens y efectos cuánticos.
  */
 
 import React, { useRef, useEffect, useState } from 'react';
-import { Play, CheckCircle2, AlertCircle, Volume2, VolumeX, Terminal, Cpu } from 'lucide-react';
+import { Play, CheckCircle2, AlertCircle, Volume2, VolumeX, Terminal, Cpu, Sparkles, BookOpen } from 'lucide-react';
+import { SwarmIntelligenceHub } from './SwarmIntelligenceHub';
 
-export function PixelSwarmViewer({ activeAgents = [], agentLogs = [], globalProgress = 0, isRunning = false, onComplete }) {
+export function PixelSwarmViewer({ activeAgents = [], agentLogs = [], globalProgress = 0, isRunning = false, onComplete, matchingReport = [] }) {
   const canvasRef = useRef(null);
   const [audioEnabled, setAudioEnabled] = useState(true);
   const [activeSpeechBubble, setActiveSpeechBubble] = useState(null);
+  const [isHubOpen, setIsHubOpen] = useState(false);
 
-  // Mapeo de sprites y estados visuales
+  // Mapeo base de sprites y estados visuales
   const spriteMeta = {
-    interviewer: { name: 'Asesor Principal', color: '#8b5cf6', icon: '💬', deskX: 60 },
-    market: { name: 'Investigador', color: '#06b6d4', icon: '🕵️', deskX: 180 },
-    financial: { name: 'Financiero', color: '#10b981', icon: '📊', deskX: 300 },
-    capex_wacc: { name: 'Ingeniero CAPEX', color: '#f59e0b', icon: '🏗️', deskX: 420 },
-    tech_id: { name: 'Especialista TRL', color: '#ec4899', icon: '💡', deskX: 180 },
-    social_mml: { name: 'Consultor Social', color: '#3b82f6', icon: '🤝', deskX: 300 },
-    lean_mvp: { name: 'Coach Lean', color: '#f97316', icon: '🚀', deskX: 420 },
-    strategy: { name: 'Estratega', color: '#6366f1', icon: '⚙️', deskX: 420 },
-    synthesizer: { name: 'Redactor Jefe', color: '#eab308', icon: '📝', deskX: 540 }
+    interviewer: { name: 'Asesor Principal', color: '#8b5cf6', icon: '💬' },
+    market: { name: 'Investigador', color: '#06b6d4', icon: '🕵️' },
+    financial: { name: 'Financiero', color: '#10b981', icon: '📊' },
+    capex_wacc: { name: 'Ingeniero CAPEX', color: '#f59e0b', icon: '🏗️' },
+    tech_id: { name: 'Especialista TRL', color: '#ec4899', icon: '💡' },
+    social_mml: { name: 'Consultor Social', color: '#3b82f6', icon: '🤝' },
+    lean_mvp: { name: 'Coach Lean', color: '#f97316', icon: '🚀' },
+    strategy: { name: 'Estratega', color: '#6366f1', icon: '🧭' },
+    quantum_diagnostic: { name: 'Diag. Cuántico', color: '#a855f7', icon: '⚛️' },
+    quantum_diagnostician: { name: 'Diag. Cuántico', color: '#a855f7', icon: '⚛️' },
+    synthesizer: { name: 'Redactor Jefe', color: '#eab308', icon: '📝' }
   };
 
   useEffect(() => {
@@ -68,29 +72,40 @@ export function PixelSwarmViewer({ activeAgents = [], agentLogs = [], globalProg
 
       // Cuadro en la pared / Ventana
       ctx.fillStyle = '#1e1b4b';
-      ctx.fillRect( canvas.width / 2 - 80, 10, 160, 30 );
+      ctx.fillRect(canvas.width / 2 - 110, 10, 220, 30);
       ctx.strokeStyle = '#6366f1';
       ctx.lineWidth = 2;
-      ctx.strokeRect( canvas.width / 2 - 80, 10, 160, 30 );
+      ctx.strokeRect(canvas.width / 2 - 110, 10, 220, 30);
       ctx.fillStyle = '#a5b4fc';
       ctx.font = '10px monospace';
-      ctx.fillText('OPEN BUSINESS PLAN SWARM', canvas.width / 2 - 70, 28);
+      ctx.fillText('OPEN BUSINESS PLAN SWARM EVO v3.0', canvas.width / 2 - 100, 28);
 
       // 2. Renderizar Escritorios y Agentes
       const displayAgents = activeAgents.length > 0 
         ? activeAgents 
-        : ['market', 'financial', 'strategy', 'synthesizer'];
+        : ['market', 'financial', 'strategy', 'quantum_diagnostic', 'synthesizer'];
 
-      displayAgents.forEach((agentId, index) => {
-        const meta = spriteMeta[agentId] || { name: 'Consultor', color: '#94a3b8', icon: '👤', deskX: 80 + index * 120 };
-        const x = 80 + index * 130;
+      const deskSpacing = Math.min(130, (canvas.width - 60) / Math.max(1, displayAgents.length));
+
+      displayAgents.forEach((agentItem, index) => {
+        const agentId = typeof agentItem === 'string' ? agentItem : (agentItem.id || `agent_${index}`);
+        const customName = typeof agentItem === 'object' ? agentItem.name : null;
+        const customAvatar = typeof agentItem === 'object' ? agentItem.avatar : null;
+        
+        const meta = spriteMeta[agentId] || { 
+          name: customName || 'Especialista', 
+          color: '#06b6d4', 
+          icon: customAvatar || '✨' 
+        };
+
+        const x = 50 + index * deskSpacing + deskSpacing / 2;
         const y = 90;
 
         // Escritorio Pixel
         ctx.fillStyle = '#78350f';
-        ctx.fillRect(x - 30, y + 25, 60, 25);
+        ctx.fillRect(x - 26, y + 25, 52, 25);
         ctx.fillStyle = '#92400e';
-        ctx.fillRect(x - 28, y + 23, 56, 4);
+        ctx.fillRect(x - 24, y + 23, 48, 4);
 
         // Monitor de computadora
         ctx.fillStyle = '#0f172a';
@@ -112,26 +127,46 @@ export function PixelSwarmViewer({ activeAgents = [], agentLogs = [], globalProg
         // Avatar de Agente (Sprite Pixel animado)
         const bounce = isRunning ? Math.sin(tick * 0.2 + index) * 2 : 0;
         
+        // Efecto cuántico si es diagnosticador cuántico
+        if (agentId.includes('quantum') && isRunning) {
+          const auraRadius = 18 + Math.sin(tick * 0.15) * 4;
+          const gradient = ctx.createRadialGradient(x, y + 12 + bounce, 4, x, y + 12 + bounce, auraRadius);
+          gradient.addColorStop(0, 'rgba(168, 85, 247, 0.6)');
+          gradient.addColorStop(1, 'rgba(168, 85, 247, 0)');
+          ctx.fillStyle = gradient;
+          ctx.beginPath();
+          ctx.arc(x, y + 12 + bounce, auraRadius, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
         // Cuerpo / Silla
         ctx.fillStyle = '#1e293b';
-        ctx.fillRect(x - 14, y + 15 + bounce, 28, 22);
+        ctx.fillRect(x - 12, y + 15 + bounce, 24, 20);
 
         // Cabeza / Icono
-        ctx.font = '18px sans-serif';
+        ctx.font = '16px sans-serif';
         ctx.textAlign = 'center';
         ctx.fillText(meta.icon, x, y + 12 + bounce);
 
         // Etiqueta con Nombre del Agente
         ctx.fillStyle = '#f8fafc';
-        ctx.font = 'bold 10px sans-serif';
-        ctx.fillText(meta.name, x, y + 62);
+        ctx.font = 'bold 9px sans-serif';
+        ctx.fillText(meta.name.slice(0, 15), x, y + 60);
+
+        // Badge de Reutilización / Token Saver flotante sobre el escritorio
+        const matchInfo = matchingReport.find(r => r.agentId === agentId);
+        if (matchInfo && matchInfo.badgeText) {
+          ctx.fillStyle = matchInfo.status === 'reused' ? '#10b981' : matchInfo.status === 'specialized' ? '#f59e0b' : '#6366f1';
+          ctx.font = '8px sans-serif';
+          ctx.fillText(matchInfo.badgeText.slice(0, 18), x, y - 10);
+        }
 
         // Globo de Diálogo Emergente (Speech Bubble)
-        if (activeSpeechBubble && activeSpeechBubble.agentId === agentId) {
-          const bubbleWidth = 120;
-          const bubbleHeight = 34;
+        if (activeSpeechBubble && (activeSpeechBubble.agentId === agentId || activeSpeechBubble.agentId === meta.name)) {
+          const bubbleWidth = 110;
+          const bubbleHeight = 32;
           const bx = x - bubbleWidth / 2;
-          const by = y - 35;
+          const by = y - 45;
 
           ctx.fillStyle = '#ffffff';
           ctx.beginPath();
@@ -141,23 +176,13 @@ export function PixelSwarmViewer({ activeAgents = [], agentLogs = [], globalProg
           ctx.lineWidth = 2;
           ctx.stroke();
 
-          // Triángulo del globo
-          ctx.beginPath();
-          ctx.moveTo(x - 5, by + bubbleHeight);
-          ctx.lineTo(x, by + bubbleHeight + 6);
-          ctx.lineTo(x + 5, by + bubbleHeight);
-          ctx.fillStyle = '#ffffff';
-          ctx.fill();
-
-          // Texto de estado truncado
           ctx.fillStyle = '#0f172a';
-          ctx.font = '9px sans-serif';
+          ctx.font = '8px sans-serif';
           ctx.textAlign = 'left';
-          const msg = activeSpeechBubble.message || 'Procesando...';
-          const line1 = msg.substring(0, 22);
-          const line2 = msg.length > 22 ? msg.substring(22, 42) + '...' : '';
-          ctx.fillText(line1, bx + 6, by + 14);
-          if (line2) ctx.fillText(line2, bx + 6, by + 26);
+          const msg = activeSpeechBubble.message.length > 28 
+            ? activeSpeechBubble.message.slice(0, 26) + '...' 
+            : activeSpeechBubble.message;
+          ctx.fillText(msg, bx + 6, by + 18);
         }
       });
 
@@ -169,84 +194,82 @@ export function PixelSwarmViewer({ activeAgents = [], agentLogs = [], globalProg
     return () => {
       cancelAnimationFrame(animationFrameId);
     };
-  }, [activeAgents, isRunning, activeSpeechBubble]);
+  }, [activeAgents, isRunning, activeSpeechBubble, matchingReport]);
 
   return (
-    <div className="bg-slate-900 border border-slate-700 rounded-xl overflow-hidden shadow-2xl my-4">
-      {/* Cabecera del Lienzo */}
-      <div className="bg-slate-800 px-4 py-3 border-b border-slate-700 flex items-center justify-between">
-        <div className="flex items-center space-x-3">
-          <div className="flex space-x-1.5">
-            <div className="w-3 h-3 rounded-full bg-red-500"></div>
-            <div className="w-3 h-3 rounded-full bg-amber-500"></div>
-            <div className="w-3 h-3 rounded-full bg-emerald-500"></div>
+    <div className="w-full bg-slate-900 border border-slate-700/80 rounded-2xl overflow-hidden shadow-2xl mb-6">
+      
+      {/* Barra de Control de la Oficina */}
+      <div className="bg-slate-950 px-4 py-3 border-b border-slate-800 flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <div className="p-1.5 bg-indigo-500/20 text-indigo-400 rounded-lg">
+            <Cpu size={18} />
           </div>
-          <span className="text-xs font-mono font-bold text-slate-300 flex items-center gap-1.5">
-            <Cpu className="w-4 h-4 text-indigo-400 animate-pulse" />
-            PIXEL SWARM OFFICE — OFICINA VIRTUAL DE CONSULTORES IA
-          </span>
+          <div>
+            <h3 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
+              Pixel Swarm Office — Oficina Virtual de Consultores IA
+              {isRunning && (
+                <span className="flex h-2 w-2 relative">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                </span>
+              )}
+            </h3>
+            <span className="text-[10px] text-slate-400">
+              {isRunning ? 'Enjambre multi-agente ejecutando en paralelo...' : 'En espera de industrialización'}
+            </span>
+          </div>
         </div>
 
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setIsHubOpen(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600/20 border border-indigo-500/30 text-indigo-300 hover:bg-indigo-600/30 text-xs font-medium transition"
+          >
+            <BookOpen size={14} />
+            Biblioteca de Agentes (Hub)
+          </button>
           <button
             onClick={() => setAudioEnabled(!audioEnabled)}
-            className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-700 transition"
-            title={audioEnabled ? 'Silenciar Efectos' : 'Activar Efectos'}
+            className="p-1.5 text-slate-400 hover:text-white transition rounded-lg hover:bg-slate-800"
+            title={audioEnabled ? "Desactivar audio" : "Activar audio"}
           >
-            {audioEnabled ? <Volume2 className="w-4 h-4 text-emerald-400" /> : <VolumeX className="w-4 h-4" />}
+            {audioEnabled ? <Volume2 size={16} /> : <VolumeX size={16} />}
           </button>
-          <span className={`text-xs px-2.5 py-1 rounded-full font-semibold flex items-center gap-1 ${
-            isRunning ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-slate-700 text-slate-400'
-          }`}>
-            <span className={`w-2 h-2 rounded-full ${isRunning ? 'bg-emerald-400 animate-ping' : 'bg-slate-500'}`}></span>
-            {isRunning ? 'Enjambre Trabajando' : 'Oficina en Espera'}
-          </span>
         </div>
       </div>
 
-      {/* Lienzo Canvas 2D */}
-      <div className="relative bg-slate-950 flex justify-center p-4">
+      {/* Canvas Pixel-Art */}
+      <div className="relative w-full bg-slate-950 flex items-center justify-center p-2 overflow-x-auto">
         <canvas
           ref={canvasRef}
-          width={640}
+          width={700}
           height={180}
-          className="rounded-lg border border-slate-800 shadow-inner max-w-full"
+          className="border border-slate-800 rounded-xl shadow-inner max-w-full"
         />
       </div>
 
-      {/* Barra de Progreso Global */}
-      <div className="w-full bg-slate-950 px-4 py-2 border-t border-slate-800">
-        <div className="flex justify-between items-center text-xs text-slate-400 mb-1">
-          <span>Avance del Enjambre Multi-Agente</span>
-          <span className="font-mono text-indigo-400 font-bold">{globalProgress}%</span>
+      {/* Consola de Eventos en Vivo */}
+      <div className="bg-slate-950/90 p-4 border-t border-slate-800 max-h-40 overflow-y-auto font-mono text-xs text-slate-300">
+        <div className="flex items-center gap-2 text-slate-500 mb-2 font-bold uppercase text-[10px]">
+          <Terminal size={12} />
+          Feed de Razonamiento del Enjambre (SSE Stream):
         </div>
-        <div className="w-full bg-slate-800 rounded-full h-2 overflow-hidden">
-          <div
-            className="bg-gradient-to-r from-indigo-500 via-purple-500 to-emerald-400 h-2 rounded-full transition-all duration-300"
-            style={{ width: `${globalProgress}%` }}
-          ></div>
-        </div>
-      </div>
-
-      {/* Consola Terminal de Actividad SSE */}
-      <div className="bg-slate-950 p-4 border-t border-slate-800 max-h-40 overflow-y-auto font-mono text-xs text-slate-300">
-        <div className="flex items-center gap-2 text-slate-500 border-b border-slate-800 pb-1 mb-2">
-          <Terminal className="w-3.5 h-3.5" />
-          <span>Feed de Eventos en Tiempo Real (SSE EventStream)</span>
-        </div>
-
         {agentLogs.length === 0 ? (
-          <p className="text-slate-600 italic">Esperando inicio de tareas del enjambre...</p>
+          <div className="text-slate-500 italic">Inicia el enjambre para visualizar los logs concurrentes...</div>
         ) : (
-          agentLogs.map((log, idx) => (
-            <div key={idx} className="flex items-start space-x-2 py-0.5 hover:bg-slate-900 px-1 rounded">
-              <span className="text-slate-500">[{new Date(log.timestamp || Date.now()).toLocaleTimeString()}]</span>
+          agentLogs.slice(-6).map((log, index) => (
+            <div key={index} className="py-0.5 flex items-start gap-2">
+              <span className="text-slate-500 text-[10px]">[{new Date(log.timestamp || Date.now()).toLocaleTimeString()}]</span>
               <span className="font-bold text-indigo-400">[{log.agentId || 'Swarm'}]:</span>
               <span className="text-slate-200">{log.message}</span>
             </div>
           ))
         )}
       </div>
+
+      {/* Modal del Swarm Intelligence Hub */}
+      <SwarmIntelligenceHub isOpen={isHubOpen} onClose={() => setIsHubOpen(false)} />
     </div>
   );
 }

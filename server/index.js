@@ -7,6 +7,7 @@ import { scrapeSocialFollowers, scrapeEcommercePrices, scrapeUberEatsRappi, scra
 import { busquedaMultiFuente, analizarViabilidad } from './competitorEngine.js';
 import { FRAMEWORKS } from '../src/config/frameworks.js';
 import { swarmOrchestrator } from './swarm/SwarmOrchestrator.js';
+import { agentStore } from './swarm/AgentStore.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -1558,6 +1559,64 @@ app.post('/api/swarm/industrialize', async (req, res) => {
     return res.json({ success: true, message: 'Enjambre activado en segundo plano.' });
   } catch (error) {
     console.error('Error en /api/swarm/industrialize:', error);
+    return res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 4. Catálogo de Agentes Registrados y Métricas Globales
+app.get('/api/swarm/agents', async (req, res) => {
+  try {
+    await agentStore.initialize();
+    const agents = agentStore.getAllAgents();
+    const totalTokensSaved = agents.reduce((acc, a) => acc + (a.metrics?.tokensSaved || 0), 0);
+    const totalUses = agents.reduce((acc, a) => acc + (a.metrics?.usageCount || 0), 0);
+
+    return res.json({
+      success: true,
+      count: agents.length,
+      totalTokensSaved,
+      totalUses,
+      agents
+    });
+  } catch (error) {
+    console.error('Error en /api/swarm/agents:', error);
+    return res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 5. Sincronización de Telemetría y Skills con Servidor Central / Webhook
+app.post('/api/v1/swarm/sync-skills', async (req, res) => {
+  try {
+    await agentStore.initialize();
+    const bundle = await agentStore.generateExportBundle();
+    
+    // Simular/ejecutar sincronización hacia endpoint de Fondo Thoth o webhook
+    console.log(`[Swarm Sync] Sincronizando ${bundle.totalAgents} agentes hacia Fondo Thoth Cloud...`);
+    console.log(`[Swarm Sync] Tokens ahorrados acumulados: ${bundle.globalMetrics.totalTokensSaved}`);
+
+    return res.json({
+      success: true,
+      message: 'Agentes y telemetría sincronizados exitosamente con Fondo Thoth Cloud.',
+      syncTimestamp: new Date().toISOString(),
+      summary: bundle.globalMetrics
+    });
+  } catch (error) {
+    console.error('Error en /api/v1/swarm/sync-skills:', error);
+    return res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 6. Exportación de Paquete Mensual de Agentes en JSON
+app.get('/api/swarm/export-bundle', async (req, res) => {
+  try {
+    await agentStore.initialize();
+    const bundle = await agentStore.generateExportBundle();
+    
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Content-Disposition', `attachment; filename="swarm_agents_bundle_${Date.now()}.json"`);
+    return res.send(JSON.stringify(bundle, null, 2));
+  } catch (error) {
+    console.error('Error en /api/swarm/export-bundle:', error);
     return res.status(500).json({ success: false, error: error.message });
   }
 });

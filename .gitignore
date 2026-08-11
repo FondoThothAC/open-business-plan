@@ -1,5 +1,22 @@
 node_modules/
 dist/
+dist_electron/
 .DS_Store
 *.log
-proyectos/negocios/proyecto_*
+.installed
+package.json.backup
+scratch/
+Datos Fuentes/
+libros/
+*.blockmap
+*.dmg
+*.AppImage
+*.exe
+*.nsis.7z
+proyectos/negocios/*/
+proyectos/social/*/
+proyectos/negocios/*.json
+proyectos/negocios/*.md
+proyectos/social/*.json
+proyectos/social/*.md
+medscribe_logo_*.png

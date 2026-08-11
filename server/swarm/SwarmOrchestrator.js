@@ -1,8 +1,9 @@
 /**
- * SwarmOrchestrator.js - Motor Central de Orquestación del Enjambre Multi-Agente
+ * SwarmOrchestrator.js - Motor Central de Orquestación del Enjambre Multi-Agente (Kimi 3 Style)
  * 
- * Gestiona el ciclo de vida de los agentes especialistas, las conexiones SSE por sesión
- * y la compilación final de anteproyectos.
+ * Gestiona el ciclo de vida de los agentes especialistas, las conexiones SSE por sesión,
+ * la ejecución paralela y concurrente, la emisión de eventos de matching de skills
+ * y la compilación final del anteproyecto con diagnóstico cuántico.
  */
 
 import { AgentRegistry } from './AgentRegistry.js';
@@ -20,11 +21,10 @@ export class SwarmOrchestrator {
   registerSessionStream(sessionId, res) {
     this.sessions.set(sessionId, res);
     
-    // Notificar conexión exitosa
     this.emitEvent(sessionId, {
       type: 'connection_established',
       sessionId,
-      message: 'Conexión SSE establecida con el Swarm Engine.'
+      message: 'Conexión SSE establecida con el Swarm Evolution Engine.'
     });
   }
 
@@ -35,7 +35,7 @@ export class SwarmOrchestrator {
   closeSession(sessionId) {
     const res = this.sessions.get(sessionId);
     if (res) {
-      res.end();
+      try { res.end(); } catch (_) {}
       this.sessions.delete(sessionId);
     }
   }
@@ -48,7 +48,11 @@ export class SwarmOrchestrator {
   emitEvent(sessionId, eventData) {
     const res = this.sessions.get(sessionId);
     if (res) {
-      res.write(`data: ${JSON.stringify(eventData)}\n\n`);
+      try {
+        res.write(`data: ${JSON.stringify(eventData)}\n\n`);
+      } catch (_) {
+        this.sessions.delete(sessionId);
+      }
     }
   }
 
@@ -63,20 +67,32 @@ export class SwarmOrchestrator {
   }
 
   /**
-   * Ejecuta la Fase 2: Industrialización Multi-Agente con streaming SSE.
+   * Ejecuta la Fase 2: Industrialización Multi-Agente Concurrente con streaming SSE.
    * @param {string} sessionId - ID único de sesión
    * @param {Object} context - Datos del proyecto e idea
    * @returns {Promise<Object>} Resultado compilado final
    */
   async runIndustrialization(sessionId, context) {
     const frameworkId = context.frameworkId || 'business';
-    const agents = AgentRegistry.getAgentsForFramework(frameworkId);
+
+    // 1. Resolución dinámica del pool de agentes y matching semántico
+    const { agents, matchingReport } = await AgentRegistry.resolveDynamicPool(context);
+
+    // Calcular ahorro total estimado de tokens en esta sesión
+    const totalTokensSaved = matchingReport.reduce((acc, r) => acc + (r.tokensSaved || 0), 0);
 
     this.emitEvent(sessionId, {
       type: 'swarm_started',
       frameworkId,
       agentCount: agents.length,
-      agentsMeta: agents.map(a => ({ id: a.id, name: a.name, avatar: a.avatar, role: a.role }))
+      matchingReport,
+      totalTokensSaved,
+      agentsMeta: agents.map(a => ({
+        id: a.id,
+        name: a.name,
+        avatar: a.avatar,
+        role: a.role
+      }))
     });
 
     const agentResults = {};
@@ -92,13 +108,18 @@ export class SwarmOrchestrator {
       });
     };
 
-    // Procesar agentes especialistas (excepto sintetizador)
+    // Separar agentes especialistas del agente sintetizador final
+    const workerAgents = [];
     for (const agent of agents) {
       if (agent.id === 'synthesizer') {
         synthesizerAgent = agent;
-        continue;
+      } else {
+        workerAgents.push(agent);
       }
+    }
 
+    // 2. Ejecución Concurrente en Paralelo de Especialistas (Kimi Swarm Style)
+    const workerPromises = workerAgents.map(async (agent) => {
       this.emitEvent(sessionId, {
         type: 'agent_started',
         agentId: agent.id,
@@ -116,6 +137,16 @@ export class SwarmOrchestrator {
           name: agent.name,
           result
         });
+
+        // Si es el agente cuántico, emitir alerta transversal específica
+        if (agent.id === 'quantum_diagnostic' || agent.id === 'quantum_diagnostician') {
+          this.emitEvent(sessionId, {
+            type: 'quantum_diagnostic_alert',
+            quantumResult: result
+          });
+        }
+
+        return { agentId: agent.id, success: true, result };
       } catch (error) {
         console.error(`Error en agente ${agent.id}:`, error);
         this.emitEvent(sessionId, {
@@ -123,10 +154,14 @@ export class SwarmOrchestrator {
           agentId: agent.id,
           error: error.message
         });
+        return { agentId: agent.id, success: false, error: error.message };
       }
-    }
+    });
 
-    // Ejecutar agente sintetizador final si existe
+    // Esperar resolución de todos los agentes concurrentes
+    await Promise.allSettled(workerPromises);
+
+    // 3. Ejecución del Agente Sintetizador Final
     let finalDoc = null;
     if (synthesizerAgent) {
       this.emitEvent(sessionId, {
@@ -148,7 +183,9 @@ export class SwarmOrchestrator {
 
     this.emitEvent(sessionId, {
       type: 'swarm_completed',
-      finalDoc
+      finalDoc,
+      matchingReport,
+      totalTokensSaved
     });
 
     return finalDoc;

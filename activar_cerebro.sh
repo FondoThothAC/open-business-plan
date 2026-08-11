@@ -41,23 +41,15 @@ echo ""
 echo "[*] Modelos disponibles localmente:"
 ollama list
 
-# 4. Verificar modelo principal (gemma4:e2b-mlx)
+# 4. Verificar modelo principal (qwen3.5:4b-mlx)
 echo ""
-echo "[*] Verificando modelo principal: gemma4:e2b-mlx..."
-if ollama list | grep -q "gemma4:e2b-mlx"; then
-    echo "[OK] Modelo gemma4:e2b-mlx encontrado y listo."
+echo "[*] Verificando modelo principal: qwen3.5:4b-mlx..."
+if ollama list | grep -q "qwen3.5:4b-mlx"; then
+    echo "[OK] Modelo qwen3.5:4b-mlx encontrado y listo."
 else
-    echo "[!] El modelo gemma4:e2b-mlx no existe. Descargando..."
-    ollama pull gemma4:e2b-mlx
+    echo "[!] El modelo qwen3.5:4b-mlx no existe. Descargando..."
+    ollama pull qwen3.5:4b-mlx
     echo "[OK] Modelo descargado."
-fi
-
-# 5. Verificar modelo de respaldo (qwen3.5:2b-mlx)
-echo "[*] Verificando modelo secundario: qwen3.5:2b-mlx..."
-if ollama list | grep -q "qwen3.5:2b-mlx"; then
-    echo "[OK] Modelo qwen3.5:2b-mlx encontrado y listo."
-else
-    echo "[ADVERTENCIA] qwen3.5:2b-mlx no encontrado. Los niveles Pro/Profundo usarán gemma4:e2b-mlx."
 fi
 
 echo ""

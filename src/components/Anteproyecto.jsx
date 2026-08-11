@@ -176,7 +176,7 @@ export default function Anteproyecto() {
   const handleLaunchSwarmSession = async ({ frameworkId, answers, ideaText }) => {
     setIsSwarmRunning(true);
     setGlobalProgress(10);
-    setAgentLogs([{ agentId: 'system', message: 'Iniciando conexión con Swarm Engine...', timestamp: new Date().toISOString() }]);
+    setAgentLogs([{ agentId: 'system', message: 'Iniciando conexión con Swarm Evolution Engine...', timestamp: new Date().toISOString() }]);
 
     const sessionId = `swarm_${Date.now()}`;
 
@@ -189,17 +189,30 @@ export default function Anteproyecto() {
         const data = JSON.parse(event.data);
 
         if (data.type === 'swarm_started') {
-          setActiveAgents(data.agentsMeta ? data.agentsMeta.map(a => a.id) : []);
+          setActiveAgents(data.agentsMeta ? data.agentsMeta.map(a => ({ id: a.id, name: a.name, avatar: a.avatar })) : []);
+          if (data.matchingReport) {
+            setMatchingReport(data.matchingReport);
+          }
           setGlobalProgress(15);
         } else if (data.type === 'agent_progress') {
           setAgentLogs(prev => [...prev, { agentId: data.agentId, message: data.message, timestamp: data.timestamp }]);
           setGlobalProgress(prev => Math.min(prev + 10, 90));
+        } else if (data.type === 'quantum_diagnostic_alert') {
+          setAgentLogs(prev => [...prev, {
+            agentId: 'quantum_diagnostic',
+            message: `⚛️ [DIAGNÓSTICO CUÁNTICO]: ${data.quantumResult?.alertaFusion || 'Áreas atómicas evaluadas.'}`,
+            timestamp: new Date().toISOString()
+          }]);
         } else if (data.type === 'agent_completed') {
-          setAgentLogs(prev => [...prev, { agentId: data.agentId, message: `✅ Tareas de ${data.name} completadas exitosamente.`, timestamp: new Date().toISOString() }]);
+          setAgentLogs(prev => [...prev, { agentId: data.agentId, message: `✅ ${data.name || data.agentId} finalizó su análisis.`, timestamp: new Date().toISOString() }]);
         } else if (data.type === 'swarm_completed') {
           setGlobalProgress(100);
           setIsSwarmRunning(false);
-          setAgentLogs(prev => [...prev, { agentId: 'system', message: '🎉 Enjambre Multi-Agente finalizado. Documento compilado.', timestamp: new Date().toISOString() }]);
+          setAgentLogs(prev => [...prev, {
+            agentId: 'system',
+            message: `🎉 Enjambre Swarm Evolution finalizado. Total Tokens Ahorrados: ${(data.totalTokensSaved || 0).toLocaleString()} tks.`,
+            timestamp: new Date().toISOString()
+          }]);
 
           if (data.finalDoc) {
             updateConfig('projectType', null, frameworkId);
@@ -293,6 +306,7 @@ export default function Anteproyecto() {
           agentLogs={agentLogs}
           globalProgress={globalProgress}
           isRunning={isSwarmRunning}
+          matchingReport={matchingReport}
         />
       )}
 
