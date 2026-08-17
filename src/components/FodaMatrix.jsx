@@ -1,4 +1,3 @@
-import React from 'react';
 import { Shield, TrendingUp, AlertTriangle, AlertOctagon } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';

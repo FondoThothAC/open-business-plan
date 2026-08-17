@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { usePlan } from '../context/PlanContext';
-import { Printer, FileText, Check, AlertTriangle, ShieldCheck, HelpCircle, MessageSquare, Sparkles, Wand2, Bot, BrainCircuit, RefreshCw } from 'lucide-react';
+import { Printer, MessageSquare, Sparkles, Wand2, Bot, BrainCircuit, RefreshCw } from 'lucide-react';
 import { refactorFieldWithComments } from '../lib/ai';
 import FinancialCharts, { PrintableFinancialReports } from '../components/FinancialCharts';
 import MermaidViewer from '../components/MermaidViewer';
@@ -256,8 +256,8 @@ function CapacidadInventarioWidget({ data }) {
 
 // --- SUBCOMPONENTE: IMPACTO AMBIENTAL WIDGET ---
 function ImpactoAmbientalWidget({ data }) {
-  const impText = data?.impacto || '';
-  const mitText = data?.mitigacion || '';
+  const _impText = data?.impacto || '';
+  const _mitText = data?.mitigacion || '';
   const normText = data?.normatividad || '';
 
   const environmentalItems = [
@@ -1289,9 +1289,78 @@ export default function VistaPrevia() {
     }
   };
 
-  // Orientación global desde config (persistente)
+  // Orientación global y modo de paginación desde config (persistente)
   const globalOrientation = planData.config?.globalOrientation || 'portrait';
   const setGlobalOrientation = (val) => updateConfig('globalOrientation', null, val);
+
+  const paginationMode = planData.config?.paginationMode || 'module-per-page';
+  const setPaginationMode = (val) => updateConfig('paginationMode', null, val);
+
+  const CorporatePrintHeader = ({ sectionTitle, pillarTitle }) => {
+    const brandKit = planData?.config?.brandKit || {};
+    const companyName = brandKit.companyName || 'Plan Estratégico';
+    const logoUrl = brandKit.logoUrl;
+    const primaryColor = brandKit.primaryColor || '#6366f1';
+
+    return (
+      <div className="print-page-header">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+          {logoUrl ? (
+            <img 
+              src={logoUrl} 
+              alt="Logo" 
+              style={{ height: '22px', width: 'auto', maxHeight: '22px', objectFit: 'contain' }} 
+            />
+          ) : (
+            <div style={{
+              width: '20px',
+              height: '20px',
+              borderRadius: '4px',
+              background: primaryColor,
+              color: '#ffffff',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '0.65rem',
+              fontWeight: 800
+            }}>
+              {companyName.charAt(0).toUpperCase()}
+            </div>
+          )}
+          <span style={{ fontWeight: 700, color: '#1e293b', fontSize: '0.78rem' }}>
+            {companyName}
+          </span>
+        </div>
+        <div style={{ textAlign: 'right', fontSize: '0.75rem', color: '#64748b' }}>
+          <span>
+            {pillarTitle ? `${pillarTitle} · ` : ''}{sectionTitle || ''}
+          </span>
+        </div>
+      </div>
+    );
+  };
+
+  const CorporatePrintFooter = ({ pageNum, sectionName }) => {
+    const brandKit = planData?.config?.brandKit || {};
+    const companyName = brandKit.companyName || 'Plan de Negocios';
+    const currentDate = new Date().toLocaleDateString('es-MX', { year: 'numeric', month: 'short', day: 'numeric' });
+
+    return (
+      <div className="print-page-footer">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <strong style={{ color: '#334155' }}>{companyName}</strong>
+          <span style={{ color: '#cbd5e1' }}>•</span>
+          <span style={{ fontStyle: 'italic', color: '#94a3b8' }}>Documento Confidencial</span>
+          <span style={{ color: '#cbd5e1' }}>•</span>
+          <span style={{ color: '#94a3b8' }}>{currentDate}</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          {sectionName && <span style={{ color: '#94a3b8' }}>{sectionName}</span>}
+          <strong style={{ color: '#1e293b' }}>Pág. {pageNum}</strong>
+        </div>
+      </div>
+    );
+  };
 
   const previewFinancialData = useMemo(() => {
     try {
@@ -1299,7 +1368,7 @@ export default function VistaPrevia() {
       if (raw && typeof raw === 'string') {
         return JSON.parse(raw);
       }
-    } catch (_) {}
+    } catch {}
 
     // Fallback: calcular corrida financiera al vuelo si no existe
     try {
@@ -1448,7 +1517,7 @@ export default function VistaPrevia() {
   };
 
   // Mostrar siempre en vista previa si existe el módulo
-  const shouldShow = (pillar, module) => {
+  const shouldShow = (_pillar, _module) => {
     return true; 
   };
 
@@ -1491,18 +1560,41 @@ export default function VistaPrevia() {
   const { modulePageNumbers, financialReportsPage, anexosPage, sourcesPage } = useMemo(() => {
     const pageNumbers = {};
     let currentPage = 3; // Portada es 1, Índice es 2. Primer módulo inicia en 3.
-    orderedModules.forEach(mod => {
-      if (!shouldShow(mod.pillarKey, mod.key)) return;
-      pageNumbers[mod.key] = currentPage;
-      
-      let estimatedPages = 1;
-      if (mod.key === 'estados_financieros') {
-        estimatedPages = 2; // Presupuesto + Balance General
-      } else if (mod.key === 'segmentacion') {
-        estimatedPages = 2; // TAM/SAM/SOM + Buyer Persona
+
+    if (paginationMode === 'continuous') {
+      let accumPages = 0;
+      orderedModules.forEach((mod) => {
+        if (!shouldShow(mod.pillarKey, mod.key)) return;
+        pageNumbers[mod.key] = currentPage;
+        
+        let density = 0.45;
+        if (mod.key === 'estados_financieros' || mod.key === 'pestel' || mod.key === 'foda' || mod.key === 'segmentacion') {
+          density = 0.9;
+        }
+        accumPages += density;
+        if (accumPages >= 1) {
+          const fullPages = Math.floor(accumPages);
+          currentPage += fullPages;
+          accumPages = accumPages - fullPages;
+        }
+      });
+      if (accumPages > 0.2) {
+        currentPage += 1;
       }
-      currentPage += estimatedPages;
-    });
+    } else {
+      orderedModules.forEach(mod => {
+        if (!shouldShow(mod.pillarKey, mod.key)) return;
+        pageNumbers[mod.key] = currentPage;
+        
+        let estimatedPages = 1;
+        if (mod.key === 'estados_financieros') {
+          estimatedPages = 2; // Presupuesto + Balance General
+        } else if (mod.key === 'segmentacion') {
+          estimatedPages = 2; // TAM/SAM/SOM + Buyer Persona
+        }
+        currentPage += estimatedPages;
+      });
+    }
 
     const reportsPage = currentPage;
     if (previewFinancialData) {
@@ -1521,7 +1613,7 @@ export default function VistaPrevia() {
       anexosPage: aPage,
       sourcesPage: sPage
     };
-  }, [orderedModules, previewFinancialData, planData?.config?.anexos]);
+  }, [orderedModules, previewFinancialData, planData?.config?.anexos, paginationMode]);
 
   // Manejadores de ordenamiento y orientación
   const handleOrientationChange = (modKey, value) => {
@@ -1737,6 +1829,7 @@ export default function VistaPrevia() {
     
     return (
       <div 
+        id="portada"
         className="print-page cover-page" 
         style={{ 
           position: 'relative',
@@ -1895,7 +1988,7 @@ export default function VistaPrevia() {
           }
           .portrait-print-page {
             page: portraitPage;
-            break-before: page;
+            ${paginationMode === 'continuous' ? 'break-before: auto;' : 'break-before: page;'}
           }
           .landscape-print-page {
             page: landscapePage;
@@ -1920,9 +2013,15 @@ export default function VistaPrevia() {
           .no-print {
             display: none !important;
           }
+          .print-page-header {
+            display: flex !important;
+          }
           .print-page-footer {
             display: flex !important;
           }
+        }
+        .print-page-header {
+          display: none;
         }
         .print-page-footer {
           display: none;
@@ -1964,6 +2063,37 @@ export default function VistaPrevia() {
             >
               <option value="portrait">Vertical 📄</option>
               <option value="landscape">Horizontal 📑</option>
+            </select>
+          </div>
+
+          {/* Selector de Modo de Paginación */}
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '0.5rem', 
+            background: 'var(--bg-panel)', 
+            backdropFilter: 'var(--glass-blur)',
+            padding: '0.5rem 0.8rem', 
+            borderRadius: '10px', 
+            border: '1px solid var(--border-color)' 
+          }}>
+            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Paginación:</span>
+            <select
+              value={paginationMode}
+              onChange={(e) => setPaginationMode(e.target.value)}
+              style={{
+                background: 'var(--bg-dark)',
+                border: '1px solid var(--border-color)',
+                color: 'var(--text-primary)',
+                fontSize: '0.75rem',
+                borderRadius: '6px',
+                padding: '3px 8px',
+                cursor: 'pointer',
+                fontWeight: 600
+              }}
+            >
+              <option value="module-per-page">Hoja por Módulo 📄</option>
+              <option value="continuous">Flujo Continuo 📜</option>
             </select>
           </div>
 
@@ -2037,9 +2167,9 @@ export default function VistaPrevia() {
         {renderCoverPage()}
 
         {/* Índice / Tabla de Contenidos */}
-        <div className="print-page toc-page" style={{ 
+        <div id="indice" className="print-page toc-page" style={{ 
           minHeight: '85vh', 
-          padding: '4rem 2rem', 
+          padding: '4rem 2.5rem', 
           pageBreakBefore: 'always', 
           fontFamily: 'Inter, sans-serif',
           background: '#ffffff',
@@ -2047,57 +2177,69 @@ export default function VistaPrevia() {
           margin: '0 auto 2.5rem auto',
           borderRadius: '12px',
           boxShadow: '0 10px 30px rgba(0, 0, 0, 0.04)',
-          border: '1px solid #e2e8f0'
+          border: '1px solid #e2e8f0',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between'
         }}>
-          <h2 style={{ fontSize: '2rem', color: '#0f172a', borderBottom: '2px solid #e2e8f0', paddingBottom: '1rem', marginBottom: '3rem', fontWeight: 800 }}>
-            Índice de Contenido
-          </h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxWidth: '650px' }}>
-            <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
-              <span style={{ fontWeight: 600, color: '#1e293b' }}>Portada</span>
-              <div style={{ flex: 1, borderBottom: '1px dotted #cbd5e1', margin: '0 10px' }}></div>
-              <span style={{ fontWeight: 600, color: '#475569' }}>1</span>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
-              <span style={{ fontWeight: 600, color: '#1e293b' }}>Índice de Contenido</span>
-              <div style={{ flex: 1, borderBottom: '1px dotted #cbd5e1', margin: '0 10px' }}></div>
-              <span style={{ fontWeight: 600, color: '#475569' }}>2</span>
-            </div>
+          <div>
+            <CorporatePrintHeader sectionTitle="Índice de Contenido" pillarTitle="Estructura General" />
             
-            {orderedModules.map((mod, idx) => {
-              const pageNum = modulePageNumbers[mod.key];
-              if (!pageNum) return null;
-              return (
-                <div key={mod.key} style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', paddingLeft: '1rem' }}>
-                  <span style={{ color: '#334155' }}>{idx + 1}. {mod.title}</span>
-                  <div style={{ flex: 1, borderBottom: '1px dotted #cbd5e1', margin: '0 10px' }}></div>
-                  <span style={{ fontWeight: 600, color: '#475569' }}>{pageNum}</span>
-                </div>
-              );
-            })}
-
-            {previewFinancialData && (
-              <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
-                <span style={{ fontWeight: 600, color: '#1e293b' }}>Reportes Financieros Pro-Forma</span>
-                <div style={{ flex: 1, borderBottom: '1px dotted #cbd5e1', margin: '0 10px' }}></div>
-                <span style={{ fontWeight: 600, color: '#475569' }}>{financialReportsPage}</span>
+            <h2 style={{ fontSize: '2rem', color: '#0f172a', borderBottom: '2px solid #e2e8f0', paddingBottom: '1rem', marginBottom: '2.5rem', fontWeight: 800, letterSpacing: '-0.02em' }}>
+              Índice de Contenido
+            </h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem', maxWidth: '680px' }}>
+              <a href="#portada" className="toc-item-link">
+                <span style={{ fontWeight: 600, color: '#1e293b' }}>Portada Institucional</span>
+                <span className="toc-dot-leader" />
+                <span className="toc-page-badge">1</span>
+              </a>
+              <div className="toc-item-link" style={{ pointerEvents: 'none' }}>
+                <span style={{ fontWeight: 600, color: '#1e293b' }}>Índice General</span>
+                <span className="toc-dot-leader" />
+                <span className="toc-page-badge">2</span>
               </div>
-            )}
+              
+              {orderedModules.map((mod, idx) => {
+                const pageNum = modulePageNumbers[mod.key];
+                if (!pageNum) return null;
+                return (
+                  <a key={mod.key} href={`#seccion-${mod.key}`} className="toc-item-link" style={{ paddingLeft: '0.85rem' }}>
+                    <span style={{ color: '#334155', fontWeight: 500 }}>
+                      <span style={{ color: 'var(--accent-color, #6366f1)', fontWeight: 700, marginRight: '0.35rem' }}>{idx + 1}.</span>
+                      {mod.title}
+                    </span>
+                    <span className="toc-dot-leader" />
+                    <span className="toc-page-badge">{pageNum}</span>
+                  </a>
+                );
+              })}
 
-            {planData?.config?.anexos?.length > 0 && (
-              <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
-                <span style={{ fontWeight: 600, color: '#1e293b' }}>Anexos y Evidencia</span>
-                <div style={{ flex: 1, borderBottom: '1px dotted #cbd5e1', margin: '0 10px' }}></div>
-                <span style={{ fontWeight: 600, color: '#475569' }}>{anexosPage}</span>
-              </div>
-            )}
+              {previewFinancialData && (
+                <a href="#seccion-reportes-financieros" className="toc-item-link">
+                  <span style={{ fontWeight: 600, color: '#1e293b' }}>Reportes Financieros Pro-Forma (5 Años)</span>
+                  <span className="toc-dot-leader" />
+                  <span className="toc-page-badge">{financialReportsPage}</span>
+                </a>
+              )}
 
-            <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
-              <span style={{ fontWeight: 600, color: '#1e293b' }}>Fuentes de Información</span>
-              <div style={{ flex: 1, borderBottom: '1px dotted #cbd5e1', margin: '0 10px' }}></div>
-              <span style={{ fontWeight: 600, color: '#475569' }}>{sourcesPage}</span>
+              {planData?.config?.anexos?.length > 0 && (
+                <a href="#seccion-anexos" className="toc-item-link">
+                  <span style={{ fontWeight: 600, color: '#1e293b' }}>Anexos y Evidencia Documental</span>
+                  <span className="toc-dot-leader" />
+                  <span className="toc-page-badge">{anexosPage}</span>
+                </a>
+              )}
+
+              <a href="#seccion-fuentes" className="toc-item-link">
+                <span style={{ fontWeight: 600, color: '#1e293b' }}>Fuentes de Información y APIs</span>
+                <span className="toc-dot-leader" />
+                <span className="toc-page-badge">{sourcesPage}</span>
+              </a>
             </div>
           </div>
+
+          <CorporatePrintFooter pageNum={2} sectionName="Índice" />
         </div>
 
         {/* Renderizar cada pilar/módulo en su orden seleccionado */}
@@ -2121,20 +2263,25 @@ export default function VistaPrevia() {
 
           return (
             <React.Fragment key={mod.key}>
-              <div className={`print-page ${pageClass}`} style={{ 
-                marginTop: '3rem',
-                width: '100%',
-                maxWidth: isLandscape ? '1080px' : '760px',
-                margin: '0 auto 2.5rem auto',
-                background: '#ffffff',
-                padding: `${printMargin}cm`,
-                borderRadius: '12px',
-                boxShadow: '0 10px 30px rgba(0, 0, 0, 0.04)',
-                border: '1px solid #e2e8f0',
-                transition: 'all 0.3s ease',
-                pageBreakBefore: 'always',
-                pageBreakInside: 'avoid'
-              }}>
+              <div 
+                id={`seccion-${mod.key}`}
+                className={`print-page ${pageClass}`} 
+                style={{ 
+                  marginTop: paginationMode === 'continuous' ? '1.5rem' : '3rem',
+                  width: '100%',
+                  maxWidth: isLandscape ? '1080px' : '760px',
+                  margin: paginationMode === 'continuous' ? '0 auto 1.5rem auto' : '0 auto 2.5rem auto',
+                  background: '#ffffff',
+                  padding: `${printMargin}cm`,
+                  borderRadius: '12px',
+                  boxShadow: '0 10px 30px rgba(0, 0, 0, 0.04)',
+                  border: '1px solid #e2e8f0',
+                  transition: 'all 0.3s ease',
+                  pageBreakBefore: paginationMode === 'continuous' ? (isLandscape ? 'always' : 'auto') : 'always',
+                  pageBreakInside: 'avoid',
+                  scrollMarginTop: '2rem'
+                }}
+              >
                 
                 {/* Control bar for screen view */}
                 <div className="no-print" style={{
@@ -2197,6 +2344,9 @@ export default function VistaPrevia() {
                     </div>
                   </div>
                 </div>
+
+                {/* Encabezado Corporativo de Impresión */}
+                <CorporatePrintHeader sectionTitle={mod.title} pillarTitle={mod.pillarTitle} />
 
                 {/* Content rendering matching the original module key checks */}
                 {mod.key === 'foda' ? (
@@ -2349,8 +2499,37 @@ export default function VistaPrevia() {
                       </div>
                     </div>
                   </div>
+                ) : mod.key === 'mapa' ? (
+                  <div style={{ marginBottom: '2rem', pageBreakInside: 'avoid' }}>
+                    <Section 
+                      number={sectionNumber}
+                      title={mod.title} 
+                      data={planData?.[mod.pillarKey]?.[mod.key]} 
+                      pillarKey={mod.pillarKey}
+                      moduleKey={mod.key}
+                    />
+                    <div style={{ marginTop: '1rem', padding: '1rem', background: '#ffffff', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+                      <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#0f172a', marginBottom: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                        🔥 Mapa de Calor y Densidad de Mercado
+                      </h4>
+                      <InegiMap
+                        token={planData.config?.externalApis?.inegiToken}
+                        location={
+                          planData?.semilla?.negocio?.ubicacion ||
+                          planData?.tecnico?.ubicacion?.macro ||
+                          planData?.tecnico?.ubicacion?.micro ||
+                          'Hermosillo, Sonora'
+                        }
+                        mode="competition"
+                        readOnly={true}
+                        defaultHeatmap={true}
+                        title="Mapa de Calor (Densidad y Concentración)"
+                        initialKeywords={planData?.semilla?.negocio?.giro || 'comercial'}
+                      />
+                    </div>
+                  </div>
                 ) : mod.key === 'ubicacion' ? (
-                  <div style={{ marginBottom: '1.5rem' }}>
+                  <div style={{ marginBottom: '2rem', pageBreakInside: 'avoid' }}>
                     <Section 
                       number={sectionNumber}
                       title={mod.title} 
@@ -2365,9 +2544,9 @@ export default function VistaPrevia() {
                       <InegiMap
                         token={planData.config?.externalApis?.inegiToken}
                         location={
-                          planData?.tecnico?.ubicacion?.micro ||
-                          planData?.tecnico?.ubicacion?.macro ||
                           planData?.semilla?.negocio?.ubicacion ||
+                          planData?.tecnico?.ubicacion?.macro ||
+                          planData?.tecnico?.ubicacion?.micro ||
                           'Hermosillo, Sonora'
                         }
                         mode="location"
@@ -2377,7 +2556,7 @@ export default function VistaPrevia() {
                     </div>
                   </div>
                 ) : mod.key === 'competencia' ? (
-                  <div style={{ marginBottom: '1.5rem' }}>
+                  <div style={{ marginBottom: '2rem', pageBreakInside: 'avoid' }}>
                     <Section 
                       number={sectionNumber}
                       title={mod.title} 
@@ -2392,15 +2571,15 @@ export default function VistaPrevia() {
                       <InegiMap
                         token={planData.config?.externalApis?.inegiToken}
                         location={
-                          planData?.tecnico?.ubicacion?.micro ||
-                          planData?.tecnico?.ubicacion?.macro ||
                           planData?.semilla?.negocio?.ubicacion ||
+                          planData?.tecnico?.ubicacion?.macro ||
+                          planData?.tecnico?.ubicacion?.micro ||
                           'Hermosillo, Sonora'
                         }
                         mode="competition"
                         readOnly={true}
                         title="Mapa de Competencia y Zonas de Influencia"
-                        initialKeywords={planData?.semilla?.negocio?.giro || 'ferretería'}
+                        initialKeywords={planData?.semilla?.negocio?.giro || 'servicios'}
                       />
                     </div>
                   </div>
@@ -2424,19 +2603,7 @@ export default function VistaPrevia() {
                 )}
 
                 {/* Pie de página con numeración de página calculada */}
-                <div className="print-page-footer" style={{
-                  marginTop: '3.5rem',
-                  borderTop: '1px solid #e2e8f0',
-                  paddingTop: '0.5rem',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  fontSize: '0.75rem',
-                  color: '#64748b',
-                  fontFamily: 'Inter, sans-serif'
-                }}>
-                  <span>{planData?.config?.brandKit?.companyName || 'Plan Estratégico'}</span>
-                  <span>Página {pageNum}</span>
-                </div>
+                <CorporatePrintFooter pageNum={pageNum} sectionName={mod.title} />
               </div>
 
               {/* Panel de Refinamiento de IA por módulo individual (oculto al imprimir y fuera de la página) */}
@@ -2462,7 +2629,18 @@ export default function VistaPrevia() {
 
         {/* Reportes Financieros Pro-Forma */}
         {previewFinancialData && (
-          <div className="print-page financial-reports-page" style={{ marginTop: '3rem', pageBreakBefore: 'always', pageBreakInside: 'avoid' }}>
+          <div 
+            id="seccion-reportes-financieros"
+            className="print-page financial-reports-page" 
+            style={{ 
+              marginTop: '3rem', 
+              pageBreakBefore: 'always', 
+              pageBreakInside: 'avoid',
+              scrollMarginTop: '2rem'
+            }}
+          >
+            <CorporatePrintHeader sectionTitle="Reportes Financieros Pro-Forma" pillarTitle="Finanzas y Organización" />
+
             <div style={{
               display: 'flex',
               alignItems: 'center',
@@ -2499,25 +2677,24 @@ export default function VistaPrevia() {
               staff={planData?.organizacion?.staff}
             />
 
-            <div className="print-page-footer" style={{
-              marginTop: '3.5rem',
-              borderTop: '1px solid #e2e8f0',
-              paddingTop: '0.5rem',
-              display: 'flex',
-              justifyContent: 'space-between',
-              fontSize: '0.75rem',
-              color: '#64748b',
-              fontFamily: 'Inter, sans-serif'
-            }}>
-              <span>{planData?.config?.brandKit?.companyName || 'Plan Estratégico'}</span>
-              <span>Página {financialReportsPage}</span>
-            </div>
+            <CorporatePrintFooter pageNum={financialReportsPage} sectionName="Reportes Financieros" />
           </div>
         )}
 
         {/* Anexos */}
         {planData?.config?.anexos?.length > 0 && (
-          <div className="print-page anexos-page" style={{ marginTop: '4rem', pageBreakBefore: 'always', pageBreakInside: 'avoid' }}>
+          <div 
+            id="seccion-anexos"
+            className="print-page anexos-page" 
+            style={{ 
+              marginTop: '4rem', 
+              pageBreakBefore: 'always', 
+              pageBreakInside: 'avoid',
+              scrollMarginTop: '2rem'
+            }}
+          >
+            <CorporatePrintHeader sectionTitle="Anexos y Evidencia Documental" pillarTitle="Documentación" />
+
             <h2 style={{ fontSize: '2rem', color: '#0f172a', borderBottom: '2px solid #e2e8f0', paddingBottom: '1rem', marginBottom: '3rem', fontWeight: 800 }}>
               Anexos y Evidencia
             </h2>
@@ -2534,19 +2711,7 @@ export default function VistaPrevia() {
               ))}
             </div>
 
-            <div className="print-page-footer" style={{
-              marginTop: '3.5rem',
-              borderTop: '1px solid #e2e8f0',
-              paddingTop: '0.5rem',
-              display: 'flex',
-              justifyContent: 'space-between',
-              fontSize: '0.75rem',
-              color: '#64748b',
-              fontFamily: 'Inter, sans-serif'
-            }}>
-              <span>{planData?.config?.brandKit?.companyName || 'Plan Estratégico'}</span>
-              <span>Página {anexosPage}</span>
-            </div>
+            <CorporatePrintFooter pageNum={anexosPage} sectionName="Anexos" />
           </div>
         )}
 
@@ -2584,12 +2749,19 @@ export default function VistaPrevia() {
           if (!hasSources) return null;
 
           return (
-            <div className="print-page portrait-print-page" style={{ 
-              marginTop: '3rem', 
-              pageBreakBefore: 'always',
-              fontFamily: 'Inter, sans-serif',
-              background: '#ffffff'
-            }}>
+            <div 
+              id="seccion-fuentes"
+              className="print-page portrait-print-page" 
+              style={{ 
+                marginTop: '3rem', 
+                pageBreakBefore: 'always',
+                fontFamily: 'Inter, sans-serif',
+                background: '#ffffff',
+                scrollMarginTop: '2rem'
+              }}
+            >
+              <CorporatePrintHeader sectionTitle="Fuentes de Información" pillarTitle="Investigación y APIs" />
+
               <h2 style={{ 
                 fontSize: '1.75rem', 
                 fontWeight: 900, 
@@ -2674,19 +2846,7 @@ export default function VistaPrevia() {
                 </div>
               )}
 
-              <div className="print-page-footer" style={{
-                marginTop: '3.5rem',
-                borderTop: '1px solid #e2e8f0',
-                paddingTop: '0.5rem',
-                display: 'flex',
-                justifyContent: 'space-between',
-                fontSize: '0.75rem',
-                color: '#64748b',
-                fontFamily: 'Inter, sans-serif'
-              }}>
-                <span>{planData?.config?.brandKit?.companyName || 'Plan Estratégico'}</span>
-                <span>Fuentes de Información</span>
-              </div>
+              <CorporatePrintFooter pageNum={sourcesPage} sectionName="Fuentes" />
             </div>
           );
         })()}

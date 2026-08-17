@@ -1,4 +1,3 @@
-import React from 'react';
 import { usePlan } from '../context/PlanContext';
 import { Sparkles } from 'lucide-react';
 

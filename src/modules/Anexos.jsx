@@ -1,6 +1,5 @@
-import React from 'react';
 import { usePlan } from '../context/PlanContext';
-import { Image as ImageIcon, Trash2, Upload, Plus } from 'lucide-react';
+import { Trash2, Upload } from 'lucide-react';
 
 export default function Anexos() {
   const { planData, addAnexo, removeAnexo, updateAnexo } = usePlan();

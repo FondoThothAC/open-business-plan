@@ -40,34 +40,34 @@ import { FIELD_GUIDES_MAP } from './field_guides.js';
 export const DEFAULT_AGENT_CONFIG = {
   // Nivel 1 — Rápido (sin swap, 1 solo modelo)
   fast: {
-    analista:  { model: 'nemotron', role: 'Analista Estratégico' },
-    redactor:  { model: 'nemotron', role: 'Redactor Ejecutivo' },
+    analista:  { model: 'qwen3.5:9b', role: 'Analista Estratégico' },
+    redactor:  { model: 'qwen3.5:9b', role: 'Redactor Ejecutivo' },
   },
   // Nivel 2 — Pro (swap opcional entre analista y redactor)
   pro: {
-    analista:  { model: 'nemotron', role: 'Analista Estratégico' },
-    critico:   { model: 'nemotron', role: 'Crítico Financiero' },
-    redactor:  { model: 'nemotron', role: 'Redactor Senior' },
+    analista:  { model: 'qwen3.5:9b', role: 'Analista Estratégico' },
+    critico:   { model: 'qwen3.5:9b', role: 'Crítico Financiero' },
+    redactor:  { model: 'qwen3.5:9b', role: 'Redactor Senior' },
   },
   // Nivel 3 — Profundo (swap entre 3 modelos especializados)
   deep: {
-    estratega:  { model: 'nemotron', role: 'Estratega de Negocio' },
-    analista:   { model: 'nemotron', role: 'Analista de Datos' },
-    abogadoDiablo: { model: 'nemotron', role: "Devil's Advocate" },
-    critico:    { model: 'nemotron', role: 'Crítico Financiero' },
-    redactor:   { model: 'nemotron', role: 'Redactor Ejecutivo Final' },
+    estratega:  { model: 'qwen3.5:9b', role: 'Estratega de Negocio' },
+    analista:   { model: 'qwen3.5:9b', role: 'Analista de Datos' },
+    abogadoDiablo: { model: 'qwen3.5:9b', role: "Devil's Advocate" },
+    critico:    { model: 'qwen3.5:9b', role: 'Crítico Financiero' },
+    redactor:   { model: 'qwen3.5:9b', role: 'Redactor Ejecutivo Final' },
   },
   // Nivel 4 — Industrial : 9 agentes. ~20-30 min
   industrial: {
-    estratega:      { model: 'nemotron', role: 'Estratega Maestro' },
-    mercado:        { model: 'nemotron', role: 'Especialista en Mercado' },
-    operaciones:    { model: 'nemotron', role: 'Analista de Operaciones' },
-    financiero:     { model: 'nemotron',   role: 'Especialista Financiero' },
-    abogadoDiablo:  { model: 'nemotron', role: "Devil's Advocate" },
-    coherencia:     { model: 'nemotron', role: 'Revisor de Coherencia Global' },
-    hallucination:  { model: 'nemotron', role: 'Verificador de Hechos/Alucinaciones' },
-    redactor:       { model: 'nemotron', role: 'Redactor Ejecutivo Final' },
-    editor:         { model: 'nemotron', role: 'Editor de Estilo Académico' },
+    estratega:      { model: 'qwen3.5:9b', role: 'Estratega Maestro' },
+    mercado:        { model: 'qwen3.5:9b', role: 'Especialista en Mercado' },
+    operaciones:    { model: 'qwen3.5:9b', role: 'Analista de Operaciones' },
+    financiero:     { model: 'qwen3.5:9b', role: 'Especialista Financiero' },
+    abogadoDiablo:  { model: 'qwen3.5:9b', role: "Devil's Advocate" },
+    coherencia:     { model: 'qwen3.5:9b', role: 'Revisor de Coherencia Global' },
+    hallucination:  { model: 'qwen3.5:9b', role: 'Verificador de Hechos/Alucinaciones' },
+    redactor:       { model: 'qwen3.5:9b', role: 'Redactor Ejecutivo Final' },
+    editor:         { model: 'qwen3.5:9b', role: 'Editor de Estilo Académico' },
   },
 };// Helper: get list of installed Ollama models
 async function getInstalledOllamaModels(endpoint) {
@@ -85,7 +85,7 @@ async function getInstalledOllamaModels(endpoint) {
 
 // Helper: map a requested model name to the best installed matching model
 function findBestOllamaModel(requestedModel, installedModels) {
-  if (!requestedModel) return 'qwen3.5:4b-mlx';
+  if (!requestedModel) return 'qwen3.5:9b';
 
   // Si el modelo es explícitamente de la nube, no forzar fallback local
   if (requestedModel.includes('gemini') || 
@@ -98,8 +98,7 @@ function findBestOllamaModel(requestedModel, installedModels) {
   }
 
   if (!installedModels || installedModels.length === 0) {
-    if (requestedModel === 'nemotron') return 'nemotron-3-nano:4b';
-    return requestedModel;
+    return 'qwen3.5:9b';
   }
   
   if (installedModels.includes(requestedModel)) {
@@ -120,10 +119,81 @@ function findBestOllamaModel(requestedModel, installedModels) {
   const includesMatch = installedModels.find(m => m.toLowerCase().includes(requestedModel.toLowerCase()) || requestedModel.toLowerCase().includes(m.toLowerCase()));
   if (includesMatch) return includesMatch;
   
-  // Ultimate fallback: if no match is found, return the requested model
-  // instead of silently forcing the first installed local model.
-  // The system will try alternative fallbacks in runChain if this fails.
-  return requestedModel;
+  // Fallback inteligente: si no hay match, elegir el mejor modelo instalado
+  // (qwen3.5:9b > gemma4:pro > qwen3-coder > el primero disponible)
+  const preferred = ['qwen3.5:9b', 'gemma4:pro', 'gemma4:12b', 'qwen3-coder:latest'];
+  for (const p of preferred) {
+    if (installedModels.includes(p)) return p;
+  }
+  return installedModels[0];
+}
+
+// Modelos por defecto de la nube por proveedor (para resolver configs incoherentes)
+const CLOUD_DEFAULT_MODELS = {
+  gemini: 'gemini-1.5-flash',
+  openai: 'gpt-4o',
+  groq: 'llama-3.3-70b-versatile',
+  mistral: 'mistral-large-latest',
+  nvidia: 'nvidia/llama-3.1-nemotron-70b-instruct',
+};
+
+// Resuelve un par (proveedor, modelo) coherente: nunca envía un modelo local a la nube
+function resolveProviderModel({ primaryProvider, model, installedModels = [] }) {
+  let prov = primaryProvider || 'ollama';
+  const resolved = String(model || '').trim();
+
+  // Detectar proveedor por el nombre del modelo si es explícitamente cloud
+  if (resolved.includes('gemini')) prov = 'gemini';
+  else if (resolved.includes('gpt')) prov = 'openai';
+  else if (resolved.includes('mistral-large')) prov = 'mistral';
+  else if (resolved.includes('nvidia') || resolved.includes('google/gemma')) prov = 'nvidia';
+  else if (resolved.includes('llama-3.3-70b')) prov = 'groq';
+
+  // Proveedores locales: resolver contra los modelos instalados de Ollama
+  if (prov === 'ollama' || prov === 'lmstudio') {
+    const localModel = findBestOllamaModel(model || 'nemotron', installedModels);
+    return { provider: prov, model: localModel };
+  }
+
+  // Proveedores de nube: si el modelo configurado no es cloud, usar el default del proveedor
+  const isCloudModel = /gemini|gpt|mistral|nvidia|llama-3\.3|:cloud/i.test(resolved);
+  const finalModel = (isCloudModel && resolved) ? resolved : (CLOUD_DEFAULT_MODELS[prov] || resolved || 'gemini-1.5-flash');
+  return { provider: prov, model: finalModel };
+}
+
+// Retry automático por límite de tokens (HTTP 429 / rate-limit)
+// Espera el tiempo indicado por Retry-After o backoff exponencial.
+async function fetchWithRetry(url, options = {}, { maxRetries = 8, baseDelay = 2000 } = {}) {
+  let lastError;
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      const response = await fetch(url, options);
+      if (response.status === 429) {
+        const retryAfter = response.headers?.get('retry-after');
+        const waitMs = retryAfter ? parseInt(retryAfter, 10) * 1000 : Math.min(baseDelay * Math.pow(2, attempt), 60000);
+        const provider = options.headers?.authorization?.includes('groq') ? 'Groq'
+          : url.includes('googleapis') ? 'Gemini'
+          : url.includes('nvidia') ? 'NVIDIA'
+          : url.includes('openai') ? 'OpenAI'
+          : url.includes('mistral') ? 'Mistral' : 'Cloud';
+        console.warn(`[fetchWithRetry] 429 ${provider}: esperando ${waitMs}ms (intento ${attempt + 1}/${maxRetries + 1})...`);
+        if (activeTermLog) {
+          activeTermLog('thinking', `⏳ Límite de tokens de ${provider}: esperando ${Math.round(waitMs / 1000)}s para reintentar... (${attempt + 1}/${maxRetries + 1})`, provider.toLowerCase());
+        }
+        await new Promise(r => setTimeout(r, waitMs));
+        continue;
+      }
+      return response;
+    } catch (err) {
+      lastError = err;
+      if (attempt < maxRetries) {
+        const waitMs = Math.min(baseDelay * Math.pow(2, attempt), 60000);
+        console.warn(`[fetchWithRetry] Error de red: reintentando en ${waitMs}ms (intento ${attempt + 1}/${maxRetries + 1})...`);
+        await new Promise(r => setTimeout(r, waitMs));
+      }
+    }
+  }
+  throw lastError || new Error('fetchWithRetry agotó todos los reintentos');
 }
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -203,7 +273,7 @@ let activeTermLog = null;
 // ─────────────────────────────────────────────────────────────────────────
 export async function generateModuleContent(config, currentModule, allPlanData) {
   const {
-    primaryProvider, secondaryProvider,
+    primaryProvider, _secondaryProvider,
     apiKey, groqKey, nvidiaKey, lmStudioEndpoint, endpoint,
     model, depth = 1,           // depth: 1=rápido, 2=pro, 3=profundo
     agentModels = {},           // sobreescritura de modelos por rol desde config
@@ -227,7 +297,7 @@ export async function generateModuleContent(config, currentModule, allPlanData) 
           projectId, projectType
         })
       });
-    } catch (_) {}
+    } catch {}
   };
 
   // Registrar el logger actual en el módulo para que callAiProvider pueda emitir pensamientos (thinking)
@@ -470,7 +540,7 @@ ${fieldsPromptContext}
 
   // Paso 1: Proveedor principal / modelos configurados
   try {
-    const resolvedPrimary = (primaryProvider === 'ollama' || primaryProvider === 'lmstudio') ? findBestOllamaModel(model || 'nemotron', installedModels) : model;
+    const _resolvedPrimary = (primaryProvider === 'ollama' || primaryProvider === 'lmstudio') ? findBestOllamaModel(model || 'nemotron', installedModels) : model;
     await termLog('start', `Iniciando generación (nivel ${depth === 1 ? '⚡ Rápido' : depth === 2 ? '🧠 Pro' : depth === 3 ? '🔬 Profundo' : '🏭 Industrial'}) usando proveedor: ${primaryProvider}...`, primaryProvider);
     return await runChain(null); // null = usar modelos por rol configurados
   } catch (providerError) {
@@ -498,7 +568,7 @@ ${fieldsPromptContext}
   // Paso 2.5: Si local falló pero tenemos nvidiaKey, cambiar a NVIDIA NIM con Nemotron en la nube
   if (nvidiaKey) {
     try {
-      await termLog('warning', `Todos los modelos locales fallaron/agotados. Iniciando fallback automático a la nube con NVIDIA NIM (Llama 3.1 Nemotron 70B)...`, 'nvidia');
+      await termLog('warning', `Modelos locales no disponibles. Iniciando fallback automático a NVIDIA NIM (Nemotron 70B)...`, 'nvidia');
       const nvidiaFallbackConfig = {
         provider: 'nvidia',
         nvidiaKey,
@@ -512,9 +582,42 @@ ${fieldsPromptContext}
     }
   }
 
-  // Paso 3: Si todos los locales y la nube fallan, indicar necesidad de reinstalar el runtime MLX o descargar un modelo GGUF estable
-  await termLog('error', 'Todos los modelos locales y fallbacks de nube fallaron.', 'system');
-  throw new Error('Generación abortada: Modelos locales y de respaldo no disponibles.');
+  // Paso 2.6: Si tenemos groqKey, cambiar a Groq Llama 3.3 70B
+  if (groqKey) {
+    try {
+      await termLog('warning', `Iniciando fallback automático a la nube con Groq (Llama 3.3 70B)...`, 'groq');
+      const groqFallbackConfig = {
+        provider: 'groq',
+        groqKey,
+        apiKey,
+        model: 'llama-3.3-70b-versatile',
+        endpoint
+      };
+      return await runChain(groqFallbackConfig);
+    } catch (groqError) {
+      await termLog('error', `Fallback a Groq falló: ${groqError.message.substring(0, 50)}`, 'groq');
+    }
+  }
+
+  // Paso 2.7: Si tenemos apiKey (Google Gemini / OpenAI)
+  if (apiKey) {
+    try {
+      await termLog('warning', `Iniciando fallback automático a Google Gemini Cloud (1.5 Flash)...`, 'gemini');
+      const geminiFallbackConfig = {
+        provider: 'gemini',
+        apiKey,
+        model: 'gemini-1.5-flash',
+        endpoint
+      };
+      return await runChain(geminiFallbackConfig);
+    } catch (geminiError) {
+      await termLog('error', `Fallback a Gemini falló: ${geminiError.message.substring(0, 50)}`, 'gemini');
+    }
+  }
+
+  // Paso 3: Si todos los locales y la nube fallan, indicar necesidad de iniciar Ollama o configurar una API key
+  await termLog('error', 'Todos los modelos locales (Ollama) y fallbacks de nube configurados fallaron o no están disponibles.', 'system');
+  throw new Error('Generación abortada: Modelos locales y de respaldo no disponibles. Inicia Ollama o configura una API Key de respaldo (Gemini, Groq o NVIDIA).');
 }
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -584,7 +687,7 @@ Devuelve un JSON con UNA sola clave: "${fieldKey}" y su contenido profesional.
 // ─────────────────────────────────────────────────────────────────────────
 // Diálogo de fallback a nube
 // ─────────────────────────────────────────────────────────────────────────
-function showFallbackDialog(errorMsg) {
+function _showFallbackDialog(errorMsg) {
   return new Promise((resolve) => {
     const isConnection = errorMsg.includes('fetch') || errorMsg.includes('Failed') || errorMsg.includes('ECONNREFUSED');
     const message = isConnection
@@ -599,7 +702,7 @@ function showFallbackDialog(errorMsg) {
 // ─────────────────────────────────────────────────────────────────────────
 export async function callAiProvider(config, prompt, expectJson = true, expectedKeys = [], onThink = null) {
   const { provider, apiKey, groqKey, nvidiaKey, endpoint, model } = config;
-  let text = '';
+  let text;
 
   if (provider === 'gemini')  text = await callGemini(apiKey, model, prompt);
   else if (provider === 'groq')    text = await callGroq(groqKey || apiKey, model, prompt, expectJson);
@@ -668,7 +771,7 @@ async function callLmStudio(endpoint, model, prompt, expectJson, apiKey) {
 
 async function callGemini(apiKey, model, prompt) {
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model || 'gemini-1.5-flash'}:generateContent?key=${apiKey}`;
-  const response = await fetch(url, {
+  const response = await fetchWithRetry(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
@@ -698,7 +801,7 @@ async function fetchWithProxy(url, options = {}) {
 }
 
 async function callGroq(apiKey, model, prompt, expectJson) {
-  const response = await fetchWithProxy('https://api.groq.com/openai/v1/chat/completions', {
+  const response = await fetchWithRetry('https://api.groq.com/openai/v1/chat/completions', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
     body: JSON.stringify({
@@ -713,7 +816,7 @@ async function callGroq(apiKey, model, prompt, expectJson) {
 }
 
 async function callNvidia(apiKey, model, prompt) {
-  const response = await fetchWithProxy('https://integrate.api.nvidia.com/v1/chat/completions', {
+  const response = await fetchWithRetry('https://integrate.api.nvidia.com/v1/chat/completions', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
     body: JSON.stringify({
@@ -729,7 +832,7 @@ async function callNvidia(apiKey, model, prompt) {
 }
 
 async function callOpenAI(apiKey, model, prompt, expectJson) {
-  const response = await fetchWithProxy('https://api.openai.com/v1/chat/completions', {
+  const response = await fetchWithRetry('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
     body: JSON.stringify({
@@ -743,7 +846,7 @@ async function callOpenAI(apiKey, model, prompt, expectJson) {
 }
 
 async function callMistral(apiKey, model, prompt) {
-  const response = await fetchWithProxy('https://api.mistral.ai/v1/chat/completions', {
+  const response = await fetchWithRetry('https://api.mistral.ai/v1/chat/completions', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
     body: JSON.stringify({
@@ -794,14 +897,14 @@ function parseAIResponse(text, expectedKeys = []) {
     if (jsonMatch) {
       try {
         return JSON.parse(jsonMatch[0]);
-      } catch (innerErr) {
+      } catch {
         const cleaned = cleanJsonString(jsonMatch[0]);
         return JSON.parse(cleaned);
       }
     }
     try {
       return JSON.parse(text);
-    } catch (innerErr) {
+    } catch {
       const cleaned = cleanJsonString(text);
       return JSON.parse(cleaned);
     }
@@ -825,7 +928,7 @@ function parseAIResponse(text, expectedKeys = []) {
             recoveredData[expectedKeys[0]] = JSON.parse(cleanJsonString(jsonMatchClean[0]));
             return recoveredData;
           }
-        } catch (_) {}
+        } catch {}
 
         recoveredData[expectedKeys[0]] = cleanedText.replace(/^[`"']+|[`"']+$/g, '');
         return recoveredData;
@@ -846,7 +949,7 @@ function parseAIResponse(text, expectedKeys = []) {
         return recoveredData;
       }
     }
-    throw new Error('La IA no devolvió un formato JSON válido.');
+    throw new Error('La IA no devolvió un formato JSON válido.', { cause: e });
   }
 }
 
@@ -1095,7 +1198,7 @@ export async function extractSeedFromText(config, rawText) {
           projectId: config?.projectId || ''
         })
       });
-    } catch (_) {}
+    } catch {}
   };
 
   await termLog('start', 'Iniciando estructuración de tu idea...', primaryProvider || 'ollama');
@@ -1123,16 +1226,11 @@ Extrae y devuelve ÚNICAMENTE un objeto JSON válido con estas claves (sin bloqu
 `;
 
   const installedModels = await getInstalledOllamaModels(endpoint);
-  const resolvedModel = findBestOllamaModel(model || 'nemotron-3-nano:4b', installedModels);
-  
-  let prov = primaryProvider || 'ollama';
-  if (resolvedModel.includes('gemini')) prov = 'gemini';
-  else if (resolvedModel.includes('gpt')) prov = 'openai';
-  else if (resolvedModel.includes('llama')) prov = 'groq';
+  const { provider: prov, model: finalModel } = resolveProviderModel({ primaryProvider, model, installedModels });
   
   try {
-    await termLog('thinking', `Analizando el texto con la Mesa de Expertos (${resolvedModel})...`, prov);
-    const text = await callAiProvider({ provider: prov, apiKey, groqKey, nvidiaKey, endpoint: prov === 'lmstudio' ? lmStudioEndpoint : endpoint, model: resolvedModel }, prompt, false);
+    await termLog('thinking', `Analizando el texto con la Mesa de Expertos (${finalModel})...`, prov);
+    const text = await callAiProvider({ provider: prov, apiKey, groqKey, nvidiaKey, endpoint: prov === 'lmstudio' ? lmStudioEndpoint : endpoint, model: finalModel }, prompt, false);
     
     // Attempt to parse JSON safely
     const cleaned = text.replace(/```json/g, '').replace(/```/g, '').trim();
@@ -1141,8 +1239,8 @@ Extrae y devuelve ÚNICAMENTE un objeto JSON válido con estas claves (sin bloqu
     return result;
   } catch (error) {
     console.error("Error al extraer semilla:", error);
-    await termLog('error', 'Error al estructurar el texto.', prov);
-    throw new Error('No se pudo estructurar el texto. Intenta de nuevo.');
+    await termLog('error', `Error al estructurar el texto: ${error.message}`, prov);
+    throw new Error(`No se pudo estructurar el texto: ${error.message || 'Intenta de nuevo.'}`, { cause: error });
   }
 }
 
@@ -1162,15 +1260,10 @@ Responde de forma clara, directa, pedagógica y alentadora. Usa un tono conversa
 `;
 
   const installedModels = await getInstalledOllamaModels(endpoint);
-  const resolvedModel = findBestOllamaModel(model || 'nemotron-3-nano:4b', installedModels);
-  
-  let prov = primaryProvider || 'ollama';
-  if (resolvedModel.includes('gemini')) prov = 'gemini';
-  else if (resolvedModel.includes('gpt')) prov = 'openai';
-  else if (resolvedModel.includes('llama')) prov = 'groq';
+  const { provider: prov, model: finalModel } = resolveProviderModel({ primaryProvider, model, installedModels });
   
   try {
-    const text = await callAiProvider({ provider: prov, apiKey, groqKey, nvidiaKey, endpoint: prov === 'lmstudio' ? lmStudioEndpoint : endpoint, model: resolvedModel }, prompt, false);
+    const text = await callAiProvider({ provider: prov, apiKey, groqKey, nvidiaKey, endpoint: prov === 'lmstudio' ? lmStudioEndpoint : endpoint, model: finalModel }, prompt, false);
     return text.trim();
   } catch (error) {
     console.error("Error en askFieldDoubt:", error);

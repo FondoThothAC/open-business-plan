@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { X, ExternalLink } from 'lucide-react';
 
 export default function SimuladorModal({ isOpen, onClose, onExport }) {

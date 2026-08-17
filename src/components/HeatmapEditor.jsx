@@ -1,4 +1,4 @@
-import React from 'react';
+
 
 export default function HeatmapEditor({ value, onChange }) {
   // value puede ser un JSON string o un array/objeto directo
@@ -8,7 +8,7 @@ export default function HeatmapEditor({ value, onChange }) {
   } else if (Array.isArray(value)) {
     grid = value;
   } else if (typeof value === 'string') {
-    try { grid = JSON.parse(value); } catch(_) { grid = Array(10).fill(0).map(() => Array(10).fill(0)); }
+    try { grid = JSON.parse(value); } catch { grid = Array(10).fill(0).map(() => Array(10).fill(0)); }
   } else {
     grid = Array(10).fill(0).map(() => Array(10).fill(0));
   }

@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { usePlan } from '../context/PlanContext';
-import { Sparkles, Loader2, Info, Search, Brain, CheckCircle2, Lock, Unlock, BarChart3, Map as MapIcon, Network, Eye, EyeOff, HelpCircle, Edit3, Layout, ArrowRight, MessageSquare, Check, X } from 'lucide-react';
+import { Sparkles, Loader2, Brain, CheckCircle2, Lock, Unlock, Map as MapIcon, Network, Eye, EyeOff, HelpCircle, Edit3, Layout, ArrowRight, MessageSquare, Check, X } from 'lucide-react';
 import { generateModuleContent } from '../lib/ai';
 import { FIELD_GUIDES_MAP } from '../lib/field_guides';
 import { FRAMEWORKS } from '../config/frameworks';

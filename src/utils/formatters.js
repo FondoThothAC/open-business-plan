@@ -12,7 +12,7 @@ export const safeStr = (val, level = 0) => {
       try {
         const parsed = JSON.parse(cleanVal);
         return safeStr(parsed, level);
-      } catch (_) {
+      } catch {
         // Fallback al valor string original si falla el parseo
       }
     }
@@ -34,7 +34,7 @@ export const safeStr = (val, level = 0) => {
         }
         return `${indent}**${keyName}**: ${v}`;
       }).join('\n\n');
-    } catch(_) { return String(val); }
+    } catch { return String(val); }
   }
   return String(val);
 };

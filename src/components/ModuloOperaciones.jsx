@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { usePlan } from '../context/PlanContext';
-import { Sparkles, Package, TrendingUp, CreditCard, Calculator, RotateCcw, Activity, Gauge, ArrowUpRight, ArrowDownRight, Minus, Brain } from 'lucide-react';
+import { Sparkles, Package, TrendingUp, CreditCard, Calculator, RotateCcw, Activity, ArrowUpRight, ArrowDownRight, Minus, Brain } from 'lucide-react';
 import { generateSingleField } from '../lib/ai';
 import ExpertPanel from './ExpertPanel';
 import ReactMarkdown from 'react-markdown';
@@ -160,7 +160,7 @@ export default function ModuloOperaciones({ title, description }) {
   const healthLabel = healthScore >= 80 ? 'Excelente' : healthScore >= 60 ? 'Buena' : healthScore >= 40 ? 'Regular' : 'Crítica';
   const healthColor = healthScore >= 80 ? 'var(--success-color)' : healthScore >= 60 ? '#f59e0b' : 'var(--danger-color)';
 
-  const formatNum = (n) => new Intl.NumberFormat('es-MX').format(Math.round(n));
+  const _formatNum = (n) => new Intl.NumberFormat('es-MX').format(Math.round(n));
 
   return (
     <div className="module-view animate-fade-in">

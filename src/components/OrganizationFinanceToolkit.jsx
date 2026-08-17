@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { usePlan } from '../context/PlanContext';
 import { Wallet, Users, Briefcase, Plus, Trash2, ExternalLink } from 'lucide-react';
 import { CIBERCAFE_CORRIDA, applyCorridaToPlan, getActiveCorrida } from '../lib/finanzas/corrida-cibercafe';

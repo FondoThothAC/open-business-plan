@@ -6,7 +6,7 @@
  */
 
 import React, { useState } from 'react';
-import { MessageSquare, Sparkles, CheckCircle, ArrowRight, HelpCircle, FileText, X } from 'lucide-react';
+import { Sparkles, ArrowRight, HelpCircle, FileText, X } from 'lucide-react';
 import { FRAMEWORKS } from '../../config/frameworks.js';
 
 export function SwarmInterviewModal({ isOpen, onClose, ideaText, onConfirmSwarm }) {

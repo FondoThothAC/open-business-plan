@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { usePlan } from '../context/PlanContext';
 import { calculateFinancialProjections } from '../lib/finanzas/financial-calculations';
 import { Calculator, Settings, RefreshCw, BarChart, TrendingUp, Wallet, FileText, CheckCircle2 } from 'lucide-react';
@@ -7,7 +7,6 @@ import FinancialCharts, { CashFlowChart, ProfitGauge } from './FinancialCharts';
 import MonteCarloSimulator from './MonteCarloSimulator';
 import {
   CIBERCAFE_CORRIDA,
-  applyCorridaToPlan,
   buildProjectionFromCorrida,
   getActiveCorrida,
   getCorridaSummaryCards,

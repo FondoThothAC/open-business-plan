@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { Upload, FileText, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 // import * as pdfjsLib from 'pdfjs-dist';
 // import Tesseract from 'tesseract.js';

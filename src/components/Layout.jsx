@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FileSpreadsheet, LineChart, PieChart, Printer, Settings, Eye, BrainCircuit, ChevronDown, ChevronRight, ChevronLeft, Save, FilePlus, FolderOpen, Check, Image as ImageIcon, Sun, Moon, Sprout, Copy, Star, Briefcase, Zap, Globe, Cpu, ShoppingBag, Landmark, ListChecks, Compass, Target, Layers, Share2, Factory, Bot } from 'lucide-react';
+import { LayoutDashboard, FileSpreadsheet, LineChart, PieChart, Settings, Eye, BrainCircuit, ChevronDown, ChevronRight, ChevronLeft, Save, FilePlus, FolderOpen, Check, Image as ImageIcon, Sprout, Copy, Star, Briefcase, Zap, Globe, Cpu, ShoppingBag, Landmark, ListChecks, Compass, Target, Layers, Share2, Factory } from 'lucide-react';
 import { usePlan } from '../context/PlanContext';
 import { PROJECT_EXAMPLES } from '../lib/projects_db';
 import { FRAMEWORKS } from '../config/frameworks';
@@ -54,12 +54,12 @@ export default function Layout() {
   const { 
     planData, updateConfig, createNewProject, loadProject, loadSavedProject, saveStatus, updateProjectName,
     manualSaveProject, saveProjectAs,
-    generationStatus, generationProgress, startIndustrialization, pauseIndustrialization, stopIndustrialization, getProjectCompletion
+    generationStatus, _generationProgress, startIndustrialization, _pauseIndustrialization, _stopIndustrialization, getProjectCompletion
   } = usePlan();
   
   const [expandedPillars, setExpandedPillars] = useState(['naturaleza']); // Collapse others by default
   const [planType, setPlanType] = useState('negocios');
-  const [aiStatus, setAiStatus] = useState('offline');
+  const [_aiStatus, _setAiStatus] = useState('offline');
   const [showLoadModal, setShowLoadModal] = useState(false);
   const [savedProjects, setSavedProjects] = useState({ negocios: [], social: [] });
   const navigate = useNavigate();
@@ -197,10 +197,10 @@ export default function Layout() {
     const checkAi = async () => {
       try {
         const res = await fetch(planData?.config?.ai?.endpoint || 'http://localhost:11434/api/tags');
-        if (res.ok) setAiStatus('online');
-        else setAiStatus('offline');
-      } catch (e) {
-        setAiStatus('offline');
+        if (res.ok) _setAiStatus('online');
+        else _setAiStatus('offline');
+      } catch {
+        _setAiStatus('offline');
       }
     };
     checkAi();

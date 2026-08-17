@@ -44,7 +44,7 @@ export class LlmExecutionEngine {
         onThought('Respuesta sintetizada exitosamente con motor Local-First (Ollama).');
         return ollamaRes;
       }
-    } catch (_) {
+    } catch {
       // Continuar con fallback
     }
 
@@ -87,7 +87,7 @@ export class LlmExecutionEngine {
           generatedText: data.response
         };
       }
-    } catch (_) {
+    } catch {
       return null;
     }
     return null;

@@ -19,4 +19,7 @@ proyectos/negocios/*.json
 proyectos/negocios/*.md
 proyectos/social/*.json
 proyectos/social/*.md
+proyectos/pdfs/
+*.pdf
 medscribe_logo_*.png
+

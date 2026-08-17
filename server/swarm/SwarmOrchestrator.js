@@ -35,7 +35,7 @@ export class SwarmOrchestrator {
   closeSession(sessionId) {
     const res = this.sessions.get(sessionId);
     if (res) {
-      try { res.end(); } catch (_) {}
+      try { res.end(); } catch {}
       this.sessions.delete(sessionId);
     }
   }
@@ -50,7 +50,7 @@ export class SwarmOrchestrator {
     if (res) {
       try {
         res.write(`data: ${JSON.stringify(eventData)}\n\n`);
-      } catch (_) {
+      } catch {
         this.sessions.delete(sessionId);
       }
     }

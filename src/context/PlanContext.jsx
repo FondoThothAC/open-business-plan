@@ -53,19 +53,19 @@ const createEmptyPlan = (projectType = 'business') => {
       visibility: {},
       comments: {},
       ai: {
-        primaryProvider: 'gemini', secondaryProvider: 'groq',
+        primaryProvider: 'ollama', secondaryProvider: 'groq',
         apiKey: KEYS.gemini, groqKey: KEYS.groq, nvidiaKey: '',
         endpoint: 'http://localhost:11434', lmStudioEndpoint: 'http://localhost:1234/v1',
-        model: 'nemotron',   // nemotron es el modelo operativo local por defecto
+        model: 'qwen3.5:9b',   // Modelo local principal (Ollama)
         depth: 1,              // 1=Rápido, 2=Pro, 3=Profundo
         contextSize: 65536,    // 64k por defecto (seguro para 8GB VRAM)
         // [DDD] Modelos por rol — sobreescriben DEFAULT_AGENT_CONFIG en ai.js
         agentModels: {
-          analista:     { model: 'nemotron', role: 'Analista Estratégico' },
-          critico:      { model: 'nemotron', role: 'Crítico Financiero' },
-          redactor:     { model: 'nemotron', role: 'Redactor Ejecutivo' },
-          estratega:    { model: 'nemotron', role: 'Estratega de Negocio' },
-          abogadoDiablo:{ model: 'nemotron', role: "Devil's Advocate" },
+          analista:     { model: 'qwen3.5:9b', role: 'Analista Estratégico' },
+          critico:      { model: 'qwen3.5:9b', role: 'Crítico Financiero' },
+          redactor:     { model: 'qwen3.5:9b', role: 'Redactor Ejecutivo' },
+          estratega:    { model: 'qwen3.5:9b', role: 'Estratega de Negocio' },
+          abogadoDiablo:{ model: 'qwen3.5:9b', role: "Devil's Advocate" },
         }
       },
       brandKit: { primaryColor: '#6366f1', secondaryColor: '#8b5cf6', logoUrl: '', companyName: '' },
@@ -176,7 +176,7 @@ export const PlanProvider = ({ children }) => {
         merged.config.activeMethodologies = [merged.config.projectType || 'business'];
       }
       return merged;
-    } catch (e) {
+    } catch {
       return createEmptyPlan('business');
     }
   };
@@ -330,7 +330,7 @@ export const PlanProvider = ({ children }) => {
         } else {
           setSaveStatus('error');
         }
-      } catch (err) {
+      } catch {
         setSaveStatus('error');
       }
     }, 2000); // 2 second debounce
@@ -373,7 +373,7 @@ export const PlanProvider = ({ children }) => {
         setSaveStatus('error');
         return false;
       }
-    } catch (err) {
+    } catch {
       setSaveStatus('error');
       return false;
     }

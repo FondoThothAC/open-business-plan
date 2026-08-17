@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { DollarSign, PieChart, TrendingUp, AlertCircle } from 'lucide-react';
 
 export default function PresupuestoEmpresa({ projections, staff = [], planData }) {

@@ -1,4 +1,3 @@
-import React from 'react';
 import { Target, MapPin, Globe } from 'lucide-react';
 import { safeStr } from '../utils/formatters';
 

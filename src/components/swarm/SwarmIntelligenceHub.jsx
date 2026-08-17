@@ -6,7 +6,7 @@
  * y sincronizar telemetría hacia la nube.
  */
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Download, Cloud, Sparkles, CheckCircle2, ShieldCheck, Zap, Bot, RefreshCw, X, Filter, Activity } from 'lucide-react';
 
 export function SwarmIntelligenceHub({ isOpen, onClose }) {

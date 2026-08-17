@@ -22,7 +22,7 @@ export class MarketAgent {
   async execute(context, emitProgress) {
     emitProgress(this.id, 'Iniciando búsqueda de competidores y clasificación SCIAN...', 10);
 
-    const sector = context.sector || 'Comercial / Servicios';
+    const _sector = context.sector || 'Comercial / Servicios';
     const ubicacion = context.ubicacion || 'Nacional / Regional';
 
     emitProgress(this.id, `Analizando código de actividad industrial SCIAN en ${ubicacion}...`, 40);

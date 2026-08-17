@@ -1,4 +1,3 @@
-import React from 'react';
 import { Plus, Trash2, Users } from 'lucide-react';
 
 const RISK_CLASSES = [

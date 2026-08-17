@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect } from 'react';
 import ReactFlow, {
   MiniMap,
   Controls,
@@ -13,7 +13,7 @@ import ReactFlow, {
 } from 'reactflow';
 import dagre from 'dagre';
 import 'reactflow/dist/style.css';
-import { User, Briefcase, Award, Crown, UserCheck } from 'lucide-react';
+import { User, Briefcase, Award, Crown } from 'lucide-react';
 
 const dagreGraph = new dagre.graphlib.Graph();
 dagreGraph.setDefaultEdgeLabel(() => ({}));
@@ -207,7 +207,7 @@ export default function OrganigramaInteractivo({ staff, onChange }) {
         style={{ background: 'var(--bg-dark)' }}
       >
         <MiniMap 
-          nodeColor={(n) => {
+          nodeColor={(_n) => {
             return 'var(--accent-color)';
           }}
           maskColor="var(--bg-panel)"

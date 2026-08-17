@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Activity, X, Minimize2, Maximize2, Bot, CheckCircle, AlertTriangle, XCircle, Zap, Cloud, Save } from 'lucide-react';
 import { usePlan } from '../context/PlanContext';
 
@@ -111,7 +111,7 @@ export default function ActivityFeed() {
         } else {
           setLogs([]);
         }
-      } catch (_) {
+      } catch {
         setLogs([]);
       }
     };
@@ -228,7 +228,7 @@ export default function ActivityFeed() {
               // Feed the status updater
               updateActiveTask(entry);
             }
-          } catch (_) {}
+          } catch {}
         };
 
         es.onerror = () => {
@@ -239,7 +239,7 @@ export default function ActivityFeed() {
             setTimeout(connect, 10000);
           }
         };
-      } catch (_) {}
+      } catch {}
     };
 
     connect();
@@ -265,7 +265,7 @@ export default function ActivityFeed() {
         await fetch(`http://localhost:3001/api/projects/${activeProjectType}/${activeProjectId}/logs`, {
           method: 'DELETE'
         });
-      } catch (_) {}
+      } catch {}
       setLogs([]);
     }
   };

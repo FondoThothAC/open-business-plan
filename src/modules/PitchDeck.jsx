@@ -6,11 +6,7 @@ import {
   Maximize2, 
   Minimize2, 
   Edit3, 
-  Play, 
-  FileText, 
-  HelpCircle, 
-  Sparkles,
-  Download
+  FileText
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';

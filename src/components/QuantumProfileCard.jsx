@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Zap, Cog, ClipboardList, AlertTriangle, UserPlus, ShieldAlert, ArrowUpRight, CheckCircle2, ChevronDown, ChevronUp } from 'lucide-react';
+import { useState } from 'react';
+import { Zap, Cog, ClipboardList, UserPlus, ShieldAlert, CheckCircle2, ChevronDown, ChevronUp } from 'lucide-react';
 
 export default function QuantumProfileCard({ diagnosticData }) {
   const [showVacancies, setShowVacancies] = useState(false);

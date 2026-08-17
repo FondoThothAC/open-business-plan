@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import { CheckCircle, AlertCircle, Sparkles, Building2, HelpCircle, ArrowRight } from 'lucide-react';
+import { useState } from 'react';
+import { CheckCircle, Sparkles, Building2, ArrowRight } from 'lucide-react';
 
 export default function AdaptiveSeedForm({
   seedData,
   benchmarkMatch,
-  frameworkInference,
+  _frameworkInference,
   onUpdateField,
   onConfirmSeed
 }) {
@@ -12,10 +12,10 @@ export default function AdaptiveSeedForm({
   const benchmark = isCheckMode ? benchmarkMatch.benchmark : null;
 
   // Estados del Modo Check
-  const [checkedItems, setCheckedItems] = useState({});
+  const [_checkedItems, _setCheckedItems] = useState({});
 
-  const toggleCheck = (key) => {
-    setCheckedItems(prev => ({
+  const _toggleCheck = (key) => {
+    _setCheckedItems(prev => ({
       ...prev,
       [key]: !prev[key]
     }));

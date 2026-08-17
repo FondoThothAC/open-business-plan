@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { usePlan } from '../context/PlanContext';
-import { Cpu, Palette, Save, Globe, Database, Upload, Image as ImageIcon, RefreshCw, Settings, Sliders, Activity, DollarSign, Zap, AlertTriangle, Info, Plus, Trash2, BookOpen, Link, FileText, CheckCircle, XCircle } from 'lucide-react';
+import { Cpu, Palette, Save, Globe, Database, Upload, Image as ImageIcon, RefreshCw, Settings, Sliders, Activity, DollarSign, Zap, AlertTriangle, Info, Plus, Trash2, BookOpen, CheckCircle, XCircle, Sparkles } from 'lucide-react';
 import DocumentUploader from '../components/DocumentUploader';
+import LogoGeneratorModal from '../components/LogoGeneratorModal';
 import { FRAMEWORKS } from '../config/frameworks';
 
 // [MDD] Modelo de precios de API (USD por 1M tokens) — se actualiza manualmente
@@ -259,7 +260,7 @@ export default function Configuracion() {
   const [isFetchingModels, setIsFetchingModels] = useState(false);
   const [ollamaOnline, setOllamaOnline] = useState(false);
   // [EDD] Rastreo local de sesión de tokens (estimado)
-  const [sessionTokens, setSessionTokens] = useState(() => {
+  const [_sessionTokens, _setSessionTokens] = useState(() => {
     return parseInt(localStorage.getItem('op_session_tokens') || '0');
   });
 
@@ -268,6 +269,7 @@ export default function Configuracion() {
   });
 
   const [showSshGuide, setShowSshGuide] = useState(false);
+  const [isLogoModalOpen, setIsLogoModalOpen] = useState(false);
 
   const handleCloudUserIdChange = (val) => {
     setCloudUserId(val);
@@ -292,7 +294,7 @@ export default function Configuracion() {
         })));
         setOllamaOnline(true);
       }
-    } catch (error) {
+    } catch {
       setOllamaOnline(false);
       setOllamaModels([
         { name: 'gemma4:pro' },
@@ -916,6 +918,27 @@ export default function Configuracion() {
               />
             </div>
           )}
+
+          <div className="form-group" style={{ marginTop: '1.25rem', paddingTop: '1rem', borderTop: '1px dashed var(--border-color)' }}>
+            <label className="form-label" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span>Pollinations.ai API Key (Imágenes de Logos y Cola Prioritaria)</span>
+              <a 
+                href="https://enter.pollinations.ai/keys" 
+                target="_blank" 
+                rel="noreferrer" 
+                style={{ fontSize: '0.75rem', color: 'var(--accent-color)', textDecoration: 'none', fontWeight: 600 }}
+              >
+                Obtener Key en Pollinations ↗
+              </a>
+            </label>
+            <input 
+              type="password" 
+              className="form-control" 
+              value={planData.config.ai.pollinationsKey || ''}
+              onChange={(e) => handleAiChange('pollinationsKey', e.target.value)}
+              placeholder="Pega aquí tu API Key de enter.pollinations.ai"
+            />
+          </div>
         </div>
 
         <div className="glass-panel" style={{ padding: '2rem' }}>
@@ -936,31 +959,70 @@ export default function Configuracion() {
 
           <div className="form-group">
             <label className="form-label">Logotipo de Empresa</label>
-            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+            <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
               <div style={{ 
-                width: '60px', 
-                height: '60px', 
+                width: '64px', 
+                height: '64px', 
                 border: '1px solid var(--border-color)', 
-                borderRadius: '8px', 
+                borderRadius: '12px', 
                 display: 'flex',
                 alignItems: 'center', 
                 justifyContent: 'center',
-                background: 'var(--bg-panel-hover)',
-                overflow: 'hidden'
+                background: '#ffffff',
+                overflow: 'hidden',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+                padding: '4px'
               }}>
                 {planData.config.brandKit.logoUrl ? (
                   <img src={planData.config.brandKit.logoUrl} alt="Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                 ) : (
-                  <ImageIcon className="w-6 h-6 text-secondary" />
+                  <ImageIcon className="w-6 h-6 text-slate-400" />
                 )}
               </div>
-              <label className="btn btn-secondary" style={{ cursor: 'pointer', fontSize: '0.8rem' }}>
+              <button
+                type="button"
+                onClick={() => setIsLogoModalOpen(true)}
+                className="btn btn-primary"
+                style={{
+                  fontSize: '0.8rem',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.4rem',
+                  padding: '0.5rem 0.9rem',
+                  borderRadius: '8px',
+                  fontWeight: 700
+                }}
+              >
+                <Sparkles className="w-4 h-4" />
+                <span>Generar con IA</span>
+              </button>
+              <label className="btn btn-secondary" style={{ cursor: 'pointer', fontSize: '0.8rem', padding: '0.5rem 0.9rem', borderRadius: '8px' }}>
                 <Upload className="w-4 h-4" />
                 <span>Subir PNG</span>
-                <input type="file" accept="image/png, image/jpeg" style={{ display: 'none' }} onChange={handleLogoUpload} />
+                <input type="file" accept="image/png, image/jpeg, image/svg+xml" style={{ display: 'none' }} onChange={handleLogoUpload} />
               </label>
             </div>
           </div>
+
+          <LogoGeneratorModal
+            isOpen={isLogoModalOpen}
+            onClose={() => setIsLogoModalOpen(false)}
+            projectId={planData.config?.projectId}
+            projectType={planData.config?.projectType === 'social_bid' ? 'social' : 'negocios'}
+            pollinationsKey={planData.config?.ai?.pollinationsKey || ''}
+            initialBrandData={{
+              companyName: planData.config.brandKit.companyName || planData.semilla?.negocio?.nombre_marca,
+              giro: planData.semilla?.negocio?.giro || planData.semilla?.negocio?.propuesta_valor,
+              isotipoDesc: planData.semilla?.negocio?.isotipo || '',
+              primaryColor: planData.config.brandKit.primaryColor || '#6366f1',
+              secondaryColor: planData.config.brandKit.secondaryColor || '#10b981'
+            }}
+            onSelectLogo={(dataUrl, meta) => {
+              handleBrandChange('logoUrl', dataUrl);
+              if (meta?.primaryColor) handleBrandChange('primaryColor', meta.primaryColor);
+              if (meta?.secondaryColor) handleBrandChange('secondaryColor', meta.secondaryColor);
+            }}
+          />
 
           <div className="form-group">
             <label className="form-label">Color de Acento</label>

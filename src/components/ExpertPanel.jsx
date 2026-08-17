@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { BrainCircuit, Sparkles, TrendingUp, ShieldCheck, Cpu, Zap, X, Trash2, AlertTriangle, Terminal, MessageSquare, Check } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { BrainCircuit, Sparkles, TrendingUp, ShieldCheck, Cpu, Zap, X, Trash2, AlertTriangle, Terminal, MessageSquare, Check, RefreshCw } from 'lucide-react';
 import { generateExpertSuggestion } from '../lib/ai';
 
 export default function ExpertPanel({ fieldName, currentValue, onApply, isOpen, onClose, aiConfig, planData }) {

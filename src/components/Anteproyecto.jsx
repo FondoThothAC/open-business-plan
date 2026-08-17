@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { usePlan } from '../context/PlanContext';
 import { FRAMEWORKS } from '../config/frameworks';
 import { extractSeedFromText, askFieldDoubt } from '../lib/ai';
@@ -7,12 +7,12 @@ import { matchIndustry } from '../lib/benchmarkMatcher';
 import { evaluateQuantumProfile } from '../lib/quantumDiagnostic';
 import QuantumProfileCard from './QuantumProfileCard';
 import AdaptiveSeedForm from './AdaptiveSeedForm';
-import { Mic, MicOff, BrainCircuit, CheckCircle, ChevronRight, Loader2, MessageSquare, AlertCircle, ArrowRight, Sparkles, Cpu, Building2, HelpCircle } from 'lucide-react';
+import { Mic, MicOff, BrainCircuit, CheckCircle, Loader2, AlertCircle, Sparkles, Cpu } from 'lucide-react';
 import { PixelSwarmViewer } from './swarm/PixelSwarmViewer';
 import { SwarmInterviewModal } from './swarm/SwarmInterviewModal';
 
 export default function Anteproyecto() {
-  const { planData, updateSemilla, updateConfig, setPlanData } = usePlan();
+  const { planData, updateSemilla, updateConfig, _setPlanData } = usePlan();
 
   // Si la semilla ya tiene datos cargados en el plan, mostramos el paso de revisión (3)
   const [step, setStep] = useState(() => {
@@ -32,10 +32,10 @@ export default function Anteproyecto() {
   const [quantumDiagnostic, setQuantumDiagnostic] = useState(null);
 
   // Asistencia IA por campo
-  const [activeDoubtField, setActiveDoubtField] = useState(null);
-  const [doubtText, setDoubtText] = useState('');
-  const [aiResponse, setAiResponse] = useState('');
-  const [isAsking, setIsAsking] = useState(false);
+  const [_activeDoubtField, _setActiveDoubtField] = useState(null);
+  const [doubtText, _setDoubtText] = useState('');
+  const [_aiResponse, _setAiResponse] = useState('');
+  const [_isAsking, _setIsAsking] = useState(false);
 
   // Estados del Swarm Engine & Pixel Swarm Office
   const [isInterviewOpen, setIsInterviewOpen] = useState(false);
@@ -43,6 +43,7 @@ export default function Anteproyecto() {
   const [activeAgents, setActiveAgents] = useState([]);
   const [agentLogs, setAgentLogs] = useState([]);
   const [globalProgress, setGlobalProgress] = useState(0);
+  const [matchingReport, setMatchingReport] = useState([]);
 
   const recognitionRef = useRef(null);
   const eventSourceRef = useRef(null);
@@ -80,7 +81,7 @@ export default function Anteproyecto() {
         if (isRecording && recognitionRef.current) {
           try {
             recognitionRef.current.start();
-          } catch (e) { }
+          } catch { }
         }
       };
     } else {
@@ -247,18 +248,18 @@ export default function Anteproyecto() {
     }
   };
 
-  const askAi = async (fieldName) => {
+  const _askAi = async (fieldName) => {
     if (!doubtText.trim()) return;
-    setIsAsking(true);
-    setAiResponse('');
+    _setIsAsking(true);
+    _setAiResponse('');
 
     try {
       const response = await askFieldDoubt(planData.config.ai, fieldName, doubtText, planData.semilla);
-      setAiResponse(response);
-    } catch (e) {
-      setAiResponse("Hubo un error al consultar a la IA. Intenta nuevamente.");
+      _setAiResponse(response);
+    } catch {
+      _setAiResponse("Hubo un error al consultar a la IA. Intenta nuevamente.");
     } finally {
-      setIsAsking(false);
+      _setIsAsking(false);
     }
   };
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Send, Trash2, MessageSquare, Clock } from 'lucide-react';
 
 export default function FieldComments({ comments = [], onAddComment, onDeleteComment }) {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { usePlan } from '../context/PlanContext';
-import { Brain, Sparkles, HelpCircle } from 'lucide-react';
+import { Brain, Sparkles } from 'lucide-react';
 import { generateModuleContent } from '../lib/ai';
 
 const CanvasBox = ({ title, description, content, onAiFill, loading }) => (

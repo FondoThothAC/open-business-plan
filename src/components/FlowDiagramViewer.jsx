@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import ReactFlow, { 
   MiniMap, 
   Controls, 
@@ -10,7 +10,7 @@ import ReactFlow, {
   Position
 } from 'reactflow';
 import dagre from 'dagre';
-import { Plus, Trash2, HelpCircle } from 'lucide-react';
+import { Plus, HelpCircle } from 'lucide-react';
 import 'reactflow/dist/style.css';
 
 // Custom Node component with custom handles and glassmorphism styling

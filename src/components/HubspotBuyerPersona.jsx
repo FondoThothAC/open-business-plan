@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { User, Target, ShieldAlert, Sparkles, BookOpen, Heart } from 'lucide-react';
 
 export default function HubspotBuyerPersona({ value = '' }) {

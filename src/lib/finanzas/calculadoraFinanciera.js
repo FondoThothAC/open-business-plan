@@ -23,7 +23,7 @@ function parseToProjectData(planData) {
   try {
     const rawCapex = planData?.organizacion?.inversion?.desglose_capex_json;
     if (rawCapex) investmentItems = JSON.parse(rawCapex);
-  } catch (e) {}
+  } catch {}
 
   let recurringExpenses = [];
   try {
@@ -36,7 +36,7 @@ function parseToProjectData(planData) {
       growthType: 'annual',
       annualGrowthRates: [5, 5, 5, 5, 5]
     }));
-  } catch (e) {}
+  } catch {}
 
   let recurringRevenues = [];
   try {
@@ -47,7 +47,7 @@ function parseToProjectData(planData) {
       initialMonthlyAmount: parseFloat(i.mensual) || 0,
       annualGrowthRates: [5, 5, 5, 5, 5]
     }));
-  } catch (e) {}
+  } catch {}
 
   // Generamos un fallback si están vacíos usando datos estimados
   if (investmentItems.length === 0) {
@@ -132,11 +132,11 @@ export async function generateAutomatedFinancials(planData) {
     netInitialInvestment,
     financialMetrics,
     annualSummaries,
-    monthlyBreakdown
+    monthlyBreakdown: _monthlyBreakdown
   } = projections;
 
   const firstYear = annualSummaries[0];
-  const lastYear = annualSummaries[annualSummaries.length - 1];
+  const _lastYear = annualSummaries[annualSummaries.length - 1];
 
   const summary = {
     capex: `La inversión inicial calculada es de ${mxn(netInitialInvestment)}, que servirá para cubrir el CAPEX y capital de trabajo del proyecto.`,

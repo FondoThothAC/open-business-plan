@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { geocodeMx, searchCompetenciaDENUE, getInegiMunicipio } from '../lib/inegi';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import {} from '../lib/inegi';
 import { MapPin, Search, RefreshCw, AlertTriangle, Save, Check } from 'lucide-react';
 import { usePlan } from '../context/PlanContext';
 import { callAiProvider } from '../lib/ai';
@@ -86,7 +86,7 @@ export default function InegiMap({
   const polygonSourceRef = useRef(null);
   const drawInteractionRef = useRef(null);
 
-  const { planData, updateSection } = usePlan();
+  const { planData, updateSection, manualSaveProject } = usePlan();
   const { pillarId, moduleId } = useParams();
 
   const [queryLocation, setQueryLocation] = useState(location || DEFAULT_CENTER.label);
@@ -111,11 +111,15 @@ export default function InegiMap({
   // Advanced demographic, market intelligence & heatmap states
   const [munData, setMunData] = useState(null);
   const [showHeatmap, setShowHeatmap] = useState(defaultHeatmap);
+
+  useEffect(() => {
+    setShowHeatmap(defaultHeatmap);
+  }, [defaultHeatmap]);
   const [activeTab, setActiveTab] = useState('demografia');
   const [precioProducto, setPrecioProducto] = useState(500);
   const [viabilityData, setViabilityData] = useState(null);
   const [searchStats, setSearchStats] = useState(null);
-  const [coloresFuente, setColoresFuente] = useState({});
+  const [_coloresFuente, setColoresFuente] = useState({});
 
   // Estados para el Análisis Profundo
   const [selectedCompetitor, setSelectedCompetitor] = useState(null);
@@ -145,7 +149,7 @@ export default function InegiMap({
   const localEstimates = useMemo(() => {
     if (!munData) return null;
 
-    let areaKm2 = 0;
+    let areaKm2;
     if (polygonCoords) {
       areaKm2 = calculatePolygonAreaKm2(polygonCoords);
     } else {
@@ -190,18 +194,48 @@ export default function InegiMap({
     };
   }, [munData, businesses, polygonCoords, radius]);
 
+  const [olLoaded, setOlLoaded] = useState(false);
+  const [olError, setOlError] = useState(false);
+
   useEffect(() => {
-    if (!window.ol || mapInstance.current || !mapRef.current) return;
+    if (window.ol) {
+      setOlLoaded(true);
+      return;
+    }
 
-    const baseLayer = new window.ol.layer.Tile({ source: new window.ol.source.OSM() });
-    const inegiSource = new window.ol.source.TileWMS({
-      url: 'https://mapaserver.inegi.org.mx/wms/mapabase/c611',
-      params: { LAYERS: 'limite_estatal,limite_municipal', TILED: true },
-      serverType: 'geoserver',
-      transition: 0,
+    const scriptId = 'openlayers-script';
+    if (!document.getElementById(scriptId)) {
+      const script = document.createElement('script');
+      script.id = scriptId;
+      script.src = 'https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.5.0/build/ol.js';
+      script.onload = () => setOlLoaded(true);
+      script.onerror = () => setOlError(true);
+      document.head.appendChild(script);
+
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = 'https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.5.0/css/ol.css';
+      document.head.appendChild(link);
+    } else {
+      // Si el script ya está inyectado pero aún no carga, esperar
+      const checkOl = setInterval(() => {
+        if (window.ol) {
+          setOlLoaded(true);
+          clearInterval(checkOl);
+        }
+      }, 500);
+      setTimeout(() => clearInterval(checkOl), 10000);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!olLoaded || mapInstance.current || !mapRef.current) return;
+
+    const baseLayer = new window.ol.layer.Tile({
+      source: new window.ol.source.OSM({
+        crossOrigin: 'anonymous'
+      })
     });
-
-    const inegiLayer = new window.ol.layer.Tile({ source: inegiSource, opacity: 0.55 });
 
     const markerSource = new window.ol.source.Vector();
     markersSourceRef.current = markerSource;
@@ -210,9 +244,9 @@ export default function InegiMap({
       source: markerSource,
       style: new window.ol.style.Style({
         image: new window.ol.style.Circle({
-          radius: 5,
+          radius: 6,
           fill: new window.ol.style.Fill({ color: '#ef4444' }),
-          stroke: new window.ol.style.Stroke({ color: '#ffffff', width: 1.5 })
+          stroke: new window.ol.style.Stroke({ color: '#ffffff', width: 2 })
         })
       })
     });
@@ -220,10 +254,10 @@ export default function InegiMap({
 
     const heatmapLayer = new window.ol.layer.Heatmap({
       source: markerSource,
-      blur: 18,
-      radius: 14,
+      blur: 20,
+      radius: 16,
       weight: function (feature) {
-        return feature.get('isMain') ? 0.0 : 0.8;
+        return feature.get('isMain') ? 0.0 : 0.85;
       }
     });
     heatmapLayerRef.current = heatmapLayer;
@@ -249,10 +283,10 @@ export default function InegiMap({
 
     mapInstance.current = new window.ol.Map({
       target: mapRef.current,
-      layers: [baseLayer, inegiLayer, markerLayer, heatmapLayer, polygonLayer],
+      layers: [baseLayer, markerLayer, heatmapLayer, polygonLayer],
       view: new window.ol.View({
         center: window.ol.proj.fromLonLat([DEFAULT_CENTER.lng, DEFAULT_CENTER.lat]),
-        zoom: 11,
+        zoom: 12,
       }),
     });
 
@@ -260,7 +294,7 @@ export default function InegiMap({
       if (mapInstance.current) {
         mapInstance.current.updateSize();
       }
-    }, 800);
+    }, 400);
 
     return () => {
       if (mapInstance.current) {
@@ -268,7 +302,7 @@ export default function InegiMap({
         mapInstance.current = null;
       }
     };
-  }, []);
+  }, [olLoaded]);
 
   useEffect(() => {
     if (markersLayerRef.current && heatmapLayerRef.current) {
@@ -486,16 +520,28 @@ export default function InegiMap({
     setLoadingGeo(true);
     setError('');
     try {
-      const geo = await inegiService.geocodeMx(targetLoc || DEFAULT_CENTER.label);
-      if (!geo.success) throw new Error(geo.error || 'No se pudo geocodificar la ubicación.');
-      const next = { lat: geo.lat, lng: geo.lng, label: geo.displayName || targetLoc };
+      let geo = await inegiService.geocodeMx(targetLoc || DEFAULT_CENTER.label);
+      if (!geo || !geo.success) {
+        // Intentar con la ubicación de la semilla o fallback a DEFAULT_CENTER
+        const fallbackCity = planData?.semilla?.negocio?.ubicacion || DEFAULT_CENTER.label;
+        geo = await inegiService.geocodeMx(fallbackCity).catch(() => null);
+      }
+      
+      const lat = (geo && geo.success && geo.lat) ? geo.lat : DEFAULT_CENTER.lat;
+      const lng = (geo && geo.success && geo.lng) ? geo.lng : DEFAULT_CENTER.lng;
+      const label = (geo && geo.success && geo.displayName) ? geo.displayName : (targetLoc || DEFAULT_CENTER.label);
+      
+      const next = { lat, lng, label };
       setCenter(next);
       setStatus(`Zona cargada: ${next.label}`);
       setMapCenter(next.lat, next.lng);
       return next;
     } catch (e) {
-      setError(e.message || 'Error geocodificando ubicación');
-      return center;
+      console.warn('Geocoding fallback to DEFAULT_CENTER:', e.message);
+      const next = { lat: DEFAULT_CENTER.lat, lng: DEFAULT_CENTER.lng, label: targetLoc || DEFAULT_CENTER.label };
+      setCenter(next);
+      setMapCenter(next.lat, next.lng);
+      return next;
     } finally {
       setLoadingGeo(false);
     }
@@ -839,10 +885,34 @@ Por favor, devuélvelo en formato JSON con la siguiente estructura exacta (respo
     }
 
     let targetPillar = pillarId || 'mercado';
-    let targetModule = moduleId || 'competencia';
-    let targetField = pillarId === 'tecnico' ? 'local' : 'competidores';
+    let targetModule = moduleId || (mode === 'location' ? 'ubicacion' : 'competencia');
+    let targetField = 'competidores';
+
+    if (pillarId === 'tecnico') {
+      targetField = 'local';
+    } else if (moduleId === 'mapa') {
+      targetField = 'analisis_espacial';
+    } else if (moduleId === 'competencia') {
+      targetField = 'competidores';
+    }
 
     updateSection(targetPillar, targetModule, targetField, content);
+
+    // Auto-guardar y persistir inmediatamente en el backend
+    if (manualSaveProject) {
+      const updatedPlan = {
+        ...planData,
+        [targetPillar]: {
+          ...(planData[targetPillar] || {}),
+          [targetModule]: {
+            ...(planData[targetPillar]?.[targetModule] || {}),
+            [targetField]: content
+          }
+        }
+      };
+      manualSaveProject(updatedPlan);
+    }
+
     setSaveSuccess(true);
     setTimeout(() => setSaveSuccess(false), 3000);
   };
@@ -995,10 +1065,22 @@ Por favor, devuélvelo en formato JSON con la siguiente estructura exacta (respo
             <button
               className={`btn ${showHeatmap ? 'btn-ia' : 'btn-secondary'}`}
               onClick={() => setShowHeatmap(!showHeatmap)}
-              style={{ padding: '0.35rem 0.75rem', fontSize: '0.72rem', display: 'flex', alignItems: 'center', gap: '0.35rem', cursor: 'pointer', border: '1px solid var(--accent-color)' }}
+              style={{
+                padding: '0.35rem 0.75rem',
+                fontSize: '0.72rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.35rem',
+                cursor: 'pointer',
+                background: showHeatmap ? 'linear-gradient(135deg, #ef4444, #f59e0b)' : '',
+                color: showHeatmap ? '#ffffff' : '',
+                border: '1px solid var(--accent-color)',
+                fontWeight: 600
+              }}
+              title="Alternar entre marcadores individuales y mapa de calor de densidad"
             >
               <span>🔥</span>
-              <span>{showHeatmap ? 'Ver Pines' : 'Ver Mapa de Calor'}</span>
+              <span>{showHeatmap ? 'Capa: Mapa de Calor (Activa)' : 'Activar Mapa de Calor'}</span>
             </button>
             <button
               className={`btn ${useOfficialIframe ? 'btn-ia' : 'btn-secondary'}`}
@@ -1033,6 +1115,21 @@ Por favor, devuélvelo en formato JSON con la siguiente estructura exacta (respo
             style={{ width: '100%', height: '100%', border: 'none' }}
             title="DENUE Oficial"
           />
+        </div>
+      ) : !olLoaded ? (
+        <div style={{ width: '100%', height: readOnly ? '380px' : '340px', borderRadius: '10px', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', background: '#f8fafc', border: '1px solid rgba(148,163,184,0.22)' }}>
+          {olError ? (
+            <>
+              <AlertTriangle size={32} style={{ color: '#ef4444', marginBottom: '0.5rem' }} />
+              <p style={{ margin: 0, fontWeight: 500, color: 'var(--text-primary)' }}>Error al cargar motor cartográfico</p>
+              <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Revisa tu conexión o desactiva tu adblocker (CDN bloqueado).</p>
+            </>
+          ) : (
+            <>
+              <RefreshCw size={28} className="animate-spin" style={{ color: 'var(--accent-color)', marginBottom: '0.5rem' }} />
+              <p style={{ margin: 0, fontWeight: 500, color: 'var(--text-primary)' }}>Montando Motor Cartográfico...</p>
+            </>
+          )}
         </div>
       ) : (
         <div

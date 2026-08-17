@@ -84,7 +84,7 @@ La orquestación de IA reside en `src/lib/ai.js` y el servidor proxy `server/ind
 4. **Nivel 4 (Industrial)**: 9 Agentes en cadena de revisión. ~20 min.
 
 ### Secuencia de Fallback de Modelos de IA:
-1. **Modelo Local Principal (Ollama / LM Studio)**: `nemotron-3-nano:4b`, `qwen3.5:4b-mlx`, `gemma4:pro`.
+1. **Modelo Local Principal (Ollama / LM Studio)**: `qwen3.5:9b`, `gemma4:12b`, `gemma4:pro`.
 2. **Modelos Locales de Respaldo**: Fallback automático en caso de falta de VRAM o fallo de invocación.
 3. **Nube (NVIDIA NIM)**: `nvidia/llama-3.1-nemotron-70b-instruct` (vía `nvidiaKey`).
 4. **Nube Alternativa**: Groq (`llama-3.3-70b`), Google Gemini API, OpenAI (`gpt-4o`).
@@ -132,6 +132,25 @@ npm run electron:build:all
    - Creación del logotipo e icono favicon oficial en `public/logo.png` y `public/favicon.ico`.
 4. **Compilación Limpia**:
    - Verificado con `npm run build` (2,069 módulos transformados sin errores en 2.21s).
+5. **Migración a IA Local-First (11/08/2026)**:
+   - Default de proveedor cambiado de Gemini (nube) a **Ollama (local)** con modelo `qwen3.5:9b`.
+   - Modelo principal instalado: `qwen3.5:9b` (9.7B, Q4_K_M, 6.6GB) + `gemma4:12b` (12B, 7GB).
+   - Resolución de modelo genérico (ej. `nemotron`) ahora fallbacka inteligentemente al mejor modelo instalado.
+6. **Bug GEMINI Corregido (11/08/2026)**:
+   - `extractSeedFromText` y `askFieldDoubt` ahora usan `resolveProviderModel()` que garantiza coherencia proveedor/modelo (nunca envía un modelo local a la nube).
+   - Errores de IA ahora incluyen el error real + `cause` para debugging.
+7. **Auto-Retry por Límite de Tokens (11/08/2026)**:
+   - `fetchWithRetry()` implementa reintento automático con backoff exponencial en HTTP 429.
+   - Soporta headers `Retry-After` y logging al ActivityFeed.
+   - Cubre todos los proveedores de nube: Gemini, Groq, NVIDIA, OpenAI, Mistral.
+8. **Lint 0/0 (11/08/2026)**:
+   - 7 errores corregidos + 184 warnings limpiados en ~30 archivos.
+   - `npm run lint` → 0 errores, 0 warnings.
+   - `npm test` → 12/12 tests verdes.
+   - `npm run build` → 100% exitoso (6.64s).
+9. **Documentación Actualizada (11/08/2026)**:
+   - Nuevo `docs/FUNCIONAMIENTO_IA.md`: documentación completa del motor de IA.
+   - Actualización de `RESUMEN_EJECUTIVO` con bitácora de fixes.
 
 ---
 

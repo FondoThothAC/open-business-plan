@@ -14,7 +14,7 @@ export class ApiManager {
           return parsed.data;
         }
       }
-    } catch (e) {}
+    } catch {}
     return null;
   }
 
@@ -24,7 +24,7 @@ export class ApiManager {
         timestamp: Date.now(),
         data
       }));
-    } catch (e) {}
+    } catch {}
   }
 
   // Returns Risk-Free Rate (e.g. US 10-Year Treasury Yield)
@@ -41,7 +41,7 @@ export class ApiManager {
         const rate = 4.25; 
         this._setCache(cacheKey, rate);
         return rate;
-      } catch (err) {
+      } catch {
         console.warn("FRED API failed, using fallback");
       }
     }
@@ -64,7 +64,7 @@ export class ApiManager {
         const beta = 1.2; 
         this._setCache(cacheKey, beta);
         return beta;
-      } catch (err) {
+      } catch {
         console.warn("Yahoo Finance API failed, using fallback");
       }
     }
@@ -79,7 +79,7 @@ export class ApiManager {
   }
 
   // Returns Environmental Impact Score (Copernicus API)
-  async getEnvironmentalImpact(lat, lon) {
+  async getEnvironmentalImpact(_lat, _lon) {
     if (this.config.copernicusKey) {
       // Future Copernicus implementation
       return { score: 95, description: "Bajo impacto ambiental en la zona." };
@@ -88,7 +88,7 @@ export class ApiManager {
   }
 
   // Returns Market Sentiment (Google Trends API)
-  async getMarketSentiment(keyword) {
+  async getMarketSentiment(_keyword) {
     if (this.config.googleTrendsKey) {
       // Future Google Trends implementation
       return { trend: 'upward', score: 85 };

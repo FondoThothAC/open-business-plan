@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { usePlan } from '../context/PlanContext';
 import { fetchPlaces, fetchSocialMedia } from '../utils/googleApi';
 import { Search, Loader2, Globe, PlusCircle, AlertCircle, MapPin, Star, DollarSign, ExternalLink } from 'lucide-react';

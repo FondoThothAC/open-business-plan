@@ -1,7 +1,6 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { runMonteCarloSimulation } from '../lib/finanzas/montecarlo';
 import { 
-  Play, 
   TrendingUp, 
   AlertTriangle, 
   CheckCircle, 
@@ -79,7 +78,7 @@ export default function MonteCarloSimulator({
   const maxBinCount = Math.max(...histogramData.map(b => b.count), 1);
 
   // Encontrar el bin más cercano al $0.00
-  const zeroIndex = useMemo(() => {
+  const _zeroIndex = useMemo(() => {
     let closestIndex = 0;
     let minDiff = Infinity;
     histogramData.forEach((b, idx) => {

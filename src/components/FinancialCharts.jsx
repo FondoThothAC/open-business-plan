@@ -814,7 +814,7 @@ const AmortizationTables = ({ loans, schedules }) => {
   );
 };
 
-export const FinancialReports = ({ projections, netInitialInvestment, loans }) => {
+export const FinancialReports = ({ projections, _netInitialInvestment, loans }) => {
   const [activeTab, setActiveTab] = useState('income');
   const { annualSummaries, monthlyBreakdown, annualCostBenefitData, monthlyCashFlowData, monthlyBreakEvenData, monthlyCostBenefitData, annualCashFlowData } = projections;
 
@@ -1034,7 +1034,7 @@ export const PrintableFinancialReports = ({ projections, staff = [] }) => {
   });
 
   const metrics = projections.financialMetrics || normalized.metrics || {};
-  const netInitialInvestment = projections.netInitialInvestment || 0;
+  const _netInitialInvestment = projections.netInitialInvestment || 0;
 
   const loans = (() => {
     if (projections.loans) return projections.loans;

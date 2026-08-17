@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { usePlan } from '../context/PlanContext';
-import { ChevronRight, ChevronLeft, CheckCircle2, Sparkles, User, Lightbulb, Users, Trophy, Wrench, Megaphone, DollarSign, Heart, FileText } from 'lucide-react';
+import { ChevronRight, ChevronLeft, CheckCircle2, Sparkles, User, Lightbulb, Users, Trophy, Wrench, Megaphone, DollarSign, Heart, FileText, Image as ImageIcon } from 'lucide-react';
 import PdfOcrReader from '../components/PdfOcrReader';
+import LogoGeneratorModal from '../components/LogoGeneratorModal';
 
 const BUSINESS_STEPS = [
   {
@@ -186,8 +187,9 @@ const SOCIAL_STEPS = [
 ];
 
 export default function Semilla() {
-  const { planData, updateSection } = usePlan();
+  const { planData, updateSection, updateConfig } = usePlan();
   const [currentStep, setCurrentStep] = useState(0);
+  const [isLogoModalOpen, setIsLogoModalOpen] = useState(false);
   const semillaData = planData.semilla || {};
 
   const projectType = planData.config?.projectType || 'business';
@@ -206,11 +208,11 @@ export default function Semilla() {
     return semillaData[step.id]?.[key] || '';
   };
 
-  const isStepComplete = () => {
+  const _isStepComplete = () => {
     return step.fields.some(f => getFieldValue(f.key).trim() !== '');
   };
 
-  const completedSteps = STEPS.filter((s, i) => {
+  const completedSteps = STEPS.filter((s, _i) => {
     const data = semillaData[s.id] || {};
     return s.fields.some(f => (data[f.key] || '').trim() !== '');
   }).length;
@@ -339,8 +341,97 @@ export default function Semilla() {
               )}
             </div>
           ))}
+
+          {/* Tarjeta de Generación de Logotipo Inteligente en el paso de Marketing */}
+          {step.id === 'marketing' && (
+            <div style={{
+              marginTop: '0.5rem',
+              padding: '1.25rem',
+              borderRadius: '14px',
+              border: '1px solid var(--accent-color, #6366f1)',
+              background: 'rgba(99, 102, 241, 0.06)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '1rem',
+              flexWrap: 'wrap'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                <div style={{
+                  width: '56px',
+                  height: '56px',
+                  borderRadius: '12px',
+                  background: '#ffffff',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  overflow: 'hidden',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                  padding: '4px'
+                }}>
+                  {planData.config?.brandKit?.logoUrl ? (
+                    <img src={planData.config.brandKit.logoUrl} alt="Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                  ) : (
+                    <ImageIcon className="w-6 h-6 text-slate-400" />
+                  )}
+                </div>
+                <div>
+                  <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800 }}>Identidad Visual y Logotipo con IA</h4>
+                  <p style={{ margin: 0, fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
+                    Genera el isotipo vectorial oficial de tu marca con Pollinations Flux y motores gráficos
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setIsLogoModalOpen(true)}
+                className="btn btn-primary"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  padding: '0.55rem 1.2rem',
+                  fontSize: '0.85rem',
+                  fontWeight: 700,
+                  borderRadius: '10px'
+                }}
+              >
+                <Sparkles className="w-4 h-4" />
+                <span>{planData.config?.brandKit?.logoUrl ? 'Cambiar Logotipo' : 'Diseñar Logotipo con IA'}</span>
+              </button>
+            </div>
+          )}
         </div>
       </div>
+
+      {/* Modal de Generación de Logotipos */}
+      <LogoGeneratorModal
+        isOpen={isLogoModalOpen}
+        onClose={() => setIsLogoModalOpen(false)}
+        projectId={planData.config?.projectId}
+        projectType={projectType === 'social_bid' ? 'social' : 'negocios'}
+        pollinationsKey={planData.config?.ai?.pollinationsKey || ''}
+        initialBrandData={{
+          companyName: getFieldValue('nombre_marca') || planData.config?.brandKit?.companyName || '',
+          giro: planData.semilla?.negocio?.que_es || planData.semilla?.negocio?.producto_servicio || '',
+          isotipoDesc: '',
+          primaryColor: planData.config?.brandKit?.primaryColor || '#6366f1',
+          secondaryColor: planData.config?.brandKit?.secondaryColor || '#10b981'
+        }}
+        onSelectLogo={(dataUrl, meta) => {
+          if (meta?.companyName) {
+            handleChange('nombre_marca', meta.companyName);
+          }
+          updateConfig('brandKit', {
+            ...(planData.config?.brandKit || {}),
+            logoUrl: dataUrl,
+            companyName: getFieldValue('nombre_marca') || planData.config?.brandKit?.companyName,
+            primaryColor: meta?.primaryColor || planData.config?.brandKit?.primaryColor || '#6366f1',
+            secondaryColor: meta?.secondaryColor || planData.config?.brandKit?.secondaryColor || '#10b981'
+          });
+        }}
+      />
 
       {/* Navigation */}
       <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '1.5rem' }}>

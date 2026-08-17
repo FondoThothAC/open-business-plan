@@ -705,6 +705,111 @@ textarea.form-control {
   .page-break::before {
     display: none;
   }
+
+  /* Table Pagination Protections */
+  table {
+    border-collapse: collapse !important;
+    width: 100% !important;
+  }
+  
+  thead {
+    display: table-header-group !important;
+  }
+  
+  tfoot {
+    display: table-footer-group !important;
+  }
+  
+  tr, .avoid-break, .foda-card, .matrix-item, .mermaid-container, .buyer-persona-card, 
+  .canvas-block, .gauge-container, .impact-widget, .recharts-wrapper, .benchmarking-table-card, 
+  .brand-board-card, .presupuesto-table-card, .financial-card, .inversion-card {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+  
+  /* Orphan Headings Prevention */
+  h1, h2, h3, h4, h5, h6 {
+    break-after: avoid !important;
+    page-break-after: avoid !important;
+    orphans: 3 !important;
+    widows: 3 !important;
+  }
+
+  p, li {
+    orphans: 2;
+    widows: 2;
+  }
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   TOC & PRINT UTILITIES
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.toc-item-link {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  width: 100%;
+  color: #1e293b;
+  text-decoration: none;
+  padding: 0.35rem 0.6rem;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+}
+
+.toc-item-link:hover {
+  background: rgba(99, 102, 241, 0.08);
+  color: var(--accent-color);
+  transform: translateX(4px);
+}
+
+.toc-dot-leader {
+  flex-grow: 1;
+  border-bottom: 1px dotted #94a3b8;
+  margin: 0 0.5rem;
+  height: 1px;
+  min-width: 20px;
+  opacity: 0.6;
+}
+
+.toc-page-badge {
+  font-weight: 700;
+  color: #475569;
+  font-size: 0.85rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.print-page-header {
+  display: none;
+}
+
+.print-page-footer {
+  display: none;
+}
+
+@media print {
+  .print-page-header {
+    display: flex !important;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 0.6rem;
+    margin-bottom: 1.25rem;
+    border-bottom: 1.5px solid #cbd5e1;
+    font-size: 0.75rem;
+    color: #64748b;
+    font-family: Inter, sans-serif;
+  }
+
+  .print-page-footer {
+    display: flex !important;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 0.6rem;
+    margin-top: 2rem;
+    border-top: 1px solid #e2e8f0;
+    font-size: 0.72rem;
+    color: #64748b;
+    font-family: Inter, sans-serif;
+  }
 }
 
 .form-control::placeholder {

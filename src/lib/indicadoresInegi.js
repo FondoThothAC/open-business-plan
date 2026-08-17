@@ -91,14 +91,14 @@ function getCached(key) {
       }
       localStorage.removeItem(`inegi_ind_${key}`);
     }
-  } catch (e) { /* ignorar errores de localStorage */ }
+  } catch { /* ignorar errores de localStorage */ }
   return null;
 }
 
 function setCache(key, data) {
   try {
     localStorage.setItem(`inegi_ind_${key}`, JSON.stringify({ ts: Date.now(), data }));
-  } catch (e) { /* ignorar errores de localStorage */ }
+  } catch { /* ignorar errores de localStorage */ }
 }
 
 // ─────────────────────────────────────────────────────────

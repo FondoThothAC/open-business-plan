@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import { useRef } from 'react';
 import { usePlan } from '../context/PlanContext';
 import { Upload, FileText, X, File } from 'lucide-react';
 

@@ -1,4 +1,3 @@
-import React from 'react';
 import { usePlan } from '../context/PlanContext';
 import AnalisisCompetenciaGoogle from '../components/AnalisisCompetenciaGoogle';
 

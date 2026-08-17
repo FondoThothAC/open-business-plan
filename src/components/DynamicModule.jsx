@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useParams, Navigate } from 'react-router-dom';
 import { usePlan } from '../context/PlanContext';
 import { FRAMEWORKS } from '../config/frameworks';
@@ -131,9 +131,9 @@ export default function DynamicModule() {
   }
 
   const locationHint =
-    planData?.tecnico?.ubicacion?.micro ||
-    planData?.tecnico?.ubicacion?.macro ||
     planData?.semilla?.negocio?.ubicacion ||
+    planData?.tecnico?.ubicacion?.macro ||
+    planData?.tecnico?.ubicacion?.micro ||
     'Hermosillo, Sonora';
 
   const projectContext = planData?.semilla?.negocio?.giro || planData?.semilla?.negocio?.nombre || 'servicios profesionales';

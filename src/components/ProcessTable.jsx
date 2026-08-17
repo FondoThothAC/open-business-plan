@@ -1,4 +1,3 @@
-import React from 'react';
 import { Plus, Trash2, Clock, Wrench, FileText } from 'lucide-react';
 
 export default function ProcessTable({ processes = [], onChange }) {

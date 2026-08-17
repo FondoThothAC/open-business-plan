@@ -21,7 +21,7 @@ export class OpenSwarmBridge {
     try {
       const response = await fetch(`${this.endpoint}/health`, { method: 'GET', timeout: 2000 });
       return response.ok;
-    } catch (_) {
+    } catch {
       return false;
     }
   }

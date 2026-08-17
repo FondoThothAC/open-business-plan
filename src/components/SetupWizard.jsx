@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Cpu, Zap, Server, Cloud, ChevronRight, CheckCircle2, AlertTriangle, Loader2, Brain, HardDrive, MemoryStick, Monitor } from 'lucide-react';
 
 const CTX_OPTIONS = [
@@ -49,7 +49,7 @@ export default function SetupWizard({ onComplete }) {
         if (psData.models?.length > 0) {
           gpuVram = Math.round((psData.models[0].size_vram || 0) / 1e9) || 8;
         }
-      } catch (_) { gpuVram = 8; }
+      } catch { gpuVram = 8; }
 
       const hwData = {
         gpuVram: gpuVram || 12,
@@ -59,7 +59,7 @@ export default function SetupWizard({ onComplete }) {
       };
       setHardware(hwData);
       setSelectedCtx(recommendCtx(hwData.gpuVram, hwData.systemRam));
-    } catch (e) {
+    } catch {
       setError('Ollama no detectado en localhost:11434. Verifica que esté activo.');
       setHardware({ gpuVram: 0, systemRam: 8, ollamaOnline: false, models: [] });
       setSelectedCtx(32768);

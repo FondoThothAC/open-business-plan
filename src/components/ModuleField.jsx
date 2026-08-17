@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Lock, Unlock, BrainCircuit, Minimize2 } from 'lucide-react';
 import { usePlan } from '../context/PlanContext';
 import ExpertPanel from './ExpertPanel';

@@ -8,6 +8,7 @@ import { busquedaMultiFuente, analizarViabilidad } from './competitorEngine.js';
 import { FRAMEWORKS } from '../src/config/frameworks.js';
 import { swarmOrchestrator } from './swarm/SwarmOrchestrator.js';
 import { agentStore } from './swarm/AgentStore.js';
+import { generateLogoVariants, buildLogoPrompt, generateProceduralSvgLogo } from '../src/lib/logoGenerator.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -20,7 +21,7 @@ const sseClients = new Set();
 function broadcast(eventData) {
   const payload = `data: ${JSON.stringify(eventData)}\n\n`;
   sseClients.forEach(res => {
-    try { res.write(payload); } catch (_) { sseClients.delete(res); }
+    try { res.write(payload); } catch { sseClients.delete(res); }
   });
 }
 
@@ -238,7 +239,7 @@ app.get('/api/projects', (req, res) => {
                    const data = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
                    completion = calculateCompletion(data);
                    projectType = data.config?.projectType || projectType;
-                 } catch (_) {}
+                 } catch {}
 
                  projects.push({
                    id: entry.name,
@@ -261,7 +262,8 @@ app.get('/api/projects', (req, res) => {
                const data = JSON.parse(fs.readFileSync(fullPath, 'utf8'));
                completion = calculateCompletion(data);
                projectType = data.config?.projectType || projectType;
-             } catch (_) {}
+              } catch {}
+
 
              projects.push({
                   id: entry.name.replace('.json', ''),
@@ -324,7 +326,7 @@ app.get('/api/projects/:type/:id', (req, res) => {
     try {
       const data = fs.readFileSync(filePath, 'utf8');
       res.json(JSON.parse(data));
-    } catch (e) {
+    } catch {
       res.status(500).json({ error: 'Error al parsear el archivo de proyecto' });
     }
   } else {
@@ -573,7 +575,7 @@ app.get('/api/inegi/denue', async (req, res) => {
           if (!text) continue;
           payload = JSON.parse(text);
           if (Array.isArray(payload)) break;
-        } catch (e) {
+        } catch {
           continue;
         }
       }
@@ -860,7 +862,7 @@ app.get('/api/inegi/denue/cuantificar', async (req, res) => {
     try {
       const parsed = JSON.parse(text);
       count = typeof parsed === 'number' ? parsed : (parsed.Total || parsed.count || 0);
-    } catch (e) {
+    } catch {
       count = parseInt(text, 10) || 0;
     }
 
@@ -979,7 +981,7 @@ app.post('/api/market/viability', async (req, res) => {
 });
 
 app.post('/api/market/enrich', async (req, res) => {
-  const { name, address = '', category = '', keyword = '' } = req.body;
+  const { name, address = '', category: _category = '', keyword = '' } = req.body;
   if (!name) {
     return res.status(400).json({ success: false, error: 'Nombre del competidor requerido' });
   }
@@ -1140,6 +1142,79 @@ app.post('/api/ai/proxy', async (req, res) => {
   }
 });
 
+// ─────────────────────────────────────────────────────────
+//  GENERACIÓN Y PERSISTENCIA DE LOGOTIPOS (Pollinations / Gemini / SVG)
+// ─────────────────────────────────────────────────────────
+app.post('/api/logo/generate', async (req, res) => {
+  try {
+    const {
+      companyName,
+      giro,
+      isotipoDesc,
+      primaryColor,
+      secondaryColor,
+      style = 'flat_vector',
+      customPrompt = '',
+      variantsCount = 4,
+      apiKey = '',
+      pollinationsKey = ''
+    } = req.body;
+
+    const brandData = { companyName, giro, isotipoDesc, primaryColor, secondaryColor };
+    const result = await generateLogoVariants(brandData, { style, customPrompt, variantsCount, apiKey, pollinationsKey });
+    return res.json(result);
+  } catch (error) {
+    console.error('Error generating logo variants:', error);
+    return res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.post('/api/logo/save', async (req, res) => {
+  try {
+    const { projectId, projectType = 'negocios', dataUrl } = req.body;
+    if (!projectId || !dataUrl) {
+      return res.status(400).json({ success: false, error: 'projectId y dataUrl son requeridos' });
+    }
+
+    const safeName = projectId.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+    const dirPath = path.resolve('proyectos', projectType, safeName);
+    if (!fs.existsSync(dirPath)) {
+      fs.mkdirSync(dirPath, { recursive: true });
+    }
+
+    let filePath;
+    if (dataUrl.startsWith('data:image/svg+xml')) {
+      filePath = path.join(dirPath, 'logo.svg');
+      const base64Data = dataUrl.replace(/^data:image\/svg\+xml;base64,/, '');
+      fs.writeFileSync(filePath, Buffer.from(base64Data, 'base64'));
+    } else {
+      filePath = path.join(dirPath, 'logo.png');
+      const base64Data = dataUrl.replace(/^data:image\/\w+;base64,/, '');
+      fs.writeFileSync(filePath, Buffer.from(base64Data, 'base64'));
+    }
+
+    // Actualizar también el JSON del proyecto si existe
+    const jsonPath = path.join(dirPath, `${safeName}.json`);
+    if (fs.existsSync(jsonPath)) {
+      try {
+        const pData = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+        if (pData.config) {
+          if (!pData.config.brandKit) pData.config.brandKit = {};
+          pData.config.brandKit.logoUrl = dataUrl;
+          fs.writeFileSync(jsonPath, JSON.stringify(pData, null, 2));
+        }
+      } catch (err) {
+        console.warn('No se pudo sincronizar JSON con el nuevo logo:', err);
+      }
+    }
+
+    return res.json({ success: true, file: filePath, message: 'Logotipo guardado exitosamente' });
+  } catch (error) {
+    console.error('Error saving logo:', error);
+    return res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 app.post('/api/log', (req, res) => {
   const { type = 'stage', module, message, provider, elapsed, projectId, projectType } = req.body;
   const icon = ICONS[type] || '·';
@@ -1173,7 +1248,7 @@ app.post('/api/log', (req, res) => {
           if (Array.isArray(parsed)) {
             logs = parsed;
           }
-        } catch (_) {}
+        } catch {}
       }
       logs.push({ ...logEntry, id: Date.now() + Math.random() });
       if (logs.length > 2000) {
@@ -1223,7 +1298,7 @@ app.get('/api/projects/:type/:id/logs', (req, res) => {
     try {
       const data = fs.readFileSync(filePath, 'utf8');
       res.json(JSON.parse(data));
-    } catch (e) {
+    } catch {
       res.status(500).json({ error: 'Error al parsear el archivo de logs' });
     }
   } else {
@@ -1266,7 +1341,7 @@ app.delete('/api/projects/:type/:id/logs', (req, res) => {
     try {
       fs.unlinkSync(filePath);
       res.json({ success: true, message: 'Historial de logs eliminado' });
-    } catch (err) {
+    } catch {
       res.status(500).json({ error: 'No se pudo eliminar el archivo de logs' });
     }
   } else {
@@ -1317,7 +1392,7 @@ app.post('/api/test/inegi', async (req, res) => {
 
     const url = `https://www.inegi.org.mx/app/api/denue/v1/consulta/Buscar/restaurante/29.088885,-110.961309/100/${cleanToken}`;
     const response = await fetch(url, { signal: AbortSignal.timeout(6000) });
-    const text = await response.text();
+    const _text = await response.text();
     if (response.status === 200 || response.status === 0) {
       res.json({ success: true, message: 'INEGI / DENUE está en línea.' });
     } else {

@@ -6,11 +6,11 @@
  * Incluye soporte para agentes auto-generados, badges de ahorro de tokens y efectos cuánticos.
  */
 
-import React, { useRef, useEffect, useState } from 'react';
-import { Play, CheckCircle2, AlertCircle, Volume2, VolumeX, Terminal, Cpu, Sparkles, BookOpen } from 'lucide-react';
+import { useRef, useEffect, useState } from 'react';
+import { Volume2, VolumeX, Terminal, Cpu, BookOpen } from 'lucide-react';
 import { SwarmIntelligenceHub } from './SwarmIntelligenceHub';
 
-export function PixelSwarmViewer({ activeAgents = [], agentLogs = [], globalProgress = 0, isRunning = false, onComplete, matchingReport = [] }) {
+export function PixelSwarmViewer({ activeAgents = [], agentLogs = [], _globalProgress = 0, isRunning = false, _onComplete, matchingReport = [] }) {
   const canvasRef = useRef(null);
   const [audioEnabled, setAudioEnabled] = useState(true);
   const [activeSpeechBubble, setActiveSpeechBubble] = useState(null);

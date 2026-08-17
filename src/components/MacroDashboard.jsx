@@ -1,12 +1,10 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { usePlan } from '../context/PlanContext';
 import { useParams } from 'react-router-dom';
 import { 
   TrendingUp, 
   TrendingDown, 
-  HelpCircle, 
   RefreshCw, 
-  Database, 
   Check, 
   AlertCircle, 
   FileText, 
@@ -14,7 +12,7 @@ import {
   Zap
 } from 'lucide-react';
 
-const formatMXN = (value) => 
+const _formatMXN = (value) => 
   new Intl.NumberFormat('es-MX', { 
     style: 'currency', 
     currency: 'MXN', 
@@ -23,7 +21,7 @@ const formatMXN = (value) =>
 
 export default function MacroDashboard({ token }) {
   const { planData, updateSection } = usePlan();
-  const { pillarId, moduleId } = useParams();
+  const { pillarId: _pillarId, moduleId: _moduleId } = useParams();
   
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
