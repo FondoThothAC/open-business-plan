@@ -2049,8 +2049,28 @@ export default function VistaPrevia() {
       <style>{`
         @media print {
           @page {
+            size: ${globalOrientation};
             margin: ${printMargin}cm;
           }
+          ${paginationMode === 'continuous' ? `
+          .portrait-print-page,
+          .landscape-print-page,
+          .toc-page,
+          .financial-reports-page,
+          .anexos-page {
+            page: auto !important;
+            break-before: auto !important;
+            page-break-before: auto !important;
+            break-inside: avoid !important;
+            page-break-inside: avoid !important;
+          }
+          .cover-page {
+            break-before: avoid !important;
+            page-break-before: avoid !important;
+            break-after: page !important;
+            page-break-after: always !important;
+          }
+          ` : `
           @page portraitPage {
             size: portrait;
             margin: ${printMargin}cm;
@@ -2061,7 +2081,8 @@ export default function VistaPrevia() {
           }
           .portrait-print-page {
             page: portraitPage;
-            ${paginationMode === 'continuous' ? 'break-before: auto !important; page-break-before: auto !important;' : 'break-before: page; page-break-before: always;'}
+            break-before: page;
+            page-break-before: always;
             break-inside: avoid !important;
             page-break-inside: avoid !important;
           }
@@ -2088,6 +2109,7 @@ export default function VistaPrevia() {
             page: portraitPage;
             break-before: page;
           }
+          `}
           .no-print {
             display: none !important;
           }
@@ -2438,13 +2460,8 @@ export default function VistaPrevia() {
           if (!shouldShow(mod.pillarKey, mod.key)) return null;
 
           const sectionNumber = `${idx + 1}.`;
-          // Orientación por defecto inteligente
-          let defaultOrientation = globalOrientation;
-          if (mod.key === 'canvas' || mod.key === 'estados_financieros' || mod.key === 'pestel') {
-            defaultOrientation = 'landscape';
-          }
           const individualOrientation = planData.config?.pageOrientations?.[mod.key];
-          const orientation = individualOrientation || defaultOrientation;
+          const orientation = individualOrientation || globalOrientation;
           const isLandscape = orientation === 'landscape';
           const pageClass = isLandscape ? 'landscape-print-page' : 'portrait-print-page';
           const pageNum = modulePageNumbers[mod.key];
@@ -2458,17 +2475,17 @@ export default function VistaPrevia() {
                 id={`seccion-${mod.key}`}
                 className={`print-page ${pageClass}`} 
                 style={{ 
-                  marginTop: paginationMode === 'continuous' ? '1.5rem' : '3rem',
+                  marginTop: paginationMode === 'continuous' ? '1rem' : '2.5rem',
                   width: '100%',
                   maxWidth: isLandscape ? '1080px' : '760px',
-                  margin: paginationMode === 'continuous' ? '0 auto 1.5rem auto' : '0 auto 2.5rem auto',
+                  margin: paginationMode === 'continuous' ? '0 auto 1rem auto' : '0 auto 2.5rem auto',
                   background: '#ffffff',
                   padding: `${printMargin}cm`,
                   borderRadius: '12px',
                   boxShadow: '0 10px 30px rgba(0, 0, 0, 0.04)',
                   border: '1px solid #e2e8f0',
                   transition: 'all 0.3s ease',
-                  pageBreakBefore: paginationMode === 'continuous' ? (isLandscape ? 'always' : 'auto') : 'always',
+                  pageBreakBefore: paginationMode === 'continuous' ? 'auto' : 'always',
                   pageBreakInside: 'avoid',
                   scrollMarginTop: '2rem'
                 }}
