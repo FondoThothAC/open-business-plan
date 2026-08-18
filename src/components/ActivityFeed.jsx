@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Activity, X, Minimize2, Maximize2, Bot, CheckCircle, AlertTriangle, XCircle, Zap, Cloud, Save } from 'lucide-react';
 import { usePlan } from '../context/PlanContext';
+import { getApiBase } from '../config/apiConfig';
 
 const TYPE_CONFIG = {
   connected: { icon: CheckCircle, color: '#10b981', label: 'Conectado' },
@@ -104,7 +105,8 @@ export default function ActivityFeed({ onOpenBob }) {
 
     const fetchHistory = async () => {
       try {
-        const res = await fetch(`http://localhost:3001/api/projects/${activeProjectType}/${activeProjectId}/logs`);
+        const apiBase = getApiBase();
+        const res = await fetch(`${apiBase}/api/projects/${activeProjectType}/${activeProjectId}/logs`);
         if (res.ok) {
           const history = await res.json();
           setLogs(history);
@@ -187,7 +189,8 @@ export default function ActivityFeed({ onOpenBob }) {
 
   // Conectar SSE al backend
   useEffect(() => {
-    const MAX_RETRIES = 3;
+    const MAX_RETRIES = 5;
+    const apiBase = getApiBase();
     
     const connect = () => {
       if (retriesRef.current >= MAX_RETRIES) {
@@ -196,7 +199,7 @@ export default function ActivityFeed({ onOpenBob }) {
       }
 
       try {
-        const es = new EventSource('http://localhost:3001/api/log/stream');
+        const es = new EventSource(`${apiBase}/api/log/stream`);
         esRef.current = es;
 
         es.onopen = () => {
@@ -236,7 +239,7 @@ export default function ActivityFeed({ onOpenBob }) {
           es.close();
           retriesRef.current++;
           if (retriesRef.current < MAX_RETRIES) {
-            setTimeout(connect, 10000);
+            setTimeout(connect, 5000);
           }
         };
       } catch {}
@@ -551,20 +554,20 @@ export default function ActivityFeed({ onOpenBob }) {
               gap: '2px',
             }}>
               {logs.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '3rem 1rem', color: '#94a3b8' }}>
-                  <Bot size={32} style={{ margin: '0 auto 0.75rem', opacity: 0.3 }} />
+                <div style={{ textAlign: 'center', padding: '2.5rem 1rem', color: '#94a3b8' }}>
+                  <Bot size={32} style={{ margin: '0 auto 0.75rem', opacity: 0.4, color: isConnected ? '#10b981' : '#6366f1' }} />
                   {isConnected ? (
-                    <p style={{ fontSize: '0.8rem' }}>
-                      Esperando actividad de IA...<br />
-                      <span style={{ fontSize: '0.7rem', opacity: 0.7 }}>
-                        Pulsa ✨ IA en cualquier módulo para empezar
+                    <p style={{ fontSize: '0.8rem', margin: 0 }}>
+                      <strong style={{ color: '#10b981' }}>Servidor Conectado en Tiempo Real</strong><br />
+                      <span style={{ fontSize: '0.72rem', opacity: 0.8 }}>
+                        Monitorizando procesos de IA (Nube y Local). Pulsa Industrializar o ✨ IA para ver la traza de ejecución.
                       </span>
                     </p>
                   ) : (
-                    <p style={{ fontSize: '0.8rem' }}>
-                      Servidor no detectado<br />
-                      <span style={{ fontSize: '0.7rem', opacity: 0.7 }}>
-                        Ejecuta <code style={{ background: 'rgba(255,255,255,0.1)', padding: '1px 4px', borderRadius: '3px' }}>bash run_mac.sh</code> en tu terminal
+                    <p style={{ fontSize: '0.8rem', margin: 0 }}>
+                      <strong style={{ color: '#38bdf8' }}>Conectando con el Servidor VPS...</strong><br />
+                      <span style={{ fontSize: '0.72rem', opacity: 0.8 }}>
+                        Sincronizando flujo de eventos SSE en segundo plano.
                       </span>
                     </p>
                   )}
