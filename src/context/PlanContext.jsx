@@ -36,11 +36,17 @@ const deepMerge = (target, source) => {
   return result;
 };
 
+// [SDD] Las API keys se leen desde variables de entorno VITE_* (definidas en .env.local)
+// .env.local NO se sube a git (ver .gitignore). Para el VPS se configura en el shell del servidor.
 const KEYS = {
-  gemini: 'AIzaSyBaAYi5LzRxxy6NnmAFPqRRXD4bhYNIn4U',
-  groq: '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',
-  denue: '1b9e230f-2ae0-48db-bd20-8810b1db575e',
-  banxico: 'da45f26edb9a72e9d18e0217de25f9d8e5c79e9a5e4c1e8b7a6d5c4b3a2'
+  gemini:      import.meta.env.VITE_GEMINI_KEY      || '',
+  groq:        import.meta.env.VITE_GROQ_KEY        || '',
+  mistral:     import.meta.env.VITE_MISTRAL_KEY     || '',
+  nvidia:      import.meta.env.VITE_NVIDIA_KEY      || '',
+  ollama:      import.meta.env.VITE_OLLAMA_KEY      || '',
+  pollinations:import.meta.env.VITE_POLLINATIONS_KEY|| '',
+  denue:       import.meta.env.VITE_DENUE_KEY       || '1b9e230f-2ae0-48db-bd20-8810b1db575e',
+  banxico:     import.meta.env.VITE_BANXICO_KEY     || '',
 };
 
 const createEmptyPlan = (projectType = 'business') => {
@@ -53,10 +59,12 @@ const createEmptyPlan = (projectType = 'business') => {
       visibility: {},
       comments: {},
       ai: {
-        primaryProvider: 'ollama', secondaryProvider: 'groq',
-        apiKey: KEYS.gemini, groqKey: KEYS.groq, nvidiaKey: '',
+        primaryProvider: 'nvidia', secondaryProvider: 'mistral',
+        apiKey: KEYS.gemini, groqKey: KEYS.groq, 
+        nvidiaKey: KEYS.nvidia, mistralKey: KEYS.mistral, ollamaKey: KEYS.ollama,
+        pollinationsKey: KEYS.pollinations,
         endpoint: 'http://localhost:11434', lmStudioEndpoint: 'http://localhost:1234/v1',
-        model: 'qwen3.5:9b',   // Modelo local principal (Ollama)
+        model: 'meta/llama-3.1-70b-instruct',   // Modelo principal activo
         depth: 1,              // 1=Rápido, 2=Pro, 3=Profundo
         contextSize: 65536,    // 64k por defecto (seguro para 8GB VRAM)
         // [DDD] Modelos por rol — sobreescriben DEFAULT_AGENT_CONFIG en ai.js
@@ -266,18 +274,21 @@ export const PlanProvider = ({ children }) => {
       if (activeId) {
         // Para evitar condiciones de carrera donde el backend pise cambios locales de localStorage síncronos
         // que aún no se han guardado con debounce, si el ID coincide con el que ya tenemos en memoria, no hacemos fetch.
-        if (planDataRef.current?.config?.projectId === activeId) {
-          console.log('El proyecto activo ya está cargado en memoria desde localStorage.');
-          return;
-        }
-
         try {
-          const response = await fetch(`http://localhost:3001/api/projects/${activeType}/${activeId}`);
+          const backendBase = (typeof window !== 'undefined' && window.location.hostname !== 'localhost') ? '' : 'http://localhost:3001';
+          const response = await fetch(`${backendBase}/api/projects/${activeType}/${activeId}`);
           if (response.ok) {
             const data = await response.json();
             const fresh = createEmptyPlan(data.config?.projectType || 'business');
             data.config = { ...data.config, projectId: activeId };
             const merged = deepMerge(fresh, data);
+            
+            // Garantizar persistencia de API Keys si el JSON remoto o local tenía strings vacíos
+            if (!merged.config.ai.nvidiaKey) merged.config.ai.nvidiaKey = KEYS.nvidia;
+            if (!merged.config.ai.mistralKey) merged.config.ai.mistralKey = KEYS.mistral;
+            if (!merged.config.ai.pollinationsKey) merged.config.ai.pollinationsKey = KEYS.pollinations;
+            if (!merged.config.ai.ollamaKey) merged.config.ai.ollamaKey = KEYS.ollama;
+
             if (!merged.config.activeMethodologies) {
               merged.config.activeMethodologies = [merged.config.projectType || 'business'];
             }
@@ -307,11 +318,12 @@ export const PlanProvider = ({ children }) => {
       localStorage.setItem('openplan_active_project_type', projectType);
     }
 
-    // Auto-save to Local Backend (Markdown & JSON)
+    // Auto-save to Backend (Local o Remoto en VPS)
     setSaveStatus('saving');
     const saveTimer = setTimeout(async () => {
       try {
-        const response = await fetch('http://localhost:3001/api/save', {
+        const backendBase = (typeof window !== 'undefined' && window.location.hostname !== 'localhost') ? '' : 'http://localhost:3001';
+        const response = await fetch(`${backendBase}/api/save`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(planData)

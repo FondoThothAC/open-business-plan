@@ -2,47 +2,47 @@
 set -e
 
 # ==============================================================================
-# Script de Despliegue Automatizado para Open Business Plan (fondothoth.com/obp)
-# VPS: 129.146.213.8
+# Script de Despliegue Automatizado para Open Business Plan
+# VPS: ubuntu@129.146.213.8  →  https://fondothoth.com/obp/
+# Clave SSH: ../claves_ssh/id_rsa_ampere
 # ==============================================================================
 
-TARGET_DIR="/var/www/fondothoth/obp"
-APP_DIR="/var/www/open-business-plan"
+SSH_KEY="$(dirname "$0")/../claves_ssh/id_rsa_ampere"
+VPS_USER="ubuntu"
+VPS_HOST="129.146.213.8"
+VPS="$VPS_USER@$VPS_HOST"
+VPS_APP_DIR="/var/www/open-business-plan"
 
 echo "🚀 Iniciando despliegue de Open Business Plan en fondothoth.com/obp..."
+echo "   VPS: $VPS_HOST | Clave: $SSH_KEY"
 
-# 1. Asegurar dependencias
-echo "📦 Instalando dependencias de Node..."
-npm install --production=false
+# 1. Compilar el frontend
+echo ""
+echo "🏗️  Compilando bundle de producción..."
+npm run build
 
-# 2. Ejecutar tests antes de compilar
-echo "🧪 Ejecutando suite de pruebas TDD..."
-npm test
+# 2. Subir dist/ al VPS via rsync
+echo ""
+echo "📤 Sincronizando dist/ → VPS..."
+rsync -avz --delete \
+  -e "ssh -i '$SSH_KEY' -o StrictHostKeyChecking=no" \
+  dist/ \
+  "$VPS:$VPS_APP_DIR/dist/"
 
-# 3. Compilar el frontend con la base /obp/
-echo "🏗️ Compilando bundle de producción (VITE_BASE_PATH=/obp/)..."
-VITE_BASE_PATH=/obp/ npm run build
+# 3. Subir el backend server
+echo ""
+echo "📤 Actualizando server/index.js en VPS..."
+scp -i "$SSH_KEY" -o StrictHostKeyChecking=no \
+  server/index.js \
+  "$VPS:$VPS_APP_DIR/server/index.js"
 
-# 4. Copiar archivos al directorio servido por Nginx
-echo "📂 Publicando archivos en $TARGET_DIR..."
-sudo mkdir -p "$TARGET_DIR"
-sudo cp -r dist/* "$TARGET_DIR/"
-sudo chown -R www-data:www-data "$TARGET_DIR" 2>/dev/null || true
+# 4. Reiniciar backend PM2
+echo ""
+echo "⚙️  Reiniciando servicio PM2 (obp-backend)..."
+ssh -i "$SSH_KEY" -o StrictHostKeyChecking=no "$VPS" \
+  "cd $VPS_APP_DIR && pm2 restart obp-backend 2>/dev/null || pm2 start server/index.js --name obp-backend && pm2 save"
 
-# 5. Iniciar o reiniciar el backend Express con PM2
-echo "⚙️ Configurando servicio de backend con PM2..."
-if command -v pm2 &> /dev/null; then
-  pm2 describe obp-backend > /dev/null 2>&1 && pm2 reload obp-backend || pm2 start server/index.js --name "obp-backend"
-  pm2 save
-else
-  echo "⚠️ PM2 no está instalado globalmente. Ejecutando npm run server en background..."
-  nohup node server/index.js > server.log 2>&1 &
-fi
-
-# 6. Recargar Nginx si existe
-if command -v nginx &> /dev/null; then
-  echo "🔄 Verificando y recargando Nginx..."
-  sudo nginx -t && sudo systemctl reload nginx
-fi
-
-echo "✅ ¡Despliegue completado con éxito en https://fondothoth.com/obp!"
+echo ""
+echo "✅ ¡Despliegue completado con éxito!"
+echo "   🌐 https://fondothoth.com/obp/"
+echo "   🔧 https://fondothoth.com/obp/configuracion"

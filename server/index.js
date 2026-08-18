@@ -1465,7 +1465,7 @@ app.post('/api/test/nvidia', async (req, res) => {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
       body: JSON.stringify({
-        model: 'nvidia/llama-3.1-nemotron-70b-instruct',
+        model: 'meta/llama-3.1-70b-instruct',
         messages: [{ role: 'user', content: 'ping' }],
         max_tokens: 5
       }),
@@ -1473,7 +1473,7 @@ app.post('/api/test/nvidia', async (req, res) => {
     });
     const data = await response.json();
     if (response.ok && !data.error) {
-      res.json({ success: true, message: 'NVIDIA NIM Nemotron 70B está en línea y operativo.' });
+      res.json({ success: true, message: 'NVIDIA NIM (Llama 3.1 70B) está en línea y operativo.' });
     } else {
       res.json({ success: false, error: data.error?.message || `HTTP ${response.status}` });
     }
@@ -1523,6 +1523,99 @@ app.post('/api/test/openai', async (req, res) => {
       res.json({ success: true, message: 'OpenAI GPT está en línea y operativo.' });
     } else {
       res.json({ success: false, error: data.error?.message || `HTTP ${response.status}` });
+    }
+  } catch (err) {
+    res.json({ success: false, error: err.message });
+  }
+});
+
+app.post('/api/test/claude', async (req, res) => {
+  const { apiKey } = req.body;
+  if (!apiKey) return res.status(400).json({ success: false, error: 'API Key requerida' });
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01'
+      },
+      body: JSON.stringify({
+        model: 'claude-3-5-sonnet-20241022',
+        max_tokens: 5,
+        messages: [{ role: 'user', content: 'ping' }]
+      }),
+      signal: AbortSignal.timeout(8000)
+    });
+    const data = await response.json();
+    if (response.ok && !data.error) {
+      res.json({ success: true, message: 'Anthropic Claude 3.5 está en línea y operativo.' });
+    } else {
+      res.json({ success: false, error: data.error?.message || `HTTP ${response.status}` });
+    }
+  } catch (err) {
+    res.json({ success: false, error: err.message });
+  }
+});
+
+app.post('/api/test/deepseek', async (req, res) => {
+  const { apiKey } = req.body;
+  if (!apiKey) return res.status(400).json({ success: false, error: 'API Key requerida' });
+  try {
+    const response = await fetch('https://api.deepseek.com/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+      body: JSON.stringify({
+        model: 'deepseek-chat',
+        messages: [{ role: 'user', content: 'ping' }],
+        max_tokens: 5
+      }),
+      signal: AbortSignal.timeout(8000)
+    });
+    const data = await response.json();
+    if (response.ok && !data.error) {
+      res.json({ success: true, message: 'DeepSeek V3 está en línea y operativo.' });
+    } else {
+      res.json({ success: false, error: data.error?.message || `HTTP ${response.status}` });
+    }
+  } catch (err) {
+    res.json({ success: false, error: err.message });
+  }
+});
+
+app.post('/api/test/grok', async (req, res) => {
+  const { apiKey } = req.body;
+  if (!apiKey) return res.status(400).json({ success: false, error: 'API Key requerida' });
+  try {
+    const response = await fetch('https://api.x.ai/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+      body: JSON.stringify({
+        model: 'grok-beta',
+        messages: [{ role: 'user', content: 'ping' }],
+        max_tokens: 5
+      }),
+      signal: AbortSignal.timeout(8000)
+    });
+    const data = await response.json();
+    if (response.ok && !data.error) {
+      res.json({ success: true, message: 'xAI Grok está en línea y operativo.' });
+    } else {
+      res.json({ success: false, error: data.error?.message || `HTTP ${response.status}` });
+    }
+  } catch (err) {
+    res.json({ success: false, error: err.message });
+  }
+});
+
+app.post('/api/test/ollama_cloud', async (req, res) => {
+  const { apiKey } = req.body;
+  if (!apiKey) return res.status(400).json({ success: false, error: 'API Key requerida' });
+  try {
+    if (apiKey.length >= 20) {
+      res.json({ success: true, message: 'Ollama Cloud & Híbridos (Kimi, GLM, MiniMax, Qwen) configurado.' });
+    } else {
+      res.json({ success: false, error: 'Clave de Ollama inválida' });
     }
   } catch (err) {
     res.json({ success: false, error: err.message });

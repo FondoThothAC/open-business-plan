@@ -510,16 +510,30 @@ export default function ActivityFeed({ onOpenBob }) {
                 </span>
               )}
             </div>
-            <div style={{ display: 'flex', gap: '0.25rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  const textLogs = logs.map(l => `[${l.time || ''}] [${l.type || 'INFO'}] ${l.module ? `[${l.module}] ` : ''}${l.message || ''}`).join('\n');
+                  navigator.clipboard.writeText(textLogs);
+                  alert('¡Historial de logs copiado al portapapeles!');
+                }}
+                title="Copiar todo el historial"
+                style={{ background: 'rgba(255,255,255,0.08)', border: 'none', borderRadius: '4px', cursor: 'pointer', color: '#94a3b8', fontSize: '0.65rem', padding: '2px 6px', fontWeight: 600 }}
+              >
+                Copiar
+              </button>
               <button
                 onClick={e => { e.stopPropagation(); setIsMinimized(m => !m); }}
                 style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#94a3b8', padding: '4px' }}
+                title={isMinimized ? "Maximizar" : "Minimizar"}
               >
                 {isMinimized ? <Maximize2 size={13} /> : <Minimize2 size={13} />}
               </button>
               <button
                 onClick={e => { e.stopPropagation(); setIsOpen(false); }}
                 style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#94a3b8', padding: '4px' }}
+                title="Cerrar"
               >
                 <X size={13} />
               </button>

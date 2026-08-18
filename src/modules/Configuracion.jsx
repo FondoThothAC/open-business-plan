@@ -96,6 +96,10 @@ function useApiStatus(planData) {
   const [nvidiaStatus, setNvidiaStatus] = useState({ state: 'idle', message: '' });
   const [geminiStatus, setGeminiStatus] = useState({ state: 'idle', message: '' });
   const [openaiStatus, setOpenaiStatus] = useState({ state: 'idle', message: '' });
+  const [claudeStatus, setClaudeStatus] = useState({ state: 'idle', message: '' });
+  const [deepseekStatus, setDeepseekStatus] = useState({ state: 'idle', message: '' });
+  const [grokStatus, setGrokStatus] = useState({ state: 'idle', message: '' });
+  const [ollamaCloudStatus, setOllamaCloudStatus] = useState({ state: 'idle', message: '' });
 
   const testLlmProvider = async (provider, apiKey, setStatus) => {
     if (!apiKey) {
@@ -104,7 +108,8 @@ function useApiStatus(planData) {
     }
     setStatus({ state: 'checking', message: 'Probando...' });
     try {
-      const res = await fetch(`http://localhost:3001/api/test/${provider}`, {
+      const backendBase = (typeof window !== 'undefined' && window.location.hostname !== 'localhost') ? '' : 'http://localhost:3001';
+      const res = await fetch(`${backendBase}/api/test/${provider}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ apiKey })
@@ -128,7 +133,8 @@ function useApiStatus(planData) {
     }
     setTavilyStatus({ state: 'checking', message: 'Probando...' });
     try {
-      const res = await fetch('http://localhost:3001/api/test/tavily', {
+      const backendBase = (typeof window !== 'undefined' && window.location.hostname !== 'localhost') ? '' : 'http://localhost:3001';
+      const res = await fetch(`${backendBase}/api/test/tavily`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ apiKey: key })
@@ -152,7 +158,8 @@ function useApiStatus(planData) {
     }
     setInegiStatus({ state: 'checking', message: 'Probando...' });
     try {
-      const res = await fetch('http://localhost:3001/api/test/inegi', {
+      const backendBase = (typeof window !== 'undefined' && window.location.hostname !== 'localhost') ? '' : 'http://localhost:3001';
+      const res = await fetch(`${backendBase}/api/test/inegi`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token })
@@ -198,9 +205,19 @@ function useApiStatus(planData) {
     if (planData?.config?.externalApis?.banxicoToken) testBanxico(planData.config.externalApis.banxicoToken);
     if (planData?.config?.ai?.groqKey) testLlmProvider('groq', planData.config.ai.groqKey, setGroqStatus);
     if (planData?.config?.ai?.nvidiaKey) testLlmProvider('nvidia', planData.config.ai.nvidiaKey, setNvidiaStatus);
-    if (planData?.config?.ai?.primaryProvider === 'gemini' && planData?.config?.ai?.apiKey) testLlmProvider('gemini', planData.config.ai.apiKey, setGeminiStatus);
-    if (planData?.config?.ai?.primaryProvider === 'mistral' && planData?.config?.ai?.apiKey) testLlmProvider('mistral', planData.config.ai.apiKey, setMistralStatus);
-    if (planData?.config?.ai?.primaryProvider === 'openai' && planData?.config?.ai?.apiKey) testLlmProvider('openai', planData.config.ai.apiKey, setOpenaiStatus);
+    if (planData?.config?.ai?.mistralKey || (planData?.config?.ai?.primaryProvider === 'mistral' && planData?.config?.ai?.apiKey)) {
+      testLlmProvider('mistral', planData.config.ai.mistralKey || planData.config.ai.apiKey, setMistralStatus);
+    }
+    if (planData?.config?.ai?.apiKey && planData?.config?.ai?.primaryProvider === 'gemini') {
+      testLlmProvider('gemini', planData.config.ai.apiKey, setGeminiStatus);
+    }
+    if (planData?.config?.ai?.openaiKey || (planData?.config?.ai?.primaryProvider === 'openai' && planData?.config?.ai?.apiKey)) {
+      testLlmProvider('openai', planData.config.ai.openaiKey || planData.config.ai.apiKey, setOpenaiStatus);
+    }
+    if (planData?.config?.ai?.claudeKey) testLlmProvider('claude', planData.config.ai.claudeKey, setClaudeStatus);
+    if (planData?.config?.ai?.deepseekKey) testLlmProvider('deepseek', planData.config.ai.deepseekKey, setDeepseekStatus);
+    if (planData?.config?.ai?.grokKey) testLlmProvider('grok', planData.config.ai.grokKey, setGrokStatus);
+    if (planData?.config?.ai?.ollamaKey) testLlmProvider('ollama_cloud', planData.config.ai.ollamaKey, setOllamaCloudStatus);
   }, []);
 
   return {
@@ -208,10 +225,14 @@ function useApiStatus(planData) {
     inegiStatus, setInegiStatus, testInegi,
     banxicoStatus, setBanxicoStatus, testBanxico,
     groqStatus, setGroqStatus, testGroq: (k) => testLlmProvider('groq', k || planData.config?.ai?.groqKey, setGroqStatus),
-    mistralStatus, setMistralStatus, testMistral: (k) => testLlmProvider('mistral', k || planData.config?.ai?.apiKey, setMistralStatus),
+    mistralStatus, setMistralStatus, testMistral: (k) => testLlmProvider('mistral', k || planData.config?.ai?.mistralKey || planData.config?.ai?.apiKey, setMistralStatus),
     nvidiaStatus, setNvidiaStatus, testNvidia: (k) => testLlmProvider('nvidia', k || planData.config?.ai?.nvidiaKey, setNvidiaStatus),
     geminiStatus, setGeminiStatus, testGemini: (k) => testLlmProvider('gemini', k || planData.config?.ai?.apiKey, setGeminiStatus),
-    openaiStatus, setOpenaiStatus, testOpenai: (k) => testLlmProvider('openai', k || planData.config?.ai?.apiKey, setOpenaiStatus),
+    openaiStatus, setOpenaiStatus, testOpenai: (k) => testLlmProvider('openai', k || planData.config?.ai?.openaiKey || planData.config?.ai?.apiKey, setOpenaiStatus),
+    claudeStatus, setClaudeStatus, testClaude: (k) => testLlmProvider('claude', k || planData.config?.ai?.claudeKey, setClaudeStatus),
+    deepseekStatus, setDeepseekStatus, testDeepseek: (k) => testLlmProvider('deepseek', k || planData.config?.ai?.deepseekKey, setDeepseekStatus),
+    grokStatus, setGrokStatus, testGrok: (k) => testLlmProvider('grok', k || planData.config?.ai?.grokKey, setGrokStatus),
+    ollamaCloudStatus, setOllamaCloudStatus, testOllamaCloud: (k) => testLlmProvider('ollama_cloud', k || planData.config?.ai?.ollamaKey, setOllamaCloudStatus),
   };
 }
 
@@ -952,6 +973,138 @@ export default function Configuracion() {
                     Refrescar
                   </button>
                 </div>
+              </div>
+
+            </div>
+          </div>
+
+          {/* FILA 2: Modelos Comerciales, Cloud & Híbridos */}
+          <div style={{ marginBottom: '1.5rem', paddingTop: '1.25rem', borderTop: '1px solid var(--border-color)' }}>
+            <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#38bdf8', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <span>💎 FILA 2: Modelos Comerciales, Cloud Global & Híbridos</span>
+              <span style={{ fontSize: '0.65rem', background: 'rgba(56, 189, 248, 0.1)', padding: '2px 8px', borderRadius: '10px', color: '#38bdf8' }}>Gemini, Claude, GPT, DeepSeek, Grok, Ollama Cloud (Kimi, GLM, MiniMax, Qwen)</span>
+            </div>
+            
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
+              
+              {/* GOOGLE GEMINI */}
+              <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: `1.5px solid ${planData.config.ai.primaryProvider === 'gemini' ? '#38bdf8' : 'var(--border-color)'}` }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                  <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#38bdf8' }}>🌐 Google Gemini (Flash / Pro)</div>
+                  <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: '#38bdf8', textDecoration: 'none', fontWeight: 700 }}>
+                    Obtener Key ↗
+                  </a>
+                </div>
+                <input 
+                  type="password" 
+                  className="form-control" 
+                  placeholder="AIzaSy..."
+                  value={planData.config.ai.primaryProvider === 'gemini' ? (planData.config.ai.apiKey || '') : (planData.config.ai.geminiKey || '')}
+                  onChange={(e) => {
+                    handleAiChange('geminiKey', e.target.value);
+                    if (planData.config.ai.primaryProvider === 'gemini') handleAiChange('apiKey', e.target.value);
+                  }}
+                  style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
+                />
+                <ApiStatusBadge status={geminiStatus} onTest={() => testGemini(planData.config.ai.geminiKey || planData.config.ai.apiKey)} disabled={!planData.config.ai.geminiKey && !planData.config.ai.apiKey} />
+              </div>
+
+              {/* ANTHROPIC CLAUDE */}
+              <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: `1.5px solid ${planData.config.ai.primaryProvider === 'claude' ? '#d97706' : 'var(--border-color)'}` }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                  <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#d97706' }}>🧠 Claude 3.5 Sonnet</div>
+                  <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: '#d97706', textDecoration: 'none', fontWeight: 700 }}>
+                    Obtener Key ↗
+                  </a>
+                </div>
+                <input 
+                  type="password" 
+                  className="form-control" 
+                  placeholder="sk-ant-..."
+                  value={planData.config.ai.claudeKey || ''}
+                  onChange={(e) => handleAiChange('claudeKey', e.target.value)}
+                  style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
+                />
+                <ApiStatusBadge status={claudeStatus} onTest={() => testClaude(planData.config.ai.claudeKey)} disabled={!planData.config.ai.claudeKey} />
+              </div>
+
+              {/* OPENAI GPT */}
+              <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: `1.5px solid ${planData.config.ai.primaryProvider === 'openai' ? '#10b981' : 'var(--border-color)'}` }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                  <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#10b981' }}>🟢 OpenAI (GPT-4o)</div>
+                  <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: '#10b981', textDecoration: 'none', fontWeight: 700 }}>
+                    Obtener Key ↗
+                  </a>
+                </div>
+                <input 
+                  type="password" 
+                  className="form-control" 
+                  placeholder="sk-proj-..."
+                  value={planData.config.ai.openaiKey || (planData.config.ai.primaryProvider === 'openai' ? planData.config.ai.apiKey : '')}
+                  onChange={(e) => {
+                    handleAiChange('openaiKey', e.target.value);
+                    if (planData.config.ai.primaryProvider === 'openai') handleAiChange('apiKey', e.target.value);
+                  }}
+                  style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
+                />
+                <ApiStatusBadge status={openaiStatus} onTest={() => testOpenai(planData.config.ai.openaiKey || planData.config.ai.apiKey)} disabled={!planData.config.ai.openaiKey && !planData.config.ai.apiKey} />
+              </div>
+
+              {/* OLLAMA CLOUD & HÍBRIDOS (Kimi, GLM, MiniMax, Qwen) */}
+              <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: '1.5px solid var(--border-color)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                  <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#6366f1' }}>☁️ Ollama Cloud (Kimi, GLM, Qwen)</div>
+                  <a href="https://ollama.com/settings/keys" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: '#6366f1', textDecoration: 'none', fontWeight: 700 }}>
+                    Obtener Key ↗
+                  </a>
+                </div>
+                <input 
+                  type="password" 
+                  className="form-control" 
+                  placeholder="65b426... (Ollama Cloud Key)"
+                  value={planData.config.ai.ollamaKey || ''}
+                  onChange={(e) => handleAiChange('ollamaKey', e.target.value)}
+                  style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
+                />
+                <ApiStatusBadge status={ollamaCloudStatus} onTest={() => testOllamaCloud(planData.config.ai.ollamaKey)} disabled={!planData.config.ai.ollamaKey} />
+              </div>
+
+              {/* DEEPSEEK V3 */}
+              <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: '1.5px solid var(--border-color)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                  <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#3b82f6' }}>🐋 DeepSeek V3 / R1</div>
+                  <a href="https://platform.deepseek.com" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: '#3b82f6', textDecoration: 'none', fontWeight: 700 }}>
+                    Obtener Key ↗
+                  </a>
+                </div>
+                <input 
+                  type="password" 
+                  className="form-control" 
+                  placeholder="sk-..."
+                  value={planData.config.ai.deepseekKey || ''}
+                  onChange={(e) => handleAiChange('deepseekKey', e.target.value)}
+                  style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
+                />
+                <ApiStatusBadge status={deepseekStatus} onTest={() => testDeepseek(planData.config.ai.deepseekKey)} disabled={!planData.config.ai.deepseekKey} />
+              </div>
+
+              {/* xAI GROK */}
+              <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: '1.5px solid var(--border-color)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                  <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#a855f7' }}>⚡ xAI Grok</div>
+                  <a href="https://console.x.ai" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: '#a855f7', textDecoration: 'none', fontWeight: 700 }}>
+                    Obtener Key ↗
+                  </a>
+                </div>
+                <input 
+                  type="password" 
+                  className="form-control" 
+                  placeholder="xai-..."
+                  value={planData.config.ai.grokKey || ''}
+                  onChange={(e) => handleAiChange('grokKey', e.target.value)}
+                  style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
+                />
+                <ApiStatusBadge status={grokStatus} onTest={() => testGrok(planData.config.ai.grokKey)} disabled={!planData.config.ai.grokKey} />
               </div>
 
             </div>

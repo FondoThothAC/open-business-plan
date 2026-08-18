@@ -88,7 +88,16 @@ export default function BobChatModal({ isOpen, onClose, planData, onExecuteComma
       }
 
       // 2. Consulta de IA conversacional con el contexto del plan
-      const aiConfig = planData?.config?.ai || { primaryProvider: 'gemini', model: 'gemini-1.5-flash' };
+      const rawAi = planData?.config?.ai || {};
+      const aiConfig = {
+        provider: rawAi.primaryProvider || rawAi.provider || (rawAi.nvidiaKey ? 'nvidia' : rawAi.mistralKey ? 'mistral' : rawAi.apiKey ? 'gemini' : 'groq'),
+        model: rawAi.model || 'meta/llama-3.1-70b-instruct',
+        apiKey: rawAi.mistralKey || rawAi.apiKey,
+        nvidiaKey: rawAi.nvidiaKey,
+        groqKey: rawAi.groqKey,
+        endpoint: rawAi.endpoint
+      };
+      
       const systemPrompt = `Eres BOB, el asistente de negocios ejecutivo de CELIS ENGINE para el proyecto "${planData?.config?.brandKit?.companyName || 'Plan de Negocios'}".
 Responde en español de forma concisa, profesional y directa en 2-3 párrafos máximo.`;
 

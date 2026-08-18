@@ -1079,8 +1079,55 @@ export const PrintableFinancialReports = ({ projections, staff = [] }) => {
     gap: '0.5rem',
   };
 
+  const exportToCSV = () => {
+    let csvContent = 'data:text/csv;charset=utf-8,';
+    csvContent += 'ESTADO DE RESULTADOS PRO-FORMA\n';
+    csvContent += 'Año,Ventas,Costos Fijos,Costos Variables,Costos Totales,Utilidad Bruta,Depreciacion,Gastos Financieros,UAI,Impuestos,Utilidad Neta\n';
+    annualIncomeData.forEach(row => {
+      csvContent += `${row.year},${row.sales || 0},${row.fixedCosts || 0},${row.variableCosts || 0},${row.totalCosts || 0},${row.grossProfit || 0},${row.annualDepreciation || 0},${row.annualInterest || 0},${row.ebt || 0},${row.taxes || 0},${row.netIncome || 0}\n`;
+    });
+
+    csvContent += '\nFLUJO DE EFECTIVO PRO-FORMA\n';
+    csvContent += 'Año,Utilidad Neta,Depreciacion,Amortizacion Principal,Valor Rescate,Flujo Neto,Flujo Acumulado\n';
+    cashflowAnnual.forEach(row => {
+      csvContent += `${row.year},${row.netIncome || 0},${row.annualDepreciation || 0},${row.annualPrincipalRepayment || 0},${row.salvageValue || 0},${row.netCashFlow || 0},${row.cumulativeCashFlow || 0}\n`;
+    });
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `proyecciones_financieras_${Date.now()}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
+      
+      {/* Barra de Acciones Financieras */}
+      <div className="no-print" style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginBottom: '1rem' }}>
+        <button
+          type="button"
+          onClick={exportToCSV}
+          className="btn btn-secondary"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            padding: '0.5rem 1rem',
+            fontSize: '0.8rem',
+            fontWeight: 700,
+            background: '#ffffff',
+            border: '1px solid #cbd5e1',
+            borderRadius: '8px',
+            color: '#0f172a',
+            cursor: 'pointer'
+          }}
+        >
+          <span>📥 Exportar Tablas Financieras a CSV (Excel)</span>
+        </button>
+      </div>
 
       {/* ── Proyección de Flujo de Caja (Gráfica) ── */}
       <div style={{ ...sectionStyle, pageBreakBefore: 'avoid' }}>

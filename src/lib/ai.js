@@ -565,15 +565,15 @@ ${fieldsPromptContext}
     }
   }
 
-  // Paso 2.5: Si local falló pero tenemos nvidiaKey, cambiar a NVIDIA NIM con Nemotron en la nube
+  // Paso 2.5: Fallback a NVIDIA NIM (Llama 3.1 70B)
   if (nvidiaKey) {
     try {
-      await termLog('warning', `Modelos locales no disponibles. Iniciando fallback automático a NVIDIA NIM (Nemotron 70B)...`, 'nvidia');
+      await termLog('warning', `Iniciando fallback automático a NVIDIA NIM (Llama 3.1 70B)...`, 'nvidia');
       const nvidiaFallbackConfig = {
         provider: 'nvidia',
         nvidiaKey,
         apiKey,
-        model: 'nvidia/llama-3.1-nemotron-70b-instruct',
+        model: 'meta/llama-3.1-70b-instruct',
         endpoint
       };
       return await runChain(nvidiaFallbackConfig);
@@ -582,7 +582,24 @@ ${fieldsPromptContext}
     }
   }
 
-  // Paso 2.6: Si tenemos groqKey, cambiar a Groq Llama 3.3 70B
+  // Paso 2.6: Fallback a Mistral AI
+  const mistralKey = allPlanData.config?.ai?.mistralKey || (apiKey && apiKey.length === 32 ? apiKey : null);
+  if (mistralKey) {
+    try {
+      await termLog('warning', `Iniciando fallback automático a Mistral AI (Large)...`, 'mistral');
+      const mistralFallbackConfig = {
+        provider: 'mistral',
+        apiKey: mistralKey,
+        model: 'mistral-large-latest',
+        endpoint
+      };
+      return await runChain(mistralFallbackConfig);
+    } catch (mistralError) {
+      await termLog('error', `Fallback a Mistral falló: ${mistralError.message.substring(0, 50)}`, 'mistral');
+    }
+  }
+
+  // Paso 2.7: Si tenemos groqKey, cambiar a Groq Llama 3.3 70B
   if (groqKey) {
     try {
       await termLog('warning', `Iniciando fallback automático a la nube con Groq (Llama 3.3 70B)...`, 'groq');
@@ -599,7 +616,7 @@ ${fieldsPromptContext}
     }
   }
 
-  // Paso 2.7: Si tenemos apiKey (Google Gemini / OpenAI)
+  // Paso 2.8: Si tenemos apiKey (Google Gemini / OpenAI)
   if (apiKey) {
     try {
       await termLog('warning', `Iniciando fallback automático a Google Gemini Cloud (1.5 Flash)...`, 'gemini');
@@ -617,7 +634,7 @@ ${fieldsPromptContext}
 
   // Paso 3: Si todos los locales y la nube fallan, indicar necesidad de iniciar Ollama o configurar una API key
   await termLog('error', 'Todos los modelos locales (Ollama) y fallbacks de nube configurados fallaron o no están disponibles.', 'system');
-  throw new Error('Generación abortada: Modelos locales y de respaldo no disponibles. Inicia Ollama o configura una API Key de respaldo (Gemini, Groq o NVIDIA).');
+  throw new Error('Generación abortada: Modelos locales y de respaldo no disponibles. Revisa tus API Keys configuradas de NVIDIA, Mistral o Groq.');
 }
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -820,7 +837,7 @@ async function callNvidia(apiKey, model, prompt) {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
     body: JSON.stringify({
-      model: model || 'nvidia/llama-3.1-nemotron-70b-instruct',
+      model: model && !model.includes('nemotron-70b-instruct') ? model : 'meta/llama-3.1-70b-instruct',
       messages: [{ role: 'user', content: prompt }],
       temperature: 0.7,
       max_tokens: 4096

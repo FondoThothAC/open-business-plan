@@ -23,3 +23,5 @@ proyectos/pdfs/
 *.pdf
 medscribe_logo_*.png
 
+.env.local
+.env*.local
