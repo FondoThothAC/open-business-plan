@@ -44,8 +44,10 @@ const PROVIDER_PRESETS = {
     { value: 'google/gemma-2-27b-it', label: 'NVIDIA NIM: Gemma 2 27B' },
   ],
   groq: [
+    { value: 'openai/gpt-oss-120b', label: 'Groq: GPT-OSS 120B (Ultra Potente)' },
+    { value: 'qwen/qwen3.6-27b', label: 'Groq: Qwen 3.6 27B' },
+    { value: 'groq/compound-mini', label: 'Groq: Compound Mini (Rápido)' },
     { value: 'llama-3.3-70b-versatile', label: 'Groq: Llama 3.3 70B' },
-    { value: 'gemma2-9b-it', label: 'Groq: Gemma 2 9B' },
     { value: 'llama-3.1-8b-instant', label: 'Groq: Llama 3.1 8B' },
   ],
   gemini: [
@@ -886,42 +888,87 @@ export default function Configuracion() {
               </div>
             </div>
             
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-              <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-secondary)' }}>PROVEEDOR ACTIVO:</span>
-              <select 
-                className="form-control" 
-                value={planData.config.ai.primaryProvider}
-                onChange={(e) => handleAiChange('primaryProvider', e.target.value)}
-                style={{ minWidth: '220px', fontWeight: 700, color: 'var(--accent-color)', borderColor: 'var(--accent-color)' }}
-              >
-                <optgroup label="⚡ Nube de Ultra-Velocidad & Local Gratis">
-                  <option value="groq">Groq (Llama 3.3 70B — 280 tok/s)</option>
-                  <option value="nvidia">NVIDIA NIM (Nemotron 70B)</option>
-                  <option value="mistral">Mistral AI (Mistral Large)</option>
-                  <option value="ollama">Ollama Local (Sin costo / Privado)</option>
-                  <option value="lmstudio">LM Studio Local</option>
-                </optgroup>
-                <optgroup label="💎 Modelos Comerciales Cloud">
-                  <option value="gemini">Google Gemini (1.5 Flash / Pro)</option>
-                  <option value="openai">OpenAI (GPT-4o / GPT-4o-mini)</option>
-                </optgroup>
-              </select>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-secondary)' }}>PROVEEDOR ACTIVO:</span>
+                <select 
+                  className="form-control" 
+                  value={planData.config.ai.primaryProvider}
+                  onChange={(e) => {
+                    const newProv = e.target.value;
+                    handleAiChange('primaryProvider', newProv);
+
+                    // Sincronizar modelo activo por defecto y agentes online si se pasa a la nube
+                    const cloudDefaults = {
+                      groq: 'llama-3.3-70b-versatile',
+                      nvidia: 'meta/llama-3.1-70b-instruct',
+                      mistral: 'mistral-large-latest',
+                      gemini: 'gemini-1.5-flash',
+                      openai: 'gpt-4o',
+                      ollama: 'llama-3.3-70b-versatile'
+                    };
+                    const targetModel = cloudDefaults[newProv] || 'llama-3.3-70b-versatile';
+                    handleAiChange('model', targetModel);
+
+                    // Actualizar modelos de agentes de la Mesa de Expertos
+                    const currentAgents = planData.config?.ai?.agentModels || {};
+                    const updatedAgents = {};
+                    Object.keys(currentAgents).forEach(roleKey => {
+                      updatedAgents[roleKey] = {
+                        ...currentAgents[roleKey],
+                        model: targetModel
+                      };
+                    });
+                    handleAiChange('agentModels', updatedAgents);
+                  }}
+                  style={{ minWidth: '220px', fontWeight: 700, color: 'var(--accent-color)', borderColor: 'var(--accent-color)' }}
+                >
+                  <optgroup label="⚡ Nube de Ultra-Velocidad & Open Models">
+                    <option value="groq">⚡ Groq (Llama 3.3 70B / 8B)</option>
+                    <option value="nvidia">🟢 NVIDIA NIM (Nemotron / Llama 70B)</option>
+                    <option value="mistral">🔥 Mistral AI (Mistral Large)</option>
+                  </optgroup>
+                  <optgroup label="💎 Modelos Comerciales Cloud">
+                    <option value="gemini">🌐 Google Gemini (1.5 Flash / Pro)</option>
+                    <option value="openai">🟢 OpenAI (GPT-4o / Mini)</option>
+                  </optgroup>
+                  <optgroup label="💻 Local Offline">
+                    <option value="ollama">💻 Ollama Local (Offline)</option>
+                  </optgroup>
+                </select>
+              </div>
+
+              {/* Selector dinámico de modelo activo */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-secondary)' }}>MODELO:</span>
+                <select
+                  className="form-control"
+                  value={planData.config.ai.model || ''}
+                  onChange={(e) => handleAiChange('model', e.target.value)}
+                  style={{ minWidth: '200px', fontSize: '0.8rem', fontWeight: 600 }}
+                >
+                  {providerOptions.map(opt => (
+                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                  ))}
+                  {isCustomModel && <option value={currentModelValue}>{currentModelValue}</option>}
+                </select>
+              </div>
             </div>
           </div>
 
-          {/* FILA 1: Modelos de Ultra-Velocidad, Abiertos y Locales */}
+          {/* FILA 1: Modelos de Ultra-Velocidad & Cloud Gratuito */}
           <div style={{ marginBottom: '1.5rem' }}>
             <div style={{ fontSize: '0.8rem', fontWeight: 800, color: 'var(--accent-color)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <span>⚡ FILA 1: Ultra-Alta Velocidad, Open Models & IA Local</span>
+              <span>⚡ FILA 1: Ultra-Alta Velocidad & Modelos Online Gratis</span>
               <span style={{ fontSize: '0.65rem', background: 'rgba(99, 102, 241, 0.1)', padding: '2px 8px', borderRadius: '10px', color: 'var(--accent-color)' }}>Recomendado para Industrialización</span>
             </div>
             
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
               
               {/* GROQ CARD */}
               <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: `1.5px solid ${planData.config.ai.primaryProvider === 'groq' ? 'var(--accent-color)' : 'var(--border-color)'}` }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                  <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#f59e0b' }}>⚡ Groq (Llama 3.3 70B)</div>
+                  <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#f59e0b' }}>⚡ Groq (Llama 3.3 70B & 8B)</div>
                   <a href="https://console.groq.com/keys" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: 'var(--accent-color)', textDecoration: 'none', fontWeight: 700 }}>
                     Obtener Key ↗
                   </a>
@@ -968,49 +1015,42 @@ export default function Configuracion() {
                   type="password" 
                   className="form-control" 
                   placeholder="Mistral API Key..."
-                  value={planData.config.ai.primaryProvider === 'mistral' ? (planData.config.ai.apiKey || '') : ''}
+                  value={planData.config.ai.mistralKey || planData.config.ai.apiKey || ''}
                   onChange={(e) => {
-                    handleAiChange('apiKey', e.target.value);
+                    handleAiChange('mistralKey', e.target.value);
+                    if (planData.config.ai.primaryProvider === 'mistral') handleAiChange('apiKey', e.target.value);
                   }}
                   style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
                 />
-                <ApiStatusBadge status={mistralStatus} onTest={() => testMistral(planData.config.ai.apiKey)} disabled={!planData.config.ai.apiKey} />
+                <ApiStatusBadge status={mistralStatus} onTest={() => testMistral(planData.config.ai.mistralKey || planData.config.ai.apiKey)} disabled={!planData.config.ai.mistralKey && !planData.config.ai.apiKey} />
               </div>
 
-              {/* OLLAMA LOCAL CARD */}
-              <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: `1.5px solid ${planData.config.ai.primaryProvider === 'ollama' ? 'var(--accent-color)' : 'var(--border-color)'}` }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                  <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#818cf8' }}>💻 Ollama Local (Offline)</div>
-                  <a href="https://ollama.com/download" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: 'var(--accent-color)', textDecoration: 'none', fontWeight: 700 }}>
-                    Descargar ↗
-                  </a>
+              {/* OLLAMA CLOUD FREE (Kimi k2.6, MiniMax, Nemotron, Qwen) */}
+              <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: '1.5px solid rgba(99,102,241,0.4)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
+                  <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#6366f1' }}>☁️ Ollama Cloud <span style={{ fontSize: '0.65rem', background: 'rgba(16,185,129,0.15)', color: '#10b981', padding: '1px 6px', borderRadius: '8px', marginLeft: '4px' }}>GRATIS</span></div>
+                  <a href="https://ollama.com/settings/keys" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: '#6366f1', textDecoration: 'none', fontWeight: 700 }}>Obtener Key ↗</a>
                 </div>
+                <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>Kimi k2.6 · MiniMax M3 · Nemotron Super · Gemma4 · Qwen3.5</div>
                 <input 
-                  type="text" 
+                  type="password" 
                   className="form-control" 
-                  placeholder="http://localhost:11434"
-                  value={planData.config.ai.endpoint || 'http://localhost:11434'}
-                  onChange={(e) => handleAiChange('endpoint', e.target.value)}
+                  placeholder="65b426... (Ollama Cloud Key)"
+                  value={planData.config.ai.ollamaKey || ''}
+                  onChange={(e) => handleAiChange('ollamaKey', e.target.value)}
                   style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
                 />
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.4rem' }}>
-                  <span style={{ fontSize: '0.75rem', fontWeight: 700, color: ollamaOnline ? '#10b981' : '#ef4444' }}>
-                    {ollamaOnline ? `En línea (${ollamaModels.length} modelos) ✓` : 'Ollama Apagado'}
-                  </span>
-                  <button type="button" onClick={fetchOllamaModels} className="btn btn-secondary" style={{ padding: '2px 8px', fontSize: '0.7rem' }}>
-                    Refrescar
-                  </button>
-                </div>
+                <ApiStatusBadge status={ollamaCloudStatus} onTest={() => testOllamaCloud(planData.config.ai.ollamaKey)} disabled={!planData.config.ai.ollamaKey} />
               </div>
 
             </div>
           </div>
 
-          {/* FILA 2: Modelos Comerciales, Cloud & Híbridos */}
+          {/* FILA 2: Modelos Comerciales, Cloud Global & Local Offline */}
           <div style={{ marginBottom: '1.5rem', paddingTop: '1.25rem', borderTop: '1px solid var(--border-color)' }}>
             <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#38bdf8', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <span>💎 FILA 2: Modelos Comerciales, Cloud Global & Híbridos</span>
-              <span style={{ fontSize: '0.65rem', background: 'rgba(56, 189, 248, 0.1)', padding: '2px 8px', borderRadius: '10px', color: '#38bdf8' }}>Gemini, Claude, GPT, DeepSeek, Grok, Ollama Cloud (Kimi, GLM, MiniMax, Qwen)</span>
+              <span>💎 FILA 2: Modelos Comerciales, Premium & Local Offline</span>
+              <span style={{ fontSize: '0.65rem', background: 'rgba(56, 189, 248, 0.1)', padding: '2px 8px', borderRadius: '10px', color: '#38bdf8' }}>Gemini, Claude, GPT, DeepSeek, Grok, Ollama Local</span>
             </div>
             
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
@@ -1078,22 +1118,30 @@ export default function Configuracion() {
                 <ApiStatusBadge status={openaiStatus} onTest={() => testOpenai(planData.config.ai.openaiKey || planData.config.ai.apiKey)} disabled={!planData.config.ai.openaiKey && !planData.config.ai.apiKey} />
               </div>
 
-              {/* OLLAMA CLOUD FREE (Kimi k2.6, MiniMax, Nemotron) */}
-              <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: '1.5px solid rgba(99,102,241,0.4)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
-                  <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#6366f1' }}>☁️ Ollama Cloud <span style={{ fontSize: '0.65rem', background: 'rgba(16,185,129,0.15)', color: '#10b981', padding: '1px 6px', borderRadius: '8px', marginLeft: '4px' }}>GRATIS</span></div>
-                  <a href="https://ollama.com/settings/keys" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: '#6366f1', textDecoration: 'none', fontWeight: 700 }}>Obtener Key ↗</a>
+              {/* OLLAMA LOCAL CARD */}
+              <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: `1.5px solid ${planData.config.ai.primaryProvider === 'ollama' ? 'var(--accent-color)' : 'var(--border-color)'}` }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                  <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#818cf8' }}>💻 Ollama Local (Offline)</div>
+                  <a href="https://ollama.com/download" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: 'var(--accent-color)', textDecoration: 'none', fontWeight: 700 }}>
+                    Descargar ↗
+                  </a>
                 </div>
-                <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>Kimi k2.6 · MiniMax M3 · Nemotron Super · Gemma4 · Qwen3.5</div>
                 <input 
-                  type="password" 
+                  type="text" 
                   className="form-control" 
-                  placeholder="65b426... (Ollama Cloud Key)"
-                  value={planData.config.ai.ollamaKey || ''}
-                  onChange={(e) => handleAiChange('ollamaKey', e.target.value)}
+                  placeholder="http://localhost:11434"
+                  value={planData.config.ai.endpoint || 'http://localhost:11434'}
+                  onChange={(e) => handleAiChange('endpoint', e.target.value)}
                   style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
                 />
-                <ApiStatusBadge status={ollamaCloudStatus} onTest={() => testOllamaCloud(planData.config.ai.ollamaKey)} disabled={!planData.config.ai.ollamaKey} />
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.4rem' }}>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 700, color: ollamaOnline ? '#10b981' : '#9ca3af' }}>
+                    {ollamaOnline ? `En línea (${ollamaModels.length} modelos) ✓` : 'Sin servidor local (Opcional)'}
+                  </span>
+                  <button type="button" onClick={fetchOllamaModels} className="btn btn-secondary" style={{ padding: '2px 8px', fontSize: '0.7rem' }}>
+                    Refrescar
+                  </button>
+                </div>
               </div>
 
               {/* OLLAMA CLOUD PREMIUM (GLM 5.1, Qwen3.5 72B) */}

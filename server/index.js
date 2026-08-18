@@ -1410,26 +1410,31 @@ app.post('/api/test/inegi', async (req, res) => {
 app.post('/api/test/groq', async (req, res) => {
   const { apiKey } = req.body;
   if (!apiKey) return res.status(400).json({ success: false, error: 'API Key requerida' });
-  try {
-    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-      body: JSON.stringify({
-        model: 'llama-3.3-70b-versatile',
-        messages: [{ role: 'user', content: 'ping' }],
-        max_tokens: 5
-      }),
-      signal: AbortSignal.timeout(8000)
-    });
-    const data = await response.json();
-    if (response.ok && !data.error) {
-      res.json({ success: true, message: 'Groq Llama 3.3 está en línea y operativo.' });
-    } else {
-      res.json({ success: false, error: data.error?.message || `HTTP ${response.status}` });
+  
+  const testModels = ['groq/compound-mini', 'qwen/qwen3.6-27b', 'openai/gpt-oss-120b', 'llama-3.3-70b-versatile', 'llama-3.1-8b-instant'];
+  
+  for (const model of testModels) {
+    try {
+      const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+        body: JSON.stringify({
+          model,
+          messages: [{ role: 'user', content: 'ping' }],
+          max_tokens: 5
+        }),
+        signal: AbortSignal.timeout(8000)
+      });
+      const data = await response.json();
+      if (response.ok && !data.error) {
+        return res.json({ success: true, message: `Groq está en línea (${model}) ✓` });
+      }
+    } catch (err) {
+      // Continuar al siguiente modelo
     }
-  } catch (err) {
-    res.json({ success: false, error: err.message });
   }
+
+  res.json({ success: false, error: 'No se pudo conectar con los modelos de Groq.' });
 });
 
 app.post('/api/test/mistral', async (req, res) => {

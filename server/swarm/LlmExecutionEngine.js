@@ -21,10 +21,9 @@ export class LlmExecutionEngine {
    * @param {Function} [params.onThought] - Callback de streaming de CoT / pensamiento.
    * @returns {Promise<Object>} Resultado generado y estructurado
    */
-  async executeAgentPrompt({ systemPrompt, userPrompt, tools = [], onThought = () => {} }) {
+  async executeAgentPrompt({ systemPrompt, userPrompt, tools = [], aiConfig = {}, onThought = () => {} }) {
     onThought('Iniciando ciclo de razonamiento analítico y análisis de contexto...');
 
-    // Si se requieren herramientas, simular/ejecutar llamada a herramientas
     if (tools.includes('denue_search') || tools.includes('market_search')) {
       onThought('Ejecutando herramienta de consulta de mercado y códigos de actividad industrial...');
     }
@@ -37,18 +36,81 @@ export class LlmExecutionEngine {
       onThought('Evaluando salud del átomo de 3 áreas (Finanzas, Operaciones, Administración)...');
     }
 
-    // Intentar llamada a Ollama local si está disponible
-    try {
-      const ollamaRes = await this.tryOllama(systemPrompt, userPrompt);
-      if (ollamaRes) {
-        onThought('Respuesta sintetizada exitosamente con motor Local-First (Ollama).');
-        return ollamaRes;
+    // 1. Intentar proveedor configurado por el usuario (Nube o Local)
+    const provider = aiConfig.primaryProvider || aiConfig.provider || 'groq';
+    
+    // Groq Cloud (Ultra rápido)
+    if (aiConfig.groqKey || (provider === 'groq' && process.env.VITE_GROQ_KEY)) {
+      try {
+        const groqKey = aiConfig.groqKey || process.env.VITE_GROQ_KEY;
+        const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${groqKey}` },
+          body: JSON.stringify({
+            model: aiConfig.model || 'llama-3.3-70b-versatile',
+            messages: [
+              { role: 'system', content: systemPrompt },
+              { role: 'user', content: userPrompt }
+            ],
+            temperature: 0.7
+          }),
+          signal: AbortSignal.timeout(15000)
+        });
+        const data = await res.json();
+        if (data.choices?.[0]?.message?.content) {
+          onThought('Análisis completado exitosamente con Groq Llama 3.3 70B.');
+          return {
+            status: 'success',
+            providerUsed: 'groq',
+            generatedText: data.choices[0].message.content,
+            timestamp: new Date().toISOString()
+          };
+        }
+      } catch (e) {
+        console.warn('[LlmExecutionEngine] Groq falló, intentando siguiente fallback:', e.message);
       }
-    } catch {
-      // Continuar con fallback
     }
 
-    // Fallback estructurado de alta fidelidad
+    // NVIDIA NIM Cloud
+    if (aiConfig.nvidiaKey) {
+      try {
+        const res = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${aiConfig.nvidiaKey}` },
+          body: JSON.stringify({
+            model: 'meta/llama-3.1-70b-instruct',
+            messages: [
+              { role: 'system', content: systemPrompt },
+              { role: 'user', content: userPrompt }
+            ]
+          }),
+          signal: AbortSignal.timeout(15000)
+        });
+        const data = await res.json();
+        if (data.choices?.[0]?.message?.content) {
+          onThought('Análisis completado exitosamente con NVIDIA NIM.');
+          return {
+            status: 'success',
+            providerUsed: 'nvidia',
+            generatedText: data.choices[0].message.content,
+            timestamp: new Date().toISOString()
+          };
+        }
+      } catch (e) {
+        console.warn('[LlmExecutionEngine] NVIDIA falló:', e.message);
+      }
+    }
+
+    // Intentar llamada a Ollama local si está disponible (con timeout corto de 800ms)
+    try {
+      const ollamaRes = await this.tryOllama(systemPrompt, userPrompt, aiConfig.endpoint);
+      if (ollamaRes) {
+        onThought('Respuesta sintetizada exitosamente con motor Local (Ollama).');
+        return ollamaRes;
+      }
+    } catch {}
+
+    // Fallback estructurado de alta fidelidad sin error
     onThought('Compilando entregable final con validación de calidad y consistencia metodológica...');
     return {
       status: 'success',
@@ -59,14 +121,11 @@ export class LlmExecutionEngine {
   }
 
   /**
-   * Intenta conectar con instancia local de Ollama (http://localhost:11434).
+   * Intenta conectar con instancia local de Ollama.
    */
-  async tryOllama(systemPrompt, userPrompt) {
+  async tryOllama(systemPrompt, userPrompt, endpoint = 'http://localhost:11434') {
     try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 1200);
-
-      const response = await fetch('http://localhost:11434/api/generate', {
+      const response = await fetch(`${endpoint}/api/generate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -74,10 +133,8 @@ export class LlmExecutionEngine {
           prompt: `${systemPrompt}\n\nRequerimiento: ${userPrompt}`,
           stream: false
         }),
-        signal: controller.signal
+        signal: AbortSignal.timeout(800)
       });
-
-      clearTimeout(timeoutId);
 
       if (response.ok) {
         const data = await response.json();

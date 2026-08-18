@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { usePlan } from '../context/PlanContext';
 import { FRAMEWORKS } from '../config/frameworks';
+import { getApiBase } from '../config/apiConfig';
 import { extractSeedFromText, askFieldDoubt } from '../lib/ai';
 import { classifyProject } from '../lib/classifyProject';
 import { matchIndustry } from '../lib/benchmarkMatcher';
@@ -180,9 +181,10 @@ export default function Anteproyecto() {
     setAgentLogs([{ agentId: 'system', message: 'Iniciando conexión con Swarm Evolution Engine...', timestamp: new Date().toISOString() }]);
 
     const sessionId = `swarm_${Date.now()}`;
+    const apiBase = getApiBase();
 
     // Suscripción SSE a los eventos del enjambre
-    const es = new EventSource(`http://localhost:3001/api/swarm/stream/${sessionId}`);
+    const es = new EventSource(`${apiBase}/api/swarm/stream/${sessionId}`);
     eventSourceRef.current = es;
 
     es.onmessage = (event) => {
@@ -227,7 +229,7 @@ export default function Anteproyecto() {
 
     // Disparar la ejecución en el backend Express
     try {
-      await fetch('http://localhost:3001/api/swarm/industrialize', {
+      await fetch(`${apiBase}/api/swarm/industrialize`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

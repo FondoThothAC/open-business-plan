@@ -60,21 +60,21 @@ const createEmptyPlan = (projectType = 'business') => {
       visibility: {},
       comments: {},
       ai: {
-        primaryProvider: 'nvidia', secondaryProvider: 'mistral',
+        primaryProvider: 'groq', secondaryProvider: 'nvidia',
         apiKey: KEYS.gemini, groqKey: KEYS.groq, 
         nvidiaKey: KEYS.nvidia, mistralKey: KEYS.mistral, ollamaKey: KEYS.ollama,
         pollinationsKey: KEYS.pollinations,
         endpoint: 'http://localhost:11434', lmStudioEndpoint: 'http://localhost:1234/v1',
-        model: 'meta/llama-3.1-70b-instruct',   // Modelo principal activo
+        model: 'llama-3.3-70b-versatile',   // Modelo principal activo de ultra-calidad y velocidad
         depth: 1,              // 1=Rápido, 2=Pro, 3=Profundo
-        contextSize: 65536,    // 64k por defecto (seguro para 8GB VRAM)
-        // [DDD] Modelos por rol — sobreescriben DEFAULT_AGENT_CONFIG en ai.js
+        contextSize: 65536,    // 64k por defecto
+        // [DDD] Modelos por rol
         agentModels: {
-          analista:     { model: 'qwen3.5:9b', role: 'Analista Estratégico' },
-          critico:      { model: 'qwen3.5:9b', role: 'Crítico Financiero' },
-          redactor:     { model: 'qwen3.5:9b', role: 'Redactor Ejecutivo' },
-          estratega:    { model: 'qwen3.5:9b', role: 'Estratega de Negocio' },
-          abogadoDiablo:{ model: 'qwen3.5:9b', role: "Devil's Advocate" },
+          analista:     { model: 'llama-3.3-70b-versatile', role: 'Analista Estratégico' },
+          critico:      { model: 'llama-3.3-70b-versatile', role: 'Crítico Financiero' },
+          redactor:     { model: 'llama-3.3-70b-versatile', role: 'Redactor Ejecutivo' },
+          estratega:    { model: 'llama-3.3-70b-versatile', role: 'Estratega de Negocio' },
+          abogadoDiablo:{ model: 'llama-3.3-70b-versatile', role: "Devil's Advocate" },
         }
       },
       brandKit: { primaryColor: '#6366f1', secondaryColor: '#8b5cf6', logoUrl: '', companyName: '' },

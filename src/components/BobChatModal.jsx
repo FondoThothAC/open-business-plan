@@ -90,14 +90,14 @@ export default function BobChatModal({ isOpen, onClose, planData, onExecuteComma
       // 2. Consulta de IA conversacional ultra-rápida con el contexto del plan
       const rawAi = planData?.config?.ai || {};
       
-      // Priorizar proveedores de ultra-baja latencia: Groq (ultra rápido) -> Gemini Flash -> Mistral -> Nvidia
+      // Priorizar proveedores de ultra-baja latencia: Groq Llama 8B (ultra rápido ~150ms) -> Gemini Flash -> Groq 70B -> Mistral -> Nvidia
       let selectedProvider = 'groq';
-      let selectedModel = 'llama-3.3-70b-versatile';
+      let selectedModel = 'llama-3.1-8b-instant';
       let selectedKey = rawAi.groqKey;
 
       if (rawAi.groqKey) {
         selectedProvider = 'groq';
-        selectedModel = 'llama-3.3-70b-versatile';
+        selectedModel = 'llama-3.1-8b-instant';
         selectedKey = rawAi.groqKey;
       } else if (rawAi.apiKey) {
         selectedProvider = 'gemini';

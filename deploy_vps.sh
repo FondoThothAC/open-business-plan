@@ -29,26 +29,15 @@ rsync -avz --delete \
   dist/ \
   "$VPS:$VPS_APP_DIR/dist/"
 
-# 3. Aplicar configuración Nginx para SPA fallback
+# 3. Subir el backend server
 echo ""
-echo "⚙️  Verificando configuración Nginx..."
-ssh -i "$SSH_KEY" -o StrictHostKeyChecking=no "$VPS" \
-  "sudo bash -c 'cat > /etc/nginx/conf.d/obp.conf <<EOF
-location /obp/ {
-    alias $VPS_APP_DIR/dist/;
-    try_files \$uri \$uri/ /obp/index.html;
-}
-EOF
-nginx -t && systemctl reload nginx'"
+echo "📤 Actualizando server/ en VPS..."
+rsync -avz --delete \
+  -e "ssh -i '$SSH_KEY' -o StrictHostKeyChecking=no" \
+  server/ \
+  "$VPS:$VPS_APP_DIR/server/"
 
-# 4. Subir el backend server
-echo ""
-echo "📤 Actualizando server/index.js en VPS..."
-scp -i "$SSH_KEY" -o StrictHostKeyChecking=no \
-  server/index.js \
-  "$VPS:$VPS_APP_DIR/server/index.js"
-
-# 5. Reiniciar backend PM2
+# 4. Reiniciar backend PM2
 echo ""
 echo "⚙️  Reiniciando servicio PM2 (obp-backend)..."
 ssh -i "$SSH_KEY" -o StrictHostKeyChecking=no "$VPS" \
