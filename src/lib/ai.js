@@ -369,24 +369,26 @@ ${fieldsPromptContext}
   // Fetch installed models to resolve name matches
   const installedModels = await getInstalledOllamaModels(endpoint);
 
-  // Resuelve el modelo de un agente (config usuario > default nivel)
+  // Resuelve el modelo de un agente respetando el proveedor activo
   const resolveModel = (role, levelConfig) => {
-    const raw = agentModels[role]?.model || levelConfig[role]?.model || model || 'qwen3.5:4b-mlx';
-    return findBestOllamaModel(raw, installedModels);
+    const raw = agentModels[role]?.model || levelConfig[role]?.model || model;
+    
+    // Si estamos en proveedor cloud o el modelo no es local, resolver directamente con resolveProviderModel
+    const { model: resolvedCloudModel } = resolveProviderModel({ primaryProvider, model: raw, installedModels });
+    if (primaryProvider && primaryProvider !== 'ollama' && primaryProvider !== 'lmstudio') {
+      return resolvedCloudModel;
+    }
+    return findBestOllamaModel(raw || 'nemotron', installedModels);
   };
 
   // Helper: construye config de proveedor para una fase
   const makeProviderConfig = (agentModel) => {
-    let prov = primaryProvider || 'ollama';
-    // Auto-detect provider based on model name if it's explicitly a cloud model
-    if (agentModel.includes('gemini')) prov = 'gemini';
-    else if (agentModel.includes('gpt')) prov = 'openai';
-    else if (agentModel.includes('mistral-large')) prov = 'mistral';
-    else if (agentModel.includes('llama-3.3-70b')) prov = 'groq';
-    else if (agentModel.includes('nvidia') || agentModel.includes('google/gemma')) prov = 'nvidia';
+    const resolved = resolveProviderModel({ primaryProvider, model: agentModel, installedModels });
+    let prov = resolved.provider;
+    let mod = resolved.model;
 
-    if (prov === 'lmstudio') return { provider: 'lmstudio', endpoint: lmStudioEndpoint, model: agentModel };
-    return { provider: prov, apiKey, groqKey, nvidiaKey, endpoint, model: agentModel };
+    if (prov === 'lmstudio') return { provider: 'lmstudio', endpoint: lmStudioEndpoint, model: mod };
+    return { provider: prov, apiKey, groqKey, nvidiaKey, endpoint, model: mod };
   };
 
   // ─── Orquestadores por nivel ───────────────────────────────────────────
@@ -396,8 +398,9 @@ ${fieldsPromptContext}
     const agentCfg = DEFAULT_AGENT_CONFIG.fast;
     const analista = resolveModel('analista', agentCfg);
     const redactor = resolveModel('redactor', agentCfg);
+    const prov = fallbackProvider?.provider || primaryProvider || 'groq';
 
-    await termLog('thinking', `⚡ Fase 1/2: Analista generando borrador (${analista})...`, 'ollama');
+    await termLog('thinking', `⚡ Fase 1/2: Analista generando borrador (${analista})...`, prov);
     const draft = await callAiProvider(
       fallbackProvider || makeProviderConfig(analista),
       `${systemContext}\n\nTAREA: Genera un borrador profesional y detallado SOLO para los campos indicados. Devuelve JSON con exactamente las claves pedidas.`,
@@ -405,7 +408,7 @@ ${fieldsPromptContext}
       expectedKeys
     );
 
-    await termLog('thinking', `⚡ Fase 2/2: Redactor finalizando (${redactor})...`, 'ollama');
+    await termLog('thinking', `⚡ Fase 2/2: Redactor finalizando (${redactor})...`, prov);
     const result = await callAiProvider(
       fallbackProvider || makeProviderConfig(redactor),
       `${systemContext}\n\nBorrador:\n${JSON.stringify(draft)}\n\nTAREA: Mejora la calidad y el tono ejecutivo del borrador. Devuelve SOLO el JSON final con las claves: ${(currentModule.fields || []).map(f => f.key).join(', ')}`,
@@ -413,7 +416,7 @@ ${fieldsPromptContext}
       expectedKeys
     );
 
-    await termLog('success', '✓ Módulo completado (nivel rápido).', 'ollama');
+    await termLog('success', '✓ Módulo completado (nivel rápido).', prov);
     return result;
   };
 
