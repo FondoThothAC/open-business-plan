@@ -39,7 +39,7 @@ function AppContent() {
   };
 
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
       {showWizard && <SetupWizard onComplete={handleWizardComplete} />}
       <Routes>
         <Route path="/" element={<Layout />}>
