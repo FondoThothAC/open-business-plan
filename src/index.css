@@ -667,7 +667,8 @@ textarea.form-control {
   }
 
   @page {
-    margin: 0.8cm;
+    margin: 1cm;
+    size: auto;
   }
   
   html, body, #root, .app-container, .main-content, .view-container {
@@ -686,7 +687,22 @@ textarea.form-control {
     padding: 0 !important;
     margin: 0 !important;
     max-width: 100% !important;
+    width: 100% !important;
     background: white !important;
+  }
+
+  /* Resetear tarjetas en impresión para evitar "página dentro de página" */
+  .print-page {
+    box-shadow: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+    margin: 0 0 1.5rem 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    background: transparent !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
   }
  
   .sidebar, .top-header, .no-print, .btn, .view-header, .view-toggle, .btn-summarize,
@@ -704,6 +720,22 @@ textarea.form-control {
   
   .page-break::before {
     display: none;
+  }
+
+  /* Índice compacto a 2 columnas en impresión */
+  .toc-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.4rem 1.5rem !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .toc-page {
+    min-height: auto !important;
+    padding: 0 !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
   }
 
   /* Table Pagination Protections */

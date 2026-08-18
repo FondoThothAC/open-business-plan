@@ -132,20 +132,24 @@ export default function BusinessModelCanvas({ readOnly = false }) {
             width: 100% !important;
             max-width: 100% !important;
             page-break-inside: avoid !important;
+            break-inside: avoid !important;
           }
           .business-model-canvas-grid {
             grid-template-columns: 1fr 1fr 1fr 1fr 1fr !important;
-            grid-template-rows: minmax(145px, auto) minmax(145px, auto) minmax(100px, auto) !important;
-            gap: 8px !important;
+            grid-template-rows: minmax(130px, auto) minmax(130px, auto) minmax(90px, auto) !important;
+            gap: 6px !important;
             min-width: 100% !important;
             width: 100% !important;
           }
           .canvas-block {
-            padding: 0.75rem !important;
+            padding: 0.65rem !important;
             border-radius: 8px !important;
             min-height: auto !important;
-            border-width: 1.5px !important;
+            border: 1.5px solid #cbd5e1 !important;
             box-shadow: none !important;
+            background: #ffffff !important;
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
           }
           .canvas-block-header {
             margin-bottom: 0.4rem !important;

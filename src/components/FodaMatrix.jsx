@@ -134,23 +134,33 @@ export default function FodaMatrix({ data }) {
         @media print {
           .foda-grid-container {
             grid-template-columns: repeat(2, 1fr) !important;
-            gap: 1.5cm !important;
+            gap: 0.8cm !important;
             display: grid !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
           }
           .foda-card {
-            background: white !important;
+            background: #ffffff !important;
             color: #1e293b !important;
-            border: 2px solid #cbd5e1 !important;
+            border: 1.5px solid #cbd5e1 !important;
             box-shadow: none !important;
-            page-break-inside: avoid;
-            border-radius: 8px !important;
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+            border-radius: 10px !important;
             padding: 1.25rem !important;
+            min-height: 140px !important;
           }
           .foda-text-container {
             color: #334155 !important;
+            font-size: 0.85rem !important;
+            line-height: 1.5 !important;
           }
           .foda-card h4 {
             color: #0f172a !important;
+            font-size: 0.95rem !important;
+            margin-bottom: 0.6rem !important;
           }
         }
       `}</style>

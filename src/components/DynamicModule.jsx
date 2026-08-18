@@ -14,6 +14,9 @@ import BusinessModelCanvas from './BusinessModelCanvas';
 import HubspotBuyerPersona from './HubspotBuyerPersona';
 import MacroDashboard from './MacroDashboard';
 import OrganigramaInteractivo from './OrganigramaInteractivo';
+import ArbolProblemasObjetivos from './ArbolProblemasObjetivos';
+import XMatrixHoshinKanri from './XMatrixHoshinKanri';
+import AmoebaStructureViewer from './AmoebaStructureViewer';
 
 const BusinessModelSelector = ({ value, onChange }) => {
   const models = [
@@ -181,7 +184,7 @@ export default function DynamicModule() {
     );
   }
 
-  if (isFinancialModule) {
+  if (isFinancialModule && projectType === 'business') {
     return (
       <ModuloFinanciero 
         moduleKey={moduleId}
@@ -217,6 +220,26 @@ export default function DynamicModule() {
     );
   }
 
+  // Especial: Social BID & ZOPP Árbol de Problemas y Objetivos
+  const isArbolLogico = (
+    moduleId === 'arbol_problemas' ||
+    moduleId === 'arbol_objetivos' ||
+    (pillarId === 'diagnostico' && moduleId === 'arbol_problemas')
+  );
+
+  // Especial: Hoshin Kanri Matriz X
+  const isHoshinKanri = (
+    projectType === 'hoshin_kanri' ||
+    moduleId === 'matriz_x' ||
+    moduleId === 'alineacion_estrategica'
+  );
+
+  // Especial: Amoeba Management Estructura Celular
+  const isAmoeba = (
+    projectType === 'amoeba_management' &&
+    (moduleId === 'celulas_autonomas' || moduleId === 'rentabilidad' || moduleId === 'estructura')
+  );
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
       {pillarId === 'naturaleza' && moduleId === 'introduccion' && (
@@ -225,6 +248,19 @@ export default function DynamicModule() {
           onChange={(val) => updateSection('naturaleza', 'introduccion', 'modelo_negocio', val)}
         />
       )}
+
+      {isArbolLogico && (
+        <ArbolProblemasObjetivos />
+      )}
+
+      {isHoshinKanri && moduleId === 'matriz_x' && (
+        <XMatrixHoshinKanri />
+      )}
+
+      {isAmoeba && (
+        <AmoebaStructureViewer />
+      )}
+
       <ModuleWrapper 
         pillar={pillarId}
         moduleKey={moduleId}
@@ -233,21 +269,25 @@ export default function DynamicModule() {
         fields={fieldsFormatted}
         extraAction={extraAction}
       />
+
       {pillarId === 'organizacion' && moduleId === 'estructura' && (
         <>
           <OrganigramaInteractivo staff={planData.organizacion?.staff || []} onChange={updateStaff} />
           <StaffTable staff={planData.organizacion?.staff || []} onChange={updateStaff} />
         </>
       )}
+
       {pillarId === 'tecnico' && moduleId === 'operacion' && (
         <ProcessTable 
           processes={planData.tecnico?.processes || []} 
           onChange={updateProcesses} 
         />
       )}
+
       {pillarId === 'organizacion' && ['inversion', 'costos', 'recursos_humanos'].includes(moduleId) && (
         <OrganizationFinanceToolkit moduleKey={moduleId} />
       )}
+
       {pillarId === 'mercado' && moduleId === 'segmentacion' && (
         <>
           <TamSamSom data={planData.mercado?.segmentacion} />

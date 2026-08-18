@@ -16,6 +16,10 @@ import remarkGfm from 'remark-gfm';
 import { safeStr } from '../utils/formatters';
 import { FRAMEWORKS } from '../config/frameworks';
 import { calculateFinancialProjections } from '../lib/finanzas/financial-calculations';
+import DiffReviewModal from '../components/DiffReviewModal';
+import ArbolProblemasObjetivos from '../components/ArbolProblemasObjetivos';
+import XMatrixHoshinKanri from '../components/XMatrixHoshinKanri';
+import AmoebaStructureViewer from '../components/AmoebaStructureViewer';
 
 function readJson(raw, fallback) {
   if (!raw || typeof raw !== 'string') return fallback;
@@ -1011,6 +1015,8 @@ const ModuleRefinementPanel = ({ pillarKey, moduleKey, fields, planData, updateS
   const [selectedField, setSelectedField] = useState(fields && fields[0] ? fields[0] : '');
   const [feedback, setFeedback] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
+  const [diffModalData, setDiffModalData] = useState(null);
+  const [isIterating, setIsIterating] = useState(false);
 
   useEffect(() => {
     if (fields && fields.length > 0) {
@@ -1044,19 +1050,70 @@ const ModuleRefinementPanel = ({ pillarKey, moduleKey, fields, planData, updateS
       }
 
       const cleanedVal = cleanMarkdownResponse(newValue);
-      updateSection(pillarKey, moduleKey, selectedField, cleanedVal);
-      
-      if (manualSaveProject) {
-        await manualSaveProject();
-      }
 
-      setFeedback('');
-      alert('Sección refinada con éxito por la IA y guardada.');
+      // Desplegamos el modal de revisión de diferencias en lugar de aplicar a ciegas
+      setDiffModalData({
+        isOpen: true,
+        fieldKey: selectedField,
+        fieldLabel,
+        oldText: currentValue,
+        newText: cleanedVal,
+        cleanedVal,
+        comments
+      });
     } catch (err) {
       console.error(err);
       alert('Error al refinar con IA: ' + err.message);
     } finally {
       setIsGenerating(false);
+    }
+  };
+
+  const handleAcceptDiff = async () => {
+    if (!diffModalData) return;
+    try {
+      updateSection(pillarKey, moduleKey, diffModalData.fieldKey, diffModalData.cleanedVal);
+      if (manualSaveProject) {
+        await manualSaveProject();
+      }
+      setFeedback('');
+      setDiffModalData(null);
+      alert('Sección refinada con éxito por la IA y guardada en el plan.');
+    } catch (err) {
+      alert('Error al guardar cambio: ' + err.message);
+    }
+  };
+
+  const handleIterateDiff = async (additionalFeedback) => {
+    if (!diffModalData) return;
+    setIsIterating(true);
+    try {
+      const config = planData.config || {};
+      const updatedComments = [
+        ...diffModalData.comments,
+        { author: 'Usuario (Ajuste)', text: additionalFeedback }
+      ];
+      
+      const newValue = await refactorFieldWithComments(config.ai || {}, {
+        fieldLabel: diffModalData.fieldLabel,
+        currentValue: diffModalData.oldText,
+        comments: updatedComments,
+        planData
+      });
+
+      if (newValue) {
+        const cleanedVal = cleanMarkdownResponse(newValue);
+        setDiffModalData(prev => ({
+          ...prev,
+          newText: cleanedVal,
+          cleanedVal,
+          comments: updatedComments
+        }));
+      }
+    } catch (err) {
+      alert('Error al re-generar con ajuste: ' + err.message);
+    } finally {
+      setIsIterating(false);
     }
   };
 
@@ -1070,9 +1127,23 @@ const ModuleRefinementPanel = ({ pillarKey, moduleKey, fields, planData, updateS
       fontSize: '0.85rem',
       fontFamily: 'Inter, sans-serif'
     }}>
+      {diffModalData && (
+        <DiffReviewModal
+          isOpen={diffModalData.isOpen}
+          onClose={() => setDiffModalData(null)}
+          fieldLabel={diffModalData.fieldLabel}
+          oldText={diffModalData.oldText}
+          newText={diffModalData.newText}
+          comments={diffModalData.comments}
+          onAccept={handleAcceptDiff}
+          onIterate={handleIterateDiff}
+          isIterating={isIterating}
+        />
+      )}
+
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
         <Bot size={16} style={{ color: 'var(--accent-color)' }} />
-        <strong style={{ color: 'var(--text-primary)' }}>Refinar Sección / Campo con IA</strong>
+        <strong style={{ color: 'var(--text-primary)' }}>Refinar Sección / Campo con IA (con Diff Visual)</strong>
       </div>
       
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
@@ -1150,12 +1221,12 @@ const ModuleRefinementPanel = ({ pillarKey, moduleKey, fields, planData, updateS
             {isGenerating ? (
               <>
                 <RefreshCw size={12} className="animate-spin" />
-                <span>Refinando...</span>
+                <span>Generando Diff...</span>
               </>
             ) : (
               <>
                 <BrainCircuit size={12} />
-                <span>Enviar Corrección</span>
+                <span>Revisar Cambios (Diff)</span>
               </>
             )}
           </button>
@@ -1988,11 +2059,15 @@ export default function VistaPrevia() {
           }
           .portrait-print-page {
             page: portraitPage;
-            ${paginationMode === 'continuous' ? 'break-before: auto;' : 'break-before: page;'}
+            ${paginationMode === 'continuous' ? 'break-before: auto !important; page-break-before: auto !important;' : 'break-before: page; page-break-before: always;'}
+            break-inside: avoid !important;
+            page-break-inside: avoid !important;
           }
           .landscape-print-page {
             page: landscapePage;
             break-before: page;
+            break-inside: avoid !important;
+            page-break-inside: avoid !important;
           }
           .cover-page {
             page: portraitPage;
@@ -2001,6 +2076,7 @@ export default function VistaPrevia() {
           .toc-page {
             page: portraitPage;
             break-before: page;
+            break-inside: avoid !important;
           }
           .financial-reports-page {
             page: landscapePage;
@@ -2168,8 +2244,8 @@ export default function VistaPrevia() {
 
         {/* Índice / Tabla de Contenidos */}
         <div id="indice" className="print-page toc-page" style={{ 
-          minHeight: '85vh', 
-          padding: '4rem 2.5rem', 
+          minHeight: paginationMode === 'continuous' ? 'auto' : '70vh', 
+          padding: '3rem 2.5rem', 
           pageBreakBefore: 'always', 
           fontFamily: 'Inter, sans-serif',
           background: '#ffffff',
@@ -2185,10 +2261,10 @@ export default function VistaPrevia() {
           <div>
             <CorporatePrintHeader sectionTitle="Índice de Contenido" pillarTitle="Estructura General" />
             
-            <h2 style={{ fontSize: '2rem', color: '#0f172a', borderBottom: '2px solid #e2e8f0', paddingBottom: '1rem', marginBottom: '2.5rem', fontWeight: 800, letterSpacing: '-0.02em' }}>
+            <h2 style={{ fontSize: '1.75rem', color: '#0f172a', borderBottom: '2px solid #e2e8f0', paddingBottom: '0.75rem', marginBottom: '1.5rem', fontWeight: 800, letterSpacing: '-0.02em' }}>
               Índice de Contenido
             </h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem', maxWidth: '680px' }}>
+            <div className="toc-grid" style={{ display: 'flex', flexDirection: 'column', gap: '0.55rem', maxWidth: '100%' }}>
               <a href="#portada" className="toc-item-link">
                 <span style={{ fontWeight: 600, color: '#1e293b' }}>Portada Institucional</span>
                 <span className="toc-dot-leader" />
@@ -2204,8 +2280,8 @@ export default function VistaPrevia() {
                 const pageNum = modulePageNumbers[mod.key];
                 if (!pageNum) return null;
                 return (
-                  <a key={mod.key} href={`#seccion-${mod.key}`} className="toc-item-link" style={{ paddingLeft: '0.85rem' }}>
-                    <span style={{ color: '#334155', fontWeight: 500 }}>
+                  <a key={mod.key} href={`#seccion-${mod.key}`} className="toc-item-link" style={{ paddingLeft: '0.5rem' }}>
+                    <span style={{ color: '#334155', fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       <span style={{ color: 'var(--accent-color, #6366f1)', fontWeight: 700, marginRight: '0.35rem' }}>{idx + 1}.</span>
                       {mod.title}
                     </span>
@@ -2217,7 +2293,7 @@ export default function VistaPrevia() {
 
               {previewFinancialData && (
                 <a href="#seccion-reportes-financieros" className="toc-item-link">
-                  <span style={{ fontWeight: 600, color: '#1e293b' }}>Reportes Financieros Pro-Forma (5 Años)</span>
+                  <span style={{ fontWeight: 600, color: '#1e293b' }}>Reportes Financieros (5 Años)</span>
                   <span className="toc-dot-leader" />
                   <span className="toc-page-badge">{financialReportsPage}</span>
                 </a>
@@ -2225,14 +2301,14 @@ export default function VistaPrevia() {
 
               {planData?.config?.anexos?.length > 0 && (
                 <a href="#seccion-anexos" className="toc-item-link">
-                  <span style={{ fontWeight: 600, color: '#1e293b' }}>Anexos y Evidencia Documental</span>
+                  <span style={{ fontWeight: 600, color: '#1e293b' }}>Anexos Documentales</span>
                   <span className="toc-dot-leader" />
                   <span className="toc-page-badge">{anexosPage}</span>
                 </a>
               )}
 
               <a href="#seccion-fuentes" className="toc-item-link">
-                <span style={{ fontWeight: 600, color: '#1e293b' }}>Fuentes de Información y APIs</span>
+                <span style={{ fontWeight: 600, color: '#1e293b' }}>Fuentes y APIs</span>
                 <span className="toc-dot-leader" />
                 <span className="toc-page-badge">{sourcesPage}</span>
               </a>
@@ -2451,6 +2527,48 @@ export default function VistaPrevia() {
                         <HubspotBuyerPersona value={planData?.[mod.pillarKey]?.[mod.key]?.perfil} />
                       </>
                     )}
+                  </div>
+                ) : (mod.key === 'arbol_problemas' || mod.key === 'arbol_objetivos') ? (
+                  <div style={{ marginBottom: '1.5rem' }}>
+                    <h3 style={{ fontSize: '1.25rem', color: '#0f172a', marginBottom: '1.5rem', fontWeight: 800 }}>
+                      {sectionNumber} {mod.title}
+                    </h3>
+                    <ArbolProblemasObjetivos />
+                    <Section 
+                      number=""
+                      title={`Detalle de ${mod.title}`} 
+                      data={planData?.[mod.pillarKey]?.[mod.key]} 
+                      pillarKey={mod.pillarKey}
+                      moduleKey={mod.key}
+                    />
+                  </div>
+                ) : mod.key === 'matriz_x' ? (
+                  <div style={{ marginBottom: '1.5rem' }}>
+                    <h3 style={{ fontSize: '1.25rem', color: '#0f172a', marginBottom: '1.5rem', fontWeight: 800 }}>
+                      {sectionNumber} {mod.title}
+                    </h3>
+                    <XMatrixHoshinKanri />
+                    <Section 
+                      number=""
+                      title={`Detalle de ${mod.title}`} 
+                      data={planData?.[mod.pillarKey]?.[mod.key]} 
+                      pillarKey={mod.pillarKey}
+                      moduleKey={mod.key}
+                    />
+                  </div>
+                ) : (mod.key === 'celulas_autonomas' || mod.key === 'estructura_amebas') ? (
+                  <div style={{ marginBottom: '1.5rem' }}>
+                    <h3 style={{ fontSize: '1.25rem', color: '#0f172a', marginBottom: '1.5rem', fontWeight: 800 }}>
+                      {sectionNumber} {mod.title}
+                    </h3>
+                    <AmoebaStructureViewer />
+                    <Section 
+                      number=""
+                      title={`Detalle de ${mod.title}`} 
+                      data={planData?.[mod.pillarKey]?.[mod.key]} 
+                      pillarKey={mod.pillarKey}
+                      moduleKey={mod.key}
+                    />
                   </div>
                 ) : mod.key === 'canvas' ? (
                   <div style={{ marginBottom: '1.5rem' }}>

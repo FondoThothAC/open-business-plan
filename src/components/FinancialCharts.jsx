@@ -1051,17 +1051,18 @@ export const PrintableFinancialReports = ({ projections, staff = [] }) => {
   })();
 
   const sectionStyle = {
-    marginBottom: '0',
-    pageBreakBefore: 'always',
-    paddingTop: '2rem',
+    marginBottom: '1.5rem',
+    pageBreakInside: 'avoid',
+    breakInside: 'avoid',
+    paddingTop: '0.5rem',
   };
 
   const panelStyle = {
     background: '#ffffff',
     border: '1px solid #e2e8f0',
-    borderRadius: '16px',
-    padding: '2rem',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+    borderRadius: '12px',
+    padding: '1.25rem',
+    boxShadow: 'none',
   };
 
   const sectionTitleStyle = {
