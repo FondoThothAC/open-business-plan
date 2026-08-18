@@ -63,7 +63,7 @@ function LogLine({ entry, index }) {
   );
 }
 
-export default function ActivityFeed() {
+export default function ActivityFeed({ onOpenBob }) {
   const { planData } = usePlan();
   
   const rawName = planData?.semilla?.negocio?.nombre_marca || planData?.config?.brandKit?.companyName || '';
@@ -270,43 +270,65 @@ export default function ActivityFeed() {
     }
   };
 
-  // Botón flotante
+  // Botones flotantes (BOB Asistente + Monitor de Logs)
   const FloatButton = () => (
-    <button
-      className="no-print"
-      onClick={() => { setIsOpen(true); setIsMinimized(false); setHasNew(false); }}
-      title="Monitor de IA"
-      style={{
-        position: 'fixed',
-        bottom: '1.5rem',
-        right: '1.5rem',
-        width: '48px',
-        height: '48px',
-        borderRadius: '50%',
-        background: 'linear-gradient(135deg, var(--accent-color), #8b5cf6)',
-        border: 'none',
-        cursor: 'pointer',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        boxShadow: '0 4px 20px rgba(99,102,241,0.5)',
-        zIndex: 999,
-        transition: 'transform 0.2s',
-      }}
-      onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.1)'}
-      onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
-    >
-      <Bot size={22} color="white" />
-      {hasNew && (
-        <span style={{
-          position: 'absolute', top: '-2px', right: '-2px',
-          width: '12px', height: '12px',
-          background: '#ef4444', borderRadius: '50%',
-          border: '2px solid var(--bg-dark)',
-          animation: 'pulse 1.5s infinite',
-        }} />
-      )}
-    </button>
+    <div style={{ position: 'fixed', bottom: '1.5rem', right: '1.5rem', display: 'flex', gap: '0.75rem', zIndex: 999 }} className="no-print">
+      {/* Botón Asistente BOB / Voz */}
+      <button
+        onClick={() => onOpenBob && onOpenBob()}
+        title="Asistente BOB (CELIS Engine & Control por Voz)"
+        style={{
+          width: '48px',
+          height: '48px',
+          borderRadius: '50%',
+          background: 'linear-gradient(135deg, #4f46e5, #7c3aed)',
+          border: 'none',
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          boxShadow: '0 4px 20px rgba(79, 70, 229, 0.5)',
+          transition: 'transform 0.2s',
+        }}
+        onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.1)'}
+        onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+      >
+        <Bot size={24} color="white" />
+      </button>
+
+      {/* Botón Monitor de Actividad */}
+      <button
+        onClick={() => { setIsOpen(true); setIsMinimized(false); setHasNew(false); }}
+        title="Monitor de Actividad e IA"
+        style={{
+          width: '48px',
+          height: '48px',
+          borderRadius: '50%',
+          background: 'linear-gradient(135deg, var(--accent-color), #8b5cf6)',
+          border: 'none',
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          boxShadow: '0 4px 20px rgba(99,102,241,0.5)',
+          transition: 'transform 0.2s',
+          position: 'relative'
+        }}
+        onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.1)'}
+        onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+      >
+        <Activity size={22} color="white" />
+        {hasNew && (
+          <span style={{
+            position: 'absolute', top: '-2px', right: '-2px',
+            width: '12px', height: '12px',
+            background: '#ef4444', borderRadius: '50%',
+            border: '2px solid var(--bg-dark)',
+            animation: 'pulse 1.5s infinite',
+          }} />
+        )}
+      </button>
+    </div>
   );
 
   return (

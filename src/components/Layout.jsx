@@ -6,6 +6,8 @@ import { PROJECT_EXAMPLES } from '../lib/projects_db';
 import { FRAMEWORKS } from '../config/frameworks';
 import ActivityFeed from './ActivityFeed';
 import GenerationControls from './GenerationControls';
+import BobChatModal from './BobChatModal';
+import GrillMePromptModal from './GrillMePromptModal';
 
 
 const METHODOLOGY_CONFIG = {
@@ -66,6 +68,8 @@ export default function Layout() {
   const location = useLocation();
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isBobOpen, setIsBobOpen] = useState(false);
+  const [activeGrillMePrompt, setActiveGrillMePrompt] = useState(null);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => {
     return localStorage.getItem('openplan_sidebar_collapsed') === 'true';
   });
@@ -1202,7 +1206,34 @@ export default function Layout() {
           }
         }
       `}</style>
-      <ActivityFeed />
+      <ActivityFeed onOpenBob={() => setIsBobOpen(true)} />
+      
+      {/* Asistente BOB Flotante (CELIS Engine & Voice) */}
+      <BobChatModal 
+        isOpen={isBobOpen} 
+        onClose={() => setIsBobOpen(false)}
+        planData={planData}
+        onExecuteCommand={(cmd) => {
+          if (cmd.action === 'UPDATE_CAPEX') {
+            updateConfig('organizacion', 'inversion', {
+              ...planData.organizacion?.inversion,
+              monto_inversion: cmd.amount
+            });
+          }
+        }}
+      />
+
+      {/* Modal Human-in-the-Loop (Grill-Me) si hay preguntas activas de agentes */}
+      {activeGrillMePrompt && (
+        <GrillMePromptModal
+          promptData={activeGrillMePrompt}
+          onSubmitResponse={(resp) => {
+            if (handleGrillMeResponse) handleGrillMeResponse(resp);
+            setActiveGrillMePrompt(null);
+          }}
+          onCancel={() => setActiveGrillMePrompt(null)}
+        />
+      )}
     </div>
   );
 }
