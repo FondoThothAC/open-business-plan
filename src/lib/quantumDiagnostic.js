@@ -86,9 +86,9 @@ Analiza objetivamente y devuelve ÚNICAMENTE un objeto JSON válido con esta est
 
   try {
     const { primaryProvider, apiKey, groqKey, nvidiaKey, lmStudioEndpoint, endpoint, model } = aiConfig || {};
-    const prov = primaryProvider || 'ollama';
+    const prov = primaryProvider || 'groq';
     const responseText = await callAiProvider(
-      { provider: prov, apiKey, groqKey, nvidiaKey, endpoint: prov === 'lmstudio' ? lmStudioEndpoint : endpoint, model: model || 'nemotron-3-nano:4b' },
+      { provider: prov, apiKey, groqKey, nvidiaKey, endpoint: prov === 'lmstudio' ? lmStudioEndpoint : endpoint, model: model || 'groq/compound-mini' },
       prompt,
       false
     );

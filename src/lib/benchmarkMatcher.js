@@ -78,9 +78,9 @@ Devuelve ÚNICAMENTE un objeto JSON válido con este formato (sin markdown ni ex
 `;
 
   try {
-    const prov = primaryProvider || 'ollama';
+    const prov = primaryProvider || 'groq';
     const responseText = await callAiProvider(
-      { provider: prov, apiKey, groqKey, nvidiaKey, endpoint: prov === 'lmstudio' ? lmStudioEndpoint : endpoint, model: model || 'nemotron-3-nano:4b' },
+      { provider: prov, apiKey, groqKey, nvidiaKey, endpoint: prov === 'lmstudio' ? lmStudioEndpoint : endpoint, model: model || 'groq/compound-mini' },
       prompt,
       false
     );

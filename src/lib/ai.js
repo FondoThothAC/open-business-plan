@@ -28,6 +28,7 @@
  */
 
 import { FIELD_GUIDES_MAP } from './field_guides.js';
+import { getApiBase } from '../config/apiConfig.js';
 
 // ─────────────────────────────────────────────────────────────────────────
 // Configuración de roles por defecto (se sobreescribe desde Configuracion.jsx)
@@ -72,13 +73,15 @@ export const DEFAULT_AGENT_CONFIG = {
 };// Helper: get list of installed Ollama models
 async function getInstalledOllamaModels(endpoint) {
   try {
-    const res = await fetch(`${endpoint || 'http://localhost:11434'}/api/tags`);
+    const res = await fetch(`${endpoint || 'http://localhost:11434'}/api/tags`, {
+      signal: AbortSignal.timeout(600)
+    });
     if (res.ok) {
       const data = await res.json();
       return data && data.models ? data.models.map(m => m.name) : [];
     }
   } catch (e) {
-    console.warn('No se pudieron obtener los modelos de Ollama:', e);
+    // Si no hay respuesta o timeout, continuar silenciosamente
   }
   return [];
 }
@@ -1233,7 +1236,8 @@ export async function extractSeedFromText(config, rawText) {
   
   const termLog = async (type, message, provider = '') => {
     try {
-      await fetch('http://localhost:3001/api/log', {
+      const apiBase = getApiBase();
+      await fetch(`${apiBase}/api/log`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -1248,7 +1252,7 @@ export async function extractSeedFromText(config, rawText) {
     } catch {}
   };
 
-  await termLog('start', 'Iniciando estructuración de tu idea...', primaryProvider || 'ollama');
+  await termLog('start', 'Iniciando estructuración de tu idea...', primaryProvider || 'groq');
 
   const prompt = `
 Eres un analista de negocios experto. El usuario ha narrado libremente la idea de su negocio (Brain Dump).
