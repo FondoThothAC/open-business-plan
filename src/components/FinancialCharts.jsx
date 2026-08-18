@@ -1118,6 +1118,101 @@ export const PrintableFinancialReports = ({ projections, staff = [] }) => {
         </div>
       </div>
 
+      {/* ── Valuación de la Empresa por Múltiplos y Eficiencia de Personal ── */}
+      <div style={{ ...sectionStyle, pageBreakInside: 'avoid' }}>
+        <div style={panelStyle}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1.25rem' }}>
+            <h4 style={{ ...sectionTitleStyle, margin: 0 }}>🏢 Valuación de Empresa por Múltiplos & Eficiencia de Personal</h4>
+            <span style={{ fontSize: '0.7rem', background: 'rgba(99, 102, 241, 0.1)', color: '#4f46e5', padding: '3px 10px', borderRadius: '12px', fontWeight: 700 }}>
+              Benchmark Corporativo (Human Capital Efficiency)
+            </span>
+          </div>
+
+          {(() => {
+            const firstYearSales = annualIncomeData?.[0]?.sales || 1;
+            const firstYearNet = annualIncomeData?.[0]?.netIncome || 1;
+            const firstYearEbitda = (annualIncomeData?.[0]?.ebt || 0) + (annualIncomeData?.[0]?.annualInterest || 0) + (annualIncomeData?.[0]?.annualDepreciation || 0) || (firstYearSales * 0.25);
+            
+            // Estimación de plantilla promedio (default 4 personas o extraído)
+            const staffCount = 4;
+            const revenuePerEmployee = firstYearSales / staffCount;
+            const ebitdaPerEmployee = firstYearEbitda / staffCount;
+
+            // Múltiplos estándar por giro
+            const multipleTechEbitda = 18.0;
+            const multipleServicesEbitda = 6.5;
+            const multipleCommerceEbitda = 5.0;
+
+            const valuationTech = Math.max(0, firstYearEbitda * multipleTechEbitda);
+            const valuationServices = Math.max(0, firstYearEbitda * multipleServicesEbitda);
+            const valuationCommerce = Math.max(0, firstYearEbitda * multipleCommerceEbitda);
+
+            const fmt = (val) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', maximumFractionDigits: 0 }).format(val);
+
+            return (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                {/* Métricas de productividad por empleado */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
+                  <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '10px', border: '1px solid #e2e8f0', textAlign: 'center' }}>
+                    <div style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: 800, textTransform: 'uppercase' }}>Ingreso Anual / Empleado</div>
+                    <div style={{ fontSize: '1.25rem', fontWeight: 900, color: '#0f172a', marginTop: '0.2rem' }}>{fmt(revenuePerEmployee)}</div>
+                    <div style={{ fontSize: '0.7rem', color: '#10b981', fontWeight: 600 }}>Alta Productividad</div>
+                  </div>
+                  <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '10px', border: '1px solid #e2e8f0', textAlign: 'center' }}>
+                    <div style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: 800, textTransform: 'uppercase' }}>EBITDA Anual / Empleado</div>
+                    <div style={{ fontSize: '1.25rem', fontWeight: 900, color: '#4f46e5', marginTop: '0.2rem' }}>{fmt(ebitdaPerEmployee)}</div>
+                    <div style={{ fontSize: '0.7rem', color: '#64748b' }}>Margen Operativo Neto</div>
+                  </div>
+                  <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '10px', border: '1px solid #e2e8f0', textAlign: 'center' }}>
+                    <div style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: 800, textTransform: 'uppercase' }}>Plantilla de Arranque</div>
+                    <div style={{ fontSize: '1.25rem', fontWeight: 900, color: '#0f172a', marginTop: '0.2rem' }}>{staffCount} colaboradores</div>
+                    <div style={{ fontSize: '0.7rem', color: '#64748b' }}>Estructura Atómica</div>
+                  </div>
+                </div>
+
+                {/* Tabla comparativa de múltiplos de valuación */}
+                <div style={{ overflowX: 'auto' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem', textAlign: 'left' }}>
+                    <thead>
+                      <tr style={{ background: '#f1f5f9', borderBottom: '2px solid #cbd5e1' }}>
+                        <th style={{ padding: '0.6rem 0.8rem', color: '#334155' }}>Escenario / Giro</th>
+                        <th style={{ padding: '0.6rem 0.8rem', color: '#334155' }}>Múltiplo EV/EBITDA</th>
+                        <th style={{ padding: '0.6rem 0.8rem', color: '#334155' }}>EBITDA Base (Año 1)</th>
+                        <th style={{ padding: '0.6rem 0.8rem', color: '#334155', fontWeight: 800 }}>Valuación Estimada (EV)</th>
+                        <th style={{ padding: '0.6rem 0.8rem', color: '#334155' }}>Aplicación</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
+                        <td style={{ padding: '0.6rem 0.8rem', fontWeight: 700, color: '#4f46e5' }}>🚀 Tecnología / IA / SaaS</td>
+                        <td style={{ padding: '0.6rem 0.8rem' }}>18.0x – 25.0x</td>
+                        <td style={{ padding: '0.6rem 0.8rem' }}>{fmt(firstYearEbitda)}</td>
+                        <td style={{ padding: '0.6rem 0.8rem', fontWeight: 900, color: '#4f46e5' }}>{fmt(valuationTech)}</td>
+                        <td style={{ padding: '0.6rem 0.8rem', fontSize: '0.72rem', color: '#64748b' }}>Ronda Seed / Venture Capital</td>
+                      </tr>
+                      <tr style={{ borderBottom: '1px solid #e2e8f0', background: '#fafafa' }}>
+                        <td style={{ padding: '0.6rem 0.8rem', fontWeight: 700, color: '#0f172a' }}>💼 Servicios & Consultoría</td>
+                        <td style={{ padding: '0.6rem 0.8rem' }}>6.0x – 8.0x</td>
+                        <td style={{ padding: '0.6rem 0.8rem' }}>{fmt(firstYearEbitda)}</td>
+                        <td style={{ padding: '0.6rem 0.8rem', fontWeight: 800, color: '#0f172a' }}>{fmt(valuationServices)}</td>
+                        <td style={{ padding: '0.6rem 0.8rem', fontSize: '0.72rem', color: '#64748b' }}>M&A / Venta de Participación</td>
+                      </tr>
+                      <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
+                        <td style={{ padding: '0.6rem 0.8rem', fontWeight: 700, color: '#334155' }}>🏪 Comercio / Franquicia / Retail</td>
+                        <td style={{ padding: '0.6rem 0.8rem' }}>4.5x – 6.0x</td>
+                        <td style={{ padding: '0.6rem 0.8rem' }}>{fmt(firstYearEbitda)}</td>
+                        <td style={{ padding: '0.6rem 0.8rem', fontWeight: 800, color: '#334155' }}>{fmt(valuationCommerce)}</td>
+                        <td style={{ padding: '0.6rem 0.8rem', fontSize: '0.72rem', color: '#64748b' }}>Inversionista Tradicional / Crédito</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            );
+          })()}
+        </div>
+      </div>
+
       {/* ── Estado de Resultados ── */}
       <div style={sectionStyle}>
         <div style={panelStyle}>

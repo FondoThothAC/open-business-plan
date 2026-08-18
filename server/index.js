@@ -1407,6 +1407,128 @@ app.post('/api/test/inegi', async (req, res) => {
   }
 });
 
+app.post('/api/test/groq', async (req, res) => {
+  const { apiKey } = req.body;
+  if (!apiKey) return res.status(400).json({ success: false, error: 'API Key requerida' });
+  try {
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+      body: JSON.stringify({
+        model: 'llama-3.3-70b-versatile',
+        messages: [{ role: 'user', content: 'ping' }],
+        max_tokens: 5
+      }),
+      signal: AbortSignal.timeout(8000)
+    });
+    const data = await response.json();
+    if (response.ok && !data.error) {
+      res.json({ success: true, message: 'Groq Llama 3.3 está en línea y operativo.' });
+    } else {
+      res.json({ success: false, error: data.error?.message || `HTTP ${response.status}` });
+    }
+  } catch (err) {
+    res.json({ success: false, error: err.message });
+  }
+});
+
+app.post('/api/test/mistral', async (req, res) => {
+  const { apiKey } = req.body;
+  if (!apiKey) return res.status(400).json({ success: false, error: 'API Key requerida' });
+  try {
+    const response = await fetch('https://api.mistral.ai/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+      body: JSON.stringify({
+        model: 'mistral-large-latest',
+        messages: [{ role: 'user', content: 'ping' }],
+        max_tokens: 5
+      }),
+      signal: AbortSignal.timeout(8000)
+    });
+    const data = await response.json();
+    if (response.ok && !data.error) {
+      res.json({ success: true, message: 'Mistral AI está en línea y operativo.' });
+    } else {
+      res.json({ success: false, error: data.error?.message || `HTTP ${response.status}` });
+    }
+  } catch (err) {
+    res.json({ success: false, error: err.message });
+  }
+});
+
+app.post('/api/test/nvidia', async (req, res) => {
+  const { apiKey } = req.body;
+  if (!apiKey) return res.status(400).json({ success: false, error: 'API Key requerida' });
+  try {
+    const response = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+      body: JSON.stringify({
+        model: 'nvidia/llama-3.1-nemotron-70b-instruct',
+        messages: [{ role: 'user', content: 'ping' }],
+        max_tokens: 5
+      }),
+      signal: AbortSignal.timeout(8000)
+    });
+    const data = await response.json();
+    if (response.ok && !data.error) {
+      res.json({ success: true, message: 'NVIDIA NIM Nemotron 70B está en línea y operativo.' });
+    } else {
+      res.json({ success: false, error: data.error?.message || `HTTP ${response.status}` });
+    }
+  } catch (err) {
+    res.json({ success: false, error: err.message });
+  }
+});
+
+app.post('/api/test/gemini', async (req, res) => {
+  const { apiKey } = req.body;
+  if (!apiKey) return res.status(400).json({ success: false, error: 'API Key requerida' });
+  try {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ contents: [{ parts: [{ text: 'ping' }] }] }),
+      signal: AbortSignal.timeout(8000)
+    });
+    const data = await response.json();
+    if (response.ok && !data.error) {
+      res.json({ success: true, message: 'Google Gemini 1.5 Flash está en línea y operativo.' });
+    } else {
+      res.json({ success: false, error: data.error?.message || `HTTP ${response.status}` });
+    }
+  } catch (err) {
+    res.json({ success: false, error: err.message });
+  }
+});
+
+app.post('/api/test/openai', async (req, res) => {
+  const { apiKey } = req.body;
+  if (!apiKey) return res.status(400).json({ success: false, error: 'API Key requerida' });
+  try {
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [{ role: 'user', content: 'ping' }],
+        max_tokens: 5
+      }),
+      signal: AbortSignal.timeout(8000)
+    });
+    const data = await response.json();
+    if (response.ok && !data.error) {
+      res.json({ success: true, message: 'OpenAI GPT está en línea y operativo.' });
+    } else {
+      res.json({ success: false, error: data.error?.message || `HTTP ${response.status}` });
+    }
+  } catch (err) {
+    res.json({ success: false, error: err.message });
+  }
+});
+
 app.post('/api/test/banxico', async (req, res) => {
   const { token } = req.body;
   if (!token) {

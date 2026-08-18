@@ -91,6 +91,34 @@ function useApiStatus(planData) {
   const [tavilyStatus, setTavilyStatus] = useState({ state: 'idle', message: '' });
   const [inegiStatus, setInegiStatus] = useState({ state: 'idle', message: '' });
   const [banxicoStatus, setBanxicoStatus] = useState({ state: 'idle', message: '' });
+  const [groqStatus, setGroqStatus] = useState({ state: 'idle', message: '' });
+  const [mistralStatus, setMistralStatus] = useState({ state: 'idle', message: '' });
+  const [nvidiaStatus, setNvidiaStatus] = useState({ state: 'idle', message: '' });
+  const [geminiStatus, setGeminiStatus] = useState({ state: 'idle', message: '' });
+  const [openaiStatus, setOpenaiStatus] = useState({ state: 'idle', message: '' });
+
+  const testLlmProvider = async (provider, apiKey, setStatus) => {
+    if (!apiKey) {
+      setStatus({ state: 'idle', message: 'No configurado' });
+      return;
+    }
+    setStatus({ state: 'checking', message: 'Probando...' });
+    try {
+      const res = await fetch(`http://localhost:3001/api/test/${provider}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ apiKey })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setStatus({ state: 'online', message: 'En línea ✓' });
+      } else {
+        setStatus({ state: 'offline', message: data.error || 'Error de conexión' });
+      }
+    } catch (err) {
+      setStatus({ state: 'offline', message: err.message });
+    }
+  };
 
   const testTavily = async (forcedKey = null) => {
     const key = forcedKey !== null ? forcedKey : (planData.config?.search?.apiKey || '');
@@ -165,21 +193,25 @@ function useApiStatus(planData) {
   };
 
   useEffect(() => {
-    if (planData?.config?.search?.apiKey) {
-      testTavily(planData.config.search.apiKey);
-    }
-    if (planData?.config?.externalApis?.inegiToken) {
-      testInegi(planData.config.externalApis.inegiToken);
-    }
-    if (planData?.config?.externalApis?.banxicoToken) {
-      testBanxico(planData.config.externalApis.banxicoToken);
-    }
+    if (planData?.config?.search?.apiKey) testTavily(planData.config.search.apiKey);
+    if (planData?.config?.externalApis?.inegiToken) testInegi(planData.config.externalApis.inegiToken);
+    if (planData?.config?.externalApis?.banxicoToken) testBanxico(planData.config.externalApis.banxicoToken);
+    if (planData?.config?.ai?.groqKey) testLlmProvider('groq', planData.config.ai.groqKey, setGroqStatus);
+    if (planData?.config?.ai?.nvidiaKey) testLlmProvider('nvidia', planData.config.ai.nvidiaKey, setNvidiaStatus);
+    if (planData?.config?.ai?.primaryProvider === 'gemini' && planData?.config?.ai?.apiKey) testLlmProvider('gemini', planData.config.ai.apiKey, setGeminiStatus);
+    if (planData?.config?.ai?.primaryProvider === 'mistral' && planData?.config?.ai?.apiKey) testLlmProvider('mistral', planData.config.ai.apiKey, setMistralStatus);
+    if (planData?.config?.ai?.primaryProvider === 'openai' && planData?.config?.ai?.apiKey) testLlmProvider('openai', planData.config.ai.apiKey, setOpenaiStatus);
   }, []);
 
   return {
     tavilyStatus, setTavilyStatus, testTavily,
     inegiStatus, setInegiStatus, testInegi,
-    banxicoStatus, setBanxicoStatus, testBanxico
+    banxicoStatus, setBanxicoStatus, testBanxico,
+    groqStatus, setGroqStatus, testGroq: (k) => testLlmProvider('groq', k || planData.config?.ai?.groqKey, setGroqStatus),
+    mistralStatus, setMistralStatus, testMistral: (k) => testLlmProvider('mistral', k || planData.config?.ai?.apiKey, setMistralStatus),
+    nvidiaStatus, setNvidiaStatus, testNvidia: (k) => testLlmProvider('nvidia', k || planData.config?.ai?.nvidiaKey, setNvidiaStatus),
+    geminiStatus, setGeminiStatus, testGemini: (k) => testLlmProvider('gemini', k || planData.config?.ai?.apiKey, setGeminiStatus),
+    openaiStatus, setOpenaiStatus, testOpenai: (k) => testLlmProvider('openai', k || planData.config?.ai?.apiKey, setOpenaiStatus),
   };
 }
 
@@ -779,145 +811,138 @@ export default function Configuracion() {
           </div>
         </div>
 
-        {/* IA Config con Fallback */}
-        <div className="glass-panel" style={{ padding: '2rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem' }}>
-            <Cpu style={{ color: 'var(--accent-color)' }} />
-            <h2 style={{ fontSize: '1.25rem' }}>IA Swarm con Auto-Fallback</h2>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-            <div className="form-group">
-              <label className="form-label">Proveedor Primario</label>
+        {/* IA Config con Fallback y Medidores */}
+        <div className="glass-panel" style={{ padding: '2rem', gridColumn: '1 / -1' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+              <Cpu style={{ color: 'var(--accent-color)' }} />
+              <div>
+                <h2 style={{ fontSize: '1.25rem', margin: 0 }}>Motor de IA, LLM Providers & Medidores en Tiempo Real</h2>
+                <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+                  Configura tus API Keys con fallback automático inteligente. Si un proveedor se satura, el sistema pasa al siguiente automáticamente.
+                </p>
+              </div>
+            </div>
+            
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-secondary)' }}>PROVEEDOR ACTIVO:</span>
               <select 
                 className="form-control" 
                 value={planData.config.ai.primaryProvider}
                 onChange={(e) => handleAiChange('primaryProvider', e.target.value)}
+                style={{ minWidth: '220px', fontWeight: 700, color: 'var(--accent-color)', borderColor: 'var(--accent-color)' }}
               >
-                <optgroup label="📍 Locales (100% Gratis y Privados)">
-                  <option value="ollama">Ollama (Local)</option>
-                  <option value="lmstudio">LM Studio (Local)</option>
+                <optgroup label="⚡ Nube de Ultra-Velocidad & Local Gratis">
+                  <option value="groq">Groq (Llama 3.3 70B — 280 tok/s)</option>
+                  <option value="nvidia">NVIDIA NIM (Nemotron 70B)</option>
+                  <option value="mistral">Mistral AI (Mistral Large)</option>
+                  <option value="ollama">Ollama Local (Sin costo / Privado)</option>
+                  <option value="lmstudio">LM Studio Local</option>
                 </optgroup>
-                <optgroup label="☁️ Nube (Capa Gratuita)">
-                  <option value="nvidia">NVIDIA NIM (Nemotron, Gemma)</option>
-                  <option value="groq">Groq (Llama, Gemma)</option>
-                  <option value="gemini">Google Gemini (Flash)</option>
-                </optgroup>
-                <optgroup label="💎 Nube (Premium / De Pago)">
-                  <option value="openai">OpenAI (GPT-4o)</option>
-                  <option value="mistral">Mistral API</option>
+                <optgroup label="💎 Modelos Comerciales Cloud">
+                  <option value="gemini">Google Gemini (1.5 Flash / Pro)</option>
+                  <option value="openai">OpenAI (GPT-4o / GPT-4o-mini)</option>
                 </optgroup>
               </select>
             </div>
-            <div className="form-group">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                <label className="form-label" style={{ marginBottom: 0 }}>{getModelLabel(provider)}</label>
-                {provider === 'ollama' && (
-                  <button 
-                    onClick={fetchOllamaModels} 
-                    className="btn btn-secondary" 
-                    style={{ padding: '2px 8px', fontSize: '0.7rem' }}
-                    title="Refrescar modelos"
-                    disabled={isFetchingModels}
-                  >
-                    <RefreshCw className={`w-3 h-3 ${isFetchingModels ? 'animate-spin' : ''}`} />
-                  </button>
-                )}
-              </div>
-              <select 
-                value={isCustomModel ? 'custom' : currentModelValue} 
-                onChange={(e) => {
-                  const val = e.target.value;
-                  if (val === 'custom') {
-                    handleAiChange('model', 'custom-model');
-                  } else {
-                    handleAiChange('model', val);
-                  }
-                }}
-                className="form-control"
-              >
-                {providerOptions.map(opt => (
-                  <option key={opt.value} value={opt.value}>{opt.label}</option>
-                ))}
-                <option value="custom">Otro (Especificar manualmente...)</option>
-              </select>
-            </div>
+          </div>
 
-            {isCustomModel && (
-              <div className="form-group" style={{ gridColumn: 'span 2', marginTop: '0.5rem' }}>
-                <label className="form-label">Nombre del Modelo Personalizado</label>
+          {/* FILA 1: Modelos de Ultra-Velocidad, Abiertos y Locales */}
+          <div style={{ marginBottom: '1.5rem' }}>
+            <div style={{ fontSize: '0.8rem', fontWeight: 800, color: 'var(--accent-color)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <span>⚡ FILA 1: Ultra-Alta Velocidad, Open Models & IA Local</span>
+              <span style={{ fontSize: '0.65rem', background: 'rgba(99, 102, 241, 0.1)', padding: '2px 8px', borderRadius: '10px', color: 'var(--accent-color)' }}>Recomendado para Industrialización</span>
+            </div>
+            
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1rem' }}>
+              
+              {/* GROQ CARD */}
+              <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: `1.5px solid ${planData.config.ai.primaryProvider === 'groq' ? 'var(--accent-color)' : 'var(--border-color)'}` }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                  <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#f59e0b' }}>⚡ Groq (Llama 3.3 70B)</div>
+                  <a href="https://console.groq.com/keys" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: 'var(--accent-color)', textDecoration: 'none', fontWeight: 700 }}>
+                    Obtener Key ↗
+                  </a>
+                </div>
+                <input 
+                  type="password" 
+                  className="form-control" 
+                  placeholder="gsk_..."
+                  value={planData.config.ai.groqKey || ''}
+                  onChange={(e) => handleAiChange('groqKey', e.target.value)}
+                  style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
+                />
+                <ApiStatusBadge status={groqStatus} onTest={() => testGroq(planData.config.ai.groqKey)} disabled={!planData.config.ai.groqKey} />
+              </div>
+
+              {/* NVIDIA NIM CARD */}
+              <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: `1.5px solid ${planData.config.ai.primaryProvider === 'nvidia' ? 'var(--accent-color)' : 'var(--border-color)'}` }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                  <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#10b981' }}>🟢 NVIDIA NIM (Nemotron 70B)</div>
+                  <a href="https://build.nvidia.com" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: 'var(--accent-color)', textDecoration: 'none', fontWeight: 700 }}>
+                    Obtener Key ↗
+                  </a>
+                </div>
+                <input 
+                  type="password" 
+                  className="form-control" 
+                  placeholder="nvapi-..."
+                  value={planData.config.ai.nvidiaKey || ''}
+                  onChange={(e) => handleAiChange('nvidiaKey', e.target.value)}
+                  style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
+                />
+                <ApiStatusBadge status={nvidiaStatus} onTest={() => testNvidia(planData.config.ai.nvidiaKey)} disabled={!planData.config.ai.nvidiaKey} />
+              </div>
+
+              {/* MISTRAL CARD */}
+              <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: `1.5px solid ${planData.config.ai.primaryProvider === 'mistral' ? 'var(--accent-color)' : 'var(--border-color)'}` }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                  <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#ec4899' }}>🔥 Mistral AI (Large)</div>
+                  <a href="https://console.mistral.ai/api-keys" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: 'var(--accent-color)', textDecoration: 'none', fontWeight: 700 }}>
+                    Obtener Key ↗
+                  </a>
+                </div>
+                <input 
+                  type="password" 
+                  className="form-control" 
+                  placeholder="Mistral API Key..."
+                  value={planData.config.ai.primaryProvider === 'mistral' ? (planData.config.ai.apiKey || '') : ''}
+                  onChange={(e) => {
+                    handleAiChange('apiKey', e.target.value);
+                  }}
+                  style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
+                />
+                <ApiStatusBadge status={mistralStatus} onTest={() => testMistral(planData.config.ai.apiKey)} disabled={!planData.config.ai.apiKey} />
+              </div>
+
+              {/* OLLAMA LOCAL CARD */}
+              <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: `1.5px solid ${planData.config.ai.primaryProvider === 'ollama' ? 'var(--accent-color)' : 'var(--border-color)'}` }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                  <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#818cf8' }}>💻 Ollama Local (Offline)</div>
+                  <a href="https://ollama.com/download" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: 'var(--accent-color)', textDecoration: 'none', fontWeight: 700 }}>
+                    Descargar ↗
+                  </a>
+                </div>
                 <input 
                   type="text" 
                   className="form-control" 
-                  value={currentModelValue === 'custom-model' ? '' : currentModelValue}
-                  onChange={(e) => handleAiChange('model', e.target.value)}
-                  placeholder="Escribe el nombre del modelo (ej. my-custom-model:latest)"
+                  placeholder="http://localhost:11434"
+                  value={planData.config.ai.endpoint || 'http://localhost:11434'}
+                  onChange={(e) => handleAiChange('endpoint', e.target.value)}
+                  style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
                 />
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.4rem' }}>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 700, color: ollamaOnline ? '#10b981' : '#ef4444' }}>
+                    {ollamaOnline ? `En línea (${ollamaModels.length} modelos) ✓` : 'Ollama Apagado'}
+                  </span>
+                  <button type="button" onClick={fetchOllamaModels} className="btn btn-secondary" style={{ padding: '2px 8px', fontSize: '0.7rem' }}>
+                    Refrescar
+                  </button>
+                </div>
               </div>
-            )}
+
+            </div>
           </div>
-
-          {(planData.config.ai.primaryProvider === 'gemini' || planData.config.ai.primaryProvider === 'mistral' || planData.config.ai.primaryProvider === 'openai' || planData.config.ai.primaryProvider === 'lmstudio') && (
-            <div className="form-group" style={{ marginTop: '1rem' }}>
-              <label className="form-label">API Key (Gemini/OpenAI/Mistral/LM Studio/Hugging Face)</label>
-              <input 
-                type="password" 
-                className="form-control" 
-                value={planData.config.ai.apiKey || ''}
-                onChange={(e) => handleAiChange('apiKey', e.target.value)}
-                placeholder={planData.config.ai.primaryProvider === 'lmstudio' ? 'hf_... (para Hugging Face) o tu API Key' : ''}
-              />
-            </div>
-          )}
-
-          {planData.config.ai.primaryProvider === 'groq' && (
-            <div className="form-group" style={{ marginTop: '1rem' }}>
-              <label className="form-label">API Key (Groq)</label>
-              <input 
-                type="password" 
-                className="form-control" 
-                value={planData.config.ai.groqKey || ''}
-                onChange={(e) => handleAiChange('groqKey', e.target.value)}
-              />
-            </div>
-          )}
-
-          {planData.config.ai.primaryProvider === 'nvidia' && (
-            <div className="form-group" style={{ marginTop: '1rem' }}>
-              <label className="form-label">API Key (NVIDIA NIM)</label>
-              <input 
-                type="password" 
-                className="form-control" 
-                value={planData.config.ai.nvidiaKey || ''}
-                onChange={(e) => handleAiChange('nvidiaKey', e.target.value)}
-                placeholder="nvapi-..."
-              />
-            </div>
-          )}
-
-          {planData.config.ai.primaryProvider === 'ollama' && (
-            <div className="form-group" style={{ marginTop: '1rem' }}>
-              <label className="form-label">Ollama Endpoint</label>
-              <input 
-                type="text" 
-                className="form-control" 
-                value={planData.config.ai.endpoint || 'http://localhost:11434'}
-                onChange={(e) => handleAiChange('endpoint', e.target.value)}
-              />
-            </div>
-          )}
-
-          {planData.config.ai.primaryProvider === 'lmstudio' && (
-            <div className="form-group" style={{ marginTop: '1rem' }}>
-              <label className="form-label">LM Studio Endpoint</label>
-              <input 
-                type="text" 
-                className="form-control" 
-                value={planData.config.ai.lmStudioEndpoint || 'http://localhost:1234/v1'}
-                onChange={(e) => handleAiChange('lmStudioEndpoint', e.target.value)}
-              />
-            </div>
-          )}
 
           <div className="form-group" style={{ marginTop: '1.25rem', paddingTop: '1rem', borderTop: '1px dashed var(--border-color)' }}>
             <label className="form-label" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
