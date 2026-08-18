@@ -291,8 +291,9 @@ export async function generateModuleContent(config, currentModule, allPlanData) 
       const rawName = allPlanData.semilla?.negocio?.nombre_marca || allPlanData.config?.brandKit?.companyName || '';
       const projectId = allPlanData.config?.projectId || (rawName ? rawName.replace(/[^a-z0-9]/gi, '_').toLowerCase() : '');
       const projectType = allPlanData.config?.projectType === 'social_bid' ? 'social' : 'negocios';
+      const apiBase = getApiBase();
 
-      await fetch('http://localhost:3001/api/log', {
+      await fetch(`${apiBase}/api/log`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

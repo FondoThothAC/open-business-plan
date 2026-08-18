@@ -265,7 +265,8 @@ export default function ActivityFeed({ onOpenBob }) {
     
     if (window.confirm('¿Estás seguro de que deseas eliminar permanentemente el historial de logs de este proyecto?')) {
       try {
-        await fetch(`http://localhost:3001/api/projects/${activeProjectType}/${activeProjectId}/logs`, {
+        const apiBase = getApiBase();
+        await fetch(`${apiBase}/api/projects/${activeProjectType}/${activeProjectId}/logs`, {
           method: 'DELETE'
         });
       } catch {}
@@ -273,85 +274,68 @@ export default function ActivityFeed({ onOpenBob }) {
     }
   };
 
-  // Botones flotantes (BOB Asistente + Monitor de Logs)
-  const FloatButton = () => (
-    <div style={{ position: 'fixed', bottom: '1.5rem', right: '1.5rem', display: 'flex', gap: '0.75rem', zIndex: 999 }} className="no-print">
-      {/* Botón Asistente BOB / Voz */}
-      <button
-        onClick={() => onOpenBob && onOpenBob()}
-        title="Asistente BOB (CELIS Engine & Control por Voz)"
-        style={{
-          width: '48px',
-          height: '48px',
-          borderRadius: '50%',
-          background: 'linear-gradient(135deg, #4f46e5, #7c3aed)',
-          border: 'none',
-          cursor: 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          boxShadow: '0 4px 20px rgba(79, 70, 229, 0.5)',
-          transition: 'transform 0.2s',
-        }}
-        onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.1)'}
-        onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
-      >
-        <Bot size={24} color="white" />
-      </button>
-
-      {/* Botón Monitor de Actividad */}
-      <button
-        onClick={() => { setIsOpen(true); setIsMinimized(false); setHasNew(false); }}
-        title="Monitor de Actividad e IA"
-        style={{
-          width: '48px',
-          height: '48px',
-          borderRadius: '50%',
-          background: 'linear-gradient(135deg, var(--accent-color), #8b5cf6)',
-          border: 'none',
-          cursor: 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          boxShadow: '0 4px 20px rgba(99,102,241,0.5)',
-          transition: 'transform 0.2s',
-          position: 'relative'
-        }}
-        onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.1)'}
-        onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
-      >
-        <Activity size={22} color="white" />
-        {hasNew && (
-          <span style={{
-            position: 'absolute', top: '-2px', right: '-2px',
-            width: '12px', height: '12px',
-            background: '#ef4444', borderRadius: '50%',
-            border: '2px solid var(--bg-dark)',
-            animation: 'pulse 1.5s infinite',
-          }} />
-        )}
-      </button>
-    </div>
-  );
-
   return (
     <>
-      <style>{`
-        @keyframes fadeInLog {
-          from { opacity: 0; transform: translateY(6px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes slideUpStatus {
-          from { transform: translateY(100%); }
-          to   { transform: translateY(0); }
-        }
-        @keyframes spinMini {
-          to { transform: rotate(360deg); }
-        }
-      `}</style>
+      {/* Floating Action Button (Siempre visible en todas las páginas y módulos) */}
+      {!isOpen && (
+        <div style={{ position: 'fixed', bottom: activeTask.active ? '3.5rem' : '1.5rem', right: '1.5rem', display: 'flex', gap: '0.75rem', zIndex: 1001, transition: 'bottom 0.3s ease' }} className="no-print">
+          {/* Botón Asistente BOB / Voz */}
+          <button
+            onClick={() => onOpenBob && onOpenBob()}
+            title="Asistente BOB (CELIS Engine & Control por Voz)"
+            style={{
+              width: '48px',
+              height: '48px',
+              borderRadius: '50%',
+              background: 'linear-gradient(135deg, #4f46e5, #7c3aed)',
+              border: 'none',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 4px 20px rgba(79, 70, 229, 0.5)',
+              transition: 'transform 0.2s',
+            }}
+            onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.1)'}
+            onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+          >
+            <Bot size={24} color="white" />
+          </button>
 
-      {/* Floating Action Button (Solo mostrar si la ventana de logs está cerrada y no hay barra de tareas activa) */}
-      {!isOpen && !activeTask.active && <FloatButton />}
+          {/* Botón Monitor de Actividad */}
+          <button
+            onClick={() => { setIsOpen(true); setIsMinimized(false); setHasNew(false); }}
+            title="Monitor de Actividad e IA"
+            style={{
+              width: '48px',
+              height: '48px',
+              borderRadius: '50%',
+              background: 'linear-gradient(135deg, var(--accent-color), #8b5cf6)',
+              border: 'none',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 4px 20px rgba(99,102,241,0.5)',
+              transition: 'transform 0.2s',
+              position: 'relative'
+            }}
+            onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.1)'}
+            onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+          >
+            <Activity size={22} color="white" />
+            {hasNew && (
+              <span style={{
+                position: 'absolute', top: '-2px', right: '-2px',
+                width: '12px', height: '12px',
+                background: '#ef4444', borderRadius: '50%',
+                border: '2px solid var(--bg-dark)',
+                animation: 'pulse 1.5s infinite',
+              }} />
+            )}
+          </button>
+        </div>
+      )}
 
       {/* Barra de estado inferior (Status bar de progreso de la tarea activa) */}
       {activeTask.active && (
