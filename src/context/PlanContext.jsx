@@ -99,7 +99,9 @@ const createEmptyPlan = (projectType = 'business') => {
       search: {
         provider: 'tavily',
         tavilyApiKey: '',
-        enableDdg: false
+        enableDdg: true,          // DuckDuckGo activo por defecto (gratis)
+        duckDuckGoEnabled: true,  // Alias usado en Configuracion.jsx
+        scraperEngine: 'local'    // Puppeteer Stealth activo por defecto (gratis)
       },
       regionalSettings: {
         country: 'Mexico',

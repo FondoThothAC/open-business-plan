@@ -345,6 +345,13 @@ export default function Configuracion() {
   const [showSshGuide, setShowSshGuide] = useState(false);
   const [isLogoModalOpen, setIsLogoModalOpen] = useState(false);
 
+  // [UXDD] Toast de confirmación no-bloqueante (reemplaza window.alert)
+  const [saveToast, setSaveToast] = useState(false);
+  const showSaveToast = () => {
+    setSaveToast(true);
+    setTimeout(() => setSaveToast(false), 3000);
+  };
+
   const handleCloudUserIdChange = (val) => {
     setCloudUserId(val);
     if (val.trim()) {
@@ -404,7 +411,8 @@ export default function Configuracion() {
     updateConfig('search', field, value);
   };
 
-  const searchConfig = planData.config?.search || { provider: 'tavily', duckDuckGoEnabled: false, apiKey: '' };
+  // [DDD] DuckDuckGo y Puppeteer habilitados por defecto (alternativa gratuita)
+  const searchConfig = planData.config?.search || { provider: 'tavily', duckDuckGoEnabled: true, apiKey: '' };
 
   const handleLogoUpload = (e) => {
     const file = e.target.files[0];
@@ -1058,14 +1066,13 @@ export default function Configuracion() {
                 <ApiStatusBadge status={openaiStatus} onTest={() => testOpenai(planData.config.ai.openaiKey || planData.config.ai.apiKey)} disabled={!planData.config.ai.openaiKey && !planData.config.ai.apiKey} />
               </div>
 
-              {/* OLLAMA CLOUD & HÍBRIDOS (Kimi, GLM, MiniMax, Qwen) */}
-              <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: '1.5px solid var(--border-color)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                  <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#6366f1' }}>☁️ Ollama Cloud (Kimi, GLM, Qwen)</div>
-                  <a href="https://ollama.com/settings/keys" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: '#6366f1', textDecoration: 'none', fontWeight: 700 }}>
-                    Obtener Key ↗
-                  </a>
+              {/* OLLAMA CLOUD FREE (Kimi k2.6, MiniMax, Nemotron) */}
+              <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: '1.5px solid rgba(99,102,241,0.4)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
+                  <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#6366f1' }}>☁️ Ollama Cloud <span style={{ fontSize: '0.65rem', background: 'rgba(16,185,129,0.15)', color: '#10b981', padding: '1px 6px', borderRadius: '8px', marginLeft: '4px' }}>GRATIS</span></div>
+                  <a href="https://ollama.com/settings/keys" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: '#6366f1', textDecoration: 'none', fontWeight: 700 }}>Obtener Key ↗</a>
                 </div>
+                <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>Kimi k2.6 · MiniMax M3 · Nemotron Super · Gemma4 · Qwen3.5</div>
                 <input 
                   type="password" 
                   className="form-control" 
@@ -1075,6 +1082,58 @@ export default function Configuracion() {
                   style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
                 />
                 <ApiStatusBadge status={ollamaCloudStatus} onTest={() => testOllamaCloud(planData.config.ai.ollamaKey)} disabled={!planData.config.ai.ollamaKey} />
+              </div>
+
+              {/* OLLAMA CLOUD PREMIUM (GLM 5.1, Qwen3.5 72B) */}
+              <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: '1.5px solid rgba(168,85,247,0.4)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
+                  <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#a855f7' }}>💎 Ollama Cloud <span style={{ fontSize: '0.65rem', background: 'rgba(168,85,247,0.15)', color: '#a855f7', padding: '1px 6px', borderRadius: '8px', marginLeft: '4px' }}>PREMIUM</span></div>
+                  <a href="https://ollama.com/settings/keys" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: '#a855f7', textDecoration: 'none', fontWeight: 700 }}>Obtener Key ↗</a>
+                </div>
+                <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>GLM 5.1 · Qwen3.5 72B · DeepSeek R2 Pro (misma key Ollama)</div>
+                <input 
+                  type="password" 
+                  className="form-control" 
+                  placeholder="Misma key de Ollama Cloud"
+                  value={planData.config.ai.ollamaKey || ''}
+                  onChange={(e) => handleAiChange('ollamaKey', e.target.value)}
+                  style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
+                />
+                <ApiStatusBadge status={ollamaCloudStatus} onTest={() => testOllamaCloud(planData.config.ai.ollamaKey)} disabled={!planData.config.ai.ollamaKey} />
+              </div>
+
+              {/* GLM / ZhipuAI Directo */}
+              <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: '1.5px solid var(--border-color)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                  <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#06b6d4' }}>🔷 GLM / ZhipuAI (GLM-4-Plus)</div>
+                  <a href="https://open.bigmodel.cn/usercenter/apikeys" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: '#06b6d4', textDecoration: 'none', fontWeight: 700 }}>Obtener Key ↗</a>
+                </div>
+                <input 
+                  type="password" 
+                  className="form-control" 
+                  placeholder="GLM API Key..."
+                  value={planData.config.ai.glmKey || ''}
+                  onChange={(e) => handleAiChange('glmKey', e.target.value)}
+                  style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
+                />
+                <ApiStatusBadge status={{ state: planData.config.ai.glmKey ? 'idle' : 'idle', message: planData.config.ai.glmKey ? 'Configurado' : 'No configurado' }} onTest={() => {}} disabled={!planData.config.ai.glmKey} />
+              </div>
+
+              {/* MINIMAX Directo */}
+              <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: '1.5px solid var(--border-color)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                  <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#f59e0b' }}>🟡 MiniMax (abab 6.5)</div>
+                  <a href="https://www.minimaxi.com/user-center/basic-information/interface-key" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: '#f59e0b', textDecoration: 'none', fontWeight: 700 }}>Obtener Key ↗</a>
+                </div>
+                <input 
+                  type="password" 
+                  className="form-control" 
+                  placeholder="MiniMax API Key..."
+                  value={planData.config.ai.minimaxKey || ''}
+                  onChange={(e) => handleAiChange('minimaxKey', e.target.value)}
+                  style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
+                />
+                <ApiStatusBadge status={{ state: planData.config.ai.minimaxKey ? 'idle' : 'idle', message: planData.config.ai.minimaxKey ? 'Configurado' : 'No configurado' }} onTest={() => {}} disabled={!planData.config.ai.minimaxKey} />
               </div>
 
               {/* DEEPSEEK V3 */}
@@ -1587,7 +1646,7 @@ export default function Configuracion() {
              <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
                <input 
                  type="checkbox" 
-                 checked={searchConfig.duckDuckGoEnabled}
+                 checked={searchConfig.duckDuckGoEnabled !== false}
                  onChange={(e) => {
                    handleSearchConfigChange('duckDuckGoEnabled', e.target.checked);
                    if (!e.target.checked && searchConfig.provider === 'duckduckgo') {
@@ -1596,7 +1655,7 @@ export default function Configuracion() {
                  }}
                  style={{ width: '1.2rem', height: '1.2rem' }}
                />
-               <span>Habilitar DuckDuckGo Scraper (Alternativa local sin costo)</span>
+               <span>✅ Habilitar DuckDuckGo Scraper (Alternativa local sin costo — <strong>Activo por defecto</strong>)</span>
              </label>
           </div>
 
@@ -1720,7 +1779,7 @@ export default function Configuracion() {
                 value={planData.config.externalApis?.scraperEngine || 'local'}
                 onChange={(e) => handleExternalChange('scraperEngine', e.target.value)}
               >
-                <option value="local">Local Headless (Gratis - Puppeteer Stealth)</option>
+                <option value="local">✅ Local Headless (Gratis - Puppeteer Stealth) — Activo por defecto</option>
                 <option value="apify">Apify Cloud ($5/mes o Capa Gratis)</option>
                 <option value="gridpanel">GridPanel Cloud</option>
               </select>
@@ -2017,8 +2076,24 @@ export default function Configuracion() {
         </button>
       </div>
 
+      {/* [UXDD] Toast de guardado — reemplaza window.alert() doble */}
+      {saveToast && (
+        <div style={{
+          position: 'fixed', bottom: '2rem', right: '2rem', zIndex: 9999,
+          background: 'linear-gradient(135deg, #10b981, #059669)',
+          color: '#fff', padding: '0.75rem 1.5rem', borderRadius: '12px',
+          boxShadow: '0 8px 32px rgba(16,185,129,0.4)',
+          display: 'flex', alignItems: 'center', gap: '0.5rem',
+          fontWeight: 700, fontSize: '0.95rem',
+          animation: 'slideInUp 0.3s ease-out'
+        }}>
+          <CheckCircle style={{ width: '1.1rem', height: '1.1rem' }} />
+          ✅ Configuración guardada correctamente
+        </div>
+      )}
+
       <div style={{ marginTop: '2rem', textAlign: 'right' }}>
-        <button className="btn btn-primary" onClick={() => alert('Configuración Guardada')}>
+        <button className="btn btn-primary" onClick={showSaveToast}>
           <Save className="w-4 h-4" />
           <span>Guardar Configuración</span>
         </button>
