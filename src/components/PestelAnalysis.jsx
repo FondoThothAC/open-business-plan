@@ -162,10 +162,11 @@ export default function PestelAnalysis({ data }) {
         @media print {
           .pestel-grid-container {
             grid-template-columns: repeat(2, 1fr) !important;
-            gap: 0.8cm !important;
+            gap: 0.35cm !important;
             display: grid !important;
             width: 100% !important;
             max-width: 100% !important;
+            margin: 0.5rem 0 !important;
             page-break-inside: avoid !important;
             break-inside: avoid !important;
           }
@@ -176,19 +177,27 @@ export default function PestelAnalysis({ data }) {
             box-shadow: none !important;
             page-break-inside: avoid !important;
             break-inside: avoid !important;
-            border-radius: 10px !important;
-            padding: 1.25rem !important;
-            min-height: 140px !important;
+            border-radius: 8px !important;
+            padding: 0.6rem 0.75rem !important;
+            min-height: auto !important;
+            gap: 0.35rem !important;
           }
-          .pestel-text-container {
-            color: #334155 !important;
-            font-size: 0.85rem !important;
-            line-height: 1.5 !important;
+          .pestel-card > div:first-child {
+            width: 28px !important;
+            height: 28px !important;
+          }
+          .pestel-card svg {
+            width: 14px !important;
+            height: 14px !important;
+          }
+          .pestel-card .markdown-content {
+            font-size: 0.72rem !important;
+            line-height: 1.35 !important;
           }
           .pestel-card h4 {
             color: #0f172a !important;
-            font-size: 0.95rem !important;
-            margin-bottom: 0.6rem !important;
+            font-size: 0.78rem !important;
+            margin: 2px 0 0 0 !important;
           }
         }
       `}</style>

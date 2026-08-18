@@ -136,14 +136,14 @@ export default function BusinessModelCanvas({ readOnly = false }) {
           }
           .business-model-canvas-grid {
             grid-template-columns: 1fr 1fr 1fr 1fr 1fr !important;
-            grid-template-rows: minmax(130px, auto) minmax(130px, auto) minmax(90px, auto) !important;
-            gap: 6px !important;
+            grid-template-rows: minmax(105px, auto) minmax(105px, auto) minmax(75px, auto) !important;
+            gap: 5px !important;
             min-width: 100% !important;
             width: 100% !important;
           }
           .canvas-block {
-            padding: 0.65rem !important;
-            border-radius: 8px !important;
+            padding: 0.5rem 0.6rem !important;
+            border-radius: 6px !important;
             min-height: auto !important;
             border: 1.5px solid #cbd5e1 !important;
             box-shadow: none !important;
@@ -152,23 +152,23 @@ export default function BusinessModelCanvas({ readOnly = false }) {
             break-inside: avoid !important;
           }
           .canvas-block-header {
-            margin-bottom: 0.4rem !important;
+            margin-bottom: 0.25rem !important;
           }
           .canvas-icon-wrapper {
-            padding: 0.25rem !important;
+            padding: 0.2rem !important;
             border-radius: 4px !important;
           }
           .canvas-icon {
-            width: 12px !important;
-            height: 12px !important;
+            width: 11px !important;
+            height: 11px !important;
           }
           .canvas-block-title {
-            font-size: 0.72rem !important;
-            letter-spacing: 0.02em !important;
+            font-size: 0.68rem !important;
+            letter-spacing: 0.01em !important;
           }
           .canvas-block-content {
-            font-size: 0.7rem !important;
-            line-height: 1.3 !important;
+            font-size: 0.68rem !important;
+            line-height: 1.25 !important;
           }
         }
       `}</style>

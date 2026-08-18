@@ -26,35 +26,41 @@ export default function TamSamSom({ data }) {
   const somNum = extractNumber(data.som) || '---';
 
   return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      gap: '1.5rem',
-      padding: '2rem',
-      background: 'var(--bg-panel)',
-      borderRadius: '24px',
-      border: '1px solid var(--border-color)',
-      marginBottom: '2.5rem',
-      boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)',
-      position: 'relative',
-      overflow: 'hidden'
-    }}>
+    <div 
+      className="tam-sam-som-container"
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: '1.5rem',
+        padding: '2rem',
+        background: 'var(--bg-panel)',
+        borderRadius: '24px',
+        border: '1px solid var(--border-color)',
+        marginBottom: '2.5rem',
+        boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)',
+        position: 'relative',
+        overflow: 'hidden'
+      }}
+    >
       <h3 style={{ fontSize: '1.5rem', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '1rem', textAlign: 'center', width: '100%' }}>
         Dimensionamiento del Mercado
       </h3>
       
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem', width: '100%' }}>
+      <div className="tam-sam-som-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem', width: '100%' }}>
         
         {/* TAM */}
-        <div style={{
-          background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(99, 102, 241, 0.05) 100%)',
-          border: '1px solid rgba(99, 102, 241, 0.3)',
-          borderRadius: '16px',
-          padding: '1.5rem',
-          position: 'relative',
-          overflow: 'hidden'
-        }}>
+        <div 
+          className="tam-sam-som-card"
+          style={{
+            background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(99, 102, 241, 0.05) 100%)',
+            border: '1px solid rgba(99, 102, 241, 0.3)',
+            borderRadius: '16px',
+            padding: '1.5rem',
+            position: 'relative',
+            overflow: 'hidden'
+          }}
+        >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <Globe className="w-6 h-6" style={{ color: '#818cf8' }} />
@@ -68,14 +74,17 @@ export default function TamSamSom({ data }) {
         </div>
 
         {/* SAM */}
-        <div style={{
-          background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(16, 185, 129, 0.05) 100%)',
-          border: '1px solid rgba(16, 185, 129, 0.3)',
-          borderRadius: '16px',
-          padding: '1.5rem',
-          position: 'relative',
-          overflow: 'hidden'
-        }}>
+        <div 
+          className="tam-sam-som-card"
+          style={{
+            background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(16, 185, 129, 0.05) 100%)',
+            border: '1px solid rgba(16, 185, 129, 0.3)',
+            borderRadius: '16px',
+            padding: '1.5rem',
+            position: 'relative',
+            overflow: 'hidden'
+          }}
+        >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <MapPin className="w-6 h-6" style={{ color: '#34d399' }} />
@@ -89,14 +98,17 @@ export default function TamSamSom({ data }) {
         </div>
 
         {/* SOM */}
-        <div style={{
-          background: 'linear-gradient(135deg, rgba(244, 63, 94, 0.15) 0%, rgba(244, 63, 94, 0.05) 100%)',
-          border: '1px solid rgba(244, 63, 94, 0.3)',
-          borderRadius: '16px',
-          padding: '1.5rem',
-          position: 'relative',
-          overflow: 'hidden'
-        }}>
+        <div 
+          className="tam-sam-som-card"
+          style={{
+            background: 'linear-gradient(135deg, rgba(244, 63, 94, 0.15) 0%, rgba(244, 63, 94, 0.05) 100%)',
+            border: '1px solid rgba(244, 63, 94, 0.3)',
+            borderRadius: '16px',
+            padding: '1.5rem',
+            position: 'relative',
+            overflow: 'hidden'
+          }}
+        >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <Target className="w-6 h-6" style={{ color: '#fb7185' }} />
@@ -111,19 +123,62 @@ export default function TamSamSom({ data }) {
 
       </div>
 
-      <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2rem', width: '100%', height: '220px', position: 'relative' }}>
+      <div className="tam-sam-som-funnel" style={{ display: 'flex', justifyContent: 'center', marginTop: '1.5rem', width: '100%', height: '180px', position: 'relative' }}>
         {/* Diagrama de círculos concéntricos para representar visualmente el embudo de mercado */}
-        <div style={{ position: 'absolute', width: '220px', height: '220px', borderRadius: '50%', border: '2px dashed rgba(99, 102, 241, 0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
-          <span style={{ position: 'absolute', top: '15px', fontSize: '0.85rem', color: '#818cf8', fontWeight: 'bold' }}>TAM</span>
-          <div style={{ width: '150px', height: '150px', borderRadius: '50%', border: '2px dashed rgba(16, 185, 129, 0.7)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', paddingBottom: '15px' }}>
-            <span style={{ fontSize: '0.85rem', color: '#34d399', fontWeight: 'bold' }}>SAM</span>
-            <div style={{ position: 'absolute', top: '75px', width: '90px', height: '90px', borderRadius: '50%', background: 'rgba(244, 63, 94, 0.2)', border: '2px solid #fb7185', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 15px rgba(244, 63, 94, 0.3)' }}>
-               <span style={{ fontSize: '0.85rem', color: '#fb7185', fontWeight: 'bold' }}>SOM</span>
+        <div style={{ position: 'absolute', width: '180px', height: '180px', borderRadius: '50%', border: '2px dashed rgba(99, 102, 241, 0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
+          <span style={{ position: 'absolute', top: '10px', fontSize: '0.78rem', color: '#818cf8', fontWeight: 'bold' }}>TAM</span>
+          <div style={{ width: '125px', height: '125px', borderRadius: '50%', border: '2px dashed rgba(16, 185, 129, 0.7)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', paddingBottom: '10px' }}>
+            <span style={{ fontSize: '0.78rem', color: '#34d399', fontWeight: 'bold' }}>SAM</span>
+            <div style={{ position: 'absolute', top: '60px', width: '70px', height: '70px', borderRadius: '50%', background: 'rgba(244, 63, 94, 0.2)', border: '2px solid #fb7185', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 15px rgba(244, 63, 94, 0.3)' }}>
+               <span style={{ fontSize: '0.75rem', color: '#fb7185', fontWeight: 'bold' }}>SOM</span>
             </div>
           </div>
         </div>
       </div>
-      
+
+      <style>{`
+        @media print {
+          .tam-sam-som-container {
+            padding: 1rem !important;
+            margin-bottom: 1rem !important;
+            border-radius: 12px !important;
+            box-shadow: none !important;
+            background: #ffffff !important;
+            border: 1.5px solid #cbd5e1 !important;
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+          }
+          .tam-sam-som-grid {
+            gap: 0.5rem !important;
+            grid-template-columns: repeat(3, 1fr) !important;
+          }
+          .tam-sam-som-card {
+            padding: 0.85rem !important;
+            border-radius: 8px !important;
+          }
+          .tam-sam-som-card p {
+            font-size: 0.75rem !important;
+            line-height: 1.3 !important;
+          }
+          .tam-sam-som-funnel {
+            height: 140px !important;
+            margin-top: 0.75rem !important;
+          }
+          .tam-sam-som-funnel > div {
+            width: 140px !important;
+            height: 140px !important;
+          }
+          .tam-sam-som-funnel > div > div {
+            width: 95px !important;
+            height: 95px !important;
+          }
+          .tam-sam-som-funnel > div > div > div {
+            top: 45px !important;
+            width: 50px !important;
+            height: 50px !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }

@@ -1555,10 +1555,35 @@ textarea.form-control {
     width: 100% !important;
     height: 100% !important;
     display: block !important;
+    position: relative !important;
   }
   
   .ol-viewport canvas {
     display: block !important;
     max-width: none !important;
+    width: 100% !important;
+  }
+
+  /* ReactFlow Diagram Print Optimization */
+  .react-flow {
+    background: #ffffff !important;
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  .react-flow__viewport {
+    transform-origin: center center !important;
+  }
+
+  .react-flow__node {
+    background: #ffffff !important;
+    border: 1.5px solid #6366f1 !important;
+    color: #0f172a !important;
+    box-shadow: none !important;
+  }
+
+  .react-flow__edge-path {
+    stroke: #6366f1 !important;
+    stroke-width: 2px !important;
   }
 }

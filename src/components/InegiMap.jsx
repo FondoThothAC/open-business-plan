@@ -194,18 +194,19 @@ export default function InegiMap({
     };
   }, [munData, businesses, polygonCoords, radius]);
 
-  const [olLoaded, setOlLoaded] = useState(false);
+  const [olLoaded, setOlLoaded] = useState(() => typeof window !== 'undefined' && Boolean(window.ol));
   const [olError, setOlError] = useState(false);
 
   useEffect(() => {
-    if (window.ol) {
+    if (typeof window !== 'undefined' && window.ol) {
       setOlLoaded(true);
       return;
     }
 
     const scriptId = 'openlayers-script';
-    if (!document.getElementById(scriptId)) {
-      const script = document.createElement('script');
+    let script = document.getElementById(scriptId);
+    if (!script) {
+      script = document.createElement('script');
       script.id = scriptId;
       script.src = 'https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.5.0/build/ol.js';
       script.onload = () => setOlLoaded(true);
@@ -217,13 +218,12 @@ export default function InegiMap({
       link.href = 'https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.5.0/css/ol.css';
       document.head.appendChild(link);
     } else {
-      // Si el script ya está inyectado pero aún no carga, esperar
       const checkOl = setInterval(() => {
         if (window.ol) {
           setOlLoaded(true);
           clearInterval(checkOl);
         }
-      }, 500);
+      }, 100);
       setTimeout(() => clearInterval(checkOl), 10000);
     }
   }, []);
