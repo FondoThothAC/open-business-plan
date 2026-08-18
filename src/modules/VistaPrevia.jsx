@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { usePlan } from '../context/PlanContext';
-import { Printer, MessageSquare, Sparkles, Wand2, Bot, BrainCircuit, RefreshCw } from 'lucide-react';
+import { Printer, MessageSquare, Sparkles, Wand2, Bot, BrainCircuit, RefreshCw, ZoomIn, ZoomOut, Maximize2, RotateCcw } from 'lucide-react';
 import { refactorFieldWithComments } from '../lib/ai';
 import FinancialCharts, { PrintableFinancialReports } from '../components/FinancialCharts';
 import MermaidViewer from '../components/MermaidViewer';
@@ -1239,6 +1239,8 @@ const ModuleRefinementPanel = ({ pillarKey, moduleKey, fields, planData, updateS
 export default function VistaPrevia() {
   const { planData, updateConfig, manualSaveProject, updateSection, addComment, deleteComment } = usePlan();
   const [printMargin, setPrintMargin] = React.useState(0.8); // Margen en cm
+  const [zoomLevel, setZoomLevel] = React.useState(100); // Nivel de Zoom en % (50% a 150%)
+  const [fitToWidth, setFitToWidth] = React.useState(false); // Modo de ajuste automático al ancho de ventana
   const [refactorStatus, setRefactorStatus] = React.useState({ active: false, total: 0, completed: 0, currentField: '' });
 
   const commentedFieldsCount = useMemo(() => {
@@ -2204,6 +2206,106 @@ export default function VistaPrevia() {
             />
           </div>
 
+          {/* Controles de Zoom y Ajuste de Ancho (Estilo Visor PDF) */}
+          <div className="zoom-controls" style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '0.4rem', 
+            background: 'var(--bg-panel)', 
+            backdropFilter: 'var(--glass-blur)',
+            padding: '0.4rem 0.6rem', 
+            borderRadius: '10px', 
+            border: '1px solid var(--border-color)' 
+          }}>
+            <button 
+              type="button"
+              title="Alejar Zoom (Ctrl/Cmd -)" 
+              onClick={() => { setFitToWidth(false); setZoomLevel(prev => Math.max(50, prev - 10)); }}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: 'var(--text-primary)',
+                padding: '4px 6px',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+              className="hover:bg-[var(--bg-panel-hover)]"
+            >
+              <ZoomOut className="w-4 h-4" />
+            </button>
+
+            <span style={{ fontSize: '0.78rem', fontWeight: 700, minWidth: '42px', textAlign: 'center', color: fitToWidth ? 'var(--accent-color)' : 'var(--text-primary)' }}>
+              {fitToWidth ? 'Auto' : `${zoomLevel}%`}
+            </span>
+
+            <button 
+              type="button"
+              title="Acercar Zoom (Ctrl/Cmd +)" 
+              onClick={() => { setFitToWidth(false); setZoomLevel(prev => Math.min(160, prev + 10)); }}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: 'var(--text-primary)',
+                padding: '4px 6px',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+              className="hover:bg-[var(--bg-panel-hover)]"
+            >
+              <ZoomIn className="w-4 h-4" />
+            </button>
+
+            <div style={{ width: '1px', height: '18px', background: 'var(--border-color)', margin: '0 2px' }} />
+
+            <button 
+              type="button"
+              title={fitToWidth ? 'Restablecer a vista normal' : 'Ajustar al ancho de la ventana'} 
+              onClick={() => { setFitToWidth(!fitToWidth); if (!fitToWidth) setZoomLevel(100); }}
+              style={{
+                background: fitToWidth ? 'var(--accent-color)' : 'transparent',
+                border: 'none',
+                color: fitToWidth ? '#ffffff' : 'var(--text-primary)',
+                padding: '4px 8px',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.35rem',
+                fontSize: '0.75rem',
+                fontWeight: 600
+              }}
+            >
+              <Maximize2 className="w-3.5 h-3.5" />
+              <span>Ajustar Ancho</span>
+            </button>
+
+            {zoomLevel !== 100 && !fitToWidth && (
+              <button 
+                type="button"
+                title="Restablecer al 100%" 
+                onClick={() => { setZoomLevel(100); setFitToWidth(false); }}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  color: 'var(--text-secondary)',
+                  padding: '4px 6px',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center'
+                }}
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
+
           {commentedFieldsCount > 0 && (
             <button 
               className="btn btn-primary" 
@@ -2231,13 +2333,26 @@ export default function VistaPrevia() {
         </div>
       </div>
 
-      <div className="preview-document print-preview-mode" style={{ 
-        background: 'transparent', 
-        color: '#1e293b', 
-        maxWidth: '100%',
-        margin: '0 auto',
-        transition: 'all 0.3s ease'
-      }}>
+      <div 
+        className="preview-viewport-wrapper"
+        style={{
+          width: '100%',
+          overflowX: 'auto',
+          display: 'flex',
+          justifyContent: 'center',
+          paddingBottom: '3rem'
+        }}
+      >
+        <div className="preview-document print-preview-mode" style={{ 
+          background: 'transparent', 
+          color: '#1e293b', 
+          width: fitToWidth ? '100%' : `${zoomLevel}%`,
+          maxWidth: fitToWidth ? '100%' : (zoomLevel > 100 ? `${(zoomLevel / 100) * 1100}px` : '100%'),
+          transform: (!fitToWidth && zoomLevel !== 100) ? `scale(${zoomLevel / 100})` : 'none',
+          transformOrigin: 'top center',
+          margin: '0 auto',
+          transition: 'all 0.25s ease'
+        }}>
         
         {/* Render de la Portada Personalizada */}
         {renderCoverPage()}
@@ -2973,6 +3088,7 @@ export default function VistaPrevia() {
           <p>Documento generado por OpenPlan V2 - Sistema de Inteligencia Empresarial</p>
           <p>© 2026 {planData?.config?.brandKit?.companyName}</p>
         </footer>
+        </div>
       </div>
 
       {/* Refactor/Correction Progress Overlay */}

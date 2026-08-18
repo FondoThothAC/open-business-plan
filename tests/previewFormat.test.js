@@ -85,4 +85,12 @@ test('Preview & Print Formatting - TDD Test Suite', async (t) => {
     assert.ok(previewContent.includes('id="indice"'), 'Debe incluir anchor id indice');
     assert.ok(previewContent.includes('id={`seccion-${mod.key}`}'), 'Debe incluir anchor id por cada modulo');
   });
+
+  await t.test('Debe verificar que VistaPrevia.jsx integra controles de Zoom y Ajuste de Ancho', () => {
+    const previewContent = fs.readFileSync(path.resolve('src/modules/VistaPrevia.jsx'), 'utf8');
+
+    assert.ok(previewContent.includes('zoomLevel'), 'Debe manejar el estado zoomLevel');
+    assert.ok(previewContent.includes('fitToWidth'), 'Debe manejar el modo fitToWidth');
+    assert.ok(previewContent.includes('ZoomIn') || previewContent.includes('zoom-controls'), 'Debe incluir controles visuales de Zoom');
+  });
 });

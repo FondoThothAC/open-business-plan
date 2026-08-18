@@ -681,6 +681,13 @@ textarea.form-control {
     color: #1e293b !important;
   }
  
+  .preview-viewport-wrapper {
+    overflow: visible !important;
+    display: block !important;
+    padding: 0 !important;
+    width: 100% !important;
+  }
+
   .preview-document {
     box-shadow: none !important;
     border: none !important;
@@ -688,6 +695,7 @@ textarea.form-control {
     margin: 0 !important;
     max-width: 100% !important;
     width: 100% !important;
+    transform: none !important;
     background: white !important;
   }
 
