@@ -319,7 +319,15 @@ export default function Configuracion() {
     geminiStatus,
     testGemini,
     openaiStatus,
-    testOpenai
+    testOpenai,
+    claudeStatus,
+    testClaude,
+    deepseekStatus,
+    testDeepseek,
+    grokStatus,
+    testGrok,
+    ollamaCloudStatus,
+    testOllamaCloud
   } = apiStatus;
 
   const [ollamaModels, setOllamaModels] = useState([]);
