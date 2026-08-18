@@ -65,16 +65,16 @@ const createEmptyPlan = (projectType = 'business') => {
         nvidiaKey: KEYS.nvidia, mistralKey: KEYS.mistral, ollamaKey: KEYS.ollama,
         pollinationsKey: KEYS.pollinations,
         endpoint: 'http://localhost:11434', lmStudioEndpoint: 'http://localhost:1234/v1',
-        model: 'llama-3.3-70b-versatile',   // Modelo principal activo de ultra-calidad y velocidad
+        model: 'groq/compound-mini',   // Modelo principal activo verificado
         depth: 1,              // 1=Rápido, 2=Pro, 3=Profundo
         contextSize: 65536,    // 64k por defecto
         // [DDD] Modelos por rol
         agentModels: {
-          analista:     { model: 'llama-3.3-70b-versatile', role: 'Analista Estratégico' },
-          critico:      { model: 'llama-3.3-70b-versatile', role: 'Crítico Financiero' },
-          redactor:     { model: 'llama-3.3-70b-versatile', role: 'Redactor Ejecutivo' },
-          estratega:    { model: 'llama-3.3-70b-versatile', role: 'Estratega de Negocio' },
-          abogadoDiablo:{ model: 'llama-3.3-70b-versatile', role: "Devil's Advocate" },
+          analista:     { model: 'groq/compound-mini', role: 'Analista Estratégico' },
+          critico:      { model: 'groq/compound-mini', role: 'Crítico Financiero' },
+          redactor:     { model: 'groq/compound-mini', role: 'Redactor Ejecutivo' },
+          estratega:    { model: 'groq/compound-mini', role: 'Estratega de Negocio' },
+          abogadoDiablo:{ model: 'groq/compound-mini', role: "Devil's Advocate" },
         }
       },
       brandKit: { primaryColor: '#6366f1', secondaryColor: '#8b5cf6', logoUrl: '', companyName: '' },

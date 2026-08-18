@@ -132,22 +132,23 @@ function findBestOllamaModel(requestedModel, installedModels) {
 const CLOUD_DEFAULT_MODELS = {
   gemini: 'gemini-1.5-flash',
   openai: 'gpt-4o',
-  groq: 'llama-3.3-70b-versatile',
+  groq: 'groq/compound-mini',
   mistral: 'mistral-large-latest',
-  nvidia: 'nvidia/llama-3.1-nemotron-70b-instruct',
+  nvidia: 'meta/llama-3.1-70b-instruct',
 };
 
 // Resuelve un par (proveedor, modelo) coherente: nunca envía un modelo local a la nube
 function resolveProviderModel({ primaryProvider, model, installedModels = [] }) {
-  let prov = primaryProvider || 'ollama';
+  let prov = primaryProvider || 'groq';
   const resolved = String(model || '').trim();
 
   // Detectar proveedor por el nombre del modelo si es explícitamente cloud
   if (resolved.includes('gemini')) prov = 'gemini';
+  else if (resolved.includes('gpt-oss') || resolved.includes('compound') || resolved.includes('groq')) prov = 'groq';
   else if (resolved.includes('gpt')) prov = 'openai';
   else if (resolved.includes('mistral-large')) prov = 'mistral';
   else if (resolved.includes('nvidia') || resolved.includes('google/gemma')) prov = 'nvidia';
-  else if (resolved.includes('llama-3.3-70b')) prov = 'groq';
+  else if (resolved.includes('llama-3.3-70b') || resolved.includes('llama-3.1-8b')) prov = 'groq';
 
   // Proveedores locales: resolver contra los modelos instalados de Ollama
   if (prov === 'ollama' || prov === 'lmstudio') {
@@ -156,8 +157,8 @@ function resolveProviderModel({ primaryProvider, model, installedModels = [] }) 
   }
 
   // Proveedores de nube: si el modelo configurado no es cloud, usar el default del proveedor
-  const isCloudModel = /gemini|gpt|mistral|nvidia|llama-3\.3|:cloud/i.test(resolved);
-  const finalModel = (isCloudModel && resolved) ? resolved : (CLOUD_DEFAULT_MODELS[prov] || resolved || 'gemini-1.5-flash');
+  const isCloudModel = /gemini|gpt|mistral|nvidia|llama-3\.3|llama-3\.1|compound|qwen|oss|:cloud/i.test(resolved);
+  const finalModel = (isCloudModel && resolved) ? resolved : (CLOUD_DEFAULT_MODELS[prov] || resolved || 'groq/compound-mini');
   return { provider: prov, model: finalModel };
 }
 
@@ -818,18 +819,47 @@ async function fetchWithProxy(url, options = {}) {
 }
 
 async function callGroq(apiKey, model, prompt, expectJson) {
-  const response = await fetchWithRetry('https://api.groq.com/openai/v1/chat/completions', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-    body: JSON.stringify({
-      model: model || 'llama-3.3-70b-versatile',
-      messages: [{ role: 'user', content: prompt }],
-      response_format: expectJson ? { type: 'json_object' } : undefined
-    })
-  });
-  const data = await response.json();
-  if (data.error) throw new Error(data.error.message);
-  return data.choices[0].message.content;
+  // Lista de modelos ordenados por prioridad de disponibilidad en Groq
+  const preferredModel = model || 'groq/compound-mini';
+  const groqCandidateModels = [
+    preferredModel,
+    'groq/compound-mini',
+    'qwen/qwen3.6-27b',
+    'openai/gpt-oss-120b',
+    'openai/gpt-oss-20b',
+    'llama-3.3-70b-versatile',
+    'llama-3.1-8b-instant'
+  ];
+  const uniqueModels = [...new Set(groqCandidateModels)];
+
+  let lastError = null;
+
+  for (const candidate of uniqueModels) {
+    try {
+      const response = await fetchWithRetry('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+        body: JSON.stringify({
+          model: candidate,
+          messages: [{ role: 'user', content: prompt }],
+          response_format: expectJson ? { type: 'json_object' } : undefined,
+          temperature: 0.7
+        })
+      });
+
+      const data = await response.json();
+      if (!data.error && data.choices?.[0]?.message?.content !== undefined) {
+        return data.choices[0].message.content;
+      }
+      if (data.error) {
+        lastError = new Error(data.error.message);
+      }
+    } catch (err) {
+      lastError = err;
+    }
+  }
+
+  throw lastError || new Error('No se pudo obtener respuesta de ningún modelo disponible en Groq.');
 }
 
 async function callNvidia(apiKey, model, prompt) {
