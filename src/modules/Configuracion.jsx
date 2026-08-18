@@ -288,6 +288,19 @@ function ApiStatusBadge({ status, onTest, disabled }) {
 export default function Configuracion() {
   const { planData, updateConfig } = usePlan();
   const apiStatus = useApiStatus(planData);
+  const {
+    groqStatus,
+    testGroq,
+    nvidiaStatus,
+    testNvidia,
+    mistralStatus,
+    testMistral,
+    geminiStatus,
+    testGemini,
+    openaiStatus,
+    testOpenai
+  } = apiStatus;
+
   const [ollamaModels, setOllamaModels] = useState([]);
   const [isFetchingModels, setIsFetchingModels] = useState(false);
   const [ollamaOnline, setOllamaOnline] = useState(false);
