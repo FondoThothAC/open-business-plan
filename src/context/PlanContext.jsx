@@ -557,7 +557,8 @@ export const PlanProvider = ({ children }) => {
       localStorage.removeItem('openplan_active_project_type');
       localStorage.setItem('openplan_new_project_flag', 'true');
       localStorage.setItem('openplan_is_unsaved_new', 'true'); // Flag to prevent auto-loading of the last edited project
-      window.location.href = '/semilla';
+      const basePath = import.meta.env.BASE_URL || '/';
+      window.location.href = `${basePath.endsWith('/') ? basePath.slice(0, -1) : basePath}/semilla`;
     }
   };
 

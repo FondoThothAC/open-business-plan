@@ -2127,7 +2127,8 @@ export default function Configuracion() {
           onClick={() => {
             if (window.confirm('⚠️ ¿LIMPIAR TODO? Esto borrará el caché del navegador y reiniciará el proyecto desde cero. Úsalo si ves datos mezclados.')) {
               localStorage.clear();
-              window.location.href = '/semilla';
+              const basePath = import.meta.env.BASE_URL || '/';
+              window.location.href = `${basePath.endsWith('/') ? basePath.slice(0, -1) : basePath}/semilla`;
             }
           }}
         >

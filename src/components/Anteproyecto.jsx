@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { usePlan } from '../context/PlanContext';
 import { FRAMEWORKS } from '../config/frameworks';
 import { getApiBase } from '../config/apiConfig';
@@ -13,6 +14,7 @@ import { PixelSwarmViewer } from './swarm/PixelSwarmViewer';
 import { SwarmInterviewModal } from './swarm/SwarmInterviewModal';
 
 export default function Anteproyecto() {
+  const navigate = useNavigate();
   const { planData, updateSemilla, updateConfig, _setPlanData } = usePlan();
 
   // Si la semilla ya tiene datos cargados en el plan, mostramos el paso de revisión (3)
@@ -480,9 +482,9 @@ export default function Anteproyecto() {
                     const firstPillar = framework.pillars?.[0];
                     const firstModule = firstPillar?.modules?.[0];
                     if (firstPillar && firstModule) {
-                      window.location.href = `/modulo/${firstPillar.key}/${firstModule.key}`;
+                      navigate(`/modulo/${firstPillar.key}/${firstModule.key}`);
                     } else {
-                      window.location.href = '/';
+                      navigate('/semilla');
                     }
                   }}
                   style={{
