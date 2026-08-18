@@ -87,21 +87,52 @@ export default function BobChatModal({ isOpen, onClose, planData, onExecuteComma
         }
       }
 
-      // 2. Consulta de IA conversacional con el contexto del plan
+      // 2. Consulta de IA conversacional ultra-rápida con el contexto del plan
       const rawAi = planData?.config?.ai || {};
+      
+      // Priorizar proveedores de ultra-baja latencia: Groq (ultra rápido) -> Gemini Flash -> Mistral -> Nvidia
+      let selectedProvider = 'groq';
+      let selectedModel = 'llama-3.3-70b-versatile';
+      let selectedKey = rawAi.groqKey;
+
+      if (rawAi.groqKey) {
+        selectedProvider = 'groq';
+        selectedModel = 'llama-3.3-70b-versatile';
+        selectedKey = rawAi.groqKey;
+      } else if (rawAi.apiKey) {
+        selectedProvider = 'gemini';
+        selectedModel = 'gemini-1.5-flash';
+        selectedKey = rawAi.apiKey;
+      } else if (rawAi.mistralKey) {
+        selectedProvider = 'mistral';
+        selectedModel = 'mistral-large-latest';
+        selectedKey = rawAi.mistralKey;
+      } else if (rawAi.nvidiaKey) {
+        selectedProvider = 'nvidia';
+        selectedModel = 'meta/llama-3.1-70b-instruct';
+        selectedKey = rawAi.nvidiaKey;
+      }
+
       const aiConfig = {
-        provider: rawAi.primaryProvider || rawAi.provider || (rawAi.nvidiaKey ? 'nvidia' : rawAi.mistralKey ? 'mistral' : rawAi.apiKey ? 'gemini' : 'groq'),
-        model: rawAi.model || 'meta/llama-3.1-70b-instruct',
-        apiKey: rawAi.mistralKey || rawAi.apiKey,
-        nvidiaKey: rawAi.nvidiaKey,
+        provider: selectedProvider,
+        model: selectedModel,
+        apiKey: selectedKey,
         groqKey: rawAi.groqKey,
+        nvidiaKey: rawAi.nvidiaKey,
+        mistralKey: rawAi.mistralKey,
         endpoint: rawAi.endpoint
       };
       
-      const systemPrompt = `Eres BOB, el asistente de negocios ejecutivo de CELIS ENGINE para el proyecto "${planData?.config?.brandKit?.companyName || 'Plan de Negocios'}".
-Responde en español de forma concisa, profesional y directa en 2-3 párrafos máximo.`;
+      const systemPrompt = `Eres BOB, el copiloto y asistente de negocios ejecutivo de CELIS ENGINE para el proyecto "${planData?.config?.brandKit?.companyName || 'Plan de Negocios'}".
+Responde en español de forma concisa, clara, profesional y directa en 1 o 2 párrafos máximo.`;
 
-      const response = await callAiProvider(aiConfig, `${systemPrompt}\n\nPregunta del usuario: "${query}"`, false);
+      // Timeout de seguridad de 12 segundos para que no se quede bloqueado
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Tiempo de espera agotado. El proveedor tardó demasiado.')), 12000)
+      );
+
+      const aiPromise = callAiProvider(aiConfig, `${systemPrompt}\n\nPregunta del usuario: "${query}"`, false);
+      const response = await Promise.race([aiPromise, timeoutPromise]);
       
       setMessages(prev => [...prev, {
         id: `bob_${Date.now()}`,
@@ -113,7 +144,7 @@ Responde en español de forma concisa, profesional y directa en 2-3 párrafos m�
       setMessages(prev => [...prev, {
         id: `bob_${Date.now()}`,
         sender: 'bob',
-        text: `Lo siento, ocurrió un detalle al procesar la consulta: ${err.message}`,
+        text: `Lo siento, ocurrió un detalle al consultar: ${err.message}`,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       }]);
     } finally {

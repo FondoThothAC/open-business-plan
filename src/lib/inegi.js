@@ -3,7 +3,9 @@
  * Incluye todos los métodos del DENUE: Buscar, Ficha, Nombre, BuscarEntidad, BuscarAreaAct, Cuantificar
  */
 
-const API_BASE = 'http://localhost:3001';
+import { getApiBase } from '../config/apiConfig';
+
+const API_BASE = getApiBase();
 
 // ─────────────────────────────────────────────────────────
 //  Geocodificación (Nominatim/OSM)

@@ -84,6 +84,8 @@ function estimateMesaCost(contextTokens, model) {
   return { costUSD, tokensIn: Math.round(avgInput), tokensOut: avgOutput };
 }
 
+import { getApiBase } from '../config/apiConfig';
+
 // ─────────────────────────────────────────────────────────
 //  Hook & Component to test API Connections
 // ─────────────────────────────────────────────────────────
@@ -101,6 +103,15 @@ function useApiStatus(planData) {
   const [grokStatus, setGrokStatus] = useState({ state: 'idle', message: '' });
   const [ollamaCloudStatus, setOllamaCloudStatus] = useState({ state: 'idle', message: '' });
 
+  const safeJsonParse = async (res) => {
+    const text = await res.text();
+    try {
+      return JSON.parse(text);
+    } catch {
+      return { success: false, error: text || `HTTP ${res.status}` };
+    }
+  };
+
   const testLlmProvider = async (provider, apiKey, setStatus) => {
     if (!apiKey) {
       setStatus({ state: 'idle', message: 'No configurado' });
@@ -108,13 +119,13 @@ function useApiStatus(planData) {
     }
     setStatus({ state: 'checking', message: 'Probando...' });
     try {
-      const backendBase = (typeof window !== 'undefined' && window.location.hostname !== 'localhost') ? '' : 'http://localhost:3001';
+      const backendBase = getApiBase();
       const res = await fetch(`${backendBase}/api/test/${provider}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ apiKey })
       });
-      const data = await res.json();
+      const data = await safeJsonParse(res);
       if (data.success) {
         setStatus({ state: 'online', message: 'En línea ✓' });
       } else {
@@ -133,13 +144,13 @@ function useApiStatus(planData) {
     }
     setTavilyStatus({ state: 'checking', message: 'Probando...' });
     try {
-      const backendBase = (typeof window !== 'undefined' && window.location.hostname !== 'localhost') ? '' : 'http://localhost:3001';
+      const backendBase = getApiBase();
       const res = await fetch(`${backendBase}/api/test/tavily`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ apiKey: key })
       });
-      const data = await res.json();
+      const data = await safeJsonParse(res);
       if (data.success) {
         setTavilyStatus({ state: 'online', message: 'En línea ✓' });
       } else {
@@ -158,13 +169,13 @@ function useApiStatus(planData) {
     }
     setInegiStatus({ state: 'checking', message: 'Probando...' });
     try {
-      const backendBase = (typeof window !== 'undefined' && window.location.hostname !== 'localhost') ? '' : 'http://localhost:3001';
+      const backendBase = getApiBase();
       const res = await fetch(`${backendBase}/api/test/inegi`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token })
       });
-      const data = await res.json();
+      const data = await safeJsonParse(res);
       if (data.success) {
         setInegiStatus({ state: 'online', message: 'En línea ✓' });
       } else {
@@ -183,12 +194,13 @@ function useApiStatus(planData) {
     }
     setBanxicoStatus({ state: 'checking', message: 'Probando...' });
     try {
-      const res = await fetch('http://localhost:3001/api/test/banxico', {
+      const backendBase = getApiBase();
+      const res = await fetch(`${backendBase}/api/test/banxico`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token })
       });
-      const data = await res.json();
+      const data = await safeJsonParse(res);
       if (data.success) {
         setBanxicoStatus({ state: 'online', message: 'En línea ✓' });
       } else {

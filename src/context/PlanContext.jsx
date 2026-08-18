@@ -1,6 +1,7 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { PROJECT_EXAMPLES } from '../lib/projects_db';
 import { FRAMEWORKS } from '../config/frameworks';
+import { getApiBase } from '../config/apiConfig';
 
 const EXAMPLE_FRAMEWORK_MAP = {
   brujula: 'business',
@@ -182,6 +183,21 @@ export const PlanProvider = ({ children }) => {
       const parsed = JSON.parse(saved);
       const base = createEmptyPlan(parsed.config?.projectType || 'business');
       const merged = deepMerge(base, parsed);
+
+      // Inyectar API Keys predeterminadas si están vacías
+      if (merged.config?.ai) {
+        if (!merged.config.ai.apiKey) merged.config.ai.apiKey = KEYS.gemini;
+        if (!merged.config.ai.groqKey) merged.config.ai.groqKey = KEYS.groq;
+        if (!merged.config.ai.nvidiaKey) merged.config.ai.nvidiaKey = KEYS.nvidia;
+        if (!merged.config.ai.mistralKey) merged.config.ai.mistralKey = KEYS.mistral;
+        if (!merged.config.ai.ollamaKey) merged.config.ai.ollamaKey = KEYS.ollama;
+        if (!merged.config.ai.pollinationsKey) merged.config.ai.pollinationsKey = KEYS.pollinations;
+      }
+      if (merged.config?.externalApis) {
+        if (!merged.config.externalApis.inegiToken) merged.config.externalApis.inegiToken = KEYS.denue;
+        if (!merged.config.externalApis.banxicoToken) merged.config.externalApis.banxicoToken = KEYS.banxico;
+      }
+
       if (!merged.config.activeMethodologies) {
         merged.config.activeMethodologies = [merged.config.projectType || 'business'];
       }
@@ -277,7 +293,7 @@ export const PlanProvider = ({ children }) => {
         // Para evitar condiciones de carrera donde el backend pise cambios locales de localStorage síncronos
         // que aún no se han guardado con debounce, si el ID coincide con el que ya tenemos en memoria, no hacemos fetch.
         try {
-          const backendBase = (typeof window !== 'undefined' && window.location.hostname !== 'localhost') ? '' : 'http://localhost:3001';
+          const backendBase = getApiBase();
           const response = await fetch(`${backendBase}/api/projects/${activeType}/${activeId}`);
           if (response.ok) {
             const data = await response.json();
@@ -286,10 +302,17 @@ export const PlanProvider = ({ children }) => {
             const merged = deepMerge(fresh, data);
             
             // Garantizar persistencia de API Keys si el JSON remoto o local tenía strings vacíos
+            if (!merged.config.ai.apiKey) merged.config.ai.apiKey = KEYS.gemini;
+            if (!merged.config.ai.groqKey) merged.config.ai.groqKey = KEYS.groq;
             if (!merged.config.ai.nvidiaKey) merged.config.ai.nvidiaKey = KEYS.nvidia;
             if (!merged.config.ai.mistralKey) merged.config.ai.mistralKey = KEYS.mistral;
             if (!merged.config.ai.pollinationsKey) merged.config.ai.pollinationsKey = KEYS.pollinations;
             if (!merged.config.ai.ollamaKey) merged.config.ai.ollamaKey = KEYS.ollama;
+
+            if (merged.config.externalApis) {
+              if (!merged.config.externalApis.inegiToken) merged.config.externalApis.inegiToken = KEYS.denue;
+              if (!merged.config.externalApis.banxicoToken) merged.config.externalApis.banxicoToken = KEYS.banxico;
+            }
 
             if (!merged.config.activeMethodologies) {
               merged.config.activeMethodologies = [merged.config.projectType || 'business'];
@@ -324,7 +347,7 @@ export const PlanProvider = ({ children }) => {
     setSaveStatus('saving');
     const saveTimer = setTimeout(async () => {
       try {
-        const backendBase = (typeof window !== 'undefined' && window.location.hostname !== 'localhost') ? '' : 'http://localhost:3001';
+        const backendBase = getApiBase();
         const response = await fetch(`${backendBase}/api/save`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -355,7 +378,8 @@ export const PlanProvider = ({ children }) => {
   const manualSaveProject = async (customPlanData = planData) => {
     setSaveStatus('saving');
     try {
-      const response = await fetch('http://localhost:3001/api/save', {
+      const backendBase = getApiBase();
+      const response = await fetch(`${backendBase}/api/save`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(customPlanData)
@@ -437,8 +461,9 @@ export const PlanProvider = ({ children }) => {
 
   const loadSavedProject = async (type, id) => {
     try {
-      const response = await fetch(`http://localhost:3001/api/projects/${type}/${id}`);
-      if (!response.ok) throw new Error('Error al cargar el proyecto.');
+      const backendBase = getApiBase();
+      const response = await fetch(`${backendBase}/api/projects/${type}/${id}`);
+      if (!response.ok) throw new Error('No se pudo cargar el proyecto del servidor');
       const data = await response.json();
       
       const fresh = createEmptyPlan(data.config?.projectType || 'business');

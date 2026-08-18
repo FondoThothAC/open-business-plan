@@ -19,7 +19,7 @@ echo "   VPS: $VPS_HOST | Clave: $SSH_KEY"
 # 1. Compilar el frontend
 echo ""
 echo "🏗️  Compilando bundle de producción..."
-npm run build
+VITE_BASE_PATH=/obp/ npm run build
 
 # 2. Subir dist/ al VPS via rsync
 echo ""
@@ -29,14 +29,26 @@ rsync -avz --delete \
   dist/ \
   "$VPS:$VPS_APP_DIR/dist/"
 
-# 3. Subir el backend server
+# 3. Aplicar configuración Nginx para SPA fallback
+echo ""
+echo "⚙️  Verificando configuración Nginx..."
+ssh -i "$SSH_KEY" -o StrictHostKeyChecking=no "$VPS" \
+  "sudo bash -c 'cat > /etc/nginx/conf.d/obp.conf <<EOF
+location /obp/ {
+    alias $VPS_APP_DIR/dist/;
+    try_files \$uri \$uri/ /obp/index.html;
+}
+EOF
+nginx -t && systemctl reload nginx'"
+
+# 4. Subir el backend server
 echo ""
 echo "📤 Actualizando server/index.js en VPS..."
 scp -i "$SSH_KEY" -o StrictHostKeyChecking=no \
   server/index.js \
   "$VPS:$VPS_APP_DIR/server/index.js"
 
-# 4. Reiniciar backend PM2
+# 5. Reiniciar backend PM2
 echo ""
 echo "⚙️  Reiniciando servicio PM2 (obp-backend)..."
 ssh -i "$SSH_KEY" -o StrictHostKeyChecking=no "$VPS" \

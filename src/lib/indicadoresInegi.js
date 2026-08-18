@@ -4,7 +4,9 @@
  * Incluye caché localStorage de 24h para evitar consultas repetitivas.
  */
 
-const API_BASE = 'http://localhost:3001';
+import { getApiBase } from '../config/apiConfig';
+
+const API_BASE = getApiBase();
 const CACHE_TTL = 1000 * 60 * 60 * 24; // 24 horas
 
 // ─────────────────────────────────────────────────────────
