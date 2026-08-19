@@ -132,11 +132,13 @@ function findBestOllamaModel(requestedModel, installedModels) {
 }
 
 const CLOUD_DEFAULT_MODELS = {
-  gemini: 'gemini-1.5-flash',
-  openai: 'gpt-4o',
-  groq: 'qwen/qwen3.6-27b',
-  mistral: 'mistral-large-latest',
-  nvidia: 'meta/llama-3.1-70b-instruct',
+  gemini:     'gemini-3.6-flash',
+  openai:     'gpt-4o',
+  groq:       'qwen/qwen3.6-27b',
+  mistral:    'mistral-large-latest',
+  nvidia:     'meta/llama-3.1-70b-instruct',
+  openrouter: 'nvidia/nemotron-3.5-lightning:free',
+  opencode:   'openai/gpt-4.1',
 };
 
 // Resuelve un par (proveedor, modelo) coherente: nunca envía un modelo local a la nube
@@ -146,6 +148,7 @@ function resolveProviderModel({ primaryProvider, model, installedModels = [] }) 
 
   // Detectar proveedor por el nombre del modelo si es explícitamente cloud
   if (resolved.includes('gemini')) prov = 'gemini';
+  else if (resolved.includes(':free') || resolved.includes('openrouter')) prov = 'openrouter';
   else if (resolved.includes('gpt-oss') || resolved.includes('compound') || resolved.includes('groq') || resolved.includes('qwen/')) prov = 'groq';
   else if (resolved.includes('gpt')) prov = 'openai';
   else if (resolved.includes('mistral-large')) prov = 'mistral';
@@ -159,7 +162,7 @@ function resolveProviderModel({ primaryProvider, model, installedModels = [] }) 
   }
 
   // Proveedores de nube: si el modelo configurado no es cloud, usar el default del proveedor
-  const isCloudModel = /gemini|gpt|mistral|nvidia|llama-3\.3|llama-3\.1|compound|qwen|oss|:cloud/i.test(resolved);
+  const isCloudModel = /gemini|gpt|mistral|nvidia|llama-3\.3|llama-3\.1|compound|qwen|oss|:free|:cloud/i.test(resolved);
   const finalModel = (isCloudModel && resolved) ? resolved : (CLOUD_DEFAULT_MODELS[prov] || resolved || 'qwen/qwen3.6-27b');
   return { provider: prov, model: finalModel };
 }
@@ -543,47 +546,72 @@ ${fieldsPromptContext}
   const runChain = orchestrators[depth] || runFast;
 
   // ─── Ejecución con fallback inteligente ───────────────────────────────
-  // [EDD] Primero intenta local (Ollama), luego pregunta antes de saltar a nube
+  // [EDD] Si el proveedor primario es nube: falla → siguiente proveedor nube.
+  // Si el proveedor primario es local (Ollama): falla → pregunta antes de saltar a nube.
+
+  const openrouterKey = allPlanData?.config?.ai?.openrouterKey || '';
+  const opencodeKey   = allPlanData?.config?.ai?.opencodeKey   || '';
+  const isCloudPrimary = primaryProvider && primaryProvider !== 'ollama' && primaryProvider !== 'lmstudio';
 
   // Paso 1: Proveedor principal / modelos configurados
   try {
-    const _resolvedPrimary = (primaryProvider === 'ollama' || primaryProvider === 'lmstudio') ? findBestOllamaModel(model || 'nemotron', installedModels) : model;
     await termLog('start', `Iniciando generación (nivel ${depth === 1 ? '⚡ Rápido' : depth === 2 ? '🧠 Pro' : depth === 3 ? '🔬 Profundo' : '🏭 Industrial'}) usando proveedor: ${primaryProvider}...`, primaryProvider);
     return await runChain(null); // null = usar modelos por rol configurados
   } catch (providerError) {
     await termLog('warning', `Proveedor primario falló: ${providerError.message.substring(0, 60)}`, primaryProvider);
   }
 
-  // Paso 2: Probar modelos locales alternativos (filtrados por los instalados para no colgarse con los no instalados)
-  // Priorizar MLX ('qwen3.5:4b-mlx') sobre GGUF en Mac
-  const defaultFallbackOrder = ['qwen3.5:4b-mlx', 'nemotron-3-nano:4b', 'qwen3.5:2b-mlx', 'gemma4:e2b-mlx'];
-  const fallbackLocalModels = defaultFallbackOrder.filter(m => installedModels.includes(m));
-  
-  // Si no hay modelos detectados pero tenemos los fallbacks, usar la lista predeterminada como último recurso
-  const actualFallbacks = fallbackLocalModels.length > 0 ? fallbackLocalModels : defaultFallbackOrder;
+  // Paso 2: Si el primario es NUBE que falló → saltar directo a OpenRouter y Groq (NO a Ollama local)
+  // Si el primario es LOCAL → intentar modelos locales alternativos primero
+  if (isCloudPrimary) {
+    // Fallback 2A: OpenRouter (Nemotron 1M ctx — capa gratuita)
+    if (openrouterKey) {
+      try {
+        await termLog('warning', `Iniciando fallback a OpenRouter (Nemotron 3.5 Lightning 1M ctx)...`, 'openrouter');
+        return await runChain({ provider: 'openrouter', openrouterKey, apiKey: openrouterKey, model: 'nvidia/nemotron-3.5-lightning:free', endpoint });
+      } catch (e) {
+        await termLog('error', `Fallback OpenRouter falló: ${e.message.substring(0, 50)}`, 'openrouter');
+      }
+    }
+    // Fallback 2B: Groq Qwen 3.6 27B
+    if (groqKey && primaryProvider !== 'groq') {
+      try {
+        await termLog('warning', `Iniciando fallback a Groq (Qwen 3.6 27B)...`, 'groq');
+        return await runChain({ provider: 'groq', groqKey, apiKey, model: 'qwen/qwen3.6-27b', endpoint });
+      } catch (e) {
+        await termLog('error', `Fallback Groq falló: ${e.message.substring(0, 50)}`, 'groq');
+      }
+    }
+    // Fallback 2C: Groq GPT-OSS 120B
+    if (groqKey) {
+      try {
+        await termLog('warning', `Iniciando fallback a Groq (GPT-OSS 120B)...`, 'groq');
+        return await runChain({ provider: 'groq', groqKey, apiKey, model: 'openai/gpt-oss-120b', endpoint });
+      } catch (e) {
+        await termLog('error', `Fallback Groq GPT-OSS falló: ${e.message.substring(0, 50)}`, 'groq');
+      }
+    }
+  } else {
+    // Proveedor primario local — intentar otros modelos locales instalados
+    const defaultFallbackOrder = ['qwen3.5:4b-mlx', 'nemotron-3-nano:4b', 'qwen3.5:2b-mlx', 'gemma4:e2b-mlx'];
+    const fallbackLocalModels = defaultFallbackOrder.filter(m => installedModels.includes(m));
+    const actualFallbacks = fallbackLocalModels.length > 0 ? fallbackLocalModels : defaultFallbackOrder;
 
-  for (const altModel of actualFallbacks) {
-    try {
-      await termLog('info', `Intentando modelo local alternativo: ${altModel}`, 'ollama');
-      const altConfig = makeProviderConfig(altModel);
-      return await runChain(altConfig);
-    } catch (altError) {
-      await termLog('error', `Modelo alternativo ${altModel} falló: ${altError.message.substring(0, 50)}`, 'ollama');
+    for (const altModel of actualFallbacks) {
+      try {
+        await termLog('info', `Intentando modelo local alternativo: ${altModel}`, 'ollama');
+        return await runChain(makeProviderConfig(altModel));
+      } catch (altError) {
+        await termLog('error', `Modelo alternativo ${altModel} falló: ${altError.message.substring(0, 50)}`, 'ollama');
+      }
     }
   }
 
   // Paso 2.5: Fallback a NVIDIA NIM (Llama 3.1 70B)
-  if (nvidiaKey) {
+  if (nvidiaKey && primaryProvider !== 'nvidia') {
     try {
       await termLog('warning', `Iniciando fallback automático a NVIDIA NIM (Llama 3.1 70B)...`, 'nvidia');
-      const nvidiaFallbackConfig = {
-        provider: 'nvidia',
-        nvidiaKey,
-        apiKey,
-        model: 'meta/llama-3.1-70b-instruct',
-        endpoint
-      };
-      return await runChain(nvidiaFallbackConfig);
+      return await runChain({ provider: 'nvidia', nvidiaKey, apiKey, model: 'meta/llama-3.1-70b-instruct', endpoint });
     } catch (nvidiaError) {
       await termLog('error', `Fallback a NVIDIA NIM falló: ${nvidiaError.message.substring(0, 50)}`, 'nvidia');
     }
@@ -591,57 +619,38 @@ ${fieldsPromptContext}
 
   // Paso 2.6: Fallback a Mistral AI
   const mistralKey = allPlanData.config?.ai?.mistralKey || (apiKey && apiKey.length === 32 ? apiKey : null);
-  if (mistralKey) {
+  if (mistralKey && primaryProvider !== 'mistral') {
     try {
       await termLog('warning', `Iniciando fallback automático a Mistral AI (Large)...`, 'mistral');
-      const mistralFallbackConfig = {
-        provider: 'mistral',
-        apiKey: mistralKey,
-        model: 'mistral-large-latest',
-        endpoint
-      };
-      return await runChain(mistralFallbackConfig);
+      return await runChain({ provider: 'mistral', apiKey: mistralKey, model: 'mistral-large-latest', endpoint });
     } catch (mistralError) {
       await termLog('error', `Fallback a Mistral falló: ${mistralError.message.substring(0, 50)}`, 'mistral');
     }
   }
 
-  // Paso 2.7: Si tenemos groqKey, cambiar a Groq Llama 3.3 70B
-  if (groqKey) {
+  // Paso 2.7: Fallback a Groq Qwen 3.6 27B (último intento)
+  if (groqKey && primaryProvider !== 'groq') {
     try {
-      await termLog('warning', `Iniciando fallback automático a la nube con Groq (Llama 3.3 70B)...`, 'groq');
-      const groqFallbackConfig = {
-        provider: 'groq',
-        groqKey,
-        apiKey,
-        model: 'llama-3.3-70b-versatile',
-        endpoint
-      };
-      return await runChain(groqFallbackConfig);
+      await termLog('warning', `Fallback final a Groq (Qwen 3.6 27B)...`, 'groq');
+      return await runChain({ provider: 'groq', groqKey, apiKey, model: 'qwen/qwen3.6-27b', endpoint });
     } catch (groqError) {
-      await termLog('error', `Fallback a Groq falló: ${groqError.message.substring(0, 50)}`, 'groq');
+      await termLog('error', `Fallback Groq final falló: ${groqError.message.substring(0, 50)}`, 'groq');
     }
   }
 
-  // Paso 2.8: Si tenemos apiKey (Google Gemini / OpenAI)
-  if (apiKey) {
+  // Paso 2.8: Fallback a Google Gemini 3.6 Flash
+  if (apiKey && primaryProvider !== 'gemini') {
     try {
-      await termLog('warning', `Iniciando fallback automático a Google Gemini Cloud (1.5 Flash)...`, 'gemini');
-      const geminiFallbackConfig = {
-        provider: 'gemini',
-        apiKey,
-        model: 'gemini-1.5-flash',
-        endpoint
-      };
-      return await runChain(geminiFallbackConfig);
+      await termLog('warning', `Iniciando fallback automático a Google Gemini (3.6 Flash)...`, 'gemini');
+      return await runChain({ provider: 'gemini', apiKey, model: 'gemini-3.6-flash', endpoint });
     } catch (geminiError) {
       await termLog('error', `Fallback a Gemini falló: ${geminiError.message.substring(0, 50)}`, 'gemini');
     }
   }
 
-  // Paso 3: Si todos los locales y la nube fallan, indicar necesidad de iniciar Ollama o configurar una API key
-  await termLog('error', 'Todos los modelos locales (Ollama) y fallbacks de nube configurados fallaron o no están disponibles.', 'system');
-  throw new Error('Generación abortada: Modelos locales y de respaldo no disponibles. Revisa tus API Keys configuradas de NVIDIA, Mistral o Groq.');
+  // Paso 3: Error final
+  await termLog('error', 'Todos los proveedores configurados fallaron. Revisa tus API Keys.', 'system');
+  throw new Error('Generación abortada: Todos los proveedores fallaron. Verifica las API Keys en Configuración.');
 }
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -725,17 +734,18 @@ function _showFallbackDialog(errorMsg) {
 // Provider Adapters
 // ─────────────────────────────────────────────────────────────────────────
 export async function callAiProvider(config, prompt, expectJson = true, expectedKeys = [], onThink = null) {
-  const { provider, apiKey, groqKey, nvidiaKey, openrouterKey, endpoint, model } = config;
+  const { provider, apiKey, groqKey, nvidiaKey, openrouterKey, opencodeKey, endpoint, model } = config;
   let text;
 
-  if (provider === 'gemini')  text = await callGemini(apiKey, model, prompt);
-  else if (provider === 'groq')    text = await callGroq(groqKey || apiKey, model, prompt, expectJson);
-  else if (provider === 'nvidia')  text = await callNvidia(nvidiaKey || apiKey, model, prompt);
+  if (provider === 'gemini')     text = await callGemini(apiKey, model, prompt);
+  else if (provider === 'groq')       text = await callGroq(groqKey || apiKey, model, prompt, expectJson);
+  else if (provider === 'nvidia')     text = await callNvidia(nvidiaKey || apiKey, model, prompt);
   else if (provider === 'openrouter') text = await callOpenRouter(openrouterKey || apiKey, model, prompt, expectJson);
-  else if (provider === 'ollama')  text = await callOllama(endpoint, model, prompt, expectJson);
-  else if (provider === 'lmstudio')text = await callLmStudio(endpoint, model, prompt, expectJson, apiKey);
-  else if (provider === 'mistral') text = await callMistral(apiKey, model, prompt);
-  else if (provider === 'openai')  text = await callOpenAI(apiKey, model, prompt, expectJson);
+  else if (provider === 'opencode')   text = await callOpenRouter(opencodeKey || apiKey, model, prompt, expectJson);
+  else if (provider === 'ollama')     text = await callOllama(endpoint, model, prompt, expectJson);
+  else if (provider === 'lmstudio')   text = await callLmStudio(endpoint, model, prompt, expectJson, apiKey);
+  else if (provider === 'mistral')    text = await callMistral(apiKey, model, prompt);
+  else if (provider === 'openai')     text = await callOpenAI(apiKey, model, prompt, expectJson);
   else throw new Error(`Proveedor ${provider} no soportado`);
 
   if (typeof text === 'string') {

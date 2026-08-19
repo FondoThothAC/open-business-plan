@@ -45,6 +45,7 @@ const KEYS = {
   mistral:     import.meta.env.VITE_MISTRAL_KEY     || '',
   nvidia:      import.meta.env.VITE_NVIDIA_KEY      || '',
   openrouter:  import.meta.env.VITE_OPENROUTER_KEY  || '',
+  opencode:    import.meta.env.VITE_OPENCODE_KEY    || '',
   ollama:      import.meta.env.VITE_OLLAMA_KEY      || '',
   pollinations:import.meta.env.VITE_POLLINATIONS_KEY|| '',
   denue:       import.meta.env.VITE_DENUE_KEY       || '1b9e230f-2ae0-48db-bd20-8810b1db575e',
@@ -192,6 +193,7 @@ export const PlanProvider = ({ children }) => {
         if (!merged.config.ai.nvidiaKey) merged.config.ai.nvidiaKey = KEYS.nvidia;
         if (!merged.config.ai.mistralKey) merged.config.ai.mistralKey = KEYS.mistral;
         if (!merged.config.ai.openrouterKey) merged.config.ai.openrouterKey = KEYS.openrouter;
+        if (!merged.config.ai.opencodeKey) merged.config.ai.opencodeKey = KEYS.opencode;
         if (!merged.config.ai.ollamaKey) merged.config.ai.ollamaKey = KEYS.ollama;
         if (!merged.config.ai.pollinationsKey) merged.config.ai.pollinationsKey = KEYS.pollinations;
       }

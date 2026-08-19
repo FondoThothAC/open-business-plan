@@ -122,6 +122,8 @@ function useApiStatus(planData) {
   const [deepseekStatus, setDeepseekStatus] = useState({ state: 'idle', message: '' });
   const [grokStatus, setGrokStatus] = useState({ state: 'idle', message: '' });
   const [ollamaCloudStatus, setOllamaCloudStatus] = useState({ state: 'idle', message: '' });
+  const [openrouterStatus, setOpenrouterStatus] = useState({ state: 'idle', message: '' });
+  const [opencodeStatus, setOpencodeStatus] = useState({ state: 'idle', message: '' });
 
   const safeJsonParse = async (res) => {
     const text = await res.text();
@@ -265,6 +267,8 @@ function useApiStatus(planData) {
     deepseekStatus, setDeepseekStatus, testDeepseek: (k) => testLlmProvider('deepseek', k || planData.config?.ai?.deepseekKey, setDeepseekStatus),
     grokStatus, setGrokStatus, testGrok: (k) => testLlmProvider('grok', k || planData.config?.ai?.grokKey, setGrokStatus),
     ollamaCloudStatus, setOllamaCloudStatus, testOllamaCloud: (k) => testLlmProvider('ollama_cloud', k || planData.config?.ai?.ollamaKey, setOllamaCloudStatus),
+    openrouterStatus, setOpenrouterStatus, testOpenRouter: (k) => testLlmProvider('openrouter', k || planData.config?.ai?.openrouterKey, setOpenrouterStatus),
+    opencodeStatus, setOpencodeStatus, testOpenCode: (k) => testLlmProvider('openrouter', k || planData.config?.ai?.opencodeKey, setOpencodeStatus),
   };
 }
 
@@ -359,7 +363,11 @@ export default function Configuracion() {
     grokStatus,
     testGrok,
     ollamaCloudStatus,
-    testOllamaCloud
+    testOllamaCloud,
+    openrouterStatus,
+    testOpenRouter,
+    opencodeStatus,
+    testOpenCode,
   } = apiStatus;
 
   const [ollamaModels, setOllamaModels] = useState([]);
@@ -1065,6 +1073,42 @@ export default function Configuracion() {
                   style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
                 />
                 <ApiStatusBadge status={ollamaCloudStatus} onTest={() => testOllamaCloud(planData.config.ai.ollamaKey)} disabled={!planData.config.ai.ollamaKey} />
+              </div>
+
+              {/* OPENROUTER CARD — Nemotron 1M ctx, GPT-OSS, GLM 5.2 (capa gratuita) */}
+              <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: `1.5px solid ${planData.config.ai.primaryProvider === 'openrouter' ? '#f59e0b' : 'rgba(245,158,11,0.3)'}` }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
+                  <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#f59e0b' }}>🌐 OpenRouter <span style={{ fontSize: '0.65rem', background: 'rgba(16,185,129,0.15)', color: '#10b981', padding: '1px 6px', borderRadius: '8px', marginLeft: '4px' }}>GRATIS</span></div>
+                  <a href="https://openrouter.ai/keys" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: '#f59e0b', textDecoration: 'none', fontWeight: 700 }}>Obtener Key ↗</a>
+                </div>
+                <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>Nemotron 3.5 (1M ctx) · GPT-OSS 20B · GLM 5.2 · Nano 30B — Regenera sin límite diario</div>
+                <input
+                  type="password"
+                  className="form-control"
+                  placeholder="sk-or-v1-..."
+                  value={planData.config.ai.openrouterKey || ''}
+                  onChange={(e) => handleAiChange('openrouterKey', e.target.value)}
+                  style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
+                />
+                <ApiStatusBadge status={openrouterStatus} onTest={() => testOpenRouter(planData.config.ai.openrouterKey)} disabled={!planData.config.ai.openrouterKey} />
+              </div>
+
+              {/* OPENCODE CARD — Modelos de código grandes, regenera cada 5h */}
+              <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: `1.5px solid ${planData.config.ai.primaryProvider === 'opencode' ? '#a78bfa' : 'rgba(167,139,250,0.3)'}` }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
+                  <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#a78bfa' }}>🖥️ OpenCode <span style={{ fontSize: '0.65rem', background: 'rgba(16,185,129,0.15)', color: '#10b981', padding: '1px 6px', borderRadius: '8px', marginLeft: '4px' }}>GRATIS c/5h</span></div>
+                  <a href="https://opencode.ai" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: '#a78bfa', textDecoration: 'none', fontWeight: 700 }}>Obtener Key ↗</a>
+                </div>
+                <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>GPT-4.1 · Claude Sonnet · Gemini Pro · Modelos grandes de código — Tokens se regeneran cada 5 horas</div>
+                <input
+                  type="password"
+                  className="form-control"
+                  placeholder="sk-..."
+                  value={planData.config.ai.opencodeKey || ''}
+                  onChange={(e) => handleAiChange('opencodeKey', e.target.value)}
+                  style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
+                />
+                <ApiStatusBadge status={opencodeStatus} onTest={() => testOpenCode(planData.config.ai.opencodeKey)} disabled={!planData.config.ai.opencodeKey} />
               </div>
 
             </div>
