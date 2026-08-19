@@ -1490,23 +1490,23 @@ app.post('/api/test/nvidia', async (req, res) => {
 app.post('/api/test/gemini', async (req, res) => {
   const { apiKey } = req.body;
   if (!apiKey) return res.status(400).json({ success: false, error: 'API Key requerida' });
-  try {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ contents: [{ parts: [{ text: 'ping' }] }] }),
-      signal: AbortSignal.timeout(8000)
-    });
-    const data = await response.json();
-    if (response.ok && !data.error) {
-      res.json({ success: true, message: 'Google Gemini 1.5 Flash está en línea y operativo.' });
-    } else {
-      res.json({ success: false, error: data.error?.message || `HTTP ${response.status}` });
-    }
-  } catch (err) {
-    res.json({ success: false, error: err.message });
+  const testModels = ['gemini-3.6-flash', 'gemini-3.5-flash-lite', 'gemini-3.7-flash', 'gemini-1.5-flash'];
+  for (const model of testModels) {
+    try {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contents: [{ parts: [{ text: 'ping' }] }] }),
+        signal: AbortSignal.timeout(8000)
+      });
+      const data = await response.json();
+      if (response.ok && !data.error && data.candidates?.[0]?.content?.parts?.[0]?.text) {
+        return res.json({ success: true, message: `Google Gemini está en línea (${model}) ✓` });
+      }
+    } catch (err) {}
   }
+  res.json({ success: false, error: 'No se pudo conectar con Google Gemini.' });
 });
 
 app.post('/api/test/openai', async (req, res) => {

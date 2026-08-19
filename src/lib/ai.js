@@ -795,15 +795,43 @@ async function callLmStudio(endpoint, model, prompt, expectJson, apiKey) {
 }
 
 async function callGemini(apiKey, model, prompt) {
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model || 'gemini-1.5-flash'}:generateContent?key=${apiKey}`;
-  const response = await fetchWithRetry(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
-  });
-  const data = await response.json();
-  if (data.error) throw new Error(data.error.message);
-  return data.candidates[0].content.parts[0].text;
+  let preferredModel = model || 'gemini-3.6-flash';
+  if (preferredModel === 'gemini-1.5-flash' || preferredModel === 'gemini-1.5-pro' || preferredModel === 'gemini-2.5-flash') {
+    preferredModel = 'gemini-3.6-flash';
+  }
+
+  const geminiCandidates = [
+    preferredModel,
+    'gemini-3.6-flash',
+    'gemini-3.5-flash-lite',
+    'gemini-3.7-flash',
+    'gemini-3.1-flash-lite'
+  ];
+  const uniqueModels = [...new Set(geminiCandidates)];
+
+  let lastError = null;
+
+  for (const candidate of uniqueModels) {
+    try {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${candidate}:generateContent?key=${apiKey}`;
+      const response = await fetchWithRetry(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+      });
+      const data = await response.json();
+      if (!data.error && data.candidates?.[0]?.content?.parts?.[0]?.text) {
+        return data.candidates[0].content.parts[0].text;
+      }
+      if (data.error) {
+        lastError = new Error(data.error.message);
+      }
+    } catch (err) {
+      lastError = err;
+    }
+  }
+
+  throw lastError || new Error('No se pudo obtener respuesta de Google Gemini.');
 }
 
 async function fetchWithProxy(url, options = {}) {
