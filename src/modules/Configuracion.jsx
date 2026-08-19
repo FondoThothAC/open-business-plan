@@ -50,10 +50,17 @@ const PROVIDER_PRESETS = {
     { value: 'llama-3.3-70b-versatile', label: 'Groq: Llama 3.3 70B' },
     { value: 'llama-3.1-8b-instant', label: 'Groq: Llama 3.1 8B' },
   ],
+  openrouter: [
+    { value: 'nvidia/nemotron-3.5-lightning:free', label: 'OpenRouter: Nemotron 3.5 Lightning (1M ctx)' },
+    { value: 'openai/gpt-oss-20b:free', label: 'OpenRouter: GPT-OSS 20B (131k ctx)' },
+    { value: 'nvidia/nemotron-3-nano-30b-a3b:free', label: 'OpenRouter: Nemotron Nano 30B (256k ctx)' },
+    { value: 'z-ai/glm-5.2:free', label: 'OpenRouter: GLM 5.2 (256k ctx)' },
+  ],
   gemini: [
-    { value: 'gemini-1.5-flash', label: 'Google: Gemini 1.5 Flash' },
-    { value: 'gemini-1.5-pro', label: 'Google: Gemini 1.5 Pro' },
-    { value: 'gemini-2.0-flash-exp', label: 'Google: Gemini 2.0 Flash (Exp)' },
+    { value: 'gemini-3.6-flash', label: 'Google: Gemini 3.6 Flash ★ Activo' },
+    { value: 'gemini-3.5-flash-lite', label: 'Google: Gemini 3.5 Flash Lite' },
+    { value: 'gemini-3.7-flash', label: 'Google: Gemini 3.7 Flash' },
+    { value: 'gemini-1.5-flash', label: 'Google: Gemini 1.5 Flash (Legacy)' },
   ],
   openai: [
     { value: 'gpt-4o', label: 'OpenAI: GPT-4o' },
@@ -63,6 +70,17 @@ const PROVIDER_PRESETS = {
     { value: 'mistral-large-latest', label: 'Mistral Large' },
     { value: 'open-mixtral-8x22b', label: 'Mixtral 8x22B' },
   ]
+};
+
+// [DDD] Modelos por defecto activos para cada proveedor de nube
+const CLOUD_PROVIDER_DEFAULTS = {
+  groq:        'qwen/qwen3.6-27b',
+  nvidia:      'nvidia/llama-3.1-nemotron-70b-instruct',
+  mistral:     'mistral-large-latest',
+  gemini:      'gemini-3.6-flash',
+  openai:      'gpt-4o',
+  openrouter:  'nvidia/nemotron-3.5-lightning:free',
+  ollama:      'qwen3.5:4b-mlx',
 };
 
 const getModelLabel = (p) => {
@@ -678,7 +696,13 @@ export default function Configuracion() {
           { rol: 'estratega',     emoji: '🗺️', label: 'Estratega',              hint: 'Define el marco. Solo nivel 3 (Profundo).' },
           { rol: 'abogadoDiablo', emoji: '😈', label: "Devil's Advocate",       hint: 'Contraargumenta. Solo nivel 3 (Profundo).' },
         ].map(({ rol, emoji, label, hint }) => {
-          const current = planData.config?.ai?.agentModels?.[rol]?.model || 'nemotron-3-nano:4b';
+          // Determinar el modelo por defecto del agente según el proveedor activo
+          const activeProvider = planData.config?.ai?.primaryProvider || 'ollama';
+          const isCloudProvider = ['groq','nvidia','mistral','gemini','openai','openrouter'].includes(activeProvider);
+          const defaultAgentModel = isCloudProvider
+            ? (CLOUD_PROVIDER_DEFAULTS[activeProvider] || 'qwen/qwen3.6-27b')
+            : 'qwen3.5:4b-mlx';
+          const current = planData.config?.ai?.agentModels?.[rol]?.model || defaultAgentModel;
           const isDeepOnly = rol === 'estratega' || rol === 'abogadoDiablo';
           return (
             <div key={rol} style={{ display: 'grid', gridTemplateColumns: '180px 1fr 160px', gap: '0.75rem', alignItems: 'center', padding: '0.6rem 0', borderBottom: '1px solid var(--border-color)' }}>
@@ -715,13 +739,17 @@ export default function Configuracion() {
                   <option value="gemma4:31b-cloud">gemma4:31b-cloud (Nube - Gratuito)</option>
                   <option value="minimax-m3:cloud">minimax-m3:cloud (Nube - Gratuito)</option>
                 </optgroup>
-                <optgroup label="☁️ Nube (Capa Gratuita y Alta Velocidad)">
-                  <option value="qwen/qwen3.6-27b">Groq: Qwen 3.6 27B (Ultra-Rápido & Sin Límite TPD) ★</option>
-                  <option value="openai/gpt-oss-120b">Groq: GPT OSS 120B (Gran Capacidad)</option>
-                  <option value="openai/gpt-oss-20b">Groq: GPT OSS 20B (Rápido)</option>
+                <optgroup label="☁️ Nube Gratuita — Groq & OpenRouter">
+                  <option value="qwen/qwen3.6-27b">Groq: Qwen 3.6 27B ★ (Ultra-Rápido 200k TPD)</option>
+                  <option value="openai/gpt-oss-120b">Groq: GPT-OSS 120B (Gran Capacidad 200k TPD)</option>
+                  <option value="openai/gpt-oss-20b">Groq: GPT-OSS 20B (Rápido)</option>
+                  <option value="nvidia/nemotron-3.5-lightning:free">OpenRouter: Nemotron 3.5 (1M ctx gratis) 🥇</option>
+                  <option value="openai/gpt-oss-20b:free">OpenRouter: GPT-OSS 20B (131k ctx gratis)</option>
+                  <option value="z-ai/glm-5.2:free">OpenRouter: GLM 5.2 (256k ctx gratis)</option>
                   <option value="nvidia/llama-3.1-nemotron-70b-instruct">NVIDIA NIM: Nemotron 70B</option>
                   <option value="google/gemma-2-27b-it">NVIDIA NIM: Gemma 2 27B</option>
-                  <option value="gemini-1.5-flash">Google: Gemini 1.5 Flash</option>
+                  <option value="gemini-3.6-flash">Google: Gemini 3.6 Flash ★ Activo</option>
+                  <option value="gemini-3.5-flash-lite">Google: Gemini 3.5 Flash Lite</option>
                 </optgroup>
                 <optgroup label="💎 Nube (Premium / De Pago)">
                   <option value="gpt-4o">OpenAI: GPT-4o</option>
@@ -900,22 +928,15 @@ export default function Configuracion() {
                     const newProv = e.target.value;
                     handleAiChange('primaryProvider', newProv);
 
-                    // Sincronizar modelo activo por defecto y agentes online si se pasa a la nube
-                    const cloudDefaults = {
-                      groq: 'llama-3.3-70b-versatile',
-                      nvidia: 'meta/llama-3.1-70b-instruct',
-                      mistral: 'mistral-large-latest',
-                      gemini: 'gemini-1.5-flash',
-                      openai: 'gpt-4o',
-                      ollama: 'llama-3.3-70b-versatile'
-                    };
-                    const targetModel = cloudDefaults[newProv] || 'llama-3.3-70b-versatile';
+                    // Sincronizar modelo activo por defecto con los modelos más recientes y activos
+                    const targetModel = CLOUD_PROVIDER_DEFAULTS[newProv] || 'qwen3.5:4b-mlx';
                     handleAiChange('model', targetModel);
 
-                    // Actualizar modelos de agentes de la Mesa de Expertos
+                    // Actualizar todos los agentes de la Mesa de Expertos al nuevo modelo por defecto
+                    const agentRoles = ['analista', 'critico', 'redactor', 'estratega', 'abogadoDiablo'];
                     const currentAgents = planData.config?.ai?.agentModels || {};
                     const updatedAgents = {};
-                    Object.keys(currentAgents).forEach(roleKey => {
+                    agentRoles.forEach(roleKey => {
                       updatedAgents[roleKey] = {
                         ...currentAgents[roleKey],
                         model: targetModel
@@ -925,13 +946,14 @@ export default function Configuracion() {
                   }}
                   style={{ minWidth: '220px', fontWeight: 700, color: 'var(--accent-color)', borderColor: 'var(--accent-color)' }}
                 >
-                  <optgroup label="⚡ Nube de Ultra-Velocidad & Open Models">
-                    <option value="groq">⚡ Groq (Llama 3.3 70B / 8B)</option>
+                  <optgroup label="⚡ Nube Ultra-Velocidad & Open Models — 🆓 GRATIS">
+                    <option value="groq">⚡ Groq (Qwen 3.6 27B / GPT-OSS 120B)</option>
                     <option value="nvidia">🟢 NVIDIA NIM (Nemotron / Llama 70B)</option>
+                    <option value="openrouter">🌐 OpenRouter (Nemotron 1M ctx) 🥇</option>
                     <option value="mistral">🔥 Mistral AI (Mistral Large)</option>
                   </optgroup>
                   <optgroup label="💎 Modelos Comerciales Cloud">
-                    <option value="gemini">🌐 Google Gemini (1.5 Flash / Pro)</option>
+                    <option value="gemini">🌐 Google Gemini (3.6 Flash)</option>
                     <option value="openai">🟢 OpenAI (GPT-4o / Mini)</option>
                   </optgroup>
                   <optgroup label="💻 Local Offline">
