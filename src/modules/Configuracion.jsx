@@ -715,10 +715,12 @@ export default function Configuracion() {
                   <option value="gemma4:31b-cloud">gemma4:31b-cloud (Nube - Gratuito)</option>
                   <option value="minimax-m3:cloud">minimax-m3:cloud (Nube - Gratuito)</option>
                 </optgroup>
-                <optgroup label="☁️ Nube (Capa Gratuita)">
+                <optgroup label="☁️ Nube (Capa Gratuita y Alta Velocidad)">
+                  <option value="qwen/qwen3.6-27b">Groq: Qwen 3.6 27B (Ultra-Rápido & Sin Límite TPD) ★</option>
+                  <option value="openai/gpt-oss-120b">Groq: GPT OSS 120B (Gran Capacidad)</option>
+                  <option value="openai/gpt-oss-20b">Groq: GPT OSS 20B (Rápido)</option>
                   <option value="nvidia/llama-3.1-nemotron-70b-instruct">NVIDIA NIM: Nemotron 70B</option>
                   <option value="google/gemma-2-27b-it">NVIDIA NIM: Gemma 2 27B</option>
-                  <option value="llama-3.3-70b-versatile">Groq: Llama 3.3 70B</option>
                   <option value="gemini-1.5-flash">Google: Gemini 1.5 Flash</option>
                 </optgroup>
                 <optgroup label="💎 Nube (Premium / De Pago)">

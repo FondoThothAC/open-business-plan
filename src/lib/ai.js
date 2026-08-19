@@ -131,11 +131,10 @@ function findBestOllamaModel(requestedModel, installedModels) {
   return installedModels[0];
 }
 
-// Modelos por defecto de la nube por proveedor (para resolver configs incoherentes)
 const CLOUD_DEFAULT_MODELS = {
   gemini: 'gemini-1.5-flash',
   openai: 'gpt-4o',
-  groq: 'groq/compound-mini',
+  groq: 'qwen/qwen3.6-27b',
   mistral: 'mistral-large-latest',
   nvidia: 'meta/llama-3.1-70b-instruct',
 };
@@ -147,7 +146,7 @@ function resolveProviderModel({ primaryProvider, model, installedModels = [] }) 
 
   // Detectar proveedor por el nombre del modelo si es explícitamente cloud
   if (resolved.includes('gemini')) prov = 'gemini';
-  else if (resolved.includes('gpt-oss') || resolved.includes('compound') || resolved.includes('groq')) prov = 'groq';
+  else if (resolved.includes('gpt-oss') || resolved.includes('compound') || resolved.includes('groq') || resolved.includes('qwen/')) prov = 'groq';
   else if (resolved.includes('gpt')) prov = 'openai';
   else if (resolved.includes('mistral-large')) prov = 'mistral';
   else if (resolved.includes('nvidia') || resolved.includes('google/gemma')) prov = 'nvidia';
@@ -161,7 +160,7 @@ function resolveProviderModel({ primaryProvider, model, installedModels = [] }) 
 
   // Proveedores de nube: si el modelo configurado no es cloud, usar el default del proveedor
   const isCloudModel = /gemini|gpt|mistral|nvidia|llama-3\.3|llama-3\.1|compound|qwen|oss|:cloud/i.test(resolved);
-  const finalModel = (isCloudModel && resolved) ? resolved : (CLOUD_DEFAULT_MODELS[prov] || resolved || 'groq/compound-mini');
+  const finalModel = (isCloudModel && resolved) ? resolved : (CLOUD_DEFAULT_MODELS[prov] || resolved || 'qwen/qwen3.6-27b');
   return { provider: prov, model: finalModel };
 }
 
@@ -175,10 +174,10 @@ async function fetchWithRetry(url, options = {}, { maxRetries = 8, baseDelay = 2
       if (response.status === 429) {
         const retryAfter = response.headers?.get('retry-after');
         const waitMs = retryAfter ? parseInt(retryAfter, 10) * 1000 : Math.min(baseDelay * Math.pow(2, attempt), 60000);
-        const provider = options.headers?.authorization?.includes('groq') ? 'Groq'
+        const provider = url.includes('groq.com') ? 'Groq'
           : url.includes('googleapis') ? 'Gemini'
           : url.includes('nvidia') ? 'NVIDIA'
-          : url.includes('openai') ? 'OpenAI'
+          : url.includes('openai.com') ? 'OpenAI'
           : url.includes('mistral') ? 'Mistral' : 'Cloud';
         console.warn(`[fetchWithRetry] 429 ${provider}: esperando ${waitMs}ms (intento ${attempt + 1}/${maxRetries + 1})...`);
         if (activeTermLog) {
@@ -826,16 +825,18 @@ async function fetchWithProxy(url, options = {}) {
 }
 
 async function callGroq(apiKey, model, prompt, expectJson) {
-  // Lista de modelos ordenados por prioridad de disponibilidad en Groq
-  const preferredModel = model || 'groq/compound-mini';
+  // Modelos activos en la cuenta de Groq (qwen 27B y gpt-oss 120B/20B no tienen saturación de cuota diaria de Llama)
+  let preferredModel = model || 'qwen/qwen3.6-27b';
+  if (preferredModel === 'llama-3.3-70b-versatile' || preferredModel === 'llama-3.1-8b-instant' || preferredModel === 'groq/compound-mini') {
+    preferredModel = 'qwen/qwen3.6-27b';
+  }
+
   const groqCandidateModels = [
     preferredModel,
-    'groq/compound-mini',
     'qwen/qwen3.6-27b',
     'openai/gpt-oss-120b',
     'openai/gpt-oss-20b',
-    'llama-3.3-70b-versatile',
-    'llama-3.1-8b-instant'
+    'groq/compound'
   ];
   const uniqueModels = [...new Set(groqCandidateModels)];
 
@@ -853,6 +854,11 @@ async function callGroq(apiKey, model, prompt, expectJson) {
           temperature: 0.7
         })
       });
+
+      if (response.status === 429) {
+        // Si este modelo específico agotó su cuota en Groq, probamos el siguiente modelo de inmediato sin colgar el hilo
+        continue;
+      }
 
       const data = await response.json();
       if (!data.error && data.choices?.[0]?.message?.content !== undefined) {
