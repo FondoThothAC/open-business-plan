@@ -725,12 +725,13 @@ function _showFallbackDialog(errorMsg) {
 // Provider Adapters
 // ─────────────────────────────────────────────────────────────────────────
 export async function callAiProvider(config, prompt, expectJson = true, expectedKeys = [], onThink = null) {
-  const { provider, apiKey, groqKey, nvidiaKey, endpoint, model } = config;
+  const { provider, apiKey, groqKey, nvidiaKey, openrouterKey, endpoint, model } = config;
   let text;
 
   if (provider === 'gemini')  text = await callGemini(apiKey, model, prompt);
   else if (provider === 'groq')    text = await callGroq(groqKey || apiKey, model, prompt, expectJson);
   else if (provider === 'nvidia')  text = await callNvidia(nvidiaKey || apiKey, model, prompt);
+  else if (provider === 'openrouter') text = await callOpenRouter(openrouterKey || apiKey, model, prompt, expectJson);
   else if (provider === 'ollama')  text = await callOllama(endpoint, model, prompt, expectJson);
   else if (provider === 'lmstudio')text = await callLmStudio(endpoint, model, prompt, expectJson, apiKey);
   else if (provider === 'mistral') text = await callMistral(apiKey, model, prompt);
@@ -889,6 +890,51 @@ async function callNvidia(apiKey, model, prompt) {
   const data = await response.json();
   if (data.error || data.detail) throw new Error(data.error?.message || data.detail?.[0]?.msg || 'NVIDIA API Error');
   return data.choices[0].message.content;
+}
+
+async function callOpenRouter(apiKey, model, prompt, expectJson) {
+  const candidateModels = [
+    model || 'nvidia/nemotron-3.5-lightning:free',
+    'nvidia/nemotron-3.5-lightning:free',
+    'openai/gpt-oss-20b:free',
+    'nvidia/nemotron-3-nano-30b-a3b:free',
+    'z-ai/glm-5.2:free'
+  ];
+  const uniqueModels = [...new Set(candidateModels)];
+  let lastError = null;
+
+  for (const candidate of uniqueModels) {
+    try {
+      const response = await fetchWithRetry('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`,
+          'HTTP-Referer': 'https://fondothoth.com/obp',
+          'X-Title': 'Open Business Plan'
+        },
+        body: JSON.stringify({
+          model: candidate,
+          messages: [{ role: 'user', content: prompt }],
+          response_format: expectJson ? { type: 'json_object' } : undefined
+        })
+      });
+
+      if (response.status === 429) continue;
+
+      const data = await response.json();
+      if (!data.error && data.choices?.[0]?.message?.content !== undefined) {
+        return data.choices[0].message.content;
+      }
+      if (data.error) {
+        lastError = new Error(data.error.message || 'OpenRouter error');
+      }
+    } catch (err) {
+      lastError = err;
+    }
+  }
+
+  throw lastError || new Error('No se pudo obtener respuesta de OpenRouter');
 }
 
 async function callOpenAI(apiKey, model, prompt, expectJson) {
