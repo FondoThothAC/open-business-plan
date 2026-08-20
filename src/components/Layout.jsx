@@ -1228,7 +1228,9 @@ export default function Layout() {
         <GrillMePromptModal
           promptData={activeGrillMePrompt}
           onSubmitResponse={(resp) => {
-            if (handleGrillMeResponse) handleGrillMeResponse(resp);
+            if (typeof handleGrillMeResponse === 'function') {
+              handleGrillMeResponse(resp);
+            }
             setActiveGrillMePrompt(null);
           }}
           onCancel={() => setActiveGrillMePrompt(null)}

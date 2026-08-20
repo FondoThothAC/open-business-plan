@@ -64,8 +64,12 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
 
 
   const handleAiGenerate = async () => {
-    if (!planData.config.ai.apiKey && planData.config.ai.provider !== 'ollama') {
-      alert("Por favor, configura tu API Key en la sección de Configuración.");
+    const rawAi = planData?.config?.ai || {};
+    const hasAnyKey = rawAi.apiKey || rawAi.groqKey || rawAi.openrouterKey || rawAi.nvidiaKey || rawAi.mistralKey;
+    const isLocalProvider = rawAi.provider === 'ollama' || rawAi.primaryProvider === 'ollama' || rawAi.primaryProvider === 'lmstudio';
+
+    if (!hasAnyKey && !isLocalProvider) {
+      alert("Por favor, configura al menos una API Key (Groq, Gemini, OpenRouter, Mistral, NVIDIA) o proveedor local en la sección de Configuración.");
       return;
     }
 

@@ -60,9 +60,11 @@ function AppContent() {
 
 function App() {
   return (
-    <PlanProvider>
-      <AppContent />
-    </PlanProvider>
+    <ErrorBoundary>
+      <PlanProvider>
+        <AppContent />
+      </PlanProvider>
+    </ErrorBoundary>
   );
 }
 

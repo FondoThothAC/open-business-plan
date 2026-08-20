@@ -66,20 +66,31 @@ export default function DynamicModule() {
   const { pillarId, moduleId } = useParams();
   const { planData, updateStaff, updateProcesses, updateSection } = usePlan();
   
-  const projectType = planData.config?.projectType || 'business';
-  const framework = FRAMEWORKS[projectType];
+  const projectType = planData?.config?.projectType || 'business';
+  let framework = FRAMEWORKS[projectType] || FRAMEWORKS.business;
+  let pillar = framework?.pillars?.find(p => p.key === pillarId);
 
-  if (!framework) return <Navigate to="/" replace />;
+  // Si el pilar no se encuentra en el framework activo (ej. navegación directa a mercado_cuantitativo),
+  // buscar en todos los frameworks disponibles en el sistema
+  if (!pillar) {
+    for (const fwKey of Object.keys(FRAMEWORKS)) {
+      const foundPillar = FRAMEWORKS[fwKey]?.pillars?.find(p => p.key === pillarId);
+      if (foundPillar) {
+        framework = FRAMEWORKS[fwKey];
+        pillar = foundPillar;
+        break;
+      }
+    }
+  }
 
-  const pillar = framework.pillars.find(p => p.key === pillarId);
   if (!pillar) return <Navigate to="/semilla" replace />;
 
-  const moduleDef = pillar.modules.find(m => m.key === moduleId);
+  const moduleDef = pillar.modules?.find(m => m.key === moduleId);
   if (!moduleDef) return <Navigate to="/semilla" replace />;
 
   // Special Case: OrgEstructura (Organigrama + Staff Table)
   useEffect(() => {
-    if (pillarId === 'organizacion' && moduleId === 'estructura' && planData.organizacion?.staff) {
+    if (pillarId === 'organizacion' && moduleId === 'estructura' && planData?.organizacion?.staff) {
       const staff = planData.organizacion.staff || [];
       let mermaidText = "graph TD\n";
       staff.forEach(emp => {
@@ -92,11 +103,11 @@ export default function DynamicModule() {
       });
       updateSection('organizacion', 'estructura', 'organigrama_visual', mermaidText);
     }
-  }, [planData.organizacion?.staff, pillarId, moduleId]);
+  }, [planData?.organizacion?.staff, pillarId, moduleId]);
 
   // Special Case: TecnicoOperacion (Auto-generate Mermaid from Process Table)
   useEffect(() => {
-    if (pillarId === 'tecnico' && moduleId === 'operacion' && planData.tecnico?.processes) {
+    if (pillarId === 'tecnico' && moduleId === 'operacion' && planData?.tecnico?.processes) {
       const processes = planData.tecnico.processes || [];
       if (processes.length > 0) {
         let mermaidText = "graph TD\n";
@@ -111,10 +122,10 @@ export default function DynamicModule() {
         updateSection('tecnico', 'operacion', 'diagrama', mermaidText);
       }
     }
-  }, [planData.tecnico?.processes, pillarId, moduleId]);
+  }, [planData?.tecnico?.processes, pillarId, moduleId]);
 
   // Transform fields
-  let fieldsFormatted = moduleDef.fields.map(f => {
+  let fieldsFormatted = (moduleDef.fields || []).map(f => {
     if (typeof f === 'string') {
       return {
         key: f,
@@ -127,7 +138,7 @@ export default function DynamicModule() {
 
   // Special Case: OrgCostos (Dynamic Payroll label)
   if (pillarId === 'organizacion' && moduleId === 'costos') {
-    const payroll = planData.organizacion?.staff?.reduce((acc, curr) => acc + (curr.salary || 0), 0) || 0;
+    const payroll = planData?.organizacion?.staff?.reduce((acc, curr) => acc + (curr.salary || 0), 0) || 0;
     fieldsFormatted = fieldsFormatted.map(f => 
       f.key === 'fijos' ? { ...f, label: `Costos Fijos Mensuales (Nómina: $${payroll.toLocaleString()})` } : f
     );
@@ -153,7 +164,7 @@ export default function DynamicModule() {
 
   const extraAction = isMapModule ? (
     <InegiMap
-      token={planData.config?.externalApis?.inegiToken}
+      token={planData?.config?.externalApis?.inegiToken}
       location={locationHint}
       mode={pillarId === 'tecnico' && moduleId === 'ubicacion' ? 'location' : 'competition'}
       title={
@@ -165,7 +176,7 @@ export default function DynamicModule() {
       defaultHeatmap={moduleId === 'mapa'}
     />
   ) : isPESTELModule ? (
-    <MacroDashboard token={planData.config?.externalApis?.banxicoToken} />
+    <MacroDashboard token={planData?.config?.externalApis?.banxicoToken} />
   ) : null;
 
   const isFinancialModule = pillarId === 'finanzas' || moduleId === 'estados_financieros' || moduleId === 'rentabilidad';
@@ -244,7 +255,7 @@ export default function DynamicModule() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
       {pillarId === 'naturaleza' && moduleId === 'introduccion' && (
         <BusinessModelSelector 
-          value={planData.naturaleza?.introduccion?.modelo_negocio} 
+          value={planData?.naturaleza?.introduccion?.modelo_negocio} 
           onChange={(val) => updateSection('naturaleza', 'introduccion', 'modelo_negocio', val)}
         />
       )}
@@ -272,14 +283,14 @@ export default function DynamicModule() {
 
       {pillarId === 'organizacion' && moduleId === 'estructura' && (
         <>
-          <OrganigramaInteractivo staff={planData.organizacion?.staff || []} onChange={updateStaff} />
-          <StaffTable staff={planData.organizacion?.staff || []} onChange={updateStaff} />
+          <OrganigramaInteractivo staff={planData?.organizacion?.staff || []} onChange={updateStaff} />
+          <StaffTable staff={planData?.organizacion?.staff || []} onChange={updateStaff} />
         </>
       )}
 
       {pillarId === 'tecnico' && moduleId === 'operacion' && (
         <ProcessTable 
-          processes={planData.tecnico?.processes || []} 
+          processes={planData?.tecnico?.processes || []} 
           onChange={updateProcesses} 
         />
       )}
@@ -290,8 +301,8 @@ export default function DynamicModule() {
 
       {pillarId === 'mercado' && moduleId === 'segmentacion' && (
         <>
-          <TamSamSom data={planData.mercado?.segmentacion} />
-          <HubspotBuyerPersona value={planData.mercado?.segmentacion?.perfil} />
+          <TamSamSom data={planData?.mercado?.segmentacion} />
+          <HubspotBuyerPersona value={planData?.mercado?.segmentacion?.perfil} />
         </>
       )}
     </div>
