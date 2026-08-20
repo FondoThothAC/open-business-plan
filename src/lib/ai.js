@@ -147,8 +147,15 @@ function resolveProviderModel({ primaryProvider, model, installedModels = [] }) 
   let prov = primaryProvider || 'groq';
   const resolved = String(model || '').trim();
 
+  // Si el usuario configuró Ollama o LM Studio explícitamente como proveedor primario,
+  // respetar su elección (los modelos con sufijo :cloud se consultan a través de Ollama Cloud)
+  if (primaryProvider === 'ollama' || primaryProvider === 'lmstudio') {
+    return { provider: primaryProvider, model: resolved || 'minimax-m3:cloud' };
+  }
+
   // Detectar proveedor por el nombre del modelo si es explícitamente cloud
-  if (resolved.includes('minimax')) prov = 'minimax';
+  if (resolved.endsWith(':cloud')) prov = 'ollama';
+  else if (resolved.includes('minimax') && !resolved.includes(':cloud')) prov = 'minimax';
   else if (resolved.includes('gemini')) prov = 'gemini';
   else if (resolved.includes(':free') || resolved.includes('openrouter')) prov = 'openrouter';
   else if (resolved.includes('gpt-oss') || resolved.includes('compound') || resolved.includes('groq') || resolved.includes('qwen/')) prov = 'groq';
@@ -159,13 +166,13 @@ function resolveProviderModel({ primaryProvider, model, installedModels = [] }) 
 
   // Proveedores locales: resolver contra los modelos instalados de Ollama
   if (prov === 'ollama' || prov === 'lmstudio') {
-    const localModel = findBestOllamaModel(model || 'minimax-m3:cloud', installedModels);
+    const localModel = findBestOllamaModel(resolved || 'minimax-m3:cloud', installedModels);
     return { provider: prov, model: localModel };
   }
 
   // Proveedores de nube: si el modelo configurado no es cloud, usar el default del proveedor
-  const isCloudModel = /minimax|gemini|gpt|mistral|nvidia|llama-3\.3|llama-3\.1|compound|qwen|oss|:free|:cloud/i.test(resolved);
-  const finalModel = (isCloudModel && resolved) ? resolved : (CLOUD_DEFAULT_MODELS[prov] || resolved || 'minimax-m3:cloud');
+  const isCloudModel = /gemini|gpt|mistral|nvidia|llama-3\.3|llama-3\.1|compound|qwen|oss|:free|:cloud/i.test(resolved);
+  const finalModel = (isCloudModel && resolved) ? resolved : (CLOUD_DEFAULT_MODELS[prov] || resolved || 'qwen/qwen3.6-27b');
   return { provider: prov, model: finalModel };
 }
 
@@ -815,7 +822,7 @@ export async function callAiProvider(config, prompt, expectJson = true, expected
     if (prov === 'nvidia')     return await callNvidia(key || nvidiaKey || apiKey, mod, prompt);
     if (prov === 'openrouter') return await callOpenRouter(key || openrouterKey || apiKey, mod, prompt, expectJson);
     if (prov === 'opencode')   return await callOpenRouter(key || opencodeKey || apiKey, mod, prompt, expectJson);
-    if (prov === 'ollama')     return await callOllama(endpoint, mod, prompt, expectJson);
+    if (prov === 'ollama')     return await callOllama(endpoint, mod, prompt, expectJson, key || apiKey);
     if (prov === 'lmstudio')   return await callLmStudio(endpoint || lmStudioEndpoint, mod, prompt, expectJson, key || apiKey);
     if (prov === 'mistral')    return await callMistral(key || mistralKey || apiKey, mod, prompt);
     if (prov === 'openai')     return await callOpenAI(key || apiKey, mod, prompt, expectJson);
@@ -924,20 +931,46 @@ export async function callMinimax(apiKey, model, prompt, _expectJson = true) {
   return data.choices?.[0]?.message?.content || data.reply || '';
 }
 
-async function callOllama(endpoint, model, prompt, expectJson) {
-  // [SDD] Ver docs/Operations_Integration_SDD.md — Ollama hace swap automático en VRAM
-  // Mac: Metal unifica RAM/VRAM, sin swap. Windows/Linux: swap ~2-4s entre modelos.
-  const url = `${endpoint || 'http://localhost:11434'}/api/generate`;
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model: model || 'qwen3.5:4b-mlx',
-      prompt,
-      stream: false,
-      format: expectJson ? 'json' : undefined,
-    })
-  });
+async function callOllama(endpoint, model, prompt, expectJson, ollamaKey = '') {
+  const targetModel = model || 'minimax-m3:cloud';
+  const targetEndpoint = endpoint || 'http://localhost:11434';
+  const url = `${targetEndpoint}/api/generate`;
+
+  const payload = {
+    model: targetModel,
+    prompt,
+    stream: false,
+    format: expectJson ? 'json' : undefined,
+  };
+
+  let response;
+  try {
+    response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(ollamaKey ? { 'Authorization': `Bearer ${ollamaKey}` } : {})
+      },
+      body: JSON.stringify(payload),
+      signal: AbortSignal.timeout(120000)
+    });
+  } catch {
+    // Si falla directo (ej. CORS o Mixed Content en VPS), intentar a través del proxy
+    response = await fetchWithProxy(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(ollamaKey ? { 'Authorization': `Bearer ${ollamaKey}` } : {})
+      },
+      body: JSON.stringify(payload)
+    });
+  }
+
+  if (!response || !response.ok) {
+    const errText = response ? await response.text().catch(() => '') : 'Sin conexión con Ollama';
+    throw new Error(`Ollama (${targetModel}) error: ${errText || response?.statusText || 'Inalcanzable'}`);
+  }
+
   const data = await response.json();
   if (data.error) throw new Error(data.error);
   return data.response;
@@ -1027,19 +1060,25 @@ async function callGemini(apiKey, model, prompt) {
 
 async function fetchWithProxy(url, options = {}) {
   if (typeof window !== 'undefined') {
-    const proxyUrl = 'http://localhost:3001/api/ai/proxy';
+    const apiBase = getApiBase();
+    const proxyUrl = `${apiBase}/api/ai/proxy`;
     const body = {
       url,
       method: options.method || 'GET',
       headers: options.headers || {},
-      body: options.body ? JSON.parse(options.body) : undefined
+      body: options.body ? (typeof options.body === 'string' ? JSON.parse(options.body) : options.body) : undefined
     };
-    const response = await fetch(proxyUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    });
-    return response;
+    try {
+      const response = await fetch(proxyUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      return response;
+    } catch (proxyErr) {
+      console.warn('[fetchWithProxy] Proxy falló, intentando fetch directo:', proxyErr.message);
+      return fetch(url, options);
+    }
   }
   return fetch(url, options);
 }
