@@ -74,24 +74,38 @@ export class TrajectoryRecorder {
 
   saveSnapshot() {
     try {
-      if (typeof window === 'undefined' || !window.localStorage) return;
-      const raw = localStorage.getItem(TRAJECTORY_STORAGE_KEY);
-      let list = [];
-      if (raw) {
-        try { list = JSON.parse(raw); } catch { list = []; }
-      }
-      const existingIdx = list.findIndex(t => t.id === this.id);
       const snapshot = this.exportHarness();
-      if (existingIdx >= 0) {
-        list[existingIdx] = snapshot;
-      } else {
-        list.unshift(snapshot);
+      
+      // Guardado Asíncrono en Backend (Native Telemetry Engine)
+      import('../config/apiConfig.js').then(({ getApiBase }) => {
+        const apiBase = getApiBase();
+        fetch(`${apiBase}/api/telemetry/log`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(snapshot)
+        }).catch(err => console.warn('[Telemetry] Error sincronizando con backend:', err));
+      }).catch(() => {});
+
+      // Fallback y caché local rápido
+      if (typeof window !== 'undefined' && window.localStorage) {
+        const raw = localStorage.getItem(TRAJECTORY_STORAGE_KEY);
+        let list = [];
+        if (raw) {
+          try { list = JSON.parse(raw); } catch { list = []; }
+        }
+        const existingIdx = list.findIndex(t => t.id === this.id);
+        if (existingIdx >= 0) {
+          list[existingIdx] = snapshot;
+        } else {
+          list.unshift(snapshot);
+        }
+        localStorage.setItem(TRAJECTORY_STORAGE_KEY, JSON.stringify(list.slice(0, 50)));
       }
-      // Mantener las últimas 50 trayectorias
-      localStorage.setItem(TRAJECTORY_STORAGE_KEY, JSON.stringify(list.slice(0, 50)));
 
       // Disparar evento para componentes React en escucha activa
-      window.dispatchEvent(new CustomEvent('openplan_trajectory_updated', { detail: snapshot }));
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('openplan_trajectory_updated', { detail: snapshot }));
+      }
     } catch (e) {
       console.warn('[TrajectoryRecorder] Error guardando snapshot:', e);
     }
@@ -129,7 +143,27 @@ export class TrajectoryRecorder {
 // ─────────────────────────────────────────────────────────────────────────
 // HELPER PARA CONSULTAR TRAYECTORIAS GUARDADAS
 // ─────────────────────────────────────────────────────────────────────────
-export function getSavedTrajectories(filter = {}) {
+export async function getSavedTrajectories(filter = {}) {
+  try {
+    const { getApiBase } = await import('../config/apiConfig.js');
+    const apiBase = getApiBase();
+    const res = await fetch(`${apiBase}/api/telemetry/trajectories`);
+    if (res.ok) {
+      const data = await res.json();
+      let list = data.trajectories || [];
+      if (filter.moduleKey) {
+        list = list.filter(t => t.moduleKey === filter.moduleKey);
+      }
+      if (filter.pillar) {
+        list = list.filter(t => t.pillar === filter.pillar);
+      }
+      return list;
+    }
+  } catch (e) {
+    console.warn('[Telemetry] Backend no disponible, usando fallback local', e);
+  }
+
+  // Fallback local
   try {
     if (typeof window === 'undefined' || !window.localStorage) return [];
     const raw = localStorage.getItem(TRAJECTORY_STORAGE_KEY);

@@ -1952,6 +1952,80 @@ app.get('/api/swarm/export-bundle', async (req, res) => {
   }
 });
 
+// ─────────────────────────────────────────────────────────
+//  NATIVE TELEMETRY ENGINE (DeepSeek Harness Inspired)
+// ─────────────────────────────────────────────────────────
+app.post('/api/telemetry/log', (req, res) => {
+  try {
+    const trajectory = req.body;
+    if (!trajectory || !trajectory.id) {
+      return res.status(400).json({ success: false, error: 'Trayectoria inválida' });
+    }
+    
+    const telemetryDir = path.resolve('proyectos', 'telemetry');
+    if (!fs.existsSync(telemetryDir)) {
+      fs.mkdirSync(telemetryDir, { recursive: true });
+    }
+    
+    // Almacenamos en formato JSON Lines
+    const logFilePath = path.join(telemetryDir, 'master_trace.jsonl');
+    const logLine = JSON.stringify({ ...trajectory, serverTimestamp: new Date().toISOString() }) + '\n';
+    fs.appendFileSync(logFilePath, logLine);
+    
+    res.json({ success: true, message: 'Trayectoria registrada nativamente.' });
+  } catch (error) {
+    console.error('[Telemetry] Error guardando trayectoria:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.get('/api/telemetry/trajectories', (req, res) => {
+  try {
+    const telemetryDir = path.resolve('proyectos', 'telemetry');
+    const logFilePath = path.join(telemetryDir, 'master_trace.jsonl');
+    
+    if (!fs.existsSync(logFilePath)) {
+      return res.json({ success: true, trajectories: [] });
+    }
+    
+    const data = fs.readFileSync(logFilePath, 'utf8');
+    const lines = data.split('\n').filter(l => l.trim().length > 0);
+    
+    // Deduplicar por ID (mantener la versión más reciente/completa)
+    const map = new Map();
+    lines.forEach(line => {
+      try {
+        const t = JSON.parse(line);
+        if (t.id) map.set(t.id, t);
+      } catch (e) {}
+    });
+    
+    // Devolver un arreglo ordenado por timestamp (más recientes primero)
+    const trajectories = Array.from(map.values())
+      .sort((a, b) => new Date(b.timestamp || b.serverTimestamp).getTime() - new Date(a.timestamp || a.serverTimestamp).getTime())
+      .reverse()
+      .slice(0, 100); // Límite para no saturar memoria en frontend
+      
+    res.json({ success: true, count: trajectories.length, trajectories });
+  } catch (error) {
+    console.error('[Telemetry] Error obteniendo trayectorias:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.delete('/api/telemetry/trajectories', (req, res) => {
+  try {
+    const telemetryDir = path.resolve('proyectos', 'telemetry');
+    const logFilePath = path.join(telemetryDir, 'master_trace.jsonl');
+    if (fs.existsSync(logFilePath)) {
+      fs.unlinkSync(logFilePath);
+    }
+    res.json({ success: true, message: 'Historial de telemetría purgado.' });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 // Servir archivos estáticos del frontend en producción
 const distPath = path.resolve('dist');
 if (fs.existsSync(distPath)) {

@@ -103,8 +103,8 @@ export default function ActivityFeed({ onOpenBob }) {
 
   // Cargar historial de logs y trayectorias agénticas al iniciar o cambiar de proyecto
   useEffect(() => {
-    const loadTrajs = () => {
-      const list = getSavedTrajectories();
+    const loadTrajs = async () => {
+      const list = await getSavedTrajectories();
       setTrajectories(list);
     };
     loadTrajs();
