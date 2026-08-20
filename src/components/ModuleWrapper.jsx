@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { usePlan } from '../context/PlanContext';
-import { Sparkles, Loader2, Brain, CheckCircle2, Lock, Unlock, Map as MapIcon, Network, Eye, EyeOff, HelpCircle, Edit3, Layout, ArrowRight, MessageSquare, Check, X } from 'lucide-react';
+import { Sparkles, Loader2, Brain, CheckCircle2, Lock, Unlock, Map as MapIcon, Network, Eye, EyeOff, HelpCircle, Edit3, Layout, ArrowRight, MessageSquare, Check, X, Activity } from 'lucide-react';
 import { generateModuleContent } from '../lib/ai';
+import { runAgenticModuleGeneration, getSavedTrajectories } from '../lib/agenticEngine';
+import AgentTrajectoryViewer from './AgentTrajectoryViewer';
 import { FIELD_GUIDES_MAP } from '../lib/field_guides';
 import { FRAMEWORKS } from '../config/frameworks';
 import MermaidViewer from './MermaidViewer';
@@ -29,6 +31,8 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
   const [isAiCompleted, setIsAiCompleted] = useState(false);
   const [draftValues, setDraftValues] = useState({});
   const [showComments, setShowComments] = useState({});
+  const [activeTrajectory, setActiveTrajectory] = useState(null);
+  const [currentTrajectory, setCurrentTrajectory] = useState(null);
   
   const isLocked = (fieldKey) => planData.config.locks?.[`${pillar}.${moduleKey}.${fieldKey}`];
   const isModuleVisible = planData.config?.visibility?.[`${pillar}.${moduleKey}`] !== false;
@@ -65,11 +69,11 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
 
   const handleAiGenerate = async () => {
     const rawAi = planData?.config?.ai || {};
-    const hasAnyKey = rawAi.apiKey || rawAi.groqKey || rawAi.openrouterKey || rawAi.nvidiaKey || rawAi.mistralKey;
+    const hasAnyKey = rawAi.apiKey || rawAi.groqKey || rawAi.openrouterKey || rawAi.nvidiaKey || rawAi.mistralKey || rawAi.minimaxKey;
     const isLocalProvider = rawAi.provider === 'ollama' || rawAi.primaryProvider === 'ollama' || rawAi.primaryProvider === 'lmstudio';
 
     if (!hasAnyKey && !isLocalProvider) {
-      alert("Por favor, configura al menos una API Key (Groq, Gemini, OpenRouter, Mistral, NVIDIA) o proveedor local en la sección de Configuración.");
+      alert("Por favor, configura al menos una API Key (Minimax, Groq, Gemini, OpenRouter, Mistral, NVIDIA) o proveedor local en la sección de Configuración.");
       return;
     }
 
@@ -77,7 +81,7 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
     if (unlockedFields.length === 0) return;
 
     setLoading(true);
-    setStage('Consultando Analista...');
+    setStage('Agente Autónomo ReAct: Iniciando razonamiento...');
     
     try {
       const enrichedFields = unlockedFields.map(f => {
@@ -87,24 +91,37 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
 
       const currentModule = { pillar, moduleKey, title, description, fields: enrichedFields };
       const aiConfig = { ...planData.config.ai, depth };
-      
-      const timer1 = setTimeout(() => setStage('IA diseñando visuales...'), 3000);
-      const timer2 = setTimeout(() => setStage('Sintetizando estructura...'), 6000);
 
-      const result = await generateModuleContent(aiConfig, currentModule, planData);
-      
-      clearTimeout(timer1);
-      clearTimeout(timer2);
+      // Ejecutar motor agéntico autónomo ReAct con registro de trayectoria DeepSeek Harness
+      let result;
+      try {
+        const agenticResp = await runAgenticModuleGeneration({
+          aiConfig,
+          currentModule,
+          planData,
+          onStepUpdate: (_step, harness) => {
+            setCurrentTrajectory(harness);
+          },
+          onLog: (_type, msg) => {
+            setStage(msg);
+          }
+        });
+        result = agenticResp.result;
+        setCurrentTrajectory(agenticResp.trajectory);
+      } catch {
+        // Fallback al generador estándar si el motor agéntico encuentra algún fallo
+        result = await generateModuleContent(aiConfig, currentModule, planData);
+      }
 
       const newDrafts = { ...draftValues };
-      Object.keys(result).forEach(key => {
+      Object.keys(result || {}).forEach(key => {
         if (fields.find(f => f.key === key) && !isLocked(key)) {
           newDrafts[key] = result[key];
         }
       });
       setDraftValues(newDrafts);
       
-      setStage('Borrador generado. Revisa y acepta los cambios.');
+      setStage('Borrador generado con trazabilidad. Revisa y acepta los cambios.');
       setIsAiCompleted(true);
       setTimeout(() => setStage(''), 6000);
     } catch (error) {
@@ -216,6 +233,23 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
             >
               {isModuleVisible ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
               <span>{isModuleVisible ? "Visible" : "Oculto"}</span>
+            </button>
+
+            <button 
+              className="btn btn-secondary"
+              onClick={() => {
+                const traj = currentTrajectory || getSavedTrajectories({ pillar, moduleKey })[0];
+                if (traj) {
+                  setActiveTrajectory(traj);
+                } else {
+                  alert('Aún no hay una trayectoria registrada para este módulo. Pulsa "Generar con IA" para trazarla.');
+                }
+              }}
+              title="Ver árbol de razonamiento y herramientas estilo DeepSeek Harness"
+              style={{ padding: '0.5rem 1rem', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+            >
+              <Activity className="w-4 h-4 text-purple-400" />
+              <span>Trayectoria</span>
             </button>
 
             <button 
@@ -485,6 +519,13 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
           setActiveExpertField(null);
         }}
       />
+
+      {activeTrajectory && (
+        <AgentTrajectoryViewer 
+          trajectory={activeTrajectory}
+          onClose={() => setActiveTrajectory(null)}
+        />
+      )}
     </div>
   );
 }

@@ -7,9 +7,10 @@
 
 | Tipo de Evento | Emisor | Payload | Consumidor |
 | :--- | :--- | :--- | :--- |
-| `start` | `generateModuleContent` | `{ type: 'start', module, provider, elapsed }` | ActivityFeed / Terminal Monitor |
+| `start` | `runAgenticModuleGeneration` | `{ type: 'start', module, provider, elapsed }` | ActivityFeed / Terminal Monitor |
 | `thinking` | `callAiProvider` | `{ type: 'thinking', message, provider, elapsed }` | Terminal Monitor (CoT Stream) |
 | `warning` | `callAiProvider` | `{ type: 'warning', message: '⚠️ Rotando...', provider }` | Notificaciones / Monitor |
+| `openplan_trajectory_updated` | `TrajectoryRecorder` | CustomEvent con snapshot actualizado de la trayectoria | ActivityFeed, ModuleWrapper |
 | `success` | Orquestador de Fase | `{ type: 'success', message: '✓ Completado', provider }` | Barra de Progreso Global |
 | `error` | Fallback Handler | `{ type: 'error', message: 'Fallo...', provider }` | Toast Alerts / Error Boundary |
 
@@ -17,4 +18,6 @@
 
 ## 2. Flujo de Emisión y Desacoplamiento
 
-Los eventos se publican mediante HTTP POST asíncrono hacia el endpoint local `/api/log` del servidor Express (`server/index.js`), que a su vez los distribuye vía Server-Sent Events (SSE) o WebSocket hacia el componente visual `ActivityFeed.jsx` y `BobChatModal.jsx`. Si el backend no está disponible, la emisión falla de manera silenciosa (`silent fail`), garantizando que la ejecución de la IA en el frontend nunca se bloquee.
+Los eventos de telemetría y logs se publican mediante HTTP POST asíncrono hacia el endpoint local `/api/log` del servidor Express (`server/index.js`), distribuyéndose vía Server-Sent Events (SSE) hacia `ActivityFeed.jsx`.
+
+Simultáneamente, el motor agéntico emite eventos en el DOM (`openplan_trajectory_updated`) y persiste snapshots en `localStorage`, permitiendo que el visor `AgentTrajectoryViewer` reaccione instantáneamente y actualice el árbol DAG en tiempo real.

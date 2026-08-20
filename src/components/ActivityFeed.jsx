@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
-import { Activity, X, Minimize2, Maximize2, Bot, CheckCircle, AlertTriangle, XCircle, Zap, Cloud, Save } from 'lucide-react';
+import { Activity, X, Minimize2, Maximize2, Bot, CheckCircle, AlertTriangle, XCircle, Zap, Cloud, Save, Sparkles, Cpu, Clock, ChevronRight } from 'lucide-react';
 import { usePlan } from '../context/PlanContext';
 import { getApiBase } from '../config/apiConfig';
+import { getSavedTrajectories } from '../lib/agenticEngine';
+import AgentTrajectoryViewer from './AgentTrajectoryViewer';
 
 const TYPE_CONFIG = {
   connected: { icon: CheckCircle, color: '#10b981', label: 'Conectado' },
@@ -72,6 +74,9 @@ export default function ActivityFeed({ onOpenBob }) {
   const activeProjectType = planData?.config?.projectType === 'social_bid' ? 'social' : 'negocios';
 
   const [logs, setLogs] = useState([]);
+  const [activeTab, setActiveTab] = useState('logs'); // 'logs' | 'trajectories'
+  const [trajectories, setTrajectories] = useState([]);
+  const [selectedTrajectory, setSelectedTrajectory] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [hasNew, setHasNew] = useState(false);
@@ -96,11 +101,22 @@ export default function ActivityFeed({ onOpenBob }) {
     activeProjectIdRef.current = activeProjectId;
   }, [activeProjectId]);
 
-  // Cargar historial de logs al iniciar o cambiar de proyecto
+  // Cargar historial de logs y trayectorias agénticas al iniciar o cambiar de proyecto
   useEffect(() => {
+    const loadTrajs = () => {
+      const list = getSavedTrajectories();
+      setTrajectories(list);
+    };
+    loadTrajs();
+
+    const handleTrajectoryUpdate = () => {
+      loadTrajs();
+    };
+    window.addEventListener('openplan_trajectory_updated', handleTrajectoryUpdate);
+
     if (!activeProjectId) {
       setLogs([]);
-      return;
+      return () => window.removeEventListener('openplan_trajectory_updated', handleTrajectoryUpdate);
     }
 
     const fetchHistory = async () => {
@@ -119,6 +135,7 @@ export default function ActivityFeed({ onOpenBob }) {
     };
 
     fetchHistory();
+    return () => window.removeEventListener('openplan_trajectory_updated', handleTrajectoryUpdate);
   }, [activeProjectId, activeProjectType]);
 
   // Helper to parse and update the active task progress
@@ -491,11 +508,6 @@ export default function ActivityFeed({ onOpenBob }) {
               }}>
                 {isConnected ? '● EN VIVO' : '○ Offline'}
               </span>
-              {logs.length > 0 && (
-                <span style={{ fontSize: '0.65rem', color: '#94a3b8' }}>
-                  {logs.length} eventos
-                </span>
-              )}
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
               <button
@@ -527,8 +539,50 @@ export default function ActivityFeed({ onOpenBob }) {
             </div>
           </div>
 
-          {/* Log Feed */}
+          {/* Selector de Pestañas: Logs en Vivo vs Trayectorias Agénticas */}
           {!isMinimized && (
+            <div style={{
+              display: 'flex',
+              borderBottom: '1px solid rgba(255,255,255,0.06)',
+              background: 'rgba(0,0,0,0.2)'
+            }}>
+              <button
+                onClick={() => setActiveTab('logs')}
+                style={{
+                  flex: 1,
+                  padding: '0.45rem 0.5rem',
+                  fontSize: '0.72rem',
+                  fontWeight: 700,
+                  border: 'none',
+                  background: activeTab === 'logs' ? 'rgba(99,102,241,0.15)' : 'transparent',
+                  color: activeTab === 'logs' ? 'var(--accent-color)' : '#94a3b8',
+                  borderBottom: activeTab === 'logs' ? '2px solid var(--accent-color)' : 'none',
+                  cursor: 'pointer'
+                }}
+              >
+                📋 Eventos ({logs.length})
+              </button>
+              <button
+                onClick={() => setActiveTab('trajectories')}
+                style={{
+                  flex: 1,
+                  padding: '0.45rem 0.5rem',
+                  fontSize: '0.72rem',
+                  fontWeight: 700,
+                  border: 'none',
+                  background: activeTab === 'trajectories' ? 'rgba(139,92,246,0.15)' : 'transparent',
+                  color: activeTab === 'trajectories' ? '#a78bfa' : '#94a3b8',
+                  borderBottom: activeTab === 'trajectories' ? '2px solid #a78bfa' : 'none',
+                  cursor: 'pointer'
+                }}
+              >
+                🔍 Trayectorias ({trajectories.length})
+              </button>
+            </div>
+          )}
+
+          {/* Tab 1: Log Feed */}
+          {!isMinimized && activeTab === 'logs' && (
             <div style={{
               flex: 1,
               overflowY: 'auto',
@@ -563,8 +617,67 @@ export default function ActivityFeed({ onOpenBob }) {
             </div>
           )}
 
+          {/* Tab 2: Trayectorias Agénticas DeepSeek Harness */}
+          {!isMinimized && activeTab === 'trajectories' && (
+            <div style={{
+              flex: 1,
+              overflowY: 'auto',
+              padding: '0.6rem',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.5rem',
+            }}>
+              {trajectories.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '2.5rem 1rem', color: '#94a3b8' }}>
+                  <Sparkles size={32} style={{ margin: '0 auto 0.75rem', opacity: 0.4, color: '#a78bfa' }} />
+                  <p style={{ fontSize: '0.8rem', margin: 0 }}>
+                    <strong style={{ color: '#a78bfa' }}>Sin Trayectorias Registradas Aún</strong><br />
+                    <span style={{ fontSize: '0.72rem', opacity: 0.8 }}>
+                      Genera cualquier módulo o inicia la industrialización para trazar el árbol de razonamiento en DeepSeek Harness.
+                    </span>
+                  </p>
+                </div>
+              ) : (
+                trajectories.map((traj) => (
+                  <div
+                    key={traj.id}
+                    onClick={() => setSelectedTrajectory(traj)}
+                    style={{
+                      background: 'rgba(255,255,255,0.03)',
+                      border: '1px solid rgba(255,255,255,0.06)',
+                      borderRadius: '8px',
+                      padding: '0.6rem 0.75rem',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      transition: 'all 0.15s ease'
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.background = 'rgba(99,102,241,0.08)'}
+                    onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.03)'}
+                  >
+                    <div>
+                      <div style={{ fontSize: '0.78rem', fontWeight: 800, color: 'white', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                        <span>{traj.moduleTitle || traj.moduleKey}</span>
+                        <span style={{ fontSize: '0.6rem', padding: '1px 5px', borderRadius: '4px', background: 'rgba(139,92,246,0.2)', color: '#a78bfa' }}>
+                          {traj.pillar}
+                        </span>
+                      </div>
+                      <div style={{ fontSize: '0.65rem', color: '#94a3b8', marginTop: '3px', display: 'flex', gap: '0.6rem' }}>
+                        <span><Cpu size={10} style={{ display: 'inline', marginRight: '2px' }} />{traj.modelUsed || 'minimax-m3:cloud'}</span>
+                        <span><Clock size={10} style={{ display: 'inline', marginRight: '2px' }} />{((traj.totalDurationMs || 0) / 1000).toFixed(1)}s</span>
+                        <span>🌳 {traj.stepsCount || (traj.trajectoryDAG?.length || 0)} pasos</span>
+                      </div>
+                    </div>
+                    <ChevronRight size={14} color="#94a3b8" />
+                  </div>
+                ))
+              )}
+            </div>
+          )}
+
           {/* Footer - Limpiar */}
-          {!isMinimized && logs.length > 0 && (
+          {!isMinimized && activeTab === 'logs' && logs.length > 0 && (
             <div style={{
               padding: '0.4rem 0.75rem',
               borderTop: '1px solid rgba(255,255,255,0.04)',
@@ -583,6 +696,14 @@ export default function ActivityFeed({ onOpenBob }) {
             </div>
           )}
         </div>
+      )}
+
+      {/* Visor Modal de Trayectoria Agéntica DeepSeek Harness */}
+      {selectedTrajectory && (
+        <AgentTrajectoryViewer
+          trajectory={selectedTrajectory}
+          onClose={() => setSelectedTrajectory(null)}
+        />
       )}
     </>
   );

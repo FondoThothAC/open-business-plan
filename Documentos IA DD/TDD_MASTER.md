@@ -8,6 +8,7 @@
 
 | Suite de Prueba | Archivo | Cobertura / Objetivo | Estado |
 | :--- | :--- | :--- | :--- |
+| **CELIS Agentic Engine & DeepSeek Harness** | `tests/agenticEngine.test.js` | Manifiesto de tools, web search, cálculo financiero, regla 13 cuántica, mermaid y árbol DAG DeepSeek Harness | ✅ Pass (6 tests) |
 | **Rotación de IA & Failover** | `tests/aiRotation.test.js` | Key pool, fast fail en 429, rotación de modelos y cascade multi-proveedor | ✅ Pass (5 tests) |
 | **Control de Cambios** | `tests/diffReview.test.js` | Algoritmo de diffs, limpieza de markdown y merge de sugerencias | ✅ Pass (3 tests) |
 | **Paginación & Impresión** | `tests/previewFormat.test.js` | Cálculo de páginas continuo/modular, reglas CSS y headers | ✅ Pass (5 tests) |
@@ -20,11 +21,11 @@
 | **Generador de Logos** | `tests/swarm/aiLogoGenerator.test.js` | Generación de prompts y SVG procedural como fallback | ✅ Pass (5 tests) |
 | **Voz & Grill-Me** | `tests/voiceAndGrillMe.test.js` | Comandos de voz y generación de opciones interactivas | ✅ Pass (3 tests) |
 
-**Total de Pruebas:** 42 ejecutadas | 42 aprobadas (100% éxito) | 0 fallos.
+**Total de Pruebas:** 48 ejecutadas | 48 aprobadas (100% éxito) | 0 fallos.
 
 ---
 
 ## 2. Estrategia de Mocking y Fixtures
 
-* **Mocking de Fetch:** Se intercepta `globalThis.fetch` en entornos de prueba para simular respuestas HTTP 429 (Rate Limit), cuotas agotadas y respuestas JSON válidas de proveedores como Groq, Gemini y OpenRouter sin consumir tokens reales.
+* **Mocking de Fetch:** Se intercepta `globalThis.fetch` en entornos de prueba para simular respuestas HTTP 429 (Rate Limit), cuotas agotadas y respuestas JSON válidas de proveedores como Minimax, Groq, Gemini y OpenRouter sin consumir tokens reales.
 * **Aislamiento:** Las pruebas no dependen de variables de entorno de producción ni servicios externos activos.

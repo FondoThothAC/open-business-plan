@@ -131,14 +131,15 @@ function findBestOllamaModel(requestedModel, installedModels) {
   return installedModels[0];
 }
 
-const CLOUD_DEFAULT_MODELS = {
-  gemini:     'gemini-3.6-flash',
-  openai:     'gpt-4o',
+export const CLOUD_DEFAULT_MODELS = {
+  minimax:    'minimax-m3:cloud',
   groq:       'qwen/qwen3.6-27b',
-  mistral:    'mistral-large-latest',
+  gemini:     'gemini-3.6-flash',
   nvidia:     'meta/llama-3.1-70b-instruct',
+  mistral:    'mistral-large-latest',
   openrouter: 'nvidia/nemotron-3.5-lightning:free',
   opencode:   'openai/gpt-4.1',
+  openai:     'gpt-4o',
 };
 
 // Resuelve un par (proveedor, modelo) coherente: nunca envía un modelo local a la nube
@@ -147,7 +148,8 @@ function resolveProviderModel({ primaryProvider, model, installedModels = [] }) 
   const resolved = String(model || '').trim();
 
   // Detectar proveedor por el nombre del modelo si es explícitamente cloud
-  if (resolved.includes('gemini')) prov = 'gemini';
+  if (resolved.includes('minimax')) prov = 'minimax';
+  else if (resolved.includes('gemini')) prov = 'gemini';
   else if (resolved.includes(':free') || resolved.includes('openrouter')) prov = 'openrouter';
   else if (resolved.includes('gpt-oss') || resolved.includes('compound') || resolved.includes('groq') || resolved.includes('qwen/')) prov = 'groq';
   else if (resolved.includes('gpt')) prov = 'openai';
@@ -157,13 +159,13 @@ function resolveProviderModel({ primaryProvider, model, installedModels = [] }) 
 
   // Proveedores locales: resolver contra los modelos instalados de Ollama
   if (prov === 'ollama' || prov === 'lmstudio') {
-    const localModel = findBestOllamaModel(model || 'nemotron', installedModels);
+    const localModel = findBestOllamaModel(model || 'minimax-m3:cloud', installedModels);
     return { provider: prov, model: localModel };
   }
 
   // Proveedores de nube: si el modelo configurado no es cloud, usar el default del proveedor
-  const isCloudModel = /gemini|gpt|mistral|nvidia|llama-3\.3|llama-3\.1|compound|qwen|oss|:free|:cloud/i.test(resolved);
-  const finalModel = (isCloudModel && resolved) ? resolved : (CLOUD_DEFAULT_MODELS[prov] || resolved || 'qwen/qwen3.6-27b');
+  const isCloudModel = /minimax|gemini|gpt|mistral|nvidia|llama-3\.3|llama-3\.1|compound|qwen|oss|:free|:cloud/i.test(resolved);
+  const finalModel = (isCloudModel && resolved) ? resolved : (CLOUD_DEFAULT_MODELS[prov] || resolved || 'minimax-m3:cloud');
   return { provider: prov, model: finalModel };
 }
 
@@ -802,11 +804,12 @@ function _showFallbackDialog(errorMsg) {
 // ─────────────────────────────────────────────────────────────────────────
 export async function callAiProvider(config, prompt, expectJson = true, expectedKeys = [], onThink = null) {
   const {
-    provider, apiKey, groqKey, nvidiaKey, openrouterKey, opencodeKey, mistralKey,
+    provider, apiKey, groqKey, nvidiaKey, openrouterKey, opencodeKey, mistralKey, minimaxKey,
     endpoint, lmStudioEndpoint, model, disableAutoFallback = false
   } = config;
 
   const invokeSingle = async (prov, mod, key) => {
+    if (prov === 'minimax')    return await callMinimax(key || minimaxKey || apiKey, mod, prompt, expectJson);
     if (prov === 'gemini')     return await callGemini(key || apiKey, mod, prompt);
     if (prov === 'groq')       return await callGroq(key || groqKey || apiKey, mod, prompt, expectJson);
     if (prov === 'nvidia')     return await callNvidia(key || nvidiaKey || apiKey, mod, prompt);
@@ -830,27 +833,34 @@ export async function callAiProvider(config, prompt, expectJson = true, expected
       throw err;
     }
 
-    // ─── Rotación Automática Multi-Proveedor a Nivel de Llamada ───
+    // ─── Rotación Automática Multi-Proveedor a Nivel de Llamada (Prioridad Minimax ➔ Groq ➔ Gemini) ───
     const logger = onThink || activeTermLog;
     const fallbackProviders = [];
 
+    // 1° Prioridad: Minimax / Minimax-M3 Cloud
+    if (provider !== 'minimax' && (minimaxKey || config?.minimaxKey)) {
+      fallbackProviders.push({ provider: 'minimax', key: minimaxKey || config?.minimaxKey, model: 'minimax-m3:cloud' });
+    }
+    if (provider !== 'ollama' && (endpoint || config?.endpoint)) {
+      fallbackProviders.push({ provider: 'ollama', key: null, model: 'minimax-m3:cloud' });
+    }
+    // 2° Prioridad: Groq
+    if (provider !== 'groq' && (groqKey || config?.groqKey)) {
+      fallbackProviders.push({ provider: 'groq', key: groqKey || config?.groqKey, model: 'qwen/qwen3.6-27b' });
+    }
+    // 3° Prioridad: Gemini
     if (provider !== 'gemini' && (apiKey || config?.geminiKey)) {
       fallbackProviders.push({ provider: 'gemini', key: apiKey || config?.geminiKey, model: 'gemini-3.6-flash' });
     }
+    // 4° Prioridad: OpenRouter / NVIDIA / Mistral
     if (provider !== 'openrouter' && (openrouterKey || config?.openrouterKey)) {
       fallbackProviders.push({ provider: 'openrouter', key: openrouterKey || config?.openrouterKey, model: 'nvidia/nemotron-3.5-lightning:free' });
-    }
-    if (provider !== 'groq' && (groqKey || config?.groqKey)) {
-      fallbackProviders.push({ provider: 'groq', key: groqKey || config?.groqKey, model: 'qwen/qwen3.6-27b' });
     }
     if (provider !== 'nvidia' && (nvidiaKey || config?.nvidiaKey)) {
       fallbackProviders.push({ provider: 'nvidia', key: nvidiaKey || config?.nvidiaKey, model: 'meta/llama-3.1-70b-instruct' });
     }
     if (provider !== 'mistral' && (mistralKey || config?.mistralKey)) {
       fallbackProviders.push({ provider: 'mistral', key: mistralKey || config?.mistralKey, model: 'mistral-large-latest' });
-    }
-    if (provider !== 'ollama' && endpoint) {
-      fallbackProviders.push({ provider: 'ollama', key: null, model: 'qwen3.5:4b-mlx' });
     }
 
     let fallbackSuccess = false;
@@ -885,6 +895,33 @@ export async function callAiProvider(config, prompt, expectJson = true, expected
   }
 
   return expectJson ? parseAIResponse(text, expectedKeys) : text;
+}
+
+export async function callMinimax(apiKey, model, prompt, _expectJson = true) {
+  const rotatedKey = getRotatedApiKey(apiKey, 'minimax');
+  if (!rotatedKey) throw new Error('API Key de MiniMax requerida');
+
+  const preferredModel = model || 'minimax-m3:cloud';
+  const url = 'https://api.minimax.chat/v1/text/chatcompletion_v2';
+  
+  const response = await fetchWithRetry(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${rotatedKey}`
+    },
+    body: JSON.stringify({
+      model: preferredModel,
+      messages: [{ role: 'user', content: prompt }],
+      temperature: 0.6
+    })
+  }, { fastFailOn429: true });
+
+  const data = await response.json();
+  if (data.base_resp && data.base_resp.status_code !== 0) {
+    throw new Error(data.base_resp.status_msg || 'Error en API de MiniMax');
+  }
+  return data.choices?.[0]?.message?.content || data.reply || '';
 }
 
 async function callOllama(endpoint, model, prompt, expectJson) {

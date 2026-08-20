@@ -25,7 +25,8 @@ const CTX_PRESETS = [
 
 const PROVIDER_PRESETS = {
   ollama: [
-    { value: 'qwen3.5:4b-mlx', label: 'qwen3.5:4b-mlx (Recomendado)' },
+    { value: 'minimax-m3:cloud', label: 'minimax-m3:cloud (Nube - Prioridad Recomendada)' },
+    { value: 'qwen3.5:4b-mlx', label: 'qwen3.5:4b-mlx (Local)' },
     { value: 'nemotron-3-nano:4b', label: 'nemotron-3-nano:4b' },
     { value: 'qwen3.5:2b-mlx', label: 'qwen3.5:2b-mlx' },
     { value: 'gemma4:e2b-mlx', label: 'gemma4:e2b-mlx' },
@@ -34,7 +35,10 @@ const PROVIDER_PRESETS = {
     { value: 'qwen3.5:cloud', label: 'qwen3.5:cloud (Nube - Gratuito)' },
     { value: 'nemotron-3-super:cloud', label: 'nemotron-3-super:cloud (Nube - Gratuito)' },
     { value: 'gemma4:31b-cloud', label: 'gemma4:31b-cloud (Nube - Gratuito)' },
-    { value: 'minimax-m3:cloud', label: 'minimax-m3:cloud (Nube - Gratuito)' },
+  ],
+  minimax: [
+    { value: 'minimax-m3:cloud', label: 'MiniMax M3 (Cloud 1M Tokens)' },
+    { value: 'abab6.5-chat', label: 'MiniMax abab 6.5' },
   ],
   lmstudio: [
     { value: 'local-model', label: 'Local Model (Predeterminado)' },
