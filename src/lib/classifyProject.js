@@ -64,13 +64,18 @@ Devuelve ÚNICAMENTE un objeto JSON válido con la siguiente estructura (sin for
   try {
     const prov = primaryProvider || 'groq';
     const responseText = await callAiProvider(
-      { provider: prov, apiKey, groqKey, nvidiaKey, endpoint: prov === 'lmstudio' ? lmStudioEndpoint : endpoint, model: model || 'groq/compound-mini' },
+      { provider: prov, apiKey, groqKey, nvidiaKey, endpoint: prov === 'lmstudio' ? lmStudioEndpoint : endpoint, model: model || 'qwen/qwen3.6-27b' },
       prompt,
       false
     );
 
-    const cleanedText = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
-    const result = JSON.parse(cleanedText);
+    // Limpiar think tags y extraer JSON robusto
+    let cleanedText = String(responseText || '')
+      .replace(/<think>[\s\S]*?<\/think>/gi, '')
+      .replace(/```json/gi, '').replace(/```/g, '').trim();
+    let result;
+    try { result = JSON.parse(cleanedText); }
+    catch { const m = cleanedText.match(/\{[\s\S]*\}/); result = JSON.parse(m ? m[0] : cleanedText); }
 
     // Asegurar que el framework exista
     if (!FRAMEWORKS[result.frameworkId]) {

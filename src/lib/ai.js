@@ -167,24 +167,59 @@ function resolveProviderModel({ primaryProvider, model, installedModels = [] }) 
   return { provider: prov, model: finalModel };
 }
 
-// Retry automático por límite de tokens (HTTP 429 / rate-limit)
-// Espera el tiempo indicado por Retry-After o backoff exponencial.
-async function fetchWithRetry(url, options = {}, { maxRetries = 8, baseDelay = 2000 } = {}) {
+// Extractor y sanitizador de pool de API keys (soporta múltiples llaves separadas por comas o saltos de línea)
+export function parseApiKeys(rawKey) {
+  if (!rawKey) return [];
+  if (Array.isArray(rawKey)) return rawKey.map(k => String(k).trim()).filter(Boolean);
+  return String(rawKey)
+    .split(/[\n,;]+/)
+    .map(k => k.trim())
+    .filter(k => k.length > 0);
+}
+
+// Contador global para balanceo Round-Robin de API Keys
+const keyRotationCounters = {};
+
+// Obtiene la siguiente API key disponible en rotación circular
+export function getRotatedApiKey(rawKey, providerName = 'default') {
+  const keys = parseApiKeys(rawKey);
+  if (keys.length === 0) return '';
+  if (keys.length === 1) return keys[0];
+  
+  if (keyRotationCounters[providerName] === undefined) {
+    keyRotationCounters[providerName] = 0;
+  }
+  const idx = keyRotationCounters[providerName] % keys.length;
+  keyRotationCounters[providerName]++;
+  return keys[idx];
+}
+
+// Retry automático por límite de tokens (HTTP 429 / rate-limit) con Fast Failover
+// Espera el tiempo indicado por Retry-After o backoff exponencial controlado.
+export async function fetchWithRetry(url, options = {}, { maxRetries = 2, baseDelay = 1500, fastFailOn429 = false } = {}) {
   let lastError;
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     try {
       const response = await fetch(url, options);
       if (response.status === 429) {
+        if (fastFailOn429 || attempt >= maxRetries) {
+          const err = new Error('HTTP_429_RATE_LIMIT');
+          err.status = 429;
+          err.response = response;
+          throw err;
+        }
+
         const retryAfter = response.headers?.get('retry-after');
-        const waitMs = retryAfter ? parseInt(retryAfter, 10) * 1000 : Math.min(baseDelay * Math.pow(2, attempt), 60000);
+        const waitMs = retryAfter ? Math.min(parseInt(retryAfter, 10) * 1000, 4000) : Math.min(baseDelay * Math.pow(1.5, attempt), 4000);
         const provider = url.includes('groq.com') ? 'Groq'
           : url.includes('googleapis') ? 'Gemini'
           : url.includes('nvidia') ? 'NVIDIA'
           : url.includes('openai.com') ? 'OpenAI'
           : url.includes('mistral') ? 'Mistral' : 'Cloud';
-        console.warn(`[fetchWithRetry] 429 ${provider}: esperando ${waitMs}ms (intento ${attempt + 1}/${maxRetries + 1})...`);
+
+        console.warn(`[fetchWithRetry] 429 ${provider}: reintentando en ${waitMs}ms (intento ${attempt + 1}/${maxRetries + 1})...`);
         if (activeTermLog) {
-          activeTermLog('thinking', `⏳ Límite de tokens de ${provider}: esperando ${Math.round(waitMs / 1000)}s para reintentar... (${attempt + 1}/${maxRetries + 1})`, provider.toLowerCase());
+          activeTermLog('thinking', `⏳ Límite temporal de ${provider}: reintento rápido en ${Math.round(waitMs / 1000)}s... (${attempt + 1}/${maxRetries + 1})`, provider.toLowerCase());
         }
         await new Promise(r => setTimeout(r, waitMs));
         continue;
@@ -192,8 +227,11 @@ async function fetchWithRetry(url, options = {}, { maxRetries = 8, baseDelay = 2
       return response;
     } catch (err) {
       lastError = err;
+      if (err.status === 429 || err.message === 'HTTP_429_RATE_LIMIT') {
+        throw err;
+      }
       if (attempt < maxRetries) {
-        const waitMs = Math.min(baseDelay * Math.pow(2, attempt), 60000);
+        const waitMs = Math.min(baseDelay * Math.pow(2, attempt), 6000);
         console.warn(`[fetchWithRetry] Error de red: reintentando en ${waitMs}ms (intento ${attempt + 1}/${maxRetries + 1})...`);
         await new Promise(r => setTimeout(r, waitMs));
       }
@@ -389,8 +427,35 @@ ${fieldsPromptContext}
     let prov = resolved.provider;
     let mod = resolved.model;
 
-    if (prov === 'lmstudio') return { provider: 'lmstudio', endpoint: lmStudioEndpoint, model: mod };
-    return { provider: prov, apiKey, groqKey, nvidiaKey, endpoint, model: mod };
+    const openrouterKey = allPlanData?.config?.ai?.openrouterKey || '';
+    const opencodeKey   = allPlanData?.config?.ai?.opencodeKey   || '';
+    const mistralKey    = allPlanData?.config?.ai?.mistralKey    || '';
+
+    if (prov === 'lmstudio') {
+      return {
+        provider: 'lmstudio',
+        endpoint: lmStudioEndpoint,
+        model: mod,
+        apiKey,
+        groqKey,
+        nvidiaKey,
+        openrouterKey,
+        opencodeKey,
+        mistralKey
+      };
+    }
+    return {
+      provider: prov,
+      apiKey,
+      groqKey,
+      nvidiaKey,
+      openrouterKey,
+      opencodeKey,
+      mistralKey,
+      endpoint,
+      lmStudioEndpoint,
+      model: mod
+    };
   };
 
   // ─── Orquestadores por nivel ───────────────────────────────────────────
@@ -733,20 +798,79 @@ function _showFallbackDialog(errorMsg) {
 // ─────────────────────────────────────────────────────────────────────────
 // Provider Adapters
 // ─────────────────────────────────────────────────────────────────────────
+// Provider Adapters
+// ─────────────────────────────────────────────────────────────────────────
 export async function callAiProvider(config, prompt, expectJson = true, expectedKeys = [], onThink = null) {
-  const { provider, apiKey, groqKey, nvidiaKey, openrouterKey, opencodeKey, endpoint, model } = config;
-  let text;
+  const {
+    provider, apiKey, groqKey, nvidiaKey, openrouterKey, opencodeKey, mistralKey,
+    endpoint, lmStudioEndpoint, model, disableAutoFallback = false
+  } = config;
 
-  if (provider === 'gemini')     text = await callGemini(apiKey, model, prompt);
-  else if (provider === 'groq')       text = await callGroq(groqKey || apiKey, model, prompt, expectJson);
-  else if (provider === 'nvidia')     text = await callNvidia(nvidiaKey || apiKey, model, prompt);
-  else if (provider === 'openrouter') text = await callOpenRouter(openrouterKey || apiKey, model, prompt, expectJson);
-  else if (provider === 'opencode')   text = await callOpenRouter(opencodeKey || apiKey, model, prompt, expectJson);
-  else if (provider === 'ollama')     text = await callOllama(endpoint, model, prompt, expectJson);
-  else if (provider === 'lmstudio')   text = await callLmStudio(endpoint, model, prompt, expectJson, apiKey);
-  else if (provider === 'mistral')    text = await callMistral(apiKey, model, prompt);
-  else if (provider === 'openai')     text = await callOpenAI(apiKey, model, prompt, expectJson);
-  else throw new Error(`Proveedor ${provider} no soportado`);
+  const invokeSingle = async (prov, mod, key) => {
+    if (prov === 'gemini')     return await callGemini(key || apiKey, mod, prompt);
+    if (prov === 'groq')       return await callGroq(key || groqKey || apiKey, mod, prompt, expectJson);
+    if (prov === 'nvidia')     return await callNvidia(key || nvidiaKey || apiKey, mod, prompt);
+    if (prov === 'openrouter') return await callOpenRouter(key || openrouterKey || apiKey, mod, prompt, expectJson);
+    if (prov === 'opencode')   return await callOpenRouter(key || opencodeKey || apiKey, mod, prompt, expectJson);
+    if (prov === 'ollama')     return await callOllama(endpoint, mod, prompt, expectJson);
+    if (prov === 'lmstudio')   return await callLmStudio(endpoint || lmStudioEndpoint, mod, prompt, expectJson, key || apiKey);
+    if (prov === 'mistral')    return await callMistral(key || mistralKey || apiKey, mod, prompt);
+    if (prov === 'openai')     return await callOpenAI(key || apiKey, mod, prompt, expectJson);
+    throw new Error(`Proveedor ${prov} no soportado`);
+  };
+
+  let text;
+  let primaryError = null;
+
+  try {
+    text = await invokeSingle(provider, model, null);
+  } catch (err) {
+    primaryError = err;
+    if (disableAutoFallback) {
+      throw err;
+    }
+
+    // ─── Rotación Automática Multi-Proveedor a Nivel de Llamada ───
+    const logger = onThink || activeTermLog;
+    const fallbackProviders = [];
+
+    if (provider !== 'gemini' && (apiKey || config?.geminiKey)) {
+      fallbackProviders.push({ provider: 'gemini', key: apiKey || config?.geminiKey, model: 'gemini-3.6-flash' });
+    }
+    if (provider !== 'openrouter' && (openrouterKey || config?.openrouterKey)) {
+      fallbackProviders.push({ provider: 'openrouter', key: openrouterKey || config?.openrouterKey, model: 'nvidia/nemotron-3.5-lightning:free' });
+    }
+    if (provider !== 'groq' && (groqKey || config?.groqKey)) {
+      fallbackProviders.push({ provider: 'groq', key: groqKey || config?.groqKey, model: 'qwen/qwen3.6-27b' });
+    }
+    if (provider !== 'nvidia' && (nvidiaKey || config?.nvidiaKey)) {
+      fallbackProviders.push({ provider: 'nvidia', key: nvidiaKey || config?.nvidiaKey, model: 'meta/llama-3.1-70b-instruct' });
+    }
+    if (provider !== 'mistral' && (mistralKey || config?.mistralKey)) {
+      fallbackProviders.push({ provider: 'mistral', key: mistralKey || config?.mistralKey, model: 'mistral-large-latest' });
+    }
+    if (provider !== 'ollama' && endpoint) {
+      fallbackProviders.push({ provider: 'ollama', key: null, model: 'qwen3.5:4b-mlx' });
+    }
+
+    let fallbackSuccess = false;
+    for (const fb of fallbackProviders) {
+      try {
+        if (logger) {
+          logger('warning', `⚠️ [Rotación IA] ${provider} saturado o con error. Rotando automáticamente a ${fb.provider} (${fb.model})...`, fb.provider);
+        }
+        text = await invokeSingle(fb.provider, fb.model, fb.key);
+        fallbackSuccess = true;
+        break;
+      } catch (fbErr) {
+        console.warn(`[callAiProvider Fallback] ${fb.provider} falló:`, fbErr.message);
+      }
+    }
+
+    if (!fallbackSuccess) {
+      throw primaryError;
+    }
+  }
 
   if (typeof text === 'string') {
     const thinkMatch = text.match(/<think>([\s\S]*?)<\/think>/i);
@@ -805,6 +929,9 @@ async function callLmStudio(endpoint, model, prompt, expectJson, apiKey) {
 }
 
 async function callGemini(apiKey, model, prompt) {
+  const keys = parseApiKeys(apiKey);
+  if (keys.length === 0) throw new Error('No se proporcionó API Key de Google Gemini válida');
+
   let preferredModel = model || 'gemini-3.6-flash';
   if (preferredModel === 'gemini-1.5-flash' || preferredModel === 'gemini-1.5-pro' || preferredModel === 'gemini-2.5-flash') {
     preferredModel = 'gemini-3.6-flash';
@@ -813,31 +940,48 @@ async function callGemini(apiKey, model, prompt) {
   const geminiCandidates = [
     preferredModel,
     'gemini-3.6-flash',
-    'gemini-3.5-flash-lite',
     'gemini-3.7-flash',
+    'gemini-3.5-flash-lite',
     'gemini-3.1-flash-lite'
   ];
   const uniqueModels = [...new Set(geminiCandidates)];
 
   let lastError = null;
 
-  for (const candidate of uniqueModels) {
-    try {
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/${candidate}:generateContent?key=${apiKey}`;
-      const response = await fetchWithRetry(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
-      });
-      const data = await response.json();
-      if (!data.error && data.candidates?.[0]?.content?.parts?.[0]?.text) {
-        return data.candidates[0].content.parts[0].text;
+  for (const currentKey of keys) {
+    for (const candidate of uniqueModels) {
+      try {
+        if (candidate !== uniqueModels[0] && activeTermLog) {
+          activeTermLog('thinking', `🔄 Rotando a modelo en Gemini: ${candidate}...`, 'gemini');
+        }
+
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${candidate}:generateContent?key=${currentKey}`;
+        const response = await fetchWithRetry(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+        }, { maxRetries: 0, fastFailOn429: true });
+
+        if (response.status === 429) {
+          continue;
+        }
+
+        const data = await response.json();
+        if (!data.error && data.candidates?.[0]?.content?.parts?.[0]?.text) {
+          return data.candidates[0].content.parts[0].text;
+        }
+        if (data.error) {
+          lastError = new Error(data.error.message);
+          if (data.error.status === 'RESOURCE_EXHAUSTED' || (data.error.message && data.error.message.includes('Quota exceeded'))) {
+            continue;
+          }
+        }
+      } catch (err) {
+        lastError = err;
+        if (err.status === 429 || err.message === 'HTTP_429_RATE_LIMIT') {
+          continue;
+        }
       }
-      if (data.error) {
-        lastError = new Error(data.error.message);
-      }
-    } catch (err) {
-      lastError = err;
     }
   }
 
@@ -864,7 +1008,9 @@ async function fetchWithProxy(url, options = {}) {
 }
 
 async function callGroq(apiKey, model, prompt, expectJson) {
-  // Modelos activos en la cuenta de Groq (qwen 27B y gpt-oss 120B/20B no tienen saturación de cuota diaria de Llama)
+  const keys = parseApiKeys(apiKey);
+  if (keys.length === 0) throw new Error('No se proporcionó API Key de Groq válida');
+
   let preferredModel = model || 'qwen/qwen3.6-27b';
   if (preferredModel === 'llama-3.3-70b-versatile' || preferredModel === 'llama-3.1-8b-instant' || preferredModel === 'groq/compound-mini') {
     preferredModel = 'qwen/qwen3.6-27b';
@@ -875,43 +1021,57 @@ async function callGroq(apiKey, model, prompt, expectJson) {
     'qwen/qwen3.6-27b',
     'openai/gpt-oss-120b',
     'openai/gpt-oss-20b',
-    'groq/compound'
+    'llama-3.3-70b-versatile',
+    'llama-3.1-8b-instant',
+    'groq/compound',
+    'groq/compound-mini'
   ];
   const uniqueModels = [...new Set(groqCandidateModels)];
 
   let lastError = null;
 
-  for (const candidate of uniqueModels) {
-    try {
-      const response = await fetchWithRetry('https://api.groq.com/openai/v1/chat/completions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-        body: JSON.stringify({
-          model: candidate,
-          messages: [{ role: 'user', content: prompt }],
-          response_format: expectJson ? { type: 'json_object' } : undefined,
-          temperature: 0.7
-        })
-      });
+  for (const currentKey of keys) {
+    for (const candidate of uniqueModels) {
+      try {
+        if (candidate !== uniqueModels[0] && activeTermLog) {
+          activeTermLog('thinking', `🔄 Rotando a modelo en Groq: ${candidate}...`, 'groq');
+        }
 
-      if (response.status === 429) {
-        // Si este modelo específico agotó su cuota en Groq, probamos el siguiente modelo de inmediato sin colgar el hilo
-        continue;
-      }
+        const response = await fetchWithRetry('https://api.groq.com/openai/v1/chat/completions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${currentKey}` },
+          body: JSON.stringify({
+            model: candidate,
+            messages: [{ role: 'user', content: prompt }],
+            response_format: expectJson ? { type: 'json_object' } : undefined,
+            temperature: 0.7
+          })
+        }, { maxRetries: 0, fastFailOn429: true });
 
-      const data = await response.json();
-      if (!data.error && data.choices?.[0]?.message?.content !== undefined) {
-        return data.choices[0].message.content;
+        if (response.status === 429) {
+          continue;
+        }
+
+        const data = await response.json();
+        if (!data.error && data.choices?.[0]?.message?.content !== undefined) {
+          return data.choices[0].message.content;
+        }
+        if (data.error) {
+          lastError = new Error(data.error.message);
+          if (data.error.code === 'rate_limit_exceeded' || (data.error.message && data.error.message.toLowerCase().includes('rate limit'))) {
+            continue;
+          }
+        }
+      } catch (err) {
+        lastError = err;
+        if (err.status === 429 || err.message === 'HTTP_429_RATE_LIMIT') {
+          continue;
+        }
       }
-      if (data.error) {
-        lastError = new Error(data.error.message);
-      }
-    } catch (err) {
-      lastError = err;
     }
   }
 
-  throw lastError || new Error('No se pudo obtener respuesta de ningún modelo disponible en Groq.');
+  throw lastError || new Error('No se pudo obtener respuesta de ningún modelo o llave disponible en Groq.');
 }
 
 async function callNvidia(apiKey, model, prompt) {
@@ -931,6 +1091,9 @@ async function callNvidia(apiKey, model, prompt) {
 }
 
 async function callOpenRouter(apiKey, model, prompt, expectJson) {
+  const keys = parseApiKeys(apiKey);
+  if (keys.length === 0) throw new Error('No se proporcionó API Key de OpenRouter válida');
+
   const candidateModels = [
     model || 'nvidia/nemotron-3.5-lightning:free',
     'nvidia/nemotron-3.5-lightning:free',
@@ -941,38 +1104,48 @@ async function callOpenRouter(apiKey, model, prompt, expectJson) {
   const uniqueModels = [...new Set(candidateModels)];
   let lastError = null;
 
-  for (const candidate of uniqueModels) {
-    try {
-      const response = await fetchWithRetry('https://openrouter.ai/api/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${apiKey}`,
-          'HTTP-Referer': 'https://fondothoth.com/obp',
-          'X-Title': 'Open Business Plan'
-        },
-        body: JSON.stringify({
-          model: candidate,
-          messages: [{ role: 'user', content: prompt }],
-          response_format: expectJson ? { type: 'json_object' } : undefined
-        })
-      });
+  for (const currentKey of keys) {
+    for (const candidate of uniqueModels) {
+      try {
+        if (candidate !== uniqueModels[0] && activeTermLog) {
+          activeTermLog('thinking', `🔄 Rotando a modelo en OpenRouter: ${candidate}...`, 'openrouter');
+        }
 
-      if (response.status === 429) continue;
+        const response = await fetchWithRetry('https://openrouter.ai/api/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${currentKey}`,
+            'HTTP-Referer': 'https://fondothoth.com/obp',
+            'X-Title': 'Open Business Plan'
+          },
+          body: JSON.stringify({
+            model: candidate,
+            messages: [{ role: 'user', content: prompt }],
+            response_format: expectJson ? { type: 'json_object' } : undefined,
+            temperature: 0.7
+          })
+        }, { maxRetries: 0, fastFailOn429: true });
 
-      const data = await response.json();
-      if (!data.error && data.choices?.[0]?.message?.content !== undefined) {
-        return data.choices[0].message.content;
+        if (response.status === 429) continue;
+
+        const data = await response.json();
+        if (!data.error && data.choices?.[0]?.message?.content !== undefined) {
+          return data.choices[0].message.content;
+        }
+        if (data.error) {
+          lastError = new Error(data.error.message || 'OpenRouter error');
+        }
+      } catch (err) {
+        lastError = err;
+        if (err.status === 429 || err.message === 'HTTP_429_RATE_LIMIT') {
+          continue;
+        }
       }
-      if (data.error) {
-        lastError = new Error(data.error.message || 'OpenRouter error');
-      }
-    } catch (err) {
-      lastError = err;
     }
   }
 
-  throw lastError || new Error('No se pudo obtener respuesta de OpenRouter');
+  throw lastError || new Error('No se pudo obtener respuesta de ningún modelo disponible en OpenRouter.');
 }
 
 async function callOpenAI(apiKey, model, prompt, expectJson) {
@@ -1375,19 +1548,90 @@ Extrae y devuelve ÚNICAMENTE un objeto JSON válido con estas claves (sin bloqu
   
   try {
     await termLog('thinking', `Analizando el texto con la Mesa de Expertos (${finalModel})...`, prov);
-    const text = await callAiProvider({ provider: prov, apiKey, groqKey, nvidiaKey, endpoint: prov === 'lmstudio' ? lmStudioEndpoint : endpoint, model: finalModel }, prompt, false);
-    
-    // Attempt to parse JSON safely
-    const cleaned = text.replace(/```json/g, '').replace(/```/g, '').trim();
-    const result = JSON.parse(cleaned);
+    const text = await callAiProvider({ provider: prov, apiKey, groqKey, nvidiaKey, openrouterKey: config?.openrouterKey, endpoint: prov === 'lmstudio' ? lmStudioEndpoint : endpoint, model: finalModel }, prompt, false);
+
+    // [FDD] Limpieza robusta de la respuesta:
+    // 1. Eliminar bloques <think>...</think> que devuelven modelos de razonamiento (compound-mini, deepseek-r1)
+    // 2. Eliminar bloques de código markdown
+    // 3. Extraer el primer objeto JSON válido con regex
+    let cleaned = String(text || '')
+      .replace(/<think>[\s\S]*?<\/think>/gi, '')  // eliminar think tags
+      .replace(/```json/gi, '')
+      .replace(/```/g, '')
+      .trim();
+
+    // Intentar JSON.parse directo primero
+    let result;
+    try {
+      result = JSON.parse(cleaned);
+    } catch {
+      // Extracción robusta: buscar el primer bloque {...} válido
+      const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        try {
+          result = JSON.parse(jsonMatch[0]);
+        } catch (innerErr) {
+          // Último intento: quitar caracteres de control
+          const ultraClean = jsonMatch[0].replace(/[\x00-\x1F\x7F]/g, ' ');
+          result = JSON.parse(ultraClean);
+        }
+      } else {
+        throw new Error('No se encontró un JSON válido en la respuesta del modelo');
+      }
+    }
+
     await termLog('success', '✓ Idea estructurada con éxito.', prov);
     return result;
   } catch (error) {
     console.error("Error al extraer semilla:", error);
+
+    // Fallback: intentar con OpenRouter si hay key disponible
+    const openrouterKey = config?.openrouterKey || '';
+    if (openrouterKey && prov !== 'openrouter') {
+      try {
+        await termLog('warning', 'Reintentando con OpenRouter (Nemotron 3.5)...', 'openrouter');
+        const textOr = await callAiProvider(
+          { provider: 'openrouter', openrouterKey, apiKey: openrouterKey, model: 'nvidia/nemotron-3.5-lightning:free', endpoint },
+          prompt, false
+        );
+        let cleanedOr = String(textOr || '')
+          .replace(/<think>[\s\S]*?<\/think>/gi, '')
+          .replace(/```json/gi, '').replace(/```/g, '').trim();
+        const matchOr = cleanedOr.match(/\{[\s\S]*\}/);
+        const resultOr = JSON.parse(matchOr ? matchOr[0] : cleanedOr);
+        await termLog('success', '✓ Idea estructurada (OpenRouter fallback).', 'openrouter');
+        return resultOr;
+      } catch (orErr) {
+        await termLog('error', `Fallback OpenRouter también falló: ${orErr.message}`, 'openrouter');
+      }
+    }
+
+    // Fallback con Groq Qwen si no es el proveedor actual
+    const gKey = config?.groqKey || groqKey;
+    if (gKey && prov !== 'groq') {
+      try {
+        await termLog('warning', 'Reintentando con Groq (Qwen 3.6 27B)...', 'groq');
+        const textG = await callAiProvider(
+          { provider: 'groq', groqKey: gKey, model: 'qwen/qwen3.6-27b', endpoint },
+          prompt, false
+        );
+        let cleanedG = String(textG || '')
+          .replace(/<think>[\s\S]*?<\/think>/gi, '')
+          .replace(/```json/gi, '').replace(/```/g, '').trim();
+        const matchG = cleanedG.match(/\{[\s\S]*\}/);
+        const resultG = JSON.parse(matchG ? matchG[0] : cleanedG);
+        await termLog('success', '✓ Idea estructurada (Groq fallback).', 'groq');
+        return resultG;
+      } catch (gErr) {
+        await termLog('error', `Fallback Groq también falló: ${gErr.message}`, 'groq');
+      }
+    }
+
     await termLog('error', `Error al estructurar el texto: ${error.message}`, prov);
     throw new Error(`No se pudo estructurar el texto: ${error.message || 'Intenta de nuevo.'}`, { cause: error });
   }
 }
+
 
 export async function askFieldDoubt(config, fieldName, userText, projectSeed) {
   const { primaryProvider, apiKey, groqKey, nvidiaKey, lmStudioEndpoint, endpoint, model } = config || {};
