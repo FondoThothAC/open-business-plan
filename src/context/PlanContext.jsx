@@ -268,7 +268,7 @@ export const PlanProvider = ({ children }) => {
       // Si no hay proyecto activo, intentamos auto-cargar el último modificado en el backend
       if (!activeId) {
         try {
-          const listRes = await fetch('http://localhost:3001/api/projects');
+          const listRes = await fetch(`${backendBase}/api/projects`);
           if (listRes.ok) {
             const projectsObj = await listRes.json();
             const allProjects = [];

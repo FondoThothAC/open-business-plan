@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import {} from '../lib/inegi';
 import { MapPin, Search, RefreshCw, AlertTriangle, Save, Check } from 'lucide-react';
 import { usePlan } from '../context/PlanContext';
+import { getApiBase } from '../config/apiConfig';
 import { callAiProvider } from '../lib/ai';
 import { useParams } from 'react-router-dom';
 import { SCIAN_PRESETS } from '../config/scian';
@@ -555,8 +556,9 @@ export default function InegiMap({
     setShowEnrichModal(true);
 
     try {
+      const apiBase = getApiBase();
       // 1. Llamar al backend para hacer el enriquecimiento
-      const response = await fetch('http://localhost:3001/api/market/enrich', {
+      const response = await fetch(`${apiBase}/api/market/enrich`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

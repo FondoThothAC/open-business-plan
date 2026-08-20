@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Sparkles, RefreshCw, Check, X, Palette, Image as ImageIcon, Download } from 'lucide-react';
 import { LOGO_STYLES, buildLogoPrompt, generateLogoVariants } from '../lib/logoGenerator';
+import { getApiBase } from '../config/apiConfig';
 
 export default function LogoGeneratorModal({
   isOpen,
@@ -75,8 +76,9 @@ export default function LogoGeneratorModal({
     };
 
     try {
+      const apiBase = getApiBase();
       // 1. Intentar llamar al backend para generar y persistir si es necesario
-      const response = await fetch('http://localhost:3001/api/logo/generate', {
+      const response = await fetch(`${apiBase}/api/logo/generate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -134,7 +136,8 @@ export default function LogoGeneratorModal({
     // Guardar en el servidor si hay proyecto activo
     if (projectId) {
       try {
-        await fetch('http://localhost:3001/api/logo/save', {
+        const apiBase = getApiBase();
+        await fetch(`${apiBase}/api/logo/save`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

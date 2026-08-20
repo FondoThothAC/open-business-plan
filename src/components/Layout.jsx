@@ -4,6 +4,7 @@ import { LayoutDashboard, FileSpreadsheet, LineChart, PieChart, Settings, Eye, B
 import { usePlan } from '../context/PlanContext';
 import { PROJECT_EXAMPLES } from '../lib/projects_db';
 import { FRAMEWORKS } from '../config/frameworks';
+import { getApiBase } from '../config/apiConfig';
 import ActivityFeed from './ActivityFeed';
 import GenerationControls from './GenerationControls';
 import BobChatModal from './BobChatModal';
@@ -215,13 +216,18 @@ export default function Layout() {
 
   useEffect(() => {
     const fetchProjects = () => {
-      fetch('http://localhost:3001/api/projects')
+      const apiBase = getApiBase();
+      fetch(`${apiBase}/api/projects`)
         .then(res => res.json())
-        .then(data => setSavedProjects(data))
+        .then(data => {
+          if (data && typeof data === 'object') {
+            setSavedProjects(data);
+          }
+        })
         .catch(err => console.error('Error fetching saved projects:', err));
     };
     fetchProjects();
-  }, [showLoadModal, saveStatus, planData?.config?.projectId]);
+  }, [showLoadModal, saveStatus, isDropdownOpen, planData?.config?.projectId]);
 
   const togglePillar = (id) => {
     setExpandedPillars(prev => 

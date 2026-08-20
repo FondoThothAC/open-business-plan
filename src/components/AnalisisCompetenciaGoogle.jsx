@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { usePlan } from '../context/PlanContext';
+import { getApiBase } from '../config/apiConfig';
 import { fetchPlaces, fetchSocialMedia } from '../utils/googleApi';
 import { Search, Loader2, Globe, PlusCircle, AlertCircle, MapPin, Star, DollarSign, ExternalLink } from 'lucide-react';
 
@@ -53,7 +54,8 @@ export default function AnalisisCompetenciaGoogle() {
       if (engine === 'local' && links.length > 0) {
         const targetUrl = links.find(l => l.link.includes('instagram.com') || l.link.includes('x.com') || l.link.includes('facebook.com'))?.link || links[0].link;
         try {
-          const res = await fetch('http://localhost:3001/api/scrape/social', {
+          const apiBase = getApiBase();
+          const res = await fetch(`${apiBase}/api/scrape/social`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ url: targetUrl })
@@ -107,7 +109,8 @@ export default function AnalisisCompetenciaGoogle() {
     if (!ecomQuery.trim()) return;
     setLoadingEcom(true);
     try {
-      const res = await fetch('http://localhost:3001/api/scrape/ecommerce', {
+      const apiBase = getApiBase();
+      const res = await fetch(`${apiBase}/api/scrape/ecommerce`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ keyword: ecomQuery })

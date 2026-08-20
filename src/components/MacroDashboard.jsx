@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { usePlan } from '../context/PlanContext';
+import { getApiBase } from '../config/apiConfig';
 import { useParams } from 'react-router-dom';
 import { 
   TrendingUp, 
@@ -32,7 +33,8 @@ export default function MacroDashboard({ token }) {
     setLoading(true);
     setError('');
     try {
-      const response = await fetch(`http://localhost:3001/api/banxico/indicators?token=${encodeURIComponent(activeToken || '')}`);
+      const apiBase = getApiBase();
+      const response = await fetch(`${apiBase}/api/banxico/indicators?token=${encodeURIComponent(activeToken || '')}`);
       const result = await response.json();
       
       if (result.success || result.isFallback) {

@@ -8,6 +8,7 @@
 
 import { useState, useEffect } from 'react';
 import { Download, Cloud, Sparkles, CheckCircle2, ShieldCheck, Zap, Bot, RefreshCw, X, Filter, Activity } from 'lucide-react';
+import { getApiBase } from '../../config/apiConfig';
 
 export function SwarmIntelligenceHub({ isOpen, onClose }) {
   const [agents, setAgents] = useState([]);
@@ -19,7 +20,8 @@ export function SwarmIntelligenceHub({ isOpen, onClose }) {
   const fetchAgents = async () => {
     setIsLoading(true);
     try {
-      const res = await fetch('http://localhost:3001/api/swarm/agents');
+      const apiBase = getApiBase();
+      const res = await fetch(`${apiBase}/api/swarm/agents`);
       if (res.ok) {
         const data = await res.json();
         setAgents(data.agents || []);
@@ -45,7 +47,8 @@ export function SwarmIntelligenceHub({ isOpen, onClose }) {
   const handleSyncCloud = async () => {
     setSyncStatus({ loading: true, message: 'Sincronizando con Fondo Thoth Cloud...' });
     try {
-      const res = await fetch('http://localhost:3001/api/v1/swarm/sync-skills', {
+      const apiBase = getApiBase();
+      const res = await fetch(`${apiBase}/api/v1/swarm/sync-skills`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
       });
@@ -62,7 +65,8 @@ export function SwarmIntelligenceHub({ isOpen, onClose }) {
   };
 
   const handleExportBundle = () => {
-    window.open('http://localhost:3001/api/swarm/export-bundle', '_blank');
+    const apiBase = getApiBase();
+    window.open(`${apiBase}/api/swarm/export-bundle`, '_blank');
   };
 
   if (!isOpen) return null;

@@ -8,6 +8,7 @@
 import React, { useState } from 'react';
 import { Sparkles, ArrowRight, HelpCircle, FileText, X } from 'lucide-react';
 import { FRAMEWORKS } from '../../config/frameworks.js';
+import { getApiBase } from '../../config/apiConfig.js';
 
 export function SwarmInterviewModal({ isOpen, onClose, ideaText, onConfirmSwarm }) {
   const [loading, setLoading] = useState(false);
@@ -19,7 +20,8 @@ export function SwarmInterviewModal({ isOpen, onClose, ideaText, onConfirmSwarm 
   const handleStartInterview = async () => {
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:3001/api/swarm/interview', {
+      const apiBase = getApiBase();
+      const res = await fetch(`${apiBase}/api/swarm/interview`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ideaText })

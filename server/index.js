@@ -235,15 +235,17 @@ app.get('/api/projects', (req, res) => {
                  const stats = fs.statSync(jsonPath);
                  let completion = 0;
                  let projectType = type === 'social' ? 'social_bid' : 'business';
+                 let projectName = entry.name.replace(/_/g, ' ');
                  try {
                    const data = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
                    completion = calculateCompletion(data);
                    projectType = data.config?.projectType || projectType;
+                   projectName = data.config?.brandKit?.companyName || data.semilla?.nombre_proyecto || data.semilla?.negocio?.nombre_marca || projectName;
                  } catch {}
 
                  projects.push({
                    id: entry.name,
-                   name: entry.name.replace(/_/g, ' '),
+                   name: projectName,
                    file: `${entry.name}.json`,
                    mtime: stats.mtime,
                    size: stats.size,
@@ -258,16 +260,18 @@ app.get('/api/projects', (req, res) => {
              const stats = fs.statSync(fullPath);
              let completion = 0;
              let projectType = type === 'social' ? 'social_bid' : 'business';
+             let projectName = entry.name.replace('.json', '').replace(/_/g, ' ');
              try {
                const data = JSON.parse(fs.readFileSync(fullPath, 'utf8'));
                completion = calculateCompletion(data);
                projectType = data.config?.projectType || projectType;
+               projectName = data.config?.brandKit?.companyName || data.semilla?.nombre_proyecto || data.semilla?.negocio?.nombre_marca || projectName;
               } catch {}
 
 
              projects.push({
                   id: entry.name.replace('.json', ''),
-                  name: entry.name.replace('.json', '').replace(/_/g, ' '),
+                  name: projectName,
                   file: entry.name,
                   mtime: stats.mtime,
                   size: stats.size,
