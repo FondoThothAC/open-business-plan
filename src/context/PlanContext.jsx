@@ -554,6 +554,32 @@ export const PlanProvider = ({ children }) => {
     });
   };
 
+  const initNewProjectFromSeed = (frameworkId, seedData, projectName) => {
+    const type = frameworkId || 'business';
+    const fresh = createEmptyPlan(type);
+    
+    const finalName = projectName || seedData?.nombre_proyecto || seedData?.negocio?.nombre_marca || 'Proyecto Nuevo';
+    fresh.config.brandKit.companyName = finalName;
+    fresh.config.projectId = undefined; // Desvinculado de cualquier plantilla previa
+    fresh.config.projectType = type;
+    fresh.config.activeMethodologies = [type];
+    fresh.config.ai = planData.config.ai;
+    fresh.config.theme = planData.config.theme;
+    fresh.config.externalApis = planData.config.externalApis;
+    fresh.semilla = seedData || {};
+
+    setPlanData(fresh);
+    localStorage.setItem('openplan_v2_data', JSON.stringify(fresh));
+    localStorage.removeItem('openplan_active_project_id');
+    localStorage.setItem('openplan_active_project_type', type === 'social_bid' ? 'social' : 'negocios');
+    localStorage.removeItem('openplan_new_project_flag');
+    localStorage.removeItem('openplan_is_unsaved_new');
+    
+    // Auto-guardar en backend para crear de inmediato su carpeta y espacio de trabajo aislado
+    manualSaveProject(fresh);
+    return fresh;
+  };
+
   const createNewProject = () => {
     if (window.confirm(`¿Estás seguro de crear un nuevo proyecto? Se perderán los cambios no guardados del actual.`)) {
       localStorage.removeItem('openplan_v2_data');
@@ -577,8 +603,14 @@ export const PlanProvider = ({ children }) => {
         brandKit: { ...prev.config.brandKit, companyName: name } 
       };
 
+      // Si el proyecto estaba vinculado a una plantilla predeterminada (ej. 'mixroom'),
+      // desvincularlo para que sea un proyecto nuevo e independiente y no sobreescriba la plantilla
+      if (newData.config.projectId && PROJECT_EXAMPLES[newData.config.projectId]) {
+        newData.config.projectId = undefined;
+      }
+
       // Deep sync: replace old name with new name in ALL text fields if they were generated
-      if (oldName && oldName.length > 3) {
+      if (oldName && oldName.length > 3 && oldName !== 'Proyecto Nuevo') {
         const pillars = ['naturaleza', 'mercado', 'tecnico', 'organizacion', 'finanzas', 'semilla'];
         pillars.forEach(pillar => {
           if (!newData[pillar]) return;
@@ -821,7 +853,7 @@ export const PlanProvider = ({ children }) => {
   }, [generationStatus]);
 
   return (
-    <PlanContext.Provider value={{ planData, updateSection, updateConfig, toggleLock, toggleModuleVisibility, updateStaff, updateProcesses, loadProject, loadSavedProject, createNewProject, updateProjectName, addAnexo, removeAnexo, updateAnexo, addComment, deleteComment, saveStatus, manualSaveProject, saveProjectAs, generationStatus, generationProgress, startIndustrialization, pauseIndustrialization, stopIndustrialization, getProjectCompletion, autoFillProject: startIndustrialization, updateSemilla }}>
+    <PlanContext.Provider value={{ planData, updateSection, updateConfig, toggleLock, toggleModuleVisibility, updateStaff, updateProcesses, loadProject, loadSavedProject, createNewProject, initNewProjectFromSeed, updateProjectName, addAnexo, removeAnexo, updateAnexo, addComment, deleteComment, saveStatus, manualSaveProject, saveProjectAs, generationStatus, generationProgress, startIndustrialization, pauseIndustrialization, stopIndustrialization, getProjectCompletion, autoFillProject: startIndustrialization, updateSemilla }}>
       {children}
     </PlanContext.Provider>
   );

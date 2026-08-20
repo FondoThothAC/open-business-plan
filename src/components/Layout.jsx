@@ -144,9 +144,10 @@ export default function Layout() {
   const getActiveProjectDetails = () => {
     const projId = planData?.config?.projectId;
     const projType = planData?.config?.projectType || 'business';
-    const compName = planData?.config?.brandKit?.companyName || planData?.semilla?.negocio?.nombre_marca || 'Proyecto Nuevo';
+    const compName = planData?.config?.brandKit?.companyName || planData?.semilla?.nombre_proyecto || planData?.semilla?.negocio?.nombre_marca || 'Proyecto Nuevo';
     
-    if (projId && PROJECT_EXAMPLES[projId]) {
+    // Solo mostrar como plantilla si el nombre actual coincide con el de la plantilla
+    if (projId && PROJECT_EXAMPLES[projId] && (!compName || compName === 'Proyecto Nuevo' || compName === PROJECT_EXAMPLES[projId].name)) {
       const ex = PROJECT_EXAMPLES[projId];
       return {
         id: projId,

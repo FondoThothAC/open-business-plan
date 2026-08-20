@@ -131,7 +131,7 @@ app.post('/api/save', (req, res) => {
 
     const projectTypeRaw = planData.config?.projectType || 'business';
     const projectType = projectTypeRaw === 'social_bid' ? 'social' : 'negocios';
-    const rawName = planData.config?.projectId || planData.semilla?.negocio?.nombre_marca || planData.config?.brandKit?.companyName || `Proyecto_${Date.now()}`;
+    const rawName = planData.config?.brandKit?.companyName || planData.semilla?.nombre_proyecto || planData.semilla?.negocio?.nombre_marca || planData.config?.projectId || `Proyecto_${Date.now()}`;
     const safeName = rawName.replace(/[^a-z0-9]/gi, '_').toLowerCase();
     
     // Check if X-User-Id header or query/config userId is provided to isolate

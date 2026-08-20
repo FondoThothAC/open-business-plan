@@ -15,7 +15,7 @@ import { SwarmInterviewModal } from './swarm/SwarmInterviewModal';
 
 export default function Anteproyecto() {
   const navigate = useNavigate();
-  const { planData, updateSemilla, updateConfig, _setPlanData } = usePlan();
+  const { planData, updateSemilla, updateConfig, initNewProjectFromSeed, _setPlanData } = usePlan();
 
   // Si la semilla ya tiene datos cargados en el plan, mostramos el paso de revisión (3)
   const [step, setStep] = useState(() => {
@@ -478,7 +478,13 @@ export default function Anteproyecto() {
                 <button
                   key={key}
                   onClick={() => {
-                    updateConfig('projectType', null, key);
+                    const seed = planData?.semilla || {};
+                    const projName = seed.nombre_proyecto || seed.negocio?.nombre_marca || 'Proyecto Nuevo';
+                    if (initNewProjectFromSeed) {
+                      initNewProjectFromSeed(key, seed, projName);
+                    } else {
+                      updateConfig('projectType', null, key);
+                    }
                     const firstPillar = framework.pillars?.[0];
                     const firstModule = firstPillar?.modules?.[0];
                     if (firstPillar && firstModule) {
