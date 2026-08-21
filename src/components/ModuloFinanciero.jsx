@@ -20,20 +20,25 @@ function parseNum(value) {
   if (typeof value === 'number') return isNaN(value) ? 0 : value;
   const str = String(value).trim();
   
-  const millonMatch = str.match(/(\d+(?:\.\d+)?)\s*millon(?:es)?/i);
+  const millonMatch = str.match(/(\d+(?:[.,]\d+)?)\s*millon(?:es)?/i);
   if (millonMatch) {
-    const num = parseFloat(millonMatch[1]);
+    const num = parseFloat(millonMatch[1].replace(',', '.'));
     if (!isNaN(num)) return num * 1000000;
   }
   
-  const currencyMatch = str.match(/\$\s*(\d{1,3}(?:,\d{3})*(?:\.\d+)?|\d+)/);
-  if (currencyMatch) {
-    const num = parseFloat(currencyMatch[1].replace(/,/g, ''));
-    if (!isNaN(num)) return num;
+  let cleanStr = str.replace(/[^0-9.,-]/g, '');
+  if (!cleanStr) return 0;
+
+  const commaIndex = cleanStr.lastIndexOf(',');
+  const dotIndex = cleanStr.lastIndexOf('.');
+  
+  if (commaIndex > dotIndex) {
+    cleanStr = cleanStr.replace(/\./g, '').replace(',', '.');
+  } else {
+    cleanStr = cleanStr.replace(/,/g, '');
   }
 
-  const normalized = str.replace(/,/g, '').replace(/[^0-9.-]/g, '');
-  const parsed = parseFloat(normalized);
+  const parsed = parseFloat(cleanStr);
   return isNaN(parsed) ? 0 : parsed;
 }
 

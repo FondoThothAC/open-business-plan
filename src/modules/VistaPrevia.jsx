@@ -42,20 +42,25 @@ export function parseNumericAmount(val, fallback = 0) {
   if (typeof val === 'number') return isNaN(val) ? fallback : val;
   const str = String(val).trim();
   
-  const millonMatch = str.match(/(\d+(?:\.\d+)?)\s*millon(?:es)?/i);
+  const millonMatch = str.match(/(\d+(?:[.,]\d+)?)\s*millon(?:es)?/i);
   if (millonMatch) {
-    const num = parseFloat(millonMatch[1]);
+    const num = parseFloat(millonMatch[1].replace(',', '.'));
     if (!isNaN(num)) return num * 1000000;
   }
   
-  const currencyMatch = str.match(/\$\s*(\d{1,3}(?:,\d{3})*(?:\.\d+)?|\d+)/);
-  if (currencyMatch) {
-    const num = parseFloat(currencyMatch[1].replace(/,/g, ''));
-    if (!isNaN(num)) return num;
+  let cleanStr = str.replace(/[^0-9.,-]/g, '');
+  if (!cleanStr) return fallback;
+
+  const commaIndex = cleanStr.lastIndexOf(',');
+  const dotIndex = cleanStr.lastIndexOf('.');
+  
+  if (commaIndex > dotIndex) {
+    cleanStr = cleanStr.replace(/\./g, '').replace(',', '.');
+  } else {
+    cleanStr = cleanStr.replace(/,/g, '');
   }
 
-  const clean = str.replace(/,/g, '').replace(/[^0-9.-]/g, '');
-  const parsed = parseFloat(clean);
+  const parsed = parseFloat(cleanStr);
   return isNaN(parsed) ? fallback : parsed;
 }
 
@@ -1781,7 +1786,7 @@ export default function VistaPrevia() {
   };
 
   // Componente de Sección con numeración recibida dinámicamente
-  const Section = ({ number, title, data, pillarKey, moduleKey }) => {
+  const Section = ({ number, title, data, pillarKey, moduleKey, hideTitle }) => {
     if (!data) return null;
     
     // Filtrar solo campos con contenido y excluir estructuras JSON internas
@@ -1801,9 +1806,11 @@ export default function VistaPrevia() {
         padding: filledFields.length === 0 ? '1rem' : '0',
         pageBreakInside: 'avoid'
       }}>
-        <h3 style={{ color: '#1e293b', fontSize: '1.25rem', borderLeft: '4px solid var(--accent-color)', paddingLeft: '1rem', marginBottom: '1rem', fontWeight: 800 }}>
-          {number} {title} {filledFields.length === 0 && <span style={{ fontSize: '0.7rem', color: '#ef4444' }}>(Sin contenido)</span>}
-        </h3>
+        {!hideTitle && (
+          <h3 style={{ color: '#1e293b', fontSize: '1.25rem', borderLeft: '4px solid var(--accent-color)', paddingLeft: '1rem', marginBottom: '1rem', fontWeight: 800 }}>
+            {number} {title} {filledFields.length === 0 && <span style={{ fontSize: '0.7rem', color: '#ef4444' }}>(Sin contenido)</span>}
+          </h3>
+        )}
         {filledFields.length === 0 ? (
           <p style={{ color: '#94a3b8', fontSize: '0.9rem', fontStyle: 'italic', paddingLeft: '1.25rem' }}>
             Este módulo aún no ha sido redactado por la IA o manualmente.
@@ -2964,6 +2971,14 @@ export default function VistaPrevia() {
                     </h3>
                     <PresupuestoEmpresa projections={previewFinancialData} staff={planData.organizacion?.staff} planData={planData} />
                     <BalanceGeneralEstandar projections={previewFinancialData} planData={planData} />
+                    <Section 
+                      number={sectionNumber}
+                      title={mod.title} 
+                      data={planData?.[mod.pillarKey]?.[mod.key]} 
+                      pillarKey={mod.pillarKey}
+                      moduleKey={mod.key}
+                      hideTitle={true}
+                    />
                   </div>
                 ) : mod.key === 'rentabilidad' && previewFinancialData ? (
                   <div key={mod.key} style={{ marginBottom: '1.5rem' }}>
@@ -2996,6 +3011,14 @@ export default function VistaPrevia() {
                         </div>
                       </div>
                     </div>
+                    <Section 
+                      number={sectionNumber}
+                      title={mod.title} 
+                      data={planData?.[mod.pillarKey]?.[mod.key]} 
+                      pillarKey={mod.pillarKey}
+                      moduleKey={mod.key}
+                      hideTitle={true}
+                    />
                   </div>
                 ) : mod.key === 'mapa' ? (
                   <div style={{ marginBottom: '2rem', pageBreakInside: 'avoid' }}>

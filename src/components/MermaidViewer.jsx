@@ -51,7 +51,7 @@ export default function MermaidViewer({ chart, onChange, theme = 'light' }) {
         startOnLoad: false,
         theme: theme === 'dark' ? 'dark' : 'base',
         securityLevel: 'loose',
-        flowchart: { curve: 'basis', htmlLabels: true, nodeSpacing: 35, rankSpacing: 45, padding: 14 },
+        flowchart: { curve: 'basis', htmlLabels: true, nodeSpacing: 60, rankSpacing: 70, padding: 25 },
         themeVariables: theme === 'dark' ? {
           primaryColor: '#1f2937',
           primaryTextColor: '#f8fafc',

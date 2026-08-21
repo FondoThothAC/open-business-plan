@@ -30,8 +30,7 @@ export default function SimuladorModal({ isOpen, onClose, onExport }) {
 
   const rawBase = import.meta.env.BASE_URL || '/';
   const basePath = rawBase.endsWith('/') ? rawBase : `${rawBase}/`;
-  const iframeSrc = `${basePath}simulador/index.html`;
-
+  const iframeSrc = `${window.location.origin}${basePath}simulador/index.html`;
   return (
     <div style={{
       position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',

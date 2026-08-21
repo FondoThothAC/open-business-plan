@@ -308,8 +308,17 @@ export async function runAgenticModuleGeneration({
     });
 
     const expectedKeys = fields.map(f => f.key);
+    
+    const locationConstraint = planData?.semilla?.negocio?.ubicacion || planData?.semilla?.negocio?.cobertura;
+    const locationInstruction = locationConstraint ? `\nREGLA ESTRICTA DE UBICACIÓN: El negocio opera o tiene cobertura en "${locationConstraint}". NO inventes ciudades ni asumas capitales (ej. no pongas Hermosillo si se te pidió Cananea). Respeta estrictamente esta ubicación.` : '';
+
     const systemPrompt = `Eres el Agente Autónomo Especialista en "${title}" de Open Business Plan (Fondo Thoth AC).
-Debes redactar contenido ejecutivo de nivel profesional con datos duros para un plan de negocios de alta inversión.
+Debes redactar contenido ejecutivo de nivel profesional con datos duros para un plan de negocios de alta inversión.${locationInstruction}
+
+CONTEXTO DEL NEGOCIO (SEMILLA):
+- Nombre/Giro: ${planData?.semilla?.negocio?.giro || planData?.semilla?.negocio?.nombre || 'No especificado'}
+- Ubicación/Cobertura: ${locationConstraint || 'No especificada'}
+- Descripción: ${planData?.semilla?.negocio?.descripcion || 'No especificada'}
 
 DATOS OBSERVADOS POR HERRAMIENTAS EN TIEMPO REAL:
 - Competencia y Mercado: ${JSON.stringify(webResult?.data || {})}
