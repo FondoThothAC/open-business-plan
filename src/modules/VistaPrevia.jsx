@@ -1967,6 +1967,11 @@ export default function VistaPrevia() {
     const isGradientWave = cover.layout === 'gradient_wave';
     const isSplitGrid = cover.layout === 'split_grid';
     const isNordicLine = cover.layout === 'nordic_line';
+    const isEditorialVogue = cover.layout === 'editorial_vogue';
+    const isBlueprintTech = cover.layout === 'blueprint_tech';
+    const isGeometricMosaic = cover.layout === 'geometric_mosaic';
+    const isGoldenPrestige = cover.layout === 'golden_prestige';
+    const isBrutalistBold = cover.layout === 'brutalist_bold';
     
     const logoWidth = cover.logoSize === 'small' ? '80px' : cover.logoSize === 'large' ? '180px' : '130px';
     const logoAlignment = cover.logoAlign === 'left' ? 'flex-start' : cover.logoAlign === 'right' ? 'flex-end' : 'center';
@@ -1983,19 +1988,41 @@ export default function VistaPrevia() {
           display: 'flex', 
           flexDirection: 'column', 
           justifyContent: 'space-between', 
-          padding: isAcademicFrame ? '5rem 4rem' : '4.5rem 3.5rem',
-          textAlign: isSidebar || isMinimalist || isSplitGrid || isNordicLine ? 'left' : 'center',
+          padding: isAcademicFrame ? '5rem 4rem' : isEditorialVogue ? '5rem 3.5rem' : '4.5rem 3.5rem',
+          textAlign: isSidebar || isMinimalist || isSplitGrid || isNordicLine || isBrutalistBold ? 'left' : 'center',
           background: isDarkExecutive 
             ? 'linear-gradient(135deg, #090d16 0%, #0f172a 100%)' 
+            : isBlueprintTech
+            ? '#0a192f'
+            : isGoldenPrestige
+            ? '#0b0f19'
+            : isBrutalistBold
+            ? '#fef08a'
             : '#ffffff',
-          color: isDarkExecutive ? '#f8fafc' : '#0f172a',
-          fontFamily: 'Inter, sans-serif',
+          color: isDarkExecutive || isGoldenPrestige
+            ? '#f8fafc' 
+            : isBlueprintTech
+            ? '#38bdf8'
+            : isBrutalistBold
+            ? '#000000'
+            : '#0f172a',
+          fontFamily: isEditorialVogue 
+            ? 'Playfair Display, Georgia, serif' 
+            : isBlueprintTech 
+            ? 'Courier New, monospace' 
+            : 'Inter, sans-serif',
           pageBreakAfter: 'always',
           maxWidth: '760px',
           margin: '0 auto 2.5rem auto',
           borderRadius: '12px',
-          boxShadow: '0 10px 30px rgba(0, 0, 0, 0.04)',
-          border: isDarkExecutive ? '1px solid #1e293b' : '1px solid #e2e8f0',
+          boxShadow: isBrutalistBold ? '8px 8px 0px #000000' : '0 10px 30px rgba(0, 0, 0, 0.04)',
+          border: isDarkExecutive || isGoldenPrestige 
+            ? '1px solid #1e293b' 
+            : isBlueprintTech
+            ? '1px solid #1e3a8a'
+            : isBrutalistBold
+            ? '4px solid #000000'
+            : '1px solid #e2e8f0',
           overflow: 'hidden'
         }}
       >
@@ -2034,6 +2061,57 @@ export default function VistaPrevia() {
             borderRadius: '8px',
             outline: '1px solid #cbd5e1',
             outlineOffset: '-8px',
+            pointerEvents: 'none',
+            zIndex: 0
+          }} />
+        )}
+
+        {/* Layout: Editorial Vogue (Borde Fino Clásico) */}
+        {isEditorialVogue && (
+          <div style={{
+            position: 'absolute',
+            inset: '1.5rem',
+            border: '1px solid #0f172a',
+            pointerEvents: 'none',
+            zIndex: 0
+          }} />
+        )}
+
+        {/* Layout: Blueprint Grid Pattern */}
+        {isBlueprintTech && (
+          <div style={{
+            position: 'absolute',
+            inset: 0,
+            backgroundImage: 'radial-gradient(rgba(56,189,248,0.18) 1.5px, transparent 0)',
+            backgroundSize: '24px 24px',
+            pointerEvents: 'none',
+            zIndex: 0
+          }} />
+        )}
+
+        {/* Layout: Geometric Mosaic */}
+        {isGeometricMosaic && (
+          <div style={{
+            position: 'absolute',
+            top: '-80px',
+            right: '-80px',
+            width: '320px',
+            height: '320px',
+            background: `linear-gradient(135deg, ${primaryColor} 0%, #3b82f6 100%)`,
+            clipPath: 'polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%)',
+            opacity: 0.15,
+            pointerEvents: 'none',
+            zIndex: 0
+          }} />
+        )}
+
+        {/* Layout: Golden Prestige Border */}
+        {isGoldenPrestige && (
+          <div style={{
+            position: 'absolute',
+            inset: '1.5rem',
+            border: '2px solid #d97706',
+            boxShadow: 'inset 0 0 15px rgba(217, 119, 6, 0.15)',
             pointerEvents: 'none',
             zIndex: 0
           }} />
@@ -2097,9 +2175,10 @@ export default function VistaPrevia() {
                 height: 'auto', 
                 maxHeight: '140px', 
                 objectFit: 'contain',
-                background: isDarkExecutive ? '#ffffff' : 'transparent',
-                padding: isDarkExecutive ? '8px' : '0',
-                borderRadius: isDarkExecutive ? '12px' : '0'
+                background: isDarkExecutive || isBlueprintTech || isGoldenPrestige ? '#ffffff' : 'transparent',
+                padding: isDarkExecutive || isBlueprintTech || isGoldenPrestige ? '8px' : '0',
+                borderRadius: isDarkExecutive || isBlueprintTech || isGoldenPrestige ? '12px' : '0',
+                border: isBrutalistBold ? '2px solid #000000' : 'none'
               }} 
             />
           ) : (
@@ -2125,20 +2204,30 @@ export default function VistaPrevia() {
           {isNordicLine && (
             <div style={{ width: '40px', height: '4px', background: primaryColor, marginBottom: '1.25rem' }} />
           )}
+          {isGoldenPrestige && (
+            <div style={{ width: '60px', height: '3px', background: '#d97706', margin: '0 auto 1.5rem auto' }} />
+          )}
           <h1 style={{ 
             fontSize: titleFontSize, 
-            fontWeight: '900', 
+            fontWeight: isEditorialVogue ? '400' : '900', 
             marginBottom: '1rem', 
-            color: isDarkExecutive ? '#ffffff' : '#0f172a',
+            color: isDarkExecutive || isGoldenPrestige 
+              ? '#ffffff' 
+              : isBlueprintTech
+              ? '#38bdf8'
+              : isBrutalistBold
+              ? '#000000'
+              : '#0f172a',
             lineHeight: 1.15,
-            letterSpacing: '-0.02em'
+            letterSpacing: isEditorialVogue ? '0.04em' : '-0.02em',
+            textTransform: isBrutalistBold || isEditorialVogue ? 'uppercase' : 'none'
           }}>
             {planData?.config?.brandKit?.companyName || 'Plan de Negocios'}
           </h1>
           <h2 style={{ 
             fontSize: '1.4rem', 
             fontWeight: '700', 
-            color: isDarkExecutive ? '#38bdf8' : primaryColor,
+            color: isDarkExecutive ? '#38bdf8' : isGoldenPrestige ? '#f59e0b' : isBlueprintTech ? '#7dd3fc' : isBrutalistBold ? '#000000' : primaryColor,
             letterSpacing: '0.06em', 
             textTransform: 'uppercase',
             margin: '0.5rem 0'
@@ -2148,7 +2237,7 @@ export default function VistaPrevia() {
           {cover.institution && (
             <p style={{ 
               fontSize: '1.1rem', 
-              color: isDarkExecutive ? '#94a3b8' : '#64748b', 
+              color: isDarkExecutive || isGoldenPrestige ? '#94a3b8' : isBlueprintTech ? '#93c5fd' : isBrutalistBold ? '#44403c' : '#64748b', 
               marginTop: '1rem',
               fontWeight: 500
             }}>
@@ -2160,15 +2249,21 @@ export default function VistaPrevia() {
         {/* Pie: Creador, Fecha y Logos Institucionales */}
         <div style={{ 
           paddingLeft: isSidebar ? '25px' : isSplitGrid ? '42%' : isNordicLine ? '2.5rem' : '0',
-          borderTop: isDarkExecutive ? '1px solid #1e293b' : '2px solid #f1f5f9',
+          borderTop: isDarkExecutive || isGoldenPrestige 
+            ? '1px solid #1e293b' 
+            : isBlueprintTech
+            ? '1px solid #1e3a8a'
+            : isBrutalistBold
+            ? '3px solid #000000'
+            : '2px solid #f1f5f9',
           paddingTop: '2rem',
           zIndex: 1
         }}>
-          <div style={{ fontSize: '1.2rem', color: isDarkExecutive ? '#f1f5f9' : '#1e293b', fontWeight: '700' }}>
+          <div style={{ fontSize: '1.2rem', color: isDarkExecutive || isGoldenPrestige ? '#f1f5f9' : isBlueprintTech ? '#e0f2fe' : '#1e293b', fontWeight: '700' }}>
             {cover.creatorName ? `Creado por: ${cover.creatorName}` : 'Elaborado por: Roberto Eduardo Celis Robles'}
           </div>
           {cover.showDate !== false && (
-            <div style={{ fontSize: '1rem', color: isDarkExecutive ? '#64748b' : '#94a3b8', marginTop: '0.5rem' }}>
+            <div style={{ fontSize: '1rem', color: isDarkExecutive || isGoldenPrestige ? '#64748b' : isBlueprintTech ? '#60a5fa' : isBrutalistBold ? '#57534e' : '#94a3b8', marginTop: '0.5rem' }}>
               {cover.customDate || new Date().toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' })}
             </div>
           )}
@@ -2176,18 +2271,18 @@ export default function VistaPrevia() {
           {(cover.institutionLogos?.length > 0) && (
             <div style={{ 
               display: 'flex', 
-              justifyContent: isSidebar || isSplitGrid || isNordicLine ? 'flex-start' : 'center', 
+              justifyContent: isSidebar || isSplitGrid || isNordicLine || isBrutalistBold ? 'flex-start' : 'center', 
               gap: '1.5rem', 
               marginTop: '1.5rem', 
               paddingTop: '1rem', 
-              borderTop: isDarkExecutive ? '1px solid #1e293b' : '1px solid #e2e8f0',
+              borderTop: isDarkExecutive || isGoldenPrestige ? '1px solid #1e293b' : isBlueprintTech ? '1px solid #1e3a8a' : isBrutalistBold ? '2px solid #000000' : '1px solid #e2e8f0',
               flexWrap: 'wrap',
               alignItems: 'center'
             }}>
               {cover.institutionLogos.map(logo => (
                 <div key={logo.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem' }}>
-                  <img src={logo.url} alt={logo.name} style={{ height: '45px', width: 'auto', maxWidth: '100px', objectFit: 'contain', background: isDarkExecutive ? '#ffffff' : 'transparent', padding: isDarkExecutive ? '4px' : '0', borderRadius: '4px' }} />
-                  <span style={{ fontSize: '0.7rem', color: isDarkExecutive ? '#94a3b8' : '#64748b', fontWeight: 500 }}>{logo.name}</span>
+                  <img src={logo.url} alt={logo.name} style={{ height: '45px', width: 'auto', maxWidth: '100px', objectFit: 'contain', background: isDarkExecutive || isBlueprintTech || isGoldenPrestige ? '#ffffff' : 'transparent', padding: isDarkExecutive || isBlueprintTech || isGoldenPrestige ? '4px' : '0', borderRadius: '4px' }} />
+                  <span style={{ fontSize: '0.7rem', color: isDarkExecutive || isGoldenPrestige ? '#94a3b8' : isBlueprintTech ? '#93c5fd' : isBrutalistBold ? '#000000' : '#64748b', fontWeight: 500 }}>{logo.name}</span>
                 </div>
               ))}
             </div>

@@ -1523,6 +1523,11 @@ export default function Configuracion() {
                 <option value="gradient_wave">Gradient Wave / Tech Dynamic (Innovación)</option>
                 <option value="split_grid">Split Grid 50/50 (Editorial Suizo)</option>
                 <option value="nordic_line">Elegancia Nórdica (Línea Tipográfica)</option>
+                <option value="editorial_vogue">Editorial High-Fashion / Vogue (Tipografía Grande Serif)</option>
+                <option value="blueprint_tech">Blueprint Técnico / Ingeniería (Cuadrícula Blueprint)</option>
+                <option value="geometric_mosaic">Mosaico Geométrico / Polígonos Modernos</option>
+                <option value="golden_prestige">Golden Prestige / Banca Privada (Negro y Oro)</option>
+                <option value="brutalist_bold">Neobrutalismo / Bold Poster (Bordes Gruesos y Sombra 3D)</option>
               </select>
             </div>
 
@@ -1785,6 +1790,69 @@ export default function Configuracion() {
                 }} />
               )}
 
+              {/* Editorial Vogue */}
+              {coverDesign.layout === 'editorial_vogue' && (
+                <div style={{
+                  position: 'absolute',
+                  inset: 0,
+                  border: '1px solid #000000',
+                  margin: '6px',
+                  pointerEvents: 'none',
+                  zIndex: 0
+                }} />
+              )}
+
+              {/* Blueprint Tech */}
+              {coverDesign.layout === 'blueprint_tech' && (
+                <div style={{
+                  position: 'absolute',
+                  inset: 0,
+                  background: '#0a192f',
+                  backgroundImage: 'radial-gradient(rgba(56,189,248,0.2) 1px, transparent 0)',
+                  backgroundSize: '10px 10px',
+                  zIndex: 0
+                }} />
+              )}
+
+              {/* Geometric Mosaic */}
+              {coverDesign.layout === 'geometric_mosaic' && (
+                <div style={{
+                  position: 'absolute',
+                  top: '-20px',
+                  right: '-20px',
+                  width: '120px',
+                  height: '120px',
+                  background: `linear-gradient(135deg, ${planData.config.brandKit.primaryColor || '#6366f1'} 0%, #3b82f6 100%)`,
+                  clipPath: 'polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%)',
+                  opacity: 0.2,
+                  zIndex: 0
+                }} />
+              )}
+
+              {/* Golden Prestige */}
+              {coverDesign.layout === 'golden_prestige' && (
+                <div style={{
+                  position: 'absolute',
+                  inset: 0,
+                  background: '#0b0f19',
+                  border: '1.5px solid #d97706',
+                  margin: '6px',
+                  zIndex: 0
+                }} />
+              )}
+
+              {/* Brutalist Bold */}
+              {coverDesign.layout === 'brutalist_bold' && (
+                <div style={{
+                  position: 'absolute',
+                  inset: 0,
+                  background: '#fef08a',
+                  border: '3px solid #000000',
+                  boxShadow: '4px 4px 0px #000000',
+                  zIndex: 0
+                }} />
+              )}
+
               {/* Top part: Logo */}
               <div style={{
                 display: 'flex',
@@ -1801,7 +1869,10 @@ export default function Configuracion() {
                       width: coverDesign.logoSize === 'small' ? '30px' : coverDesign.logoSize === 'large' ? '70px' : '50px',
                       height: 'auto',
                       maxHeight: '40px',
-                      objectFit: 'contain'
+                      objectFit: 'contain',
+                      background: ['dark_executive', 'blueprint_tech', 'golden_prestige'].includes(coverDesign.layout) ? '#ffffff' : 'transparent',
+                      padding: ['dark_executive', 'blueprint_tech', 'golden_prestige'].includes(coverDesign.layout) ? '2px' : '0',
+                      borderRadius: '4px'
                     }}
                   />
                 ) : (
@@ -1809,13 +1880,14 @@ export default function Configuracion() {
                     width: coverDesign.logoSize === 'small' ? '30px' : coverDesign.logoSize === 'large' ? '70px' : '50px',
                     height: '25px',
                     borderRadius: '4px',
-                    border: coverDesign.layout === 'dark_executive' ? '1px dashed #475569' : '1px dashed #cbd5e1',
-                    background: coverDesign.layout === 'dark_executive' ? '#1e293b' : '#f1f5f9',
+                    border: ['dark_executive', 'blueprint_tech', 'golden_prestige'].includes(coverDesign.layout) ? '1px dashed #475569' : coverDesign.layout === 'brutalist_bold' ? '2px solid #000000' : '1px dashed #cbd5e1',
+                    background: ['dark_executive', 'blueprint_tech', 'golden_prestige'].includes(coverDesign.layout) ? '#1e293b' : '#f1f5f9',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     fontSize: '8px',
-                    color: coverDesign.layout === 'dark_executive' ? '#94a3b8' : '#94a3b8'
+                    fontWeight: coverDesign.layout === 'brutalist_bold' ? 900 : 400,
+                    color: ['dark_executive', 'blueprint_tech', 'golden_prestige'].includes(coverDesign.layout) ? '#94a3b8' : coverDesign.layout === 'brutalist_bold' ? '#000000' : '#94a3b8'
                   }}>Logo</div>
                 )}
               </div>
@@ -1835,19 +1907,25 @@ export default function Configuracion() {
                 {coverDesign.layout === 'nordic_line' && (
                   <div style={{ width: '15px', height: '2px', background: '#0f172a', marginBottom: '0.2rem' }} />
                 )}
+                {coverDesign.layout === 'golden_prestige' && (
+                  <div style={{ width: '25px', height: '1.5px', background: '#f59e0b', margin: '0 auto 0.3rem auto' }} />
+                )}
                 <h3 style={{
                   margin: 0,
                   fontSize: coverDesign.titleSize === 'small' ? '10px' : coverDesign.titleSize === 'large' ? '16px' : '13px',
-                  fontWeight: 800,
+                  fontWeight: coverDesign.layout === 'editorial_vogue' ? 400 : 800,
+                  fontFamily: coverDesign.layout === 'editorial_vogue' ? 'Playfair Display, Georgia, serif' : coverDesign.layout === 'blueprint_tech' ? 'Courier New, monospace' : 'inherit',
+                  letterSpacing: coverDesign.layout === 'editorial_vogue' ? '0.08em' : coverDesign.layout === 'blueprint_tech' ? '0.05em' : 'normal',
                   lineHeight: '1.2',
-                  color: coverDesign.layout === 'dark_executive' ? '#f8fafc' : '#0f172a'
+                  textTransform: coverDesign.layout === 'brutalist_bold' || coverDesign.layout === 'editorial_vogue' ? 'uppercase' : 'none',
+                  color: ['dark_executive', 'golden_prestige'].includes(coverDesign.layout) ? '#f8fafc' : coverDesign.layout === 'blueprint_tech' ? '#38bdf8' : coverDesign.layout === 'brutalist_bold' ? '#000000' : '#0f172a'
                 }}>
                   {planData.config.brandKit.companyName || 'Nombre del Proyecto'}
                 </h3>
                 <p style={{
                   margin: 0,
                   fontSize: '7px',
-                  color: coverDesign.layout === 'dark_executive' ? '#94a3b8' : planData.config.brandKit.primaryColor || '#64748b',
+                  color: coverDesign.layout === 'dark_executive' ? '#94a3b8' : coverDesign.layout === 'blueprint_tech' ? '#7dd3fc' : coverDesign.layout === 'golden_prestige' ? '#f59e0b' : coverDesign.layout === 'brutalist_bold' ? '#000000' : planData.config.brandKit.primaryColor || '#64748b',
                   fontWeight: 600,
                   textTransform: 'uppercase',
                   letterSpacing: '0.05em'
@@ -1858,7 +1936,7 @@ export default function Configuracion() {
                   <p style={{
                     margin: '3px 0 0 0',
                     fontSize: '6px',
-                    color: coverDesign.layout === 'dark_executive' ? '#64748b' : '#94a3b8'
+                    color: ['dark_executive', 'blueprint_tech', 'golden_prestige'].includes(coverDesign.layout) ? '#64748b' : coverDesign.layout === 'brutalist_bold' ? '#44403c' : '#94a3b8'
                   }}>
                     {coverDesign.institution}
                   </p>
@@ -1868,10 +1946,10 @@ export default function Configuracion() {
               {/* Bottom part: Creator and Date */}
               <div style={{
                 paddingLeft: coverDesign.layout === 'sidebar' ? '10px' : coverDesign.layout === 'split_grid' ? '45%' : coverDesign.layout === 'nordic_line' ? '15px' : '0',
-                borderTop: coverDesign.layout === 'dark_executive' ? '1px solid #1e293b' : '1px solid #f1f5f9',
+                borderTop: ['dark_executive', 'blueprint_tech', 'golden_prestige'].includes(coverDesign.layout) ? '1px solid #1e293b' : coverDesign.layout === 'brutalist_bold' ? '2px solid #000000' : '1px solid #f1f5f9',
                 paddingTop: '8px',
                 fontSize: '6.5px',
-                color: coverDesign.layout === 'dark_executive' ? '#cbd5e1' : '#475569',
+                color: ['dark_executive', 'golden_prestige'].includes(coverDesign.layout) ? '#cbd5e1' : coverDesign.layout === 'blueprint_tech' ? '#94a3b8' : coverDesign.layout === 'brutalist_bold' ? '#000000' : '#475569',
                 zIndex: 1
               }}>
                 <div style={{ fontWeight: 600 }}>
