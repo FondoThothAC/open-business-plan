@@ -2239,6 +2239,59 @@ export default function Configuracion() {
         )}
       </div>
 
+      {/* [TOUCH BAR] Panel de Integración MacBook Pro (Chrome & BTT) */}
+      <div className="glass-panel" style={{ padding: '2rem', marginTop: '2rem', border: '1px solid rgba(99, 102, 241, 0.3)', background: 'linear-gradient(180deg, rgba(99, 102, 241, 0.04) 0%, rgba(15, 23, 42, 0.4) 100%)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(99, 102, 241, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#818cf8' }}>
+              ⌨️
+            </div>
+            <div>
+              <h2 style={{ fontSize: '1.15rem', color: 'var(--text-primary)', fontWeight: 800, margin: 0 }}>
+                MacBook Pro Touch Bar & Chrome MediaSession
+              </h2>
+              <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', margin: '0.2rem 0 0 0' }}>
+                Proyección en tiempo real de agentes IA, progreso % y monitor en la barra OLED física.
+              </p>
+            </div>
+          </div>
+          <span style={{ fontSize: '0.75rem', background: '#10b98120', color: '#10b981', padding: '0.25rem 0.6rem', borderRadius: '12px', fontWeight: 700 }}>
+            ● Activo en Chrome & Safari
+          </span>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem', marginTop: '1rem' }}>
+          <div style={{ background: 'var(--bg-panel)', padding: '1rem', borderRadius: '10px', border: '1px solid var(--border-color)' }}>
+            <h4 style={{ fontSize: '0.85rem', color: 'var(--text-primary)', fontWeight: 700, margin: '0 0 0.5rem 0' }}>
+              🌐 Modo Web Zero-Install (Chrome / Safari)
+            </h4>
+            <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', lineHeight: 1.4, margin: 0 }}>
+              La barra OLED de tu MacBook Pro muestra automáticamente el modelo activo (<strong>minimax-m3:cloud</strong>), el porcentaje de avance y el último log mediante la API MediaSession nativa.
+            </p>
+          </div>
+
+          <div style={{ background: 'var(--bg-panel)', padding: '1rem', borderRadius: '10px', border: '1px solid var(--border-color)' }}>
+            <h4 style={{ fontSize: '0.85rem', color: 'var(--text-primary)', fontWeight: 700, margin: '0 0 0.5rem 0' }}>
+              🎛️ BetterTouchTool / Raycast Widget
+            </h4>
+            <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', lineHeight: 1.4, margin: '0 0 0.75rem 0' }}>
+              Endpoint de telemetría local activo en <code>/api/touchbar/status</code>. Permite crear botones táctiles para saltar a Vista Previa o Simulador.
+            </p>
+            <button
+              className="btn btn-secondary btn-sm"
+              style={{ fontSize: '0.75rem', width: '100%' }}
+              onClick={() => {
+                const bttScript = `curl -s http://localhost:3001/api/touchbar/status`;
+                navigator.clipboard.writeText(bttScript);
+                alert("✓ Comando BTT copiado al portapapeles:\\n" + bttScript);
+              }}
+            >
+              📋 Copiar Script JSON para BetterTouchTool
+            </button>
+          </div>
+        </div>
+      </div>
+
       <div className="glass-panel" style={{ padding: '2rem', marginTop: '2rem', border: '1px solid rgba(239, 68, 68, 0.2)', background: 'rgba(239, 68, 68, 0.02)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem' }}>
           <RefreshCw style={{ color: '#ef4444' }} />

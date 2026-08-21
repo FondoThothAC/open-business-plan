@@ -2026,6 +2026,49 @@ app.delete('/api/telemetry/trajectories', (req, res) => {
   }
 });
 
+// ─────────────────────────────────────────────────────────
+//  TOUCH BAR API — Telemetría para BetterTouchTool / Raycast
+// ─────────────────────────────────────────────────────────
+let touchBarState = {
+  projectName: 'Open Business Plan',
+  location: 'Cananea, Sonora',
+  currentModule: 'introduccion',
+  currentModuleTitle: 'Introducción',
+  progressPercent: 0,
+  aiState: 'listo',
+  activeModel: 'minimax-m3:cloud',
+  lastLog: 'Sistema listo',
+  quantumStatus: 'Óptimo (2 Áreas)',
+  updatedAt: new Date().toISOString()
+};
+
+app.get('/api/touchbar/status', (req, res) => {
+  res.json({
+    success: true,
+    data: touchBarState,
+    bttWidget: {
+      text: `[${touchBarState.progressPercent}%] ${touchBarState.currentModuleTitle}`,
+      subtext: `${touchBarState.activeModel} • ${touchBarState.lastLog}`,
+      color: touchBarState.aiState === 'pensando' ? '#8b5cf6' : touchBarState.aiState === 'error' ? '#ef4444' : '#10b981'
+    }
+  });
+});
+
+app.post('/api/touchbar/status', (req, res) => {
+  try {
+    const payload = req.body || {};
+    touchBarState = {
+      ...touchBarState,
+      ...payload,
+      updatedAt: new Date().toISOString()
+    };
+    broadcast({ type: 'touchbar_update', data: touchBarState });
+    res.json({ success: true, state: touchBarState });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 // Servir archivos estáticos del frontend en producción
 const distPath = path.resolve('dist');
 if (fs.existsSync(distPath)) {

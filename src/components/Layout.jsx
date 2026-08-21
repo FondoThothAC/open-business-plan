@@ -9,6 +9,7 @@ import ActivityFeed from './ActivityFeed';
 import GenerationControls from './GenerationControls';
 import BobChatModal from './BobChatModal';
 import GrillMePromptModal from './GrillMePromptModal';
+import TouchBarBridge from './TouchBarBridge';
 
 
 const METHODOLOGY_CONFIG = {
@@ -1214,6 +1215,7 @@ export default function Layout() {
         }
       `}</style>
       <ActivityFeed onOpenBob={() => setIsBobOpen(true)} />
+      <TouchBarBridge />
       
       {/* Asistente BOB Flotante (CELIS Engine & Voice) */}
       <BobChatModal 
