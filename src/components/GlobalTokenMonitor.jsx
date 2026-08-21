@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Activity, Cpu, RotateCcw, Calendar, TrendingUp } from 'lucide-react';
-import { getApiBase } from '../config/apiConfig';
+import { Activity, Cpu, RotateCcw, Calendar, TrendingUp, Clock, RefreshCw } from 'lucide-react';
+import { getApiBase, safeFetchJson } from '../config/apiConfig';
 
 export default function GlobalTokenMonitor() {
   const [stats, setStats] = useState({
@@ -11,17 +11,19 @@ export default function GlobalTokenMonitor() {
     totalRegens: 0,
     projectCount: 0
   });
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     fetchGlobalStats();
   }, []);
 
   const fetchGlobalStats = async () => {
+    setLoading(true);
     try {
       const apiBase = getApiBase();
-      const res = await fetch(`${apiBase}/api/projects`);
-      if (res.ok) {
-        const data = await res.json();
+      const res = await safeFetchJson(`${apiBase}/api/projects`);
+      if (res.ok && res.data) {
+        const data = res.data;
         const all = [...(data.negocios || []), ...(data.social || [])];
         
         let total = 0;
@@ -41,7 +43,7 @@ export default function GlobalTokenMonitor() {
             total += tk;
             regens += (p.telemetry.regenerations || 0);
             
-            const pTime = new Date(p.mtime).getTime();
+            const pTime = p.mtime ? new Date(p.mtime).getTime() : startOfDay;
             if (pTime >= startOfDay) today += tk;
             if (pTime >= startOfWeek) week += tk;
             if (pTime >= startOfMonth) month += tk;
@@ -59,6 +61,8 @@ export default function GlobalTokenMonitor() {
       }
     } catch (e) {
       console.warn("GlobalTokenMonitor Error:", e);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -66,13 +70,38 @@ export default function GlobalTokenMonitor() {
 
   return (
     <div className="glass-panel" style={{ padding: '2rem', marginBottom: '2rem' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem' }}>
-        <Activity size={24} color="#8b5cf6" />
-        <h2 style={{ fontSize: '1.25rem', margin: 0 }}>Monitor Global de Cuotas IA</h2>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <Activity size={24} color="#8b5cf6" />
+          <div>
+            <h2 style={{ fontSize: '1.25rem', margin: 0 }}>Monitor Global de Cuotas y Consumo IA</h2>
+            <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+              Telemetría agregada de inferencia en todos los proyectos locales y en la nube
+            </span>
+          </div>
+        </div>
+
+        <button
+          onClick={fetchGlobalStats}
+          disabled={loading}
+          style={{
+            background: 'var(--bg-panel-hover)',
+            border: '1px solid var(--border-color)',
+            color: 'var(--text-primary)',
+            padding: '0.4rem 0.8rem',
+            borderRadius: '8px',
+            cursor: loading ? 'not-allowed' : 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.4rem',
+            fontSize: '0.75rem',
+            fontWeight: 600
+          }}
+        >
+          <RefreshCw size={13} className={loading ? 'spin' : ''} />
+          <span>{loading ? 'Actualizando...' : 'Refrescar'}</span>
+        </button>
       </div>
-      <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
-        Uso agregado de inferencia IA en todos los proyectos locales. Útil para estimar facturación en APIs de pago.
-      </p>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
         
@@ -82,7 +111,9 @@ export default function GlobalTokenMonitor() {
           <div style={{ fontSize: '1.75rem', fontWeight: 800, color: '#3b82f6', lineHeight: 1.2 }}>
             {formatK(stats.totalTokens)}
           </div>
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '0.25rem' }}>Total Histórico</div>
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '0.25rem' }}>
+            Tokens Históricos ({stats.projectCount} Planes)
+          </div>
         </div>
 
         {/* Uso Hoy */}
@@ -91,7 +122,20 @@ export default function GlobalTokenMonitor() {
           <div style={{ fontSize: '1.75rem', fontWeight: 800, color: '#10b981', lineHeight: 1.2 }}>
             {formatK(stats.todayTokens)}
           </div>
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '0.25rem' }}>Uso de Hoy</div>
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '0.25rem' }}>
+            Consumo de Hoy (24h)
+          </div>
+        </div>
+
+        {/* Uso Esta Semana */}
+        <div style={{ background: 'var(--bg-panel-hover)', padding: '1.5rem', borderRadius: '12px', border: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
+          <Calendar size={24} color="#a855f7" style={{ marginBottom: '0.5rem' }} />
+          <div style={{ fontSize: '1.75rem', fontWeight: 800, color: '#a855f7', lineHeight: 1.2 }}>
+            {formatK(stats.weekTokens)}
+          </div>
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '0.25rem' }}>
+            Esta Semana (7 días)
+          </div>
         </div>
 
         {/* Uso del Mes */}
@@ -100,16 +144,20 @@ export default function GlobalTokenMonitor() {
           <div style={{ fontSize: '1.75rem', fontWeight: 800, color: '#f59e0b', lineHeight: 1.2 }}>
             {formatK(stats.monthTokens)}
           </div>
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '0.25rem' }}>Este Mes</div>
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '0.25rem' }}>
+            Este Mes (Facturación)
+          </div>
         </div>
 
         {/* Regeneraciones */}
         <div style={{ background: 'var(--bg-panel-hover)', padding: '1.5rem', borderRadius: '12px', border: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
-          <RotateCcw size={24} color="#a855f7" style={{ marginBottom: '0.5rem' }} />
-          <div style={{ fontSize: '1.75rem', fontWeight: 800, color: '#a855f7', lineHeight: 1.2 }}>
+          <RotateCcw size={24} color="#ef4444" style={{ marginBottom: '0.5rem' }} />
+          <div style={{ fontSize: '1.75rem', fontWeight: 800, color: '#ef4444', lineHeight: 1.2 }}>
             {stats.totalRegens}
           </div>
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '0.25rem' }}>Reintentos / Fallos</div>
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '0.25rem' }}>
+            Reintentos y Fallbacks
+          </div>
         </div>
 
       </div>

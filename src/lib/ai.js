@@ -911,6 +911,9 @@ export async function callAiProvider(config, prompt, expectJson = true, expected
     }
 
     let fallbackSuccess = false;
+    let effectiveProvider = provider;
+    let effectiveModel = model;
+
     for (const fb of fallbackProviders) {
       try {
         if (logger) {
@@ -918,6 +921,8 @@ export async function callAiProvider(config, prompt, expectJson = true, expected
         }
         text = await invokeSingle(fb.provider, fb.model, fb.key);
         fallbackSuccess = true;
+        effectiveProvider = fb.provider;
+        effectiveModel = fb.model;
         break;
       } catch (fbErr) {
         console.warn(`[callAiProvider Fallback] ${fb.provider} falló:`, fbErr.message);
@@ -940,10 +945,23 @@ export async function callAiProvider(config, prompt, expectJson = true, expected
       }
       text = text.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
     }
-    if (typeof window !== 'undefined' && window.__activeModuleTrace) {
-      window.__activeModuleTrace.logs.push({
-        provider, model, prompt, response: text, reasoning
-      });
+    if (typeof window !== 'undefined') {
+      if (window.__activeModuleTrace) {
+        window.__activeModuleTrace.logs.push({
+          provider: config.provider || provider,
+          model: config.model || model,
+          prompt,
+          response: text,
+          reasoning
+        });
+      }
+      window.dispatchEvent(new CustomEvent('openplan_trajectory_updated', {
+        detail: {
+          provider: config.provider || provider,
+          model: config.model || model,
+          timestamp: new Date().toISOString()
+        }
+      }));
     }
   }
 

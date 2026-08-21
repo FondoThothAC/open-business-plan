@@ -135,11 +135,26 @@ function useApiStatus(planData) {
   const [tokenrouterStatus, setTokenrouterStatus] = useState({ state: 'idle', message: '' });
 
   const safeJsonParse = async (res) => {
+    if (!res) return { success: false, error: 'Sin respuesta del servidor' };
     const text = await res.text();
     try {
       return JSON.parse(text);
     } catch {
-      return { success: false, error: text || `HTTP ${res.status}` };
+      if (res.status === 502 || text.includes('502 Bad Gateway')) {
+        return { 
+          success: false, 
+          error: 'Servidor backend no disponible (502 Bad Gateway). Ejecuta "pm2 restart obp-backend" en tu servidor VPS.',
+          isServerDown: true
+        };
+      }
+      if (res.status === 504 || text.includes('504 Gateway Time-out')) {
+        return { success: false, error: 'Tiempo de espera agotado en servidor (504 Gateway Timeout).' };
+      }
+      if (res.status === 404) {
+        return { success: false, error: 'Ruta no encontrada en el backend (404 Not Found).' };
+      }
+      const cleanText = text.replace(/<[^>]*>/g, '').trim().slice(0, 100);
+      return { success: false, error: cleanText || `Error de conexión (HTTP ${res.status})` };
     }
   };
 
@@ -394,6 +409,20 @@ export default function Configuracion() {
   });
 
   const [telemetryData, setTelemetryData] = useState({});
+  const [activeHotProvider, setActiveHotProvider] = useState(null);
+
+  useEffect(() => {
+    const handleHot = (e) => {
+      const detail = e.detail || {};
+      const prov = detail.provider || detail.providerUsed;
+      if (prov) {
+        setActiveHotProvider(prov);
+        setTimeout(() => setActiveHotProvider(null), 5000);
+      }
+    };
+    window.addEventListener('openplan_trajectory_updated', handleHot);
+    return () => window.removeEventListener('openplan_trajectory_updated', handleHot);
+  }, []);
 
   const [openRouterFreeModels, setOpenRouterFreeModels] = useState([]);
   const [isOpenRouterFetching, setIsOpenRouterFetching] = useState(false);
@@ -424,10 +453,9 @@ export default function Configuracion() {
     const fetchTelemetry = async () => {
       try {
         const backendBase = getApiBase();
-        const res = await fetch(`${backendBase}/api/telemetry/tokens`);
-        if (res.ok) {
-          const data = await res.json();
-          setTelemetryData(data || {});
+        const res = await safeFetchJson(`${backendBase}/api/telemetry/tokens`);
+        if (res.ok && res.data) {
+          setTelemetryData(res.data || {});
         }
       } catch {
         // Fallback silencioso
@@ -1126,7 +1154,7 @@ export default function Configuracion() {
                   style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
                 />
                 <ApiStatusBadge status={groqStatus} onTest={() => testGroq(planData.config.ai.groqKey)} disabled={!planData.config.ai.groqKey} />
-                <ApiQuotaMeter providerKey="groq" tokens={telemetryData.groq || 0} isConfigured={!!planData.config.ai.groqKey} statusState={groqStatus.state} />
+                <ApiQuotaMeter providerKey="groq" tokens={telemetryData.groq || 0} isConfigured={!!planData.config.ai.groqKey} statusState={groqStatus.state} isHot={activeHotProvider === 'groq'} />
               </div>
 
               {/* NVIDIA NIM CARD */}
@@ -1146,7 +1174,7 @@ export default function Configuracion() {
                   style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
                 />
                 <ApiStatusBadge status={nvidiaStatus} onTest={() => testNvidia(planData.config.ai.nvidiaKey)} disabled={!planData.config.ai.nvidiaKey} />
-                <ApiQuotaMeter providerKey="nvidia" tokens={telemetryData.nvidia || 0} isConfigured={!!planData.config.ai.nvidiaKey} statusState={nvidiaStatus.state} />
+                <ApiQuotaMeter providerKey="nvidia" tokens={telemetryData.nvidia || 0} isConfigured={!!planData.config.ai.nvidiaKey} statusState={nvidiaStatus.state} isHot={activeHotProvider === 'nvidia'} />
               </div>
 
               {/* MISTRAL CARD */}
@@ -1169,7 +1197,7 @@ export default function Configuracion() {
                   style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
                 />
                 <ApiStatusBadge status={mistralStatus} onTest={() => testMistral(planData.config.ai.mistralKey || planData.config.ai.apiKey)} disabled={!planData.config.ai.mistralKey && !planData.config.ai.apiKey} />
-                <ApiQuotaMeter providerKey="mistral" tokens={telemetryData.mistral || 0} isConfigured={!!planData.config.ai.mistralKey || (planData.config.ai.primaryProvider === 'mistral' && !!planData.config.ai.apiKey)} statusState={mistralStatus.state} />
+                <ApiQuotaMeter providerKey="mistral" tokens={telemetryData.mistral || 0} isConfigured={!!planData.config.ai.mistralKey || (planData.config.ai.primaryProvider === 'mistral' && !!planData.config.ai.apiKey)} statusState={mistralStatus.state} isHot={activeHotProvider === 'mistral'} />
               </div>
 
               {/* OLLAMA CLOUD FREE (Kimi k2.6, MiniMax, Nemotron, Qwen) */}
@@ -1207,7 +1235,7 @@ export default function Configuracion() {
                   style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
                 />
                 <ApiStatusBadge status={openrouterStatus} onTest={() => testOpenRouter(planData.config.ai.openrouterKey)} disabled={!planData.config.ai.openrouterKey} />
-                <ApiQuotaMeter providerKey="openrouter" tokens={telemetryData.openrouter || 0} isConfigured={!!planData.config.ai.openrouterKey} statusState={openrouterStatus.state} />
+                <ApiQuotaMeter providerKey="openrouter" tokens={telemetryData.openrouter || 0} isConfigured={!!planData.config.ai.openrouterKey} statusState={openrouterStatus.state} isHot={activeHotProvider === 'openrouter'} />
               </div>
 
               {/* OPENCODE CARD — Modelos de código grandes, regenera cada 5h */}
@@ -1226,7 +1254,7 @@ export default function Configuracion() {
                   style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
                 />
                 <ApiStatusBadge status={opencodeStatus} onTest={() => testOpenCode(planData.config.ai.opencodeKey)} disabled={!planData.config.ai.opencodeKey} />
-                <ApiQuotaMeter providerKey="opencode" tokens={telemetryData.opencode || 0} isConfigured={!!planData.config.ai.opencodeKey} statusState={opencodeStatus.state} />
+                <ApiQuotaMeter providerKey="opencode" tokens={telemetryData.opencode || 0} isConfigured={!!planData.config.ai.opencodeKey} statusState={opencodeStatus.state} isHot={activeHotProvider === 'opencode'} />
               </div>
 
               {/* ORCA ROUTER CARD */}
@@ -1245,7 +1273,7 @@ export default function Configuracion() {
                   style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
                 />
                 <ApiStatusBadge status={{ state: planData.config.ai.orcarouterKey ? 'online' : 'idle', message: planData.config.ai.orcarouterKey ? 'Configurado' : 'Sin verificar' }} onTest={() => {}} disabled={!planData.config.ai.orcarouterKey} />
-                <ApiQuotaMeter providerKey="orcarouter" tokens={telemetryData.orcarouter || 0} isConfigured={!!planData.config.ai.orcarouterKey} statusState={planData.config.ai.orcarouterKey ? 'online' : 'idle'} />
+                <ApiQuotaMeter providerKey="orcarouter" tokens={telemetryData.orcarouter || 0} isConfigured={!!planData.config.ai.orcarouterKey} statusState={planData.config.ai.orcarouterKey ? 'online' : 'idle'} isHot={activeHotProvider === 'orcarouter'} />
               </div>
 
               {/* TOKENROUTER CARD */}
@@ -1264,7 +1292,7 @@ export default function Configuracion() {
                   style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
                 />
                 <ApiStatusBadge status={tokenrouterStatus} onTest={() => testTokenRouter(planData.config.ai.tokenrouterKey)} disabled={!planData.config.ai.tokenrouterKey} />
-                <ApiQuotaMeter providerKey="tokenrouter" tokens={telemetryData.tokenrouter || 0} isConfigured={!!planData.config.ai.tokenrouterKey} statusState={tokenrouterStatus.state} />
+                <ApiQuotaMeter providerKey="tokenrouter" tokens={telemetryData.tokenrouter || 0} isConfigured={!!planData.config.ai.tokenrouterKey} statusState={tokenrouterStatus.state} isHot={activeHotProvider === 'tokenrouter'} />
               </div>
 
             </div>
@@ -1299,7 +1327,7 @@ export default function Configuracion() {
                   style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
                 />
                 <ApiStatusBadge status={geminiStatus} onTest={() => testGemini(planData.config.ai.geminiKey || planData.config.ai.apiKey)} disabled={!planData.config.ai.geminiKey && !planData.config.ai.apiKey} />
-                <ApiQuotaMeter providerKey="gemini" tokens={telemetryData.gemini || 0} isConfigured={!!planData.config.ai.geminiKey || !!planData.config.ai.apiKey} statusState={geminiStatus.state} />
+                <ApiQuotaMeter providerKey="gemini" tokens={telemetryData.gemini || 0} isConfigured={!!planData.config.ai.geminiKey || !!planData.config.ai.apiKey} statusState={geminiStatus.state} isHot={activeHotProvider === 'gemini'} />
               </div>
 
               {/* ANTHROPIC CLAUDE */}
@@ -1319,7 +1347,7 @@ export default function Configuracion() {
                   style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
                 />
                 <ApiStatusBadge status={claudeStatus} onTest={() => testClaude(planData.config.ai.claudeKey)} disabled={!planData.config.ai.claudeKey} />
-                <ApiQuotaMeter providerKey="claude" tokens={telemetryData.claude || 0} isConfigured={!!planData.config.ai.claudeKey} statusState={claudeStatus.state} />
+                <ApiQuotaMeter providerKey="claude" tokens={telemetryData.claude || 0} isConfigured={!!planData.config.ai.claudeKey} statusState={claudeStatus.state} isHot={activeHotProvider === 'claude'} />
               </div>
 
               {/* OPENAI GPT */}
@@ -1342,7 +1370,7 @@ export default function Configuracion() {
                   style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
                 />
                 <ApiStatusBadge status={openaiStatus} onTest={() => testOpenai(planData.config.ai.openaiKey || planData.config.ai.apiKey)} disabled={!planData.config.ai.openaiKey && !planData.config.ai.apiKey} />
-                <ApiQuotaMeter providerKey="openai" tokens={telemetryData.openai || 0} isConfigured={!!planData.config.ai.openaiKey || !!planData.config.ai.apiKey} statusState={openaiStatus.state} />
+                <ApiQuotaMeter providerKey="openai" tokens={telemetryData.openai || 0} isConfigured={!!planData.config.ai.openaiKey || !!planData.config.ai.apiKey} statusState={openaiStatus.state} isHot={activeHotProvider === 'openai'} />
               </div>
 
               {/* OLLAMA LOCAL CARD */}
@@ -1369,7 +1397,7 @@ export default function Configuracion() {
                     Refrescar
                   </button>
                 </div>
-                <ApiQuotaMeter providerKey="ollama" tokens={telemetryData.ollama || 0} isConfigured={ollamaOnline} statusState={ollamaOnline ? 'online' : 'offline'} />
+                <ApiQuotaMeter providerKey="ollama" tokens={telemetryData.ollama || 0} isConfigured={ollamaOnline} statusState={ollamaOnline ? 'online' : 'offline'} isHot={activeHotProvider === 'ollama'} />
               </div>
 
               {/* OLLAMA CLOUD PREMIUM (GLM 5.1, Qwen3.5 72B) */}
@@ -1388,7 +1416,7 @@ export default function Configuracion() {
                   style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
                 />
                 <ApiStatusBadge status={ollamaCloudStatus} onTest={() => testOllamaCloud(planData.config.ai.ollamaKey)} disabled={!planData.config.ai.ollamaKey} />
-                <ApiQuotaMeter providerKey="ollama_cloud" tokens={telemetryData.ollama_cloud || 0} isConfigured={!!planData.config.ai.ollamaKey} statusState={ollamaCloudStatus.state} />
+                <ApiQuotaMeter providerKey="ollama_cloud" tokens={telemetryData.ollama_cloud || 0} isConfigured={!!planData.config.ai.ollamaKey} statusState={ollamaCloudStatus.state} isHot={activeHotProvider === 'ollama_cloud'} />
               </div>
 
               {/* GLM / ZhipuAI Directo */}

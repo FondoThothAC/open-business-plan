@@ -10,6 +10,8 @@ import GenerationControls from './GenerationControls';
 import BobChatModal from './BobChatModal';
 import GrillMePromptModal from './GrillMePromptModal';
 import TouchBarBridge from './TouchBarBridge';
+import ServerHealthBanner from './ServerHealthBanner';
+import WordDocumentCenterModal from './WordDocumentCenterModal';
 
 
 const METHODOLOGY_CONFIG = {
@@ -82,11 +84,13 @@ export default function Layout() {
 
   useEffect(() => {
     const handleTrajectory = (e) => {
-      const { provider, model } = e.detail;
+      const detail = e.detail || {};
+      const provider = detail.provider || detail.providerUsed;
+      const model = detail.model || detail.modelUsed;
       if (provider || model) {
         setLastAiInfo({ provider: provider || 'IA', model: model || 'Automático' });
         setIsAiHot(true);
-        setTimeout(() => setIsAiHot(false), 3000); // El pulso dura 3 segundos
+        setTimeout(() => setIsAiHot(false), 5000); // 5 segundos de brillo HOT
       }
     };
     window.addEventListener('openplan_trajectory_updated', handleTrajectory);
@@ -455,6 +459,7 @@ export default function Layout() {
 
       {/* Main Content Area */}
       <main className="main-content">
+        <ServerHealthBanner />
         <header className="top-header no-print" style={{ height: 'auto', minHeight: '70px', padding: '0.5rem 1.5rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', flexWrap: 'wrap', gap: '1rem' }}>
             
@@ -540,19 +545,22 @@ export default function Layout() {
                   onClick={() => setShowWorkspaceModal(true)}
                   style={{
                     padding: '0.6rem 1.2rem',
-                    background: 'rgba(59, 130, 246, 0.1)',
+                    background: 'linear-gradient(135deg, rgba(37, 99, 235, 0.15), rgba(59, 130, 246, 0.25))',
                     color: '#3b82f6',
-                    border: 'none',
+                    border: '1px solid rgba(59, 130, 246, 0.3)',
                     borderRadius: '8px',
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
                     gap: '0.5rem',
-                    fontWeight: 600,
+                    fontWeight: 700,
+                    fontSize: '0.85rem',
                     transition: 'all 0.2s',
+                    boxShadow: '0 2px 8px rgba(37, 99, 235, 0.15)'
                   }}
+                  title="Centro de Documentos estilo Word con Versiones y Trazabilidad"
                 >
-                  <Briefcase size={16} /> <span>Workspace</span>
+                  <Briefcase size={16} /> <span>Documentos (Word)</span>
                 </button>
 
                 <div style={{ position: 'relative' }}>
@@ -1298,6 +1306,12 @@ export default function Layout() {
             });
           }
         }}
+      />
+
+      {/* Centro de Documentos Estilo Word y Trazabilidad */}
+      <WordDocumentCenterModal
+        isOpen={showWorkspaceModal}
+        onClose={() => setShowWorkspaceModal(false)}
       />
 
       {/* Modal Human-in-the-Loop (Grill-Me) si hay preguntas activas de agentes */}
