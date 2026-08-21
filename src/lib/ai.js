@@ -133,11 +133,12 @@ function findBestOllamaModel(requestedModel, installedModels) {
 
 export const CLOUD_DEFAULT_MODELS = {
   minimax:    'minimax-m3:cloud',
-  groq:       'qwen/qwen3.6-27b',
+  groq:       'llama-3.3-70b-versatile',
   gemini:     'gemini-3.6-flash',
   nvidia:     'meta/llama-3.1-70b-instruct',
   mistral:    'mistral-large-latest',
   openrouter: 'nvidia/nemotron-3.5-lightning:free',
+  orcarouter: 'orcarouter/auto',
   opencode:   'openai/gpt-4.1',
   openai:     'gpt-4o',
 };
@@ -158,6 +159,7 @@ function resolveProviderModel({ primaryProvider, model, installedModels = [] }) 
   else if (resolved.includes('minimax') && !resolved.includes(':cloud')) prov = 'minimax';
   else if (resolved.includes('gemini')) prov = 'gemini';
   else if (resolved.includes(':free') || resolved.includes('openrouter')) prov = 'openrouter';
+  else if (resolved.includes('orcarouter') || resolved.includes('orca')) prov = 'orcarouter';
   else if (resolved.includes('gpt-oss') || resolved.includes('compound') || resolved.includes('groq') || resolved.includes('qwen/')) prov = 'groq';
   else if (resolved.includes('gpt')) prov = 'openai';
   else if (resolved.includes('mistral-large')) prov = 'mistral';
@@ -172,7 +174,7 @@ function resolveProviderModel({ primaryProvider, model, installedModels = [] }) 
 
   // Proveedores de nube: si el modelo configurado no es cloud, usar el default del proveedor
   const isCloudModel = /gemini|gpt|mistral|nvidia|llama-3\.3|llama-3\.1|compound|qwen|oss|:free|:cloud/i.test(resolved);
-  const finalModel = (isCloudModel && resolved) ? resolved : (CLOUD_DEFAULT_MODELS[prov] || resolved || 'qwen/qwen3.6-27b');
+  const finalModel = (isCloudModel && resolved) ? resolved : (CLOUD_DEFAULT_MODELS[prov] || resolved || 'llama-3.3-70b-versatile');
   return { provider: prov, model: finalModel };
 }
 
@@ -327,7 +329,7 @@ let activeTermLog = null;
 export async function generateModuleContent(config, currentModule, allPlanData) {
   const {
     primaryProvider, _secondaryProvider,
-    apiKey, groqKey, nvidiaKey, lmStudioEndpoint, endpoint,
+    apiKey, groqKey, nvidiaKey, orcaRouterKey, lmStudioEndpoint, endpoint,
     model, depth = 1,           // depth: 1=rápido, 2=pro, 3=profundo
     agentModels = {},           // sobreescritura de modelos por rol desde config
   } = config;
@@ -461,6 +463,7 @@ ${fieldsPromptContext}
       openrouterKey,
       opencodeKey,
       mistralKey,
+      orcaRouterKey: config.orcaRouterKey,
       endpoint,
       lmStudioEndpoint,
       model: mod
@@ -647,22 +650,22 @@ ${fieldsPromptContext}
         await termLog('error', `Fallback OpenRouter falló: ${e.message.substring(0, 50)}`, 'openrouter');
       }
     }
-    // Fallback 2B: Groq Qwen 3.6 27B
-    if (groqKey && primaryProvider !== 'groq') {
+    // Fallback 2B: Orca Router
+    if (orcaRouterKey && primaryProvider !== 'orcarouter') {
       try {
-        await termLog('warning', `Iniciando fallback a Groq (Qwen 3.6 27B)...`, 'groq');
-        return await runChain({ provider: 'groq', groqKey, apiKey, model: 'qwen/qwen3.6-27b', endpoint });
+        await termLog('warning', `Iniciando fallback a Orca Router (orcarouter/auto)...`, 'orcarouter');
+        return await runChain({ provider: 'orcarouter', orcaRouterKey, apiKey, model: 'orcarouter/auto', endpoint });
       } catch (e) {
-        await termLog('error', `Fallback Groq falló: ${e.message.substring(0, 50)}`, 'groq');
+        await termLog('error', `Fallback Orca Router falló: ${e.message.substring(0, 50)}`, 'orcarouter');
       }
     }
-    // Fallback 2C: Groq GPT-OSS 120B
-    if (groqKey) {
+    // Fallback 2C: Groq
+    if (groqKey && primaryProvider !== 'groq') {
       try {
-        await termLog('warning', `Iniciando fallback a Groq (GPT-OSS 120B)...`, 'groq');
-        return await runChain({ provider: 'groq', groqKey, apiKey, model: 'openai/gpt-oss-120b', endpoint });
+        await termLog('warning', `Iniciando fallback a Groq (Llama 3.3 70B)...`, 'groq');
+        return await runChain({ provider: 'groq', groqKey, apiKey, model: 'llama-3.3-70b-versatile', endpoint });
       } catch (e) {
-        await termLog('error', `Fallback Groq GPT-OSS falló: ${e.message.substring(0, 50)}`, 'groq');
+        await termLog('error', `Fallback Groq falló: ${e.message.substring(0, 50)}`, 'groq');
       }
     }
   } else {
@@ -702,11 +705,11 @@ ${fieldsPromptContext}
     }
   }
 
-  // Paso 2.7: Fallback a Groq Qwen 3.6 27B (último intento)
+  // Paso 2.7: Fallback a Groq Llama 3.3 70B (último intento)
   if (groqKey && primaryProvider !== 'groq') {
     try {
-      await termLog('warning', `Fallback final a Groq (Qwen 3.6 27B)...`, 'groq');
-      return await runChain({ provider: 'groq', groqKey, apiKey, model: 'qwen/qwen3.6-27b', endpoint });
+      await termLog('warning', `Fallback final a Groq (Llama 3.3 70B)...`, 'groq');
+      return await runChain({ provider: 'groq', groqKey, apiKey, model: 'llama-3.3-70b-versatile', endpoint });
     } catch (groqError) {
       await termLog('error', `Fallback Groq final falló: ${groqError.message.substring(0, 50)}`, 'groq');
     }
@@ -811,7 +814,7 @@ function _showFallbackDialog(errorMsg) {
 // ─────────────────────────────────────────────────────────────────────────
 export async function callAiProvider(config, prompt, expectJson = true, expectedKeys = [], onThink = null) {
   const {
-    provider, apiKey, groqKey, nvidiaKey, openrouterKey, opencodeKey, mistralKey, minimaxKey,
+    provider, apiKey, groqKey, nvidiaKey, openrouterKey, opencodeKey, mistralKey, minimaxKey, orcaRouterKey,
     endpoint, lmStudioEndpoint, model, disableAutoFallback = false
   } = config;
 
@@ -822,6 +825,7 @@ export async function callAiProvider(config, prompt, expectJson = true, expected
     if (prov === 'nvidia')     return await callNvidia(key || nvidiaKey || apiKey, mod, prompt);
     if (prov === 'openrouter') return await callOpenRouter(key || openrouterKey || apiKey, mod, prompt, expectJson);
     if (prov === 'opencode')   return await callOpenRouter(key || opencodeKey || apiKey, mod, prompt, expectJson);
+    if (prov === 'orcarouter') return await callOrcaRouter(key || orcaRouterKey || apiKey, mod, prompt, expectJson);
     if (prov === 'ollama')     return await callOllama(endpoint, mod, prompt, expectJson, key || apiKey);
     if (prov === 'lmstudio')   return await callLmStudio(endpoint || lmStudioEndpoint, mod, prompt, expectJson, key || apiKey);
     if (prov === 'mistral')    return await callMistral(key || mistralKey || apiKey, mod, prompt);
@@ -851,11 +855,15 @@ export async function callAiProvider(config, prompt, expectJson = true, expected
     if (provider !== 'ollama' && (endpoint || config?.endpoint)) {
       fallbackProviders.push({ provider: 'ollama', key: null, model: 'minimax-m3:cloud' });
     }
-    // 2° Prioridad: Groq
-    if (provider !== 'groq' && (groqKey || config?.groqKey)) {
-      fallbackProviders.push({ provider: 'groq', key: groqKey || config?.groqKey, model: 'qwen/qwen3.6-27b' });
+    // 2° Prioridad: Orca Router
+    if (provider !== 'orcarouter' && (orcaRouterKey || config?.orcaRouterKey)) {
+      fallbackProviders.push({ provider: 'orcarouter', key: orcaRouterKey || config?.orcaRouterKey, model: 'orcarouter/auto' });
     }
-    // 3° Prioridad: Gemini
+    // 3° Prioridad: Groq
+    if (provider !== 'groq' && (groqKey || config?.groqKey)) {
+      fallbackProviders.push({ provider: 'groq', key: groqKey || config?.groqKey, model: 'llama-3.3-70b-versatile' });
+    }
+    // 4° Prioridad: Gemini
     if (provider !== 'gemini' && (apiKey || config?.geminiKey)) {
       fallbackProviders.push({ provider: 'gemini', key: apiKey || config?.geminiKey, model: 'gemini-3.6-flash' });
     }
@@ -1038,6 +1046,9 @@ async function callGemini(apiKey, model, prompt) {
 
         const data = await response.json();
         if (!data.error && data.candidates?.[0]?.content?.parts?.[0]?.text) {
+          if (data.usageMetadata && data.usageMetadata.totalTokenCount) {
+            recordTokenTelemetry('gemini', data.usageMetadata.totalTokenCount);
+          }
           return data.candidates[0].content.parts[0].text;
         }
         if (data.error) {
@@ -1087,20 +1098,16 @@ async function callGroq(apiKey, model, prompt, expectJson) {
   const keys = parseApiKeys(apiKey);
   if (keys.length === 0) throw new Error('No se proporcionó API Key de Groq válida');
 
-  let preferredModel = model || 'qwen/qwen3.6-27b';
-  if (preferredModel === 'llama-3.3-70b-versatile' || preferredModel === 'llama-3.1-8b-instant' || preferredModel === 'groq/compound-mini') {
-    preferredModel = 'qwen/qwen3.6-27b';
+  let preferredModel = model || 'llama-3.3-70b-versatile';
+  if (preferredModel === 'groq/compound-mini' || preferredModel.includes('qwen') || preferredModel.includes('gpt-oss')) {
+    preferredModel = 'llama-3.3-70b-versatile';
   }
 
   const groqCandidateModels = [
     preferredModel,
-    'qwen/qwen3.6-27b',
-    'openai/gpt-oss-120b',
-    'openai/gpt-oss-20b',
     'llama-3.3-70b-versatile',
     'llama-3.1-8b-instant',
-    'groq/compound',
-    'groq/compound-mini'
+    'mixtral-8x7b-32768'
   ];
   const uniqueModels = [...new Set(groqCandidateModels)];
 
@@ -1130,6 +1137,9 @@ async function callGroq(apiKey, model, prompt, expectJson) {
 
         const data = await response.json();
         if (!data.error && data.choices?.[0]?.message?.content !== undefined) {
+          if (data.usage && data.usage.total_tokens) {
+            recordTokenTelemetry('groq', data.usage.total_tokens);
+          }
           return data.choices[0].message.content;
         }
         if (data.error) {
@@ -1207,6 +1217,9 @@ async function callOpenRouter(apiKey, model, prompt, expectJson) {
 
         const data = await response.json();
         if (!data.error && data.choices?.[0]?.message?.content !== undefined) {
+          if (data.usage && data.usage.total_tokens) {
+            recordTokenTelemetry('openrouter', data.usage.total_tokens);
+          }
           return data.choices[0].message.content;
         }
         if (data.error) {
@@ -1235,7 +1248,55 @@ async function callOpenAI(apiKey, model, prompt, expectJson) {
     })
   });
   const data = await response.json();
+  if (data.usage && data.usage.total_tokens) {
+    recordTokenTelemetry('openai', data.usage.total_tokens);
+  }
   return data.choices[0].message.content;
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Telemetry Hook
+// ─────────────────────────────────────────────────────────────────────────
+function recordTokenTelemetry(provider, tokens) {
+  if (!tokens || tokens <= 0) return;
+  try {
+    const apiBase = getApiBase();
+    fetch(`${apiBase}/api/telemetry/tokens`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ provider, tokens })
+    }).catch(() => {});
+  } catch (e) {}
+}
+
+async function callOrcaRouter(apiKey, model, prompt, expectJson) {
+  const keys = parseApiKeys(apiKey);
+  if (keys.length === 0) throw new Error('No se proporcionó API Key de Orca Router válida');
+
+  let lastError = null;
+  const currentKey = keys[0];
+
+  try {
+    const response = await fetchWithRetry('https://api.orcarouter.ai/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${currentKey}` },
+      body: JSON.stringify({
+        model: model || 'orcarouter/auto',
+        messages: [{ role: 'user', content: prompt }],
+        response_format: expectJson ? { type: 'json_object' } : undefined
+      })
+    });
+    
+    const data = await response.json();
+    
+    if (data.usage && data.usage.total_tokens) {
+      recordTokenTelemetry('orcarouter', data.usage.total_tokens);
+    }
+    
+    return data.choices[0].message.content;
+  } catch (err) {
+    throw new Error(`Error en Orca Router: ${err.message}`);
+  }
 }
 
 async function callMistral(apiKey, model, prompt) {
@@ -1248,6 +1309,9 @@ async function callMistral(apiKey, model, prompt) {
     })
   });
   const data = await response.json();
+  if (data.usage && data.usage.total_tokens) {
+    recordTokenTelemetry('mistral', data.usage.total_tokens);
+  }
   return data.choices[0].message.content;
 }
 
