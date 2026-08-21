@@ -86,7 +86,7 @@ const CLOUD_PROVIDER_DEFAULTS = {
   gemini:      'gemini-3.6-flash',
   openai:      'gpt-4o',
   openrouter:  'nvidia/nemotron-3.5-lightning:free',
-  ollama:      'qwen3.5:4b-mlx',
+  ollama:      'minimax-m3:cloud',
 };
 
 const getModelLabel = (p) => {
@@ -1514,10 +1514,15 @@ export default function Configuracion() {
                 value={coverDesign.layout}
                 onChange={(e) => handleCoverChange('layout', e.target.value)}
               >
-                <option value="classic">Clásico (Centrado)</option>
-                <option value="modern">Moderno (Franja y Contraste)</option>
+                <option value="classic">Clásico (Centrado Académico)</option>
+                <option value="modern">Moderno (Franja y Acento)</option>
                 <option value="minimalist">Minimalista (Limpio y Elegante)</option>
-                <option value="sidebar">Borde Lateral (Izquierdo)</option>
+                <option value="sidebar">Borde Lateral (Izquierdo Corporativo)</option>
+                <option value="dark_executive">Obsidian / Dark Executive (Fondo Oscuro Premium)</option>
+                <option value="academic_frame">Marco Formal Institucional (Doble Borde)</option>
+                <option value="gradient_wave">Gradient Wave / Tech Dynamic (Innovación)</option>
+                <option value="split_grid">Split Grid 50/50 (Editorial Suizo)</option>
+                <option value="nordic_line">Elegancia Nórdica (Línea Tipográfica)</option>
               </select>
             </div>
 
@@ -1716,12 +1721,77 @@ export default function Configuracion() {
                 }} />
               )}
 
+              {/* Obsidian Dark Executive */}
+              {coverDesign.layout === 'dark_executive' && (
+                <div style={{
+                  position: 'absolute',
+                  inset: 0,
+                  background: 'linear-gradient(135deg, #090d16 0%, #0f172a 100%)',
+                  zIndex: 0
+                }} />
+              )}
+
+              {/* Academic Frame (Doble Marco) */}
+              {coverDesign.layout === 'academic_frame' && (
+                <div style={{
+                  position: 'absolute',
+                  inset: '8px',
+                  border: '2px solid #334155',
+                  borderRadius: '4px',
+                  outline: '1px solid #cbd5e1',
+                  outlineOffset: '-4px',
+                  pointerEvents: 'none',
+                  zIndex: 0
+                }} />
+              )}
+
+              {/* Gradient Wave */}
+              {coverDesign.layout === 'gradient_wave' && (
+                <div style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: '70px',
+                  background: `linear-gradient(135deg, ${planData.config.brandKit.primaryColor || '#6366f1'} 0%, #a855f7 50%, #ec4899 100%)`,
+                  borderRadius: '0 0 50% 50% / 0 0 20px 20px',
+                  zIndex: 0
+                }} />
+              )}
+
+              {/* Split Grid 50/50 */}
+              {coverDesign.layout === 'split_grid' && (
+                <div style={{
+                  position: 'absolute',
+                  left: 0,
+                  top: 0,
+                  width: '40%',
+                  height: '100%',
+                  background: planData.config.brandKit.primaryColor || '#6366f1',
+                  zIndex: 0
+                }} />
+              )}
+
+              {/* Nordic Line */}
+              {coverDesign.layout === 'nordic_line' && (
+                <div style={{
+                  position: 'absolute',
+                  left: '20px',
+                  top: 0,
+                  bottom: 0,
+                  width: '1px',
+                  background: '#cbd5e1',
+                  zIndex: 0
+                }} />
+              )}
+
               {/* Top part: Logo */}
               <div style={{
                 display: 'flex',
                 justifyContent: coverDesign.logoAlign === 'left' ? 'flex-start' : coverDesign.logoAlign === 'right' ? 'flex-end' : 'center',
                 width: '100%',
-                paddingLeft: coverDesign.layout === 'sidebar' ? '10px' : '0'
+                paddingLeft: coverDesign.layout === 'sidebar' ? '10px' : coverDesign.layout === 'split_grid' ? '45%' : '0',
+                zIndex: 1
               }}>
                 {planData.config.brandKit.logoUrl ? (
                   <img 
@@ -1739,42 +1809,46 @@ export default function Configuracion() {
                     width: coverDesign.logoSize === 'small' ? '30px' : coverDesign.logoSize === 'large' ? '70px' : '50px',
                     height: '25px',
                     borderRadius: '4px',
-                    border: '1px dashed #cbd5e1',
-                    background: '#f1f5f9',
+                    border: coverDesign.layout === 'dark_executive' ? '1px dashed #475569' : '1px dashed #cbd5e1',
+                    background: coverDesign.layout === 'dark_executive' ? '#1e293b' : '#f1f5f9',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     fontSize: '8px',
-                    color: '#94a3b8'
+                    color: coverDesign.layout === 'dark_executive' ? '#94a3b8' : '#94a3b8'
                   }}>Logo</div>
                 )}
               </div>
 
               {/* Center part: Title and Subtitle */}
               <div style={{
-                paddingLeft: coverDesign.layout === 'sidebar' ? '10px' : '0',
+                paddingLeft: coverDesign.layout === 'sidebar' ? '10px' : coverDesign.layout === 'split_grid' ? '45%' : coverDesign.layout === 'nordic_line' ? '15px' : '0',
                 margin: 'auto 0',
                 display: 'flex',
                 flexDirection: 'column',
-                gap: '0.25rem'
+                gap: '0.25rem',
+                zIndex: 1
               }}>
                 {coverDesign.layout === 'modern' && (
                   <div style={{ width: '30px', height: '3px', background: planData.config.brandKit.primaryColor || '#6366f1', marginBottom: '0.25rem', alignSelf: coverDesign.layout === 'classic' ? 'center' : 'flex-start' }} />
+                )}
+                {coverDesign.layout === 'nordic_line' && (
+                  <div style={{ width: '15px', height: '2px', background: '#0f172a', marginBottom: '0.2rem' }} />
                 )}
                 <h3 style={{
                   margin: 0,
                   fontSize: coverDesign.titleSize === 'small' ? '10px' : coverDesign.titleSize === 'large' ? '16px' : '13px',
                   fontWeight: 800,
                   lineHeight: '1.2',
-                  color: '#0f172a'
+                  color: coverDesign.layout === 'dark_executive' ? '#f8fafc' : '#0f172a'
                 }}>
                   {planData.config.brandKit.companyName || 'Nombre del Proyecto'}
                 </h3>
                 <p style={{
                   margin: 0,
                   fontSize: '7px',
-                  color: '#64748b',
-                  fontWeight: 500,
+                  color: coverDesign.layout === 'dark_executive' ? '#94a3b8' : planData.config.brandKit.primaryColor || '#64748b',
+                  fontWeight: 600,
                   textTransform: 'uppercase',
                   letterSpacing: '0.05em'
                 }}>
@@ -1784,7 +1858,7 @@ export default function Configuracion() {
                   <p style={{
                     margin: '3px 0 0 0',
                     fontSize: '6px',
-                    color: '#94a3b8'
+                    color: coverDesign.layout === 'dark_executive' ? '#64748b' : '#94a3b8'
                   }}>
                     {coverDesign.institution}
                   </p>
@@ -1793,23 +1867,24 @@ export default function Configuracion() {
 
               {/* Bottom part: Creator and Date */}
               <div style={{
-                paddingLeft: coverDesign.layout === 'sidebar' ? '10px' : '0',
-                borderTop: '1px solid #f1f5f9',
+                paddingLeft: coverDesign.layout === 'sidebar' ? '10px' : coverDesign.layout === 'split_grid' ? '45%' : coverDesign.layout === 'nordic_line' ? '15px' : '0',
+                borderTop: coverDesign.layout === 'dark_executive' ? '1px solid #1e293b' : '1px solid #f1f5f9',
                 paddingTop: '8px',
                 fontSize: '6.5px',
-                color: '#475569'
+                color: coverDesign.layout === 'dark_executive' ? '#cbd5e1' : '#475569',
+                zIndex: 1
               }}>
                 <div style={{ fontWeight: 600 }}>
                   {coverDesign.creatorName ? `Creado por: ${coverDesign.creatorName}` : 'Elaborado por: [Tu Nombre]'}
                 </div>
                 {coverDesign.showDate !== false && (
-                  <div style={{ color: '#94a3b8', marginTop: '2px' }}>
+                  <div style={{ color: coverDesign.layout === 'dark_executive' ? '#64748b' : '#94a3b8', marginTop: '2px' }}>
                     {coverDesign.customDate || new Date().toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' })}
                   </div>
                 )}
                 {/* Institution logos in miniature */}
                 {institutionLogos.length > 0 && (
-                  <div style={{ display: 'flex', justifyContent: 'center', gap: '4px', marginTop: '5px', paddingTop: '4px', borderTop: '1px solid #f1f5f9' }}>
+                  <div style={{ display: 'flex', justifyContent: 'center', gap: '4px', marginTop: '5px', paddingTop: '4px', borderTop: coverDesign.layout === 'dark_executive' ? '1px solid #1e293b' : '1px solid #f1f5f9' }}>
                     {institutionLogos.map(logo => (
                       <img key={logo.id} src={logo.url} alt={logo.name} style={{ width: '16px', height: '16px', objectFit: 'contain', borderRadius: '2px' }} />
                     ))}

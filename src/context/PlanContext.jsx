@@ -62,21 +62,21 @@ const createEmptyPlan = (projectType = 'business') => {
       visibility: {},
       comments: {},
       ai: {
-        primaryProvider: 'groq', secondaryProvider: 'nvidia',
+        primaryProvider: 'ollama', secondaryProvider: 'groq',
         apiKey: KEYS.gemini, groqKey: KEYS.groq, 
         nvidiaKey: KEYS.nvidia, mistralKey: KEYS.mistral, ollamaKey: KEYS.ollama,
         pollinationsKey: KEYS.pollinations,
         endpoint: 'http://localhost:11434', lmStudioEndpoint: 'http://localhost:1234/v1',
-        model: 'qwen/qwen3.6-27b',   // Modelo principal activo — JSON limpio sin think tags
+        model: 'minimax-m3:cloud',   // Modelo principal activo por defecto (1M tokens, gratis en Ollama Cloud)
         depth: 1,              // 1=Rápido, 2=Pro, 3=Profundo
         contextSize: 65536,    // 64k por defecto
         // [DDD] Modelos por rol
         agentModels: {
-          analista:     { model: 'qwen/qwen3.6-27b', role: 'Analista Estratégico' },
-          critico:      { model: 'qwen/qwen3.6-27b', role: 'Crítico Financiero' },
-          redactor:     { model: 'qwen/qwen3.6-27b', role: 'Redactor Ejecutivo' },
-          estratega:    { model: 'qwen/qwen3.6-27b', role: 'Estratega de Negocio' },
-          abogadoDiablo:{ model: 'qwen/qwen3.6-27b', role: "Devil's Advocate" },
+          analista:     { model: 'minimax-m3:cloud', role: 'Analista Estratégico' },
+          critico:      { model: 'minimax-m3:cloud', role: 'Crítico Financiero' },
+          redactor:     { model: 'minimax-m3:cloud', role: 'Redactor Ejecutivo' },
+          estratega:    { model: 'minimax-m3:cloud', role: 'Estratega de Negocio' },
+          abogadoDiablo:{ model: 'minimax-m3:cloud', role: "Devil's Advocate" },
         }
       },
       brandKit: { primaryColor: '#6366f1', secondaryColor: '#8b5cf6', logoUrl: '', companyName: '' },

@@ -27,7 +27,7 @@ export default function SetupWizard({ onComplete }) {
   const [hardware, setHardware] = useState(null);
   const [ollamaModels, setOllamaModels] = useState([]);
   const [selectedCtx, setSelectedCtx] = useState(32768);
-  const [selectedModel, setSelectedModel] = useState('gemma4:pro');
+  const [selectedModel, setSelectedModel] = useState('minimax-m3:cloud');
   const [error, setError] = useState('');
 
   const detectHardware = async () => {
@@ -38,7 +38,13 @@ export default function SetupWizard({ onComplete }) {
       const data = await res.json();
       const models = (data.models || []).map(m => m.name);
       setOllamaModels(models);
-      if (models.length > 0) setSelectedModel(models[0]);
+      if (models.length > 0) {
+        // Si minimax-m3:cloud está disponible en la lista o hay modelos locales
+        const hasMinimax = models.find(m => m.includes('minimax'));
+        setSelectedModel(hasMinimax || models[0] || 'minimax-m3:cloud');
+      } else {
+        setSelectedModel('minimax-m3:cloud');
+      }
 
       let gpuVram = 0;
       let systemRam = Math.round(navigator.deviceMemory || 8);
@@ -60,9 +66,10 @@ export default function SetupWizard({ onComplete }) {
       setHardware(hwData);
       setSelectedCtx(recommendCtx(hwData.gpuVram, hwData.systemRam));
     } catch {
-      setError('Ollama no detectado en localhost:11434. Verifica que esté activo.');
+      setError('Ollama local no detectado en localhost:11434. Operando con Ollama Cloud / Minimax-M3 (Nube Gratuito).');
       setHardware({ gpuVram: 0, systemRam: 8, ollamaOnline: false, models: [] });
       setSelectedCtx(32768);
+      setSelectedModel('minimax-m3:cloud');
     } finally {
       setDetecting(false);
     }
@@ -75,7 +82,7 @@ export default function SetupWizard({ onComplete }) {
   const handleComplete = () => {
     const config = {
       mode,
-      model: mode === 'local' ? selectedModel : 'gemini-1.5-flash',
+      model: selectedModel || 'minimax-m3:cloud',
       contextSize: selectedCtx,
       endpoint: 'http://localhost:11434',
       setupComplete: true,

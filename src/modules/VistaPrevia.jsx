@@ -1962,10 +1962,16 @@ export default function VistaPrevia() {
     const isSidebar = cover.layout === 'sidebar';
     const isModern = cover.layout === 'modern';
     const isMinimalist = cover.layout === 'minimalist';
+    const isDarkExecutive = cover.layout === 'dark_executive';
+    const isAcademicFrame = cover.layout === 'academic_frame';
+    const isGradientWave = cover.layout === 'gradient_wave';
+    const isSplitGrid = cover.layout === 'split_grid';
+    const isNordicLine = cover.layout === 'nordic_line';
     
     const logoWidth = cover.logoSize === 'small' ? '80px' : cover.logoSize === 'large' ? '180px' : '130px';
     const logoAlignment = cover.logoAlign === 'left' ? 'flex-start' : cover.logoAlign === 'right' ? 'flex-end' : 'center';
     const titleFontSize = cover.titleSize === 'small' ? '2.2rem' : cover.titleSize === 'large' ? '4.2rem' : '3.2rem';
+    const primaryColor = planData.config?.brandKit?.primaryColor || '#6366f1';
     
     return (
       <div 
@@ -1977,19 +1983,23 @@ export default function VistaPrevia() {
           display: 'flex', 
           flexDirection: 'column', 
           justifyContent: 'space-between', 
-          padding: '4rem 3rem',
-          textAlign: isSidebar || isMinimalist ? 'left' : 'center',
-          background: '#ffffff',
-          color: '#0f172a',
+          padding: isAcademicFrame ? '5rem 4rem' : '4.5rem 3.5rem',
+          textAlign: isSidebar || isMinimalist || isSplitGrid || isNordicLine ? 'left' : 'center',
+          background: isDarkExecutive 
+            ? 'linear-gradient(135deg, #090d16 0%, #0f172a 100%)' 
+            : '#ffffff',
+          color: isDarkExecutive ? '#f8fafc' : '#0f172a',
           fontFamily: 'Inter, sans-serif',
           pageBreakAfter: 'always',
           maxWidth: '760px',
           margin: '0 auto 2.5rem auto',
           borderRadius: '12px',
           boxShadow: '0 10px 30px rgba(0, 0, 0, 0.04)',
-          border: '1px solid #e2e8f0'
+          border: isDarkExecutive ? '1px solid #1e293b' : '1px solid #e2e8f0',
+          overflow: 'hidden'
         }}
       >
+        {/* Layout: Sidebar Borde Lateral */}
         {isSidebar && (
           <div style={{
             position: 'absolute',
@@ -1997,10 +2007,11 @@ export default function VistaPrevia() {
             top: 0,
             bottom: 0,
             width: '24px',
-            background: planData.config?.brandKit?.primaryColor || '#6366f1'
+            background: primaryColor
           }} />
         )}
 
+        {/* Layout: Modern Franja Horizontal */}
         {isModern && (
           <div style={{
             position: 'absolute',
@@ -2008,32 +2019,97 @@ export default function VistaPrevia() {
             top: '20%',
             width: '100%',
             height: '140px',
-            background: planData.config?.brandKit?.primaryColor || '#6366f1',
+            background: primaryColor,
             opacity: 0.08,
             zIndex: 0
           }} />
         )}
 
+        {/* Layout: Academic Frame (Doble Marco Perimetral) */}
+        {isAcademicFrame && (
+          <div style={{
+            position: 'absolute',
+            inset: '1.25rem',
+            border: `3px double ${primaryColor}`,
+            borderRadius: '8px',
+            outline: '1px solid #cbd5e1',
+            outlineOffset: '-8px',
+            pointerEvents: 'none',
+            zIndex: 0
+          }} />
+        )}
+
+        {/* Layout: Gradient Wave (Tech Dynamic) */}
+        {isGradientWave && (
+          <div style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: '180px',
+            background: `linear-gradient(135deg, ${primaryColor} 0%, #8b5cf6 50%, #ec4899 100%)`,
+            borderRadius: '0 0 50% 50% / 0 0 40px 40px',
+            opacity: 0.95,
+            zIndex: 0
+          }} />
+        )}
+
+        {/* Layout: Split Grid 50/50 */}
+        {isSplitGrid && (
+          <div style={{
+            position: 'absolute',
+            left: 0,
+            top: 0,
+            bottom: 0,
+            width: '38%',
+            background: `linear-gradient(180deg, ${primaryColor} 0%, #4338ca 100%)`,
+            zIndex: 0
+          }} />
+        )}
+
+        {/* Layout: Nordic Line (Línea Tipográfica Vertical) */}
+        {isNordicLine && (
+          <div style={{
+            position: 'absolute',
+            left: '3rem',
+            top: 0,
+            bottom: 0,
+            width: '2px',
+            background: '#e2e8f0',
+            zIndex: 0
+          }} />
+        )}
+
+        {/* Top: Logotipo */}
         <div style={{ 
           display: 'flex', 
           justifyContent: logoAlignment, 
           width: '100%',
-          paddingLeft: isSidebar ? '20px' : '0',
+          paddingLeft: isSidebar ? '25px' : isSplitGrid ? '42%' : isNordicLine ? '2.5rem' : '0',
           zIndex: 1
         }}>
           {planData?.config?.brandKit?.logoUrl ? (
             <img 
               src={planData.config.brandKit.logoUrl} 
               alt="Logo" 
-              style={{ width: logoWidth, height: 'auto', maxHeight: '140px', objectFit: 'contain' }} 
+              style={{ 
+                width: logoWidth, 
+                height: 'auto', 
+                maxHeight: '140px', 
+                objectFit: 'contain',
+                background: isDarkExecutive ? '#ffffff' : 'transparent',
+                padding: isDarkExecutive ? '8px' : '0',
+                borderRadius: isDarkExecutive ? '12px' : '0'
+              }} 
             />
           ) : (
             <div style={{ height: '50px' }} />
           )}
         </div>
 
+        {/* Centro: Título, Subtítulo y Organización */}
         <div style={{ 
-          paddingLeft: isSidebar ? '20px' : '0',
+          paddingLeft: isSidebar ? '25px' : isSplitGrid ? '42%' : isNordicLine ? '2.5rem' : '0',
           zIndex: 1,
           margin: 'auto 0'
         }}>
@@ -2041,48 +2117,58 @@ export default function VistaPrevia() {
             <div style={{ 
               width: '100px', 
               height: '6px', 
-              background: planData.config?.brandKit?.primaryColor || '#6366f1', 
+              background: primaryColor, 
               marginBottom: '2rem',
               margin: cover.logoAlign === 'center' ? '0 auto 2rem auto' : '0 0 2rem 0'
             }} />
+          )}
+          {isNordicLine && (
+            <div style={{ width: '40px', height: '4px', background: primaryColor, marginBottom: '1.25rem' }} />
           )}
           <h1 style={{ 
             fontSize: titleFontSize, 
             fontWeight: '900', 
             marginBottom: '1rem', 
-            color: '#0f172a',
-            lineHeight: 1.15
+            color: isDarkExecutive ? '#ffffff' : '#0f172a',
+            lineHeight: 1.15,
+            letterSpacing: '-0.02em'
           }}>
             {planData?.config?.brandKit?.companyName || 'Plan de Negocios'}
           </h1>
           <h2 style={{ 
-            fontSize: '1.5rem', 
-            fontWeight: '600', 
-            color: planData.config?.brandKit?.primaryColor || '#6366f1',
-            letterSpacing: '0.05em', 
+            fontSize: '1.4rem', 
+            fontWeight: '700', 
+            color: isDarkExecutive ? '#38bdf8' : primaryColor,
+            letterSpacing: '0.06em', 
             textTransform: 'uppercase',
             margin: '0.5rem 0'
           }}>
             {cover.subtitle || 'Plan Estratégico Maestro'}
           </h2>
           {cover.institution && (
-            <p style={{ fontSize: '1.1rem', color: '#64748b', marginTop: '1rem' }}>
+            <p style={{ 
+              fontSize: '1.1rem', 
+              color: isDarkExecutive ? '#94a3b8' : '#64748b', 
+              marginTop: '1rem',
+              fontWeight: 500
+            }}>
               {cover.institution}
             </p>
           )}
         </div>
 
+        {/* Pie: Creador, Fecha y Logos Institucionales */}
         <div style={{ 
-          paddingLeft: isSidebar ? '20px' : '0',
-          borderTop: '2px solid #f1f5f9',
+          paddingLeft: isSidebar ? '25px' : isSplitGrid ? '42%' : isNordicLine ? '2.5rem' : '0',
+          borderTop: isDarkExecutive ? '1px solid #1e293b' : '2px solid #f1f5f9',
           paddingTop: '2rem',
           zIndex: 1
         }}>
-          <div style={{ fontSize: '1.2rem', color: '#1e293b', fontWeight: '700' }}>
+          <div style={{ fontSize: '1.2rem', color: isDarkExecutive ? '#f1f5f9' : '#1e293b', fontWeight: '700' }}>
             {cover.creatorName ? `Creado por: ${cover.creatorName}` : 'Elaborado por: Roberto Eduardo Celis Robles'}
           </div>
           {cover.showDate !== false && (
-            <div style={{ fontSize: '1rem', color: '#94a3b8', marginTop: '0.5rem' }}>
+            <div style={{ fontSize: '1rem', color: isDarkExecutive ? '#64748b' : '#94a3b8', marginTop: '0.5rem' }}>
               {cover.customDate || new Date().toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' })}
             </div>
           )}
@@ -2090,18 +2176,18 @@ export default function VistaPrevia() {
           {(cover.institutionLogos?.length > 0) && (
             <div style={{ 
               display: 'flex', 
-              justifyContent: isSidebar ? 'flex-start' : 'center', 
+              justifyContent: isSidebar || isSplitGrid || isNordicLine ? 'flex-start' : 'center', 
               gap: '1.5rem', 
               marginTop: '1.5rem', 
               paddingTop: '1rem', 
-              borderTop: '1px solid #e2e8f0',
+              borderTop: isDarkExecutive ? '1px solid #1e293b' : '1px solid #e2e8f0',
               flexWrap: 'wrap',
               alignItems: 'center'
             }}>
               {cover.institutionLogos.map(logo => (
                 <div key={logo.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem' }}>
-                  <img src={logo.url} alt={logo.name} style={{ height: '45px', width: 'auto', maxWidth: '100px', objectFit: 'contain' }} />
-                  <span style={{ fontSize: '0.7rem', color: '#94a3b8', fontWeight: 500 }}>{logo.name}</span>
+                  <img src={logo.url} alt={logo.name} style={{ height: '45px', width: 'auto', maxWidth: '100px', objectFit: 'contain', background: isDarkExecutive ? '#ffffff' : 'transparent', padding: isDarkExecutive ? '4px' : '0', borderRadius: '4px' }} />
+                  <span style={{ fontSize: '0.7rem', color: isDarkExecutive ? '#94a3b8' : '#64748b', fontWeight: 500 }}>{logo.name}</span>
                 </div>
               ))}
             </div>
