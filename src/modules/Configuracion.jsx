@@ -5,17 +5,10 @@ import DocumentUploader from '../components/DocumentUploader';
 import LogoGeneratorModal from '../components/LogoGeneratorModal';
 import TokenTelemetryDashboard from '../components/TokenTelemetryDashboard';
 import ApiQuotaMeter from '../components/ApiQuotaMeter';
+import GlobalTokenMonitor from '../components/GlobalTokenMonitor';
 import { FRAMEWORKS } from '../config/frameworks';
 
-// [MDD] Modelo de precios de API (USD por 1M tokens) — se actualiza manualmente
-const API_COSTS = {
-  'gemini-1.5-flash':       { input: 0.075, output: 0.30,  name: 'Gemini 1.5 Flash' },
-  'gemini-1.5-pro':         { input: 1.25,  output: 5.00,  name: 'Gemini 1.5 Pro' },
-  'llama-3.3-70b-versatile':{ input: 0.59,  output: 0.79,  name: 'Groq Llama 3.3 70B' },
-  'mistral-large-latest':   { input: 2.00,  output: 6.00,  name: 'Mistral Large' },
-  'gpt-4o':                 { input: 2.50,  output: 10.00, name: 'GPT-4o' },
-};
-
+import { API_COSTS } from '../config/pricing';
 const CTX_PRESETS = [
   { label: '8k',   value: 8192   },
   { label: '16k',  value: 16384  },
@@ -69,8 +62,17 @@ const PROVIDER_PRESETS = {
     { value: 'gemini-1.5-flash', label: 'Google: Gemini 1.5 Flash (Legacy)' },
   ],
   openai: [
+    { value: 'gpt-5.6-sol', label: 'OpenAI: GPT-5.6 Sol (Flagship)' },
+    { value: 'gpt-5.6-terra', label: 'OpenAI: GPT-5.6 Terra (Balanced)' },
+    { value: 'gpt-5.6-luna', label: 'OpenAI: GPT-5.6 Luna (Fast)' },
+    { value: 'gpt-5', label: 'OpenAI: GPT-5' },
+    { value: 'gpt-4.5', label: 'OpenAI: GPT-4.5' },
     { value: 'gpt-4o', label: 'OpenAI: GPT-4o' },
-    { value: 'gpt-4o-mini', label: 'OpenAI: GPT-4o Mini' },
+  ],
+  claude: [
+    { value: 'claude-fable-5', label: 'Anthropic: Claude Fable 5' },
+    { value: 'claude-5-sonnet', label: 'Anthropic: Claude 5 Sonnet' },
+    { value: 'claude-5-opus', label: 'Anthropic: Claude 5 Opus' },
   ],
   mistral: [
     { value: 'mistral-large-latest', label: 'Mistral Large' },
@@ -130,6 +132,7 @@ function useApiStatus(planData) {
   const [ollamaCloudStatus, setOllamaCloudStatus] = useState({ state: 'idle', message: '' });
   const [openrouterStatus, setOpenrouterStatus] = useState({ state: 'idle', message: '' });
   const [opencodeStatus, setOpencodeStatus] = useState({ state: 'idle', message: '' });
+  const [tokenrouterStatus, setTokenrouterStatus] = useState({ state: 'idle', message: '' });
 
   const safeJsonParse = async (res) => {
     const text = await res.text();
@@ -182,7 +185,7 @@ function useApiStatus(planData) {
       if (data.success) {
         setTavilyStatus({ state: 'online', message: 'En línea ✓' });
       } else {
-        setTavilyStatus({ state: 'offline', message: data.error || 'Error de conexión' });
+        setTavilyStatus({ state: 'offline', message: data.error || 'API Key inválida' });
       }
     } catch (err) {
       setTavilyStatus({ state: 'offline', message: err.message });
@@ -258,6 +261,9 @@ function useApiStatus(planData) {
     if (planData?.config?.ai?.deepseekKey) testLlmProvider('deepseek', planData.config.ai.deepseekKey, setDeepseekStatus);
     if (planData?.config?.ai?.grokKey) testLlmProvider('grok', planData.config.ai.grokKey, setGrokStatus);
     if (planData?.config?.ai?.ollamaKey) testLlmProvider('ollama_cloud', planData.config.ai.ollamaKey, setOllamaCloudStatus);
+    if (planData?.config?.ai?.openrouterKey) testLlmProvider('openrouter', planData.config.ai.openrouterKey, setOpenrouterStatus);
+    if (planData?.config?.ai?.opencodeKey) testLlmProvider('openrouter', planData.config.ai.opencodeKey, setOpencodeStatus);
+    if (planData?.config?.ai?.tokenrouterKey) testLlmProvider('tokenrouter', planData.config.ai.tokenrouterKey, setTokenrouterStatus);
   }, []);
 
   return {
@@ -275,6 +281,7 @@ function useApiStatus(planData) {
     ollamaCloudStatus, setOllamaCloudStatus, testOllamaCloud: (k) => testLlmProvider('ollama_cloud', k || planData.config?.ai?.ollamaKey, setOllamaCloudStatus),
     openrouterStatus, setOpenrouterStatus, testOpenRouter: (k) => testLlmProvider('openrouter', k || planData.config?.ai?.openrouterKey, setOpenrouterStatus),
     opencodeStatus, setOpencodeStatus, testOpenCode: (k) => testLlmProvider('openrouter', k || planData.config?.ai?.opencodeKey, setOpencodeStatus),
+    tokenrouterStatus, setTokenrouterStatus, testTokenRouter: (k) => testLlmProvider('tokenrouter', k || planData.config?.ai?.tokenrouterKey, setTokenrouterStatus),
   };
 }
 
@@ -374,6 +381,8 @@ export default function Configuracion() {
     testOpenRouter,
     opencodeStatus,
     testOpenCode,
+    tokenrouterStatus,
+    testTokenRouter,
   } = apiStatus;
 
   const [ollamaModels, setOllamaModels] = useState([]);
@@ -385,6 +394,31 @@ export default function Configuracion() {
   });
 
   const [telemetryData, setTelemetryData] = useState({});
+
+  const [openRouterFreeModels, setOpenRouterFreeModels] = useState([]);
+  const [isOpenRouterFetching, setIsOpenRouterFetching] = useState(false);
+
+  useEffect(() => {
+    const fetchOpenRouterFreeModels = async () => {
+      setIsOpenRouterFetching(true);
+      try {
+        const response = await fetch('https://openrouter.ai/api/v1/models');
+        if (response.ok) {
+          const data = await response.json();
+          const freeModels = data.data.filter(modelo => 
+            modelo.pricing.prompt === "0" && 
+            modelo.pricing.completion === "0"
+          ).map(m => m.id);
+          setOpenRouterFreeModels(freeModels);
+        }
+      } catch (error) {
+        console.error("Fallo al obtener modelos gratuitos de OpenRouter:", error);
+      } finally {
+        setIsOpenRouterFetching(false);
+      }
+    };
+    fetchOpenRouterFreeModels();
+  }, []);
 
   useEffect(() => {
     const fetchTelemetry = async () => {
@@ -1004,14 +1038,64 @@ export default function Configuracion() {
                 <select
                   className="form-control"
                   value={planData.config.ai.model || ''}
-                  onChange={(e) => handleAiChange('model', e.target.value)}
+                  onChange={(e) => {
+                    const newModel = e.target.value;
+                    handleAiChange('model', newModel);
+                    
+                    // Auto-sync primaryProvider if we can guess it from the unified list
+                    if (newModel.includes('gpt')) handleAiChange('primaryProvider', 'openai');
+                    else if (newModel.includes('gemini')) handleAiChange('primaryProvider', 'gemini');
+                    else if (newModel.includes('claude')) handleAiChange('primaryProvider', 'claude');
+                    else if (newModel.includes('mistral') || newModel.includes('mixtral')) handleAiChange('primaryProvider', 'mistral');
+                    else if (newModel.includes('nvidia') || newModel.includes('nemotron-70b')) handleAiChange('primaryProvider', 'nvidia');
+                    else if (PROVIDER_PRESETS.groq.some(o => o.value === newModel)) handleAiChange('primaryProvider', 'groq');
+                    else if (PROVIDER_PRESETS.openrouter.some(o => o.value === newModel) || openRouterFreeModels.includes(newModel) || newModel === 'openrouter/free') handleAiChange('primaryProvider', 'openrouter');
+                    else if (ollamaModels.some(m => m.name === newModel) || PROVIDER_PRESETS.ollama.some(o => o.value === newModel)) handleAiChange('primaryProvider', 'ollama');
+                  }}
                   style={{ minWidth: '200px', fontSize: '0.8rem', fontWeight: 600 }}
                 >
-                  {providerOptions.map(opt => (
-                    <option key={opt.value} value={opt.value}>{opt.label}</option>
-                  ))}
+                  <optgroup label="☁️ Ollama Cloud (Gratis por Defecto)">
+                    {PROVIDER_PRESETS.ollama.filter(d => d.value.includes('cloud') && !ollamaModels.some(m => m.name === d.value)).map(opt => (
+                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    ))}
+                  </optgroup>
+                  <optgroup label="💻 Local (Ollama Offline)">
+                    {ollamaModels.map(m => (
+                      <option key={m.name} value={m.name}>{m.name}</option>
+                    ))}
+                    {PROVIDER_PRESETS.ollama.filter(d => !d.value.includes('cloud') && !ollamaModels.some(m => m.name === d.value)).map(opt => (
+                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    ))}
+                  </optgroup>
+                  <optgroup label="⚡ Fila 1 (Ultra Velocidad)">
+                    {PROVIDER_PRESETS.groq.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+                    {PROVIDER_PRESETS.mistral.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+                    {PROVIDER_PRESETS.nvidia.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+                  </optgroup>
+                  <optgroup label="💎 Fila 2 (Modelos Comerciales Premium)">
+                    {PROVIDER_PRESETS.openai.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+                    {PROVIDER_PRESETS.gemini.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+                    {PROVIDER_PRESETS.claude.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+                  </optgroup>
+                  <optgroup label="🎁 Ofertas Gratis (OpenRouter en Vivo)">
+                    <option value="openrouter/free">openrouter/free (Auto Best Free)</option>
+                    {openRouterFreeModels.map(m => (
+                      <option key={m} value={m}>{m} (Gratis)</option>
+                    ))}
+                    {!isOpenRouterFetching && openRouterFreeModels.length === 0 && (
+                      <option disabled>Sin ofertas actualmente</option>
+                    )}
+                    {isOpenRouterFetching && <option disabled>Buscando ofertas...</option>}
+                  </optgroup>
                   {isCustomModel && <option value={currentModelValue}>{currentModelValue}</option>}
                 </select>
+                
+                {/* Blinking indicator for OpenRouter Free Models */}
+                {openRouterFreeModels.length > 0 && (
+                  <span className="animate-pulse" style={{ fontSize: '0.75rem', fontWeight: 800, color: '#f59e0b', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                    <Sparkles size={14} /> ¡{openRouterFreeModels.length} ofertas en OpenRouter!
+                  </span>
+                )}
               </div>
             </div>
           </div>
@@ -1162,6 +1246,25 @@ export default function Configuracion() {
                 />
                 <ApiStatusBadge status={{ state: planData.config.ai.orcarouterKey ? 'online' : 'idle', message: planData.config.ai.orcarouterKey ? 'Configurado' : 'Sin verificar' }} onTest={() => {}} disabled={!planData.config.ai.orcarouterKey} />
                 <ApiQuotaMeter providerKey="orcarouter" tokens={telemetryData.orcarouter || 0} isConfigured={!!planData.config.ai.orcarouterKey} statusState={planData.config.ai.orcarouterKey ? 'online' : 'idle'} />
+              </div>
+
+              {/* TOKENROUTER CARD */}
+              <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: `1.5px solid ${planData.config.ai.primaryProvider === 'tokenrouter' ? '#10b981' : 'rgba(16,185,129,0.3)'}` }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
+                  <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#10b981' }}>⚡ TokenRouter <span style={{ fontSize: '0.65rem', background: 'rgba(16,185,129,0.15)', color: '#10b981', padding: '1px 6px', borderRadius: '8px', marginLeft: '4px' }}>GRATIS / OFERTAS</span></div>
+                  <a href="https://tokenrouter.net" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: '#10b981', textDecoration: 'none', fontWeight: 700 }}>Obtener Key ↗</a>
+                </div>
+                <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>DeepSeek R1/V3 · Qwen 2.5 72B — Acceso gratis y rotación inteligente de modelos</div>
+                <input
+                  type="password"
+                  className="form-control"
+                  placeholder="sk-..."
+                  value={planData.config.ai.tokenrouterKey || ''}
+                  onChange={(e) => handleAiChange('tokenrouterKey', e.target.value)}
+                  style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
+                />
+                <ApiStatusBadge status={tokenrouterStatus} onTest={() => testTokenRouter(planData.config.ai.tokenrouterKey)} disabled={!planData.config.ai.tokenrouterKey} />
+                <ApiQuotaMeter providerKey="tokenrouter" tokens={telemetryData.tokenrouter || 0} isConfigured={!!planData.config.ai.tokenrouterKey} statusState={tokenrouterStatus.state} />
               </div>
 
             </div>
@@ -2202,6 +2305,22 @@ export default function Configuracion() {
               value={planData.config.externalApis?.copernicusKey || ''}
               onChange={(e) => handleExternalChange('copernicusKey', e.target.value)}
             />
+          </div>
+          <div className="form-group" style={{ gridColumn: '1 / -1', background: 'rgba(59, 130, 246, 0.05)', padding: '1rem', borderRadius: '8px', border: '1px dashed #3b82f6' }}>
+            <label className="form-label" style={{ color: '#3b82f6', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              API Key: AlphaVantage (Gratis)
+              <span style={{ fontSize: '0.6rem', padding: '2px 6px', background: '#3b82f6', color: '#fff', borderRadius: '4px' }}>Datos JSON Financieros</span>
+            </label>
+            <input 
+              type="password" 
+              className="form-control" 
+              placeholder="Requerido para Gemelo Digital (Balances, Stock, PESTEL)..."
+              value={planData.config.externalApis?.alphaVantageKey || ''}
+              onChange={(e) => handleExternalChange('alphaVantageKey', e.target.value)}
+            />
+            <p style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '0.5rem', marginBottom: 0 }}>
+              AlphaVantage provee datos en formato estructurado (JSON) que el motor de IA procesa e inyecta directamente a la base de datos de trazabilidad y al PESTEL.
+            </p>
           </div>
         </div>
       </div>

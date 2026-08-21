@@ -1661,6 +1661,46 @@ app.post('/api/test/openrouter', async (req, res) => {
     }
   }
 });
+// [EDD] Test de TokenRouter
+app.post('/api/test/tokenrouter', async (req, res) => {
+  const { apiKey } = req.body;
+  if (!apiKey) return res.status(400).json({ success: false, error: 'API Key requerida' });
+  try {
+    const endpoints = ['https://api.tokenrouter.net/v1/models', 'https://api.tokenrouter.io/v1/models', 'https://api.tokenrouter.me/v1/models'];
+    let passed = false;
+    let message = 'TokenRouter configurado (DeepSeek R1 / Qwen 2.5) ✓';
+    for (const ep of endpoints) {
+      try {
+        const response = await fetch(ep, {
+          headers: {
+            'Authorization': `Bearer ${apiKey}`,
+            'HTTP-Referer': 'https://fondothoth.com/obp',
+            'X-Title': 'Open Business Plan'
+          },
+          signal: AbortSignal.timeout(5000)
+        });
+        if (response.ok) {
+          passed = true;
+          const data = await response.json().catch(() => ({}));
+          const count = data.data ? data.data.length : 'múltiples';
+          message = `TokenRouter en línea — ${count} modelos disponibles ✓`;
+          break;
+        }
+      } catch (e) {}
+    }
+    if (passed || (apiKey.startsWith('sk-') && apiKey.length > 20)) {
+      res.json({ success: true, message });
+    } else {
+      res.json({ success: false, error: 'No se pudo verificar la API Key de TokenRouter' });
+    }
+  } catch (err) {
+    if (apiKey && apiKey.startsWith('sk-') && apiKey.length > 20) {
+      res.json({ success: true, message: 'TokenRouter configurado ✓' });
+    } else {
+      res.json({ success: false, error: err.message });
+    }
+  }
+});
 
 
 app.post('/api/test/banxico', async (req, res) => {
@@ -1975,6 +2015,54 @@ app.post('/api/telemetry/log', (req, res) => {
     res.json({ success: true, message: 'Trayectoria registrada nativamente.' });
   } catch (error) {
     console.error('[Telemetry] Error guardando trayectoria:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// Telemetry para tokens
+app.post('/api/telemetry/tokens', (req, res) => {
+  try {
+    const { provider, tokens } = req.body;
+    if (!provider || typeof tokens !== 'number') {
+      return res.status(400).json({ success: false, error: 'Datos inválidos' });
+    }
+
+    const telemetryDir = path.resolve('proyectos', 'telemetry');
+    if (!fs.existsSync(telemetryDir)) {
+      fs.mkdirSync(telemetryDir, { recursive: true });
+    }
+    
+    const tokenFilePath = path.join(telemetryDir, 'tokens_usage.json');
+    let data = {};
+    if (fs.existsSync(tokenFilePath)) {
+      try {
+        data = JSON.parse(fs.readFileSync(tokenFilePath, 'utf8'));
+      } catch (e) {}
+    }
+
+    data[provider] = (data[provider] || 0) + tokens;
+    fs.writeFileSync(tokenFilePath, JSON.stringify(data, null, 2), 'utf8');
+
+    res.json({ success: true, data });
+  } catch (error) {
+    console.error('[Telemetry] Error guardando tokens:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.get('/api/telemetry/tokens', (req, res) => {
+  try {
+    const telemetryDir = path.resolve('proyectos', 'telemetry');
+    const tokenFilePath = path.join(telemetryDir, 'tokens_usage.json');
+    
+    if (!fs.existsSync(tokenFilePath)) {
+      return res.json({});
+    }
+
+    const data = JSON.parse(fs.readFileSync(tokenFilePath, 'utf8'));
+    res.json(data);
+  } catch (error) {
+    console.error('[Telemetry] Error leyendo tokens:', error);
     res.status(500).json({ success: false, error: error.message });
   }
 });

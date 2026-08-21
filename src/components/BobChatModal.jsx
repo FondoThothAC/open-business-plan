@@ -90,15 +90,35 @@ export default function BobChatModal({ isOpen, onClose, planData, onExecuteComma
       // 2. Consulta de IA conversacional ultra-rápida con el contexto del plan
       const rawAi = planData?.config?.ai || {};
       
-      // Priorizar proveedores de ultra-baja latencia: Groq (compound-mini / qwen) -> Gemini Flash -> Mistral -> Nvidia
-      let selectedProvider = 'groq';
-      let selectedModel = 'groq/compound-mini';
-      let selectedKey = rawAi.groqKey;
+      // PRIORIDAD PARA EL CHAT:
+      // 1. Enrutadores Inteligentes (TokenRouter / OpenRouter / OrcaRouter) -> Eligen automáticamente el mejor modelo gratis/disponible (DeepSeek R1, Qwen 2.5, Nemotron)
+      // 2. Groq (Llama 3.3 70B Versatile — 800+ tks/seg)
+      // 3. Ollama Cloud / Minimax (minimax-m3:cloud)
+      // 4. Gemini 3.6 Flash / 1.5 Flash
+      let selectedProvider = 'tokenrouter';
+      let selectedModel = 'deepseek/deepseek-r1:free';
+      let selectedKey = rawAi.tokenrouterKey;
 
-      if (rawAi.groqKey) {
+      if (rawAi.tokenrouterKey) {
+        selectedProvider = 'tokenrouter';
+        selectedModel = 'deepseek/deepseek-r1:free';
+        selectedKey = rawAi.tokenrouterKey;
+      } else if (rawAi.openrouterKey) {
+        selectedProvider = 'openrouter';
+        selectedModel = 'nvidia/nemotron-3.5-lightning:free';
+        selectedKey = rawAi.openrouterKey;
+      } else if (rawAi.orcarouterKey) {
+        selectedProvider = 'orcarouter';
+        selectedModel = 'orcarouter/auto';
+        selectedKey = rawAi.orcarouterKey;
+      } else if (rawAi.groqKey) {
         selectedProvider = 'groq';
-        selectedModel = 'groq/compound-mini';
+        selectedModel = 'llama-3.3-70b-versatile';
         selectedKey = rawAi.groqKey;
+      } else if (rawAi.ollamaKey) {
+        selectedProvider = 'ollama';
+        selectedModel = 'minimax-m3:cloud';
+        selectedKey = rawAi.ollamaKey;
       } else if (rawAi.apiKey) {
         selectedProvider = 'gemini';
         selectedModel = 'gemini-1.5-flash';
@@ -117,21 +137,47 @@ export default function BobChatModal({ isOpen, onClose, planData, onExecuteComma
         provider: selectedProvider,
         model: selectedModel,
         apiKey: selectedKey,
+        tokenrouterKey: rawAi.tokenrouterKey,
+        openrouterKey: rawAi.openrouterKey,
+        orcaRouterKey: rawAi.orcarouterKey,
         groqKey: rawAi.groqKey,
         nvidiaKey: rawAi.nvidiaKey,
         mistralKey: rawAi.mistralKey,
+        minimaxKey: rawAi.ollamaKey,
         endpoint: rawAi.endpoint
       };
       
-      const systemPrompt = `Eres BOB, el copiloto y asistente de negocios ejecutivo de CELIS ENGINE para el proyecto "${planData?.config?.brandKit?.companyName || 'Plan de Negocios'}".
-Responde en español de forma concisa, clara, profesional y directa en 1 o 2 párrafos máximo.`;
+      // Extraer resumen del estado actual del plan de negocio
+      const semilla = planData?.semilla || {};
+      const projectName = planData?.config?.brandKit?.companyName || semilla?.nombre_proyecto || semilla?.negocio?.nombre_marca || 'Sin nombre';
+      const projectType = planData?.config?.projectType || 'business';
+      
+      // Identificar secciones o pilares vacíos para sugerir mejoras
+      const emptySections = [];
+      if (!planData?.mercado || Object.keys(planData.mercado).length === 0) emptySections.push('Estudio de Mercado');
+      if (!planData?.finanzas || Object.keys(planData.finanzas).length === 0) emptySections.push('Modelo Financiero');
+      if (!planData?.operaciones || Object.keys(planData.operaciones).length === 0) emptySections.push('Operaciones');
+      if (!planData?.organizacion || Object.keys(planData.organizacion).length === 0) emptySections.push('Organización');
 
-      // Timeout de seguridad de 12 segundos para que no se quede bloqueado
+      const systemPrompt = `Eres BOB, el Copiloto Consultor y Asistente Estratégico Ejecutivo de CELIS ENGINE para el proyecto "${projectName}" (${projectType}).
+
+CONTEXTO VIVO DEL PLAN:
+- Nombre del Proyecto: ${projectName}
+- Tipo: ${projectType}
+- Semilla / Datos Fundacionales: ${JSON.stringify(semilla).slice(0, 800)}
+- Secciones pendientes o con poca información: ${emptySections.length > 0 ? emptySections.join(', ') : 'Ninguna (Plan muy avanzado)'}
+
+TUS DIRECTIVAS Y PERSONALIDAD:
+1. Sé proactivo y consultivo: No te limites a responder pasivamente. Si notas que falta información clave del proyecto (clientes, modelo de ingresos, inversión, canales), haz 1 pregunta indagatoria estratégica al final de tu respuesta para ayudar al usuario a completarlo.
+2. Si el usuario reporta una falla o duda del sistema/proveedores, explícale la causa técnica con claridad ejecutiva y sugiérele la alternativa óptima (ej. rotar a Groq Llama 3.3, Ollama Cloud o TokenRouter).
+3. Mantén un tono ejecutivo, experto, motivador y directo (máximo 2 párrafos). Responde siempre en español.`;
+
+      // Timeout de seguridad de 25 segundos
       const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Tiempo de espera agotado. El proveedor tardó demasiado.')), 12000)
+        setTimeout(() => reject(new Error('Tiempo de espera agotado al consultar el proveedor de IA.')), 25000)
       );
 
-      const aiPromise = callAiProvider(aiConfig, `${systemPrompt}\n\nPregunta del usuario: "${query}"`, false);
+      const aiPromise = callAiProvider(aiConfig, `${systemPrompt}\n\nHistorial / Pregunta del usuario: "${query}"`, false);
       const response = await Promise.race([aiPromise, timeoutPromise]);
       
       setMessages(prev => [...prev, {
@@ -141,10 +187,21 @@ Responde en español de forma concisa, clara, profesional y directa en 1 o 2 pá
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       }]);
     } catch (err) {
+      // Diagnóstico inteligente cuando ocurre un error
+      let helpfulTip = '';
+      const errMsg = err.message || '';
+      if (errMsg.includes('decommissioned') || errMsg.includes('not supported') || errMsg.includes('404')) {
+        helpfulTip = '\n\n💡 *Sugerencia*: El modelo configurado fue retirado por el proveedor. Te sugiero seleccionar **Groq (Llama 3.3 70B)** u **Ollama Cloud** en Configuración.';
+      } else if (errMsg.includes('429') || errMsg.includes('quota') || errMsg.includes('rate limit')) {
+        helpfulTip = '\n\n💡 *Sugerencia*: Se alcanzó el límite de peticiones por minuto. ¿Deseas que activemos el fallback a TokenRouter o OpenRouter?';
+      } else if (errMsg.includes('fetch') || errMsg.includes('network') || errMsg.includes('timeout')) {
+        helpfulTip = '\n\n💡 *Sugerencia*: Hubo una interrupción de red. ¿Verificamos si tu API Key en Configuración está activa?';
+      }
+
       setMessages(prev => [...prev, {
         id: `bob_${Date.now()}`,
         sender: 'bob',
-        text: `Lo siento, ocurrió un detalle al consultar: ${err.message}`,
+        text: `Detecté un problema con el proveedor de IA: ${err.message}.${helpfulTip}`,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       }]);
     } finally {

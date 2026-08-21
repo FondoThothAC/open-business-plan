@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { usePlan } from '../context/PlanContext';
-import { Sparkles, Loader2, Brain, CheckCircle2, Lock, Unlock, Map as MapIcon, Network, Eye, EyeOff, HelpCircle, Edit3, Layout, ArrowRight, MessageSquare, Check, X, Activity } from 'lucide-react';
+import { Sparkles, Loader2, Brain, CheckCircle2, Lock, Unlock, Map as MapIcon, Network, Eye, EyeOff, HelpCircle, Edit3, Layout, ArrowRight, MessageSquare, Check, X, Activity, BadgeDollarSign } from 'lucide-react';
 import { generateModuleContent } from '../lib/ai';
 import { runAgenticModuleGeneration, getSavedTrajectories } from '../lib/agenticEngine';
 import AgentTrajectoryViewer from './AgentTrajectoryViewer';
@@ -33,6 +33,7 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
   const [showComments, setShowComments] = useState({});
   const [activeTrajectory, setActiveTrajectory] = useState(null);
   const [currentTrajectory, setCurrentTrajectory] = useState(null);
+  const [showTelemetryModal, setShowTelemetryModal] = useState(false);
   
   const isLocked = (fieldKey) => planData.config.locks?.[`${pillar}.${moduleKey}.${fieldKey}`];
   const isModuleVisible = planData.config?.visibility?.[`${pillar}.${moduleKey}`] !== false;
@@ -120,6 +121,10 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
         }
       });
       setDraftValues(newDrafts);
+      
+      if (result && result._trace) {
+        updateSection(pillar, moduleKey, '_trace', result._trace);
+      }
       
       setStage('Borrador generado con trazabilidad. Revisa y acepta los cambios.');
       setIsAiCompleted(true);
@@ -234,6 +239,18 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
               {isModuleVisible ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
               <span>{isModuleVisible ? "Visible" : "Oculto"}</span>
             </button>
+
+            {moduleData._trace && (
+              <button 
+                className="btn btn-secondary"
+                onClick={() => setShowTelemetryModal(true)}
+                title="Ver trazabilidad de tokens y costos asociados"
+                style={{ padding: '0.5rem 1rem', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.4rem', border: '1px solid var(--accent-color)', color: 'var(--accent-color)' }}
+              >
+                <BadgeDollarSign className="w-4 h-4" />
+                <span>Costos IA</span>
+              </button>
+            )}
 
             <button 
               className="btn btn-secondary"
@@ -525,6 +542,67 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
           trajectory={activeTrajectory}
           onClose={() => setActiveTrajectory(null)}
         />
+      )}
+
+      {showTelemetryModal && moduleData._trace && (
+        <div className="modal-backdrop" onClick={() => setShowTelemetryModal(false)}>
+          <div className="modal-content glass-panel" onClick={e => e.stopPropagation()} style={{ maxWidth: '800px', width: '90%', maxHeight: '90vh', overflowY: 'auto' }}>
+            <div className="modal-header">
+              <h2 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <BadgeDollarSign className="w-5 h-5 text-green-400" />
+                Trazabilidad y Costos (Estimados)
+              </h2>
+              <button className="close-btn" onClick={() => setShowTelemetryModal(false)}><X className="w-5 h-5" /></button>
+            </div>
+            <div className="modal-body" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div style={{ background: 'rgba(255,255,255,0.05)', padding: '1rem', borderRadius: '12px' }}>
+                  <h4 style={{ color: 'var(--text-secondary)', marginBottom: '0.5rem', fontSize: '0.85rem' }}>Tokens Totales Invertidos</h4>
+                  <div style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--accent-color)' }}>
+                    {moduleData._trace.tokens?.toLocaleString() || 0}
+                  </div>
+                  <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.5rem' }}>
+                    Prompt: {moduleData._trace.promptTokens?.toLocaleString() || 0} | Completion: {moduleData._trace.completionTokens?.toLocaleString() || 0}
+                  </div>
+                </div>
+                <div style={{ background: 'rgba(34, 197, 94, 0.1)', padding: '1rem', borderRadius: '12px', border: '1px solid rgba(34, 197, 94, 0.2)' }}>
+                  <h4 style={{ color: 'var(--text-secondary)', marginBottom: '0.5rem', fontSize: '0.85rem' }}>Ahorro / Costo Equivalente</h4>
+                  <div style={{ fontSize: '2rem', fontWeight: 800, color: '#4ade80' }}>
+                    ${moduleData._trace.cost ? moduleData._trace.cost.toFixed(4) : '0.0000'} USD
+                  </div>
+                  <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.5rem' }}>
+                    Calculado usando tarifas comerciales API (2026)
+                  </div>
+                </div>
+              </div>
+
+              {moduleData._trace.logs && moduleData._trace.logs.length > 0 && (
+                <div>
+                  <h3 style={{ fontSize: '1.1rem', marginBottom: '1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>Detalle de Peticiones</h3>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                    {moduleData._trace.logs.map((log, idx) => (
+                      <div key={idx} style={{ background: 'rgba(0,0,0,0.2)', padding: '1rem', borderRadius: '10px', fontSize: '0.85rem' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                          <span style={{ fontWeight: 'bold', color: 'var(--accent-color)' }}>{log.provider} - {log.model}</span>
+                        </div>
+                        {log.reasoning && (
+                          <div style={{ marginTop: '0.75rem', background: 'rgba(139, 92, 246, 0.1)', borderLeft: '3px solid #8b5cf6', padding: '0.75rem', borderRadius: '0 8px 8px 0' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#8b5cf6', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.8rem' }}>
+                              <Brain className="w-3.5 h-3.5" /> Razonamiento Interno
+                            </div>
+                            <div style={{ color: 'var(--text-secondary)', whiteSpace: 'pre-wrap', maxHeight: '150px', overflowY: 'auto' }}>
+                              {log.reasoning}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

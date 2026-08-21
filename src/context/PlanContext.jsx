@@ -46,6 +46,7 @@ const KEYS = {
   nvidia:      import.meta.env.VITE_NVIDIA_KEY      || '',
   openrouter:  import.meta.env.VITE_OPENROUTER_KEY  || '',
   opencode:    import.meta.env.VITE_OPENCODE_KEY    || '',
+  tokenrouter: import.meta.env.VITE_TOKENROUTER_KEY || '',
   ollama:      import.meta.env.VITE_OLLAMA_KEY      || '',
   pollinations:import.meta.env.VITE_POLLINATIONS_KEY|| '',
   denue:       import.meta.env.VITE_DENUE_KEY       || '1b9e230f-2ae0-48db-bd20-8810b1db575e',
@@ -65,6 +66,8 @@ const createEmptyPlan = (projectType = 'business') => {
         primaryProvider: 'ollama', secondaryProvider: 'groq',
         apiKey: KEYS.gemini, groqKey: KEYS.groq, 
         nvidiaKey: KEYS.nvidia, mistralKey: KEYS.mistral, ollamaKey: KEYS.ollama,
+        openrouterKey: KEYS.openrouter, opencodeKey: KEYS.opencode,
+        tokenrouterKey: KEYS.tokenrouter,
         pollinationsKey: KEYS.pollinations,
         endpoint: 'http://localhost:11434', lmStudioEndpoint: 'http://localhost:1234/v1',
         model: 'minimax-m3:cloud',   // Modelo principal activo por defecto (1M tokens, gratis en Ollama Cloud)
@@ -821,11 +824,20 @@ export const PlanProvider = ({ children }) => {
           }
 
           if (result && statusRef.current === 'running' && isSubscribed) {
+            const currentTokens = (result._trace?.metrics?.promptTokens || 0) + (result._trace?.metrics?.completionTokens || 0);
+            const resultData = { ...result };
+            delete resultData._trace;
+
             setPlanData(prev => ({
               ...prev,
               [pillar]: {
                 ...prev[pillar],
-                [modKey]: { ...prev[pillar][modKey], ...result }
+                [modKey]: { ...prev[pillar][modKey], ...resultData }
+              },
+              telemetry: {
+                ...prev.telemetry,
+                totalTokens: (prev.telemetry?.totalTokens || 0) + currentTokens,
+                regenerations: (prev.telemetry?.regenerations || 0) + 1
               }
             }));
             setGenerationQueue(prev => prev.slice(1));

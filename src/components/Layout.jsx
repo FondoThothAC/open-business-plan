@@ -71,10 +71,27 @@ export default function Layout() {
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isBobOpen, setIsBobOpen] = useState(false);
+  const [showWorkspaceModal, setShowWorkspaceModal] = useState(false);
   const [activeGrillMePrompt, setActiveGrillMePrompt] = useState(null);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => {
     return localStorage.getItem('openplan_sidebar_collapsed') === 'true';
   });
+  
+  const [lastAiInfo, setLastAiInfo] = useState({ provider: 'Local/Auto', model: 'En Espera' });
+  const [isAiHot, setIsAiHot] = useState(false);
+
+  useEffect(() => {
+    const handleTrajectory = (e) => {
+      const { provider, model } = e.detail;
+      if (provider || model) {
+        setLastAiInfo({ provider: provider || 'IA', model: model || 'Automático' });
+        setIsAiHot(true);
+        setTimeout(() => setIsAiHot(false), 3000); // El pulso dura 3 segundos
+      }
+    };
+    window.addEventListener('openplan_trajectory_updated', handleTrajectory);
+    return () => window.removeEventListener('openplan_trajectory_updated', handleTrajectory);
+  }, []);
 
   // Sincronizar reactivamente el tipo de plan del header según la ruta activa
   useEffect(() => {
@@ -487,266 +504,317 @@ export default function Layout() {
 
               <div style={{ borderLeft: '1px solid var(--border-color)', height: '30px', margin: '0 0.5rem' }} />
 
+              {/* Etiqueta dinámica de modelo AI Hot */}
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                padding: '0.4rem 0.8rem',
+                background: isAiHot ? 'rgba(239, 68, 68, 0.15)' : 'rgba(100, 116, 139, 0.1)',
+                border: `1px solid ${isAiHot ? 'rgba(239, 68, 68, 0.3)' : 'rgba(100, 116, 139, 0.2)'}`,
+                borderRadius: '8px',
+                transition: 'all 0.3s ease',
+                boxShadow: isAiHot ? '0 0 12px rgba(239, 68, 68, 0.2)' : 'none'
+              }}>
+                <div style={{ 
+                  width: '8px', height: '8px', borderRadius: '50%', 
+                  background: isAiHot ? '#ef4444' : '#64748b',
+                  boxShadow: isAiHot ? '0 0 8px #ef4444' : 'none',
+                  animation: isAiHot ? 'pulse 1s infinite' : 'none'
+                }}></div>
+                <div>
+                  <div style={{ fontSize: '0.6rem', color: isAiHot ? '#ef4444' : '#64748b', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    {isAiHot ? '🔥 ACTIVO AHORA' : 'Última IA'}
+                  </div>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-primary)', fontWeight: 600 }}>
+                    {lastAiInfo.model}
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ borderLeft: '1px solid var(--border-color)', height: '30px', margin: '0 0.5rem' }} />
+
               {/* Selector de Proyecto Unificado y Personalizado */}
-              <div style={{ position: 'relative' }}>
-                {isDropdownOpen && (
-                  <div 
-                    style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 998, background: 'transparent' }} 
-                    onClick={() => setIsDropdownOpen(false)}
-                  />
-                )}
-                
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
                 <button
-                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  className="glass-panel"
+                  onClick={() => setShowWorkspaceModal(true)}
                   style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.6rem',
-                    padding: '0.4rem 0.8rem',
-                    background: 'var(--bg-panel)',
-                    border: '1px solid var(--border-color)',
+                    padding: '0.6rem 1.2rem',
+                    background: 'rgba(59, 130, 246, 0.1)',
+                    color: '#3b82f6',
+                    border: 'none',
                     borderRadius: '8px',
                     cursor: 'pointer',
-                    textAlign: 'left',
-                    transition: 'all 0.2s ease',
-                    minWidth: '220px',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
-                    position: 'relative',
-                    zIndex: 999
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    fontWeight: 600,
+                    transition: 'all 0.2s',
                   }}
                 >
-                  <div style={{
-                    width: '28px', height: '28px',
-                    borderRadius: '6px',
-                    background: `rgba(${activeProj.type === 'social_bid' ? '16, 185, 129' : '99, 102, 241'}, 0.1)`,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    flexShrink: 0
-                  }}>
-                    <ActiveIcon size={14} color={activeColor} />
-                  </div>
-                  
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: '0.6rem', color: 'var(--text-secondary)', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.03em', lineHeight: 1.1 }}>
-                      Proyecto Activo
-                    </div>
-                    <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginTop: '1px', lineHeight: 1.2 }}>
-                      {activeProj.name}
-                    </div>
-                    <div style={{ marginTop: '1px' }}>
-                      {renderStars(activeProj.completion)}
-                    </div>
-                  </div>
-                  
-                  <ChevronDown size={14} color="var(--text-secondary)" style={{ transform: isDropdownOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease', marginLeft: '4px' }} />
+                  <Briefcase size={16} /> <span>Workspace</span>
                 </button>
 
-                {isDropdownOpen && (
-                  <div 
+                <div style={{ position: 'relative' }}>
+                  {isDropdownOpen && (
+                    <div 
+                      style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 998, background: 'transparent' }} 
+                      onClick={() => setIsDropdownOpen(false)}
+                    />
+                  )}
+                  
+                  <button
+                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                     className="glass-panel"
                     style={{
-                      position: 'absolute',
-                      top: 'calc(100% + 6px)',
-                      left: 0,
-                      width: '360px',
-                      maxHeight: '380px',
-                      overflowY: 'auto',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.6rem',
+                      padding: '0.4rem 0.8rem',
                       background: 'var(--bg-panel)',
-                      backdropFilter: 'blur(16px)',
                       border: '1px solid var(--border-color)',
-                      borderRadius: '10px',
-                      boxShadow: '0 12px 30px rgba(0, 0, 0, 0.35)',
-                      zIndex: 999,
-                      padding: '0.4rem',
-                      animation: 'fadeIn 0.15s ease'
+                      borderRadius: '8px',
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                      transition: 'all 0.2s ease',
+                      minWidth: '220px',
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+                      position: 'relative',
+                      zIndex: 999
                     }}
                   >
-                    {/* Category: Predeterminados */}
-                    <div style={{ padding: '0.4rem 0.5rem 0.3rem', fontSize: '0.62rem', fontWeight: 800, color: 'var(--accent-color)', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid rgba(255,255,255,0.04)', marginBottom: '0.2rem' }}>
-                      ⭐ Plantillas Predeterminadas (Ejemplos)
+                    <div style={{
+                      width: '28px', height: '28px',
+                      borderRadius: '6px',
+                      background: `rgba(${activeProj.type === 'social_bid' ? '16, 185, 129' : '99, 102, 241'}, 0.1)`,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      flexShrink: 0
+                    }}>
+                      <ActiveIcon size={14} color={activeColor} />
                     </div>
-                    {Object.entries(PROJECT_EXAMPLES).map(([id, project]) => {
-                      const type = EXAMPLE_FRAMEWORK_MAP[id] || 'business';
-                      const IconComp = METHODOLOGY_CONFIG[type]?.icon || Briefcase;
-                      const color = METHODOLOGY_CONFIG[type]?.color || 'var(--accent-color)';
-                      const comp = calculateExampleCompletion(project.data);
-                      const isSelected = id === activeProj.id;
-                      
-                      return (
-                        <button
-                          key={`example-${id}`}
-                          onClick={() => {
-                            loadProject(id);
-                            setIsDropdownOpen(false);
-                          }}
-                          style={{
-                            width: '100%',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '0.6rem',
-                            padding: '0.45rem 0.6rem',
-                            background: isSelected ? 'rgba(99, 102, 241, 0.08)' : 'transparent',
-                            border: 'none',
-                            borderRadius: '6px',
-                            cursor: 'pointer',
-                            textAlign: 'left',
-                            transition: 'all 0.15s ease'
-                          }}
-                          onMouseEnter={e => {
-                            e.currentTarget.style.background = 'var(--bg-panel-hover)';
-                            e.currentTarget.style.transform = 'translateX(3px)';
-                          }}
-                          onMouseLeave={e => {
-                            e.currentTarget.style.background = isSelected ? 'rgba(99, 102, 241, 0.08)' : 'transparent';
-                            e.currentTarget.style.transform = 'none';
-                          }}
-                        >
-                          <div style={{
-                            width: '24px', height: '24px', borderRadius: '5px',
-                            background: `rgba(${type === 'social_bid' ? '16, 185, 129' : '99, 102, 241'}, 0.08)`,
-                            display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
-                          }}>
-                            <IconComp size={12} color={color} />
-                          </div>
-                          <div style={{ flex: 1, minWidth: 0 }}>
-                            <div style={{ fontWeight: 800, fontSize: '0.78rem', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '0.4rem', justifyContent: 'space-between' }}>
-                              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{project.name}</span>
-                              <span style={{ fontSize: '0.58rem', padding: '1px 4px', borderRadius: '3px', background: `${color}15`, color: color, fontWeight: 700, flexShrink: 0 }}>
-                                {METHODOLOGY_CONFIG[type]?.name}
-                              </span>
-                            </div>
-                            <div style={{ marginTop: '1px' }}>
-                              {renderStars(comp)}
-                            </div>
-                          </div>
-                        </button>
-                      );
-                    })}
+                    
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: '0.6rem', color: 'var(--text-secondary)', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.03em', lineHeight: 1.1 }}>
+                        Proyecto Activo
+                      </div>
+                      <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginTop: '1px', lineHeight: 1.2 }}>
+                        {activeProj.name}
+                      </div>
+                      <div style={{ marginTop: '1px' }}>
+                        {renderStars(activeProj.completion)}
+                      </div>
+                    </div>
+                    
+                    <ChevronDown size={14} color="var(--text-secondary)" style={{ transform: isDropdownOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease', marginLeft: '4px' }} />
+                  </button>
 
-                    {/* Category: Guardados */}
-                    {((savedProjects.negocios && savedProjects.negocios.length > 0) || (savedProjects.social && savedProjects.social.length > 0)) && (
-                      <>
-                        <div style={{ padding: '0.6rem 0.5rem 0.3rem', fontSize: '0.62rem', fontWeight: 800, color: 'var(--accent-color)', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid rgba(255,255,255,0.04)', marginTop: '0.4rem', marginBottom: '0.2rem' }}>
-                          📁 Mis Proyectos Guardados
-                        </div>
+                  {isDropdownOpen && (
+                    <div 
+                      className="glass-panel"
+                      style={{
+                        position: 'absolute',
+                        top: 'calc(100% + 6px)',
+                        left: 0,
+                        width: '360px',
+                        maxHeight: '380px',
+                        overflowY: 'auto',
+                        background: 'var(--bg-panel)',
+                        backdropFilter: 'blur(16px)',
+                        border: '1px solid var(--border-color)',
+                        borderRadius: '10px',
+                        boxShadow: '0 12px 30px rgba(0, 0, 0, 0.35)',
+                        zIndex: 999,
+                        padding: '0.4rem',
+                        animation: 'fadeIn 0.15s ease'
+                      }}
+                    >
+                      {/* Category: Predeterminados */}
+                      <div style={{ padding: '0.4rem 0.5rem 0.3rem', fontSize: '0.62rem', fontWeight: 800, color: 'var(--accent-color)', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid rgba(255,255,255,0.04)', marginBottom: '0.2rem' }}>
+                        ⭐ Plantillas Predeterminadas (Ejemplos)
+                      </div>
+                      {Object.entries(PROJECT_EXAMPLES).map(([id, project]) => {
+                        const type = EXAMPLE_FRAMEWORK_MAP[id] || 'business';
+                        const IconComp = METHODOLOGY_CONFIG[type]?.icon || Briefcase;
+                        const color = METHODOLOGY_CONFIG[type]?.color || 'var(--accent-color)';
+                        const comp = calculateExampleCompletion(project.data);
+                        const isSelected = id === activeProj.id;
                         
-                        {savedProjects.negocios?.map(p => {
-                          const type = p.projectType || 'business';
-                          const IconComp = METHODOLOGY_CONFIG[type]?.icon || Briefcase;
-                          const color = METHODOLOGY_CONFIG[type]?.color || 'var(--accent-color)';
-                          const isSelected = p.id === activeProj.id;
-                          
-                          return (
-                            <button
-                              key={`saved-neg-${p.id}`}
-                              onClick={async () => {
-                                const success = await loadSavedProject('negocios', p.id);
-                                if (success) setIsDropdownOpen(false);
-                              }}
-                              style={{
-                                width: '100%',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '0.6rem',
-                                padding: '0.45rem 0.6rem',
-                                background: isSelected ? 'rgba(99, 102, 241, 0.08)' : 'transparent',
-                                border: 'none',
-                                borderRadius: '6px',
-                                cursor: 'pointer',
-                                textAlign: 'left',
-                                transition: 'all 0.15s ease'
-                              }}
-                              onMouseEnter={e => {
-                                e.currentTarget.style.background = 'var(--bg-panel-hover)';
-                                e.currentTarget.style.transform = 'translateX(3px)';
-                              }}
-                              onMouseLeave={e => {
-                                e.currentTarget.style.background = isSelected ? 'rgba(99, 102, 241, 0.08)' : 'transparent';
-                                e.currentTarget.style.transform = 'none';
-                              }}
-                            >
-                              <div style={{
-                                width: '24px', height: '24px', borderRadius: '5px',
-                                background: `rgba(${type === 'social_bid' ? '16, 185, 129' : '99, 102, 241'}, 0.08)`,
-                                display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
-                              }}>
-                                <IconComp size={12} color={color} />
+                        return (
+                          <button
+                            key={`example-${id}`}
+                            onClick={() => {
+                              loadProject(id);
+                              setIsDropdownOpen(false);
+                            }}
+                            style={{
+                              width: '100%',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '0.6rem',
+                              padding: '0.45rem 0.6rem',
+                              background: isSelected ? 'rgba(99, 102, 241, 0.08)' : 'transparent',
+                              border: 'none',
+                              borderRadius: '6px',
+                              cursor: 'pointer',
+                              textAlign: 'left',
+                              transition: 'all 0.15s ease'
+                            }}
+                            onMouseEnter={e => {
+                              e.currentTarget.style.background = 'var(--bg-panel-hover)';
+                              e.currentTarget.style.transform = 'translateX(3px)';
+                            }}
+                            onMouseLeave={e => {
+                              e.currentTarget.style.background = isSelected ? 'rgba(99, 102, 241, 0.08)' : 'transparent';
+                              e.currentTarget.style.transform = 'none';
+                            }}
+                          >
+                            <div style={{
+                              width: '24px', height: '24px', borderRadius: '5px',
+                              background: `rgba(${type === 'social_bid' ? '16, 185, 129' : '99, 102, 241'}, 0.08)`,
+                              display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
+                            }}>
+                              <IconComp size={12} color={color} />
+                            </div>
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                              <div style={{ fontWeight: 800, fontSize: '0.78rem', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '0.4rem', justifyContent: 'space-between' }}>
+                                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{project.name}</span>
+                                <span style={{ fontSize: '0.58rem', padding: '1px 4px', borderRadius: '3px', background: `${color}15`, color: color, fontWeight: 700, flexShrink: 0 }}>
+                                  {METHODOLOGY_CONFIG[type]?.name}
+                                </span>
                               </div>
-                              <div style={{ flex: 1, minWidth: 0 }}>
-                                <div style={{ fontWeight: 500, fontSize: '0.78rem', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '0.4rem', justifyContent: 'space-between' }}>
-                                  <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.name}</span>
-                                  <span style={{ fontSize: '0.58rem', padding: '1px 4px', borderRadius: '3px', background: `${color}15`, color: color, fontWeight: 700, flexShrink: 0 }}>
-                                    {METHODOLOGY_CONFIG[type]?.name}
-                                  </span>
-                                </div>
-                                <div style={{ marginTop: '1px' }}>
-                                  {renderStars(p.completion || 0)}
-                                </div>
+                              <div style={{ marginTop: '1px' }}>
+                                {renderStars(comp)}
                               </div>
-                            </button>
-                          );
-                        })}
+                            </div>
+                          </button>
+                        );
+                      })}
 
-                        {savedProjects.social?.map(p => {
-                          const type = p.projectType || 'social_bid';
-                          const IconComp = METHODOLOGY_CONFIG[type]?.icon || Globe;
-                          const color = METHODOLOGY_CONFIG[type]?.color || 'var(--accent-color)';
-                          const isSelected = p.id === activeProj.id;
+                      {/* Category: Guardados */}
+                      {((savedProjects.negocios && savedProjects.negocios.length > 0) || (savedProjects.social && savedProjects.social.length > 0)) && (
+                        <>
+                          <div style={{ padding: '0.6rem 0.5rem 0.3rem', fontSize: '0.62rem', fontWeight: 800, color: 'var(--accent-color)', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid rgba(255,255,255,0.04)', marginTop: '0.4rem', marginBottom: '0.2rem' }}>
+                            📁 Mis Proyectos Guardados
+                          </div>
                           
-                          return (
-                            <button
-                              key={`saved-soc-${p.id}`}
-                              onClick={async () => {
-                                const success = await loadSavedProject('social', p.id);
-                                if (success) setIsDropdownOpen(false);
-                              }}
-                              style={{
-                                width: '100%',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '0.6rem',
-                                padding: '0.45rem 0.6rem',
-                                background: isSelected ? 'rgba(99, 102, 241, 0.08)' : 'transparent',
-                                border: 'none',
-                                borderRadius: '6px',
-                                cursor: 'pointer',
-                                textAlign: 'left',
-                                transition: 'all 0.15s ease'
-                              }}
-                              onMouseEnter={e => {
-                                e.currentTarget.style.background = 'var(--bg-panel-hover)';
-                                e.currentTarget.style.transform = 'translateX(3px)';
-                              }}
-                              onMouseLeave={e => {
-                                e.currentTarget.style.background = isSelected ? 'rgba(99, 102, 241, 0.08)' : 'transparent';
-                                e.currentTarget.style.transform = 'none';
-                              }}
-                            >
-                              <div style={{
-                                width: '24px', height: '24px', borderRadius: '5px',
-                                background: `rgba(${type === 'social_bid' ? '16, 185, 129' : '99, 102, 241'}, 0.08)`,
-                                display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
-                              }}>
-                                <IconComp size={12} color={color} />
-                              </div>
-                              <div style={{ flex: 1, minWidth: 0 }}>
-                                <div style={{ fontWeight: 500, fontSize: '0.78rem', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '0.4rem', justifyContent: 'space-between' }}>
-                                  <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.name}</span>
-                                  <span style={{ fontSize: '0.58rem', padding: '1px 4px', borderRadius: '3px', background: `${color}15`, color: color, fontWeight: 700, flexShrink: 0 }}>
-                                    {METHODOLOGY_CONFIG[type]?.name}
-                                  </span>
+                          {savedProjects.negocios?.map(p => {
+                            const type = p.projectType || 'business';
+                            const IconComp = METHODOLOGY_CONFIG[type]?.icon || Briefcase;
+                            const color = METHODOLOGY_CONFIG[type]?.color || 'var(--accent-color)';
+                            const isSelected = p.id === activeProj.id;
+                            
+                            return (
+                              <button
+                                key={`saved-neg-${p.id}`}
+                                onClick={async () => {
+                                  const success = await loadSavedProject('negocios', p.id);
+                                  if (success) setIsDropdownOpen(false);
+                                }}
+                                style={{
+                                  width: '100%',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: '0.6rem',
+                                  padding: '0.45rem 0.6rem',
+                                  background: isSelected ? 'rgba(99, 102, 241, 0.08)' : 'transparent',
+                                  border: 'none',
+                                  borderRadius: '6px',
+                                  cursor: 'pointer',
+                                  textAlign: 'left',
+                                  transition: 'all 0.15s ease'
+                                }}
+                                onMouseEnter={e => {
+                                  e.currentTarget.style.background = 'var(--bg-panel-hover)';
+                                  e.currentTarget.style.transform = 'translateX(3px)';
+                                }}
+                                onMouseLeave={e => {
+                                  e.currentTarget.style.background = isSelected ? 'rgba(99, 102, 241, 0.08)' : 'transparent';
+                                  e.currentTarget.style.transform = 'none';
+                                }}
+                              >
+                                <div style={{
+                                  width: '24px', height: '24px', borderRadius: '5px',
+                                  background: `rgba(${type === 'social_bid' ? '16, 185, 129' : '99, 102, 241'}, 0.08)`,
+                                  display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
+                                }}>
+                                  <IconComp size={12} color={color} />
                                 </div>
-                                <div style={{ marginTop: '1px' }}>
-                                  {renderStars(p.completion || 0)}
+                                <div style={{ flex: 1, minWidth: 0 }}>
+                                  <div style={{ fontWeight: 500, fontSize: '0.78rem', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '0.4rem', justifyContent: 'space-between' }}>
+                                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.name}</span>
+                                    <span style={{ fontSize: '0.58rem', padding: '1px 4px', borderRadius: '3px', background: `${color}15`, color: color, fontWeight: 700, flexShrink: 0 }}>
+                                      {METHODOLOGY_CONFIG[type]?.name}
+                                    </span>
+                                  </div>
+                                  <div style={{ marginTop: '1px' }}>
+                                    {renderStars(p.completion || 0)}
+                                  </div>
                                 </div>
-                              </div>
-                            </button>
-                          );
-                        })}
-                      </>
-                    )}
-                  </div>
-                )}
+                              </button>
+                            );
+                          })}
+
+                          {savedProjects.social?.map(p => {
+                            const type = p.projectType || 'social_bid';
+                            const IconComp = METHODOLOGY_CONFIG[type]?.icon || Globe;
+                            const color = METHODOLOGY_CONFIG[type]?.color || 'var(--accent-color)';
+                            const isSelected = p.id === activeProj.id;
+                            
+                            return (
+                              <button
+                                key={`saved-soc-${p.id}`}
+                                onClick={async () => {
+                                  const success = await loadSavedProject('social', p.id);
+                                  if (success) setIsDropdownOpen(false);
+                                }}
+                                style={{
+                                  width: '100%',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: '0.6rem',
+                                  padding: '0.45rem 0.6rem',
+                                  background: isSelected ? 'rgba(99, 102, 241, 0.08)' : 'transparent',
+                                  border: 'none',
+                                  borderRadius: '6px',
+                                  cursor: 'pointer',
+                                  textAlign: 'left',
+                                  transition: 'all 0.15s ease'
+                                }}
+                                onMouseEnter={e => {
+                                  e.currentTarget.style.background = 'var(--bg-panel-hover)';
+                                  e.currentTarget.style.transform = 'translateX(3px)';
+                                }}
+                                onMouseLeave={e => {
+                                  e.currentTarget.style.background = isSelected ? 'rgba(99, 102, 241, 0.08)' : 'transparent';
+                                  e.currentTarget.style.transform = 'none';
+                                }}
+                              >
+                                <div style={{
+                                  width: '24px', height: '24px', borderRadius: '5px',
+                                  background: `rgba(${type === 'social_bid' ? '16, 185, 129' : '99, 102, 241'}, 0.08)`,
+                                  display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
+                                }}>
+                                  <IconComp size={12} color={color} />
+                                </div>
+                                <div style={{ flex: 1, minWidth: 0 }}>
+                                  <div style={{ fontWeight: 500, fontSize: '0.78rem', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '0.4rem', justifyContent: 'space-between' }}>
+                                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.name}</span>
+                                    <span style={{ fontSize: '0.58rem', padding: '1px 4px', borderRadius: '3px', background: `${color}15`, color: color, fontWeight: 700, flexShrink: 0 }}>
+                                      {METHODOLOGY_CONFIG[type]?.name}
+                                    </span>
+                                  </div>
+                                  <div style={{ marginTop: '1px' }}>
+                                    {renderStars(p.completion || 0)}
+                                  </div>
+                                </div>
+                              </button>
+                            );
+                          })}
+                        </>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 

@@ -58,6 +58,14 @@ const PROVIDER_METADATA = {
     freeTier: false,
     accentColor: '#38bdf8',
   },
+  tokenrouter: {
+    name: 'TokenRouter',
+    dailyQuota: 100000,
+    rateLimit: 'DeepSeek / Qwen Free Rotativo',
+    contextMax: '128k ctx',
+    freeTier: true,
+    accentColor: '#10b981',
+  },
   gemini: {
     name: 'Google Gemini',
     dailyQuota: 1000000,
