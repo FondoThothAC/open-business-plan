@@ -37,6 +37,28 @@ function isVariableOpex(row) {
   return label.includes('variable') || label.includes('comercial') || label.includes('venta') || label.includes('comisión');
 }
 
+export function parseNumericAmount(val, fallback = 0) {
+  if (val === null || val === undefined || val === '') return fallback;
+  if (typeof val === 'number') return isNaN(val) ? fallback : val;
+  const str = String(val).trim();
+  
+  const millonMatch = str.match(/(\d+(?:\.\d+)?)\s*millon(?:es)?/i);
+  if (millonMatch) {
+    const num = parseFloat(millonMatch[1]);
+    if (!isNaN(num)) return num * 1000000;
+  }
+  
+  const currencyMatch = str.match(/\$\s*(\d{1,3}(?:,\d{3})*(?:\.\d+)?|\d+)/);
+  if (currencyMatch) {
+    const num = parseFloat(currencyMatch[1].replace(/,/g, ''));
+    if (!isNaN(num)) return num;
+  }
+
+  const clean = str.replace(/,/g, '').replace(/[^0-9.-]/g, '');
+  const parsed = parseFloat(clean);
+  return isNaN(parsed) ? fallback : parsed;
+}
+
 // --- SUBCOMPONENTE: BENCHMARKING TABLE ---
 function BenchmarkingTable({ data }) {
   const comparativaData = data?.comparativa || '';
@@ -326,11 +348,11 @@ function ImpactoAmbientalWidget({ data }) {
       medida: 'Clasificación de metales y plásticos en contenedores con entrega documentada y controlada a centros de reciclaje.'
     },
     {
-      norma: 'Reglamento de Ecología Municipal',
-      clave: 'Art. 82 Eco-Hermosillo',
-      ambito: 'Disposición Urbana y Ruido',
-      anio: '2018',
-      medida: 'Disposición de desechos sólidos urbanos no peligrosos y monitoreo acústico del área de carga y descarga.'
+      norma: 'Reglamento de Protección Ambiental y Minera',
+      clave: 'Reglamento Ambiental',
+      ambito: 'Disposición Ecológica y Residuos',
+      anio: '2023',
+      medida: 'Disposición controlada de residuos, protocolo de contención de fluidos/lubricantes y monitoreo ambiental en operaciones.'
     }
   ];
 
@@ -399,7 +421,7 @@ function ImpactoAmbientalWidget({ data }) {
 }
 
 // --- SUBCOMPONENTE: MAQUINARIA Y TECNOLOGIA TABLE ---
-function MaquinariaTable({ data }) {
+function MaquinariaTable({ data, planData }) {
   const maquinaria = data?.maquinaria || '';
   const equipo = data?.equipo || '';
   const herramientas = data?.herramientas || '';
@@ -408,22 +430,43 @@ function MaquinariaTable({ data }) {
   
   const parseText = (text, type) => {
     if (!text || typeof text !== 'string') return;
-    const lines = text.split(/[\n,;•·-]/).map(s => s.trim()).filter(s => s.length > 5);
-    lines.forEach(line => {
-      const priceMatch = line.match(/\$?(\d{1,3}(,\d{3})*(\.\d+)?)/);
-      const price = priceMatch ? Number(priceMatch[1].replace(/,/g, '')) : null;
+    
+    let rawLines = text
+      .split(/(?:\r?\n)+|(?:\s*[•·]\s*)|(?:\s*;\s*(?=[A-Z0-9]))|(?:\s*\.\s+(?=[0-9]+\.|\d+\)|\b[A-Z]))/)
+      .map(s => s.trim())
+      .filter(s => s.length > 5);
+
+    if (rawLines.length === 1 && rawLines[0].includes(').')) {
+      rawLines = rawLines[0].split(/\)\.\s*/).map((s, idx, arr) => idx < arr.length - 1 ? s + ')' : s).map(s => s.trim()).filter(s => s.length > 5);
+    }
+
+    rawLines.forEach(line => {
+      const priceMatch = line.match(/\$\s*(\d{1,3}(?:,\d{3})*(?:\.\d+)?|\d+)/) || line.match(/(\d{1,3}(?:,\d{3})+(?:\.\d+)?)\s*(?:MXN|USD|pesos)/i);
+      let price = null;
+      if (priceMatch) {
+        price = Number(priceMatch[1].replace(/,/g, ''));
+      }
       
-      const yearsMatch = line.match(/(\d+)\s*a\u00f1os/i);
-      const years = yearsMatch ? Number(yearsMatch[1]) : 5;
+      const yearsMatch = line.match(/(\d+)\s*(?:años?|year)/i);
+      const years = yearsMatch ? Number(yearsMatch[1]) : (type === 'Maquinaria' ? 10 : type === 'Equipo' ? 5 : 3);
 
-      let name = line.split(/[:$(-]/)[0].trim();
-      if (name.length > 55) name = name.substring(0, 55) + '...';
+      let name = line
+        .replace(/^\d+[\.\)]\s*/, '')
+        .replace(/\([^)]*?(?:\$|\baños\b|MXN)[^)]*?\)/gi, '')
+        .replace(/:\s*\$[\d,]+.*/, '')
+        .replace(/\$[\d,]+(\s*MXN)?/gi, '')
+        .replace(/,\s*\d+\s*años.*/i, '')
+        .trim();
 
-      if (name) {
+      name = name.replace(/^[-–—:\s]+|[-–—:\s,\.]+$/g, '').trim();
+
+      if (name.length > 70) name = name.substring(0, 70) + '...';
+
+      if (name && name.length > 2 && !/^\d+$/.test(name)) {
         items.push({
           nombre: name,
           tipo: type,
-          costo: price || (type === 'Maquinaria' ? 45000 : type === 'Equipo' ? 12000 : 8000),
+          costo: price || (type === 'Maquinaria' ? 180000 : type === 'Equipo' ? 45000 : 15000),
           vidaUtil: years,
         });
       }
@@ -435,12 +478,12 @@ function MaquinariaTable({ data }) {
   parseText(herramientas, 'Herramienta');
 
   const defaultItems = [
-    { nombre: 'Estantería de acero galvanizado pesado', tipo: 'Equipo', costo: 35000, vidaUtil: 10 },
-    { nombre: 'Montacargas manual (patín hidráulico)', tipo: 'Maquinaria', costo: 15000, vidaUtil: 5 },
-    { nombre: 'Computadora de Administración y TPV', tipo: 'Equipo', costo: 18000, vidaUtil: 3 },
-    { nombre: 'Vehículo Pick-up de reparto local', tipo: 'Vehículo / Logística', costo: 280000, vidaUtil: 5 },
-    { nombre: 'Cortadora de cable y tubos industrial', tipo: 'Herramienta', costo: 9500, vidaUtil: 5 },
-    { nombre: 'Báscula industrial calibrada (hasta 300kg)', tipo: 'Herramienta', costo: 6500, vidaUtil: 5 }
+    { nombre: 'Banco de Pruebas Dinámico e Hidráulico de Alta Presión', tipo: 'Maquinaria', costo: 1850000, vidaUtil: 15 },
+    { nombre: 'Puente Grúa Monorriel de 10 Toneladas', tipo: 'Maquinaria', costo: 450000, vidaUtil: 20 },
+    { nombre: 'Unidad Móvil de Microfiltración y Deshidratación de Aceite', tipo: 'Maquinaria', costo: 320000, vidaUtil: 10 },
+    { nombre: 'Máquina de Lavado y Ultrasonido Industrial para Válvulas', tipo: 'Equipo', costo: 280000, vidaUtil: 12 },
+    { nombre: 'Unidad Móvil Pick-up 4x4 equipada con módulo hidráulico', tipo: 'Vehículo / Logística', costo: 650000, vidaUtil: 5 },
+    { nombre: 'Estación de Telemetría IoT y Diagnóstico Preventivo', tipo: 'Equipo', costo: 85000, vidaUtil: 5 }
   ];
 
   const finalItems = items.length > 0 ? items.slice(0, 8) : defaultItems;
@@ -484,35 +527,61 @@ function MaquinariaTable({ data }) {
 }
 
 // --- SUBCOMPONENTE: INSUMOS Y PROVEEDORES TABLE ---
-function InsumosTable({ data }) {
+function InsumosTable({ data, planData }) {
   const materia = data?.materia_prima || '';
   const prov = data?.proveedores || '';
   
+  const planLocation = 
+    planData?.semilla?.cobertura ||
+    planData?.semilla?.ubicacion ||
+    planData?.semilla?.cliente_ubicacion ||
+    planData?.semilla?.negocio?.ubicacion ||
+    planData?.tecnico?.ubicacion?.micro ||
+    planData?.tecnico?.ubicacion?.macro ||
+    'Cananea / Sonora (Base Operativa)';
+
   const parsedItems = [];
   if (materia && typeof materia === 'string') {
-    const rawMateria = materia.split(/[\n,;•·-]/).map(s => s.trim()).filter(s => s.length > 3);
-    const rawProv = (prov && typeof prov === 'string') ? prov.split(/[\n,;•·-]/).map(s => s.trim()).filter(s => s.length > 3) : [];
+    let rawMateria = materia
+      .split(/(?:\r?\n)+|(?:\s*[•·]\s*)|(?:\s*;\s*(?=[A-Z0-9]))|(?:\s*\.\s+(?=[0-9]+\.|\d+\)|\b[A-Z]))/)
+      .map(s => s.trim())
+      .filter(s => s.length > 3);
+
+    if (rawMateria.length === 1 && rawMateria[0].includes(').')) {
+      rawMateria = rawMateria[0].split(/\)\.\s*/).map((s, idx, arr) => idx < arr.length - 1 ? s + ')' : s).map(s => s.trim()).filter(s => s.length > 3);
+    }
+
+    const rawProv = (prov && typeof prov === 'string') 
+      ? prov.split(/(?:\r?\n)+|(?:\s*[•·]\s*)|(?:\s*;\s*(?=[A-Z0-9]))|(?:\s*\.\s+(?=[0-9]+\.|\d+\)|\b[A-Z]))/).map(s => s.trim()).filter(s => s.length > 3) 
+      : [];
     
     rawMateria.forEach((m, idx) => {
-      const priceMatch = m.match(/\$?(\d{1,3}(,\d{3})*(\.\d+)?)/);
-      const price = priceMatch ? priceMatch[0] : '$150';
+      const priceMatch = m.match(/\$\s*(\d{1,3}(?:,\d{3})*(?:\.\d+)?|\d+)(?:\s*MXN)?(?:\/[a-zA-Záéíóú]+)?/i);
+      const price = priceMatch ? priceMatch[0] : '$8,500 / lote';
       
-      const qtyMatch = m.match(/(\d+)\s*(kg|sacos|unidades|tramos|lotes|l)/i);
-      const qty = qtyMatch ? qtyMatch[0] : 'Según demanda';
+      const qtyMatch = m.match(/(\d+[\d,]*\s*(?:kg|sacos|unidades|tramos|lotes|l|litros|piezas|kits|mangueras)(?:\/[a-zA-Záéíóú]+)?)/i);
+      const qty = qtyMatch ? qtyMatch[1] : 'Según demanda';
       
-      const freqMatch = m.match(/(semanal|quincenal|mensual|anual)/i);
+      const freqMatch = m.match(/(semanal|quincenal|mensual|bimestral|anual|por evento)/i);
       const freq = freqMatch ? freqMatch[0] : 'Mensual';
 
-      let cleanName = m.split(/[:$(-]/)[0].trim();
-      if (cleanName.length > 55) cleanName = cleanName.substring(0, 55) + '...';
+      let cleanName = m
+        .replace(/^\d+[\.\)]\s*/, '')
+        .replace(/\([^)]*?(?:\$|MXN|\/mes|\/lote)[^)]*?\)/gi, '')
+        .replace(/:\s*\$[\d,]+.*/, '')
+        .replace(/\$[\d,]+.*/, '')
+        .trim();
 
-      const p = rawProv[idx] || rawProv[0] || 'Proveedor Local';
+      cleanName = cleanName.replace(/^[-–—:\s]+|[-–—:\s,\.]+$/g, '').trim();
+      if (cleanName.length > 65) cleanName = cleanName.substring(0, 65) + '...';
 
-      if (cleanName) {
+      const p = rawProv[idx] || rawProv[0] || 'Proveedor Certificado / Fabricante OEM';
+
+      if (cleanName && cleanName.length > 2 && !/^\d+$/.test(cleanName)) {
         parsedItems.push({
           insumo: cleanName,
-          proveedor: p,
-          direccion: 'Hermosillo, Sonora (Entrega local)',
+          proveedor: p.replace(/^\d+[\.\)]\s*/, '').replace(/Proveedor\s*\d+:\s*/i, '').trim(),
+          direccion: planLocation,
           precio: price,
           cantidad: qty,
           frecuencia: freq.charAt(0).toUpperCase() + freq.slice(1)
@@ -522,10 +591,10 @@ function InsumosTable({ data }) {
   }
 
   const defaultItems = [
-    { insumo: 'Tornillería y fijaciones grado 316', proveedor: 'Distribuidor Mayorista Industrial', direccion: 'Blvd. Solidaridad #12, Hermosillo', precio: '$120 / kg', cantidad: '150 kg/mes', frecuencia: 'Quincenal' },
-    { insumo: 'Tuberías de cobre y conexiones de alta presión', proveedor: 'Coflex / Lusa del Noroeste', direccion: 'Parque Industrial, Hermosillo', precio: '$240 / tramo', cantidad: '120 tramos/mes', frecuencia: 'Mensual' },
-    { insumo: 'Cemento, aditivos y mezclas listas', proveedor: 'Cemex Distribuidor Local', direccion: 'Av. Tecnológico #450, Hermosillo', precio: '$210 / saco', cantidad: '200 sacos/mes', frecuencia: 'Semanal' },
-    { insumo: 'Herramientas y accesorios de ferretería', proveedor: 'Truper Mayorista de México', direccion: 'CEDI Hermosillo, Sonora', precio: 'Variable (Descuento 35%)', cantidad: 'Lotes de stock', frecuencia: 'Mensual' }
+    { insumo: 'Fluidos hidráulicos sintéticos de alta estabilidad ISO VG 46/68', proveedor: 'Mobil / Shell / Castrol Industrial', direccion: planLocation, precio: '$180,000 / mes', cantidad: '3,000 L/mes', frecuencia: 'Mensual' },
+    { insumo: 'Elementos filtrantes absolutos Beta 1000 de 1 a 3 micras', proveedor: 'Parker Hannifin / HYDAC International', direccion: planLocation, precio: '$95,000 / mes', cantidad: '120 piezas/mes', frecuencia: 'Mensual' },
+    { insumo: 'Kits de estanqueidad y sellado de alta resistencia térmica (Viton/PTFE)', proveedor: 'SKF / Hallite Seals', direccion: planLocation, precio: '$65,000 / mes', cantidad: '80 kits/mes', frecuencia: 'Mensual' },
+    { insumo: 'Mangueras hidráulicas trenzadas de alta presión (4,000 a 6,000 PSI)', proveedor: 'Gates Corporation / Eaton Aeroquip', direccion: planLocation, precio: '$110,000 / mes', cantidad: '150 tramos/mes', frecuencia: 'Mensual' }
   ];
 
   const finalItems = parsedItems.length > 0 ? parsedItems.slice(0, 6) : defaultItems;
@@ -538,9 +607,9 @@ function InsumosTable({ data }) {
           <tr style={{ background: '#f1f5f9', borderBottom: '1px solid #e2e8f0' }}>
             <th style={{ padding: '0.6rem 0.8rem', textAlign: 'left', fontWeight: 'bold', color: '#475569' }}>Materia Prima / Insumo</th>
             <th style={{ padding: '0.6rem 0.8rem', textAlign: 'left', fontWeight: 'bold', color: '#475569' }}>Proveedor Clave</th>
-            <th style={{ padding: '0.6rem 0.8rem', textAlign: 'left', fontWeight: 'bold', color: '#475569' }}>Ubicación / Dirección</th>
-            <th style={{ padding: '0.6rem 0.8rem', textAlign: 'center', fontWeight: 'bold', color: '#475569' }}>Costo Promedio</th>
-            <th style={{ padding: '0.6rem 0.8rem', textAlign: 'center', fontWeight: 'bold', color: '#475569' }}>Cantidad</th>
+            <th style={{ padding: '0.6rem 0.8rem', textAlign: 'left', fontWeight: 'bold', color: '#475569' }}>Ubicación / Cobertura</th>
+            <th style={{ padding: '0.6rem 0.8rem', textAlign: 'center', fontWeight: 'bold', color: '#475569' }}>Costo Estimado</th>
+            <th style={{ padding: '0.6rem 0.8rem', textAlign: 'center', fontWeight: 'bold', color: '#475569' }}>Volumen</th>
             <th style={{ padding: '0.6rem 0.8rem', textAlign: 'center', fontWeight: 'bold', color: '#475569' }}>Frecuencia</th>
           </tr>
         </thead>
@@ -1461,31 +1530,29 @@ export default function VistaPrevia() {
       let monthlyVariableCostsVal = 8000;
 
       // Buscar si hay números en el texto de inversión
-      const inversionTexto = planData.organizacion?.inversion?.monto_total || '';
-      const invMatch = inversionTexto.match(/\$?([0-9,]+)/);
-      if (invMatch) {
-        initialInvestmentVal = Number(invMatch[1].replace(/,/g, '')) || 120000;
+      const inversionTexto = planData.organizacion?.inversion?.monto_total || planData.organizacion?.inversion?.capex || planData.semilla?.finanzas?.inversion_total || '';
+      if (inversionTexto) {
+        initialInvestmentVal = parseNumericAmount(inversionTexto, 120000);
       }
 
       // Buscar si hay números en costos fijos
-      const fijosTexto = planData.organizacion?.costos?.fijos || '';
-      const fijosMatch = fijosTexto.match(/\$?([0-9,]+)/);
-      if (fijosMatch) {
-        monthlyFixedCostsVal = Math.round(Number(fijosMatch[1].replace(/,/g, '')) / 12) || 15000;
+      const fijosTexto = planData.organizacion?.costos?.fijos || planData.semilla?.finanzas?.costos_fijos || '';
+      if (fijosTexto) {
+        const rawFijos = parseNumericAmount(fijosTexto, 180000);
+        monthlyFixedCostsVal = rawFijos > 1000000 ? Math.round(rawFijos / 12) : rawFijos;
       }
 
       // Buscar si hay números en costos variables
       const variablesTexto = planData.organizacion?.costos?.variables || '';
-      const varMatch = variablesTexto.match(/\$?([0-9,]+)/);
-      if (varMatch) {
-        monthlyVariableCostsVal = Math.round(Number(varMatch[1].replace(/,/g, '')) / 12) || 8000;
+      if (variablesTexto) {
+        const rawVars = parseNumericAmount(variablesTexto, 96000);
+        monthlyVariableCostsVal = rawVars > 1000000 ? Math.round(rawVars / 12) : rawVars;
       }
 
       // Buscar si hay números en resultados de ventas
-      const resultadosTexto = planData.organizacion?.estados_financieros?.resultados || '';
-      const ventasMatch = resultadosTexto.match(/Ventas\s*\$?([0-9,]+)/i);
-      if (ventasMatch) {
-        annualSalesGoalVal = Number(ventasMatch[1].replace(/,/g, '')) || 500000;
+      const resultadosTexto = planData.organizacion?.estados_financieros?.resultados || planData.semilla?.finanzas?.meta_ingresos || '';
+      if (resultadosTexto) {
+        annualSalesGoalVal = parseNumericAmount(resultadosTexto, 500000);
       }
 
       const financeData = {
@@ -1504,28 +1571,28 @@ export default function VistaPrevia() {
       const investmentItems = capexRows.length > 0
         ? capexRows.map((row, index) => ({
             id: index + 1,
-            name: row.concepto || `Inversión ${index + 1}`,
-            amount: Number(row.monto || 0),
+            name: row.concepto || row.name || `Inversión ${index + 1}`,
+            amount: parseNumericAmount(row.monto || row.amount),
             type: ['Activo Fijo', 'Activo Diferido', 'Capital de Trabajo'].includes(row.tipo) ? row.tipo : 'Activo Fijo',
-            acquisitionSource: 'Aportación (Nuevo)',
+            acquisitionSource: row.fuente || 'Aportación (Nuevo)',
           })).filter((row) => row.amount > 0)
         : [{ id: 1, name: 'Inversión Inicial Base', amount: financeData.initialInvestment, type: 'Activo Fijo', acquisitionSource: 'Aportación (Nuevo)' }];
 
       const recurringRevenues = revenueRows.length > 0
         ? revenueRows.map((row, index) => ({
             id: index + 1,
-            name: row.concepto || `Ingreso ${index + 1}`,
-            initialMonthlyAmount: Number(row.mensual || (Number(row.anual || 0) / 12) || 0),
-            annualGrowthRates: Array(financeData.projectDuration).fill(Number(row.crecimiento || financeData.annualSalesGrowth || 0)),
+            name: row.concepto || row.name || `Ingreso ${index + 1}`,
+            initialMonthlyAmount: parseNumericAmount(row.mensual || (parseNumericAmount(row.anual) / 12) || 0),
+            annualGrowthRates: Array(financeData.projectDuration).fill(parseNumericAmount(row.crecimiento || financeData.annualSalesGrowth || 0)),
           })).filter((row) => row.initialMonthlyAmount > 0)
         : [{ id: 1, name: 'Ventas Proyectadas', initialMonthlyAmount: financeData.annualSalesGoal / 12, annualGrowthRates: Array(financeData.projectDuration).fill(financeData.annualSalesGrowth) }];
 
       const recurringExpenses = opexRows.length > 0
         ? opexRows.map((row, index) => ({
             id: index + 1,
-            name: row.concepto || `Gasto ${index + 1}`,
+            name: row.concepto || row.name || `Gasto ${index + 1}`,
             type: isVariableOpex(row) ? 'Variable' : 'Fijo',
-            initialMonthlyAmount: Number(row.mensual || 0),
+            initialMonthlyAmount: parseNumericAmount(row.mensual || 0),
             growthType: 'annual',
             monthlyGrowthRate: 0,
             annualGrowthRates: Array(financeData.projectDuration).fill(financeData.annualCostGrowth),
@@ -2598,7 +2665,7 @@ export default function VistaPrevia() {
                       pillarKey={mod.pillarKey}
                       moduleKey={mod.key}
                     />
-                    <MaquinariaTable data={planData?.tecnico?.recursos} />
+                    <MaquinariaTable data={planData?.tecnico?.recursos} planData={planData} />
                   </div>
                 ) : mod.key === 'insumos' ? (
                   <div style={{ marginBottom: '1.5rem' }}>
@@ -2609,7 +2676,7 @@ export default function VistaPrevia() {
                       pillarKey={mod.pillarKey}
                       moduleKey={mod.key}
                     />
-                    <InsumosTable data={planData?.tecnico?.insumos} />
+                    <InsumosTable data={planData?.tecnico?.insumos} planData={planData} />
                   </div>
                 ) : mod.key === 'capacidad' ? (
                   <div style={{ marginBottom: '1.5rem' }}>
@@ -2765,10 +2832,13 @@ export default function VistaPrevia() {
                       <InegiMap
                         token={planData.config?.externalApis?.inegiToken}
                         location={
+                          planData?.semilla?.cobertura ||
+                          planData?.semilla?.ubicacion ||
+                          planData?.semilla?.cliente_ubicacion ||
                           planData?.semilla?.negocio?.ubicacion ||
-                          planData?.tecnico?.ubicacion?.macro ||
                           planData?.tecnico?.ubicacion?.micro ||
-                          'Hermosillo, Sonora'
+                          planData?.tecnico?.ubicacion?.macro ||
+                          'Cananea, Sonora'
                         }
                         mode="competition"
                         readOnly={true}
@@ -2794,10 +2864,13 @@ export default function VistaPrevia() {
                       <InegiMap
                         token={planData.config?.externalApis?.inegiToken}
                         location={
+                          planData?.semilla?.cobertura ||
+                          planData?.semilla?.ubicacion ||
+                          planData?.semilla?.cliente_ubicacion ||
                           planData?.semilla?.negocio?.ubicacion ||
-                          planData?.tecnico?.ubicacion?.macro ||
                           planData?.tecnico?.ubicacion?.micro ||
-                          'Hermosillo, Sonora'
+                          planData?.tecnico?.ubicacion?.macro ||
+                          'Cananea, Sonora'
                         }
                         mode="location"
                         readOnly={true}
@@ -2821,10 +2894,13 @@ export default function VistaPrevia() {
                       <InegiMap
                         token={planData.config?.externalApis?.inegiToken}
                         location={
+                          planData?.semilla?.cobertura ||
+                          planData?.semilla?.ubicacion ||
+                          planData?.semilla?.cliente_ubicacion ||
                           planData?.semilla?.negocio?.ubicacion ||
-                          planData?.tecnico?.ubicacion?.macro ||
                           planData?.tecnico?.ubicacion?.micro ||
-                          'Hermosillo, Sonora'
+                          planData?.tecnico?.ubicacion?.macro ||
+                          'Cananea, Sonora'
                         }
                         mode="competition"
                         readOnly={true}

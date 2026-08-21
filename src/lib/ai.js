@@ -1099,7 +1099,7 @@ async function callGroq(apiKey, model, prompt, expectJson) {
   if (keys.length === 0) throw new Error('No se proporcionó API Key de Groq válida');
 
   let preferredModel = model || 'llama-3.3-70b-versatile';
-  if (preferredModel === 'groq/compound-mini' || preferredModel.includes('qwen') || preferredModel.includes('gpt-oss')) {
+  if (preferredModel === 'groq/compound-mini') {
     preferredModel = 'llama-3.3-70b-versatile';
   }
 

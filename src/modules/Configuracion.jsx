@@ -3,6 +3,8 @@ import { usePlan } from '../context/PlanContext';
 import { Cpu, Palette, Save, Globe, Database, Upload, Image as ImageIcon, RefreshCw, Settings, Sliders, Activity, DollarSign, Zap, AlertTriangle, Info, Plus, Trash2, BookOpen, CheckCircle, XCircle, Sparkles } from 'lucide-react';
 import DocumentUploader from '../components/DocumentUploader';
 import LogoGeneratorModal from '../components/LogoGeneratorModal';
+import TokenTelemetryDashboard from '../components/TokenTelemetryDashboard';
+import ApiQuotaMeter from '../components/ApiQuotaMeter';
 import { FRAMEWORKS } from '../config/frameworks';
 
 // [MDD] Modelo de precios de API (USD por 1M tokens) — se actualiza manualmente
@@ -382,6 +384,26 @@ export default function Configuracion() {
     return parseInt(localStorage.getItem('op_session_tokens') || '0');
   });
 
+  const [telemetryData, setTelemetryData] = useState({});
+
+  useEffect(() => {
+    const fetchTelemetry = async () => {
+      try {
+        const backendBase = getApiBase();
+        const res = await fetch(`${backendBase}/api/telemetry/tokens`);
+        if (res.ok) {
+          const data = await res.json();
+          setTelemetryData(data || {});
+        }
+      } catch {
+        // Fallback silencioso
+      }
+    };
+    fetchTelemetry();
+    const interval = setInterval(fetchTelemetry, 4000);
+    return () => clearInterval(interval);
+  }, []);
+
   const [cloudUserId, setCloudUserId] = useState(() => {
     return localStorage.getItem('openplan_user_id') || '';
   });
@@ -625,6 +647,8 @@ export default function Configuracion() {
             </div>
           )}
         </div>
+
+        <TokenTelemetryDashboard />
       </div>
 
       {/* Control de Contexto */}
@@ -1018,6 +1042,7 @@ export default function Configuracion() {
                   style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
                 />
                 <ApiStatusBadge status={groqStatus} onTest={() => testGroq(planData.config.ai.groqKey)} disabled={!planData.config.ai.groqKey} />
+                <ApiQuotaMeter providerKey="groq" tokens={telemetryData.groq || 0} isConfigured={!!planData.config.ai.groqKey} statusState={groqStatus.state} />
               </div>
 
               {/* NVIDIA NIM CARD */}
@@ -1037,6 +1062,7 @@ export default function Configuracion() {
                   style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
                 />
                 <ApiStatusBadge status={nvidiaStatus} onTest={() => testNvidia(planData.config.ai.nvidiaKey)} disabled={!planData.config.ai.nvidiaKey} />
+                <ApiQuotaMeter providerKey="nvidia" tokens={telemetryData.nvidia || 0} isConfigured={!!planData.config.ai.nvidiaKey} statusState={nvidiaStatus.state} />
               </div>
 
               {/* MISTRAL CARD */}
@@ -1059,6 +1085,7 @@ export default function Configuracion() {
                   style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
                 />
                 <ApiStatusBadge status={mistralStatus} onTest={() => testMistral(planData.config.ai.mistralKey || planData.config.ai.apiKey)} disabled={!planData.config.ai.mistralKey && !planData.config.ai.apiKey} />
+                <ApiQuotaMeter providerKey="mistral" tokens={telemetryData.mistral || 0} isConfigured={!!planData.config.ai.mistralKey || (planData.config.ai.primaryProvider === 'mistral' && !!planData.config.ai.apiKey)} statusState={mistralStatus.state} />
               </div>
 
               {/* OLLAMA CLOUD FREE (Kimi k2.6, MiniMax, Nemotron, Qwen) */}
@@ -1077,6 +1104,7 @@ export default function Configuracion() {
                   style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
                 />
                 <ApiStatusBadge status={ollamaCloudStatus} onTest={() => testOllamaCloud(planData.config.ai.ollamaKey)} disabled={!planData.config.ai.ollamaKey} />
+                <ApiQuotaMeter providerKey="ollama_cloud" tokens={telemetryData.ollama_cloud || 0} isConfigured={!!planData.config.ai.ollamaKey} statusState={ollamaCloudStatus.state} />
               </div>
 
               {/* OPENROUTER CARD — Nemotron 1M ctx, GPT-OSS, GLM 5.2 (capa gratuita) */}
@@ -1095,6 +1123,7 @@ export default function Configuracion() {
                   style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
                 />
                 <ApiStatusBadge status={openrouterStatus} onTest={() => testOpenRouter(planData.config.ai.openrouterKey)} disabled={!planData.config.ai.openrouterKey} />
+                <ApiQuotaMeter providerKey="openrouter" tokens={telemetryData.openrouter || 0} isConfigured={!!planData.config.ai.openrouterKey} statusState={openrouterStatus.state} />
               </div>
 
               {/* OPENCODE CARD — Modelos de código grandes, regenera cada 5h */}
@@ -1113,6 +1142,26 @@ export default function Configuracion() {
                   style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
                 />
                 <ApiStatusBadge status={opencodeStatus} onTest={() => testOpenCode(planData.config.ai.opencodeKey)} disabled={!planData.config.ai.opencodeKey} />
+                <ApiQuotaMeter providerKey="opencode" tokens={telemetryData.opencode || 0} isConfigured={!!planData.config.ai.opencodeKey} statusState={opencodeStatus.state} />
+              </div>
+
+              {/* ORCA ROUTER CARD */}
+              <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: `1.5px solid ${planData.config.ai.primaryProvider === 'orcarouter' ? '#38bdf8' : 'rgba(56,189,248,0.3)'}` }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
+                  <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#38bdf8' }}>🐬 Orca Router <span style={{ fontSize: '0.65rem', background: 'rgba(56,189,248,0.15)', color: '#38bdf8', padding: '1px 6px', borderRadius: '8px', marginLeft: '4px' }}>ROUTER</span></div>
+                  <a href="https://orcarouter.ai" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: '#38bdf8', textDecoration: 'none', fontWeight: 700 }}>Obtener Key ↗</a>
+                </div>
+                <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>Enrutador inteligente multi-modelo · Requiere recarga inicial para activar saldo</div>
+                <input
+                  type="password"
+                  className="form-control"
+                  placeholder="sk-orca-..."
+                  value={planData.config.ai.orcarouterKey || ''}
+                  onChange={(e) => handleAiChange('orcarouterKey', e.target.value)}
+                  style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
+                />
+                <ApiStatusBadge status={{ state: planData.config.ai.orcarouterKey ? 'online' : 'idle', message: planData.config.ai.orcarouterKey ? 'Configurado' : 'Sin verificar' }} onTest={() => {}} disabled={!planData.config.ai.orcarouterKey} />
+                <ApiQuotaMeter providerKey="orcarouter" tokens={telemetryData.orcarouter || 0} isConfigured={!!planData.config.ai.orcarouterKey} statusState={planData.config.ai.orcarouterKey ? 'online' : 'idle'} />
               </div>
 
             </div>
@@ -1147,6 +1196,7 @@ export default function Configuracion() {
                   style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
                 />
                 <ApiStatusBadge status={geminiStatus} onTest={() => testGemini(planData.config.ai.geminiKey || planData.config.ai.apiKey)} disabled={!planData.config.ai.geminiKey && !planData.config.ai.apiKey} />
+                <ApiQuotaMeter providerKey="gemini" tokens={telemetryData.gemini || 0} isConfigured={!!planData.config.ai.geminiKey || !!planData.config.ai.apiKey} statusState={geminiStatus.state} />
               </div>
 
               {/* ANTHROPIC CLAUDE */}
@@ -1166,6 +1216,7 @@ export default function Configuracion() {
                   style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
                 />
                 <ApiStatusBadge status={claudeStatus} onTest={() => testClaude(planData.config.ai.claudeKey)} disabled={!planData.config.ai.claudeKey} />
+                <ApiQuotaMeter providerKey="claude" tokens={telemetryData.claude || 0} isConfigured={!!planData.config.ai.claudeKey} statusState={claudeStatus.state} />
               </div>
 
               {/* OPENAI GPT */}
@@ -1188,6 +1239,7 @@ export default function Configuracion() {
                   style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
                 />
                 <ApiStatusBadge status={openaiStatus} onTest={() => testOpenai(planData.config.ai.openaiKey || planData.config.ai.apiKey)} disabled={!planData.config.ai.openaiKey && !planData.config.ai.apiKey} />
+                <ApiQuotaMeter providerKey="openai" tokens={telemetryData.openai || 0} isConfigured={!!planData.config.ai.openaiKey || !!planData.config.ai.apiKey} statusState={openaiStatus.state} />
               </div>
 
               {/* OLLAMA LOCAL CARD */}
@@ -1214,6 +1266,7 @@ export default function Configuracion() {
                     Refrescar
                   </button>
                 </div>
+                <ApiQuotaMeter providerKey="ollama" tokens={telemetryData.ollama || 0} isConfigured={ollamaOnline} statusState={ollamaOnline ? 'online' : 'offline'} />
               </div>
 
               {/* OLLAMA CLOUD PREMIUM (GLM 5.1, Qwen3.5 72B) */}
@@ -1232,6 +1285,7 @@ export default function Configuracion() {
                   style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
                 />
                 <ApiStatusBadge status={ollamaCloudStatus} onTest={() => testOllamaCloud(planData.config.ai.ollamaKey)} disabled={!planData.config.ai.ollamaKey} />
+                <ApiQuotaMeter providerKey="ollama_cloud" tokens={telemetryData.ollama_cloud || 0} isConfigured={!!planData.config.ai.ollamaKey} statusState={ollamaCloudStatus.state} />
               </div>
 
               {/* GLM / ZhipuAI Directo */}

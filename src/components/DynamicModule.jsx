@@ -145,10 +145,13 @@ export default function DynamicModule() {
   }
 
   const locationHint =
+    planData?.semilla?.cobertura ||
+    planData?.semilla?.ubicacion ||
+    planData?.semilla?.cliente_ubicacion ||
     planData?.semilla?.negocio?.ubicacion ||
-    planData?.tecnico?.ubicacion?.macro ||
     planData?.tecnico?.ubicacion?.micro ||
-    'Hermosillo, Sonora';
+    planData?.tecnico?.ubicacion?.macro ||
+    'Cananea, Sonora';
 
   const projectContext = planData?.semilla?.negocio?.giro || planData?.semilla?.negocio?.nombre || 'servicios profesionales';
 
@@ -182,13 +185,17 @@ export default function DynamicModule() {
   const isFinancialModule = pillarId === 'finanzas' || moduleId === 'estados_financieros' || moduleId === 'rentabilidad';
 
   if (pillarId === 'simulador_financiero' && moduleId === 'simulador') {
+    const rawBase = import.meta.env.BASE_URL || '/';
+    const basePath = rawBase.endsWith('/') ? rawBase : `${rawBase}/`;
+    const iframeSrc = `${basePath}simulador/index.html`;
+
     return (
       <div className="module-view" style={{ padding: 0, height: 'calc(100vh - 80px)', overflow: 'hidden' }}>
         <div style={{ width: '100%', height: '100%', position: 'relative', borderRadius: '14px', overflow: 'hidden', border: '1px solid var(--border-color)', background: '#f8fafc' }}>
           <iframe 
-            src="/simulador/index.html" 
+            src={iframeSrc} 
             style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}
-            title="Simulador FAPPA Cibercafe"
+            title="Simulador Financiero"
           />
         </div>
       </div>

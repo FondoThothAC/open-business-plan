@@ -1026,6 +1026,57 @@ export const PROJECT_EXAMPLES = {
         }
       }
     }
+  },
+  hidraulica_minera: {
+    name: "Hidráulica Minera S.A. de C.V.",
+    data: {
+      naturaleza: {
+        introduccion: {
+          justificacion: 'La industria minera requiere mantenimiento continuo y especializado en sus sistemas hidráulicos de maquinaria pesada. Las paradas no programadas por fallas cuestan millones, y existe una alta demanda de un socio estratégico local.',
+          origen: 'Crear una empresa estructurada con un CAPEX fuerte para soportar SLAs (Service Level Agreements) a largo plazo en minas de Sonora y el Noroeste.',
+          nombre: 'Hidráulica Minera S.A. de C.V.',
+          descripcion: 'Empresa especializada en el mantenimiento preventivo, predictivo y correctivo de sistemas e infraestructura hidráulica a nivel industrial para el sector minero.'
+        },
+        identidad: {
+          mision: 'Asegurar la continuidad operativa de la industria minera mediante servicios de mantenimiento hidráulico de la más alta precisión y seguridad.',
+          vision: 'Ser el socio estratégico líder en soluciones hidráulicas para la minería en el noroeste de México.',
+          valores: 'Seguridad, Precisión, Disponibilidad, Innovación.'
+        },
+        objetivos: {
+          general: 'Alcanzar el retorno de inversión del CAPEX inicial de 20 millones de pesos en un periodo de 60 meses mediante contratos recurrentes.',
+          especificos: '• Obtener 5 contratos a largo plazo (SLAs) con mineras Tier 1.\n• Reducir el tiempo de inactividad de los clientes en un 30%.\n• Recuperar la inversión mensual y generar ganancia distribuible a inversores.'
+        },
+        legal: {
+          constitucion: 'S.A. de C.V. (Sociedad Anónima de Capital Variable)',
+          socios: '60% Grupo Inversionista (Capital), 40% Socios Operativos (Capital Intelectual / Know-how)'
+        }
+      },
+      mercado: {
+        analisis: {
+          producto: 'Mantenimiento preventivo, overhaul de cilindros y bombas hidráulicas, diagnóstico predictivo y refacciones.',
+          valor: 'SLA garantizado, respuesta 24/7 y financiamiento de refacciones de alta rotación.',
+          demanda: 'Minas a tajo abierto y subterráneas en Sonora y Chihuahua.',
+          cliente: 'Directores de Mantenimiento y Operaciones de grandes conglomerados mineros.'
+        }
+      },
+      tecnico: {
+        ubicacion: { macro: 'Sonora', micro: 'Corredor Industrial / Minero', local: 'Taller de reparación con capacidades de izaje pesado.' },
+        operacion: { proceso: 'Recepción, lavado y desarme, evaluación con metrología, maquinado/cambio de sellos, ensamble, prueba en banco (hasta 5000 PSI) y liberación.' }
+      },
+      organizacion: {
+        inversion: {
+          capex: '$20,000,000 MXN',
+          estructura: '60% Aporte Inversionistas, 40% Know-how y Desarrollo (Capital Intelectual)',
+          retorno: 'ROI planificado a 60 meses con distribuciones mensuales para cubrir la inversión y generar rendimientos.'
+        }
+      },
+      semilla: {
+        proyecto: 'Mantenimiento de hidraulica a nivel industrial para empresas en minas.',
+        inversion_esperada: '20000000',
+        esquema_accionistas: '60% inversionistas, 40% socios por capital intelectual/know-how',
+        plazo_retorno: '60 meses',
+        estrategia: 'Pagos mensuales para cubrir la inversión y ganancias'
+      }
+    }
   }
 };
-

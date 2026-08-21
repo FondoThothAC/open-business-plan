@@ -11,6 +11,30 @@ const PORCENTAJES_LEY = {
 
 const SALARIO_MINIMO_GENERAL = 250; // default fallback
 
+export function parseNumericAmount(val, fallback = 0) {
+  if (val === null || val === undefined || val === '') return fallback;
+  if (typeof val === 'number') return isNaN(val) ? fallback : val;
+  const str = String(val).trim();
+  
+  // Extraer si viene expresado en millones (ej. "20 millones")
+  const millonMatch = str.match(/(\d+(?:\.\d+)?)\s*millon(?:es)?/i);
+  if (millonMatch) {
+    const num = parseFloat(millonMatch[1]);
+    if (!isNaN(num)) return num * 1000000;
+  }
+  
+  // Extraer formato de moneda $20,000,000 o similar
+  const currencyMatch = str.match(/\$\s*(\d{1,3}(?:,\d{3})*(?:\.\d+)?|\d+)/);
+  if (currencyMatch) {
+    const num = parseFloat(currencyMatch[1].replace(/,/g, ''));
+    if (!isNaN(num)) return num;
+  }
+  
+  const clean = str.replace(/,/g, '').replace(/[^0-9.-]/g, '');
+  const parsed = parseFloat(clean);
+  return isNaN(parsed) ? fallback : parsed;
+}
+
 function parseToProjectData(planData) {
   // Extraemos lo que podamos del planData generado por IA
   const projectDuration = parseInt(planData?.organizacion?.inversion?.horizonte) || 5;
@@ -22,43 +46,67 @@ function parseToProjectData(planData) {
   let investmentItems = [];
   try {
     const rawCapex = planData?.organizacion?.inversion?.desglose_capex_json;
-    if (rawCapex) investmentItems = JSON.parse(rawCapex);
+    if (rawCapex) {
+      const parsed = typeof rawCapex === 'string' ? JSON.parse(rawCapex) : rawCapex;
+      if (Array.isArray(parsed)) {
+        investmentItems = parsed.map((item, idx) => ({
+          id: idx + 1,
+          name: item.concepto || item.name || `Inversión ${idx + 1}`,
+          amount: parseNumericAmount(item.monto || item.amount),
+          type: item.tipo || item.type || 'Activo Fijo',
+          acquisitionSource: item.fuente || item.acquisitionSource || 'Financiamiento'
+        })).filter(i => i.amount > 0);
+      }
+    }
   } catch {}
 
   let recurringExpenses = [];
   try {
     const rawOpex = planData?.organizacion?.costos?.desglose_opex_json;
-    if (rawOpex) recurringExpenses = JSON.parse(rawOpex).map((i, index) => ({
-      id: index + 1,
-      name: i.concepto,
-      type: i.categoria === 'Fijo' ? 'Fijo' : 'Variable',
-      initialMonthlyAmount: parseFloat(i.mensual) || 0,
-      growthType: 'annual',
-      annualGrowthRates: [5, 5, 5, 5, 5]
-    }));
+    if (rawOpex) {
+      const parsed = typeof rawOpex === 'string' ? JSON.parse(rawOpex) : rawOpex;
+      if (Array.isArray(parsed)) {
+        recurringExpenses = parsed.map((i, index) => ({
+          id: index + 1,
+          name: i.concepto || i.name,
+          type: (i.categoria === 'Fijo' || i.type === 'Fijo') ? 'Fijo' : 'Variable',
+          initialMonthlyAmount: parseNumericAmount(i.mensual || i.initialMonthlyAmount),
+          growthType: 'annual',
+          annualGrowthRates: [5, 5, 5, 5, 5]
+        })).filter(e => e.initialMonthlyAmount > 0);
+      }
+    }
   } catch {}
 
   let recurringRevenues = [];
   try {
     const rawRev = planData?.organizacion?.estados_financieros?.ingresos_json;
-    if (rawRev) recurringRevenues = JSON.parse(rawRev).map((i, index) => ({
-      id: index + 1,
-      name: i.concepto,
-      initialMonthlyAmount: parseFloat(i.mensual) || 0,
-      annualGrowthRates: [5, 5, 5, 5, 5]
-    }));
+    if (rawRev) {
+      const parsed = typeof rawRev === 'string' ? JSON.parse(rawRev) : rawRev;
+      if (Array.isArray(parsed)) {
+        recurringRevenues = parsed.map((i, index) => ({
+          id: index + 1,
+          name: i.concepto || i.name,
+          initialMonthlyAmount: parseNumericAmount(i.mensual || i.initialMonthlyAmount || (Number(i.anual || 0) / 12)),
+          annualGrowthRates: [5, 5, 5, 5, 5]
+        })).filter(r => r.initialMonthlyAmount > 0);
+      }
+    }
   } catch {}
 
-  // Generamos un fallback si están vacíos usando datos estimados
+  // Si no hay capex estruturado en JSON, intentar extraer monto del texto de inversión
   if (investmentItems.length === 0) {
-    investmentItems.push({ id: 1, name: "Equipamiento Inicial Estimado", amount: 150000, type: "Activo Fijo", acquisitionSource: "Financiamiento" });
+    const capexFromText = parseNumericAmount(planData?.organizacion?.inversion?.capex || planData?.semilla?.finanzas?.inversion_total, 150000);
+    investmentItems.push({ id: 1, name: "Inversión Inicial en Maquinaria y Equipamiento", amount: capexFromText, type: "Activo Fijo", acquisitionSource: "Financiamiento / Aportación" });
   }
   if (recurringExpenses.length === 0) {
-    recurringExpenses.push({ id: 1, name: "Costos Fijos Operativos Base", type: "Fijo", initialMonthlyAmount: 12000, growthType: 'annual', annualGrowthRates: [5,5,5,5,5] });
-    recurringExpenses.push({ id: 2, name: "Costos Variables", type: "Variable", initialMonthlyAmount: 8000, growthType: 'annual', annualGrowthRates: [5,5,5,5,5] });
+    const fixedFromText = parseNumericAmount(planData?.organizacion?.costos?.fijos || planData?.semilla?.finanzas?.costos_fijos, 35000);
+    recurringExpenses.push({ id: 1, name: "Costos Fijos Operativos Base", type: "Fijo", initialMonthlyAmount: fixedFromText, growthType: 'annual', annualGrowthRates: [5,5,5,5,5] });
+    recurringExpenses.push({ id: 2, name: "Costos Variables Operativos", type: "Variable", initialMonthlyAmount: Math.round(fixedFromText * 0.4), growthType: 'annual', annualGrowthRates: [5,5,5,5,5] });
   }
   if (recurringRevenues.length === 0) {
-    recurringRevenues.push({ id: 1, name: "Ventas Proyectadas", initialMonthlyAmount: 35000, annualGrowthRates: [5,5,5,5,5] });
+    const revFromText = parseNumericAmount(planData?.semilla?.finanzas?.meta_ingresos || planData?.organizacion?.estados_financieros?.resultados, 120000);
+    recurringRevenues.push({ id: 1, name: "Facturación Mensual por Servicios", initialMonthlyAmount: revFromText > 500000 ? Math.round(revFromText / 12) : revFromText, annualGrowthRates: [5,5,5,5,5] });
   }
 
   // Generar un depreciable dummy en base a los activos fijos
@@ -86,7 +134,7 @@ function parseToProjectData(planData) {
     loans: [], // Simplificación
     payrollConfig: {
       positions: [
-        { id: 1, title: 'Operador / Vendedor', monthlySalary: SALARIOS_MINIMOS[0]?.zsmg * 30 || 7500 } // Ej. tomamos albañilería como base operativa
+        { id: 1, title: 'Operador Especializado / Técnico', monthlySalary: SALARIOS_MINIMOS[0]?.zsmg * 30 || 12000 }
       ],
       temporaryEmployees: 0,
       temporaryEmployeeSalary: 0,

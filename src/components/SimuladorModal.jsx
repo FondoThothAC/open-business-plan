@@ -28,6 +28,10 @@ export default function SimuladorModal({ isOpen, onClose, onExport }) {
 
   if (!isOpen) return null;
 
+  const rawBase = import.meta.env.BASE_URL || '/';
+  const basePath = rawBase.endsWith('/') ? rawBase : `${rawBase}/`;
+  const iframeSrc = `${basePath}simulador/index.html`;
+
   return (
     <div style={{
       position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
@@ -58,9 +62,9 @@ export default function SimuladorModal({ isOpen, onClose, onExport }) {
       </div>
       <div style={{ flex: 1, position: 'relative', background: '#f8fafc' }}>
         <iframe 
-          src="/simulador/index.html" 
+          src={iframeSrc} 
           style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}
-          title="Simulador FAPPA Cibercafe"
+          title="Simulador Financiero"
         />
       </div>
     </div>

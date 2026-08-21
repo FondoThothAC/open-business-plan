@@ -16,13 +16,32 @@ import {
 const formatCurrency = (value) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(Number(value || 0));
 
 function parseNum(value) {
-  if (typeof value === 'number') return value;
-  const normalized = (value || 0).toString().replace(/,/g, '').replace(/[^0-9.-]/g, '');
-  return Number(normalized) || 0;
+  if (value === null || value === undefined || value === '') return 0;
+  if (typeof value === 'number') return isNaN(value) ? 0 : value;
+  const str = String(value).trim();
+  
+  const millonMatch = str.match(/(\d+(?:\.\d+)?)\s*millon(?:es)?/i);
+  if (millonMatch) {
+    const num = parseFloat(millonMatch[1]);
+    if (!isNaN(num)) return num * 1000000;
+  }
+  
+  const currencyMatch = str.match(/\$\s*(\d{1,3}(?:,\d{3})*(?:\.\d+)?|\d+)/);
+  if (currencyMatch) {
+    const num = parseFloat(currencyMatch[1].replace(/,/g, ''));
+    if (!isNaN(num)) return num;
+  }
+
+  const normalized = str.replace(/,/g, '').replace(/[^0-9.-]/g, '');
+  const parsed = parseFloat(normalized);
+  return isNaN(parsed) ? 0 : parsed;
 }
 
 function readJson(raw, fallback) {
-  if (!raw || typeof raw !== 'string') return fallback;
+  if (!raw) return fallback;
+  if (typeof raw !== 'string') {
+    return Array.isArray(fallback) ? (Array.isArray(raw) ? raw : fallback) : (raw || fallback);
+  }
   try {
     const parsed = JSON.parse(raw);
     return Array.isArray(fallback) ? (Array.isArray(parsed) ? parsed : fallback) : (parsed || fallback);
@@ -49,9 +68,9 @@ function buildInitialFinanceData(planData, importedCorrida) {
       discountRate: importedCorrida.discountRate || estimatedWACC,
       inflationRate: currentInflation,
       initialInvestment: importedCorrida.initialInvestment || 0,
-      monthlyFixedCosts: (importedCorrida.fixedCostLines || []).reduce((sum, row) => sum + Number(row.monthly || 0), 0),
+      monthlyFixedCosts: (importedCorrida.fixedCostLines || []).reduce((sum, row) => sum + parseNum(row.monthly), 0),
       annualSalesGoal: importedCorrida.annualRows?.[0]?.sales || 0,
-      monthlyVariableCosts: (importedCorrida.variableCostLines || []).reduce((sum, row) => sum + Number(row.monthly || 0), 0),
+      monthlyVariableCosts: (importedCorrida.variableCostLines || []).reduce((sum, row) => sum + parseNum(row.monthly), 0),
       annualSalesGrowth: importedCorrida.annualGrowthRate || 5,
       annualCostGrowth: importedCorrida.annualGrowthRate || 5,
     };
@@ -61,9 +80,9 @@ function buildInitialFinanceData(planData, importedCorrida) {
   const capexRows = readJson(planData.organizacion?.inversion?.desglose_capex_json, []);
   const opexRows = readJson(planData.organizacion?.costos?.desglose_opex_json, []);
   const revenueRows = readJson(planData.organizacion?.estados_financieros?.ingresos_json, []);
-  const capexTotal = capexRows.reduce((sum, row) => sum + Number(row.monto || 0), 0);
-  const fixedTotal = opexRows.filter((row) => !isVariableExpense(row)).reduce((sum, row) => sum + Number(row.mensual || 0), 0);
-  const revenueTotal = revenueRows.reduce((sum, row) => sum + Number(row.anual || (Number(row.mensual || 0) * 12)), 0);
+  const capexTotal = capexRows.reduce((sum, row) => sum + parseNum(row.monto || row.amount), 0);
+  const fixedTotal = opexRows.filter((row) => !isVariableExpense(row)).reduce((sum, row) => sum + parseNum(row.mensual), 0);
+  const revenueTotal = revenueRows.reduce((sum, row) => sum + (parseNum(row.anual) || (parseNum(row.mensual) * 12)), 0);
   const inver = capexTotal || semilla.finanzas?.inversion_total || planData.organizacion?.inversion?.capex || '100000';
   const fijos = fixedTotal || semilla.finanzas?.costos_fijos || planData.organizacion?.costos?.fijos || '20000';
   const meta = revenueTotal || semilla.finanzas?.meta_ingresos || '500000';
@@ -90,28 +109,28 @@ function buildManualProjectData(financeData, planData) {
   const investmentItems = capexRows.length > 0
     ? capexRows.map((row, index) => ({
       id: index + 1,
-      name: row.concepto || `Inversión ${index + 1}`,
-      amount: Number(row.monto || 0),
+      name: row.concepto || row.name || `Inversión ${index + 1}`,
+      amount: parseNum(row.monto || row.amount),
       type: ['Activo Fijo', 'Activo Diferido', 'Capital de Trabajo'].includes(row.tipo) ? row.tipo : 'Activo Fijo',
-      acquisitionSource: 'Aportación (Nuevo)',
+      acquisitionSource: row.fuente || 'Aportación (Nuevo)',
     })).filter((row) => row.amount > 0)
     : [{ id: 1, name: 'Inversión Inicial Base', amount: financeData.initialInvestment, type: 'Activo Fijo', acquisitionSource: 'Aportación (Nuevo)' }];
 
   const recurringRevenues = revenueRows.length > 0
     ? revenueRows.map((row, index) => ({
       id: index + 1,
-      name: row.concepto || `Ingreso ${index + 1}`,
-      initialMonthlyAmount: Number(row.mensual || (Number(row.anual || 0) / 12) || 0),
-      annualGrowthRates: Array(financeData.projectDuration).fill(Number(row.crecimiento || financeData.annualSalesGrowth || 0)),
+      name: row.concepto || row.name || `Ingreso ${index + 1}`,
+      initialMonthlyAmount: parseNum(row.mensual || (parseNum(row.anual) / 12) || 0),
+      annualGrowthRates: Array(financeData.projectDuration).fill(parseNum(row.crecimiento || financeData.annualSalesGrowth || 0)),
     })).filter((row) => row.initialMonthlyAmount > 0)
     : [{ id: 1, name: 'Ventas Proyectadas', initialMonthlyAmount: financeData.annualSalesGoal / 12, annualGrowthRates: Array(financeData.projectDuration).fill(financeData.annualSalesGrowth) }];
 
   const recurringExpenses = opexRows.length > 0
     ? opexRows.map((row, index) => ({
       id: index + 1,
-      name: row.concepto || `Gasto ${index + 1}`,
+      name: row.concepto || row.name || `Gasto ${index + 1}`,
       type: isVariableExpense(row) ? 'Variable' : 'Fijo',
-      initialMonthlyAmount: Number(row.mensual || 0),
+      initialMonthlyAmount: parseNum(row.mensual || 0),
       growthType: 'annual',
       monthlyGrowthRate: 0,
       annualGrowthRates: Array(financeData.projectDuration).fill(financeData.annualCostGrowth),
