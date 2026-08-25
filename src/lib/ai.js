@@ -34,6 +34,25 @@ import { calculateCost } from '../config/pricing.js';
 // Variable a nivel de módulo para capturar el feed de progreso activo
 let activeTermLog = null;
 
+// Caché de estado Ollama — evita timeouts repetidos en cada agente del chain
+// Se resetea automáticamente tras 30 segundos para detectar reconexiones
+let _ollamaOfflineCache = false;
+let _ollamaOfflineCacheTs = 0;
+const OLLAMA_OFFLINE_CACHE_TTL_MS = 30_000;
+
+function _isOllamaOfflineCached() {
+  if (!_ollamaOfflineCache) return false;
+  if (Date.now() - _ollamaOfflineCacheTs > OLLAMA_OFFLINE_CACHE_TTL_MS) {
+    _ollamaOfflineCache = false; // TTL expirado, permitir reintento
+    return false;
+  }
+  return true;
+}
+function _markOllamaOffline() {
+  _ollamaOfflineCache = true;
+  _ollamaOfflineCacheTs = Date.now();
+}
+
 // ─────────────────────────────────────────────────────────────────────────
 // Configuración de roles por defecto (se sobreescribe desde Configuracion.jsx)
 // ─────────────────────────────────────────────────────────────────────────
@@ -883,36 +902,41 @@ export async function callAiProvider(config, prompt, expectJson = true, expected
       throw err;
     }
 
-    // ─── Rotación Automática Multi-Proveedor a Nivel de Llamada (Prioridad Minimax ➔ Groq ➔ Gemini) ───
+    // ─── Rotación Automática Multi-Proveedor — Prioridad: rápidos primero ───
+    // ORDEN: Minimax → Groq (rápido) → Gemini (rápido) → TokenRouter → OrcaRouter → OpenRouter (lento) → NVIDIA → Mistral
+    // OpenRouter tier gratuito puede tardar 60s+; Groq y Gemini responden en 1-3s.
     const logger = onThink || activeTermLog;
     const fallbackProviders = [];
 
-    // 1° Prioridad: Minimax / Minimax-M3 Cloud
+    // 1° Prioridad: Minimax (si tiene clave)
     if (provider !== 'minimax' && (minimaxKey || config?.minimaxKey)) {
       fallbackProviders.push({ provider: 'minimax', key: minimaxKey || config?.minimaxKey, model: 'minimax-m3:cloud' });
     }
-    if (provider !== 'ollama' && (endpoint || config?.endpoint)) {
-      fallbackProviders.push({ provider: 'ollama', key: null, model: 'minimax-m3:cloud' });
+
+    // 2° Prioridad: Groq — rápido y con modelos robustos
+    if (provider !== 'groq' && (groqKey || config?.groqKey)) {
+      fallbackProviders.push({ provider: 'groq', key: groqKey || config?.groqKey, model: 'openai/gpt-oss-20b' });
     }
-    // 2° Prioridad: Routers Inteligentes Multi-Modelo (TokenRouter / Orca Router / OpenRouter)
+
+    // 3° Prioridad: Gemini — rápido
+    if (provider !== 'gemini' && (apiKey || config?.geminiKey)) {
+      fallbackProviders.push({ provider: 'gemini', key: apiKey || config?.geminiKey, model: 'gemini-2.5-flash' });
+    }
+
+    // 4° Prioridad: Routers inteligentes (TokenRouter / OrcaRouter)
     if (provider !== 'tokenrouter' && (tokenrouterKey || config?.tokenrouterKey)) {
       fallbackProviders.push({ provider: 'tokenrouter', key: tokenrouterKey || config?.tokenrouterKey, model: 'deepseek/deepseek-r1:free' });
     }
     if (provider !== 'orcarouter' && (orcaRouterKey || config?.orcaRouterKey)) {
       fallbackProviders.push({ provider: 'orcarouter', key: orcaRouterKey || config?.orcaRouterKey, model: 'orcarouter/auto' });
     }
+
+    // 5° Prioridad: OpenRouter — tier gratuito lento (~60s), va al final
     if (provider !== 'openrouter' && (openrouterKey || config?.openrouterKey)) {
       fallbackProviders.push({ provider: 'openrouter', key: openrouterKey || config?.openrouterKey, model: 'nvidia/nemotron-3.5-lightning:free' });
     }
-    // 3° Prioridad: Groq
-    if (provider !== 'groq' && (groqKey || config?.groqKey)) {
-      fallbackProviders.push({ provider: 'groq', key: groqKey || config?.groqKey, model: 'llama-3.3-70b-versatile' });
-    }
-    // 4° Prioridad: Gemini
-    if (provider !== 'gemini' && (apiKey || config?.geminiKey)) {
-      fallbackProviders.push({ provider: 'gemini', key: apiKey || config?.geminiKey, model: 'gemini-2.5-flash' });
-    }
-    // 5° Prioridad: NVIDIA / Mistral
+
+    // 6° Prioridad: NVIDIA / Mistral
     if (provider !== 'nvidia' && (nvidiaKey || config?.nvidiaKey)) {
       fallbackProviders.push({ provider: 'nvidia', key: nvidiaKey || config?.nvidiaKey, model: 'meta/llama-3.1-70b-instruct' });
     }
@@ -1017,6 +1041,11 @@ async function callOllama(endpoint, model, prompt, expectJson, ollamaKey = '') {
     format: expectJson ? 'json' : undefined,
   };
 
+  // Si ya sabemos que Ollama está offline (caché activo), fallar rápido sin timeout
+  if (_isOllamaOfflineCached()) {
+    throw new Error(`Ollama (${targetModel}) error: offline (caché activo, evitando timeout)`);
+  }
+
   let response;
   try {
     response = await fetch(url, {
@@ -1026,18 +1055,25 @@ async function callOllama(endpoint, model, prompt, expectJson, ollamaKey = '') {
         ...(ollamaKey ? { 'Authorization': `Bearer ${ollamaKey}` } : {})
       },
       body: JSON.stringify(payload),
-      signal: AbortSignal.timeout(120000)
+      // Timeout reducido en VPS: si Ollama no responde en 8s, está offline
+      signal: AbortSignal.timeout(8000)
     });
-  } catch {
-    // Si falla directo (ej. CORS o Mixed Content en VPS), intentar a través del proxy
-    response = await fetchWithProxy(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(ollamaKey ? { 'Authorization': `Bearer ${ollamaKey}` } : {})
-      },
-      body: JSON.stringify(payload)
-    });
+  } catch (fetchErr) {
+    // Marcar Ollama como offline para evitar timeouts en las siguientes fases del chain
+    _markOllamaOffline();
+    // Si falla por CORS/Mixed Content en VPS, intentar a través del proxy
+    try {
+      response = await fetchWithProxy(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(ollamaKey ? { 'Authorization': `Bearer ${ollamaKey}` } : {})
+        },
+        body: JSON.stringify(payload)
+      });
+    } catch {
+      throw fetchErr; // Re-lanzar el error original
+    }
   }
 
   if (!response || !response.ok) {
@@ -1176,16 +1212,17 @@ async function callGroq(apiKey, model, prompt, expectJson) {
   const keys = parseApiKeys(apiKey);
   if (keys.length === 0) throw new Error('No se proporcionó API Key de Groq válida');
 
-  let preferredModel = model || 'llama-3.3-70b-versatile';
-  // Normalizar aliases a IDs de Groq válidos
+  let preferredModel = model || 'openai/gpt-oss-20b';
+  // Normalizar aliases a IDs de Groq válidos actuales
   if (preferredModel === 'groq/compound') preferredModel = 'compound-beta';
   if (preferredModel === 'groq/compound-mini') preferredModel = 'compound-beta-mini';
-  if (preferredModel === 'openai/gpt-oss-120b') preferredModel = 'llama-3.3-70b-versatile';
-  if (preferredModel === 'openai/gpt-oss-20b') preferredModel = 'llama-3.1-8b-instant';
   if (preferredModel === 'qwen/qwen3.6-27b') preferredModel = 'qwen-qwq-32b';
 
+  // Lista de candidatos Groq — modelos validados en producción primero
   const groqCandidateModels = [
     preferredModel,
+    'openai/gpt-oss-20b',       // Validado en producción VPS
+    'openai/gpt-oss-120b',      // Validado en producción VPS
     'llama-3.3-70b-versatile',
     'compound-beta',
     'compound-beta-mini',
