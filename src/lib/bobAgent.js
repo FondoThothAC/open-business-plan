@@ -202,8 +202,9 @@ export async function sendBobMessage({
     `\nUsuario: ${userMessage}\nBOB:`;
 
   const aiConfig = {
-    provider: 'ollama',
+    provider: 'minimax',
     model: 'minimax-m3:cloud',
+    minimaxKey: bobKey,
     apiKey: bobKey,
     endpoint: rawAi.endpoint,
     disableAutoFallback: true

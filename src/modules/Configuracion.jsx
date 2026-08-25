@@ -58,10 +58,8 @@ const PROVIDER_PRESETS = {
     { value: 'z-ai/glm-5.2:free', label: 'OpenRouter: GLM 5.2 (256k ctx)' },
   ],
   gemini: [
-    { value: 'gemini-3.6-flash', label: 'Google: Gemini 3.6 Flash ★ Activo' },
-    { value: 'gemini-3.5-flash-lite', label: 'Google: Gemini 3.5 Flash Lite' },
-    { value: 'gemini-3.7-flash', label: 'Google: Gemini 3.7 Flash' },
-    { value: 'gemini-1.5-flash', label: 'Google: Gemini 1.5 Flash (Legacy)' },
+    { value: 'gemini-1.5-pro', label: 'Google: Gemini 1.5 Pro (Premium)' },
+    { value: 'gemini-1.5-flash', label: 'Google: Gemini 1.5 Flash (Ultra Rápido)' },
   ],
   openai: [
     { value: 'gpt-5.6-sol', label: 'OpenAI: GPT-5.6 Sol (Flagship)' },
@@ -87,7 +85,7 @@ const CLOUD_PROVIDER_DEFAULTS = {
   groq:        'qwen/qwen3.6-27b',
   nvidia:      'nvidia/llama-3.1-nemotron-70b-instruct',
   mistral:     'mistral-large-latest',
-  gemini:      'gemini-3.6-flash',
+  gemini:      'gemini-1.5-flash',
   openai:      'gpt-4o',
   openrouter:  'nvidia/nemotron-3.5-lightning:free',
   ollama:      'minimax-m3:cloud',

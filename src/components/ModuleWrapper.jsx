@@ -120,19 +120,52 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
           newDrafts[key] = result[key];
         }
       });
-      setDraftValues(newDrafts);
       
       if (result && result._trace) {
         updateSection(pillar, moduleKey, '_trace', result._trace);
       }
       
-      setStage('Borrador generado con trazabilidad. Revisa y acepta los cambios.');
-      setIsAiCompleted(true);
-      setTimeout(() => setStage(''), 6000);
+      // Efecto Typewriter para simular la escritura en tiempo real de la IA
+      setStage('Aplicando escritura en vivo...');
+      let currentLength = 0;
+      const maxLength = Math.max(0, ...Object.values(newDrafts).map(v => typeof v === 'string' ? v.length : 0));
+      
+      if (maxLength > 0) {
+        const typeInterval = setInterval(() => {
+          currentLength += 45; // Velocidad de tipeo en vivo por frame
+          let isFinished = true;
+          
+          setDraftValues(prev => {
+            const temp = { ...prev };
+            Object.keys(newDrafts).forEach(key => {
+              if (typeof newDrafts[key] === 'string') {
+                if (currentLength < newDrafts[key].length) isFinished = false;
+                temp[key] = newDrafts[key].slice(0, currentLength);
+              } else {
+                temp[key] = newDrafts[key];
+              }
+            });
+            return temp;
+          });
+
+          if (isFinished) {
+            clearInterval(typeInterval);
+            setIsAiCompleted(true);
+            setLoading(false);
+            setStage('Borrador generado con trazabilidad. Revisa y acepta los cambios.');
+            setTimeout(() => setStage(''), 6000);
+          }
+        }, 35);
+      } else {
+        setDraftValues(newDrafts);
+        setIsAiCompleted(true);
+        setLoading(false);
+        setStage('Borrador generado con trazabilidad. Revisa y acepta los cambios.');
+        setTimeout(() => setStage(''), 6000);
+      }
     } catch (error) {
       alert(error.message);
       setStage('Error en generación');
-    } finally {
       setLoading(false);
     }
   };

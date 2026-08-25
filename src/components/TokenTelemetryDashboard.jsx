@@ -159,10 +159,30 @@ export default function TokenTelemetryDashboard() {
       </div>
 
       {/* Grid de proveedores */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '0.75rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '0.75rem' }}>
         {sortedEntries.map(([provider, tokens]) => {
           const pct = totalTokens > 0 ? ((tokens / totalTokens) * 100) : 0;
           const color = providerColors[provider] || '#6366f1';
+          
+          const providerNames = {
+            'ollama_cloud': 'Ollama Cloud / MiniMax',
+            'minimax': 'MiniMax (Direct)',
+            'gemini': 'Google Gemini',
+            'groq': 'Groq',
+            'openai': 'OpenAI',
+            'claude': 'Anthropic',
+            'openrouter': 'OpenRouter',
+            'tokenrouter': 'TokenRouter'
+          };
+          
+          const freemiumLimits = {
+            'minimax': 1000000,
+            'ollama_cloud': 1000000,
+            'gemini': 1500000,
+            'groq': 500000
+          };
+          const limit = freemiumLimits[provider];
+          
           return (
             <div key={provider} style={{
               padding: '0.75rem',
@@ -181,16 +201,24 @@ export default function TokenTelemetryDashboard() {
                 transition: 'width 0.5s ease',
               }} />
               <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.25rem', fontWeight: 600 }}>
-                {provider.replace(/_/g, ' ')}
+                {providerNames[provider] || provider.replace(/_/g, ' ')}
               </div>
               <div style={{ fontSize: '1.1rem', fontWeight: 800, fontFamily: 'var(--font-display)', color }}>
-                {tokens >= 1000 ? `${(tokens / 1000).toFixed(1)}k` : tokens.toLocaleString()}
+                {tokens >= 1000000 ? `${(tokens / 1000000).toFixed(2)}M` : tokens >= 1000 ? `${(tokens / 1000).toFixed(1)}k` : tokens.toLocaleString()}
               </div>
-              {totalTokens > 0 && (
-                <div style={{ fontSize: '0.62rem', color: 'var(--text-secondary)', marginTop: '0.15rem' }}>
-                  {pct.toFixed(1)}% del total
-                </div>
-              )}
+              
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', marginTop: '0.25rem' }}>
+                {totalTokens > 0 && (
+                  <div style={{ fontSize: '0.62rem', color: 'var(--text-secondary)' }}>
+                    {pct.toFixed(1)}% del total
+                  </div>
+                )}
+                {limit && (
+                  <div style={{ fontSize: '0.62rem', color: tokens > limit ? '#ef4444' : '#10b981', fontWeight: 500 }}>
+                    {tokens > limit ? 'Límite diario superado' : `${((limit - tokens) / 1000).toFixed(0)}k restantes (aprox)`}
+                  </div>
+                )}
+              </div>
             </div>
           );
         })}

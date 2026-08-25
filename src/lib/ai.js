@@ -686,19 +686,29 @@ ${fieldsPromptContext}
         }
       }
     } else {
-      // Proveedor primario local — intentar otros modelos locales instalados
-      const defaultFallbackOrder = ['qwen3.5:4b-mlx', 'nemotron-3-nano:4b', 'qwen3.5:2b-mlx', 'gemma4:e2b-mlx'];
-      const fallbackLocalModels = defaultFallbackOrder.filter(m => installedModels.includes(m));
-      const actualFallbacks = fallbackLocalModels.length > 0 ? fallbackLocalModels : defaultFallbackOrder;
+      // Proveedor primario local — verificar si Ollama está disponible antes de intentar alternativas locales
+      const ollamaOnline = installedModels.length > 0;
 
-      for (const altModel of actualFallbacks) {
-        try {
-          await termLog('info', `Intentando modelo local alternativo: ${altModel}`, 'ollama');
-          fallbackResult = await runChain(makeProviderConfig(altModel));
-          if (fallbackResult) break;
-        } catch (altError) {
-          await termLog('error', `Modelo alternativo ${altModel} falló: ${altError.message.substring(0, 50)}`, 'ollama');
+      if (ollamaOnline) {
+        // Ollama responde pero el modelo falló → intentar otros modelos locales instalados
+        const defaultFallbackOrder = ['qwen3.5:4b-mlx', 'nemotron-3-nano:4b', 'qwen3.5:2b-mlx', 'gemma4:e2b-mlx'];
+        const fallbackLocalModels = defaultFallbackOrder.filter(m => installedModels.includes(m));
+        const actualFallbacks = fallbackLocalModels.length > 0 ? fallbackLocalModels : [];
+
+        for (const altModel of actualFallbacks) {
+          try {
+            await termLog('info', `Intentando modelo local alternativo: ${altModel}`, 'ollama');
+            // disableAutoFallback:true evita que callAiProvider vuelva a rotar internamente
+            const altCfg = { ...makeProviderConfig(altModel), disableAutoFallback: true };
+            fallbackResult = await runChain(altCfg);
+            if (fallbackResult) break;
+          } catch (altError) {
+            await termLog('error', `Modelo alternativo ${altModel} falló: ${altError.message.substring(0, 50)}`, 'ollama');
+          }
         }
+      } else {
+        // Ollama completamente offline (fetch failed) — saltar directo a la nube
+        await termLog('warning', '⚡ Ollama offline detectado. Saltando directo a proveedores de nube...', 'system');
       }
     }
   }
@@ -900,7 +910,7 @@ export async function callAiProvider(config, prompt, expectJson = true, expected
     }
     // 4° Prioridad: Gemini
     if (provider !== 'gemini' && (apiKey || config?.geminiKey)) {
-      fallbackProviders.push({ provider: 'gemini', key: apiKey || config?.geminiKey, model: 'gemini-3.6-flash' });
+      fallbackProviders.push({ provider: 'gemini', key: apiKey || config?.geminiKey, model: 'gemini-2.5-flash' });
     }
     // 5° Prioridad: NVIDIA / Mistral
     if (provider !== 'nvidia' && (nvidiaKey || config?.nvidiaKey)) {
@@ -1072,17 +1082,23 @@ async function callGemini(apiKey, model, prompt) {
   const keys = parseApiKeys(apiKey);
   if (keys.length === 0) throw new Error('No se proporcionó API Key de Google Gemini válida');
 
-  let preferredModel = model || 'gemini-3.6-flash';
-  if (preferredModel === 'gemini-1.5-flash' || preferredModel === 'gemini-1.5-pro' || preferredModel === 'gemini-2.5-flash') {
-    preferredModel = 'gemini-3.6-flash';
+  let preferredModel = model || 'gemini-2.5-flash';
+  // Normalizar aliases o modelos viejos a nombres válidos actuales
+  if (
+    preferredModel === 'gemini-3.6-flash' ||
+    preferredModel === 'gemini-3.7-flash' ||
+    preferredModel === 'gemini-3.5-flash-lite' ||
+    preferredModel === 'gemini-3.1-flash-lite'
+  ) {
+    preferredModel = 'gemini-2.5-flash';
   }
 
   const geminiCandidates = [
     preferredModel,
-    'gemini-3.6-flash',
-    'gemini-3.7-flash',
-    'gemini-3.5-flash-lite',
-    'gemini-3.1-flash-lite'
+    'gemini-2.5-flash',
+    'gemini-2.5-flash-lite',
+    'gemini-2.0-flash',
+    'gemini-1.5-flash'
   ];
   const uniqueModels = [...new Set(geminiCandidates)];
 
@@ -1161,13 +1177,19 @@ async function callGroq(apiKey, model, prompt, expectJson) {
   if (keys.length === 0) throw new Error('No se proporcionó API Key de Groq válida');
 
   let preferredModel = model || 'llama-3.3-70b-versatile';
-  if (preferredModel === 'groq/compound-mini') {
-    preferredModel = 'llama-3.3-70b-versatile';
-  }
+  // Normalizar aliases a IDs de Groq válidos
+  if (preferredModel === 'groq/compound') preferredModel = 'compound-beta';
+  if (preferredModel === 'groq/compound-mini') preferredModel = 'compound-beta-mini';
+  if (preferredModel === 'openai/gpt-oss-120b') preferredModel = 'llama-3.3-70b-versatile';
+  if (preferredModel === 'openai/gpt-oss-20b') preferredModel = 'llama-3.1-8b-instant';
+  if (preferredModel === 'qwen/qwen3.6-27b') preferredModel = 'qwen-qwq-32b';
 
   const groqCandidateModels = [
     preferredModel,
     'llama-3.3-70b-versatile',
+    'compound-beta',
+    'compound-beta-mini',
+    'moonshotai/kimi-k2-instruct',
     'llama-3.1-8b-instant',
     'qwen-qwq-32b',
     'deepseek-r1-distill-llama-70b'

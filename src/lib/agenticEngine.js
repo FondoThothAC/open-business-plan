@@ -328,8 +328,9 @@ CAMPOS REQUERIDOS (Devuelve ÚNICAMENTE un JSON válido con estas claves exactas
 ${fields.map(f => `"${f.key}": "${f.label} - ${f.type === 'mermaid' ? 'Código Mermaid.js válido' : 'Texto detallado y ejecutivo'}"`).join('\n')}
 `;
 
-    // Priorizar Minimax-M3 Cloud y ejecutar llamada
-    const generatedResult = await callAiProvider(aiConfig, systemPrompt, true, expectedKeys);
+    // Priorizar el modelo configurado y deshabilitar saltos si el usuario lo solicita implícitamente
+    const strictConfig = { ...aiConfig, disableAutoFallback: true };
+    const generatedResult = await callAiProvider(strictConfig, systemPrompt, true, expectedKeys);
 
     // ─── PASO 4: REFLEXIÓN Y VALIDACIÓN CRÍTICA (Critic-in-the-Loop) ───
     const criticStart = Date.now();

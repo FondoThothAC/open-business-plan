@@ -2233,32 +2233,50 @@ async function pingProvider(providerName, endpoint, apiKey, timeoutMs = 8000) {
 }
 
 // Detectar modelos gratuitos disponibles en routers y marcarlos como HOT
-function detectHotModels(registryData) {
-  const hotModels = new Set();
+async function detectHotModels(registryData) {
+  if (!registryData.models) registryData.models = {};
   
-  // Modelos que sabemos están en capa gratuita de routers
-  const freeRouterModels = [
-    'nvidia/nemotron-3.5-lightning:free',
-    'openai/gpt-oss-20b:free',
-    'nvidia/nemotron-3-nano-30b-a3b:free',
-    'z-ai/glm-5.2:free',
-    'deepseek/deepseek-r1:free',
-    'minimax-m3:cloud',
-    'kimi-k2.6:cloud',
-    'qwen3.5:cloud',
-    'nemotron-3-super:cloud',
-    'gemma4:31b-cloud',
-    'glm-5.1:cloud',
-  ];
+  const hotModels = new Set([
+    'minimax-m3:cloud', 'kimi-k2.6:cloud', 'qwen3.5:cloud', 'nemotron-3-super:cloud',
+    'gemma4:31b-cloud', 'glm-5.1:cloud'
+  ]);
 
-  freeRouterModels.forEach(m => hotModels.add(m));
+  try {
+    console.log('[ModelRegistry] Obteniendo modelos dinámicos de OpenRouter...');
+    const res = await fetch('https://openrouter.ai/api/v1/models', { signal: AbortSignal.timeout(10000) });
+    if (res.ok) {
+      const json = await res.json();
+      if (json && Array.isArray(json.data)) {
+        json.data.forEach(model => {
+          // Es gratis si los precios son explícitamente "0" o el ID termina en :free
+          const isFree = (model.pricing && model.pricing.prompt === "0" && model.pricing.completion === "0") || model.id.endsWith(':free');
+          if (isFree) {
+            hotModels.add(model.id);
+            if (!registryData.models[model.id]) {
+              registryData.models[model.id] = {
+                input: 0, output: 0,
+                name: model.name || model.id.split('/').pop(),
+                provider: 'openrouter',
+                tier: 'free',
+                contextWindow: model.context_length || 131072,
+                capabilities: ['chat'],
+                isHot: true,
+                lastVerified: new Date().toISOString()
+              };
+            }
+          }
+        });
+      }
+      console.log(`[ModelRegistry] Modelos de OpenRouter sincronizados.`);
+    }
+  } catch (err) {
+    console.warn('[ModelRegistry] Error al sincronizar modelos de OpenRouter:', err.message);
+  }
 
   // Actualizar flags en el registro
-  if (registryData.models) {
-    for (const [modelId, modelData] of Object.entries(registryData.models)) {
-      modelData.isHot = hotModels.has(modelId);
-      modelData.lastVerified = new Date().toISOString();
-    }
+  for (const [modelId, modelData] of Object.entries(registryData.models)) {
+    modelData.isHot = hotModels.has(modelId);
+    modelData.lastVerified = new Date().toISOString();
   }
 
   return registryData;
@@ -2272,8 +2290,8 @@ async function runModelRegistryCron() {
   registry.lastCronRun = new Date().toISOString();
   registry.cronStatus = 'running';
 
-  // Detectar modelos HOT
-  detectHotModels(registry);
+  // Detectar modelos HOT dinámicamente
+  await detectHotModels(registry);
 
   registry.cronStatus = 'completed';
   saveModelRegistry(registry);
