@@ -872,6 +872,7 @@ function _showFallbackDialog(errorMsg) {
 export async function callAiProvider(config, prompt, expectJson = true, expectedKeys = [], onThink = null) {
   const {
     provider, apiKey, groqKey, nvidiaKey, openrouterKey, opencodeKey, tokenrouterKey, mistralKey, minimaxKey, orcaRouterKey,
+    ollamaKey,   // API key de Ollama Cloud (permite llamar a https://ollama.com/v1 sin instalar Ollama)
     endpoint, lmStudioEndpoint, model, disableAutoFallback = false
   } = config;
 
@@ -884,7 +885,8 @@ export async function callAiProvider(config, prompt, expectJson = true, expected
     if (prov === 'opencode')    return await callOpenRouter(key || opencodeKey || apiKey, mod, prompt, expectJson);
     if (prov === 'tokenrouter') return await callTokenRouter(key || tokenrouterKey || apiKey, mod, prompt, expectJson);
     if (prov === 'orcarouter')  return await callOrcaRouter(key || orcaRouterKey || apiKey, mod, prompt, expectJson);
-    if (prov === 'ollama')      return await callOllama(endpoint, mod, prompt, expectJson, key || apiKey);
+    // ollama: si hay ollamaKey → Cloud (no requiere Ollama local). Sin ollamaKey → localhost
+    if (prov === 'ollama')      return await callOllama(endpoint, mod, prompt, expectJson, key || ollamaKey || '');
     if (prov === 'lmstudio')    return await callLmStudio(endpoint || lmStudioEndpoint, mod, prompt, expectJson, key || apiKey);
     if (prov === 'mistral')     return await callMistral(key || mistralKey || apiKey, mod, prompt);
     if (prov === 'openai')      return await callOpenAI(key || apiKey, mod, prompt, expectJson);
@@ -1031,52 +1033,72 @@ export async function callMinimax(apiKey, model, prompt, _expectJson = true) {
 
 async function callOllama(endpoint, model, prompt, expectJson, ollamaKey = '') {
   const targetModel = model || 'minimax-m3:cloud';
-  const targetEndpoint = endpoint || 'http://localhost:11434';
-  const url = `${targetEndpoint}/api/generate`;
 
-  const payload = {
-    model: targetModel,
-    prompt,
-    stream: false,
-    format: expectJson ? 'json' : undefined,
-  };
+  // ─── MODO CLOUD: Si hay ollamaKey → usar API pública de Ollama Cloud ───────
+  // https://ollama.com/v1/chat/completions es compatible con OpenAI API.
+  // NO requiere Ollama instalado localmente. Funciona perfecto en VPS.
+  if (ollamaKey) {
+    const cloudUrl = 'https://ollama.com/v1/chat/completions';
+    const cloudResponse = await fetchWithRetry(cloudUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${ollamaKey}`
+      },
+      body: JSON.stringify({
+        model: targetModel,
+        messages: [{ role: 'user', content: prompt }],
+        ...(expectJson ? { response_format: { type: 'json_object' } } : {})
+      })
+    }, { maxRetries: 1, fastFailOn429: true });
 
+    if (!cloudResponse.ok) {
+      const errText = await cloudResponse.text().catch(() => '');
+      throw new Error(`Ollama Cloud (${targetModel}) error: ${errText || cloudResponse.statusText}`);
+    }
+
+    const cloudData = await cloudResponse.json();
+    if (cloudData.error) throw new Error(cloudData.error.message || JSON.stringify(cloudData.error));
+
+    const content = cloudData.choices?.[0]?.message?.content || '';
+    const usage = cloudData.usage || {};
+    recordTokenTelemetry('ollama_cloud', (usage.total_tokens || 0), targetModel, usage.prompt_tokens || 0, usage.completion_tokens || 0, 0, prompt);
+    return content;
+  }
+
+  // ─── MODO LOCAL: Sin ollamaKey → intentar localhost:11434 ─────────────────
   // Si ya sabemos que Ollama está offline (caché activo), fallar rápido sin timeout
   if (_isOllamaOfflineCached()) {
-    throw new Error(`Ollama (${targetModel}) error: offline (caché activo, evitando timeout)`);
+    throw new Error(`Ollama local (${targetModel}) error: offline (caché activo, evitando timeout)`);
   }
+
+  const targetEndpoint = endpoint || 'http://localhost:11434';
+  const url = `${targetEndpoint}/api/generate`;
+  const payload = { model: targetModel, prompt, stream: false, format: expectJson ? 'json' : undefined };
 
   let response;
   try {
     response = await fetch(url, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(ollamaKey ? { 'Authorization': `Bearer ${ollamaKey}` } : {})
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
-      // Timeout reducido en VPS: si Ollama no responde en 8s, está offline
       signal: AbortSignal.timeout(8000)
     });
   } catch (fetchErr) {
-    // Marcar Ollama como offline para evitar timeouts en las siguientes fases del chain
     _markOllamaOffline();
-    // Si falla por CORS/Mixed Content en VPS, intentar a través del proxy
     try {
       response = await fetchWithProxy(url, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(ollamaKey ? { 'Authorization': `Bearer ${ollamaKey}` } : {})
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
     } catch {
-      throw fetchErr; // Re-lanzar el error original
+      throw fetchErr;
     }
   }
 
   if (!response || !response.ok) {
+    _markOllamaOffline();
     const errText = response ? await response.text().catch(() => '') : 'Sin conexión con Ollama';
     throw new Error(`Ollama (${targetModel}) error: ${errText || response?.statusText || 'Inalcanzable'}`);
   }
@@ -1086,9 +1108,7 @@ async function callOllama(endpoint, model, prompt, expectJson, ollamaKey = '') {
 
   const promptTokens = data.prompt_eval_count || Math.round(prompt.length / 4);
   const completionTokens = data.eval_count || Math.round((data.response || '').length / 4);
-  const totalTokens = promptTokens + completionTokens;
-  recordTokenTelemetry(ollamaKey ? 'ollama_cloud' : 'ollama', totalTokens, targetModel, promptTokens, completionTokens, 0, prompt);
-
+  recordTokenTelemetry('ollama', promptTokens + completionTokens, targetModel, promptTokens, completionTokens, 0, prompt);
   return data.response;
 }
 
