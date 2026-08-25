@@ -2157,6 +2157,266 @@ app.post('/api/touchbar/status', (req, res) => {
   }
 });
 
+// ─────────────────────────────────────────────────────────────────────────
+//  MODELO REGISTRY — Registro Dinámico de Modelos de IA + Cron 24h
+// ─────────────────────────────────────────────────────────────────────────
+
+// Estado del registro de modelos (persiste en disco cada 24h)
+const modelRegistryPath = path.resolve('proyectos', 'telemetry', 'model_registry.json');
+
+function loadModelRegistry() {
+  try {
+    if (fs.existsSync(modelRegistryPath)) {
+      return JSON.parse(fs.readFileSync(modelRegistryPath, 'utf8'));
+    }
+  } catch (e) {
+    console.warn('[ModelRegistry] Error cargando registro, usando defaults');
+  }
+  return { models: {}, lastCronRun: null, cronStatus: 'never_run' };
+}
+
+function saveModelRegistry(data) {
+  try {
+    const dir = path.dirname(modelRegistryPath);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(modelRegistryPath, JSON.stringify(data, null, 2), 'utf8');
+  } catch (e) {
+    console.error('[ModelRegistry] Error guardando registro:', e.message);
+  }
+}
+
+// Verificar disponibilidad de un proveedor haciendo un ping ligero
+async function pingProvider(providerName, endpoint, apiKey, timeoutMs = 8000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  
+  try {
+    let url, headers, body, method;
+
+    switch (providerName) {
+      case 'ollama_cloud':
+        url = 'https://api.ollama.com/v1/chat/completions';
+        headers = { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' };
+        body = JSON.stringify({ model: 'minimax-m3:cloud', messages: [{ role: 'user', content: 'ping' }], max_tokens: 1 });
+        method = 'POST';
+        break;
+      case 'groq':
+        url = 'https://api.groq.com/openai/v1/models';
+        headers = { 'Authorization': `Bearer ${apiKey}` };
+        method = 'GET';
+        break;
+      case 'gemini':
+        url = `https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`;
+        method = 'GET';
+        break;
+      case 'openrouter':
+        url = 'https://openrouter.ai/api/v1/models';
+        headers = { 'Authorization': `Bearer ${apiKey}` };
+        method = 'GET';
+        break;
+      default:
+        return { online: false, error: 'Proveedor no soportado para ping' };
+    }
+
+    const res = await fetch(url, { method, headers, body: method === 'POST' ? body : undefined, signal: controller.signal });
+    clearTimeout(timer);
+    
+    return {
+      online: res.ok || res.status === 401, // 401 = endpoint vivo pero key inválida
+      statusCode: res.status,
+      latencyMs: Date.now(),
+    };
+  } catch (e) {
+    clearTimeout(timer);
+    return { online: false, error: e.message };
+  }
+}
+
+// Detectar modelos gratuitos disponibles en routers y marcarlos como HOT
+function detectHotModels(registryData) {
+  const hotModels = new Set();
+  
+  // Modelos que sabemos están en capa gratuita de routers
+  const freeRouterModels = [
+    'nvidia/nemotron-3.5-lightning:free',
+    'openai/gpt-oss-20b:free',
+    'nvidia/nemotron-3-nano-30b-a3b:free',
+    'z-ai/glm-5.2:free',
+    'deepseek/deepseek-r1:free',
+    'minimax-m3:cloud',
+    'kimi-k2.6:cloud',
+    'qwen3.5:cloud',
+    'nemotron-3-super:cloud',
+    'gemma4:31b-cloud',
+    'glm-5.1:cloud',
+  ];
+
+  freeRouterModels.forEach(m => hotModels.add(m));
+
+  // Actualizar flags en el registro
+  if (registryData.models) {
+    for (const [modelId, modelData] of Object.entries(registryData.models)) {
+      modelData.isHot = hotModels.has(modelId);
+      modelData.lastVerified = new Date().toISOString();
+    }
+  }
+
+  return registryData;
+}
+
+// Cron de verificación cada 24 horas
+async function runModelRegistryCron() {
+  console.log('[ModelRegistry] Ejecutando cron de verificación de modelos...');
+  
+  const registry = loadModelRegistry();
+  registry.lastCronRun = new Date().toISOString();
+  registry.cronStatus = 'running';
+
+  // Detectar modelos HOT
+  detectHotModels(registry);
+
+  registry.cronStatus = 'completed';
+  saveModelRegistry(registry);
+  
+  console.log(`[ModelRegistry] Cron completado. ${Object.keys(registry.models || {}).length} modelos en registro.`);
+}
+
+// Ejecutar cron cada 24 horas (86400000 ms)
+setInterval(runModelRegistryCron, 24 * 60 * 60 * 1000);
+
+// Ejecutar una vez al arrancar el servidor (con delay de 5 segundos)
+setTimeout(runModelRegistryCron, 5000);
+
+// Endpoint: Obtener registro de modelos
+app.get('/api/models/registry', (req, res) => {
+  try {
+    const registry = loadModelRegistry();
+    res.json({
+      success: true,
+      models: registry.models || {},
+      lastCronRun: registry.lastCronRun,
+      cronStatus: registry.cronStatus,
+      totalModels: Object.keys(registry.models || {}).length,
+    });
+  } catch (error) {
+    console.error('[ModelRegistry] Error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// Endpoint: Forzar verificación manual
+app.post('/api/models/verify', async (req, res) => {
+  try {
+    await runModelRegistryCron();
+    const registry = loadModelRegistry();
+    res.json({ success: true, models: registry.models, lastCronRun: registry.lastCronRun });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// ─────────────────────────────────────────────────────────────────────────
+//  TELEMETRÍA EXPANDIDA — Log detallado por llamada con metadata
+// ─────────────────────────────────────────────────────────────────────────
+
+app.post('/api/telemetry/call-log', (req, res) => {
+  try {
+    const { provider, model, promptTokens, completionTokens, latencyMs, promptPreview, status, module: planModule, error: callError } = req.body;
+    
+    if (!provider) {
+      return res.status(400).json({ success: false, error: 'Proveedor requerido' });
+    }
+
+    const telemetryDir = path.resolve('proyectos', 'telemetry');
+    if (!fs.existsSync(telemetryDir)) {
+      fs.mkdirSync(telemetryDir, { recursive: true });
+    }
+
+    const logEntry = {
+      timestamp: new Date().toISOString(),
+      provider,
+      model: model || 'unknown',
+      promptTokens: promptTokens || 0,
+      completionTokens: completionTokens || 0,
+      totalTokens: (promptTokens || 0) + (completionTokens || 0),
+      latencyMs: latencyMs || 0,
+      promptPreview: (promptPreview || '').slice(0, 200),
+      status: status || 'success',
+      module: planModule || 'general',
+      error: callError || null,
+      costUsd: 0, // Calculado por el frontend usando pricing.js
+    };
+
+    // Almacenar en JSONL para análisis futuro
+    const callLogPath = path.join(telemetryDir, 'call_log.jsonl');
+    fs.appendFileSync(callLogPath, JSON.stringify(logEntry) + '\n');
+
+    // También actualizar el acumulador de tokens
+    const tokenFilePath = path.join(telemetryDir, 'tokens_usage.json');
+    let tokenData = {};
+    if (fs.existsSync(tokenFilePath)) {
+      try { tokenData = JSON.parse(fs.readFileSync(tokenFilePath, 'utf8')); } catch (e) {}
+    }
+    tokenData[provider] = (tokenData[provider] || 0) + logEntry.totalTokens;
+    fs.writeFileSync(tokenFilePath, JSON.stringify(tokenData, null, 2), 'utf8');
+
+    res.json({ success: true, entry: logEntry });
+  } catch (error) {
+    console.error('[Telemetry] Error guardando call-log:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// Endpoint: Obtener historial de llamadas (para sección de Trazabilidad)
+app.get('/api/telemetry/call-log', (req, res) => {
+  try {
+    const telemetryDir = path.resolve('proyectos', 'telemetry');
+    const callLogPath = path.join(telemetryDir, 'call_log.jsonl');
+    
+    if (!fs.existsSync(callLogPath)) {
+      return res.json({ success: true, entries: [], total: 0 });
+    }
+
+    const data = fs.readFileSync(callLogPath, 'utf8');
+    const lines = data.split('\n').filter(l => l.trim().length > 0);
+    
+    // Parsear las últimas 500 entradas (más recientes primero)
+    const entries = [];
+    for (let i = lines.length - 1; i >= Math.max(0, lines.length - 500); i--) {
+      try {
+        entries.push(JSON.parse(lines[i]));
+      } catch (e) {}
+    }
+
+    // Estadísticas agregadas
+    const stats = {};
+    entries.forEach(e => {
+      if (!stats[e.provider]) {
+        stats[e.provider] = { totalTokens: 0, calls: 0, totalLatency: 0, errors: 0 };
+      }
+      stats[e.provider].totalTokens += e.totalTokens || 0;
+      stats[e.provider].calls += 1;
+      stats[e.provider].totalLatency += e.latencyMs || 0;
+      if (e.status === 'error') stats[e.provider].errors += 1;
+    });
+
+    // Calcular latencia promedio por proveedor
+    Object.values(stats).forEach(s => {
+      s.avgLatencyMs = s.calls > 0 ? Math.round(s.totalLatency / s.calls) : 0;
+    });
+
+    res.json({ 
+      success: true, 
+      entries, 
+      total: lines.length,
+      stats,
+    });
+  } catch (error) {
+    console.error('[Telemetry] Error leyendo call-log:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 // Servir archivos estáticos del frontend en producción
 const distPath = path.resolve('dist');
 if (fs.existsSync(distPath)) {

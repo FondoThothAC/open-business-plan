@@ -1037,6 +1037,12 @@ async function callOllama(endpoint, model, prompt, expectJson, ollamaKey = '') {
 
   const data = await response.json();
   if (data.error) throw new Error(data.error);
+
+  const promptTokens = data.prompt_eval_count || Math.round(prompt.length / 4);
+  const completionTokens = data.eval_count || Math.round((data.response || '').length / 4);
+  const totalTokens = promptTokens + completionTokens;
+  recordTokenTelemetry(ollamaKey ? 'ollama_cloud' : 'ollama', totalTokens, targetModel, promptTokens, completionTokens, 0, prompt);
+
   return data.response;
 }
 
@@ -1314,7 +1320,7 @@ async function callOpenAI(apiKey, model, prompt, expectJson) {
 // ─────────────────────────────────────────────────────────────────────────
 // Telemetry Hook
 // ─────────────────────────────────────────────────────────────────────────
-function recordTokenTelemetry(provider, totalTokens, model = null, promptTokens = 0, completionTokens = 0) {
+function recordTokenTelemetry(provider, totalTokens, model = null, promptTokens = 0, completionTokens = 0, latencyMs = 0, promptPreview = '') {
   if (!totalTokens || totalTokens <= 0) return;
   try {
     if (typeof window !== 'undefined' && window.__activeModuleTrace) {
@@ -1327,10 +1333,26 @@ function recordTokenTelemetry(provider, totalTokens, model = null, promptTokens 
     }
 
     const apiBase = getApiBase();
+    // 1. Contador agregado de tokens por proveedor
     fetch(`${apiBase}/api/telemetry/tokens`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ provider, tokens: totalTokens })
+    }).catch(() => {});
+
+    // 2. Log detallado de llamadas para la sección de Trazabilidad
+    fetch(`${apiBase}/api/telemetry/call-log`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        provider,
+        model: model || 'unknown',
+        promptTokens,
+        completionTokens,
+        latencyMs,
+        promptPreview: typeof promptPreview === 'string' ? promptPreview.slice(0, 200) : '',
+        status: 'success'
+      })
     }).catch(() => {});
   } catch (e) {}
 }

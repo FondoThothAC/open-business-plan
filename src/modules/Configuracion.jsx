@@ -4,6 +4,8 @@ import { Cpu, Palette, Save, Globe, Database, Upload, Image as ImageIcon, Refres
 import DocumentUploader from '../components/DocumentUploader';
 import LogoGeneratorModal from '../components/LogoGeneratorModal';
 import TokenTelemetryDashboard from '../components/TokenTelemetryDashboard';
+import AiTraceabilityPanel from '../components/AiTraceabilityPanel';
+import DigitalTwinDashboard from '../components/DigitalTwinDashboard';
 import ApiQuotaMeter from '../components/ApiQuotaMeter';
 import GlobalTokenMonitor from '../components/GlobalTokenMonitor';
 import { FRAMEWORKS } from '../config/frameworks';
@@ -711,6 +713,7 @@ export default function Configuracion() {
         </div>
 
         <TokenTelemetryDashboard />
+        <AiTraceabilityPanel />
       </div>
 
       {/* Control de Contexto */}
@@ -1207,6 +1210,9 @@ export default function Configuracion() {
                   <a href="https://ollama.com/settings/keys" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: '#6366f1', textDecoration: 'none', fontWeight: 700 }}>Obtener Key ↗</a>
                 </div>
                 <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>Kimi k2.6 · MiniMax M3 · Nemotron Super · Gemma4 · Qwen3.5</div>
+                
+                {/* Key principal — Generación de Planes (Mesa de Expertos) */}
+                <div style={{ fontSize: '0.62rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: '0.2rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>🏭 Key Principal (Generación de Planes)</div>
                 <input 
                   type="password" 
                   className="form-control" 
@@ -1217,6 +1223,28 @@ export default function Configuracion() {
                 />
                 <ApiStatusBadge status={ollamaCloudStatus} onTest={() => testOllamaCloud(planData.config.ai.ollamaKey)} disabled={!planData.config.ai.ollamaKey} />
                 <ApiQuotaMeter providerKey="ollama_cloud" tokens={telemetryData.ollama_cloud || 0} isConfigured={!!planData.config.ai.ollamaKey} statusState={ollamaCloudStatus.state} />
+
+                {/* Key dedicada para BOB Chat — Cuenta separada */}
+                <div style={{ marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: '1px dashed rgba(99,102,241,0.2)' }}>
+                  <div style={{ fontSize: '0.62rem', fontWeight: 700, color: '#8b5cf6', marginBottom: '0.2rem', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    🤖 Key de BOB Chat (Exclusiva)
+                    <span style={{ fontSize: '0.55rem', fontWeight: 400, color: 'var(--text-muted)', textTransform: 'none', letterSpacing: 0 }}>— Separa la cuota del copiloto de la generación de planes</span>
+                  </div>
+                  <input 
+                    type="password" 
+                    className="form-control" 
+                    placeholder="Segunda key de Ollama Cloud para BOB..."
+                    value={planData.config.ai.bobOllamaKey || ''}
+                    onChange={(e) => handleAiChange('bobOllamaKey', e.target.value)}
+                    style={{ fontSize: '0.8rem', marginBottom: '0.3rem' }}
+                  />
+                  <div style={{ fontSize: '0.6rem', color: 'var(--text-muted)', marginBottom: '0.25rem' }}>
+                    {planData.config.ai.bobOllamaKey 
+                      ? '✅ BOB usará esta key exclusiva para conversaciones (minimax-m3:cloud)'
+                      : '💡 Sin key dedicada, BOB usará la key principal compartida. Recomendamos crear una segunda cuenta.'
+                    }
+                  </div>
+                </div>
               </div>
 
               {/* OPENROUTER CARD — Nemotron 1M ctx, GPT-OSS, GLM 5.2 (capa gratuita) */}
@@ -1302,7 +1330,9 @@ export default function Configuracion() {
           <div style={{ marginBottom: '1.5rem', paddingTop: '1.25rem', borderTop: '1px solid var(--border-color)' }}>
             <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#38bdf8', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <span>💎 FILA 2: Modelos Comerciales, Premium & Local Offline</span>
-              <span style={{ fontSize: '0.65rem', background: 'rgba(56, 189, 248, 0.1)', padding: '2px 8px', borderRadius: '10px', color: '#38bdf8' }}>Gemini, Claude, GPT, DeepSeek, Grok, Ollama Local</span>
+              <span style={{ fontSize: '0.65rem', background: 'rgba(56, 189, 248, 0.1)', padding: '2px 8px', borderRadius: '10px', color: '#38bdf8' }}>
+                {['Gemini', planData.config.ai.claudeKey ? 'Claude' : null, planData.config.ai.openaiKey ? 'GPT' : null, 'DeepSeek', 'Grok', ollamaOnline ? 'Ollama Local' : null].filter(Boolean).join(', ') || 'Proveedores Premium'}
+              </span>
             </div>
             
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
@@ -1310,7 +1340,7 @@ export default function Configuracion() {
               {/* GOOGLE GEMINI */}
               <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: `1.5px solid ${planData.config.ai.primaryProvider === 'gemini' ? '#38bdf8' : 'var(--border-color)'}` }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                  <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#38bdf8' }}>🌐 Google Gemini (Flash / Pro)</div>
+                  <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#38bdf8' }}>🌐 Google Gemini <span style={{ fontSize: '0.6rem', fontWeight: 400, color: 'var(--text-muted)' }}>(Flash 3.6 · 3.5 Lite · 3.7 · 1.5 Pro)</span></div>
                   <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: '#38bdf8', textDecoration: 'none', fontWeight: 700 }}>
                     Obtener Key ↗
                   </a>
@@ -1333,7 +1363,7 @@ export default function Configuracion() {
               {/* ANTHROPIC CLAUDE */}
               <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: `1.5px solid ${planData.config.ai.primaryProvider === 'claude' ? '#d97706' : 'var(--border-color)'}` }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                  <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#d97706' }}>🧠 Claude 3.5 Sonnet</div>
+                  <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#d97706' }}>🧠 Anthropic Claude <span style={{ fontSize: '0.6rem', fontWeight: 400, color: 'var(--text-muted)' }}>(Fable 5 · Sonnet 5 · Opus 5)</span></div>
                   <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: '#d97706', textDecoration: 'none', fontWeight: 700 }}>
                     Obtener Key ↗
                   </a>
@@ -1353,7 +1383,7 @@ export default function Configuracion() {
               {/* OPENAI GPT */}
               <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: `1.5px solid ${planData.config.ai.primaryProvider === 'openai' ? '#10b981' : 'var(--border-color)'}` }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                  <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#10b981' }}>🟢 OpenAI (GPT-4o)</div>
+                  <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#10b981' }}>🟢 OpenAI <span style={{ fontSize: '0.6rem', fontWeight: 400, color: 'var(--text-muted)' }}>(GPT-5.6 Sol/Terra/Luna · 5 · 4.5 · 4o)</span></div>
                   <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: '#10b981', textDecoration: 'none', fontWeight: 700 }}>
                     Obtener Key ↗
                   </a>
@@ -2284,72 +2314,197 @@ export default function Configuracion() {
         </div>
       </div>
 
+      {/* Dashboard de Gemelos Digitales */}
+      <div style={{ marginTop: '2rem' }}>
+        <DigitalTwinDashboard />
+      </div>
+
       {/* Conexiones Gemelo Digital */}
       <div className="glass-panel" style={{ marginTop: '2rem', padding: '2rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem' }}>
-          <Activity className="text-[#f59e0b]" />
-          <h2 style={{ fontSize: '1.25rem' }}>Conexiones de Datos en Tiempo Real (Gemelo Digital)</h2>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <Activity className="text-[#f59e0b]" />
+            <h2 style={{ fontSize: '1.25rem', margin: 0 }}>Conexiones de Datos en Tiempo Real (Gemelo Digital)</h2>
+          </div>
+          <span style={{ fontSize: '0.7rem', background: 'rgba(245,158,11,0.1)', color: '#f59e0b', padding: '3px 8px', borderRadius: '10px', fontWeight: 700 }}>
+            9 Fuentes de Datos Integradas
+          </span>
         </div>
         <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '1.5rem', lineHeight: 1.6 }}>
-          Ingresa tus llaves de API para automatizar cálculos matemáticos con datos en vivo (WACC, Bonos del Tesoro, Impacto Ambiental y Sentimiento del Mercado).
+          Conecta APIs financieras, macroeconómicas y sectoriales para alimentar automáticamente los cálculos matemáticos (WACC, CAPM, Montecarlo), el análisis PESTEL y la validación de mercado con evidencia del mundo real.
         </p>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
-          <div className="form-group">
-            <label className="form-label">API Key: Yahoo Finance</label>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.25rem' }}>
+          
+          {/* ALPHA VANTAGE (JSON Financiero) */}
+          <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: '1.5px solid rgba(59,130,246,0.3)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+              <div style={{ fontWeight: 800, fontSize: '0.85rem', color: '#3b82f6' }}>📈 Alpha Vantage <span style={{ fontSize: '0.6rem', background: 'rgba(59,130,246,0.15)', color: '#3b82f6', padding: '1px 6px', borderRadius: '8px' }}>5 req/min</span></div>
+              <a href="https://www.alphavantage.co/support/#api-key" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: '#3b82f6', textDecoration: 'none', fontWeight: 700 }}>Obtener Key ↗</a>
+            </div>
+            <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>Alimenta: <strong>Finanzas (WACC, Beta)</strong> · <strong>Mercado (Volatilidad)</strong> · <strong>PESTEL (Económico)</strong></div>
             <input 
               type="password" 
               className="form-control" 
-              placeholder="Opcional. Para cálculo de WACC y Beta."
-              value={planData.config.externalApis?.yahooFinanceKey || ''}
-              onChange={(e) => handleExternalChange('yahooFinanceKey', e.target.value)}
-            />
-          </div>
-          <div className="form-group">
-            <label className="form-label">API Key: FRED (Reserva Federal)</label>
-            <input 
-              type="password" 
-              className="form-control" 
-              placeholder="Opcional. Para Tasa Libre de Riesgo."
-              value={planData.config.externalApis?.fredKey || ''}
-              onChange={(e) => handleExternalChange('fredKey', e.target.value)}
-            />
-          </div>
-          <div className="form-group">
-            <label className="form-label">API Key: Google Trends / Baidu</label>
-            <input 
-              type="password" 
-              className="form-control" 
-              placeholder="Opcional. Para método Guanxi (Sentimiento)."
-              value={planData.config.externalApis?.googleTrendsKey || ''}
-              onChange={(e) => handleExternalChange('googleTrendsKey', e.target.value)}
-            />
-          </div>
-          <div className="form-group">
-            <label className="form-label">API Key: Copernicus / OpenWeather</label>
-            <input 
-              type="password" 
-              className="form-control" 
-              placeholder="Opcional. Para método Horizon Europe."
-              value={planData.config.externalApis?.copernicusKey || ''}
-              onChange={(e) => handleExternalChange('copernicusKey', e.target.value)}
-            />
-          </div>
-          <div className="form-group" style={{ gridColumn: '1 / -1', background: 'rgba(59, 130, 246, 0.05)', padding: '1rem', borderRadius: '8px', border: '1px dashed #3b82f6' }}>
-            <label className="form-label" style={{ color: '#3b82f6', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              API Key: AlphaVantage (Gratis)
-              <span style={{ fontSize: '0.6rem', padding: '2px 6px', background: '#3b82f6', color: '#fff', borderRadius: '4px' }}>Datos JSON Financieros</span>
-            </label>
-            <input 
-              type="password" 
-              className="form-control" 
-              placeholder="Requerido para Gemelo Digital (Balances, Stock, PESTEL)..."
+              placeholder="38CEHMYW5CGOHUX1..."
               value={planData.config.externalApis?.alphaVantageKey || ''}
               onChange={(e) => handleExternalChange('alphaVantageKey', e.target.value)}
+              style={{ fontSize: '0.8rem' }}
             />
-            <p style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '0.5rem', marginBottom: 0 }}>
-              AlphaVantage provee datos en formato estructurado (JSON) que el motor de IA procesa e inyecta directamente a la base de datos de trazabilidad y al PESTEL.
-            </p>
           </div>
+
+          {/* FRED (Federal Reserve Economic Data) */}
+          <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: '1.5px solid rgba(16,185,129,0.3)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+              <div style={{ fontWeight: 800, fontSize: '0.85rem', color: '#10b981' }}>🏛️ FRED (Reserva Federal) <span style={{ fontSize: '0.6rem', background: 'rgba(16,185,129,0.15)', color: '#10b981', padding: '1px 6px', borderRadius: '8px' }}>Gratis</span></div>
+              <a href="https://fred.stlouisfed.org/docs/api/api_key.html" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: '#10b981', textDecoration: 'none', fontWeight: 700 }}>Obtener Key ↗</a>
+            </div>
+            <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>Alimenta: <strong>Tasa Libre de Riesgo (10Y)</strong> · <strong>Inflación USA</strong> · <strong>WACC</strong></div>
+            <input 
+              type="password" 
+              className="form-control" 
+              placeholder="Opcional. Para series temporales de bonos del tesoro..."
+              value={planData.config.externalApis?.fredKey || ''}
+              onChange={(e) => handleExternalChange('fredKey', e.target.value)}
+              style={{ fontSize: '0.8rem' }}
+            />
+          </div>
+
+          {/* BANXICO SieAPI (CETES y Tipo de Cambio) */}
+          <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: '1.5px solid rgba(245,158,11,0.3)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+              <div style={{ fontWeight: 800, fontSize: '0.85rem', color: '#f59e0b' }}>🇲🇽 BANXICO SieAPI <span style={{ fontSize: '0.6rem', background: 'rgba(245,158,11,0.15)', color: '#f59e0b', padding: '1px 6px', borderRadius: '8px' }}>Oficial</span></div>
+              <a href="https://www.banxico.org.mx/SieAPIRest/service/v1/token" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: '#f59e0b', textDecoration: 'none', fontWeight: 700 }}>Obtener Token ↗</a>
+            </div>
+            <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>Alimenta: <strong>CETES 28d</strong> · <strong>Tipo de Cambio FIX</strong> · <strong>TIIE</strong></div>
+            <input 
+              type="password" 
+              className="form-control" 
+              placeholder="Token de BANXICO SieAPI..."
+              value={planData.config.externalApis?.banxicoToken || ''}
+              onChange={(e) => handleExternalChange('banxicoToken', e.target.value)}
+              style={{ fontSize: '0.8rem' }}
+            />
+          </div>
+
+          {/* INEGI / DENUE (Censo y Directorio de Empresas) */}
+          <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: '1.5px solid rgba(99,102,241,0.3)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+              <div style={{ fontWeight: 800, fontSize: '0.85rem', color: '#6366f1' }}>🗺️ INEGI DENUE <span style={{ fontSize: '0.6rem', background: 'rgba(99,102,241,0.15)', color: '#6366f1', padding: '1px 6px', borderRadius: '8px' }}>Geolocalizado</span></div>
+              <a href="https://www.inegi.org.mx/servicios/api_denue.html" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: '#6366f1', textDecoration: 'none', fontWeight: 700 }}>Obtener Token ↗</a>
+            </div>
+            <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>Alimenta: <strong>TAM/SAM/SOM</strong> · <strong>Competencia Regional</strong> · <strong>Ubicación Operativa</strong></div>
+            <input 
+              type="password" 
+              className="form-control" 
+              placeholder="Token de INEGI DENUE..."
+              value={planData.config.externalApis?.inegiToken || ''}
+              onChange={(e) => handleExternalChange('inegiToken', e.target.value)}
+              style={{ fontSize: '0.8rem' }}
+            />
+          </div>
+
+          {/* COINGECKO (Criptoactivos & DeFi) */}
+          <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: '1.5px solid rgba(139,92,246,0.3)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+              <div style={{ fontWeight: 800, fontSize: '0.85rem', color: '#8b5cf6' }}>🪙 CoinGecko <span style={{ fontSize: '0.6rem', background: 'rgba(16,185,129,0.15)', color: '#10b981', padding: '1px 6px', borderRadius: '8px' }}>Público Sin Key</span></div>
+              <a href="https://www.coingecko.com/en/api" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: '#8b5cf6', textDecoration: 'none', fontWeight: 700 }}>API Docs ↗</a>
+            </div>
+            <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>Alimenta: <strong>Finanzas (Activos Digitales)</strong> · <strong>PESTEL (Tecnológico)</strong></div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <input 
+                type="checkbox" 
+                id="toggleCoinGecko"
+                checked={planData.config.externalApis?.coinGeckoEnabled !== false}
+                onChange={(e) => handleExternalChange('coinGeckoEnabled', e.target.checked)}
+                style={{ width: '16px', height: '16px', cursor: 'pointer' }}
+              />
+              <label htmlFor="toggleCoinGecko" style={{ fontSize: '0.78rem', cursor: 'pointer', margin: 0 }}>
+                {planData.config.externalApis?.coinGeckoEnabled !== false ? '✅ Habilitado (BTC, ETH, Stablecoins)' : '❌ Deshabilitado'}
+              </label>
+            </div>
+          </div>
+
+          {/* WORLD BANK (Banco Mundial) */}
+          <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: '1.5px solid rgba(14,165,233,0.3)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+              <div style={{ fontWeight: 800, fontSize: '0.85rem', color: '#0ea5e9' }}>🌐 Banco Mundial <span style={{ fontSize: '0.6rem', background: 'rgba(16,185,129,0.15)', color: '#10b981', padding: '1px 6px', borderRadius: '8px' }}>Open Data Sin Key</span></div>
+              <a href="https://datahelpdesk.worldbank.org/" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: '#0ea5e9', textDecoration: 'none', fontWeight: 700 }}>Portal ↗</a>
+            </div>
+            <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>Alimenta: <strong>PIB Nacional</strong> · <strong>PESTEL (Económico/Social)</strong> · <strong>Comercio Exterior</strong></div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <input 
+                type="checkbox" 
+                id="toggleWorldBank"
+                checked={planData.config.externalApis?.worldBankEnabled !== false}
+                onChange={(e) => handleExternalChange('worldBankEnabled', e.target.checked)}
+                style={{ width: '16px', height: '16px', cursor: 'pointer' }}
+              />
+              <label htmlFor="toggleWorldBank" style={{ fontSize: '0.78rem', cursor: 'pointer', margin: 0 }}>
+                {planData.config.externalApis?.worldBankEnabled !== false ? '✅ Habilitado (Indicadores Macro Mundiales)' : '❌ Deshabilitado'}
+              </label>
+            </div>
+          </div>
+
+          {/* NEWS API (Radar de Noticias Sectoriales) */}
+          <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: '1.5px solid rgba(236,72,153,0.3)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+              <div style={{ fontWeight: 800, fontSize: '0.85rem', color: '#ec4899' }}>📰 NewsAPI <span style={{ fontSize: '0.6rem', background: 'rgba(236,72,153,0.15)', color: '#ec4899', padding: '1px 6px', borderRadius: '8px' }}>100 req/día Free</span></div>
+              <a href="https://newsapi.org/register" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: '#ec4899', textDecoration: 'none', fontWeight: 700 }}>Obtener Key ↗</a>
+            </div>
+            <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>Alimenta: <strong>Radar de Tendencias</strong> · <strong>PESTEL (Político/Social)</strong> · <strong>Mercado</strong></div>
+            <input 
+              type="password" 
+              className="form-control" 
+              placeholder="Opcional. API Key de newsapi.org..."
+              value={planData.config.externalApis?.newsApiKey || ''}
+              onChange={(e) => handleExternalChange('newsApiKey', e.target.value)}
+              style={{ fontSize: '0.8rem' }}
+            />
+          </div>
+
+          {/* EXCHANGERATE (Tipos de Cambio Internacionales) */}
+          <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: '1.5px solid rgba(20,184,166,0.3)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+              <div style={{ fontWeight: 800, fontSize: '0.85rem', color: '#14b8a6' }}>💱 ExchangeRate API <span style={{ fontSize: '0.6rem', background: 'rgba(16,185,129,0.15)', color: '#10b981', padding: '1px 6px', borderRadius: '8px' }}>Público Sin Key</span></div>
+              <a href="https://open.er-api.com/" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: '#14b8a6', textDecoration: 'none', fontWeight: 700 }}>API Docs ↗</a>
+            </div>
+            <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>Alimenta: <strong>Paridad USD, EUR, CAD, GBP, JPY</strong> · <strong>Costos de Importación</strong></div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <input 
+                type="checkbox" 
+                id="toggleExchangeRate"
+                checked={planData.config.externalApis?.exchangeRateEnabled !== false}
+                onChange={(e) => handleExternalChange('exchangeRateEnabled', e.target.checked)}
+                style={{ width: '16px', height: '16px', cursor: 'pointer' }}
+              />
+              <label htmlFor="toggleExchangeRate" style={{ fontSize: '0.78rem', cursor: 'pointer', margin: 0 }}>
+                {planData.config.externalApis?.exchangeRateEnabled !== false ? '✅ Habilitado (Actualizaciones diarias de FX)' : '❌ Deshabilitado'}
+              </label>
+            </div>
+          </div>
+
+          {/* SEC EDGAR (Reportes Corporativos Oficiales) */}
+          <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: '1.5px solid rgba(168,85,247,0.3)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+              <div style={{ fontWeight: 800, fontSize: '0.85rem', color: '#a855f7' }}>📑 SEC EDGAR <span style={{ fontSize: '0.6rem', background: 'rgba(16,185,129,0.15)', color: '#10b981', padding: '1px 6px', borderRadius: '8px' }}>Público Sin Key</span></div>
+              <a href="https://www.sec.gov/edgar/searchedgar/companysearch" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: '#a855f7', textDecoration: 'none', fontWeight: 700 }}>Buscador CIK ↗</a>
+            </div>
+            <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>Alimenta: <strong>Benchmarks 10-K / 10-Q</strong> · <strong>Márgenes de Industria</strong> · <strong>Gobierno Corporativo</strong></div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <input 
+                type="checkbox" 
+                id="toggleSecEdgar"
+                checked={planData.config.externalApis?.secEdgarEnabled !== false}
+                onChange={(e) => handleExternalChange('secEdgarEnabled', e.target.checked)}
+                style={{ width: '16px', height: '16px', cursor: 'pointer' }}
+              />
+              <label htmlFor="toggleSecEdgar" style={{ fontSize: '0.78rem', cursor: 'pointer', margin: 0 }}>
+                {planData.config.externalApis?.secEdgarEnabled !== false ? '✅ Habilitado (Reportes Públicos XBRL)' : '❌ Deshabilitado'}
+              </label>
+            </div>
+          </div>
+
         </div>
       </div>
       

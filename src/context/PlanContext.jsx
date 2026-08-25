@@ -40,17 +40,19 @@ const deepMerge = (target, source) => {
 // [SDD] Las API keys se leen desde variables de entorno VITE_* (definidas en .env.local)
 // .env.local NO se sube a git (ver .gitignore). Para el VPS se configura en el shell del servidor.
 const KEYS = {
-  gemini:      import.meta.env.VITE_GEMINI_KEY      || '',
-  groq:        import.meta.env.VITE_GROQ_KEY        || '',
-  mistral:     import.meta.env.VITE_MISTRAL_KEY     || '',
-  nvidia:      import.meta.env.VITE_NVIDIA_KEY      || '',
-  openrouter:  import.meta.env.VITE_OPENROUTER_KEY  || '',
-  opencode:    import.meta.env.VITE_OPENCODE_KEY    || '',
-  tokenrouter: import.meta.env.VITE_TOKENROUTER_KEY || '',
-  ollama:      import.meta.env.VITE_OLLAMA_KEY      || '',
-  pollinations:import.meta.env.VITE_POLLINATIONS_KEY|| '',
-  denue:       import.meta.env.VITE_DENUE_KEY       || '1b9e230f-2ae0-48db-bd20-8810b1db575e',
-  banxico:     import.meta.env.VITE_BANXICO_KEY     || '',
+  gemini:       import.meta.env.VITE_GEMINI_KEY       || '',
+  groq:         import.meta.env.VITE_GROQ_KEY         || '',
+  mistral:      import.meta.env.VITE_MISTRAL_KEY      || '',
+  nvidia:       import.meta.env.VITE_NVIDIA_KEY       || '',
+  openrouter:   import.meta.env.VITE_OPENROUTER_KEY   || '',
+  opencode:     import.meta.env.VITE_OPENCODE_KEY     || '',
+  tokenrouter:  import.meta.env.VITE_TOKENROUTER_KEY  || '',
+  ollama:       import.meta.env.VITE_OLLAMA_KEY       || '',
+  bobOllama:    import.meta.env.VITE_BOB_OLLAMA_KEY   || '1846f31536ce449d952c415332369d0e.lJy1pkJcXD23IBn-WWrdVhTg',
+  pollinations: import.meta.env.VITE_POLLINATIONS_KEY || '',
+  denue:        import.meta.env.VITE_DENUE_KEY        || '1b9e230f-2ae0-48db-bd20-8810b1db575e',
+  banxico:      import.meta.env.VITE_BANXICO_KEY      || '',
+  alphaVantage: import.meta.env.VITE_ALPHAVANTAGE_KEY || '38CEHMYW5CGOHUX1',
 };
 
 const createEmptyPlan = (projectType = 'business') => {
@@ -66,6 +68,7 @@ const createEmptyPlan = (projectType = 'business') => {
         primaryProvider: 'ollama', secondaryProvider: 'groq',
         apiKey: KEYS.gemini, groqKey: KEYS.groq, 
         nvidiaKey: KEYS.nvidia, mistralKey: KEYS.mistral, ollamaKey: KEYS.ollama,
+        bobOllamaKey: KEYS.bobOllama,
         openrouterKey: KEYS.openrouter, opencodeKey: KEYS.opencode,
         tokenrouterKey: KEYS.tokenrouter,
         pollinationsKey: KEYS.pollinations,
@@ -83,7 +86,17 @@ const createEmptyPlan = (projectType = 'business') => {
         }
       },
       brandKit: { primaryColor: '#6366f1', secondaryColor: '#8b5cf6', logoUrl: '', companyName: '' },
-      externalApis: { inegiToken: KEYS.denue, banxicoToken: KEYS.banxico },
+      externalApis: {
+        inegiToken: KEYS.denue,
+        banxicoToken: KEYS.banxico,
+        alphaVantageKey: KEYS.alphaVantage,
+        coinGeckoEnabled: true,
+        worldBankEnabled: true,
+        newsApiKey: '',
+        exchangeRateEnabled: true,
+        openExchangeKey: '',
+        secEdgarEnabled: true,
+      },
       anexos: [],
       documents: [],
       coverDesign: {
@@ -198,11 +211,17 @@ export const PlanProvider = ({ children }) => {
         if (!merged.config.ai.openrouterKey) merged.config.ai.openrouterKey = KEYS.openrouter;
         if (!merged.config.ai.opencodeKey) merged.config.ai.opencodeKey = KEYS.opencode;
         if (!merged.config.ai.ollamaKey) merged.config.ai.ollamaKey = KEYS.ollama;
+        if (!merged.config.ai.bobOllamaKey) merged.config.ai.bobOllamaKey = KEYS.bobOllama;
         if (!merged.config.ai.pollinationsKey) merged.config.ai.pollinationsKey = KEYS.pollinations;
       }
       if (merged.config?.externalApis) {
         if (!merged.config.externalApis.inegiToken) merged.config.externalApis.inegiToken = KEYS.denue;
         if (!merged.config.externalApis.banxicoToken) merged.config.externalApis.banxicoToken = KEYS.banxico;
+        if (!merged.config.externalApis.alphaVantageKey) merged.config.externalApis.alphaVantageKey = KEYS.alphaVantage;
+        if (merged.config.externalApis.coinGeckoEnabled === undefined) merged.config.externalApis.coinGeckoEnabled = true;
+        if (merged.config.externalApis.worldBankEnabled === undefined) merged.config.externalApis.worldBankEnabled = true;
+        if (merged.config.externalApis.exchangeRateEnabled === undefined) merged.config.externalApis.exchangeRateEnabled = true;
+        if (merged.config.externalApis.secEdgarEnabled === undefined) merged.config.externalApis.secEdgarEnabled = true;
       }
 
       if (!merged.config.activeMethodologies) {

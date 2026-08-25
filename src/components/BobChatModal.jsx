@@ -1,17 +1,21 @@
 import { useState, useEffect, useRef } from 'react';
-import { Bot, Mic, MicOff, Send, X, Sparkles, MessageSquare, ArrowRight, Zap, RefreshCw } from 'lucide-react';
+import { Bot, Mic, MicOff, Send, X, Sparkles, MessageSquare, ArrowRight, Zap, RefreshCw, Compass, CheckCircle, HelpCircle } from 'lucide-react';
 import { CelisVoiceEngine } from '../lib/voiceEngine';
-import { callAiProvider } from '../lib/ai';
+import { sendBobMessage } from '../lib/bobAgent';
+import { usePlan } from '../context/PlanContext';
 
 export default function BobChatModal({ isOpen, onClose, planData, onExecuteCommand }) {
   if (!isOpen) return null;
+
+  const { navigateToModule, activeModuleKey } = usePlan();
 
   const [messages, setMessages] = useState([
     {
       id: 'welcome',
       sender: 'bob',
-      text: '¡Hola! Soy BOB, tu copiloto de negocios en CELIS ENGINE. Puedes dictarme comandos por voz ("Ajusta la inversión inicial a 500 mil") o preguntarme sobre cualquier sección del plan.',
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      text: '¡Hola! Soy BOB, tu copiloto ejecutivo en CELIS ENGINE (minimax-m3:cloud). Puedo responder dudas, navegar entre secciones, auditar el equilibrio cuántico del fundador o entrevistarte con /grill-me para completar el plan.',
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      toolsExecuted: []
     }
   ]);
   const [inputText, setInputText] = useState('');
@@ -54,6 +58,46 @@ export default function BobChatModal({ isOpen, onClose, planData, onExecuteComma
     }
   };
 
+  // Handler de ejecución de herramientas MCP
+  const handleToolExecution = async (toolName, params) => {
+    console.log('[BobChat] Ejecutando herramienta MCP:', toolName, params);
+
+    if (toolName === 'navigate_to_module') {
+      const mod = params.moduleKey;
+      if (typeof navigateToModule === 'function') {
+        navigateToModule(mod);
+      } else if (onExecuteCommand) {
+        onExecuteCommand({ action: 'NAVIGATE', module: mod });
+      }
+      return `Navegación realizada al módulo: ${mod}`;
+    }
+
+    if (toolName === 'update_plan_field') {
+      if (onExecuteCommand) {
+        onExecuteCommand({
+          action: 'UPDATE_FIELD',
+          moduleKey: params.moduleKey,
+          fieldKey: params.fieldKey,
+          value: params.value
+        });
+      }
+      return `Campo ${params.fieldKey} actualizado en ${params.moduleKey}`;
+    }
+
+    if (toolName === 'trigger_expert_panel') {
+      if (onExecuteCommand) {
+        onExecuteCommand({
+          action: 'TRIGGER_EXPERT_PANEL',
+          moduleKey: params.moduleKey,
+          depth: params.depth || 2
+        });
+      }
+      return `Mesa de Expertos disparada para el módulo: ${params.moduleKey}`;
+    }
+
+    return null;
+  };
+
   const handleSend = async (textToSend) => {
     const query = (textToSend || inputText).trim();
     if (!query || isLoading) return;
@@ -69,7 +113,7 @@ export default function BobChatModal({ isOpen, onClose, planData, onExecuteComma
     setIsLoading(true);
 
     try {
-      // 1. Intentar resolver como comando directo si aplica
+      // 1. Detección rápida de comando local de inversión
       const lower = query.toLowerCase();
       if (lower.includes('inversión') || lower.includes('capex')) {
         const match = query.match(/(?:inversi[oó]n|capex|capital).*?(\d[\d,\.]*)/i);
@@ -80,142 +124,58 @@ export default function BobChatModal({ isOpen, onClose, planData, onExecuteComma
             id: `bob_${Date.now()}`,
             sender: 'bob',
             text: `He detectado tu indicación. Se actualizó la inversión inicial estimada a $${amount.toLocaleString()} MXN.`,
-            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            toolsExecuted: ['update_capex']
           }]);
           setIsLoading(false);
           return;
         }
       }
 
-      // 2. Consulta de IA conversacional ultra-rápida con el contexto del plan
-      const rawAi = planData?.config?.ai || {};
-      
-      // PRIORIDAD PARA EL CHAT:
-      // 1. Enrutadores Inteligentes (TokenRouter / OpenRouter / OrcaRouter) -> Eligen automáticamente el mejor modelo gratis/disponible (DeepSeek R1, Qwen 2.5, Nemotron)
-      // 2. Groq (Llama 3.3 70B Versatile — 800+ tks/seg)
-      // 3. Ollama Cloud / Minimax (minimax-m3:cloud)
-      // 4. Gemini 3.6 Flash / 1.5 Flash
-      let selectedProvider = 'tokenrouter';
-      let selectedModel = 'deepseek/deepseek-r1:free';
-      let selectedKey = rawAi.tokenrouterKey;
+      // 2. Ejecución a través del motor de agente BOB MCP
+      const result = await sendBobMessage({
+        userMessage: query,
+        history: messages,
+        planData,
+        currentModule: activeModuleKey || 'semilla',
+        onToolExecute: handleToolExecution
+      });
 
-      if (rawAi.tokenrouterKey) {
-        selectedProvider = 'tokenrouter';
-        selectedModel = 'deepseek/deepseek-r1:free';
-        selectedKey = rawAi.tokenrouterKey;
-      } else if (rawAi.openrouterKey) {
-        selectedProvider = 'openrouter';
-        selectedModel = 'nvidia/nemotron-3.5-lightning:free';
-        selectedKey = rawAi.openrouterKey;
-      } else if (rawAi.orcarouterKey) {
-        selectedProvider = 'orcarouter';
-        selectedModel = 'orcarouter/auto';
-        selectedKey = rawAi.orcarouterKey;
-      } else if (rawAi.groqKey) {
-        selectedProvider = 'groq';
-        selectedModel = 'llama-3.3-70b-versatile';
-        selectedKey = rawAi.groqKey;
-      } else if (rawAi.ollamaKey) {
-        selectedProvider = 'ollama';
-        selectedModel = 'minimax-m3:cloud';
-        selectedKey = rawAi.ollamaKey;
-      } else if (rawAi.apiKey) {
-        selectedProvider = 'gemini';
-        selectedModel = 'gemini-1.5-flash';
-        selectedKey = rawAi.apiKey;
-      } else if (rawAi.mistralKey) {
-        selectedProvider = 'mistral';
-        selectedModel = 'mistral-large-latest';
-        selectedKey = rawAi.mistralKey;
-      } else if (rawAi.nvidiaKey) {
-        selectedProvider = 'nvidia';
-        selectedModel = 'meta/llama-3.1-70b-instruct';
-        selectedKey = rawAi.nvidiaKey;
-      }
-
-      const aiConfig = {
-        provider: selectedProvider,
-        model: selectedModel,
-        apiKey: selectedKey,
-        tokenrouterKey: rawAi.tokenrouterKey,
-        openrouterKey: rawAi.openrouterKey,
-        orcaRouterKey: rawAi.orcarouterKey,
-        groqKey: rawAi.groqKey,
-        nvidiaKey: rawAi.nvidiaKey,
-        mistralKey: rawAi.mistralKey,
-        minimaxKey: rawAi.ollamaKey,
-        endpoint: rawAi.endpoint
-      };
-      
-      // Extraer resumen del estado actual del plan de negocio
-      const semilla = planData?.semilla || {};
-      const projectName = planData?.config?.brandKit?.companyName || semilla?.nombre_proyecto || semilla?.negocio?.nombre_marca || 'Sin nombre';
-      const projectType = planData?.config?.projectType || 'business';
-      
-      // Identificar secciones o pilares vacíos para sugerir mejoras
-      const emptySections = [];
-      if (!planData?.mercado || Object.keys(planData.mercado).length === 0) emptySections.push('Estudio de Mercado');
-      if (!planData?.finanzas || Object.keys(planData.finanzas).length === 0) emptySections.push('Modelo Financiero');
-      if (!planData?.operaciones || Object.keys(planData.operaciones).length === 0) emptySections.push('Operaciones');
-      if (!planData?.organizacion || Object.keys(planData.organizacion).length === 0) emptySections.push('Organización');
-
-      const systemPrompt = `Eres BOB, el Copiloto Consultor y Asistente Estratégico Ejecutivo de CELIS ENGINE para el proyecto "${projectName}" (${projectType}).
-
-CONTEXTO VIVO DEL PLAN:
-- Nombre del Proyecto: ${projectName}
-- Tipo: ${projectType}
-- Semilla / Datos Fundacionales: ${JSON.stringify(semilla).slice(0, 800)}
-- Secciones pendientes o con poca información: ${emptySections.length > 0 ? emptySections.join(', ') : 'Ninguna (Plan muy avanzado)'}
-
-TUS DIRECTIVAS Y PERSONALIDAD:
-1. Sé proactivo y consultivo: No te limites a responder pasivamente. Si notas que falta información clave del proyecto (clientes, modelo de ingresos, inversión, canales), haz 1 pregunta indagatoria estratégica al final de tu respuesta para ayudar al usuario a completarlo.
-2. Si el usuario reporta una falla o duda del sistema/proveedores, explícale la causa técnica con claridad ejecutiva y sugiérele la alternativa óptima (ej. rotar a Groq Llama 3.3, Ollama Cloud o TokenRouter).
-3. Mantén un tono ejecutivo, experto, motivador y directo (máximo 2 párrafos). Responde siempre en español.`;
-
-      // Timeout de seguridad de 25 segundos
-      const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Tiempo de espera agotado al consultar el proveedor de IA.')), 25000)
-      );
-
-      const aiPromise = callAiProvider(aiConfig, `${systemPrompt}\n\nHistorial / Pregunta del usuario: "${query}"`, false);
-      const response = await Promise.race([aiPromise, timeoutPromise]);
-      
       setMessages(prev => [...prev, {
         id: `bob_${Date.now()}`,
         sender: 'bob',
-        text: typeof response === 'string' ? response : JSON.stringify(response),
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        text: result.reply,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        toolsExecuted: (result.toolCalls || []).map(t => t.tool)
       }]);
     } catch (err) {
-      // Diagnóstico inteligente cuando ocurre un error
-      let helpfulTip = '';
-      const errMsg = err.message || '';
-      if (errMsg.includes('decommissioned') || errMsg.includes('not supported') || errMsg.includes('404')) {
-        helpfulTip = '\n\n💡 *Sugerencia*: El modelo configurado fue retirado por el proveedor. Te sugiero seleccionar **Groq (Llama 3.3 70B)** u **Ollama Cloud** en Configuración.';
-      } else if (errMsg.includes('429') || errMsg.includes('quota') || errMsg.includes('rate limit')) {
-        helpfulTip = '\n\n💡 *Sugerencia*: Se alcanzó el límite de peticiones por minuto. ¿Deseas que activemos el fallback a TokenRouter o OpenRouter?';
-      } else if (errMsg.includes('fetch') || errMsg.includes('network') || errMsg.includes('timeout')) {
-        helpfulTip = '\n\n💡 *Sugerencia*: Hubo una interrupción de red. ¿Verificamos si tu API Key en Configuración está activa?';
-      }
-
+      console.error('[BobChatModal] Error:', err);
       setMessages(prev => [...prev, {
         id: `bob_${Date.now()}`,
         sender: 'bob',
-        text: `Detecté un problema con el proveedor de IA: ${err.message}.${helpfulTip}`,
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        text: `⚠️ ${err.message}`,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        toolsExecuted: []
       }]);
     } finally {
       setIsLoading(false);
     }
   };
 
+  const quickActions = [
+    { label: '🎯 Grill-Me', prompt: '/grill-me Entrevístame para completar la propuesta de valor y modelo de ingresos' },
+    { label: '⚛️ Diagnóstico Cuántico', prompt: 'Evalúa el balance atómico del fundador en las 3 áreas: Finanzas, Operativo, Administrativo' },
+    { label: '📊 Ver Finanzas', prompt: 'Llévanos al módulo de finanzas y dime qué métricas clave necesitamos' },
+    { label: '🔍 Auditoría General', prompt: 'Revisa qué secciones tienen menos información y cuál es el siguiente paso prioritario' },
+  ];
+
   return (
     <div style={{
       position: 'fixed',
       bottom: '90px',
       right: '24px',
-      width: '380px',
-      height: '520px',
+      width: '400px',
+      height: '560px',
       background: '#ffffff',
       borderRadius: '20px',
       boxShadow: '0 20px 40px -15px rgba(0,0,0,0.3)',
@@ -236,12 +196,15 @@ TUS DIRECTIVAS Y PERSONALIDAD:
         justifyContent: 'space-between'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-          <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ width: '34px', height: '34px', borderRadius: '10px', background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Bot size={20} />
           </div>
           <div>
-            <div style={{ fontWeight: 800, fontSize: '0.9rem' }}>BOB · CELIS Engine</div>
-            <div style={{ fontSize: '0.65rem', opacity: 0.85 }}>Copiloto por Voz e IA</div>
+            <div style={{ fontWeight: 800, fontSize: '0.92rem' }}>BOB · CELIS Engine</div>
+            <div style={{ fontSize: '0.65rem', opacity: 0.9, display: 'flex', alignItems: 'center', gap: '5px' }}>
+              <span>Copiloto MCP</span>
+              <span style={{ background: 'rgba(255,255,255,0.25)', padding: '1px 6px', borderRadius: '6px', fontSize: '0.55rem', fontWeight: 800 }}>minimax-m3:cloud</span>
+            </div>
           </div>
         </div>
         <button
@@ -252,6 +215,30 @@ TUS DIRECTIVAS Y PERSONALIDAD:
         </button>
       </div>
 
+      {/* Quick Action Chips */}
+      <div style={{ padding: '0.5rem 0.75rem', background: '#f1f5f9', borderBottom: '1px solid #e2e8f0', display: 'flex', gap: '0.4rem', overflowX: 'auto', whiteSpace: 'nowrap' }}>
+        {quickActions.map((qa, i) => (
+          <button
+            key={i}
+            onClick={() => handleSend(qa.prompt)}
+            disabled={isLoading}
+            style={{
+              padding: '3px 8px',
+              borderRadius: '12px',
+              border: '1px solid #cbd5e1',
+              background: '#ffffff',
+              fontSize: '0.68rem',
+              fontWeight: 600,
+              color: '#475569',
+              cursor: 'pointer',
+              flexShrink: 0
+            }}
+          >
+            {qa.label}
+          </button>
+        ))}
+      </div>
+
       {/* Messages Feed */}
       <div style={{ flex: 1, padding: '1rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.75rem', background: '#f8fafc' }}>
         {messages.map(msg => (
@@ -259,18 +246,27 @@ TUS DIRECTIVAS Y PERSONALIDAD:
             key={msg.id}
             style={{
               alignSelf: msg.sender === 'user' ? 'flex-end' : 'flex-start',
-              maxWidth: '85%',
+              maxWidth: '88%',
               background: msg.sender === 'user' ? '#4f46e5' : '#ffffff',
               color: msg.sender === 'user' ? '#ffffff' : '#1e293b',
               padding: '0.75rem 1rem',
               borderRadius: msg.sender === 'user' ? '16px 16px 4px 16px' : '16px 16px 16px 4px',
               fontSize: '0.82rem',
-              lineHeight: 1.4,
+              lineHeight: 1.45,
               boxShadow: '0 2px 6px rgba(0,0,0,0.04)',
               border: msg.sender === 'user' ? 'none' : '1px solid #e2e8f0'
             }}
           >
-            {msg.text}
+            {msg.toolsExecuted && msg.toolsExecuted.length > 0 && (
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginBottom: '6px' }}>
+                {msg.toolsExecuted.map((t, ti) => (
+                  <span key={ti} style={{ fontSize: '0.6rem', padding: '1px 6px', borderRadius: '6px', background: 'rgba(16,185,129,0.15)', color: '#059669', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                    <Zap size={10} /> Herramienta MCP: {t}
+                  </span>
+                ))}
+              </div>
+            )}
+            <div style={{ whiteSpace: 'pre-wrap' }}>{msg.text}</div>
             <div style={{ fontSize: '0.6rem', opacity: 0.6, marginTop: '4px', textAlign: 'right' }}>
               {msg.timestamp}
             </div>
@@ -279,7 +275,7 @@ TUS DIRECTIVAS Y PERSONALIDAD:
         {isLoading && (
           <div style={{ alignSelf: 'flex-start', background: '#ffffff', padding: '0.6rem 1rem', borderRadius: '16px', fontSize: '0.75rem', color: '#64748b', display: 'flex', alignItems: 'center', gap: '0.5rem', border: '1px solid #e2e8f0' }}>
             <RefreshCw size={14} className="animate-spin" />
-            <span>BOB está pensando...</span>
+            <span>BOB ejecutando análisis...</span>
           </div>
         )}
         <div ref={messagesEndRef} />
@@ -311,7 +307,7 @@ TUS DIRECTIVAS Y PERSONALIDAD:
 
         <input
           type="text"
-          placeholder={isListening ? "Escuchando tu voz..." : "Escribe un comando o duda..."}
+          placeholder={isListening ? "Escuchando tu voz..." : "Pregunta, pide ir a una sección o /grill-me..."}
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleSend()}

@@ -1,7 +1,9 @@
 /**
  * TouchBarManager.js
- * Módulo de integración para MacBook Pro Touch Bar mediante Web MediaSession API y Telemetría.
- * Permite proyectar en la pantalla OLED de macOS el estado del enjambre IA, progreso y módulo activo en Google Chrome.
+ * Módulo de integración multi-navegador (Google Chrome, Apple Safari, Mozilla Firefox)
+ * para MacBook Pro Touch Bar mediante Web MediaSession API y Telemetría.
+ * Permite proyectar en la pantalla OLED de macOS o la pestaña del navegador
+ * el estado del enjambre IA, progreso y módulo activo.
  */
 
 // Mapa de emojis descriptivos según el estado de la IA
@@ -17,7 +19,7 @@ const AI_STATE_ICONS = {
 };
 
 /**
- * Formatea el título principal que se proyectará en la Touch Bar de macOS.
+ * Formatea el título principal que se proyectará en la Touch Bar de macOS o título de ventana.
  */
 export function formatTouchBarTitle({ progressPercent = 0, aiState = 'listo', currentModuleTitle = 'Plan de Negocios' }) {
   const icon = AI_STATE_ICONS[aiState] || '🚀';
@@ -99,7 +101,11 @@ export function createTouchBarCoverSvg({
  */
 export function svgToDataUrl(svgString) {
   if (typeof btoa === 'function') {
-    return `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(svgString)))}`;
+    try {
+      return `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(svgString)))}`;
+    } catch {
+      return `data:image/svg+xml;utf8,${encodeURIComponent(svgString)}`;
+    }
   }
   return `data:image/svg+xml;utf8,${encodeURIComponent(svgString)}`;
 }
@@ -135,13 +141,14 @@ export function createTouchBarStatusPayload({
 }
 
 /**
- * Clase Singleton para gestionar la MediaSession en Google Chrome / Safari.
+ * Clase Singleton para gestionar la MediaSession multi-navegador en Chrome, Safari y Firefox.
  */
 class TouchBarBridgeManager {
   constructor() {
     this.audioElement = null;
     this.isEnabled = false;
     this.listeners = new Set();
+    this.hasUserInteracted = false;
     this.currentStatus = {
       progressPercent: 0,
       aiState: 'listo',
@@ -153,17 +160,29 @@ class TouchBarBridgeManager {
   }
 
   init() {
-    if (typeof window === 'undefined' || typeof navigator === 'undefined' || !('mediaSession' in navigator)) {
+    if (typeof window === 'undefined' || typeof navigator === 'undefined') {
       return false;
     }
 
-    if (!this.audioElement) {
-      // Audio silencioso loop para mantener el enlace de MediaSession activo en Chrome
+    // Registrar interacción de usuario para Safari / Firefox (política de autoplay)
+    const unlockAudio = () => {
+      this.hasUserInteracted = true;
+      if (this.audioElement && this.audioElement.paused) {
+        this.audioElement.play().catch(() => {});
+      }
+      window.removeEventListener('click', unlockAudio);
+      window.removeEventListener('keydown', unlockAudio);
+    };
+
+    window.addEventListener('click', unlockAudio, { once: true });
+    window.addEventListener('keydown', unlockAudio, { once: true });
+
+    if (!this.audioElement && typeof document !== 'undefined') {
+      // Audio silencioso WAV base64 loop para activar MediaSession
       this.audioElement = document.createElement('audio');
-      // Generador de tono silencioso en base64 (WAV 1 segundo vacío)
       this.audioElement.src = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA';
       this.audioElement.loop = true;
-      this.audioElement.volume = 0.001; // Casi inaudible
+      this.audioElement.volume = 0.001;
     }
 
     this.setupMediaSessionHandlers();
@@ -172,7 +191,7 @@ class TouchBarBridgeManager {
   }
 
   setupMediaSessionHandlers() {
-    if (!('mediaSession' in navigator)) return;
+    if (typeof navigator === 'undefined' || !('mediaSession' in navigator)) return;
 
     try {
       navigator.mediaSession.setActionHandler('play', () => {
@@ -210,18 +229,25 @@ class TouchBarBridgeManager {
   update(statusUpdates = {}) {
     this.currentStatus = { ...this.currentStatus, ...statusUpdates };
 
+    const title = formatTouchBarTitle(this.currentStatus);
+    const artist = formatTouchBarArtist(this.currentStatus);
+
+    // Fallback universal: reflejar en document.title para Firefox / navegadores sin MediaSession
+    if (typeof document !== 'undefined') {
+      const pct = Math.round(Number(this.currentStatus.progressPercent) || 0);
+      const icon = AI_STATE_ICONS[this.currentStatus.aiState] || '🚀';
+      document.title = `${icon} (${pct}%) ${this.currentStatus.currentModuleTitle} | Open Business Plan`;
+    }
+
     if (!this.isEnabled || typeof navigator === 'undefined' || !('mediaSession' in navigator)) {
       return;
     }
 
     try {
-      // Intentar iniciar audio silencioso si el usuario ya interactuó
-      if (this.audioElement && this.audioElement.paused) {
+      if (this.hasUserInteracted && this.audioElement && this.audioElement.paused) {
         this.audioElement.play().catch(() => {});
       }
 
-      const title = formatTouchBarTitle(this.currentStatus);
-      const artist = formatTouchBarArtist(this.currentStatus);
       const svg = createTouchBarCoverSvg(this.currentStatus);
       const artworkUrl = svgToDataUrl(svg);
 

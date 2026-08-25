@@ -2,30 +2,70 @@
  * Capa de Adaptadores Unificados para Gemelos Digitales (Datos Económicos y Financieros).
  * 
  * Transforma respuestas heterogéneas (JSON, Series Temporales, Texto) provenientes de
- * AlphaVantage, FRED, INEGI, BANXICO, Yahoo Finance y Google en un esquema estandarizado
- * que alimenta directamente el análisis PESTEL, el cálculo de WACC y la base de datos de trazabilidad.
+ * AlphaVantage, FRED, INEGI, BANXICO, CoinGecko, Banco Mundial, NewsAPI, ExchangeRate y SEC EDGAR
+ * en un esquema estandarizado que alimenta directamente el análisis PESTEL, el cálculo de WACC
+ * y la base de datos de trazabilidad.
  */
 
+import { adaptCoinGecko, fetchCoinGeckoPrice } from './adapters/coinGeckoAdapter.js';
+import { adaptWorldBank, fetchWorldBankIndicator } from './adapters/worldBankAdapter.js';
+import { adaptNewsApi, fetchNewsSector } from './adapters/newsApiAdapter.js';
+import { adaptExchangeRates, fetchExchangeRates } from './adapters/exchangeRateAdapter.js';
+import { adaptSecEdgar, fetchSecCompanyFacts } from './adapters/secEdgarAdapter.js';
+
+export {
+  adaptCoinGecko, fetchCoinGeckoPrice,
+  adaptWorldBank, fetchWorldBankIndicator,
+  adaptNewsApi, fetchNewsSector,
+  adaptExchangeRates, fetchExchangeRates,
+  adaptSecEdgar, fetchSecCompanyFacts
+};
+
+// Cache local en memoria para AlphaVantage (evita agotar el límite de 5 req/min)
+const _alphaVantageCache = new Map();
+
 /**
- * Esquema Normalizado de Datos de Gemelo Digital:
- * @typedef {Object} DigitalTwinRecord
- * @property {string} indicator - Nombre técnico y descriptivo del indicador (ej. 'Tasa de Interés Libre de Riesgo').
- * @property {number|string} value - Valor numérico principal o síntesis.
- * @property {string} unit - Unidad de medida ('%', 'USD', 'MXN', 'Índice', 'Puntos').
- * @property {Array<{date: string, val: number}>} timeseries - Serie histórica cronológica (si aplica).
- * @property {string} source - Nombre oficial de la fuente ('FRED', 'AlphaVantage', 'INEGI', 'BANXICO').
- * @property {string} timestamp - Fecha y hora ISO de adquisición de datos.
- * @property {'json'|'timeseries'|'text'|'tabular'} rawType - Formato de origen de los datos.
- * @property {Object} metadata - Información contextual adicional (periodicidad, sector, ticker).
+ * Consulta la API de Alpha Vantage y devuelve el registro normalizado.
+ * @param {string} symbol - Ticker bursátil (ej. 'MSFT', 'AAPL', 'BABA', 'AMZN')
+ * @param {'OVERVIEW'|'TIME_SERIES_DAILY'|'GLOBAL_QUOTE'|'INCOME_STATEMENT'} fnType - Tipo de consulta
+ * @param {string} apiKey - API Key de Alpha Vantage
+ * @returns {Promise<Object>} Registro normalizado de Gemelo Digital
  */
+export async function fetchAlphaVantageData(symbol = 'IBM', fnType = 'OVERVIEW', apiKey = '38CEHMYW5CGOHUX1') {
+  const cacheKey = `${symbol}_${fnType}`;
+  if (_alphaVantageCache.has(cacheKey)) {
+    return _alphaVantageCache.get(cacheKey);
+  }
+
+  const effectiveKey = apiKey || '38CEHMYW5CGOHUX1';
+  try {
+    const url = `https://www.alphavantage.co/query?function=${fnType}&symbol=${encodeURIComponent(symbol)}&apikey=${effectiveKey}`;
+    const res = await fetch(url, { signal: AbortSignal.timeout(12000) });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    
+    // Verificar si AlphaVantage devolvió mensaje de limitación de tasa
+    if (data.Note || data.Information) {
+      console.warn('[AlphaVantage] Límite de tasa alcanzado o aviso:', data.Note || data.Information);
+    }
+
+    const adapted = adaptAlphaVantage(data, symbol);
+    _alphaVantageCache.set(cacheKey, adapted);
+    return adapted;
+  } catch (err) {
+    console.warn('[AlphaVantage] Error consultando API:', err.message);
+    return adaptAlphaVantage(null, symbol);
+  }
+}
 
 /**
  * Adaptador para AlphaVantage (Balances, Ratios, Precios y Métricas Financieras).
  * @param {Object} rawData - Respuesta cruda en JSON de la API de AlphaVantage.
  * @param {string} symbol - Ticker o símbolo analizado.
- * @returns {DigitalTwinRecord} Registro estandarizado.
+ * @returns {Object} Registro estandarizado.
  */
 export function adaptAlphaVantage(rawData, symbol = 'MERCADO') {
+  const now = new Date().toISOString();
   if (!rawData) {
     return {
       indicator: `Métricas Financieras (${symbol})`,
@@ -33,7 +73,7 @@ export function adaptAlphaVantage(rawData, symbol = 'MERCADO') {
       unit: 'N/A',
       timeseries: [],
       source: 'AlphaVantage',
-      timestamp: new Date().toISOString(),
+      timestamp: now,
       rawType: 'json',
       metadata: { error: 'Respuesta vacía de AlphaVantage' }
     };
@@ -41,20 +81,25 @@ export function adaptAlphaVantage(rawData, symbol = 'MERCADO') {
 
   // Si es un Overview / Resumen Fundamental
   if (rawData.Symbol || rawData.PERatio || rawData.Beta) {
+    const beta = parseFloat(rawData.Beta) || 1.0;
     return {
       indicator: `Perfil Financiero y Riesgo (${rawData.Symbol || symbol})`,
-      value: parseFloat(rawData.Beta) || 1.0,
+      value: beta,
       unit: 'Beta',
       timeseries: [],
       source: 'AlphaVantage',
-      timestamp: new Date().toISOString(),
+      timestamp: now,
       rawType: 'json',
       metadata: {
+        symbol: rawData.Symbol || symbol,
+        name: rawData.Name || '',
         per: parseFloat(rawData.PERatio) || null,
         eps: parseFloat(rawData.EPS) || null,
         sector: rawData.Sector || 'General',
         industry: rawData.Industry || 'General',
-        waccReferenceBeta: parseFloat(rawData.Beta) || 1.0
+        marketCap: parseFloat(rawData.MarketCapitalization) || null,
+        waccReferenceBeta: beta,
+        dividendYield: parseFloat(rawData.DividendYield) || null
       }
     };
   }
@@ -76,7 +121,7 @@ export function adaptAlphaVantage(rawData, symbol = 'MERCADO') {
       unit: 'USD',
       timeseries: points,
       source: 'AlphaVantage',
-      timestamp: new Date().toISOString(),
+      timestamp: now,
       rawType: 'timeseries',
       metadata: { symbol, totalPoints: points.length }
     };
@@ -88,7 +133,7 @@ export function adaptAlphaVantage(rawData, symbol = 'MERCADO') {
     unit: 'JSON',
     timeseries: [],
     source: 'AlphaVantage',
-    timestamp: new Date().toISOString(),
+    timestamp: now,
     rawType: 'json',
     metadata: rawData
   };
@@ -98,7 +143,7 @@ export function adaptAlphaVantage(rawData, symbol = 'MERCADO') {
  * Adaptador para FRED (Federal Reserve Economic Data).
  * @param {Object} rawData - Respuesta cruda JSON de FRED.
  * @param {string} seriesId - ID de la serie (ej. 'DGS10' para bonos a 10 años, 'CPIAUCSL' para inflación).
- * @returns {DigitalTwinRecord} Registro estandarizado.
+ * @returns {Object} Registro estandarizado.
  */
 export function adaptFred(rawData, seriesId = 'DGS10') {
   if (!rawData || !rawData.observations || !Array.isArray(rawData.observations)) {
@@ -147,7 +192,7 @@ export function adaptFred(rawData, seriesId = 'DGS10') {
  * Adaptador para INEGI / BANXICO.
  * @param {Object} rawData - Respuesta de la API oficial.
  * @param {string} indicatorType - 'inflacion', 'cetes28', 'tipo_cambio', 'denue'.
- * @returns {DigitalTwinRecord} Registro estandarizado.
+ * @returns {Object} Registro estandarizado.
  */
 export function adaptMexicanMacro(rawData, indicatorType = 'inflacion') {
   const now = new Date().toISOString();
@@ -195,7 +240,7 @@ export function adaptMexicanMacro(rawData, indicatorType = 'inflacion') {
 /**
  * Agrega y persiste un registro normalizado de Gemelo Digital en el estado del plan.
  * @param {Object} currentPlanData - Estado actual del plan de negocios.
- * @param {DigitalTwinRecord} adaptedRecord - Registro normalizado.
+ * @param {Object} adaptedRecord - Registro normalizado.
  * @returns {Object} planData actualizado con la evidencia almacenada en trazabilidad.
  */
 export function injectDigitalTwinEvidence(currentPlanData, adaptedRecord) {
