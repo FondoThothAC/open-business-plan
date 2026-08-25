@@ -179,35 +179,30 @@ export async function sendBobMessage({
   onToolExecute = null
 }) {
   const rawAi = planData?.config?.ai || {};
-  const bobKey = rawAi.bobOllamaKey || rawAi.ollamaKey;
-
-  if (!bobKey) {
-    throw new Error('No se encontró la API Key de Ollama Cloud para BOB.');
-  }
+  const bobKey = rawAi.bobOllamaKey || rawAi.ollamaKey || '';
 
   const systemPrompt = buildBobSystemPrompt(planData, currentModule);
   
   // Construir historial en formato conversacional
-  const messages = [
-    { role: 'system', content: systemPrompt },
-    ...history.slice(-10).map(m => ({
-      role: m.sender === 'user' ? 'user' : 'assistant',
-      content: m.text
-    })),
-    { role: 'user', content: userMessage }
-  ];
-
   const fullPrompt = `${systemPrompt}\n\n` + 
     history.slice(-8).map(m => `${m.sender === 'user' ? 'Usuario' : 'BOB'}: ${m.text}`).join('\n') +
     `\nUsuario: ${userMessage}\nBOB:`;
 
+  // Construir configuración inteligente de IA con fallback multi-proveedor
+  const primaryProv = rawAi.primaryProvider || 'groq';
   const aiConfig = {
-    provider: 'minimax',
-    model: 'minimax-m3:cloud',
-    minimaxKey: bobKey,
-    apiKey: bobKey,
+    ...rawAi,
+    provider: primaryProv,
+    model: rawAi.model || 'llama-3.3-70b-versatile',
+    apiKey: rawAi.apiKey,
+    groqKey: rawAi.groqKey,
+    geminiKey: rawAi.apiKey || rawAi.geminiKey,
+    nvidiaKey: rawAi.nvidiaKey,
+    openrouterKey: rawAi.openrouterKey,
+    ollamaKey: rawAi.ollamaKey || bobKey,
+    minimaxKey: rawAi.minimaxKey,
     endpoint: rawAi.endpoint,
-    disableAutoFallback: true
+    disableAutoFallback: false
   };
 
   const rawResponse = await callAiProvider(aiConfig, fullPrompt, false);

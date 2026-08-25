@@ -872,7 +872,7 @@ function _showFallbackDialog(errorMsg) {
 export async function callAiProvider(config, prompt, expectJson = true, expectedKeys = [], onThink = null) {
   const {
     provider, apiKey, groqKey, nvidiaKey, openrouterKey, opencodeKey, tokenrouterKey, mistralKey, minimaxKey, orcaRouterKey,
-    ollamaKey,   // API key de Ollama Cloud (permite llamar a https://ollama.com/v1 sin instalar Ollama)
+    ollamaKey,
     endpoint, lmStudioEndpoint, model, disableAutoFallback = false
   } = config;
 
@@ -885,7 +885,6 @@ export async function callAiProvider(config, prompt, expectJson = true, expected
     if (prov === 'opencode')    return await callOpenRouter(key || opencodeKey || apiKey, mod, prompt, expectJson);
     if (prov === 'tokenrouter') return await callTokenRouter(key || tokenrouterKey || apiKey, mod, prompt, expectJson);
     if (prov === 'orcarouter')  return await callOrcaRouter(key || orcaRouterKey || apiKey, mod, prompt, expectJson);
-    // ollama: si hay ollamaKey → Cloud (no requiere Ollama local). Sin ollamaKey → localhost
     if (prov === 'ollama')      return await callOllama(endpoint, mod, prompt, expectJson, key || ollamaKey || '');
     if (prov === 'lmstudio')    return await callLmStudio(endpoint || lmStudioEndpoint, mod, prompt, expectJson, key || apiKey);
     if (prov === 'mistral')     return await callMistral(key || mistralKey || apiKey, mod, prompt);
@@ -904,28 +903,31 @@ export async function callAiProvider(config, prompt, expectJson = true, expected
       throw err;
     }
 
-    // ─── Rotación Automática Multi-Proveedor — Prioridad: rápidos primero ───
-    // ORDEN: Minimax → Groq (rápido) → Gemini (rápido) → TokenRouter → OrcaRouter → OpenRouter (lento) → NVIDIA → Mistral
-    // OpenRouter tier gratuito puede tardar 60s+; Groq y Gemini responden en 1-3s.
+    // ─── Rotación Automática Multi-Proveedor Ultra Rápida ───
+    // ORDEN DE MENOR A MAYOR LATENCIA:
+    // 1. Groq (1-2s con Llama 3.3 70B / 3.1 8B)
+    // 2. Gemini (1-3s con Gemini 2.0 / 1.5 Flash)
+    // 3. OpenRouter (tier gratuito)
+    // 4. Minimax / NVIDIA / Mistral
     const logger = onThink || activeTermLog;
     const fallbackProviders = [];
 
-    // 1° Prioridad: Minimax (si tiene clave)
-    if (provider !== 'minimax' && (minimaxKey || config?.minimaxKey)) {
-      fallbackProviders.push({ provider: 'minimax', key: minimaxKey || config?.minimaxKey, model: 'minimax-m3:cloud' });
-    }
-
-    // 2° Prioridad: Groq — rápido y con modelos robustos
+    // 1° Prioridad: Groq — el más veloz y robusto
     if (provider !== 'groq' && (groqKey || config?.groqKey)) {
-      fallbackProviders.push({ provider: 'groq', key: groqKey || config?.groqKey, model: 'openai/gpt-oss-20b' });
+      fallbackProviders.push({ provider: 'groq', key: groqKey || config?.groqKey, model: 'llama-3.3-70b-versatile' });
     }
 
-    // 3° Prioridad: Gemini — rápido
+    // 2° Prioridad: Gemini — Google Flash
     if (provider !== 'gemini' && (apiKey || config?.geminiKey)) {
-      fallbackProviders.push({ provider: 'gemini', key: apiKey || config?.geminiKey, model: 'gemini-2.5-flash' });
+      fallbackProviders.push({ provider: 'gemini', key: apiKey || config?.geminiKey, model: 'gemini-2.0-flash' });
     }
 
-    // 4° Prioridad: Routers inteligentes (TokenRouter / OrcaRouter)
+    // 3° Prioridad: OpenRouter
+    if (provider !== 'openrouter' && (openrouterKey || config?.openrouterKey)) {
+      fallbackProviders.push({ provider: 'openrouter', key: openrouterKey || config?.openrouterKey, model: 'nvidia/nemotron-3.5-lightning:free' });
+    }
+
+    // 4° Prioridad: Routers inteligentes
     if (provider !== 'tokenrouter' && (tokenrouterKey || config?.tokenrouterKey)) {
       fallbackProviders.push({ provider: 'tokenrouter', key: tokenrouterKey || config?.tokenrouterKey, model: 'deepseek/deepseek-r1:free' });
     }
@@ -933,12 +935,10 @@ export async function callAiProvider(config, prompt, expectJson = true, expected
       fallbackProviders.push({ provider: 'orcarouter', key: orcaRouterKey || config?.orcaRouterKey, model: 'orcarouter/auto' });
     }
 
-    // 5° Prioridad: OpenRouter — tier gratuito lento (~60s), va al final
-    if (provider !== 'openrouter' && (openrouterKey || config?.openrouterKey)) {
-      fallbackProviders.push({ provider: 'openrouter', key: openrouterKey || config?.openrouterKey, model: 'nvidia/nemotron-3.5-lightning:free' });
+    // 5° Prioridad: Minimax / NVIDIA / Mistral
+    if (provider !== 'minimax' && (minimaxKey || config?.minimaxKey)) {
+      fallbackProviders.push({ provider: 'minimax', key: minimaxKey || config?.minimaxKey, model: 'minimax-m3:cloud' });
     }
-
-    // 6° Prioridad: NVIDIA / Mistral
     if (provider !== 'nvidia' && (nvidiaKey || config?.nvidiaKey)) {
       fallbackProviders.push({ provider: 'nvidia', key: nvidiaKey || config?.nvidiaKey, model: 'meta/llama-3.1-70b-instruct' });
     }
@@ -1138,23 +1138,22 @@ async function callGemini(apiKey, model, prompt) {
   const keys = parseApiKeys(apiKey);
   if (keys.length === 0) throw new Error('No se proporcionó API Key de Google Gemini válida');
 
-  let preferredModel = model || 'gemini-2.5-flash';
-  // Normalizar aliases o modelos viejos a nombres válidos actuales
+  let preferredModel = model || 'gemini-2.0-flash';
+  // Normalizar aliases o modelos no soportados
   if (
+    preferredModel.includes('3.') ||
+    preferredModel.includes('2.5') ||
     preferredModel === 'gemini-3.6-flash' ||
-    preferredModel === 'gemini-3.7-flash' ||
-    preferredModel === 'gemini-3.5-flash-lite' ||
-    preferredModel === 'gemini-3.1-flash-lite'
+    preferredModel === 'gemini-3.7-flash'
   ) {
-    preferredModel = 'gemini-2.5-flash';
+    preferredModel = 'gemini-2.0-flash';
   }
 
   const geminiCandidates = [
     preferredModel,
-    'gemini-2.5-flash',
-    'gemini-2.5-flash-lite',
     'gemini-2.0-flash',
-    'gemini-1.5-flash'
+    'gemini-1.5-flash',
+    'gemini-1.5-pro'
   ];
   const uniqueModels = [...new Set(geminiCandidates)];
 
@@ -1181,7 +1180,7 @@ async function callGemini(apiKey, model, prompt) {
         const data = await response.json();
         if (!data.error && data.candidates?.[0]?.content?.parts?.[0]?.text) {
           if (data.usageMetadata && data.usageMetadata.totalTokenCount) {
-            recordTokenTelemetry('gemini', data.usageMetadata.totalTokenCount, targetModel, data.usageMetadata.promptTokenCount, data.usageMetadata.candidatesTokenCount);
+            recordTokenTelemetry('gemini', data.usageMetadata.totalTokenCount, candidate, data.usageMetadata.promptTokenCount, data.usageMetadata.candidatesTokenCount);
           }
           return data.candidates[0].content.parts[0].text;
         }
@@ -1232,24 +1231,21 @@ async function callGroq(apiKey, model, prompt, expectJson) {
   const keys = parseApiKeys(apiKey);
   if (keys.length === 0) throw new Error('No se proporcionó API Key de Groq válida');
 
-  let preferredModel = model || 'openai/gpt-oss-20b';
-  // Normalizar aliases a IDs de Groq válidos actuales
-  if (preferredModel === 'groq/compound') preferredModel = 'compound-beta';
-  if (preferredModel === 'groq/compound-mini') preferredModel = 'compound-beta-mini';
-  if (preferredModel === 'qwen/qwen3.6-27b') preferredModel = 'qwen-qwq-32b';
+  let preferredModel = model || 'llama-3.3-70b-versatile';
+  // Normalizar aliases
+  if (preferredModel === 'groq/compound' || preferredModel === 'compound-beta') preferredModel = 'llama-3.3-70b-versatile';
+  if (preferredModel === 'openai/gpt-oss-120b') preferredModel = 'llama-3.3-70b-versatile';
+  if (preferredModel === 'openai/gpt-oss-20b') preferredModel = 'llama-3.1-8b-instant';
+  if (preferredModel === 'qwen/qwen3.6-27b') preferredModel = 'qwen-2.5-32b';
 
-  // Lista de candidatos Groq — modelos validados en producción primero
+  // Modelos oficiales y reales de Groq API
   const groqCandidateModels = [
     preferredModel,
-    'openai/gpt-oss-20b',       // Validado en producción VPS
-    'openai/gpt-oss-120b',      // Validado en producción VPS
     'llama-3.3-70b-versatile',
-    'compound-beta',
-    'compound-beta-mini',
-    'moonshotai/kimi-k2-instruct',
     'llama-3.1-8b-instant',
-    'qwen-qwq-32b',
-    'deepseek-r1-distill-llama-70b'
+    'deepseek-r1-distill-llama-70b',
+    'qwen-2.5-32b',
+    'gemma2-9b-it'
   ];
   const uniqueModels = [...new Set(groqCandidateModels.filter(Boolean))];
 
@@ -1325,9 +1321,10 @@ async function callOpenRouter(apiKey, model, prompt, expectJson) {
   const candidateModels = [
     model || 'nvidia/nemotron-3.5-lightning:free',
     'nvidia/nemotron-3.5-lightning:free',
-    'openai/gpt-oss-20b:free',
-    'nvidia/nemotron-3-nano-30b-a3b:free',
-    'z-ai/glm-5.2:free'
+    'meta-llama/llama-3.3-70b-instruct:free',
+    'deepseek/deepseek-r1:free',
+    'google/gemini-2.0-flash-exp:free',
+    'qwen/qwen-2.5-72b-instruct:free'
   ];
   const uniqueModels = [...new Set(candidateModels)];
   let lastError = null;
@@ -1360,7 +1357,7 @@ async function callOpenRouter(apiKey, model, prompt, expectJson) {
         const data = await response.json();
         if (!data.error && data.choices?.[0]?.message?.content !== undefined) {
           if (data.usage && data.usage.total_tokens) {
-            recordTokenTelemetry('openrouter', data.usage.total_tokens, targetModel, data.usage.prompt_tokens, data.usage.completion_tokens);
+            recordTokenTelemetry('openrouter', data.usage.total_tokens, candidate, data.usage.prompt_tokens, data.usage.completion_tokens);
           }
           return data.choices[0].message.content;
         }
