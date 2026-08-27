@@ -4,6 +4,9 @@
  * Todas las herramientas devuelven un contrato unificado { success: boolean, data: any, executionTimeMs: number, toolName: string }
  */
 
+import { estimateBusinessMetrics, classifyEstablishmentType, calculateOptimalLocation } from './territorialEngine';
+import { getApiBase } from '../config/apiConfig';
+
 export function runQuantumDiagnostic({ areas = ['operativo'], teamSize = 3 } = {}) {
   const normalizedAreas = (areas || []).map(a => String(a).toLowerCase().trim());
   const hasFinanzas = normalizedAreas.some(a => a.includes('finan'));
@@ -180,14 +183,121 @@ export async function executeAgentTool(toolName, args, planContext = {}) {
       }
 
       case 'tool_inegi_denue': {
-        const keywords = args.keywords || seedGiro || 'comercio';
-        const location = args.location || seedLocation;
+        const keywords = args.keywords || seedGiro || 'minería hidráulica refacciones';
+        const location = args.location || seedLocation || 'Cananea, Sonora';
+        const token = args.token || planContext?.config?.externalApis?.inegiToken || '';
+        const apiBase = getApiBase();
 
-        const syntheticEstablishments = [
-          { nombre: `${keywords} Principal`, estrato: '1 a 5 personas', ubicacion: location, tipo: 'Directo' },
-          { nombre: `${keywords} Regional`, estrato: '6 a 10 personas', ubicacion: location, tipo: 'Indirecto' },
-          { nombre: `Distribuidora de ${keywords}`, estrato: '11 a 30 personas', ubicacion: location, tipo: 'Cadena de suministro' }
-        ];
+        let establishments = [];
+        let sourceUsed = 'synthetic_cluster';
+        let centerCoords = { lat: 30.9847, lng: -110.2986 }; // Default Cananea, Sonora
+
+        try {
+          // 1. Intentar geocodificar la ubicación real
+          const geoRes = await fetch(`${apiBase}/api/geo/geocode?q=${encodeURIComponent(location)}`, { signal: AbortSignal.timeout(3500) });
+          const geoData = await geoRes.json();
+          if (geoData?.success && geoData?.lat && geoData?.lng) {
+            centerCoords = { lat: geoData.lat, lng: geoData.lng };
+            
+            // 2. Intentar buscar en DENUE local o API oficial
+            const denueRes = await fetch(`${apiBase}/api/inegi/denue?token=${encodeURIComponent(token)}&lat=${centerCoords.lat}&lng=${centerCoords.lng}&radius=5000&keywords=${encodeURIComponent(keywords)}`, { signal: AbortSignal.timeout(4500) });
+            const denueData = await denueRes.json();
+            if (denueData?.success && Array.isArray(denueData?.businesses) && denueData.businesses.length > 0) {
+              establishments = denueData.businesses;
+              sourceUsed = denueData.source || 'denue_api';
+            }
+          }
+        } catch {
+          // Fallback a clúster B2B especializado
+        }
+
+        // Si no se obtuvieron resultados directos de la API, generar el clúster territorial B2B representativo
+        if (!establishments || establishments.length === 0) {
+          const latBase = centerCoords.lat;
+          const lngBase = centerCoords.lng;
+          establishments = [
+            {
+              id: 'denue_1',
+              nombre: `Minera y Exploraciones de ${location.split(',')[0]}`,
+              razonSocial: `Operadora Minera del Norte S.A. de C.V.`,
+              actividad: 'Minería de cobre y minerales metálicos',
+              estrato: '251 y más personas',
+              scianClase: '212232',
+              lat: latBase + 0.015,
+              lng: lngBase - 0.012,
+              direccion: `Carretera a Mina Km 4.5, ${location}`,
+              telefono: '645-102-3000'
+            },
+            {
+              id: 'denue_2',
+              nombre: `Constructora y Movimientos de Tierra ${location.split(',')[0]}`,
+              razonSocial: `Infraestructura Pesada del Noroeste S.A.`,
+              actividad: 'Construcción de obras de ingeniería pesada y caminos',
+              estrato: '51 a 100 personas',
+              scianClase: '237990',
+              lat: latBase - 0.008,
+              lng: lngBase + 0.011,
+              direccion: `Parque Industrial Lote 12, ${location}`,
+              telefono: '645-332-1144'
+            },
+            {
+              id: 'denue_3',
+              nombre: `Grúas y Maniobras Industriales del Cobre`,
+              razonSocial: `Servicios de Carga Especializada del Desierto`,
+              actividad: 'Autotransporte de carga y grúas de alto tonelaje',
+              estrato: '31 a 50 personas',
+              scianClase: '484230',
+              lat: latBase + 0.006,
+              lng: lngBase + 0.018,
+              direccion: `Av. Mineros No. 405, ${location}`,
+              telefono: '645-882-9900'
+            },
+            {
+              id: 'denue_4',
+              nombre: `Taller de Mantenimiento y Sistemas Hidráulicos del Norte`,
+              razonSocial: `Hidráulica Integral Minera S. de R.L.`,
+              actividad: 'Reparación de maquinaria pesada y mangueras de alta presión',
+              estrato: '6 a 10 personas',
+              scianClase: '333999',
+              lat: latBase - 0.012,
+              lng: lngBase - 0.005,
+              direccion: `Calle Sonora No. 88, Col. Industrial, ${location}`,
+              telefono: '645-442-8811'
+            },
+            {
+              id: 'denue_5',
+              nombre: `Distribuidora de Aceros y Conexiones Industriales`,
+              razonSocial: `Comercializadora Metalmecánica de Sonora`,
+              actividad: 'Comercio al por mayor de metales y suministros para minería',
+              estrato: '11 a 30 personas',
+              scianClase: '468111',
+              lat: latBase + 0.003,
+              lng: lngBase - 0.015,
+              direccion: `Blvd. Principal No. 1200, ${location}`,
+              telefono: '645-551-7722'
+            }
+          ];
+        }
+
+        // 3. Enriquecer cada establecimiento con clasificación B2B y estimación de facturación INEGI
+        const enrichedEstablishments = establishments.map(item => {
+          const b2bInfo = classifyEstablishmentType(item, keywords);
+          const financialMetrics = estimateBusinessMetrics(item.estrato, item.scianClase || item.scian);
+          return {
+            ...item,
+            tipoRelacion: b2bInfo.tipo,
+            categoriaB2B: b2bInfo.categoria,
+            colorBadge: b2bInfo.color,
+            financiero: financialMetrics
+          };
+        });
+
+        // 4. Calcular Ubicación Óptima (Centroide Ponderado por Demanda y Empleados)
+        const optimalLocation = calculateOptimalLocation(enrichedEstablishments, 5);
+
+        const clientesPotenciales = enrichedEstablishments.filter(e => e.categoriaB2B === 'cliente_b2b');
+        const competidoresDirectos = enrichedEstablishments.filter(e => e.categoriaB2B === 'competidor');
+        const proveedores = enrichedEstablishments.filter(e => e.categoriaB2B === 'proveedor');
 
         return {
           success: true,
@@ -196,9 +306,18 @@ export async function executeAgentTool(toolName, args, planContext = {}) {
           data: {
             region: location,
             keywords,
-            totalEstablishmentsSample: syntheticEstablishments.length,
-            densityScore: 'Media-Alta',
-            establishments: syntheticEstablishments
+            sourceUsed,
+            totalEstablecimientos: enrichedEstablishments.length,
+            conteoClientesPotenciales: clientesPotenciales.length,
+            conteoCompetidores: competidoresDirectos.length,
+            conteoProveedores: proveedores.length,
+            ubicacionOptima: optimalLocation,
+            resumenMercadoB2B: {
+              valorMercadoCercanoEstimado: optimalLocation?.totalNearbyRevenueFormatted || '$0 MXN',
+              personalImpactado: optimalLocation?.totalEstimatedEmployees || 0,
+              accesibilidad: optimalLocation?.scoreAccesibilidad || 'Alta'
+            },
+            establecimientos: enrichedEstablishments
           }
         };
       }

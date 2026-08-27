@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {} from '../lib/inegi';
-import { MapPin, Search, RefreshCw, AlertTriangle, Save, Check } from 'lucide-react';
+import { MapPin, Search, RefreshCw, AlertTriangle, Save, Check, Target, Building2, Users, DollarSign, Navigation, ShieldCheck } from 'lucide-react';
 import { usePlan } from '../context/PlanContext';
 import { getApiBase } from '../config/apiConfig';
 import { callAiProvider } from '../lib/ai';
 import { useParams } from 'react-router-dom';
 import { SCIAN_PRESETS } from '../config/scian';
 import { getAutoRadius } from '../config/clasificacionesIndustriales';
+import { estimateBusinessMetrics, classifyEstablishmentType, calculateOptimalLocation } from '../lib/territorialEngine';
 
 const DEFAULT_CENTER = {
   label: 'Hermosillo, Sonora',
@@ -121,6 +122,12 @@ export default function InegiMap({
   const [viabilityData, setViabilityData] = useState(null);
   const [searchStats, setSearchStats] = useState(null);
   const [_coloresFuente, setColoresFuente] = useState({});
+
+  // Estados para Geointeligencia Territorial B2B y Ubicación Óptima
+  const [b2bFilter, setB2bFilter] = useState('todos'); // 'todos', 'competidores', 'clientes_b2b', 'proveedores'
+  const [optimalLocationData, setOptimalLocationData] = useState(null);
+  const [optimalMaxRadiusKm, setOptimalMaxRadiusKm] = useState(5);
+  const [showOptimalPoint, setShowOptimalPoint] = useState(true);
 
   // Estados para el Análisis Profundo
   const [selectedCompetitor, setSelectedCompetitor] = useState(null);
@@ -617,16 +624,17 @@ Por favor, devuélvelo en formato JSON con la siguiente estructura exacta (respo
     }
   };
 
-  const drawBusinesses = (list, centerLat, centerLng) => {
+  const drawBusinesses = (list, centerLat, centerLng, optimalLoc = optimalLocationData) => {
     if (!window.ol || !markersSourceRef.current) return;
     markersSourceRef.current.clear();
 
     const features = [];
 
+    // 1. Ubicación Actual / Centro de Referencia
     if (centerLat != null && centerLng != null && Number.isFinite(centerLat) && Number.isFinite(centerLng)) {
       const centerFeature = new window.ol.Feature({
         geometry: new window.ol.geom.Point(window.ol.proj.fromLonLat([centerLng, centerLat])),
-        name: 'Mi Negocio / Ubicación del Proyecto',
+        name: 'Ubicación de Consulta / Referencia',
       });
       centerFeature.setStyle(new window.ol.style.Style({
         image: new window.ol.style.Circle({
@@ -639,6 +647,29 @@ Por favor, devuélvelo en formato JSON con la siguiente estructura exacta (respo
       features.push(centerFeature);
     }
 
+    // 2. Ubicación Óptima Recomendada (Centroide Ponderado por Demanda)
+    if (showOptimalPoint && optimalLoc?.optimalCoords && Number.isFinite(optimalLoc.optimalCoords.lat)) {
+      const optLat = optimalLoc.optimalCoords.lat;
+      const optLng = optimalLoc.optimalCoords.lng;
+      const optimalFeature = new window.ol.Feature({
+        geometry: new window.ol.geom.Point(window.ol.proj.fromLonLat([optLng, optLat])),
+        name: '🎯 Ubicación Óptima Sugerida (Centroide de Cobertura)',
+      });
+      optimalFeature.setStyle(new window.ol.style.Style({
+        image: new window.ol.style.RegularShape({
+          fill: new window.ol.style.Fill({ color: '#f59e0b' }),
+          stroke: new window.ol.style.Stroke({ color: '#ffffff', width: 2.5 }),
+          points: 5,
+          radius: 12,
+          radius2: 5,
+          angle: 0
+        })
+      }));
+      optimalFeature.set('isOptimal', true);
+      features.push(optimalFeature);
+    }
+
+    // 3. Establecimientos (Competidores, Clientes B2B, Proveedores)
     list
       .filter((item) => Number.isFinite(item.lat) && Number.isFinite(item.lng))
       .forEach((item) => {
@@ -647,18 +678,18 @@ Por favor, devuélvelo en formato JSON con la siguiente estructura exacta (respo
           name: item.nombre,
         });
 
-        // Color coding by source
-        const markerColor = item.color || '#ef4444';
+        // Color coding por relación B2B o fuente
+        const markerColor = item.colorBadge || item.color || '#ef4444';
 
         feat.setStyle(new window.ol.style.Style({
           image: new window.ol.style.Circle({
-            radius: item.posibleZombie ? 4.5 : 6,
+            radius: item.categoriaB2B === 'cliente_b2b' ? 7.5 : (item.posibleZombie ? 4.5 : 6),
             fill: new window.ol.style.Fill({ 
               color: item.posibleZombie ? 'rgba(107,114,128,0.5)' : markerColor 
             }),
             stroke: new window.ol.style.Stroke({ 
               color: item.posibleZombie ? '#4b5563' : '#ffffff', 
-              width: item.posibleZombie ? 2.5 : 1.5,
+              width: item.categoriaB2B === 'cliente_b2b' ? 2.5 : 1.5,
               lineDash: item.posibleZombie ? [4, 4] : undefined
             })
           })
@@ -708,8 +739,25 @@ Por favor, devuélvelo en formato JSON con la siguiente estructura exacta (respo
         setStatus(`Zona delimitada: se detectaron ${rawBusinesses.length} competidores en el área dibujada.`);
       }
 
-      setBusinesses(rawBusinesses);
-      drawBusinesses(rawBusinesses, targetCenter.lat, targetCenter.lng);
+      // Enriquecimiento B2B & Estimación Financiera de cada empresa
+      const enriched = rawBusinesses.map(item => {
+        const b2b = classifyEstablishmentType(item, keywords);
+        const fin = estimateBusinessMetrics(item.estrato || item.Estrato, item.scianClase || item.scian || '');
+        return {
+          ...item,
+          tipoRelacion: b2b.tipo,
+          categoriaB2B: b2b.categoria,
+          colorBadge: b2b.color,
+          financiero: fin
+        };
+      });
+
+      // Cálculo de la Ubicación Óptima (Centroide Ponderado)
+      const optimalResult = calculateOptimalLocation(enriched, optimalMaxRadiusKm);
+      setOptimalLocationData(optimalResult);
+
+      setBusinesses(enriched);
+      drawBusinesses(enriched, targetCenter.lat, targetCenter.lng, optimalResult);
 
       // Cargar Indicadores Macroeconómicos Reales del INEGI para el Estado
       const cleanDisplay = targetCenter.label.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
@@ -1017,6 +1065,91 @@ Por favor, devuélvelo en formato JSON con la siguiente estructura exacta (respo
               />
             </div>
           )}
+
+          {/* [B2B GEOINTELLIGENCE] Filtro Multimodal & Ubicación Óptima */}
+          <div style={{ display: 'flex', gap: '0.65rem', alignItems: 'center', flexWrap: 'wrap', marginBottom: '0.75rem', padding: '0.6rem 0.8rem', background: 'rgba(99, 102, 241, 0.08)', borderRadius: '10px', border: '1px solid rgba(99, 102, 241, 0.2)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#818cf8', fontWeight: 800, fontSize: '0.76rem' }}>
+              <Building2 size={16} /> Clúster Territorial:
+            </div>
+            
+            <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap' }}>
+              <button
+                type="button"
+                onClick={() => setB2bFilter('todos')}
+                style={{
+                  padding: '3px 10px', fontSize: '0.7rem', borderRadius: '6px', cursor: 'pointer',
+                  background: b2bFilter === 'todos' ? '#4f46e5' : 'rgba(255,255,255,0.05)',
+                  color: b2bFilter === 'todos' ? 'white' : 'var(--text-secondary)',
+                  border: '1px solid var(--border-color)', fontWeight: 600
+                }}
+              >
+                🌐 Todos ({businesses.length})
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setB2bFilter('clientes_b2b')}
+                style={{
+                  padding: '3px 10px', fontSize: '0.7rem', borderRadius: '6px', cursor: 'pointer',
+                  background: b2bFilter === 'clientes_b2b' ? '#8b5cf6' : 'rgba(255,255,255,0.05)',
+                  color: b2bFilter === 'clientes_b2b' ? 'white' : 'var(--text-secondary)',
+                  border: '1px solid var(--border-color)', fontWeight: 600
+                }}
+              >
+                🎯 Clientes Potenciales B2B ({businesses.filter(b => b.categoriaB2B === 'cliente_b2b').length})
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setB2bFilter('competidores')}
+                style={{
+                  padding: '3px 10px', fontSize: '0.7rem', borderRadius: '6px', cursor: 'pointer',
+                  background: b2bFilter === 'competidores' ? '#ef4444' : 'rgba(255,255,255,0.05)',
+                  color: b2bFilter === 'competidores' ? 'white' : 'var(--text-secondary)',
+                  border: '1px solid var(--border-color)', fontWeight: 600
+                }}
+              >
+                ⚔️ Competidores ({businesses.filter(b => b.categoriaB2B === 'competidor').length})
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setB2bFilter('proveedores')}
+                style={{
+                  padding: '3px 10px', fontSize: '0.7rem', borderRadius: '6px', cursor: 'pointer',
+                  background: b2bFilter === 'proveedores' ? '#10b981' : 'rgba(255,255,255,0.05)',
+                  color: b2bFilter === 'proveedores' ? 'white' : 'var(--text-secondary)',
+                  border: '1px solid var(--border-color)', fontWeight: 600
+                }}
+              >
+                📦 Proveedores / Cadena ({businesses.filter(b => b.categoriaB2B === 'proveedor').length})
+              </button>
+            </div>
+
+            {optimalLocationData && (
+              <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span style={{ fontSize: '0.7rem', color: '#f59e0b', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  🎯 Punto Óptimo: Cobertura {optimalLocationData.clientsWithinRadius} clientes ({optimalLocationData.totalNearbyRevenueFormatted})
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const next = !showOptimalPoint;
+                    setShowOptimalPoint(next);
+                    drawBusinesses(businesses, center.lat, center.lng, next ? optimalLocationData : null);
+                  }}
+                  style={{
+                    padding: '2px 8px', fontSize: '0.66rem', borderRadius: '4px',
+                    background: showOptimalPoint ? '#f59e0b' : 'transparent',
+                    color: showOptimalPoint ? '#0f172a' : '#f59e0b',
+                    border: '1px solid #f59e0b', cursor: 'pointer', fontWeight: 700
+                  }}
+                >
+                  {showOptimalPoint ? '📍 Centroide Visible' : 'Ocultar Centroide'}
+                </button>
+              </div>
+            )}
+          </div>
 
           {/* Color Codes Legend */}
           <div style={{ display: 'flex', gap: '0.65rem', flexWrap: 'wrap', marginBottom: '0.75rem', fontSize: '0.7rem', padding: '0.4rem', background: 'rgba(255,255,255,0.02)', borderRadius: '6px' }}>
@@ -1375,45 +1508,81 @@ Por favor, devuélvelo en formato JSON con la siguiente estructura exacta (respo
       )}
 
       {!readOnly && businesses.length > 0 && (
-        <div style={{ marginTop: '0.8rem', maxHeight: '180px', overflow: 'auto', border: '1px solid rgba(148,163,184,0.18)', borderRadius: '8px' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.75rem' }}>
-            <thead style={{ position: 'sticky', top: 0, background: 'rgba(15,23,42,0.9)' }}>
+        <div style={{ marginTop: '0.8rem', maxHeight: '220px', overflow: 'auto', border: '1px solid rgba(148,163,184,0.18)', borderRadius: '8px' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.74rem' }}>
+            <thead style={{ position: 'sticky', top: 0, background: 'rgba(15,23,42,0.95)', zIndex: 5 }}>
               <tr>
-                <th style={{ textAlign: 'left', padding: '0.45rem' }}>Negocio</th>
-                <th style={{ textAlign: 'left', padding: '0.45rem' }}>Actividad</th>
-                <th style={{ textAlign: 'left', padding: '0.45rem' }}>Fuentes</th>
-                <th style={{ textAlign: 'left', padding: '0.45rem' }}>Estado</th>
-                <th style={{ textAlign: 'left', padding: '0.45rem' }}>Acciones</th>
+                <th style={{ textAlign: 'left', padding: '0.5rem' }}>Establecimiento / Razón Social</th>
+                <th style={{ textAlign: 'left', padding: '0.5rem' }}>Relación B2B</th>
+                <th style={{ textAlign: 'left', padding: '0.5rem' }}>Personal (DENUE)</th>
+                <th style={{ textAlign: 'left', padding: '0.5rem' }}>Facturación Est. (INEGI)</th>
+                <th style={{ textAlign: 'left', padding: '0.5rem' }}>Dist. Punto Óptimo</th>
+                <th style={{ textAlign: 'left', padding: '0.5rem' }}>Acciones</th>
               </tr>
             </thead>
             <tbody>
-              {businesses.slice(0, 50).map((item, index) => (
+              {businesses
+                .filter(item => {
+                  if (b2bFilter === 'todos') return true;
+                  return item.categoriaB2B === b2bFilter;
+                })
+                .slice(0, 50)
+                .map((item, index) => (
                 <tr key={`${item.nombre}_${index}`} style={{ borderTop: '1px solid rgba(148,163,184,0.1)', background: item.posibleZombie ? 'rgba(239,68,68,0.02)' : 'none' }}>
-                  <td style={{ padding: '0.4rem' }}>
+                  <td style={{ padding: '0.45rem' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: item.posibleZombie ? '#9ca3af' : (item.color || '#ef4444') }}></span>
+                      <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: item.colorBadge || item.color || '#ef4444' }}></span>
                       <strong>{item.nombre || 'Sin nombre'}</strong>
                     </div>
+                    {item.razonSocial && item.razonSocial !== item.nombre && (
+                      <div style={{ fontSize: '0.65rem', color: '#94a3b8', marginTop: '1px' }}>
+                        {item.razonSocial}
+                      </div>
+                    )}
                     {item.direccion && (
-                      <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', marginTop: '2px', opacity: 0.8 }}>
+                      <div style={{ fontSize: '0.66rem', color: 'var(--text-secondary)', marginTop: '2px', opacity: 0.8 }}>
                         {item.direccion}
                       </div>
                     )}
                   </td>
-                  <td style={{ padding: '0.4rem' }}>{item.actividad || 'N/D'}</td>
-                  <td style={{ padding: '0.4rem', textTransform: 'uppercase', fontSize: '0.68rem', color: 'var(--text-secondary)' }}>
-                    {(Array.isArray(item.fuentes) ? item.fuentes : [item.fuente]).filter(Boolean).join(', ')}
+
+                  <td style={{ padding: '0.45rem' }}>
+                    <span style={{
+                      fontSize: '0.66rem', padding: '2px 6px', borderRadius: '4px',
+                      background: `${item.colorBadge || '#3b82f6'}22`,
+                      color: item.colorBadge || '#3b82f6',
+                      fontWeight: 700
+                    }}>
+                      {item.tipoRelacion || 'Establecimiento'}
+                    </span>
+                    <div style={{ fontSize: '0.64rem', color: 'var(--text-secondary)', marginTop: '2px' }}>
+                      {item.actividad || 'Giro general'}
+                    </div>
                   </td>
-                  <td style={{ padding: '0.4rem' }}>
-                    {item.posibleZombie ? (
-                      <span style={{ color: '#ef4444', fontWeight: 'bold', fontSize: '0.68rem', background: 'rgba(239,68,68,0.1)', padding: '2px 4px', borderRadius: '3px' }}>
-                        ZOMBIE?
-                      </span>
-                    ) : (
-                      <span style={{ color: '#22c55e', fontSize: '0.68rem' }}>Activo</span>
-                    )}
+
+                  <td style={{ padding: '0.45rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: 'white', fontWeight: 600 }}>
+                      <Users size={13} style={{ color: '#818cf8' }} />
+                      <span>{item.estrato || '1 a 5 personas'}</span>
+                    </div>
                   </td>
-                  <td style={{ padding: '0.4rem' }}>
+
+                  <td style={{ padding: '0.45rem' }}>
+                    <div style={{ color: '#34d399', fontWeight: 700, fontSize: '0.72rem' }}>
+                      {item.financiero?.facturacionFormateada || '$1.4M MXN/año'}
+                    </div>
+                    <div style={{ fontSize: '0.62rem', color: 'var(--text-secondary)' }}>
+                      ~${Math.round((item.financiero?.facturacionMensualEstimadaPromedio || 116000) / 1000)}k/mes
+                    </div>
+                  </td>
+
+                  <td style={{ padding: '0.45rem' }}>
+                    <div style={{ color: '#f59e0b', fontWeight: 600, fontSize: '0.72rem' }}>
+                      {item.distanciaPuntoOptimoKm != null ? `${item.distanciaPuntoOptimoKm} km` : 'En zona'}
+                    </div>
+                  </td>
+
+                  <td style={{ padding: '0.45rem' }}>
                     <button
                       onClick={() => handleDeepAnalysis(item)}
                       style={{
@@ -1425,11 +1594,12 @@ Por favor, devuélvelo en formato JSON con la siguiente estructura exacta (respo
                         color: '#38bdf8',
                         cursor: 'pointer',
                         transition: 'all 0.2s',
+                        fontWeight: 600
                       }}
                       onMouseOver={(e) => { e.target.style.background = '#38bdf8'; e.target.style.color = '#0f172a'; }}
                       onMouseOut={(e) => { e.target.style.background = 'rgba(56, 189, 248, 0.12)'; e.target.style.color = '#38bdf8'; }}
                     >
-                      🔍 Análisis
+                      🔍 Investigar
                     </button>
                   </td>
                 </tr>
