@@ -1371,6 +1371,16 @@ export default function Layout() {
               ...planData.organizacion?.inversion,
               monto_inversion: cmd.amount
             });
+          } else if (cmd.action === 'CONFIGURE_MULTIBRANCH' || cmd.tool === 'configure_multibranch_expansion') {
+            const params = cmd.parameters || cmd.data || cmd;
+            updateConfig('multiBranch', null, {
+              hubCity: params.hubCity,
+              branches: params.branches || [],
+              rolloutStrategy: params.rolloutStrategy || 'escalonada',
+              capexPerBranch: params.capexPerBranch || 350000,
+              quantumScaleLevel: params.quantumScaleLevel || 2,
+              configuredAt: new Date().toISOString()
+            });
           }
         }}
       />

@@ -98,6 +98,29 @@ export const BOB_TOOLS_SCHEMA = [
       },
       required: ['currentTopic', 'nextQuestion']
     }
+  },
+  {
+    name: 'configure_multibranch_expansion',
+    description: 'Configura la estrategia y ciudades de expansión multi-sucursal (Modelo Hub-and-Spoke, Saltos Cuánticos de Escala y fases de apertura).',
+    parameters: {
+      type: 'object',
+      properties: {
+        hubCity: { type: 'string', description: 'Ciudad Matriz / Hub Central (ej. Cananea, Sonora)' },
+        branches: { 
+          type: 'array', 
+          items: { type: 'string' },
+          description: 'Lista de ciudades satélite para sucursales (ej. ["Nacozari", "Caborca", "Nogales"])' 
+        },
+        rolloutStrategy: { 
+          type: 'string', 
+          enum: ['escalonada', 'simultanea', 'hitos_roi'],
+          description: 'Estrategia de apertura: escalonada (fases por flujo), simultanea (capital conjunto), hitos_roi (al superar punto de equilibrio +20%)'
+        },
+        capexPerBranch: { type: 'number', description: 'Inversión inicial promedio por sucursal en MXN' },
+        quantumScaleLevel: { type: 'number', description: 'Nivel del salto cuántico (1: Piloto 1-5 emp, 2: Red inicial 5-20 emp, 3: Departamental 20-50 emp, 4: Gobierno Corporativo 50+ emp)' }
+      },
+      required: ['hubCity', 'branches', 'rolloutStrategy']
+    }
   }
 ];
 
@@ -109,6 +132,7 @@ export function buildBobSystemPrompt(planData, currentModule = 'semilla') {
   const projectName = seed.nombre_proyecto || 'Nuevo Plan';
   const sector = seed.sector || 'General';
   const founderProfile = seed.perfil_fundador || 'No especificado';
+  const multiBranchConfig = planData?.config?.multiBranch || null;
 
   return `Eres BOB (Business Operations Bot), el copiloto ejecutivo de IA e inteligencia de negocios de Open Business Plan (Fondo Thoth AC).
 Estás impulsado exclusivamente por el modelo minimax-m3:cloud de 1 Millón de tokens de contexto.
@@ -118,13 +142,20 @@ CONTEXTO DEL PLAN ACTUAL:
 - Sector: ${sector}
 - Módulo Activo en Pantalla: ${currentModule}
 - Perfil Fundador (Modelo Atómico Cuántico): ${JSON.stringify(founderProfile)}
+- Configuración Multi-Sucursal Activa: ${multiBranchConfig ? JSON.stringify(multiBranchConfig) : 'Monolocal / En definición'}
 
 TUS CAPACIDADES COMO AGENTE MCP:
 1. Puedes ejecutar comandos en la UI del usuario llamando herramientas estructuradas (JSON tools).
 2. Si el usuario te pide ir a un módulo, cambiar de pantalla, o ver finanzas, usa "navigate_to_module".
 3. Si el usuario te da información clave (ej. "nuestro precio es $500", "el mercado objetivo son médicos"), usa "update_plan_field" para guardarlo directamente.
 4. Si el usuario te pide /grill-me o entrevistas para completar el plan, usa "grill_me_interview" formulando una pregunta filosa a la vez.
-5. Si detectas que el fundador hace todo él mismo, advierte sobre la "fusión atómica" y sugiere delegación según la metodología de Fondo Thoth AC.
+5. Si el usuario plantea abrir varias sucursales o expandirse a múltiples ciudades (ej. Cananea, Nacozari, Caborca):
+   - Pregunta o formula las 3 opciones de despliegue:
+     a) Escalonada (Fase 1 Hub Ciudad Ancla -> Fase 2 Satélites financiados con flujo).
+     b) Simultánea (Lanzamiento en paralelo con crédito o capital semilla).
+     c) Hitos Condicionales (Apertura al superar Punto de Equilibrio + 20% de margen libre).
+   - Utiliza "configure_multibranch_expansion" para estructurar la red.
+6. Si detectas que el fundador hace todo él mismo, advierte sobre la "fusión atómica" y sugiere delegación según la metodología de Fondo Thoth AC (Salto Cuántico Nivel 2 a 4 para multi-sucursal).
 
 FORMATO DE RESPUESTA:
 - Responde siempre en español premium, empático, conciso y profesional.
