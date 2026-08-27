@@ -45,4 +45,36 @@ test('DocumentParser - Conversión y extracción multiformato (TDD)', async (t) 
     assert.strictEqual(result.text.includes('# Modelo de Negocio'), true);
     assert.strictEqual(result.text.includes('Venta de suscripciones SaaS B2B.'), true);
   });
+
+  await t.test('Debe procesar imágenes (.png, .jpg) con OCR y generar Markdown estructurado', async () => {
+    const mockFile = {
+      name: 'esquema_servilleta.png',
+      type: 'image/png',
+      size: 4096
+    };
+    const result = await parseDocumentFile(mockFile, {
+      ocrExtractor: async () => 'Presupuesto Inicial: $50,000 USD\nRetorno estimado: 18 meses'
+    });
+
+    assert.strictEqual(result.name, 'esquema_servilleta.png');
+    assert.strictEqual(result.format, 'image');
+    assert.strictEqual(result.text.includes('### Texto Extraído de Imagen (OCR): esquema_servilleta.png'), true);
+    assert.strictEqual(result.text.includes('Presupuesto Inicial: $50,000 USD'), true);
+  });
+
+  await t.test('Debe procesar audios (.mp3, .m4a, .wav) con transcripción Whisper y generar Markdown', async () => {
+    const mockFile = {
+      name: 'entrevista_socio.mp3',
+      type: 'audio/mpeg',
+      size: 8192
+    };
+    const result = await parseDocumentFile(mockFile, {
+      audioTranscriber: async () => 'El cliente busca una solución rápida para automatizar sus cobros mensuales.'
+    });
+
+    assert.strictEqual(result.name, 'entrevista_socio.mp3');
+    assert.strictEqual(result.format, 'audio');
+    assert.strictEqual(result.text.includes('### Transcripción de Audio: entrevista_socio.mp3'), true);
+    assert.strictEqual(result.text.includes('automatizar sus cobros mensuales'), true);
+  });
 });

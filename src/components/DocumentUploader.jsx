@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import { usePlan } from '../context/PlanContext';
-import { Upload, FileText, X, File, Loader2, Sparkles } from 'lucide-react';
+import { Upload, FileText, X, File, Loader2, Sparkles, Image, Mic, FileSpreadsheet } from 'lucide-react';
 import { parseDocumentFile } from '../lib/documentParser';
 
 export default function DocumentUploader() {
@@ -9,6 +9,7 @@ export default function DocumentUploader() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [statusMessage, setStatusMessage] = useState('');
   const documents = planData.config?.documents || [];
+  const groqKey = planData.config?.ai?.groqKey || '';
 
   const handleFileUpload = async (e) => {
     const files = Array.from(e.target.files || []);
@@ -19,9 +20,24 @@ export default function DocumentUploader() {
 
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
-      setStatusMessage(`Convirtiendo ${file.name} a Markdown (${i + 1}/${files.length})...`);
+      const isImg = /\.(png|jpe?g|webp|bmp)$/i.test(file.name);
+      const isAud = /\.(mp3|wav|m4a|ogg|webm|aac)$/i.test(file.name);
+
+      if (isImg) {
+        setStatusMessage(`Analizando imagen con OCR: ${file.name}...`);
+      } else if (isAud) {
+        setStatusMessage(`Transcribiendo audio con Whisper: ${file.name}...`);
+      } else {
+        setStatusMessage(`Convirtiendo ${file.name} a Markdown (${i + 1}/${files.length})...`);
+      }
+
       try {
-        const parsedDoc = await parseDocumentFile(file);
+        const parsedDoc = await parseDocumentFile(file, {
+          groqKey,
+          onProgress: (pct) => {
+            setStatusMessage(`OCR ${file.name}: ${pct}%`);
+          }
+        });
         newDocs.push(parsedDoc);
       } catch (err) {
         console.error(`Error procesando ${file.name}:`, err);
@@ -57,10 +73,27 @@ export default function DocumentUploader() {
         return <span style={{ fontSize: '0.65rem', padding: '2px 6px', borderRadius: '4px', background: 'rgba(59, 130, 246, 0.2)', color: '#60a5fa', fontWeight: 600 }}>DOCX ➔ MD</span>;
       case 'pdf':
         return <span style={{ fontSize: '0.65rem', padding: '2px 6px', borderRadius: '4px', background: 'rgba(239, 68, 68, 0.2)', color: '#f87171', fontWeight: 600 }}>PDF ➔ MD</span>;
+      case 'image':
+        return <span style={{ fontSize: '0.65rem', padding: '2px 6px', borderRadius: '4px', background: 'rgba(245, 158, 11, 0.2)', color: '#fbbf24', fontWeight: 600 }}>🖼️ OCR ➔ MD</span>;
+      case 'audio':
+        return <span style={{ fontSize: '0.65rem', padding: '2px 6px', borderRadius: '4px', background: 'rgba(168, 85, 247, 0.2)', color: '#c084fc', fontWeight: 600 }}>🎙️ WHISPER ➔ MD</span>;
       case 'markdown':
         return <span style={{ fontSize: '0.65rem', padding: '2px 6px', borderRadius: '4px', background: 'rgba(16, 185, 129, 0.2)', color: '#34d399', fontWeight: 600 }}>MARKDOWN</span>;
       default:
         return <span style={{ fontSize: '0.65rem', padding: '2px 6px', borderRadius: '4px', background: 'rgba(148, 163, 184, 0.2)', color: '#cbd5e1', fontWeight: 600 }}>TEXTO</span>;
+    }
+  };
+
+  const getDocIcon = (format) => {
+    switch (format) {
+      case 'image':
+        return <Image className="w-4 h-4" style={{ color: '#fbbf24' }} />;
+      case 'audio':
+        return <Mic className="w-4 h-4" style={{ color: '#c084fc' }} />;
+      case 'csv':
+        return <FileSpreadsheet className="w-4 h-4" style={{ color: '#34d399' }} />;
+      default:
+        return <File className="w-4 h-4" style={{ color: 'var(--accent-color)' }} />;
     }
   };
 
@@ -70,15 +103,15 @@ export default function DocumentUploader() {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <FileText style={{ color: 'var(--accent-color)' }} />
-            <h2 style={{ fontSize: '1.25rem', margin: 0 }}>Documentos de Contexto (RAG)</h2>
+            <h2 style={{ fontSize: '1.25rem', margin: 0 }}>Documentos & Recursos RAG Multimodal</h2>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.75rem', color: 'var(--accent-color)' }}>
-            <Sparkles className="w-3.5 h-3.5" /> Auto-Conversión a Markdown
+            <Sparkles className="w-3.5 h-3.5" /> Conversor Universal a Markdown
           </div>
         </div>
         
         <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '1.5rem' }}>
-          Sube tus archivos de referencia (<strong>.docx, .pdf, .md, .txt, .csv</strong>). El sistema los convertirá automáticamente a formato <strong>Markdown (.md)</strong> estructurado preservando títulos y tablas para asistir al motor de IA en la generación de módulos.
+          Sube tus archivos de referencia (<strong>Word .docx, PDF, Texto, Imágenes OCR o Audios con notas de voz</strong>). El motor extraerá y transcribirá automáticamente todo su contenido a formato <strong>Markdown (.md)</strong> estructurado para alimentar el contexto de la IA.
         </p>
 
         {/* Upload Zone */}
@@ -110,17 +143,17 @@ export default function DocumentUploader() {
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem' }}>
               <Loader2 className="w-8 h-8 animate-spin" style={{ color: 'var(--accent-color)', animation: 'spin 1s linear infinite' }} />
               <p style={{ color: 'var(--accent-color)', fontSize: '0.9rem', fontWeight: '600' }}>
-                {statusMessage || 'Convirtiendo y procesando documentos...'}
+                {statusMessage || 'Procesando y convirtiendo contenido...'}
               </p>
             </div>
           ) : (
             <>
               <Upload className="w-8 h-8" style={{ margin: '0 auto 0.75rem', color: 'var(--text-secondary)' }} />
               <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', fontWeight: '600' }}>
-                Arrastra aquí tus archivos Word (.docx), PDF (.pdf) o Markdown (.md, .txt)
+                Arrastra o haz clic para subir Documentos, Imágenes o Audios
               </p>
               <p style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', marginTop: '0.25rem', opacity: 0.7 }}>
-                Formatos soportados: <strong>.docx, .pdf, .md, .txt, .csv</strong> — Conversión instantánea
+                <strong>Documentos:</strong> .docx, .pdf, .txt, .md, .csv | <strong>Imágenes:</strong> .png, .jpg | <strong>Audios:</strong> .mp3, .m4a, .wav
               </p>
             </>
           )}
@@ -128,7 +161,7 @@ export default function DocumentUploader() {
           <input 
             ref={fileInputRef}
             type="file" 
-            accept=".docx,.doc,.pdf,.txt,.md,.csv,.text" 
+            accept=".docx,.doc,.pdf,.txt,.md,.csv,.text,.png,.jpg,.jpeg,.webp,.mp3,.wav,.m4a,.ogg,.webm" 
             multiple 
             style={{ display: 'none' }}
             onChange={handleFileUpload}
@@ -140,7 +173,7 @@ export default function DocumentUploader() {
         {documents.length > 0 && (
           <div style={{ marginTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
             <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              {documents.length} documento{documents.length > 1 ? 's' : ''} cargado{documents.length > 1 ? 's' : ''} en memoria RAG
+              {documents.length} recurso{documents.length > 1 ? 's' : ''} cargado{documents.length > 1 ? 's' : ''} en memoria RAG
             </div>
             {documents.map(doc => (
               <div 
@@ -156,7 +189,7 @@ export default function DocumentUploader() {
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                  <File className="w-4 h-4" style={{ color: 'var(--accent-color)' }} />
+                  {getDocIcon(doc.format)}
                   <div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                       <span style={{ fontSize: '0.85rem', fontWeight: '600' }}>{doc.name}</span>
