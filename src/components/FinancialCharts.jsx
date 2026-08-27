@@ -290,7 +290,7 @@ const MonthlyDetailTable = ({ data, headers, keys, showSalesPercentage, colSpan 
                   const isCurrency = typeof value === 'number' && key !== 'month' && key !== 'year';
                   const isPercentage = key.toLowerCase().includes('percentage') || key === 'bepPercentage';
                   const shouldShowPercentage = showSalesPercentage && isCurrency && key !== 'sales' && row.sales > 0;
-                  const percentage = shouldShowPercentage ? `(${(value / row.sales * 100).toFixed(1)}%)` : null;
+                  const percentage = shouldShowPercentage ? `(${(isFinite(Number(value) / Number(row.sales)) ? (Number(value) / Number(row.sales) * 100) : 0).toFixed(1)}%)` : null;
 
                   let displayValue;
                   if (isCurrency) {
@@ -459,7 +459,7 @@ export const ReportTable = ({ headers, annualData, keys, monthlyData, monthlyHea
                       const isCurrency = typeof value === 'number' && key !== 'year';
                       const isPercentage = key.toLowerCase().includes('percentage') || key === 'bepPercentage';
                       const shouldShowPercentage = showSalesPercentage && isCurrency && key !== 'sales' && row.sales > 0;
-                      const percentage = shouldShowPercentage ? `(${(value / row.sales * 100).toFixed(1)}%)` : null;
+                      const percentage = shouldShowPercentage ? `(${(isFinite(Number(value) / Number(row.sales)) ? (Number(value) / Number(row.sales) * 100) : 0).toFixed(1)}%)` : null;
 
                       let displayValue;
                       if (isCurrency) {
@@ -517,7 +517,7 @@ export const ReportTable = ({ headers, annualData, keys, monthlyData, monthlyHea
                       const isCurrency = typeof value === 'number' && key !== 'month' && key !== 'year';
                       const isPercentage = key.toLowerCase().includes('percentage') || key === 'bepPercentage';
                       const shouldShowPercentage = showSalesPercentage && isCurrency && key !== 'sales' && row.sales > 0;
-                      const percentage = shouldShowPercentage ? `(${(value / row.sales * 100).toFixed(1)}%)` : null;
+                      const percentage = shouldShowPercentage ? `(${(isFinite(Number(value) / Number(row.sales)) ? (Number(value) / Number(row.sales) * 100) : 0).toFixed(1)}%)` : null;
 
                       let displayValue;
                       if (isCurrency) {
@@ -904,9 +904,9 @@ export const FinancialReports = ({ projections, _netInitialInvestment, loans }) 
         <ReportTable
           headers={['Año', 'Ventas', 'C. Fijos', 'P. Eq. ($)', 'P. Eq. (%)']}
           annualData={annualSummaries.map((s) => ({
-            ...s.breakEven,
-            bepAmount: isFinite(s.breakEven.bepAmount) ? s.breakEven.bepAmount : 'N/A',
-            bepPercentage: isFinite(s.breakEven.bepPercentage) ? `${s.breakEven.bepPercentage.toFixed(1)}%` : 'N/A',
+            ...(s.breakEven || {}),
+            bepAmount: isFinite(Number((s.breakEven || {}).bepAmount)) ? (s.breakEven || {}).bepAmount : 'N/A',
+            bepPercentage: isFinite(Number((s.breakEven || {}).bepPercentage)) ? `${Number((s.breakEven || {}).bepPercentage).toFixed(1)}%` : 'N/A',
           }))}
           keys={['year', 'sales', 'fixedCosts', 'bepAmount', 'bepPercentage']}
           monthlyData={monthlyBreakEvenData}
@@ -1300,9 +1300,9 @@ export const PrintableFinancialReports = ({ projections, staff = [] }) => {
           <ReportTable
             headers={['Año', 'Ventas', 'C. Fijos', 'P. Eq. ($)', 'P. Eq. (%)']}
             annualData={(annualSummaries || []).map((s) => ({
-              ...s.breakEven,
-              bepAmount: isFinite(s.breakEven.bepAmount) ? s.breakEven.bepAmount : 'N/A',
-              bepPercentage: isFinite(s.breakEven.bepPercentage) ? `${s.breakEven.bepPercentage.toFixed(1)}%` : 'N/A',
+              ...(s.breakEven || {}),
+              bepAmount: isFinite(Number((s.breakEven || {}).bepAmount)) ? (s.breakEven || {}).bepAmount : 'N/A',
+              bepPercentage: isFinite(Number((s.breakEven || {}).bepPercentage)) ? `${Number((s.breakEven || {}).bepPercentage).toFixed(1)}%` : 'N/A',
             }))}
             keys={['year', 'sales', 'fixedCosts', 'bepAmount', 'bepPercentage']}
             monthlyData={monthlyBreakEvenData || []}
