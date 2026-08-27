@@ -1381,6 +1381,8 @@ export default function Layout() {
               quantumScaleLevel: params.quantumScaleLevel || 2,
               configuredAt: new Date().toISOString()
             });
+          } else if (cmd.action === 'TRIGGER_INDUSTRIALIZE' || cmd.tool === 'trigger_industrialization') {
+            openIndustrializeConfig();
           }
         }}
       />

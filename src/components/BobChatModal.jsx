@@ -175,6 +175,17 @@ export default function BobChatModal({ isOpen, onClose, planData, onExecuteComma
       return `Análisis de FRLI y contingencia ejecutado: Cálculo de pasivo laboral LFT y semáforo de crisis activado.`;
     }
 
+    if (toolName === 'trigger_industrialization') {
+      if (onExecuteCommand) {
+        onExecuteCommand({
+          action: 'TRIGGER_INDUSTRIALIZE',
+          tool: 'trigger_industrialization',
+          parameters: params
+        });
+      }
+      return `Industrialización global de módulos disparada automáticamente con el motor agéntico.`;
+    }
+
     return null;
   };
 
