@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { usePlan } from '../context/PlanContext';
 import { Cpu, Palette, Save, Globe, Database, Upload, Image as ImageIcon, RefreshCw, Settings, Sliders, Activity, DollarSign, Zap, AlertTriangle, Info, Plus, Trash2, BookOpen, CheckCircle, XCircle, Sparkles } from 'lucide-react';
-import DocumentUploader from '../components/DocumentUploader';
 import LogoGeneratorModal from '../components/LogoGeneratorModal';
 import TokenTelemetryDashboard from '../components/TokenTelemetryDashboard';
 import AiTraceabilityPanel from '../components/AiTraceabilityPanel';
@@ -2613,10 +2612,6 @@ export default function Configuracion() {
             <span>Agregar Fuente Manual</span>
           </button>
         </div>
-      </div>
-
-      <div style={{ marginTop: '2rem' }}>
-        <DocumentUploader />
       </div>
 
       <div className="glass-panel" style={{ padding: '2rem', marginTop: '2rem', border: '1px solid var(--border-color)' }}>

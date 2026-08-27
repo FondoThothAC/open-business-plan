@@ -132,12 +132,15 @@ export const AGENT_TOOLS_MANIFEST = [
 // Ejecutor unificado de herramientas agénticas
 export async function executeAgentTool(toolName, args, planContext = {}) {
   const startTime = Date.now();
+  const seed = planContext?.semilla || {};
+  const seedGiro = seed.nombre_proyecto || seed.negocio?.nombre_marca || seed.negocio?.giro || seed.negocio?.nombre || seed.solucion || '';
+  const seedLocation = seed.cobertura || seed.negocio?.ubicacion || seed.negocio?.cobertura || 'México';
 
   try {
     switch (toolName) {
       case 'tool_web_search': {
-        const query = args.query || 'negocio';
-        const location = args.location || planContext?.semilla?.negocio?.ubicacion || 'México';
+        const query = args.query || seedGiro || 'negocio';
+        const location = args.location || seedLocation;
         const limit = args.limit || 5;
 
         // Intentar consultar backend o generar simulación de alta fidelidad basada en datos de mercado
@@ -177,8 +180,8 @@ export async function executeAgentTool(toolName, args, planContext = {}) {
       }
 
       case 'tool_inegi_denue': {
-        const keywords = args.keywords || 'comercio';
-        const location = args.location || 'Sonora';
+        const keywords = args.keywords || seedGiro || 'comercio';
+        const location = args.location || seedLocation;
 
         const syntheticEstablishments = [
           { nombre: `${keywords} Principal`, estrato: '1 a 5 personas', ubicacion: location, tipo: 'Directo' },
@@ -234,15 +237,16 @@ export async function executeAgentTool(toolName, args, planContext = {}) {
       }
 
       case 'tool_quantum_diagnostic': {
-        const { areasFundador = ['operativo'], tamanoEquipo = 3 } = args;
-        const diagnostic = runQuantumDiagnostic({ areas: areasFundador, teamSize: tamanoEquipo });
+        const founderAreas = args.areasFundador || seed.perfil_fundador?.areas || ['operativo'];
+        const teamSize = args.tamanoEquipo || seed.tamano_equipo || 3;
+        const diagnostic = runQuantumDiagnostic({ areas: founderAreas, teamSize });
 
         return {
           success: true,
           toolName,
           executionTimeMs: Date.now() - startTime,
           data: {
-            areasFundador,
+            areasFundador: founderAreas,
             hasAtomicFusion: diagnostic.hasAtomicFusion,
             isBalanced: diagnostic.isBalanced,
             delegationRequired: diagnostic.delegationRequired,

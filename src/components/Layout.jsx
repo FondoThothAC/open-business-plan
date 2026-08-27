@@ -63,6 +63,13 @@ export default function Layout() {
     generationStatus, _generationProgress, startIndustrialization, _pauseIndustrialization, _stopIndustrialization, getProjectCompletion
   } = usePlan();
   
+  const [forceActivityOpen, setForceActivityOpen] = useState(false);
+  
+  // Auto-abrir monitor durante industrialización
+  useEffect(() => {
+    setForceActivityOpen(generationStatus === 'running');
+  }, [generationStatus]);
+  
   const [expandedPillars, setExpandedPillars] = useState(['naturaleza']); // Collapse others by default
   const [planType, setPlanType] = useState('negocios');
   const [_aiStatus, _setAiStatus] = useState('offline');
@@ -93,9 +100,23 @@ export default function Layout() {
         setTimeout(() => setIsAiHot(false), 5000); // 5 segundos de brillo HOT
       }
     };
+    
+    const handleNavigate = (e) => {
+      if (e.detail) {
+        navigate(e.detail);
+      }
+    };
+
     window.addEventListener('openplan_trajectory_updated', handleTrajectory);
-    return () => window.removeEventListener('openplan_trajectory_updated', handleTrajectory);
-  }, []);
+    window.addEventListener('openplan_new_trajectory', handleTrajectory); // También escuchar la de agenticEngine
+    window.addEventListener('openplan_navigate', handleNavigate);
+    
+    return () => {
+      window.removeEventListener('openplan_trajectory_updated', handleTrajectory);
+      window.removeEventListener('openplan_new_trajectory', handleTrajectory);
+      window.removeEventListener('openplan_navigate', handleNavigate);
+    };
+  }, [navigate]);
 
   // Sincronizar reactivamente el tipo de plan del header según la ruta activa
   useEffect(() => {
@@ -1289,8 +1310,12 @@ export default function Layout() {
             box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
           }
         }
+        @keyframes slideDown {
+          from { opacity: 0; transform: translateY(-10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
       `}</style>
-      <ActivityFeed onOpenBob={() => setIsBobOpen(true)} />
+      <ActivityFeed onOpenBob={() => setIsBobOpen(true)} forceOpen={forceActivityOpen} />
       <TouchBarBridge />
       
       {/* Asistente BOB Flotante (CELIS Engine & Voice) */}

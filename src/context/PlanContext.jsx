@@ -255,6 +255,16 @@ export const PlanProvider = ({ children }) => {
     queueRef.current = generationQueue;
   }, [generationQueue]);
 
+  const generationProgressRef = React.useRef(generationProgress);
+  useEffect(() => {
+    generationProgressRef.current = generationProgress;
+  }, [generationProgress]);
+
+  const generationQueueRef = React.useRef(generationQueue);
+  useEffect(() => {
+    generationQueueRef.current = generationQueue;
+  }, [generationQueue]);
+
   // Persist generation queue and status
   useEffect(() => {
     localStorage.setItem('openplan_gen_status', generationStatus);
@@ -825,21 +835,67 @@ export const PlanProvider = ({ children }) => {
           const isFinancialModule = ['inversion', 'costos', 'estados_financieros', 'rentabilidad', 'simulador'].includes(modKey);
           
           if (isFinancialModule) {
+            // Navegar visualmente al módulo actual si estamos en el cliente
+            if (typeof window !== 'undefined') {
+              window.dispatchEvent(new CustomEvent('openplan_navigate', { detail: `/modulo/${pillar}/${modKey}` }));
+            }
             const { generateAutomatedFinancials } = await import('../lib/finanzas/calculadoraFinanciera');
             // Genera la data calculada exacta de una pasada.
             const allFinancials = await generateAutomatedFinancials(planDataRef.current);
             result = allFinancials[modKey] || {};
             await new Promise(r => setTimeout(r, 1000)); // Delay para visual de progreso
           } else {
-            result = await generateModuleContent(
-              planDataRef.current.config.ai,
-              {
+            // Navegar visualmente al módulo actual si estamos en el cliente
+            if (typeof window !== 'undefined') {
+              window.dispatchEvent(new CustomEvent('openplan_navigate', { detail: `/modulo/${pillar}/${modKey}` }));
+            }
+            const { runAgenticModuleGeneration } = await import('../lib/agenticEngine');
+            const { getApiBase } = await import('../config/apiConfig');
+            const aiConfig = planDataRef.current.config.ai;
+
+            const rawName = planDataRef.current?.semilla?.negocio?.nombre_marca || planDataRef.current?.config?.brandKit?.companyName || '';
+            const projectId = planDataRef.current?.config?.projectId || (rawName ? rawName.replace(/[^a-z0-9]/gi, '_').toLowerCase() : '');
+            const projectType = planDataRef.current?.config?.projectType === 'social_bid' ? 'social' : 'negocios';
+
+            const handleAgentLog = (type, message, provider = '') => {
+              try {
+                const apiBase = getApiBase();
+                fetch(`${apiBase}/api/log`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    type,
+                    module: currentItem.title || modKey,
+                    message,
+                    provider,
+                    projectId,
+                    projectType
+                  })
+                }).catch(() => {});
+              } catch {}
+            };
+            
+            const agentResp = await runAgenticModuleGeneration({
+              aiConfig,
+              currentModule: {
+                pillar,
+                moduleKey: modKey,
                 title: currentItem.modKey,
                 description: `Generación automática de ${currentItem.modKey}`,
-                fields: currentItem.emptyFields.map(f => ({ key: f }))
+                fields: currentItem.emptyFields.map(f => ({ key: f, label: f }))
               },
-              planDataRef.current
-            );
+              planData: planDataRef.current,
+              onLog: handleAgentLog
+            });
+            
+            result = agentResp.result;
+            
+            // Emitir evento para que el monitor en vivo capte la nueva trayectoria si hay
+            if (agentResp.trajectory && typeof window !== 'undefined') {
+              window.dispatchEvent(new CustomEvent('openplan_new_trajectory', {
+                detail: agentResp.trajectory
+              }));
+            }
           }
 
           if (result && statusRef.current === 'running' && isSubscribed) {
@@ -859,6 +915,53 @@ export const PlanProvider = ({ children }) => {
                 regenerations: (prev.telemetry?.regenerations || 0) + 1
               }
             }));
+            
+            // Emitir evento visual de módulo completado para monitor en vivo
+            const total = generationProgressRef?.current?.total || generationQueueRef?.current?.length || queueRef.current.length || 1;
+            const completedNow = Math.min((generationProgressRef.current?.completed || 0) + 1, total);
+            if (typeof window !== 'undefined') {
+              const effProvider = result._trace?.provider || planDataRef.current?.config?.ai?.primaryProvider || 'ollama';
+              window.dispatchEvent(new CustomEvent('openplan_module_completed', {
+                detail: {
+                  moduleTitle: currentItem.title,
+                  moduleKey: currentItem.modKey,
+                  pillar: currentItem.pillar,
+                  progress: { completed: completedNow, total, percent: total > 0 ? Math.round((completedNow / total) * 100) : 100 },
+                  tokens: currentTokens,
+                  provider: effProvider,
+                  model: result._trace?.model || currentItem.modKey,
+                  timestamp: Date.now()
+                }
+              }));
+              
+              // También log estructurado para trazabilidad
+              const rawName = planDataRef.current?.semilla?.negocio?.nombre_marca || planDataRef.current?.config?.brandKit?.companyName || '';
+              const projectId = planDataRef.current?.config?.projectId || (rawName ? rawName.replace(/[^a-z0-9]/gi, '_').toLowerCase() : '');
+              const projectType = planDataRef.current?.config?.projectType === 'social_bid' ? 'social' : 'negocios';
+              const apiBase = (await import('../config/apiConfig')).getApiBase();
+              fetch(`${apiBase}/api/log`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  type: 'stage',
+                  module: currentItem.title,
+                  message: `✅ Módulo completado — ${currentItem.title} (${completedNow}/${total} ${Math.round((completedNow/total)*100)}%)`,
+                  provider: effProvider,
+                  elapsed: Date.now(),
+                  projectId,
+                  projectType,
+                  visual: { type: 'module_complete', pillar: currentItem.pillar, progress: { completed: completedNow, total } }
+                })
+              }).catch(() => {});
+              // Navegar visualmente al módulo que se acaba de llenar para que el usuario vea el contenido
+              setTimeout(() => {
+                window.dispatchEvent(new CustomEvent('openplan_navigate', { detail: `/modulo/${pillar}/${modKey}` }));
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }, 300);
+            }
+            
+            // Avanzar cola de forma síncrona para la siguiente iteración del loop
+            queueRef.current = queueRef.current.slice(1);
             setGenerationQueue(prev => prev.slice(1));
             setGenerationProgress(prev => ({ ...prev, completed: prev.completed + 1 }));
           } else {
@@ -866,6 +969,15 @@ export const PlanProvider = ({ children }) => {
           }
         } catch (e) {
           console.error(`Error in queue item ${currentItem.modKey}:`, e);
+          // En timeout de Ollama Cloud (aborted/timeout/500) no pausar con alert — dejar que el fallback ya intentado por ai.js siga; solo logear y continuar
+          const isTimeout = /timeout|aborted|aborted due to timeout|500/i.test(e.message || '');
+          if (isTimeout) {
+            console.warn('[Industrial] Timeout en', currentItem.modKey, '— continuando al siguiente módulo');
+            queueRef.current = queueRef.current.slice(1);
+            setGenerationQueue(prev => prev.slice(1));
+            setGenerationProgress(prev => ({ ...prev, completed: prev.completed + 1 }));
+            continue;
+          }
           alert(`Error al generar el módulo "${currentItem.title}": ${e.message}`);
           setGenerationStatus('paused');
           break;

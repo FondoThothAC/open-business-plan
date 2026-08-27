@@ -207,8 +207,9 @@ export async function runAgenticModuleGeneration({
     const step = recorder.addStep(type, payload);
     if (onStepUpdate) onStepUpdate(step, recorder.exportHarness());
     if (onLog) {
-      const icon = type === 'thought' ? 'thinking' : type === 'tool_call' ? 'stage' : type === 'reflection' ? 'warning' : 'success';
-      onLog(icon, `[${moduleKey}] ${payload.title}: ${payload.content.substring(0, 80)}...`, preferredProvider);
+      const icon = type === 'thought' ? 'thinking' : type === 'tool_call' ? 'stage' : type === 'observation' ? 'save' : type === 'reflection' ? 'warning' : 'success';
+      const cleanContent = payload.content ? payload.content.replace(/\n+/g, ' ').substring(0, 95) : '';
+      onLog(icon, `${payload.title || type.toUpperCase()}${cleanContent ? `: ${cleanContent}...` : ''}`, preferredProvider);
     }
   };
 
@@ -216,22 +217,29 @@ export async function runAgenticModuleGeneration({
     // ─── PASO 1: PENSAMIENTO Y PLANIFICACIÓN AGÉNTICA (Thought / CoT) ───
     const step1Start = Date.now();
     notifyStep('thought', {
-      title: 'Razonamiento Estratégico Inicial',
-      content: `Iniciando agente autónomo para estructurar el módulo "${title}" (${pillar}/${moduleKey}). Analizando dependencias del plan de negocios y seleccionando herramientas de validación de mercado y cálculo.`,
+      title: 'Razonamiento Estratégico',
+      content: `Estructurando módulo "${title}" (${pillar}/${moduleKey}) con herramientas de validación de mercado y cálculo.`,
       durationMs: Date.now() - step1Start
     });
 
-    // ─── PASO 2: SELECCIÓN E INVOCACIÓN DE HERRAMIENTAS EN VIVO (Tool Execution) ───
-    const queryGiro = planData?.semilla?.negocio?.giro || planData?.semilla?.negocio?.nombre || title;
-    const location = planData?.semilla?.negocio?.ubicacion || 'México';
+    // ─── RESOLUCIÓN ROBUSTA DEL CONTEXTO DE LA SEMILLA (Soporte Dual: Plano y Anidado) ───
+    const seed = planData?.semilla || {};
+    const queryGiro = seed.nombre_proyecto || seed.negocio?.nombre_marca || seed.negocio?.giro || seed.negocio?.nombre || seed.solucion || title;
+    const location = seed.cobertura || seed.negocio?.ubicacion || seed.negocio?.cobertura || 'México';
+    const problemDesc = seed.problema || seed.negocio?.descripcion || '';
+    const solutionDesc = seed.solucion || seed.negocio?.que_es || '';
+    const targetMarket = seed.mercado_objetivo || seed.clientes?.quienes || '';
+    const revenueModel = seed.modelo_ingresos || seed.finanzas?.como_gana_dinero || '';
+    const unfairAdvantage = seed.ventaja_injusta || seed.negocio?.diferencial || '';
 
+    // ─── PASO 2: SELECCIÓN E INVOCACIÓN DE HERRAMIENTAS EN VIVO (Tool Execution) ───
     // Invocación 1: Búsqueda de Mercado Web
     const tool1Start = Date.now();
     notifyStep('tool_call', {
-      title: 'Invocando Herramienta: Búsqueda Web de Mercado',
+      title: 'Búsqueda Web en Vivo',
       toolName: 'tool_web_search',
       toolArgs: { query: queryGiro, location, limit: 3 },
-      content: `Consultando competidores en vivo y rango de precios para "${queryGiro}" en ${location}.`,
+      content: `Consultando competidores y precios para "${queryGiro}" en ${location}.`,
       durationMs: 0
     });
 
@@ -249,7 +257,7 @@ export async function runAgenticModuleGeneration({
     let financialData = null;
     if (pillar === 'organizacion' || pillar === 'finanzas' || moduleKey === 'inversion' || moduleKey === 'costos' || moduleKey === 'rentabilidad') {
       const tool2Start = Date.now();
-      const capex = planData?.organizacion?.inversion?.monto_inversion || 150000;
+      const capex = planData?.organizacion?.inversion?.monto_inversion || seed.finanzas?.inversion_inicial || 150000;
       const opex = planData?.organizacion?.costos?.total_costos_fijos || 30000;
       const sales = planData?.mercado?.ventas?.proyeccion_mensual || 75000;
 
@@ -300,36 +308,50 @@ export async function runAgenticModuleGeneration({
     }
 
     // ─── PASO 3: SÍNTESIS Y GENERACIÓN CON MODELO PRIORITARIO (Minimax-M3 / Groq) ───
-    const synthStart = Date.now();
-    notifyStep('thought', {
-      title: 'Síntesis Ejecutiva con IA Multimodal',
-      content: `Consolidando observaciones de herramientas en el prompt estructurado para los campos: ${fields.map(f => f.key).join(', ')}.`,
-      durationMs: Date.now() - synthStart
-    });
-
     const expectedKeys = fields.map(f => f.key);
-    
-    const locationConstraint = planData?.semilla?.negocio?.ubicacion || planData?.semilla?.negocio?.cobertura;
-    const locationInstruction = locationConstraint ? `\nREGLA ESTRICTA DE UBICACIÓN: El negocio opera o tiene cobertura en "${locationConstraint}". NO inventes ciudades ni asumas capitales (ej. no pongas Hermosillo si se te pidió Cananea). Respeta estrictamente esta ubicación.` : '';
+    const locationInstruction = location ? `\nREGLA ESTRICTA DE UBICACIÓN: El negocio opera o tiene cobertura en "${location}". NO inventes ciudades ni asumas capitales (ej. no pongas Hermosillo si se te pidió Cananea). Respeta estrictamente esta ubicación.` : '';
+
+    const documentsContext = (planData.config?.documents || []).length > 0
+      ? `\nDOCUMENTOS DE REFERENCIA RAG:\n${planData.config.documents.map(d => d.text).join('\n---\n').substring(0, 4000)}\n`
+      : '';
 
     const systemPrompt = `Eres el Agente Autónomo Especialista en "${title}" de Open Business Plan (Fondo Thoth AC).
 Debes redactar contenido ejecutivo de nivel profesional con datos duros para un plan de negocios de alta inversión.${locationInstruction}
 
-CONTEXTO DEL NEGOCIO (SEMILLA):
-- Nombre/Giro: ${planData?.semilla?.negocio?.giro || planData?.semilla?.negocio?.nombre || 'No especificado'}
-- Ubicación/Cobertura: ${locationConstraint || 'No especificada'}
-- Descripción: ${planData?.semilla?.negocio?.descripcion || 'No especificada'}
+CONTEXTO DETALLADO DEL PROYECTO (SEMILLA):
+- Nombre del Proyecto: ${queryGiro}
+- Cobertura / Ubicación: ${location}
+- Problema / Necesidad detectada: ${problemDesc || 'No especificado'}
+- Solución / Propuesta de Valor: ${solutionDesc || 'No especificada'}
+- Mercado Objetivo / Cliente Ideal: ${targetMarket || 'No especificado'}
+- Modelo de Ingresos / Monetización: ${revenueModel || 'No especificado'}
+- Ventaja Competitiva / Diferencial: ${unfairAdvantage || 'No especificada'}
+${Object.keys(seed).length > 0 ? `\nDatos Crudos de Semilla:\n${JSON.stringify(seed, null, 2)}` : ''}
+${documentsContext}
 
 DATOS OBSERVADOS POR HERRAMIENTAS EN TIEMPO REAL:
 - Competencia y Mercado: ${JSON.stringify(webResult?.data || {})}
 ${financialData ? `- Métricas Financieras Validadas: ${JSON.stringify(financialData)}` : ''}
 
 CAMPOS REQUERIDOS (Devuelve ÚNICAMENTE un JSON válido con estas claves exactas):
-${fields.map(f => `"${f.key}": "${f.label} - ${f.type === 'mermaid' ? 'Código Mermaid.js válido' : 'Texto detallado y ejecutivo'}"`).join('\n')}
+${fields.map(f => `"${f.key}": "${f.label || f.key} - ${f.type === 'mermaid' ? 'Código Mermaid.js válido' : 'Texto detallado y ejecutivo directamente vinculado a la propuesta de valor y ubicación del proyecto'}"`).join('\n')}
 `;
 
-    // Priorizar el modelo configurado y deshabilitar saltos si el usuario lo solicita implícitamente
-    const strictConfig = { ...aiConfig, disableAutoFallback: true };
+    const synthStart = Date.now();
+    notifyStep('thought', {
+      title: 'Síntesis Ejecutiva con IA Multimodal',
+      content: `Consolidando observaciones de herramientas en el prompt estructurado para los campos: ${fields.map(f => f.key).join(', ')}.`,
+      toolArgs: { prompt: systemPrompt },
+      durationMs: Date.now() - synthStart
+    });
+
+    // Priorizar el modelo configurado pero permitir fallback en timeout/500 para industrialización
+    const strictConfig = { 
+      ...aiConfig, 
+      provider: preferredProvider, 
+      model: preferredModel,
+      disableAutoFallback: false 
+    };
     const generatedResult = await callAiProvider(strictConfig, systemPrompt, true, expectedKeys);
 
     // ─── PASO 4: REFLEXIÓN Y VALIDACIÓN CRÍTICA (Critic-in-the-Loop) ───

@@ -12,6 +12,7 @@ import AdaptiveSeedForm from './AdaptiveSeedForm';
 import { Mic, MicOff, BrainCircuit, CheckCircle, Loader2, AlertCircle, Sparkles, Cpu } from 'lucide-react';
 import { PixelSwarmViewer } from './swarm/PixelSwarmViewer';
 import { SwarmInterviewModal } from './swarm/SwarmInterviewModal';
+import DocumentUploader from './DocumentUploader';
 
 export default function Anteproyecto() {
   const navigate = useNavigate();
@@ -386,6 +387,9 @@ export default function Anteproyecto() {
                 <Cpu size={20} /> Entrevistar e Industrializar con Swarm IA
               </button>
             </div>
+          </div>
+          <div style={{ marginTop: '2rem' }}>
+            <DocumentUploader />
           </div>
         </div>
       )}

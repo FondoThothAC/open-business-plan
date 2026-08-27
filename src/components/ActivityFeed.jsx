@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Activity, X, Minimize2, Maximize2, Bot, CheckCircle, AlertTriangle, XCircle, Zap, Cloud, Save, Sparkles, Cpu, Clock, ChevronRight } from 'lucide-react';
+import { Activity, X, Minimize2, Maximize2, Bot, CheckCircle, AlertTriangle, XCircle, Zap, Cloud, Save, Sparkles, Cpu, Clock, ChevronRight, Check, Module, Brain, Loader2, TrendingUp, Target } from 'lucide-react';
 import { usePlan } from '../context/PlanContext';
 import { getApiBase } from '../config/apiConfig';
 import { getSavedTrajectories } from '../lib/agenticEngine';
@@ -18,6 +18,11 @@ const TYPE_CONFIG = {
 };
 
 function LogLine({ entry, index }) {
+  if (!entry) return null;
+  const messageText = (entry.message || '').trim();
+  const moduleText = (entry.module || '').trim();
+  if (!messageText && !moduleText && entry.type !== 'connected') return null;
+
   const cfg = TYPE_CONFIG[entry.type] || TYPE_CONFIG.stage;
   const Icon = cfg.icon;
   const elapsed = entry.elapsed ? ` · ${(entry.elapsed / 1000).toFixed(1)}s` : '';
@@ -37,13 +42,13 @@ function LogLine({ entry, index }) {
     >
       <Icon style={{ color: cfg.color, flexShrink: 0, marginTop: '2px' }} size={13} />
       <div style={{ flex: 1, minWidth: 0 }}>
-        {entry.module && (
+        {moduleText && (
           <span style={{
             fontSize: '0.65rem', fontWeight: '700',
             color: cfg.color, textTransform: 'uppercase',
             letterSpacing: '0.05em', marginRight: '0.4rem'
           }}>
-            {entry.module}
+            {moduleText}
           </span>
         )}
         {entry.provider && (
@@ -56,7 +61,7 @@ function LogLine({ entry, index }) {
           </span>
         )}
         <span style={{ fontSize: '0.8rem', color: '#e2e8f0' }}>
-          {entry.message}
+          {messageText || (entry.type === 'connected' ? 'Monitor de IA conectado ✓' : 'Procesando paso agéntico...')}
         </span>
         <span style={{ fontSize: '0.65rem', color: '#94a3b8', marginLeft: '0.4rem' }}>
           {entry.time}{elapsed}
@@ -66,8 +71,10 @@ function LogLine({ entry, index }) {
   );
 }
 
-export default function ActivityFeed({ onOpenBob }) {
+export default function ActivityFeed({ onOpenBob, forceOpen }) {
   const { planData } = usePlan();
+  const forceOpenRef = useRef(forceOpen);
+  forceOpenRef.current = forceOpen;
   
   const rawName = planData?.semilla?.negocio?.nombre_marca || planData?.config?.brandKit?.companyName || '';
   const activeProjectId = planData?.config?.projectId || (rawName ? rawName.replace(/[^a-z0-9]/gi, '_').toLowerCase() : '');
@@ -79,17 +86,30 @@ export default function ActivityFeed({ onOpenBob }) {
   const [selectedTrajectory, setSelectedTrajectory] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
+  const [isMaximized, setIsMaximized] = useState(false);
   const [hasNew, setHasNew] = useState(false);
-  const [isConnected, setIsConnected] = useState(false);
-  
-  // Real-time task tracking state
-  const [activeTask, setActiveTask] = useState({
-    active: false,
-    module: '',
-    message: '',
-    progress: 0,
-    type: ''
-  });
+const [isConnected, setIsConnected] = useState(false);
+   
+   // Real-time task tracking state
+   const [activeTask, setActiveTask] = useState({
+     active: false,
+     module: '',
+     message: '',
+     progress: 0,
+     type: ''
+   });
+   
+   // Progreso visual de módulos durante industrialización
+   const [moduleProgress, setModuleProgress] = useState({
+     active: false,
+     current: '',
+     completed: 0,
+     total: 0,
+     percent: 0,
+     tokens: 0,
+     provider: '',
+     history: [] // historial de módulos completados
+   });
 
   const bottomRef = useRef(null);
   const esRef = useRef(null);
@@ -135,8 +155,54 @@ export default function ActivityFeed({ onOpenBob }) {
     };
 
     fetchHistory();
-    return () => window.removeEventListener('openplan_trajectory_updated', handleTrajectoryUpdate);
+
+    const handleModuleCompleted = (e) => {
+      const d = e.detail;
+      setModuleProgress(prev => ({
+        active: true,
+        current: d.moduleTitle || d.moduleKey,
+        completed: d.progress?.completed || 0,
+        total: d.progress?.total || 0,
+        percent: d.progress?.percent || 0,
+        tokens: d.tokens || 0,
+        provider: d.provider || '',
+        history: [...prev.history.slice(-9), { // mantener últimos 10
+          title: d.moduleTitle,
+          pillar: d.pillar,
+          completed: d.progress?.completed,
+          total: d.progress?.total,
+          percent: d.progress?.percent,
+          tokens: d.tokens,
+          timestamp: d.timestamp
+        }]
+      }));
+      
+      // Actualizar barra de tarea activa
+      setActiveTask({
+        active: true,
+        module: d.moduleTitle || 'Progreso Industrial',
+        message: `Módulo ${d.progress?.completed}/${d.progress?.total} (${d.progress?.percent}%)`,
+        progress: d.progress?.percent || 0,
+        type: 'stage'
+      });
+    };
+    
+    window.addEventListener('openplan_module_completed', handleModuleCompleted);
+    return () => {
+      window.removeEventListener('openplan_trajectory_updated', handleTrajectoryUpdate);
+      window.removeEventListener('openplan_module_completed', handleModuleCompleted);
+    };
   }, [activeProjectId, activeProjectType]);
+
+  // Auto-abrir panel cuando forceOpen es true (ej. durante industrialización)
+  useEffect(() => {
+    if (forceOpenRef.current && !isOpen) {
+      setIsOpen(true);
+      setIsMinimized(false);
+      setIsMaximized(true);
+      setHasNew(false);
+    }
+  }, [forceOpenRef.current, isOpen, isMinimized]);
 
   // Helper to parse and update the active task progress
   const updateActiveTask = (entry) => {
@@ -456,20 +522,21 @@ export default function ActivityFeed({ onOpenBob }) {
           className="no-print"
           style={{
             position: 'fixed',
-            bottom: activeTask.active ? '2.9rem' : '1.5rem',
-            right: '1.5rem',
-            width: '420px',
-            maxHeight: isMinimized ? '52px' : '400px',
-            background: 'rgba(15, 17, 26, 0.97)',
-            backdropFilter: 'blur(16px)',
-            border: '1px solid rgba(99,102,241,0.3)',
+            bottom: isMaximized ? '2rem' : (activeTask.active ? '2.9rem' : '1.5rem'),
+            right: isMaximized ? '2rem' : '1.5rem',
+            width: isMaximized ? 'min(860px, 94vw)' : '440px',
+            height: isMinimized ? '52px' : (isMaximized ? 'min(620px, 85vh)' : '440px'),
+            maxHeight: isMinimized ? '52px' : (isMaximized ? '85vh' : '440px'),
+            background: 'rgba(15, 17, 26, 0.98)',
+            backdropFilter: 'blur(20px)',
+            border: '1px solid rgba(99,102,241,0.35)',
             borderRadius: '14px',
-            boxShadow: '0 20px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(99,102,241,0.1)',
+            boxShadow: '0 25px 70px rgba(0,0,0,0.75), 0 0 0 1px rgba(99,102,241,0.15)',
             zIndex: 999,
             display: 'flex',
             flexDirection: 'column',
             overflow: 'hidden',
-            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+            transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
           }}
         >
           {/* Header */}
@@ -479,7 +546,7 @@ export default function ActivityFeed({ onOpenBob }) {
             justifyContent: 'space-between',
             padding: '0.75rem 1rem',
             borderBottom: isMinimized ? 'none' : '1px solid rgba(255,255,255,0.06)',
-            background: 'linear-gradient(90deg, rgba(99,102,241,0.1), rgba(139,92,246,0.05))',
+            background: 'linear-gradient(90deg, rgba(99,102,241,0.12), rgba(139,92,246,0.06))',
             flexShrink: 0,
             cursor: 'pointer',
           }}
@@ -523,18 +590,25 @@ export default function ActivityFeed({ onOpenBob }) {
                 Copiar
               </button>
               <button
+                onClick={e => { e.stopPropagation(); setIsMaximized(m => !m); setIsMinimized(false); }}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: isMaximized ? '#818cf8' : '#94a3b8', padding: '4px' }}
+                title={isMaximized ? "Restaurar tamaño normal" : "Expandir terminal completa"}
+              >
+                {isMaximized ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
+              </button>
+              <button
                 onClick={e => { e.stopPropagation(); setIsMinimized(m => !m); }}
                 style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#94a3b8', padding: '4px' }}
-                title={isMinimized ? "Maximizar" : "Minimizar"}
+                title={isMinimized ? "Mostrar panel" : "Minimizar"}
               >
-                {isMinimized ? <Maximize2 size={13} /> : <Minimize2 size={13} />}
+                <ChevronRight size={14} style={{ transform: isMinimized ? 'rotate(90deg)' : 'rotate(-90deg)', transition: 'transform 0.2s' }} />
               </button>
               <button
                 onClick={e => { e.stopPropagation(); setIsOpen(false); }}
                 style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#94a3b8', padding: '4px' }}
                 title="Cerrar"
               >
-                <X size={13} />
+                <X size={14} />
               </button>
             </div>
           </div>
@@ -591,6 +665,78 @@ export default function ActivityFeed({ onOpenBob }) {
               flexDirection: 'column',
               gap: '2px',
             }}>
+              {/* Barra de progreso visual de módulos durante industrialización */}
+              {moduleProgress.active && (
+                <div style={{
+                  background: 'linear-gradient(90deg, rgba(99,102,241,0.12), rgba(139,92,246,0.08))',
+                  border: '1px solid rgba(99,102,241,0.3)',
+                  borderRadius: '10px',
+                  padding: '0.6rem 0.8rem',
+                  marginBottom: '0.5rem',
+                  animation: 'slideDown 0.3s ease'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem', marginBottom: '0.4rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <Target size={14} color="var(--accent-color)" />
+                      <strong style={{ fontSize: '0.75rem', color: 'var(--text-primary)' }}>
+                        Industrialización en progreso
+                      </strong>
+                      <span style={{
+                        fontSize: '0.65rem',
+                        padding: '1px 6px',
+                        borderRadius: '8px',
+                        background: 'var(--accent-color)',
+                        color: 'white',
+                        fontWeight: 700
+                      }}>
+                        {moduleProgress.completed}/{moduleProgress.total} ({moduleProgress.percent}%)
+                      </span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.65rem', color: 'var(--text-secondary)' }}>
+                      <span><Brain size={10} style={{ marginRight: '2px' }} /> {moduleProgress.tokens.toLocaleString()} tokens</span>
+                      <span><Cpu size={10} style={{ marginRight: '2px' }} /> {moduleProgress.provider?.toUpperCase()}</span>
+                    </div>
+                  </div>
+                  <div style={{ height: '6px', background: 'rgba(0,0,0,0.3)', borderRadius: '3px', overflow: 'hidden' }}>
+                    <div style={{
+                      height: '100%',
+                      width: `${moduleProgress.percent}%`,
+                      background: 'linear-gradient(90deg, #6366f1, #a78bfa, #10b981)',
+                      borderRadius: '3px',
+                      transition: 'width 0.5s cubic-bezier(0.4, 0, 0.2, 1)'
+                    }} />
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '0.3rem', fontSize: '0.6rem', color: 'var(--text-secondary)' }}>
+                    <span>📦 Módulo actual: <strong style={{ color: '#60a5fa' }}>{moduleProgress.current}</strong></span>
+                    <span>{moduleProgress.history.length} completados</span>
+                  </div>
+                  {/* Mini historial de módulos completados */}
+                  {moduleProgress.history.length > 0 && (
+                    <div style={{ marginTop: '0.4rem', display: 'flex', gap: '0.3rem', overflowX: 'auto', padding: '0.2rem 0' }}>
+                      {moduleProgress.history.map((h, i) => (
+                        <div key={i} style={{
+                          flex: '0 0 auto',
+                          minWidth: '80px',
+                          padding: '0.2rem 0.4rem',
+                          background: h.percent === 100 ? 'rgba(16,185,129,0.15)' : 'rgba(255,255,255,0.04)',
+                          border: h.percent === 100 ? '1px solid rgba(16,185,129,0.3)' : '1px solid rgba(255,255,255,0.06)',
+                          borderRadius: '6px',
+                          fontSize: '0.55rem',
+                          textAlign: 'center',
+                          color: h.percent === 100 ? '#10b981' : 'var(--text-secondary)',
+                          whiteSpace: 'nowrap'
+                        }}>
+                          <div style={{ fontWeight: 700 }}>{h.title}</div>
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '2px' }}>
+                            <CheckCircle size={8} color={h.percent === 100 ? '#10b981' : '#94a3b8'} />
+                            <span>{h.percent}%</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
               {logs.length === 0 ? (
                 <div style={{ textAlign: 'center', padding: '2.5rem 1rem', color: '#94a3b8' }}>
                   <Bot size={32} style={{ margin: '0 auto 0.75rem', opacity: 0.4, color: isConnected ? '#10b981' : '#6366f1' }} />

@@ -1,0 +1,266 @@
+{
+  "models": {
+    "dots-studio/dots-3-note-preview:free": {
+      "input": 0,
+      "output": 0,
+      "name": "Dots Studio: Dots3-Note Preview (free)",
+      "provider": "openrouter",
+      "tier": "free",
+      "contextWindow": 512000,
+      "capabilities": [
+        "chat"
+      ],
+      "isHot": true,
+      "lastVerified": "2026-08-27T05:11:55.783Z"
+    },
+    "liquid/lfm-2.5-2.6b:free": {
+      "input": 0,
+      "output": 0,
+      "name": "LiquidAI: LFM2.5-2.6B (free)",
+      "provider": "openrouter",
+      "tier": "free",
+      "contextWindow": 65536,
+      "capabilities": [
+        "chat"
+      ],
+      "isHot": true,
+      "lastVerified": "2026-08-27T05:11:55.783Z"
+    },
+    "nvidia/nemotron-3.5-lightning:free": {
+      "input": 0,
+      "output": 0,
+      "name": "NVIDIA: Nemotron 3.5 Lightning (free)",
+      "provider": "openrouter",
+      "tier": "free",
+      "contextWindow": 1000000,
+      "capabilities": [
+        "chat"
+      ],
+      "isHot": true,
+      "lastVerified": "2026-08-27T05:11:55.783Z"
+    },
+    "thinkingmachines/inkling-small:free": {
+      "input": 0,
+      "output": 0,
+      "name": "Thinking Machines: Inkling Small (free)",
+      "provider": "openrouter",
+      "tier": "free",
+      "contextWindow": 1048576,
+      "capabilities": [
+        "chat"
+      ],
+      "isHot": true,
+      "lastVerified": "2026-08-27T05:11:55.783Z"
+    },
+    "poolside/laguna-s-2.1:free": {
+      "input": 0,
+      "output": 0,
+      "name": "Poolside: Laguna S 2.1 (free)",
+      "provider": "openrouter",
+      "tier": "free",
+      "contextWindow": 262144,
+      "capabilities": [
+        "chat"
+      ],
+      "isHot": true,
+      "lastVerified": "2026-08-27T05:11:55.783Z"
+    },
+    "thinkingmachines/inkling:free": {
+      "input": 0,
+      "output": 0,
+      "name": "Thinking Machines: Inkling (free)",
+      "provider": "openrouter",
+      "tier": "free",
+      "contextWindow": 1048576,
+      "capabilities": [
+        "chat"
+      ],
+      "isHot": true,
+      "lastVerified": "2026-08-27T05:11:55.783Z"
+    },
+    "poolside/laguna-xs-2.1:free": {
+      "input": 0,
+      "output": 0,
+      "name": "Poolside: Laguna XS 2.1 (free)",
+      "provider": "openrouter",
+      "tier": "free",
+      "contextWindow": 262144,
+      "capabilities": [
+        "chat"
+      ],
+      "isHot": true,
+      "lastVerified": "2026-08-27T05:11:55.783Z"
+    },
+    "cohere/north-mini-code:free": {
+      "input": 0,
+      "output": 0,
+      "name": "Cohere: North Mini Code (free)",
+      "provider": "openrouter",
+      "tier": "free",
+      "contextWindow": 256000,
+      "capabilities": [
+        "chat"
+      ],
+      "isHot": true,
+      "lastVerified": "2026-08-27T05:11:55.783Z"
+    },
+    "z-ai/glm-5.2:free": {
+      "input": 0,
+      "output": 0,
+      "name": "Z.ai: GLM 5.2 (free)",
+      "provider": "openrouter",
+      "tier": "free",
+      "contextWindow": 256000,
+      "capabilities": [
+        "chat"
+      ],
+      "isHot": true,
+      "lastVerified": "2026-08-27T05:11:55.783Z"
+    },
+    "nvidia/nemotron-3.5-content-safety:free": {
+      "input": 0,
+      "output": 0,
+      "name": "NVIDIA: Nemotron 3.5 Content Safety (free)",
+      "provider": "openrouter",
+      "tier": "free",
+      "contextWindow": 128000,
+      "capabilities": [
+        "chat"
+      ],
+      "isHot": true,
+      "lastVerified": "2026-08-27T05:11:55.783Z"
+    },
+    "nvidia/nemotron-3-ultra-550b-a55b:free": {
+      "input": 0,
+      "output": 0,
+      "name": "NVIDIA: Nemotron 3 Ultra (free)",
+      "provider": "openrouter",
+      "tier": "free",
+      "contextWindow": 1000000,
+      "capabilities": [
+        "chat"
+      ],
+      "isHot": true,
+      "lastVerified": "2026-08-27T05:11:55.783Z"
+    },
+    "minimax/minimax-m3:free": {
+      "input": 0,
+      "output": 0,
+      "name": "MiniMax: MiniMax M3 (free)",
+      "provider": "openrouter",
+      "tier": "free",
+      "contextWindow": 1048576,
+      "capabilities": [
+        "chat"
+      ],
+      "isHot": true,
+      "lastVerified": "2026-08-27T05:11:55.783Z"
+    },
+    "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free": {
+      "input": 0,
+      "output": 0,
+      "name": "NVIDIA: Nemotron 3 Nano Omni (free)",
+      "provider": "openrouter",
+      "tier": "free",
+      "contextWindow": 256000,
+      "capabilities": [
+        "chat"
+      ],
+      "isHot": true,
+      "lastVerified": "2026-08-27T05:11:55.783Z"
+    },
+    "google/gemma-4-26b-a4b-it:free": {
+      "input": 0,
+      "output": 0,
+      "name": "Google: Gemma 4 26B A4B  (free)",
+      "provider": "openrouter",
+      "tier": "free",
+      "contextWindow": 262144,
+      "capabilities": [
+        "chat"
+      ],
+      "isHot": true,
+      "lastVerified": "2026-08-27T05:11:55.783Z"
+    },
+    "google/gemma-4-31b-it:free": {
+      "input": 0,
+      "output": 0,
+      "name": "Google: Gemma 4 31B (free)",
+      "provider": "openrouter",
+      "tier": "free",
+      "contextWindow": 262144,
+      "capabilities": [
+        "chat"
+      ],
+      "isHot": true,
+      "lastVerified": "2026-08-27T05:11:55.783Z"
+    },
+    "google/lyria-3-pro-preview": {
+      "input": 0,
+      "output": 0,
+      "name": "Google: Lyria 3 Pro Preview",
+      "provider": "openrouter",
+      "tier": "free",
+      "contextWindow": 1048576,
+      "capabilities": [
+        "chat"
+      ],
+      "isHot": true,
+      "lastVerified": "2026-08-27T05:11:55.783Z"
+    },
+    "google/lyria-3-clip-preview": {
+      "input": 0,
+      "output": 0,
+      "name": "Google: Lyria 3 Clip Preview",
+      "provider": "openrouter",
+      "tier": "free",
+      "contextWindow": 1048576,
+      "capabilities": [
+        "chat"
+      ],
+      "isHot": true,
+      "lastVerified": "2026-08-27T05:11:55.783Z"
+    },
+    "minimax/minimax-m2.7:free": {
+      "input": 0,
+      "output": 0,
+      "name": "MiniMax: MiniMax M2.7 (free)",
+      "provider": "openrouter",
+      "tier": "free",
+      "contextWindow": 196608,
+      "capabilities": [
+        "chat"
+      ],
+      "isHot": true,
+      "lastVerified": "2026-08-27T05:11:55.783Z"
+    },
+    "nvidia/nemotron-3-super-120b-a12b:free": {
+      "input": 0,
+      "output": 0,
+      "name": "NVIDIA: Nemotron 3 Super (free)",
+      "provider": "openrouter",
+      "tier": "free",
+      "contextWindow": 262144,
+      "capabilities": [
+        "chat"
+      ],
+      "isHot": true,
+      "lastVerified": "2026-08-27T05:11:55.783Z"
+    },
+    "openrouter/free": {
+      "input": 0,
+      "output": 0,
+      "name": "Free Models Router",
+      "provider": "openrouter",
+      "tier": "free",
+      "contextWindow": 200000,
+      "capabilities": [
+        "chat"
+      ],
+      "isHot": true,
+      "lastVerified": "2026-08-27T05:11:55.783Z"
+    }
+  },
+  "lastCronRun": "2026-08-27T05:11:55.104Z",
+  "cronStatus": "completed"
+}

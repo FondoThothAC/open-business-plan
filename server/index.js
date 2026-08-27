@@ -1128,15 +1128,44 @@ const ICONS = {
 
 // CORS proxy for external AI providers (NVIDIA, Groq, Mistral, OpenAI, etc.)
 app.post('/api/ai/proxy', async (req, res) => {
-  const { url, method = 'POST', headers = {}, body } = req.body;
+  let { url, method = 'POST', headers = {}, body } = req.body;
   try {
+    const finalHeaders = { 'Content-Type': 'application/json', ...headers };
+
+    // ── Inyección automática de Ollama Cloud Key desde .env ──────────────────
+    if (
+      url &&
+      (url.includes('ollama.com/v1') || url.includes('ollama.com/api')) &&
+      !finalHeaders['Authorization'] &&
+      process.env.OLLAMA_KEY
+    ) {
+      finalHeaders['Authorization'] = `Bearer ${process.env.OLLAMA_KEY}`;
+      console.log('[proxy] Inyectando OLLAMA_KEY del servidor para:', url);
+    }
+
+    // ── Inyección automática de Google Gemini Key desde .env ─────────────────
+    if (
+      url &&
+      url.includes('generativelanguage.googleapis.com') &&
+      process.env.GEMINI_KEY
+    ) {
+      // Si la url no tiene key o tiene key vacía/inválida
+      if (!url.includes('key=') || url.includes('key=undefined') || url.includes('key=null') || url.includes('key=')) {
+        const parsedUrl = new URL(url);
+        const currentKey = parsedUrl.searchParams.get('key');
+        if (!currentKey || currentKey === 'undefined' || currentKey === 'null' || currentKey === '') {
+          parsedUrl.searchParams.set('key', process.env.GEMINI_KEY);
+          url = parsedUrl.toString();
+          console.log('[proxy] Inyectando GEMINI_KEY del servidor en URL Gemini');
+        }
+      }
+    }
+
     const response = await fetch(url, {
       method,
-      headers: {
-        'Content-Type': 'application/json',
-        ...headers
-      },
-      body: body ? JSON.stringify(body) : undefined
+      headers: finalHeaders,
+      body: body ? JSON.stringify(body) : undefined,
+      signal: AbortSignal.timeout(180000)
     });
     const data = await response.json();
     return res.status(response.status).json(data);
@@ -1144,6 +1173,30 @@ app.post('/api/ai/proxy', async (req, res) => {
     console.error('AI Proxy Error:', error);
     return res.status(500).json({ error: error.message });
   }
+});
+
+// ─── Endpoint para que el frontend consulte la configuración de IA del servidor ───
+app.get('/api/config/ollama', (req, res) => {
+  const ollamaKey = process.env.OLLAMA_KEY || '';
+  const ollambBobKey = process.env.OLLAMA_BOB_KEY || '';
+  const geminiKey = process.env.GEMINI_KEY || process.env.GOOGLE_API_KEY || '';
+  res.json({
+    hasOllamaKey: !!ollamaKey,
+    hasBobKey: !!ollambBobKey,
+    hasGeminiKey: !!geminiKey,
+    ollamaKeyHint: ollamaKey ? ollamaKey.slice(0, 8) + '...' : null,
+    bobKeyHint: ollambBobKey ? ollambBobKey.slice(0, 8) + '...' : null,
+    geminiKeyHint: geminiKey ? geminiKey.slice(0, 8) + '...' : null,
+    defaultModel: 'minimax-m3:cloud',
+    availableCloudModels: [
+      'minimax-m3:cloud',
+      'kimi-k2.6:cloud',
+      'nemotron-3-super:cloud',
+      'gemma4:31b-cloud',
+      'glm-5.1:cloud',
+      'qwen3.5:cloud'
+    ]
+  });
 });
 
 // ─────────────────────────────────────────────────────────
@@ -2195,7 +2248,7 @@ async function pingProvider(providerName, endpoint, apiKey, timeoutMs = 8000) {
 
     switch (providerName) {
       case 'ollama_cloud':
-        url = 'https://api.ollama.com/v1/chat/completions';
+        url = 'https://ollama.com/v1/chat/completions';
         headers = { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' };
         body = JSON.stringify({ model: 'minimax-m3:cloud', messages: [{ role: 'user', content: 'ping' }], max_tokens: 1 });
         method = 'POST';

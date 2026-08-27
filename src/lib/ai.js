@@ -351,8 +351,9 @@ export async function generateModuleContent(config, currentModule, allPlanData) 
   const {
     primaryProvider, _secondaryProvider,
     apiKey, groqKey, nvidiaKey, orcaRouterKey, lmStudioEndpoint, endpoint, openrouterKey, minimaxKey, mistralKey,
-    model, depth = 1,           // depth: 1=rápido, 2=pro, 3=profundo
-    agentModels = {},           // sobreescritura de modelos por rol desde config
+    ollamaKey, bobOllamaKey,
+    model, depth = 1,
+    agentModels = {},
   } = config;
 
   const t0 = Date.now();
@@ -362,21 +363,27 @@ export async function generateModuleContent(config, currentModule, allPlanData) 
   }
 
   // [EDD] Logger de eventos al ActivityFeed (silent fail si backend caído)
-  const termLog = async (type, message, provider = '') => {
+  // Soporta eventos enriquecidos: {type, message, provider, module, progress, phase, agent, tokens, visual}
+  // Compatibilidad: termLog('type','msg','provider') y termLog({type,message,provider,...})
+  const termLog = async (...args) => {
     try {
       const rawName = allPlanData.semilla?.negocio?.nombre_marca || allPlanData.config?.brandKit?.companyName || '';
       const projectId = allPlanData.config?.projectId || (rawName ? rawName.replace(/[^a-z0-9]/gi, '_').toLowerCase() : '');
       const projectType = allPlanData.config?.projectType === 'social_bid' ? 'social' : 'negocios';
       const apiBase = getApiBase();
 
+      let payload;
+      if (typeof args[0] === 'string') {
+        payload = { type: args[0], message: args[1] || '', provider: args[2] || '', module: currentModule.title, elapsed: Date.now() - t0, projectId, projectType };
+      } else {
+        const event = args[0] || {};
+        payload = { ...event, module: event.module || currentModule.title, elapsed: Date.now() - t0, projectId, projectType };
+      }
+
       await fetch(`${apiBase}/api/log`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type, module: currentModule.title,
-          message, provider, elapsed: Date.now() - t0,
-          projectId, projectType
-        })
+        body: JSON.stringify(payload)
       });
     } catch {}
   };
@@ -385,12 +392,34 @@ export async function generateModuleContent(config, currentModule, allPlanData) 
   activeTermLog = termLog;
 
   // Contexto global del plan (toda la información disponible)
-  const semillaContext = allPlanData.semilla
-    ? `\nENTREVISTA CON EL EMPRENDEDOR:\n${JSON.stringify(allPlanData.semilla, null, 2)}\n`
+  const seed = allPlanData.semilla || {};
+  const seedName = seed.nombre_proyecto || seed.negocio?.nombre_marca || seed.negocio?.giro || seed.negocio?.nombre || seed.solucion || '';
+  const seedLoc = seed.cobertura || seed.negocio?.ubicacion || seed.negocio?.cobertura || '';
+  const seedProb = seed.problema || seed.negocio?.descripcion || '';
+  const seedSol = seed.solucion || seed.negocio?.que_es || '';
+  const seedMarket = seed.mercado_objetivo || seed.clientes?.quienes || '';
+  const seedRev = seed.modelo_ingresos || seed.finanzas?.como_gana_dinero || '';
+  const seedAdv = seed.ventaja_injusta || seed.negocio?.diferencial || '';
+
+  const locationConstraint = seedLoc ? `\nREGLA ESTRICTA DE UBICACIÓN: El negocio opera o tiene cobertura en "${seedLoc}". NO inventes ciudades ni asumas capitales (ej. no pongas Hermosillo si se te indicó Cananea u otra ciudad). Respeta estrictamente esta ubicación.` : '';
+
+  const semillaContext = Object.keys(seed).length > 0
+    ? `\nCONTEXTO NARRATIVO Y SEMILLA DEL PROYECTO:
+- Nombre del Proyecto: ${seedName || 'No especificado'}
+- Ubicación / Cobertura: ${seedLoc || 'No especificada'}
+- Problema / Necesidad: ${seedProb || 'No especificado'}
+- Solución / Propuesta de Valor: ${seedSol || 'No especificada'}
+- Mercado Objetivo: ${seedMarket || 'No especificado'}
+- Modelo de Ingresos: ${seedRev || 'No especificado'}
+- Ventaja Competitiva: ${seedAdv || 'No especificada'}
+${locationConstraint}
+Datos Crudos de la Semilla:
+${JSON.stringify(seed, null, 2)}\n`
     : '';
 
   const documentsContext = (allPlanData.config?.documents || []).length > 0
-    ? `\nDOCUMENTOS DE REFERENCIA:\n${allPlanData.config.documents.map(d => d.text).join('\n---\n').substring(0, 5000)}\n`
+    ? `\nDOCUMENTOS DE REFERENCIA (RAG):
+${allPlanData.config.documents.map(d => d.text).join('\n---\n').substring(0, 5000)}\n`
     : '';
 
   const isLocalProvider = primaryProvider === 'ollama' || primaryProvider === 'lmstudio';
@@ -422,8 +451,8 @@ export async function generateModuleContent(config, currentModule, allPlanData) 
   }
 
   const systemContext = `
-Eres un miembro de una "Mesa de Expertos" en estrategia empresarial de alto nivel.
-Tu objetivo es redactar una sección del Plan de Negocios con rigor académico y ejecutivo.
+Eres un miembro de una "Mesa de Expertos" en estrategia empresarial de alto nivel de Open Business Plan (Fondo Thoth AC).
+Tu objetivo es redactar una sección del Plan de Negocios con rigor académico, ejecutivo y directamente alineado a la propuesta de valor y ubicación del proyecto.
 ${semillaContext}
 ${documentsContext}
 Estado actual COMPLETO del plan (contexto de referencia):
@@ -466,6 +495,8 @@ ${fieldsPromptContext}
     const openrouterKey = allPlanData?.config?.ai?.openrouterKey || '';
     const opencodeKey   = allPlanData?.config?.ai?.opencodeKey   || '';
     const mistralKey    = allPlanData?.config?.ai?.mistralKey    || '';
+    const ollamaKeyFromPlan = allPlanData?.config?.ai?.ollamaKey || ollamaKey || '';
+    const bobOllamaKeyFromPlan = allPlanData?.config?.ai?.bobOllamaKey || bobOllamaKey || '';
 
     if (prov === 'lmstudio') {
       return {
@@ -477,7 +508,9 @@ ${fieldsPromptContext}
         nvidiaKey,
         openrouterKey,
         opencodeKey,
-        mistralKey
+        mistralKey,
+        ollamaKey: ollamaKeyFromPlan,
+        bobOllamaKey: bobOllamaKeyFromPlan
       };
     }
     return {
@@ -488,6 +521,8 @@ ${fieldsPromptContext}
       openrouterKey,
       opencodeKey,
       mistralKey,
+      ollamaKey: ollamaKeyFromPlan,
+      bobOllamaKey: bobOllamaKeyFromPlan,
       orcaRouterKey: config.orcaRouterKey,
       endpoint,
       lmStudioEndpoint,
@@ -504,7 +539,7 @@ ${fieldsPromptContext}
     const redactor = resolveModel('redactor', agentCfg);
     const prov = fallbackProvider?.provider || primaryProvider || 'groq';
 
-    await termLog('thinking', `⚡ Fase 1/2: Analista generando borrador (${analista})...`, prov);
+    await termLog({ type: 'thinking', message: `⚡ Fase 1/2: Analista generando borrador (${analista})...`, provider: prov, phase: 'fase_1_analista', agent: 'analista', visual: { icon: '🧠', color: '#8b5cf6' } });
     const draft = await callAiProvider(
       fallbackProvider || makeProviderConfig(analista),
       `${systemContext}\n\nTAREA: Genera un borrador profesional y detallado SOLO para los campos indicados. Devuelve JSON con exactamente las claves pedidas.`,
@@ -512,7 +547,7 @@ ${fieldsPromptContext}
       expectedKeys
     );
 
-    await termLog('thinking', `⚡ Fase 2/2: Redactor finalizando (${redactor})...`, prov);
+    await termLog({ type: 'thinking', message: `⚡ Fase 2/2: Redactor finalizando (${redactor})...`, provider: prov, phase: 'fase_2_redactor', agent: 'redactor', visual: { icon: '✍️', color: '#6366f1' } });
     const result = await callAiProvider(
       fallbackProvider || makeProviderConfig(redactor),
       `${systemContext}\n\nBorrador:\n${JSON.stringify(draft)}\n\nTAREA: Mejora la calidad y el tono ejecutivo del borrador. Devuelve SOLO el JSON final con las claves: ${(currentModule.fields || []).map(f => f.key).join(', ')}`,
@@ -520,7 +555,7 @@ ${fieldsPromptContext}
       expectedKeys
     );
 
-    await termLog('success', '✓ Módulo completado (nivel rápido).', prov);
+    await termLog({ type: 'success', message: '✓ Módulo completado (nivel rápido).', provider: prov, phase: 'complete', visual: { icon: '✅', color: '#10b981', badge: 'RÁPIDO' } });
     return result;
   };
 
@@ -532,7 +567,7 @@ ${fieldsPromptContext}
     const critico  = resolveModel('critico',  agentCfg);
     const redactor = resolveModel('redactor', agentCfg);
 
-    await termLog('thinking', `🧠 Fase 1/3: Analista redactando borrador (${analista})...`, analista);
+    await termLog({ type: 'thinking', message: `🧠 Fase 1/3: Analista redactando borrador (${analista})...`, provider: analista, phase: 'fase_1_analista', agent: 'analista', visual: { icon: '🧠', color: '#8b5cf6' } });
     const draft = await callAiProvider(
       fallbackProvider || makeProviderConfig(analista),
       `${systemContext}\n\nTAREA: Genera un borrador profesional y exhaustivo. El plan final es de 100 páginas. Devuelve JSON con SOLO las claves pedidas.`,
@@ -540,14 +575,14 @@ ${fieldsPromptContext}
       expectedKeys
     );
 
-    await termLog('thinking', `🧠 Fase 2/3: Crítico revisando (${critico})...`, critico);
+    await termLog({ type: 'thinking', message: `🧠 Fase 2/3: Crítico revisando (${critico})...`, provider: critico, phase: 'fase_2_critico', agent: 'critico', visual: { icon: '📉', color: '#ef4444' } });
     const critique = await callAiProvider(
       fallbackProvider || makeProviderConfig(critico),
       `${systemContext}\n\nBorrador:\n${JSON.stringify(draft)}\n\nTAREA: Actúa como inversor crítico. ¿Qué falta? ¿Qué es débil o impreciso? Sé breve y directo. No devuelvas JSON.`,
       false
     );
 
-    await termLog('thinking', `🧠 Fase 3/3: Redactor sintetizando versión final (${redactor})...`, redactor);
+    await termLog({ type: 'thinking', message: `🧠 Fase 3/3: Redactor sintetizando versión final (${redactor})....`, provider: redactor, phase: 'fase_3_redactor', agent: 'redactor', visual: { icon: '✍️', color: '#6366f1' } });
     const result = await callAiProvider(
       fallbackProvider || makeProviderConfig(redactor),
       `${systemContext}\n\nBorrador:\n${JSON.stringify(draft)}\n\nCrítica:\n${critique}\n\nTAREA: Integra las mejoras. Genera la versión final con tono ejecutivo. DEVUELVE SOLO JSON con claves: ${(currentModule.fields || []).map(f => f.key).join(', ')}`,
@@ -555,7 +590,7 @@ ${fieldsPromptContext}
       expectedKeys
     );
 
-    await termLog('success', '✓ Módulo completado (nivel pro).', redactor);
+    await termLog({ type: 'success', message: '✓ Módulo completado (nivel pro).', provider: redactor, phase: 'complete', visual: { icon: '✅', color: '#10b981', badge: 'PRO' } });
     return result;
   };
 
@@ -571,39 +606,39 @@ ${fieldsPromptContext}
 
     const mkCfg = (m) => fallbackProvider || makeProviderConfig(m);
 
-    await termLog('thinking', `🔬 Fase 1/5: Estratega definiendo marco (${estratega})...`, estratega);
+    await termLog({ type: 'thinking', message: `🔬 Fase 1/5: Estratega definiendo marco (${estratega})...`, provider: estratega, phase: 'fase_1_estratega', agent: 'estratega', visual: { icon: '🎯', color: '#ec4899' } });
     const marco = await callAiProvider(mkCfg(estratega),
       `${systemContext}\n\nTAREA: Define el marco estratégico y los puntos clave que DEBEN aparecer en "${currentModule.title}". No escribas el contenido final, solo la estructura. Responde en texto libre.`,
       false
     );
 
-    await termLog('thinking', `🔬 Fase 2/5: Analista desarrollando contenido (${analista})...`, analista);
+    await termLog({ type: 'thinking', message: `🔬 Fase 2/5: Analista desarrollando contenido (${analista})...`, provider: analista, phase: 'fase_2_analista', agent: 'analista', visual: { icon: '🧠', color: '#8b5cf6' } });
     const draft = await callAiProvider(mkCfg(analista),
       `${systemContext}\n\nMarco estratégico:\n${marco}\n\nTAREA: Desarrolla el contenido completo basándote en el marco. Sé exhaustivo. Devuelve JSON con las claves pedidas.`,
       true,
       expectedKeys
     );
 
-    await termLog('thinking', `🔬 Fase 3/5: Devil's Advocate buscando debilidades (${abogadoDiablo})...`, abogadoDiablo);
+    await termLog({ type: 'thinking', message: `🔬 Fase 3/5: Devil's Advocate buscando debilidades (${abogadoDiablo})...`, provider: abogadoDiablo, phase: 'fase_3_devil', agent: 'abogadoDiablo', visual: { icon: '😈', color: '#ef4444' } });
     const devilCritique = await callAiProvider(mkCfg(abogadoDiablo),
       `${systemContext}\n\nContenido desarrollado:\n${JSON.stringify(draft)}\n\nTAREA: Eres un escéptico. ¿Cuáles son los 3 argumentos más débiles? ¿Qué suposiciones son peligrosas? Responde en texto libre.`,
       false
     );
 
-    await termLog('thinking', `🔬 Fase 4/5: Crítico financiero validando (${critico})...`, critico);
+    await termLog({ type: 'thinking', message: `🔬 Fase 4/5: Crítico financiero validando (${critico})...`, provider: critico, phase: 'fase_4_critico', agent: 'critico', visual: { icon: '📉', color: '#ef4444' } });
     const financialCritique = await callAiProvider(mkCfg(critico),
       `${systemContext}\n\nContenido:\n${JSON.stringify(draft)}\n\nCrítica previa:\n${devilCritique}\n\nTAREA: Valida la solidez financiera y estratégica. ¿Es viable? ¿Qué datos faltan? Texto libre.`,
       false
     );
 
-    await termLog('thinking', `🔬 Fase 5/5: Redactor senior sintetizando (${redactor})...`, redactor);
+    await termLog({ type: 'thinking', message: `🔬 Fase 5/5: Redactor senior sintetizando (${redactor})...`, provider: redactor, phase: 'fase_5_redactor', agent: 'redactor', visual: { icon: '✍️', color: '#6366f1' } });
     const result = await callAiProvider(mkCfg(redactor),
       `${systemContext}\n\nBorrador:\n${JSON.stringify(draft)}\n\nCríticas recibidas:\n${devilCritique}\n\n${financialCritique}\n\nTAREA: Genera la versión FINAL definitiva integrando todas las perspectivas. Tono ejecutivo, académico y riguroso. DEVUELVE SOLO JSON con claves: ${(currentModule.fields || []).map(f => f.key).join(', ')}`,
       true,
       expectedKeys
     );
 
-    await termLog('success', '✓ Módulo completado (nivel profundo).', redactor);
+    await termLog({ type: 'success', message: '✓ Módulo completado (nivel profundo).', provider: redactor, phase: 'complete', visual: { icon: '✅', color: '#10b981', badge: 'PROFUNDO' } });
     return result;
   };
 
@@ -612,34 +647,34 @@ ${fieldsPromptContext}
     const agentCfg = DEFAULT_AGENT_CONFIG.industrial;
     const mkCfg = (role) => fallbackProvider || makeProviderConfig(resolveModel(role, agentCfg));
 
-    await termLog('thinking', '🏭 Fase 1/9: Estratega Maestro (Marco)', 'estratega');
+    await termLog({ type: 'thinking', message: '🏭 Fase 1/9: Estratega Maestro (Marco)', provider: 'estratega', phase: 'ind_1_estratega', agent: 'estratega', visual: { icon: '🎯', color: '#ec4899' } });
     const marco = await callAiProvider(mkCfg('estratega'), `${systemContext}\n\nDefine el marco estratégico maestro para este módulo.`, false);
 
-    await termLog('thinking', '🏭 Fase 2/9: Especialista en Mercado', 'mercado');
+    await termLog({ type: 'thinking', message: '🏭 Fase 2/9: Especialista en Mercado', provider: 'mercado', phase: 'ind_2_mercado', agent: 'mercado', visual: { icon: '📊', color: '#3b82f6' } });
     const marketIn = await callAiProvider(mkCfg('mercado'), `${systemContext}\n\nMarco: ${marco}\n\nDesarrolla la perspectiva de mercado para este módulo.`, false);
 
-    await termLog('thinking', '🏭 Fase 3/9: Analista de Operaciones', 'operaciones');
+    await termLog({ type: 'thinking', message: '🏭 Fase 3/9: Analista de Operaciones', provider: 'operaciones', phase: 'ind_3_operaciones', agent: 'operaciones', visual: { icon: '⚙️', color: '#f59e0b' } });
     const opsIn = await callAiProvider(mkCfg('operaciones'), `${systemContext}\n\nMarco: ${marco}\n\nDesarrolla la perspectiva operativa.`, false);
 
-    await termLog('thinking', '🏭 Fase 4/9: Especialista Financiero', 'financiero');
+    await termLog({ type: 'thinking', message: '🏭 Fase 4/9: Especialista Financiero', provider: 'financiero', phase: 'ind_4_financiero', agent: 'financiero', visual: { icon: '💰', color: '#10b981' } });
     const finIn = await callAiProvider(mkCfg('financiero'), `${systemContext}\n\nMarco: ${marco}\n\nDesarrolla la perspectiva financiera y de costos.`, false);
 
-    await termLog('thinking', '🏭 Fase 5/9: Devil\'s Advocate', 'abogadoDiablo');
+    await termLog({ type: 'thinking', message: '🏭 Fase 5/9: Devil\'s Advocate', provider: 'abogadoDiablo', phase: 'ind_5_devil', agent: 'abogadoDiablo', visual: { icon: '😈', color: '#ef4444' } });
     const critique = await callAiProvider(mkCfg('abogadoDiablo'), `${systemContext}\n\nContenido: ${JSON.stringify({marketIn, opsIn, finIn})}\n\nEncuentra debilidades críticas.`, false);
 
-    await termLog('thinking', '🏭 Fase 6/9: Revisor de Coherencia', 'coherencia');
+    await termLog({ type: 'thinking', message: '🏭 Fase 6/9: Revisor de Coherencia', provider: 'coherencia', phase: 'ind_6_coherencia', agent: 'coherencia', visual: { icon: '🔗', color: '#06b6d4' } });
     const coherence = await callAiProvider(mkCfg('coherencia'), `${systemContext}\n\nValida la coherencia entre mercado, operaciones and finanzas.`, false);
 
-    await termLog('thinking', '🏭 Fase 7/9: Verificador de Hechos', 'hallucination');
+    await termLog({ type: 'thinking', message: '🏭 Fase 7/9: Verificador de Hechos', provider: 'hallucination', phase: 'ind_7_hallucination', agent: 'hallucination', visual: { icon: '🔍', color: '#8b5cf6' } });
     const check = await callAiProvider(mkCfg('hallucination'), `Valida si hay alucinaciones o datos falsos en esto: ${JSON.stringify({marketIn, opsIn, finIn})}`, false);
 
-    await termLog('thinking', '🏭 Fase 8/9: Redactor Final', 'redactor');
+    await termLog({ type: 'thinking', message: '🏭 Fase 8/9: Redactor Final', provider: 'redactor', phase: 'ind_8_redactor', agent: 'redactor', visual: { icon: '✍️', color: '#6366f1' } });
     const draft = await callAiProvider(mkCfg('redactor'), `${systemContext}\n\nCríticas: ${critique}\n\nCoherencia: ${coherence}\n\nHechos: ${check}\n\nGenera el borrador final integrado.`, false);
 
-    await termLog('thinking', '🏭 Fase 9/9: Editor de Estilo', 'editor');
+    await termLog({ type: 'thinking', message: '🏭 Fase 9/9: Editor de Estilo', provider: 'editor', phase: 'ind_9_editor', agent: 'editor', visual: { icon: '📝', color: '#a855f7' } });
     const result = await callAiProvider(mkCfg('editor'), `${systemContext}\n\nBorrador: ${JSON.stringify(draft)}\n\nPulido final estilo académico/ejecutivo. DEVUELVE SOLO JSON.`, true, expectedKeys);
 
-    await termLog('success', '✓ Módulo completado (NIVEL INDUSTRIAL).', 'editor');
+    await termLog({ type: 'success', message: '✓ Módulo completado (NIVEL INDUSTRIAL).', provider: 'editor', phase: 'complete', visual: { icon: '🏭', color: '#10b981', badge: 'INDUSTRIAL' } });
     return result;
   };
 
@@ -657,10 +692,10 @@ ${fieldsPromptContext}
   let fallbackResult;
   // Paso 1: Proveedor principal / modelos configurados
   try {
-    await termLog('start', `Iniciando generación (nivel ${depth === 1 ? '⚡ Rápido' : depth === 2 ? '🧠 Pro' : depth === 3 ? '🔬 Profundo' : '🏭 Industrial'}) usando proveedor: ${primaryProvider}...`, primaryProvider);
+    await termLog({ type: 'start', message: `Iniciando generación (nivel ${depth === 1 ? '⚡ Rápido' : depth === 2 ? '🧠 Pro' : depth === 3 ? '🔬 Profundo' : '🏭 Industrial'}) usando proveedor: ${primaryProvider}...`, provider: primaryProvider, phase: 'init', visual: { icon: '🚀', color: '#6366f1' } });
     fallbackResult = await runChain(null); // null = usar modelos por rol configurados
   } catch (providerError) {
-    await termLog('warning', `Proveedor primario falló: ${providerError.message.substring(0, 60)}`, primaryProvider);
+    await termLog({ type: 'warning', message: `Proveedor primario falló: ${providerError.message.substring(0, 60)}`, provider: primaryProvider, phase: 'fallback_start', visual: { icon: '⚠️', color: '#f59e0b' } });
   }
 
   // Paso 2: Si el primario es NUBE que falló → saltar directo a OpenRouter y Groq (NO a Ollama local)
@@ -670,38 +705,38 @@ ${fieldsPromptContext}
       // Fallback 2A: OpenRouter (Nemotron 1M ctx — capa gratuita)
       if (openrouterKey) {
         try {
-          await termLog('warning', `Iniciando fallback a OpenRouter (Nemotron 3.5 Lightning 1M ctx)...`, 'openrouter');
+          await termLog({ type: 'warning', message: `Iniciando fallback a OpenRouter (Nemotron 3.5 Lightning 1M ctx)...`, provider: 'openrouter', phase: 'fallback_openrouter', visual: { icon: '☁️', color: '#818cf8' } });
           fallbackResult = await runChain({ provider: 'openrouter', openrouterKey, apiKey: openrouterKey, model: 'nvidia/nemotron-3.5-lightning:free', endpoint });
         } catch (e) {
-          await termLog('error', `Fallback OpenRouter falló: ${e.message.substring(0, 50)}`, 'openrouter');
+          await termLog({ type: 'error', message: `Fallback OpenRouter falló: ${e.message.substring(0, 50)}`, provider: 'openrouter', phase: 'fallback_failed', visual: { icon: '❌', color: '#ef4444' } });
         }
       }
       // Fallback 2B: TokenRouter (DeepSeek R1 / Qwen 2.5)
       const tokenrouterKey = allPlanData?.config?.ai?.tokenrouterKey || '';
       if (!fallbackResult && tokenrouterKey && primaryProvider !== 'tokenrouter') {
         try {
-          await termLog('warning', `Iniciando fallback a TokenRouter (DeepSeek / Qwen)...`, 'tokenrouter');
+          await termLog({ type: 'warning', message: `Iniciando fallback a TokenRouter (DeepSeek / Qwen)...`, provider: 'tokenrouter', phase: 'fallback_tokenrouter', visual: { icon: '🔑', color: '#a78bfa' } });
           fallbackResult = await runChain({ provider: 'tokenrouter', tokenrouterKey, apiKey: tokenrouterKey, model: 'deepseek/deepseek-r1:free', endpoint });
         } catch (e) {
-          await termLog('error', `Fallback TokenRouter falló: ${e.message.substring(0, 50)}`, 'tokenrouter');
+          await termLog({ type: 'error', message: `Fallback TokenRouter falló: ${e.message.substring(0, 50)}`, provider: 'tokenrouter', phase: 'fallback_failed', visual: { icon: '❌', color: '#ef4444' } });
         }
       }
       // Fallback 2C: Orca Router
       if (!fallbackResult && orcaRouterKey && primaryProvider !== 'orcarouter') {
         try {
-          await termLog('warning', `Iniciando fallback a Orca Router (orcarouter/auto)...`, 'orcarouter');
+          await termLog({ type: 'warning', message: `Iniciando fallback a Orca Router (orcarouter/auto)...`, provider: 'orcarouter', phase: 'fallback_orcarouter', visual: { icon: '🐋', color: '#06b6d4' } });
           fallbackResult = await runChain({ provider: 'orcarouter', orcaRouterKey, apiKey, model: 'orcarouter/auto', endpoint });
         } catch (e) {
-          await termLog('error', `Fallback Orca Router falló: ${e.message.substring(0, 50)}`, 'orcarouter');
+          await termLog({ type: 'error', message: `Fallback Orca Router falló: ${e.message.substring(0, 50)}`, provider: 'orcarouter', phase: 'fallback_failed', visual: { icon: '❌', color: '#ef4444' } });
         }
       }
       // Fallback 2C: Groq
       if (!fallbackResult && groqKey && primaryProvider !== 'groq') {
         try {
-          await termLog('warning', `Iniciando fallback a Groq (Llama 3.3 70B)...`, 'groq');
-          fallbackResult = await runChain({ provider: 'groq', groqKey, apiKey, model: 'llama-3.3-70b-versatile', endpoint });
+          await termLog({ type: 'warning', message: `Iniciando fallback a Groq (Llama 3.3 70B)...`, provider: 'groq', phase: 'fallback_groq', visual: { icon: '⚡', color: '#f59e0b' } });
+          fallbackResult = await runChain({ provider: 'groq', groqKey, apiKey, model: 'llama-3.1-8b-instant', endpoint });
         } catch (e) {
-          await termLog('error', `Fallback Groq falló: ${e.message.substring(0, 50)}`, 'groq');
+          await termLog({ type: 'error', message: `Fallback Groq falló: ${e.message.substring(0, 50)}`, provider: 'groq', phase: 'fallback_failed', visual: { icon: '❌', color: '#ef4444' } });
         }
       }
     } else {
@@ -716,18 +751,18 @@ ${fieldsPromptContext}
 
         for (const altModel of actualFallbacks) {
           try {
-            await termLog('info', `Intentando modelo local alternativo: ${altModel}`, 'ollama');
+            await termLog({ type: 'info', message: `Intentando modelo local alternativo: ${altModel}`, provider: 'ollama', phase: 'local_fallback', visual: { icon: '🔄', color: '#6366f1' } });
             // disableAutoFallback:true evita que callAiProvider vuelva a rotar internamente
             const altCfg = { ...makeProviderConfig(altModel), disableAutoFallback: true };
             fallbackResult = await runChain(altCfg);
             if (fallbackResult) break;
           } catch (altError) {
-            await termLog('error', `Modelo alternativo ${altModel} falló: ${altError.message.substring(0, 50)}`, 'ollama');
+            await termLog({ type: 'error', message: `Modelo alternativo ${altModel} falló: ${altError.message.substring(0, 50)}`, provider: 'ollama', phase: 'local_fallback_failed', visual: { icon: '❌', color: '#ef4444' } });
           }
         }
       } else {
         // Ollama completamente offline (fetch failed) — saltar directo a la nube
-        await termLog('warning', '⚡ Ollama offline detectado. Saltando directo a proveedores de nube...', 'system');
+        await termLog({ type: 'warning', message: '⚡ Ollama offline detectado. Saltando directo a proveedores de nube...', provider: 'system', phase: 'ollama_offline', visual: { icon: '📴', color: '#ef4444' } });
       }
     }
   }
@@ -735,10 +770,10 @@ ${fieldsPromptContext}
   // Paso 2.5: Fallback a NVIDIA NIM (Llama 3.1 70B)
   if (!fallbackResult && nvidiaKey && primaryProvider !== 'nvidia') {
     try {
-      await termLog('warning', `Iniciando fallback automático a NVIDIA NIM (Llama 3.1 70B)...`, 'nvidia');
+      await termLog({ type: 'warning', message: `Iniciando fallback automático a NVIDIA NIM (Llama 3.1 70B)...`, provider: 'nvidia', phase: 'fallback_nvidia', visual: { icon: '🟢', color: '#76b900' } });
       fallbackResult = await runChain({ provider: 'nvidia', nvidiaKey, apiKey, model: 'meta/llama-3.1-70b-instruct', endpoint });
     } catch (nvidiaError) {
-      await termLog('error', `Fallback a NVIDIA NIM falló: ${nvidiaError.message.substring(0, 50)}`, 'nvidia');
+      await termLog({ type: 'error', message: `Fallback a NVIDIA NIM falló: ${nvidiaError.message.substring(0, 50)}`, provider: 'nvidia', phase: 'fallback_failed', visual: { icon: '❌', color: '#ef4444' } });
     }
   }
 
@@ -746,30 +781,30 @@ ${fieldsPromptContext}
   const finalMistralKey = mistralKey || allPlanData.config?.ai?.mistralKey || (apiKey && apiKey.length === 32 ? apiKey : null);
   if (!fallbackResult && finalMistralKey && primaryProvider !== 'mistral') {
     try {
-      await termLog('warning', `Iniciando fallback automático a Mistral AI (Large)...`, 'mistral');
+      await termLog({ type: 'warning', message: `Iniciando fallback automático a Mistral AI (Large)...`, provider: 'mistral', phase: 'fallback_mistral', visual: { icon: '🧠', color: '#f59e0b' } });
       fallbackResult = await runChain({ provider: 'mistral', apiKey: finalMistralKey, model: 'mistral-large-latest', endpoint });
     } catch (mistralError) {
-      await termLog('error', `Fallback a Mistral falló: ${mistralError.message.substring(0, 50)}`, 'mistral');
+      await termLog({ type: 'error', message: `Fallback a Mistral falló: ${mistralError.message.substring(0, 50)}`, provider: 'mistral', phase: 'fallback_failed', visual: { icon: '❌', color: '#ef4444' } });
     }
   }
 
-  // Paso 2.7: Fallback a Groq Llama 3.3 70B (último intento)
+  // Paso 2.7: Fallback a Groq Llama 3.1 8B (último intento)
   if (!fallbackResult && groqKey && primaryProvider !== 'groq') {
     try {
-      await termLog('warning', `Fallback final a Groq (Llama 3.3 70B)...`, 'groq');
-      fallbackResult = await runChain({ provider: 'groq', groqKey, apiKey, model: 'llama-3.3-70b-versatile', endpoint });
+      await termLog({ type: 'warning', message: `Fallback final a Groq (Llama 3.1 8B)...`, provider: 'groq', phase: 'fallback_groq_final', visual: { icon: '⚡', color: '#f59e0b' } });
+      fallbackResult = await runChain({ provider: 'groq', groqKey, apiKey, model: 'llama-3.1-8b-instant', endpoint });
     } catch (groqError) {
-      await termLog('error', `Fallback Groq final falló: ${groqError.message.substring(0, 50)}`, 'groq');
+      await termLog({ type: 'error', message: `Fallback Groq final falló: ${groqError.message.substring(0, 50)}`, provider: 'groq', phase: 'fallback_failed', visual: { icon: '❌', color: '#ef4444' } });
     }
   }
 
   // Paso 2.8: Fallback a Google Gemini 3.6 Flash
   if (!fallbackResult && apiKey && primaryProvider !== 'gemini') {
     try {
-      await termLog('warning', `Iniciando fallback automático a Google Gemini (3.6 Flash)...`, 'gemini');
+      await termLog({ type: 'warning', message: `Iniciando fallback automático a Google Gemini (3.6 Flash)...`, provider: 'gemini', phase: 'fallback_gemini', visual: { icon: '💎', color: '#4285f4' } });
       fallbackResult = await runChain({ provider: 'gemini', apiKey, model: 'gemini-3.6-flash', endpoint });
     } catch (geminiError) {
-      await termLog('error', `Fallback a Gemini falló: ${geminiError.message.substring(0, 50)}`, 'gemini');
+      await termLog({ type: 'error', message: `Fallback a Gemini falló: ${geminiError.message.substring(0, 50)}`, provider: 'gemini', phase: 'fallback_failed', visual: { icon: '❌', color: '#ef4444' } });
     }
   }
 
@@ -780,7 +815,7 @@ ${fieldsPromptContext}
 
   // Paso 3: Error final
   if (!fallbackResult) {
-    await termLog('error', 'Todos los proveedores configurados fallaron. Revisa tus API Keys.', 'system');
+    await termLog({ type: 'error', message: 'Todos los proveedores configurados fallaron. Revisa tus API Keys.', provider: 'system', phase: 'total_failure', visual: { icon: '💥', color: '#ef4444' } });
     throw new Error('Generación abortada: Todos los proveedores fallaron. Verifica las API Keys en Configuración.');
   }
 
@@ -793,20 +828,48 @@ ${fieldsPromptContext}
 export async function generateSingleField(config, fieldKey, fieldLabel, fieldGuide, allPlanData) {
   const { primaryProvider, apiKey, groqKey, nvidiaKey, lmStudioEndpoint, endpoint, model } = config;
 
-  const semillaContext = allPlanData.semilla
-    ? `Entrevista con el emprendedor:\n${JSON.stringify(allPlanData.semilla, null, 2)}\n`
+  const seed = allPlanData.semilla || {};
+  const seedName = seed.nombre_proyecto || seed.negocio?.nombre_marca || seed.negocio?.giro || seed.negocio?.nombre || seed.solucion || '';
+  const seedLoc = seed.cobertura || seed.negocio?.ubicacion || seed.negocio?.cobertura || '';
+  const seedProb = seed.problema || seed.negocio?.descripcion || '';
+  const seedSol = seed.solucion || seed.negocio?.que_es || '';
+  const seedMarket = seed.mercado_objetivo || seed.clientes?.quienes || '';
+  const seedRev = seed.modelo_ingresos || seed.finanzas?.como_gana_dinero || '';
+  const seedAdv = seed.ventaja_injusta || seed.negocio?.diferencial || '';
+
+  const locationConstraint = seedLoc ? `\nREGLA ESTRICTA DE UBICACIÓN: El negocio opera o tiene cobertura en "${seedLoc}". NO inventes ciudades ni asumas capitales. Respeta estrictamente esta ubicación.` : '';
+
+  const semillaContext = Object.keys(seed).length > 0
+    ? `\nCONTEXTO NARRATIVO Y SEMILLA DEL PROYECTO:
+- Nombre del Proyecto: ${seedName || 'No especificado'}
+- Ubicación / Cobertura: ${seedLoc || 'No especificada'}
+- Problema / Necesidad: ${seedProb || 'No especificado'}
+- Solución / Propuesta de Valor: ${seedSol || 'No especificada'}
+- Mercado Objetivo: ${seedMarket || 'No especificado'}
+- Modelo de Ingresos: ${seedRev || 'No especificado'}
+- Ventaja Competitiva: ${seedAdv || 'No especificada'}
+${locationConstraint}
+Datos Crudos de Semilla:
+${JSON.stringify(seed, null, 2)}\n`
+    : '';
+
+  const documentsContext = (allPlanData.config?.documents || []).length > 0
+    ? `\nDOCUMENTOS DE REFERENCIA (RAG):
+${allPlanData.config.documents.map(d => d.text).join('\n---\n').substring(0, 4000)}\n`
     : '';
 
   const prompt = `
-Eres un experto en planes de negocio profesionales.
+Eres un consultor experto en formulación de planes de negocio de Open Business Plan (Fondo Thoth AC).
 ${semillaContext}
+${documentsContext}
 Contexto del plan actual:
 ${cleanPlanDataForAi(allPlanData, primaryProvider === 'ollama' || primaryProvider === 'lmstudio')}
 
-TAREA: Genera contenido SOLO para el campo "${fieldLabel}".
-Guía: ${fieldGuide.desc || ''}
-Ejemplo: ${fieldGuide.ejemplo || ''}
+TAREA: Genera contenido profesional, riguroso y exhaustivo SOLO para el campo "${fieldLabel}".
+Guía y Requisitos: ${fieldGuide.desc || ''}
+Ejemplo de referencia: ${fieldGuide.ejemplo || ''}
 
+REGLA CRÍTICA: Basa tu respuesta estrictamente en la propuesta de valor, giro y ubicación especificados en la semilla.
 Devuelve un JSON con UNA sola clave: "${fieldKey}" y su contenido profesional.
 `;
 
@@ -869,6 +932,24 @@ function _showFallbackDialog(errorMsg) {
 // ─────────────────────────────────────────────────────────────────────────
 // Provider Adapters
 // ─────────────────────────────────────────────────────────────────────────
+// ─── Circuit Breaker a nivel de sesión para evitar reintentar proveedores muertos ───
+const sessionFailedProviders = new Map(); // provider -> timestamp
+const CIRCUIT_BREAKER_TTL_MS = 5 * 60 * 1000; // 5 minutos
+
+function isProviderCircuitOpen(prov) {
+  const failedAt = sessionFailedProviders.get(prov);
+  if (!failedAt) return false;
+  if (Date.now() - failedAt > CIRCUIT_BREAKER_TTL_MS) {
+    sessionFailedProviders.delete(prov);
+    return false;
+  }
+  return true;
+}
+
+function markProviderFailed(prov) {
+  sessionFailedProviders.set(prov, Date.now());
+}
+
 export async function callAiProvider(config, prompt, expectJson = true, expectedKeys = [], onThink = null) {
   const {
     provider, apiKey, groqKey, nvidiaKey, openrouterKey, opencodeKey, tokenrouterKey, mistralKey, minimaxKey, orcaRouterKey,
@@ -903,65 +984,66 @@ export async function callAiProvider(config, prompt, expectJson = true, expected
       throw err;
     }
 
+    markProviderFailed(provider);
+
     // ─── Rotación Automática Multi-Proveedor Ultra Rápida ───
     // ORDEN DE MENOR A MAYOR LATENCIA:
-    // 1. Groq (1-2s con Llama 3.3 70B / 3.1 8B)
-    // 2. Gemini (1-3s con Gemini 2.0 / 1.5 Flash)
+    // 1. Groq (1-2s con Llama 3.1 8B)
+    // 2. Gemini (1-3s con Gemini 3.6 Flash / 3.5 Flash Lite)
     // 3. OpenRouter (tier gratuito)
     // 4. Minimax / NVIDIA / Mistral
     const logger = onThink || activeTermLog;
     const fallbackProviders = [];
 
     // 1° Prioridad: Groq — el más veloz y robusto
-    if (provider !== 'groq' && (groqKey || config?.groqKey)) {
-      fallbackProviders.push({ provider: 'groq', key: groqKey || config?.groqKey, model: 'llama-3.3-70b-versatile' });
+    if (provider !== 'groq' && (groqKey || config?.groqKey) && !isProviderCircuitOpen('groq')) {
+      fallbackProviders.push({ provider: 'groq', key: groqKey || config?.groqKey, model: 'llama-3.1-8b-instant' });
     }
 
     // 2° Prioridad: Gemini — Google Flash
-    if (provider !== 'gemini' && (apiKey || config?.geminiKey)) {
-      fallbackProviders.push({ provider: 'gemini', key: apiKey || config?.geminiKey, model: 'gemini-2.0-flash' });
+    if (provider !== 'gemini' && (apiKey || config?.geminiKey) && !isProviderCircuitOpen('gemini')) {
+      fallbackProviders.push({ provider: 'gemini', key: apiKey || config?.geminiKey, model: 'gemini-3.6-flash' });
     }
 
     // 3° Prioridad: OpenRouter
-    if (provider !== 'openrouter' && (openrouterKey || config?.openrouterKey)) {
+    if (provider !== 'openrouter' && (openrouterKey || config?.openrouterKey) && !isProviderCircuitOpen('openrouter')) {
       fallbackProviders.push({ provider: 'openrouter', key: openrouterKey || config?.openrouterKey, model: 'nvidia/nemotron-3.5-lightning:free' });
     }
 
     // 4° Prioridad: Routers inteligentes
-    if (provider !== 'tokenrouter' && (tokenrouterKey || config?.tokenrouterKey)) {
+    if (provider !== 'tokenrouter' && (tokenrouterKey || config?.tokenrouterKey) && !isProviderCircuitOpen('tokenrouter')) {
       fallbackProviders.push({ provider: 'tokenrouter', key: tokenrouterKey || config?.tokenrouterKey, model: 'deepseek/deepseek-r1:free' });
     }
-    if (provider !== 'orcarouter' && (orcaRouterKey || config?.orcaRouterKey)) {
+    if (provider !== 'orcarouter' && (orcaRouterKey || config?.orcaRouterKey) && !isProviderCircuitOpen('orcarouter')) {
       fallbackProviders.push({ provider: 'orcarouter', key: orcaRouterKey || config?.orcaRouterKey, model: 'orcarouter/auto' });
     }
 
     // 5° Prioridad: Minimax / NVIDIA / Mistral
-    if (provider !== 'minimax' && (minimaxKey || config?.minimaxKey)) {
+    if (provider !== 'minimax' && (minimaxKey || config?.minimaxKey) && !isProviderCircuitOpen('minimax')) {
       fallbackProviders.push({ provider: 'minimax', key: minimaxKey || config?.minimaxKey, model: 'minimax-m3:cloud' });
     }
-    if (provider !== 'nvidia' && (nvidiaKey || config?.nvidiaKey)) {
+    if (provider !== 'nvidia' && (nvidiaKey || config?.nvidiaKey) && !isProviderCircuitOpen('nvidia')) {
       fallbackProviders.push({ provider: 'nvidia', key: nvidiaKey || config?.nvidiaKey, model: 'meta/llama-3.1-70b-instruct' });
     }
-    if (provider !== 'mistral' && (mistralKey || config?.mistralKey)) {
+    if (provider !== 'mistral' && (mistralKey || config?.mistralKey) && !isProviderCircuitOpen('mistral')) {
       fallbackProviders.push({ provider: 'mistral', key: mistralKey || config?.mistralKey, model: 'mistral-large-latest' });
     }
 
     let fallbackSuccess = false;
-    let effectiveProvider = provider;
-    let effectiveModel = model;
+    let failingProv = provider;
 
     for (const fb of fallbackProviders) {
       try {
         if (logger) {
-          logger('warning', `⚠️ [Rotación IA] ${provider} saturado o con error. Rotando automáticamente a ${fb.provider} (${fb.model})...`, fb.provider);
+          logger('warning', `⚠️ [Rotación IA] ${failingProv} falló. Rotando automáticamente a ${fb.provider} (${fb.model})...`, fb.provider);
         }
         text = await invokeSingle(fb.provider, fb.model, fb.key);
         fallbackSuccess = true;
-        effectiveProvider = fb.provider;
-        effectiveModel = fb.model;
         break;
       } catch (fbErr) {
         console.warn(`[callAiProvider Fallback] ${fb.provider} falló:`, fbErr.message);
+        markProviderFailed(fb.provider);
+        failingProv = fb.provider;
       }
     }
 
@@ -1037,24 +1119,36 @@ async function callOllama(endpoint, model, prompt, expectJson, ollamaKey = '') {
   // ─── MODO CLOUD: Si hay ollamaKey → usar API pública de Ollama Cloud ───────
   // https://ollama.com/v1/chat/completions es compatible con OpenAI API.
   // NO requiere Ollama instalado localmente. Funciona perfecto en VPS.
+  // Usamos fetchWithProxy para que las peticiones pasen por el backend y evitar CORS.
   if (ollamaKey) {
+    // Ollama Cloud usa exactamente el mismo endpoint que OpenAI API
     const cloudUrl = 'https://ollama.com/v1/chat/completions';
-    const cloudResponse = await fetchWithRetry(cloudUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${ollamaKey}`
-      },
-      body: JSON.stringify({
-        model: targetModel,
-        messages: [{ role: 'user', content: prompt }],
-        ...(expectJson ? { response_format: { type: 'json_object' } } : {})
-      })
-    }, { maxRetries: 1, fastFailOn429: true });
+    // Timeout 90s para prompts largos agénticos (PESTEL etc) + retry vía fallback
+    let cloudResponse;
+    try {
+      cloudResponse = await fetchWithProxy(cloudUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${ollamaKey}`
+        },
+        body: JSON.stringify({
+          model: targetModel,
+          messages: [{ role: 'user', content: prompt }],
+          ...(expectJson ? { response_format: { type: 'json_object' } } : {})
+        }),
+        signal: AbortSignal.timeout(90000)
+      });
+    } catch (e) {
+      if (e.name === 'TimeoutError' || e.name === 'AbortError') {
+        throw new Error(`Ollama Cloud (${targetModel}) timeout 90s: ${e.message}`);
+      }
+      throw e;
+    }
 
     if (!cloudResponse.ok) {
       const errText = await cloudResponse.text().catch(() => '');
-      throw new Error(`Ollama Cloud (${targetModel}) error: ${errText || cloudResponse.statusText}`);
+      throw new Error(`Ollama Cloud (${targetModel}) error ${cloudResponse.status}: ${errText || cloudResponse.statusText}`);
     }
 
     const cloudData = await cloudResponse.json();
@@ -1138,22 +1232,20 @@ async function callGemini(apiKey, model, prompt) {
   const keys = parseApiKeys(apiKey);
   if (keys.length === 0) throw new Error('No se proporcionó API Key de Google Gemini válida');
 
-  let preferredModel = model || 'gemini-2.0-flash';
-  // Normalizar aliases o modelos no soportados
+  let preferredModel = model || 'gemini-3.6-flash';
+  // Normalizar aliases — usar modelos actuales de Gemini API (v1beta)
   if (
-    preferredModel.includes('3.') ||
-    preferredModel.includes('2.5') ||
-    preferredModel === 'gemini-3.6-flash' ||
-    preferredModel === 'gemini-3.7-flash'
+    preferredModel.includes('1.5') ||
+    preferredModel === 'gemini-2.0-flash'
   ) {
-    preferredModel = 'gemini-2.0-flash';
+    preferredModel = 'gemini-3.6-flash';
   }
 
   const geminiCandidates = [
     preferredModel,
-    'gemini-2.0-flash',
-    'gemini-1.5-flash',
-    'gemini-1.5-pro'
+    'gemini-3.6-flash',
+    'gemini-3.5-flash-lite',
+    'gemini-3.7-flash'
   ];
   const uniqueModels = [...new Set(geminiCandidates)];
 
@@ -1231,21 +1323,20 @@ async function callGroq(apiKey, model, prompt, expectJson) {
   const keys = parseApiKeys(apiKey);
   if (keys.length === 0) throw new Error('No se proporcionó API Key de Groq válida');
 
-  let preferredModel = model || 'llama-3.3-70b-versatile';
+  let preferredModel = model || 'llama-3.1-8b-instant';
   // Normalizar aliases
-  if (preferredModel === 'groq/compound' || preferredModel === 'compound-beta') preferredModel = 'llama-3.3-70b-versatile';
-  if (preferredModel === 'openai/gpt-oss-120b') preferredModel = 'llama-3.3-70b-versatile';
-  if (preferredModel === 'openai/gpt-oss-20b') preferredModel = 'llama-3.1-8b-instant';
-  if (preferredModel === 'qwen/qwen3.6-27b') preferredModel = 'qwen-2.5-32b';
+  if (preferredModel === 'groq/compound' || preferredModel === 'compound-beta') preferredModel = 'llama-3.1-8b-instant';
+  if (preferredModel === 'openai/gpt-oss-120b') preferredModel = 'openai/gpt-oss-120b';
+  if (preferredModel === 'openai/gpt-oss-20b') preferredModel = 'openai/gpt-oss-20b';
+  if (preferredModel === 'qwen/qwen3.6-27b') preferredModel = 'qwen/qwen3-32b';
 
-  // Modelos oficiales y reales de Groq API
+  // Modelos oficiales y reales de Groq API (2026)
   const groqCandidateModels = [
     preferredModel,
-    'llama-3.3-70b-versatile',
     'llama-3.1-8b-instant',
-    'deepseek-r1-distill-llama-70b',
-    'qwen-2.5-32b',
-    'gemma2-9b-it'
+    'openai/gpt-oss-120b',
+    'openai/gpt-oss-20b',
+    'qwen/qwen3-32b'
   ];
   const uniqueModels = [...new Set(groqCandidateModels.filter(Boolean))];
 
@@ -1896,7 +1987,7 @@ export async function extractSeedFromText(config, rawText) {
     } catch {}
   };
 
-  await termLog('start', 'Iniciando estructuración de tu idea...', primaryProvider || 'groq');
+  await termLog({ type: 'start', message: 'Iniciando estructuración de tu idea...', provider: primaryProvider || 'groq', phase: 'seed_init', visual: { icon: '🌱', color: '#10b981' } });
 
   const prompt = `
 Eres un analista de negocios experto. El usuario ha narrado libremente la idea de su negocio (Brain Dump).
@@ -1924,7 +2015,7 @@ Extrae y devuelve ÚNICAMENTE un objeto JSON válido con estas claves (sin bloqu
   const { provider: prov, model: finalModel } = resolveProviderModel({ primaryProvider, model, installedModels });
   
   try {
-    await termLog('thinking', `Analizando el texto con la Mesa de Expertos (${finalModel})...`, prov);
+    await termLog({ type: 'thinking', message: `Analizando el texto con la Mesa de Expertos (${finalModel})...`, provider: prov, phase: 'seed_analysis', visual: { icon: '🔬', color: '#8b5cf6' } });
     const text = await callAiProvider({ provider: prov, apiKey, groqKey, nvidiaKey, openrouterKey: config?.openrouterKey, endpoint: prov === 'lmstudio' ? lmStudioEndpoint : endpoint, model: finalModel }, prompt, false);
 
     // [FDD] Limpieza robusta de la respuesta:
@@ -1957,7 +2048,7 @@ Extrae y devuelve ÚNICAMENTE un objeto JSON válido con estas claves (sin bloqu
       }
     }
 
-    await termLog('success', '✓ Idea estructurada con éxito.', prov);
+    await termLog({ type: 'success', message: '✓ Idea estructurada con éxito.', provider: prov, phase: 'complete', visual: { icon: '✅', color: '#10b981' } });
     return result;
   } catch (error) {
     console.error("Error al extraer semilla:", error);
@@ -1966,7 +2057,7 @@ Extrae y devuelve ÚNICAMENTE un objeto JSON válido con estas claves (sin bloqu
     const openrouterKey = config?.openrouterKey || '';
     if (openrouterKey && prov !== 'openrouter') {
       try {
-        await termLog('warning', 'Reintentando con OpenRouter (Nemotron 3.5)...', 'openrouter');
+        await termLog({ type: 'warning', message: 'Reintentando con OpenRouter (Nemotron 3.5)...', provider: 'openrouter', phase: 'fallback_openrouter', visual: { icon: '☁️', color: '#818cf8' } });
         const textOr = await callAiProvider(
           { provider: 'openrouter', openrouterKey, apiKey: openrouterKey, model: 'nvidia/nemotron-3.5-lightning:free', endpoint },
           prompt, false
@@ -1976,10 +2067,10 @@ Extrae y devuelve ÚNICAMENTE un objeto JSON válido con estas claves (sin bloqu
           .replace(/```json/gi, '').replace(/```/g, '').trim();
         const matchOr = cleanedOr.match(/\{[\s\S]*\}/);
         const resultOr = JSON.parse(matchOr ? matchOr[0] : cleanedOr);
-        await termLog('success', '✓ Idea estructurada (OpenRouter fallback).', 'openrouter');
+        await termLog({ type: 'success', message: '✓ Idea estructurada (OpenRouter fallback).', provider: 'openrouter', phase: 'complete', visual: { icon: '✅', color: '#10b981' } });
         return resultOr;
       } catch (orErr) {
-        await termLog('error', `Fallback OpenRouter también falló: ${orErr.message}`, 'openrouter');
+        await termLog({ type: 'error', message: `Fallback OpenRouter también falló: ${orErr.message}`, provider: 'openrouter', phase: 'fallback_failed', visual: { icon: '❌', color: '#ef4444' } });
       }
     }
 
@@ -1987,7 +2078,7 @@ Extrae y devuelve ÚNICAMENTE un objeto JSON válido con estas claves (sin bloqu
     const gKey = config?.groqKey || groqKey;
     if (gKey && prov !== 'groq') {
       try {
-        await termLog('warning', 'Reintentando con Groq (Qwen 3.6 27B)...', 'groq');
+        await termLog({ type: 'warning', message: 'Reintentando con Groq (Qwen 3.6 27B)...', provider: 'groq', phase: 'fallback_groq', visual: { icon: '⚡', color: '#f59e0b' } });
         const textG = await callAiProvider(
           { provider: 'groq', groqKey: gKey, model: 'qwen/qwen3.6-27b', endpoint },
           prompt, false
@@ -1997,14 +2088,14 @@ Extrae y devuelve ÚNICAMENTE un objeto JSON válido con estas claves (sin bloqu
           .replace(/```json/gi, '').replace(/```/g, '').trim();
         const matchG = cleanedG.match(/\{[\s\S]*\}/);
         const resultG = JSON.parse(matchG ? matchG[0] : cleanedG);
-        await termLog('success', '✓ Idea estructurada (Groq fallback).', 'groq');
+        await termLog({ type: 'success', message: '✓ Idea estructurada (Groq fallback).', provider: 'groq', phase: 'complete', visual: { icon: '✅', color: '#10b981' } });
         return resultG;
       } catch (gErr) {
-        await termLog('error', `Fallback Groq también falló: ${gErr.message}`, 'groq');
+        await termLog({ type: 'error', message: `Fallback Groq también falló: ${gErr.message}`, provider: 'groq', phase: 'fallback_failed', visual: { icon: '❌', color: '#ef4444' } });
       }
     }
 
-    await termLog('error', `Error al estructurar el texto: ${error.message}`, prov);
+    await termLog({ type: 'error', message: `Error al estructurar el texto: ${error.message}`, provider: prov, phase: 'total_failure', visual: { icon: '💥', color: '#ef4444' } });
     throw new Error(`No se pudo estructurar el texto: ${error.message || 'Intenta de nuevo.'}`, { cause: error });
   }
 }
