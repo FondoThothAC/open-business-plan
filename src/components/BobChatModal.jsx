@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Bot, Mic, MicOff, Send, X, Sparkles, MessageSquare, ArrowRight, Zap, RefreshCw, Compass, CheckCircle, HelpCircle } from 'lucide-react';
+import { Bot, Mic, MicOff, Send, X, Sparkles, MessageSquare, ArrowRight, Zap, RefreshCw, Compass, CheckCircle, HelpCircle, RotateCcw } from 'lucide-react';
 import { CelisVoiceEngine } from '../lib/voiceEngine';
 import { sendBobMessage } from '../lib/bobAgent';
 import { usePlan } from '../context/PlanContext';
@@ -9,20 +9,65 @@ export default function BobChatModal({ isOpen, onClose, planData, onExecuteComma
 
   const { navigateToModule, activeModuleKey } = usePlan();
 
-  const [messages, setMessages] = useState([
-    {
-      id: 'welcome',
-      sender: 'bob',
-      text: '¡Hola! Soy BOB, tu copiloto ejecutivo en CELIS ENGINE (minimax-m3:cloud). Puedo responder dudas, navegar entre secciones, auditar el equilibrio cuántico del fundador o entrevistarte con /grill-me para completar el plan.',
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      toolsExecuted: []
+  // Clave de persistencia por proyecto
+  const projectName = planData?.semilla?.nombre_proyecto || planData?.id || 'default_project';
+  const storageKey = `bob_chat_history_${projectName.replace(/\s+/g, '_').toLowerCase()}`;
+
+  const defaultWelcomeMessage = {
+    id: 'welcome',
+    sender: 'bob',
+    text: '¡Hola! Soy BOB, tu copiloto ejecutivo en CELIS ENGINE (minimax-m3:cloud). Puedo responder dudas, navegar entre secciones, auditar el equilibrio cuántico del fundador, calcular tu Fondo de Reserva de Liquidación (FRLI) o entrevistarte con /grill-me para completar el plan.',
+    timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    toolsExecuted: []
+  };
+
+  // Inicializar mensajes desde localStorage si existen
+  const [messages, setMessages] = useState(() => {
+    try {
+      const saved = localStorage.getItem(storageKey);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed;
+        }
+      }
+    } catch (e) {
+      console.warn('[BobChat] Error cargando historial de chat:', e);
     }
-  ]);
+    return [defaultWelcomeMessage];
+  });
+
   const [inputText, setInputText] = useState('');
   const [isListening, setIsListening] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const voiceEngineRef = useRef(null);
   const messagesEndRef = useRef(null);
+
+  // Guardar mensajes en localStorage cada vez que cambien
+  useEffect(() => {
+    try {
+      if (messages && messages.length > 0) {
+        localStorage.setItem(storageKey, JSON.stringify(messages));
+      }
+    } catch (e) {
+      console.warn('[BobChat] Error guardando historial:', e);
+    }
+  }, [messages, storageKey]);
+
+  // Recargar historial si cambia de proyecto
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(storageKey);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setMessages(parsed);
+          return;
+        }
+      }
+    } catch {}
+    setMessages([defaultWelcomeMessage]);
+  }, [storageKey]);
 
   useEffect(() => {
     voiceEngineRef.current = new CelisVoiceEngine({
@@ -55,6 +100,19 @@ export default function BobChatModal({ isOpen, onClose, planData, onExecuteComma
     } else {
       const groqKey = planData?.config?.ai?.groqKey;
       voiceEngineRef.current?.startListening(groqKey);
+    }
+  };
+
+  const handleClearHistory = () => {
+    if (window.confirm('¿Deseas reiniciar la conversación con BOB? Se limpiará el historial de este proyecto.')) {
+      try {
+        localStorage.removeItem(storageKey);
+      } catch {}
+      setMessages([{
+        ...defaultWelcomeMessage,
+        id: `welcome_${Date.now()}`,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      }]);
     }
   };
 
@@ -199,8 +257,8 @@ export default function BobChatModal({ isOpen, onClose, planData, onExecuteComma
       position: 'fixed',
       bottom: '90px',
       right: '24px',
-      width: '400px',
-      height: '560px',
+      width: '420px',
+      height: '580px',
       background: '#ffffff',
       borderRadius: '20px',
       boxShadow: '0 20px 40px -15px rgba(0,0,0,0.3)',
@@ -227,17 +285,28 @@ export default function BobChatModal({ isOpen, onClose, planData, onExecuteComma
           <div>
             <div style={{ fontWeight: 800, fontSize: '0.92rem' }}>BOB · CELIS Engine</div>
             <div style={{ fontSize: '0.65rem', opacity: 0.9, display: 'flex', alignItems: 'center', gap: '5px' }}>
-              <span>Copiloto MCP</span>
+              <span>Historial Activo</span>
               <span style={{ background: 'rgba(255,255,255,0.25)', padding: '1px 6px', borderRadius: '6px', fontSize: '0.55rem', fontWeight: 800 }}>minimax-m3:cloud</span>
             </div>
           </div>
         </div>
-        <button
-          onClick={onClose}
-          style={{ background: 'transparent', border: 'none', color: '#ffffff', cursor: 'pointer', padding: '4px' }}
-        >
-          <X size={18} />
-        </button>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+          <button
+            onClick={handleClearHistory}
+            title="Reiniciar conversación y limpiar historial"
+            style={{ background: 'rgba(255,255,255,0.15)', border: 'none', color: '#ffffff', cursor: 'pointer', padding: '6px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          >
+            <RotateCcw size={15} />
+          </button>
+          <button
+            onClick={onClose}
+            title="Cerrar ventana (el historial se conservará)"
+            style={{ background: 'transparent', border: 'none', color: '#ffffff', cursor: 'pointer', padding: '4px' }}
+          >
+            <X size={18} />
+          </button>
+        </div>
       </div>
 
       {/* Quick Action Chips */}
