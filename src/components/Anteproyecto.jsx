@@ -282,6 +282,11 @@ export default function Anteproyecto() {
         </p>
       </div>
 
+      {/* [RAG] Cargador de Documentos — siempre visible */}
+      <div style={{ marginBottom: '2rem' }}>
+        <DocumentUploader />
+      </div>
+
       {/* Stepper */}
       <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginBottom: '2.5rem' }}>
         {[1, 2, 3, 4].map(i => (
@@ -387,9 +392,6 @@ export default function Anteproyecto() {
                 <Cpu size={20} /> Entrevistar e Industrializar con Swarm IA
               </button>
             </div>
-          </div>
-          <div style={{ marginTop: '2rem' }}>
-            <DocumentUploader />
           </div>
         </div>
       )}

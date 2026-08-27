@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FileSpreadsheet, LineChart, PieChart, Settings, Eye, BrainCircuit, ChevronDown, ChevronRight, ChevronLeft, Save, FilePlus, FolderOpen, Check, Image as ImageIcon, Sprout, Copy, Star, Briefcase, Zap, Globe, Cpu, ShoppingBag, Landmark, ListChecks, Compass, Target, Layers, Share2, Factory } from 'lucide-react';
+import { LayoutDashboard, FileSpreadsheet, LineChart, PieChart, Settings, Eye, BrainCircuit, ChevronDown, ChevronRight, ChevronLeft, Save, FilePlus, FolderOpen, Check, Image as ImageIcon, Sprout, Copy, Star, Briefcase, Zap, Globe, Cpu, ShoppingBag, Landmark, ListChecks, Compass, Target, Layers, Share2, Factory, Files, UploadCloud } from 'lucide-react';
 import { usePlan } from '../context/PlanContext';
 import { PROJECT_EXAMPLES } from '../lib/projects_db';
 import { FRAMEWORKS } from '../config/frameworks';
@@ -12,6 +12,7 @@ import GrillMePromptModal from './GrillMePromptModal';
 import TouchBarBridge from './TouchBarBridge';
 import ServerHealthBanner from './ServerHealthBanner';
 import WordDocumentCenterModal from './WordDocumentCenterModal';
+import DocumentUploader from './DocumentUploader';
 
 
 const METHODOLOGY_CONFIG = {
@@ -81,6 +82,7 @@ export default function Layout() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isBobOpen, setIsBobOpen] = useState(false);
   const [showWorkspaceModal, setShowWorkspaceModal] = useState(false);
+  const [showRagModal, setShowRagModal] = useState(false);
   const [activeGrillMePrompt, setActiveGrillMePrompt] = useState(null);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => {
     return localStorage.getItem('openplan_sidebar_collapsed') === 'true';
@@ -382,6 +384,46 @@ export default function Layout() {
               <div className="nav-icon-box"><Sprout size={18} /></div>
               {!isSidebarCollapsed && <span>🌱 Semilla del Proyecto</span>}
             </NavLink>
+
+            {/* [RAG] Botón de Carga de Documentos justo debajo de Semilla */}
+            <div 
+              onClick={() => setShowRagModal(true)}
+              className="nav-item"
+              title="Cargar Documentos RAG (Word, PDF, OCR, Audio)"
+              style={{
+                cursor: 'pointer',
+                marginTop: '0.35rem',
+                background: (planData?.config?.documents?.length > 0) ? 'rgba(99, 102, 241, 0.08)' : 'transparent',
+                border: (planData?.config?.documents?.length > 0) ? '1px solid rgba(99, 102, 241, 0.25)' : '1px dashed var(--border-color)',
+                borderRadius: '8px',
+                padding: isSidebarCollapsed ? '0.5rem 0' : '0.55rem 0.75rem',
+                justifyContent: isSidebarCollapsed ? 'center' : 'space-between',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                <div className="nav-icon-box" style={{ color: '#818cf8' }}>
+                  <UploadCloud size={18} />
+                </div>
+                {!isSidebarCollapsed && (
+                  <span style={{ fontSize: '0.82rem', fontWeight: '600', color: 'var(--text-primary)' }}>
+                    📂 Cargar Documentos
+                  </span>
+                )}
+              </div>
+              {!isSidebarCollapsed && (
+                <span style={{
+                  fontSize: '0.68rem',
+                  padding: '2px 7px',
+                  borderRadius: '10px',
+                  background: (planData?.config?.documents?.length > 0) ? 'rgba(99, 102, 241, 0.2)' : 'var(--bg-panel)',
+                  color: (planData?.config?.documents?.length > 0) ? '#818cf8' : 'var(--text-secondary)',
+                  fontWeight: '700'
+                }}>
+                  {planData?.config?.documents?.length || 0}
+                </span>
+              )}
+            </div>
           </div>
 
           {planData?.config?.activeMethodologies?.length > 1 && !isSidebarCollapsed && (
@@ -1338,6 +1380,14 @@ export default function Layout() {
         isOpen={showWorkspaceModal}
         onClose={() => setShowWorkspaceModal(false)}
       />
+
+      {/* Modal RAG Multimodal accesible globalmente desde la Barra Lateral */}
+      {showRagModal && (
+        <DocumentUploader
+          compact={true}
+          onClose={() => setShowRagModal(false)}
+        />
+      )}
 
       {/* Modal Human-in-the-Loop (Grill-Me) si hay preguntas activas de agentes */}
       {activeGrillMePrompt && (
