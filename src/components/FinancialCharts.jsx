@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import LiquidationReserveWidget from './LiquidationReserveWidget';
 
 const formatCurrency = (value) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', maximumFractionDigits: 0 }).format(Number(value || 0));
 
@@ -1383,6 +1384,11 @@ export const PrintableFinancialReports = ({ projections, staff = [] }) => {
           </div>
         </div>
       )}
+
+      {/* ── Fondo de Reserva de Liquidación Intocable (FRLI) & Kill Switch ── */}
+      <div style={sectionStyle}>
+        <LiquidationReserveWidget projections={projections} staff={staff} />
+      </div>
 
     </div>
   );

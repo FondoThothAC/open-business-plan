@@ -4,8 +4,8 @@
  * Todas las herramientas devuelven un contrato unificado { success: boolean, data: any, executionTimeMs: number, toolName: string }
  */
 
-import { estimateBusinessMetrics, classifyEstablishmentType, calculateOptimalLocation } from './territorialEngine';
-import { getApiBase } from '../config/apiConfig';
+import { estimateBusinessMetrics, classifyEstablishmentType, calculateOptimalLocation } from './territorialEngine.js';
+import { getApiBase } from '../config/apiConfig.js';
 
 export function runQuantumDiagnostic({ areas = ['operativo'], teamSize = 3 } = {}) {
   const normalizedAreas = (areas || []).map(a => String(a).toLowerCase().trim());

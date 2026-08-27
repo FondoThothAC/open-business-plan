@@ -106,6 +106,17 @@ export default function BobChatModal({ isOpen, onClose, planData, onExecuteComma
       return `Red multi-sucursal configurada: Hub en ${params.hubCity} con ${params.branches?.length || 0} sucursales (${params.rolloutStrategy})`;
     }
 
+    if (toolName === 'analyze_liquidation_runway') {
+      if (onExecuteCommand) {
+        onExecuteCommand({
+          action: 'ANALYZE_LIQUIDATION',
+          tool: 'analyze_liquidation_runway',
+          parameters: params
+        });
+      }
+      return `Análisis de FRLI y contingencia ejecutado: Cálculo de pasivo laboral LFT y semáforo de crisis activado.`;
+    }
+
     return null;
   };
 
@@ -152,19 +163,21 @@ export default function BobChatModal({ isOpen, onClose, planData, onExecuteComma
         onToolExecute: handleToolExecution
       });
 
-      setMessages(prev => [...prev, {
+      const bobMsg = {
         id: `bob_${Date.now()}`,
         sender: 'bob',
-        text: result.reply,
+        text: result.cleanText || result.reply || 'Análisis completado.',
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         toolsExecuted: (result.toolCalls || []).map(t => t.tool)
-      }]);
+      };
+      setMessages(prev => [...prev, bobMsg]);
+
     } catch (err) {
-      console.error('[BobChatModal] Error:', err);
+      console.error('Error al consultar a BOB:', err);
       setMessages(prev => [...prev, {
-        id: `bob_${Date.now()}`,
+        id: `bob_err_${Date.now()}`,
         sender: 'bob',
-        text: `⚠️ ${err.message}`,
+        text: 'Lo siento, ocurrió un error de conexión con el motor cognitivo. Por favor intenta de nuevo.',
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         toolsExecuted: []
       }]);
@@ -174,11 +187,11 @@ export default function BobChatModal({ isOpen, onClose, planData, onExecuteComma
   };
 
   const quickActions = [
+    { label: '🛡️ Reserva Cierre (FRLI)', prompt: '¿Cuál es mi Fondo de Reserva de Liquidación Intocable (FRLI) recomendado y cuándo debo activar el protocolo de cierre si hay pérdidas?' },
     { label: '🎯 Grill-Me', prompt: '/grill-me Entrevístame para completar la propuesta de valor y modelo de ingresos' },
     { label: '🏢 Multi-Sucursales', prompt: 'Queremos expandir el proyecto abriendo sucursales en varias ciudades. ¿Qué opciones de despliegue y estructura cuántica me recomiendas?' },
     { label: '⚛️ Diagnóstico Cuántico', prompt: 'Evalúa el balance atómico del fundador en las 3 áreas: Finanzas, Operativo, Administrativo' },
     { label: '📊 Ver Finanzas', prompt: 'Llévanos al módulo de finanzas y dime qué métricas clave necesitamos' },
-    { label: '🔍 Auditoría General', prompt: 'Revisa qué secciones tienen menos información y cuál es el siguiente paso prioritario' },
   ];
 
   return (

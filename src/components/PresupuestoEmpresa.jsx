@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { DollarSign, PieChart, TrendingUp, AlertCircle } from 'lucide-react';
+import LiquidationReserveWidget from './LiquidationReserveWidget';
 
 export default function PresupuestoEmpresa({ projections, staff = [], planData }) {
   const budget = useMemo(() => {
@@ -92,7 +93,7 @@ export default function PresupuestoEmpresa({ projections, staff = [], planData }
       </div>
 
       {/* Gráfico de Barra Acumulada de Distribución de Egresos */}
-      <div style={{ background: 'var(--bg-panel)', padding: '1.5rem', borderRadius: '16px', border: '1px solid var(--border-color)' }}>
+      <div style={{ background: 'var(--bg-panel)', padding: '1.5rem', borderRadius: '16px', border: '1px solid var(--border-color)', marginBottom: '1.5rem' }}>
         <h5 style={{ margin: '0 0 1rem 0', fontSize: '0.85rem', fontWeight: '800', color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
           Distribución de Egresos y Relación de Gastos
         </h5>
@@ -137,6 +138,9 @@ export default function PresupuestoEmpresa({ projections, staff = [], planData }
           </div>
         </div>
       </div>
+
+      {/* Widget Cuántico de Fondo de Reserva de Liquidación Intocable y Kill Switch */}
+      <LiquidationReserveWidget planData={planData} projections={projections} staff={staff} />
     </div>
   );
 }

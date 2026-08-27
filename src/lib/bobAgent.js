@@ -121,6 +121,18 @@ export const BOB_TOOLS_SCHEMA = [
       },
       required: ['hubCity', 'branches', 'rolloutStrategy']
     }
+  },
+  {
+    name: 'analyze_liquidation_runway',
+    description: 'Calcula el Fondo de Reserva de Liquidación Intocable (FRLI) y diagnostica el estado del semáforo de contingencia (Runway y Protocolo de Cierre en 3 fases).',
+    parameters: {
+      type: 'object',
+      properties: {
+        isPlannedBurn: { type: 'boolean', description: 'Si el proyecto opera bajo estrategia de quema planificada de inversión (estilo Amazon / J-Curve)' },
+        plannedMonths: { type: 'number', description: 'Meses de tolerancia para quema planeada' },
+        estimatedStaffCount: { type: 'number', description: 'Número estimado de colaboradores para cálculo de liquidación LFT' }
+      }
+    }
   }
 ];
 
@@ -155,7 +167,15 @@ TUS CAPACIDADES COMO AGENTE MCP:
      b) Simultánea (Lanzamiento en paralelo con crédito o capital semilla).
      c) Hitos Condicionales (Apertura al superar Punto de Equilibrio + 20% de margen libre).
    - Utiliza "configure_multibranch_expansion" para estructurar la red.
-6. Si detectas que el fundador hace todo él mismo, advierte sobre la "fusión atómica" y sugiere delegación según la metodología de Fondo Thoth AC (Salto Cuántico Nivel 2 a 4 para multi-sucursal).
+6. Si el usuario consulta sobre quiebra, pérdidas consecutivas, flujo negativo o cuándo cerrar el negocio:
+   - Explica el **Fondo de Reserva de Liquidación Intocable (FRLI)** según la Ley Federal del Trabajo (3 meses de indemnización constitucional + proporcionales + penalizaciones de renta/proveedores + SAT).
+   - Diferencia entre **Quema Planeada de Inversión (J-Curve / Modelo Amazon)** y **Pérdida Imprevista** (3 meses continuos fuera de presupuesto).
+   - Expón el **Protocolo Cuántico de 3 Fases**:
+     * Fase 1 (Amarilla): Congelar gastos discrecionales y auditoría de fugas.
+     * Fase 2 (Naranja): Reestructuración de choque, ajuste salarial convenido y llamado de capital.
+     * Fase 3 (Roja / Kill Switch): Cierre digno y ejecución de la reserva para liquidación sin demandas.
+   - Ejecuta "analyze_liquidation_runway" para evaluar las cifras exactas.
+7. Si detectas que el fundador hace todo él mismo, advierte sobre la "fusión atómica" y sugiere delegación según la metodología de Fondo Thoth AC.
 
 FORMATO DE RESPUESTA:
 - Responde siempre en español premium, empático, conciso y profesional.
