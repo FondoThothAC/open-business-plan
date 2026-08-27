@@ -1359,15 +1359,15 @@ Por favor, devuélvelo en formato JSON con la siguiente estructura exacta (respo
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
                   <span style={{ fontSize: '0.74rem', color: 'var(--text-secondary)' }}>Escolaridad Promedio:</span>
-                  <span style={{ fontSize: '0.74rem', fontWeight: 'bold', color: 'white' }}>{munData.escolaridad_promedio?.toFixed(1) || '10.0'} años</span>
+                  <span style={{ fontSize: '0.74rem', fontWeight: 'bold', color: 'white' }}>{munData.escolaridad_promedio != null ? Number(munData.escolaridad_promedio).toFixed(1) : '10.0'} años</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
                   <span style={{ fontSize: '0.74rem', color: 'var(--text-secondary)' }}>Hogares con Internet:</span>
-                  <span style={{ fontSize: '0.74rem', fontWeight: 'bold', color: 'white' }}>{munData.pct_internet?.toFixed(1) || '70.4'}%</span>
+                  <span style={{ fontSize: '0.74rem', fontWeight: 'bold', color: 'white' }}>{munData.pct_internet != null ? Number(munData.pct_internet).toFixed(1) : '70.4'}%</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
                   <span style={{ fontSize: '0.74rem', color: 'var(--text-secondary)' }}>Hogares con Celular:</span>
-                  <span style={{ fontSize: '0.74rem', fontWeight: 'bold', color: 'white' }}>{munData.pct_celular?.toFixed(1) || '95.0'}%</span>
+                  <span style={{ fontSize: '0.74rem', fontWeight: 'bold', color: 'white' }}>{munData.pct_celular != null ? Number(munData.pct_celular).toFixed(1) : '95.0'}%</span>
                 </div>
               </div>
             </div>
@@ -1495,14 +1495,14 @@ Por favor, devuélvelo en formato JSON con la siguiente estructura exacta (respo
         <div className="glass-panel" style={{ marginTop: '0.75rem', padding: '0.75rem', background: 'rgba(255,255,255,0.03)' }}>
           <div style={{ fontSize: '0.78rem', fontWeight: 700, marginBottom: '0.45rem' }}>Índice de Efectividad Territorial</div>
           <div style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-            Puntaje global: <strong>{effectiveness.effectivenessScore.toFixed(1)}/100</strong> ·
-            Competencia: <strong>{effectiveness.competitionScore.toFixed(1)}</strong> ·
-            Cercanía a clientes: <strong>{effectiveness.clientProximityScore.toFixed(1)}</strong> ·
-            Cercanía a proveedores: <strong>{effectiveness.supplierProximityScore.toFixed(1)}</strong>
+            Puntaje global: <strong>{Number(effectiveness.effectivenessScore || 0).toFixed(1)}/100</strong> ·
+            Competencia: <strong>{Number(effectiveness.competitionScore || 0).toFixed(1)}</strong> ·
+            Cercanía a clientes: <strong>{Number(effectiveness.clientProximityScore || 0).toFixed(1)}</strong> ·
+            Cercanía a proveedores: <strong>{Number(effectiveness.supplierProximityScore || 0).toFixed(1)}</strong>
           </div>
           <div style={{ marginTop: '0.4rem', fontSize: '0.74rem', color: 'var(--text-secondary)' }}>
-            Distancia clientes: {effectiveness.clientDistanceKm == null ? 'N/D' : `${effectiveness.clientDistanceKm.toFixed(1)} km`} ·
-            Distancia proveedores: {effectiveness.supplierDistanceKm == null ? 'N/D' : `${effectiveness.supplierDistanceKm.toFixed(1)} km`}
+            Distancia clientes: {effectiveness.clientDistanceKm == null || !Number.isFinite(Number(effectiveness.clientDistanceKm)) ? 'N/D' : `${Number(effectiveness.clientDistanceKm).toFixed(1)} km`} ·
+            Distancia proveedores: {effectiveness.supplierDistanceKm == null || !Number.isFinite(Number(effectiveness.supplierDistanceKm)) ? 'N/D' : `${Number(effectiveness.supplierDistanceKm).toFixed(1)} km`}
           </div>
         </div>
       )}

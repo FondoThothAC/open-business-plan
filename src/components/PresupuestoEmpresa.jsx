@@ -24,9 +24,9 @@ export default function PresupuestoEmpresa({ projections, staff = [], planData }
 
     const totalGastosMensuales = costosFijosMensuales + costosVariablesMensuales;
     const saldoPresupuesto = ingresosMensuales - totalGastosMensuales;
-    const porcentajeGastos = (totalGastosMensuales / Math.max(1, ingresosMensuales)) * 100;
-    const porcentajeFijos = (costosFijosMensuales / Math.max(1, totalGastosMensuales)) * 100;
-    const porcentajeVariables = (costosVariablesMensuales / Math.max(1, totalGastosMensuales)) * 100;
+    const porcentajeGastos = isFinite((totalGastosMensuales / Math.max(1, ingresosMensuales)) * 100) ? (totalGastosMensuales / Math.max(1, ingresosMensuales)) * 100 : 50;
+    const porcentajeFijos = isFinite((costosFijosMensuales / Math.max(1, totalGastosMensuales)) * 100) ? (costosFijosMensuales / Math.max(1, totalGastosMensuales)) * 100 : 50;
+    const porcentajeVariables = isFinite((costosVariablesMensuales / Math.max(1, totalGastosMensuales)) * 100) ? (costosVariablesMensuales / Math.max(1, totalGastosMensuales)) * 100 : 50;
 
     return {
       ingresosMensuales,
@@ -41,7 +41,7 @@ export default function PresupuestoEmpresa({ projections, staff = [], planData }
     };
   }, [projections, staff, planData]);
 
-  const formatCurrency = (val) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', maximumFractionDigits: 0 }).format(val);
+  const formatCurrency = (val) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', maximumFractionDigits: 0 }).format(Number(val || 0));
 
   return (
     <div style={{ marginTop: '1.5rem', marginBottom: '2.5rem' }}>
@@ -86,7 +86,7 @@ export default function PresupuestoEmpresa({ projections, staff = [], planData }
             {formatCurrency(budget.saldoPresupuesto)}
           </div>
           <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', display: 'block', marginTop: '2px' }}>
-            Margen de seguridad: {Math.max(0, 100 - budget.porcentajeGastos).toFixed(1)}% de ingresos libres
+            Margen de seguridad: {Number(Math.max(0, 100 - (budget.porcentajeGastos || 0))).toFixed(1)}% de ingresos libres
           </span>
         </div>
       </div>
@@ -99,16 +99,16 @@ export default function PresupuestoEmpresa({ projections, staff = [], planData }
 
         <div style={{ display: 'flex', height: '24px', borderRadius: '6px', overflow: 'hidden', background: 'rgba(128, 128, 128, 0.15)', marginBottom: '1.25rem' }}>
           <div 
-            style={{ width: `${budget.porcentajeFijos}%`, background: '#64748b', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff', fontSize: '0.72rem', fontWeight: 'bold' }}
-            title={`Costos Fijos: ${budget.porcentajeFijos.toFixed(1)}%`}
+            style={{ width: `${Number(budget.porcentajeFijos || 50)}%`, background: '#64748b', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff', fontSize: '0.72rem', fontWeight: 'bold' }}
+            title={`Costos Fijos: ${Number(budget.porcentajeFijos || 0).toFixed(1)}%`}
           >
-            {budget.porcentajeFijos > 15 ? `Fijos (${budget.porcentajeFijos.toFixed(0)}%)` : ''}
+            {(budget.porcentajeFijos || 0) > 15 ? `Fijos (${Number(budget.porcentajeFijos || 0).toFixed(0)}%)` : ''}
           </div>
           <div 
-            style={{ width: `${budget.porcentajeVariables}%`, background: '#f43f5e', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff', fontSize: '0.72rem', fontWeight: 'bold' }}
-            title={`Costos Variables: ${budget.porcentajeVariables.toFixed(1)}%`}
+            style={{ width: `${Number(budget.porcentajeVariables || 50)}%`, background: '#f43f5e', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff', fontSize: '0.72rem', fontWeight: 'bold' }}
+            title={`Costos Variables: ${Number(budget.porcentajeVariables || 0).toFixed(1)}%`}
           >
-            {budget.porcentajeVariables > 15 ? `Variables (${budget.porcentajeVariables.toFixed(0)}%)` : ''}
+            {(budget.porcentajeVariables || 0) > 15 ? `Variables (${Number(budget.porcentajeVariables || 0).toFixed(0)}%)` : ''}
           </div>
         </div>
 
