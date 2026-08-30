@@ -10,6 +10,7 @@ import { BoxAmoeba } from './BoxAmoeba.jsx';
 import { BoxGuanxi } from './BoxGuanxi.jsx';
 import { BoxONUDI } from './BoxONUDI.jsx';
 import { BoxArbolProblemasMML } from './BoxArbolProblemasMML.jsx';
+import { BoxLayoutIndustrial } from './BoxLayoutIndustrial.jsx';
 import { BOX_TYPES } from '../../config/boxes.js';
 
 export {
@@ -24,7 +25,8 @@ export {
   BoxAmoeba,
   BoxGuanxi,
   BoxONUDI,
-  BoxArbolProblemasMML
+  BoxArbolProblemasMML,
+  BoxLayoutIndustrial
 };
 
 /**
@@ -47,6 +49,8 @@ export function RenderBox({ definition = {}, values = {}, onChange = () => {} })
       return <BoxONUDI definition={definition} values={values} onChange={onChange} />;
     case 'box_arbol_problemas_mml':
       return <BoxArbolProblemasMML definition={definition} values={values} onChange={onChange} />;
+    case 'box_layout_industrial':
+      return <BoxLayoutIndustrial definition={definition} values={values} onChange={onChange} />;
     default:
       break;
   }

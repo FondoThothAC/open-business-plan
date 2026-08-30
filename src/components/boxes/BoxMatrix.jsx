@@ -2,6 +2,7 @@ import { Layout, ShieldAlert } from 'lucide-react';
 
 /**
  * Componente BoxMatrix - Renderiza matrices bidimensionales (FODA, Porter 5F, ZOPP 4x4, Matriz X)
+ * Totalmente adaptado al tema claro/oscuro del sistema
  */
 export function BoxMatrix({ definition = {}, values = {} }) {
   const quadrants = values.quadrants || [
@@ -13,23 +14,23 @@ export function BoxMatrix({ definition = {}, values = {} }) {
 
   return (
     <div style={{
-      background: 'var(--card-bg, #1e293b)',
-      border: '1px solid var(--border-color, rgba(255,255,255,0.1))',
+      background: 'var(--bg-panel, #ffffff)',
+      border: '1px solid var(--border-color, #e4e4e7)',
       borderRadius: '12px',
       padding: '20px',
       margin: '20px 0',
-      boxShadow: '0 8px 24px rgba(0,0,0,0.15)'
+      boxShadow: '0 4px 20px rgba(0,0,0,0.06)'
     }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <div style={{ padding: '8px', background: 'rgba(245,158,11,0.15)', borderRadius: '8px', color: '#fbbf24' }}>
+          <div style={{ padding: '8px', background: 'rgba(245,158,11,0.12)', borderRadius: '8px', color: '#f59e0b' }}>
             <Layout size={20} />
           </div>
           <div>
-            <h4 style={{ margin: 0, fontSize: '1.1rem', color: 'var(--text-primary, #f8fafc)', fontWeight: 600 }}>
+            <h4 style={{ margin: 0, fontSize: '1.1rem', color: 'var(--text-primary, #09090b)', fontWeight: 700 }}>
               {definition.title || 'Matriz Estratégica Bidimensional'}
             </h4>
-            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted, #94a3b8)' }}>
+            <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary, #71717a)' }}>
               Fuente: {definition.source?.book || 'Metodología Estratégica'} ({definition.source?.page || ''})
             </span>
           </div>
@@ -39,16 +40,16 @@ export function BoxMatrix({ definition = {}, values = {} }) {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '12px' }}>
         {quadrants.map((q, idx) => (
           <div key={idx} style={{
-            background: 'rgba(15,23,42,0.6)',
-            border: '1px solid rgba(255,255,255,0.08)',
+            background: 'var(--bg-panel-hover, rgba(0,0,0,0.02))',
+            border: '1px solid var(--border-color, #e4e4e7)',
             borderRadius: '8px',
             padding: '14px'
           }}>
-            <h5 style={{ margin: '0 0 10px 0', fontSize: '0.88rem', color: '#f1f5f9', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <ShieldAlert size={14} style={{ color: idx % 2 === 0 ? '#34d399' : '#f59e0b' }} />
+            <h5 style={{ margin: '0 0 10px 0', fontSize: '0.88rem', color: 'var(--text-primary, #09090b)', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <ShieldAlert size={14} style={{ color: idx % 2 === 0 ? '#10b981' : '#f59e0b' }} />
               {q.title}
             </h5>
-            <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '0.8rem', color: '#94a3b8', lineHeight: 1.6 }}>
+            <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '0.8rem', color: 'var(--text-secondary, #71717a)', lineHeight: 1.6 }}>
               {q.items.map((item, i) => (
                 <li key={i}>{item}</li>
               ))}

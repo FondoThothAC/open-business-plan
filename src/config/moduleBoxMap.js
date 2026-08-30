@@ -68,7 +68,7 @@ export const MODULE_BOX_MAP = {
   'investment_project:demanda': ['box_tam_sam_som'],
   'investment_project:oferta': [],
   'investment_project:ingenieria': [],
-  'investment_project:layout': [],
+  'investment_project:layout': ['box_layout_industrial'],
   'investment_project:presupuesto': ['box_capex_csi_table'],
   'investment_project:cronograma': [],
   'investment_project:capital': ['box_wacc_van_tir'],

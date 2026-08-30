@@ -4,6 +4,7 @@ import { Factory } from 'lucide-react';
 /**
  * BoxONUDI - Flujo de Caja Libre para la Firma (FCFF) con WACC (Estándar ONUDI Industrial)
  * Fórmula: FCFF = EBIT x (1 - T) + Depreciación - CAPEX - Δ Capital de Trabajo
+ * Totalmente adaptado al tema claro/oscuro del sistema
  */
 export function BoxONUDI({ definition = {}, values = {}, onChange = () => {} }) {
   const [inputs, setInputs] = useState({
@@ -29,23 +30,23 @@ export function BoxONUDI({ definition = {}, values = {}, onChange = () => {} }) 
 
   return (
     <div style={{
-      background: 'var(--card-bg, #1e293b)',
-      border: '1px solid rgba(14, 165, 233, 0.25)',
+      background: 'var(--bg-panel, #ffffff)',
+      border: '1px solid var(--border-color, #e4e4e7)',
       borderRadius: '12px',
       padding: '24px',
       margin: '20px 0',
-      boxShadow: '0 8px 24px rgba(0,0,0,0.15)'
+      boxShadow: '0 4px 20px rgba(0,0,0,0.06)'
     }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{ padding: '10px', background: 'rgba(14, 165, 233, 0.15)', borderRadius: '10px', color: '#0ea5e9' }}>
+          <div style={{ padding: '10px', background: 'rgba(14, 165, 233, 0.12)', borderRadius: '10px', color: '#0ea5e9' }}>
             <Factory size={24} />
           </div>
           <div>
-            <h4 style={{ margin: 0, fontSize: '1.15rem', color: 'var(--text-primary, #f8fafc)', fontWeight: 700 }}>
+            <h4 style={{ margin: 0, fontSize: '1.15rem', color: 'var(--text-primary, #09090b)', fontWeight: 700 }}>
               {definition.title || 'Modelo FCFF y Factibilidad Industrial (Metodología ONUDI)'}
             </h4>
-            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted, #94a3b8)' }}>
+            <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary, #71717a)' }}>
               Fuente: {definition.source?.book || 'Manual for the Preparation of Industrial Feasibility Studies (UNIDO)'} ({definition.source?.page || 'Part II'})
             </span>
           </div>
@@ -53,7 +54,7 @@ export function BoxONUDI({ definition = {}, values = {}, onChange = () => {} }) 
         <div style={{
           padding: '6px 14px',
           borderRadius: '20px',
-          background: fcff > 0 ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)',
+          background: fcff > 0 ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)',
           color: fcff > 0 ? '#10b981' : '#ef4444',
           fontWeight: 700,
           fontSize: '0.9rem'
@@ -64,7 +65,7 @@ export function BoxONUDI({ definition = {}, values = {}, onChange = () => {} }) 
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px', marginBottom: '20px' }}>
         <div>
-          <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary, #94a3b8)', display: 'block', marginBottom: '4px' }}>
+          <label style={{ fontSize: '0.75rem', color: 'var(--text-secondary, #71717a)', display: 'block', marginBottom: '4px', fontWeight: 600 }}>
             EBIT Operativo ($)
           </label>
           <input
@@ -76,7 +77,7 @@ export function BoxONUDI({ definition = {}, values = {}, onChange = () => {} }) 
         </div>
 
         <div>
-          <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary, #94a3b8)', display: 'block', marginBottom: '4px' }}>
+          <label style={{ fontSize: '0.75rem', color: 'var(--text-secondary, #71717a)', display: 'block', marginBottom: '4px', fontWeight: 600 }}>
             Tasa Fiscal / ISR (%)
           </label>
           <input
@@ -88,7 +89,7 @@ export function BoxONUDI({ definition = {}, values = {}, onChange = () => {} }) 
         </div>
 
         <div>
-          <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary, #94a3b8)', display: 'block', marginBottom: '4px' }}>
+          <label style={{ fontSize: '0.75rem', color: 'var(--text-secondary, #71717a)', display: 'block', marginBottom: '4px', fontWeight: 600 }}>
             Depreciación Anual ($)
           </label>
           <input
@@ -100,7 +101,7 @@ export function BoxONUDI({ definition = {}, values = {}, onChange = () => {} }) 
         </div>
 
         <div>
-          <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary, #94a3b8)', display: 'block', marginBottom: '4px' }}>
+          <label style={{ fontSize: '0.75rem', color: 'var(--text-secondary, #71717a)', display: 'block', marginBottom: '4px', fontWeight: 600 }}>
             CAPEX Requerido ($)
           </label>
           <input
@@ -112,7 +113,7 @@ export function BoxONUDI({ definition = {}, values = {}, onChange = () => {} }) 
         </div>
 
         <div>
-          <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary, #94a3b8)', display: 'block', marginBottom: '4px' }}>
+          <label style={{ fontSize: '0.75rem', color: 'var(--text-secondary, #71717a)', display: 'block', marginBottom: '4px', fontWeight: 600 }}>
             Δ Capital Trabajo ($)
           </label>
           <input
@@ -124,7 +125,7 @@ export function BoxONUDI({ definition = {}, values = {}, onChange = () => {} }) 
         </div>
 
         <div>
-          <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary, #94a3b8)', display: 'block', marginBottom: '4px' }}>
+          <label style={{ fontSize: '0.75rem', color: 'var(--text-secondary, #71717a)', display: 'block', marginBottom: '4px', fontWeight: 600 }}>
             WACC Descuento (%)
           </label>
           <input
@@ -137,8 +138,8 @@ export function BoxONUDI({ definition = {}, values = {}, onChange = () => {} }) 
       </div>
 
       <div style={{
-        background: 'rgba(255,255,255,0.03)',
-        border: '1px solid var(--border-color, rgba(255,255,255,0.08))',
+        background: 'var(--bg-panel-hover, rgba(0,0,0,0.02))',
+        border: '1px solid var(--border-color, #e4e4e7)',
         borderRadius: '8px',
         padding: '16px',
         display: 'grid',
@@ -147,20 +148,20 @@ export function BoxONUDI({ definition = {}, values = {}, onChange = () => {} }) 
         textAlign: 'center'
       }}>
         <div>
-          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted, #94a3b8)' }}>NOPAT (EBIT x [1-T])</span>
-          <div style={{ fontSize: '1.1rem', fontWeight: 700, color: '#38bdf8' }}>
+          <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary, #71717a)' }}>NOPAT (EBIT x [1-T])</span>
+          <div style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--accent-color, #6366f1)' }}>
             ${Math.round(nopat).toLocaleString()} MXN
           </div>
         </div>
         <div>
-          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted, #94a3b8)' }}>Flujo Libre a la Firma (FCFF)</span>
+          <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary, #71717a)' }}>Flujo Libre a la Firma (FCFF)</span>
           <div style={{ fontSize: '1.1rem', fontWeight: 700, color: '#10b981' }}>
             ${Math.round(fcff).toLocaleString()} MXN
           </div>
         </div>
         <div>
-          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted, #94a3b8)' }}>Valor Presente Año 1 (VP)</span>
-          <div style={{ fontSize: '1.1rem', fontWeight: 700, color: '#a78bfa' }}>
+          <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary, #71717a)' }}>Valor Presente Año 1 (VP)</span>
+          <div style={{ fontSize: '1.1rem', fontWeight: 700, color: '#8b5cf6' }}>
             ${Math.round(valorPresente).toLocaleString()} MXN
           </div>
         </div>

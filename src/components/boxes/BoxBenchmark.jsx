@@ -2,6 +2,7 @@ import { Gauge, CheckCircle2, AlertTriangle } from 'lucide-react';
 
 /**
  * Componente BoxBenchmark - Renderiza indicadores de desempeño con semáforo y rangos de industria
+ * Totalmente adaptado al tema claro/oscuro del sistema
  */
 export function BoxBenchmark({ definition = {}, values = {} }) {
   const kpis = values.kpis || [
@@ -13,23 +14,23 @@ export function BoxBenchmark({ definition = {}, values = {} }) {
 
   return (
     <div style={{
-      background: 'var(--card-bg, #1e293b)',
-      border: '1px solid var(--border-color, rgba(255,255,255,0.1))',
+      background: 'var(--bg-panel, #ffffff)',
+      border: '1px solid var(--border-color, #e4e4e7)',
       borderRadius: '12px',
       padding: '20px',
       margin: '20px 0',
-      boxShadow: '0 8px 24px rgba(0,0,0,0.15)'
+      boxShadow: '0 4px 20px rgba(0,0,0,0.06)'
     }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <div style={{ padding: '8px', background: 'rgba(168,85,247,0.15)', borderRadius: '8px', color: '#c084fc' }}>
+          <div style={{ padding: '8px', background: 'rgba(168,85,247,0.12)', borderRadius: '8px', color: '#9333ea' }}>
             <Gauge size={20} />
           </div>
           <div>
-            <h4 style={{ margin: 0, fontSize: '1.1rem', color: 'var(--text-primary, #f8fafc)', fontWeight: 600 }}>
+            <h4 style={{ margin: 0, fontSize: '1.1rem', color: 'var(--text-primary, #09090b)', fontWeight: 700 }}>
               {definition.title || 'Tablero de Benchmarks y KPIs de Industria'}
             </h4>
-            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted, #94a3b8)' }}>
+            <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary, #71717a)' }}>
               Fuente: {definition.source?.book || 'Benchmarks Oficiales'} ({definition.source?.page || ''})
             </span>
           </div>
@@ -39,22 +40,22 @@ export function BoxBenchmark({ definition = {}, values = {} }) {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '12px' }}>
         {kpis.map((kpi, idx) => (
           <div key={idx} style={{
-            background: 'rgba(15,23,42,0.6)',
-            border: '1px solid rgba(255,255,255,0.06)',
+            background: 'var(--bg-panel-hover, rgba(0,0,0,0.02))',
+            border: '1px solid var(--border-color, #e4e4e7)',
             borderRadius: '8px',
             padding: '12px'
           }}>
-            <span style={{ fontSize: '0.75rem', color: '#94a3b8', display: 'block', marginBottom: '4px' }}>
+            <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary, #71717a)', display: 'block', marginBottom: '4px', fontWeight: 600 }}>
               {kpi.label}
             </span>
-            <div style={{ fontSize: '1.3rem', fontWeight: 700, color: kpi.isOk ? '#34d399' : '#f59e0b', marginBottom: '6px' }}>
+            <div style={{ fontSize: '1.3rem', fontWeight: 700, color: kpi.isOk ? '#10b981' : '#f59e0b', marginBottom: '6px' }}>
               {kpi.val}
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.75rem', color: kpi.isOk ? '#10b981' : '#f59e0b' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.75rem', color: kpi.isOk ? '#10b981' : '#f59e0b', fontWeight: 600 }}>
               {kpi.isOk ? <CheckCircle2 size={12} /> : <AlertTriangle size={12} />}
               <span>{kpi.status}</span>
             </div>
-            <span style={{ display: 'block', fontSize: '0.68rem', color: '#64748b', marginTop: '4px' }}>
+            <span style={{ display: 'block', fontSize: '0.68rem', color: 'var(--text-secondary, #71717a)', marginTop: '4px' }}>
               Ref: {kpi.benchmark}
             </span>
           </div>

@@ -4,6 +4,7 @@ import { TrendingUp } from 'lucide-react';
 /**
  * BoxAmoeba - Calculadora de Rentabilidad por Hora de Amoeba Management (Kyocera / Kazuo Inamori)
  * Fórmula: Valor Agregado por Hora = (Ingresos Totales - Gastos Operativos Directos) / Horas Totales Trabajadas
+ * Totalmente adaptado al tema claro/oscuro del sistema
  */
 export function BoxAmoeba({ definition = {}, values = {}, onChange = () => {} }) {
   const [inputs, setInputs] = useState({
@@ -27,23 +28,23 @@ export function BoxAmoeba({ definition = {}, values = {}, onChange = () => {} })
 
   return (
     <div style={{
-      background: 'var(--card-bg, #1e293b)',
-      border: '1px solid rgba(59, 130, 246, 0.25)',
+      background: 'var(--bg-panel, #ffffff)',
+      border: '1px solid var(--border-color, #e4e4e7)',
       borderRadius: '12px',
       padding: '24px',
       margin: '20px 0',
-      boxShadow: '0 8px 24px rgba(0,0,0,0.15)'
+      boxShadow: '0 4px 20px rgba(0,0,0,0.06)'
     }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{ padding: '10px', background: 'rgba(59, 130, 246, 0.15)', borderRadius: '10px', color: '#3b82f6' }}>
+          <div style={{ padding: '10px', background: 'rgba(59, 130, 246, 0.12)', borderRadius: '10px', color: '#3b82f6' }}>
             <TrendingUp size={24} />
           </div>
           <div>
-            <h4 style={{ margin: 0, fontSize: '1.15rem', color: 'var(--text-primary, #f8fafc)', fontWeight: 700 }}>
+            <h4 style={{ margin: 0, fontSize: '1.15rem', color: 'var(--text-primary, #09090b)', fontWeight: 700 }}>
               {definition.title || 'Rentabilidad por Hora Amoeba (Kyocera / Kazuo Inamori)'}
             </h4>
-            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted, #94a3b8)' }}>
+            <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary, #71717a)' }}>
               Fuente: {definition.source?.book || 'Amoeba Management: The Dynamic Management System for Rapid Market Response'} ({definition.source?.page || 'Ch. 4'})
             </span>
           </div>
@@ -51,7 +52,7 @@ export function BoxAmoeba({ definition = {}, values = {}, onChange = () => {} })
         <div style={{
           padding: '6px 14px',
           borderRadius: '20px',
-          background: valorAgregadoPorHora >= 500 ? 'rgba(16, 185, 129, 0.2)' : 'rgba(245, 158, 11, 0.2)',
+          background: valorAgregadoPorHora >= 500 ? 'rgba(16, 185, 129, 0.15)' : 'rgba(245, 158, 11, 0.15)',
           color: valorAgregadoPorHora >= 500 ? '#10b981' : '#f59e0b',
           fontWeight: 700,
           fontSize: '0.9rem'
@@ -62,7 +63,7 @@ export function BoxAmoeba({ definition = {}, values = {}, onChange = () => {} })
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '20px' }}>
         <div>
-          <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary, #94a3b8)', display: 'block', marginBottom: '4px' }}>
+          <label style={{ fontSize: '0.75rem', color: 'var(--text-secondary, #71717a)', display: 'block', marginBottom: '4px', fontWeight: 600 }}>
             Nombre de la Micro-Célula
           </label>
           <input
@@ -74,7 +75,7 @@ export function BoxAmoeba({ definition = {}, values = {}, onChange = () => {} })
         </div>
 
         <div>
-          <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary, #94a3b8)', display: 'block', marginBottom: '4px' }}>
+          <label style={{ fontSize: '0.75rem', color: 'var(--text-secondary, #71717a)', display: 'block', marginBottom: '4px', fontWeight: 600 }}>
             Ingresos Brutos Mensuales ($)
           </label>
           <input
@@ -86,7 +87,7 @@ export function BoxAmoeba({ definition = {}, values = {}, onChange = () => {} })
         </div>
 
         <div>
-          <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary, #94a3b8)', display: 'block', marginBottom: '4px' }}>
+          <label style={{ fontSize: '0.75rem', color: 'var(--text-secondary, #71717a)', display: 'block', marginBottom: '4px', fontWeight: 600 }}>
             Costos Operativos Directos ($)
           </label>
           <input
@@ -98,7 +99,7 @@ export function BoxAmoeba({ definition = {}, values = {}, onChange = () => {} })
         </div>
 
         <div>
-          <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary, #94a3b8)', display: 'block', marginBottom: '4px' }}>
+          <label style={{ fontSize: '0.75rem', color: 'var(--text-secondary, #71717a)', display: 'block', marginBottom: '4px', fontWeight: 600 }}>
             Miembros en la Célula
           </label>
           <input
@@ -112,8 +113,8 @@ export function BoxAmoeba({ definition = {}, values = {}, onChange = () => {} })
 
       {/* Resultados de Micro-P&L */}
       <div style={{
-        background: 'rgba(255,255,255,0.03)',
-        border: '1px solid var(--border-color, rgba(255,255,255,0.08))',
+        background: 'var(--bg-panel-hover, rgba(0,0,0,0.02))',
+        border: '1px solid var(--border-color, #e4e4e7)',
         borderRadius: '8px',
         padding: '16px',
         display: 'grid',
@@ -122,26 +123,26 @@ export function BoxAmoeba({ definition = {}, values = {}, onChange = () => {} })
         textAlign: 'center'
       }}>
         <div>
-          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted, #94a3b8)' }}>Valor Agregado Bruto</span>
-          <div style={{ fontSize: '1.1rem', fontWeight: 700, color: '#38bdf8' }}>
+          <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary, #71717a)' }}>Valor Agregado Bruto</span>
+          <div style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--accent-color, #6366f1)' }}>
             ${valorAgregadoBruto.toLocaleString()} MXN
           </div>
         </div>
         <div>
-          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted, #94a3b8)' }}>Horas Totales / Mes</span>
-          <div style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-primary, #f8fafc)' }}>
+          <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary, #71717a)' }}>Horas Totales / Mes</span>
+          <div style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-primary, #09090b)' }}>
             {totalHoras.toLocaleString()} hrs
           </div>
         </div>
         <div>
-          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted, #94a3b8)' }}>Margen de Célula</span>
+          <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary, #71717a)' }}>Margen de Célula</span>
           <div style={{ fontSize: '1.1rem', fontWeight: 700, color: '#10b981' }}>
             {margenAmoeba.toFixed(1)}%
           </div>
         </div>
         <div>
-          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted, #94a3b8)' }}>Eficiencia por Hora</span>
-          <div style={{ fontSize: '1.1rem', fontWeight: 700, color: '#a78bfa' }}>
+          <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary, #71717a)' }}>Eficiencia por Hora</span>
+          <div style={{ fontSize: '1.1rem', fontWeight: 700, color: '#8b5cf6' }}>
             ${Math.round(valorAgregadoPorHora).toLocaleString()}/hr
           </div>
         </div>

@@ -988,7 +988,7 @@ _Diseño macro, tecnología y memorias de cálculo._
 #### 📦 Módulo: **Instalaciones y Lay-out** (`layout`)
 _Distribución física, terreno y obras._
 
-**Boxes asociados:** _Ninguno (Módulo solo texto/diagrama)_
+**Boxes asociados:** `box_layout_industrial`
 
 | Campo / Textbox | Clave | Instrucción del Prompt | Ejemplo / Guía | Benchmark / Cita |
 |---|---|---|---|---|

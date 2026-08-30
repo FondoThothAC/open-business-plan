@@ -88,6 +88,13 @@ export const BOX_REGISTRY = {
   ],
   investment_project: [
     {
+      id: 'box_layout_industrial',
+      type: BOX_TYPES.CANVAS,
+      title: 'Generador y Visualizador de Lay-out de Planta (Distribución Física)',
+      description: 'Modelado interactivo de zonas de planta, áreas en m², equipos y flujo de proceso.',
+      source: { book: 'Operations Management (Slack)', page: 'Ch. 7' }
+    },
+    {
       id: 'box_capex_csi_table',
       type: BOX_TYPES.TABLE,
       title: 'Catálogo de Conceptos y CAPEX de Obra (División CSI 16)',

@@ -4,6 +4,7 @@ import { GitFork, AlertCircle, CheckCircle, ArrowDown, ArrowUp } from 'lucide-re
 /**
  * BoxArbolProblemasMML - Árbol de Problemas y Transformación a Objetivos (BID / ZOPP / MML)
  * Estructura: Causas Raíz → Problema Central → Efectos Directos (Causa-Efecto a Medios-Fines)
+ * Totalmente adaptado al tema claro/oscuro del sistema
  */
 export function BoxArbolProblemasMML({ definition = {}, values = {}, onChange = () => {} }) {
   const [mode, setMode] = useState('problemas'); // 'problemas' | 'objetivos'
@@ -51,23 +52,23 @@ export function BoxArbolProblemasMML({ definition = {}, values = {}, onChange = 
 
   return (
     <div style={{
-      background: 'var(--card-bg, #1e293b)',
-      border: '1px solid rgba(245, 158, 11, 0.25)',
+      background: 'var(--bg-panel, #ffffff)',
+      border: '1px solid var(--border-color, #e4e4e7)',
       borderRadius: '12px',
       padding: '24px',
       margin: '20px 0',
-      boxShadow: '0 8px 24px rgba(0,0,0,0.15)'
+      boxShadow: '0 4px 20px rgba(0,0,0,0.06)'
     }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{ padding: '10px', background: 'rgba(245, 158, 11, 0.15)', borderRadius: '10px', color: '#f59e0b' }}>
+          <div style={{ padding: '10px', background: 'rgba(245, 158, 11, 0.12)', borderRadius: '10px', color: '#f59e0b' }}>
             <GitFork size={24} />
           </div>
           <div>
-            <h4 style={{ margin: 0, fontSize: '1.15rem', color: 'var(--text-primary, #f8fafc)', fontWeight: 700 }}>
+            <h4 style={{ margin: 0, fontSize: '1.15rem', color: 'var(--text-primary, #09090b)', fontWeight: 700 }}>
               {definition.title || 'Árbol de Problemas y Objetivos (Metodología Marco Lógico BID/ZOPP)'}
             </h4>
-            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted, #94a3b8)' }}>
+            <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary, #71717a)' }}>
               Fuente: {definition.source?.book || 'Manual de Formulación y Evaluación de Proyectos (BID / CEPAL)'} ({definition.source?.page || 'Ch. 2'})
             </span>
           </div>
@@ -104,8 +105,8 @@ export function BoxArbolProblemasMML({ definition = {}, values = {}, onChange = 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           
           {/* Nivel Superior: Efectos */}
-          <div style={{ background: 'rgba(239, 68, 68, 0.05)', border: '1px solid rgba(239, 68, 68, 0.2)', borderRadius: '8px', padding: '16px' }}>
-            <h5 style={{ margin: '0 0 10px 0', color: '#f87171', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <div style={{ background: 'var(--bg-panel-hover, rgba(0,0,0,0.02))', border: '1px solid rgba(239, 68, 68, 0.25)', borderRadius: '8px', padding: '16px' }}>
+            <h5 style={{ margin: '0 0 10px 0', color: '#ef4444', fontSize: '0.85rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
               <ArrowUp size={14} /> EFECTOS NEGATIVOS DIRECTOS E INDIRECTOS
             </h5>
             {tree.efectos.map((efecto, i) => (
@@ -121,8 +122,8 @@ export function BoxArbolProblemasMML({ definition = {}, values = {}, onChange = 
           </div>
 
           {/* Nivel Medio: Problema Central */}
-          <div style={{ background: 'rgba(239, 68, 68, 0.12)', border: '2px solid #ef4444', borderRadius: '8px', padding: '16px' }}>
-            <h5 style={{ margin: '0 0 10px 0', color: '#fca5a5', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <div style={{ background: 'rgba(239, 68, 68, 0.06)', border: '2px solid #ef4444', borderRadius: '8px', padding: '16px' }}>
+            <h5 style={{ margin: '0 0 10px 0', color: '#b91c1c', fontSize: '0.9rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
               <AlertCircle size={16} /> PROBLEMA CENTRAL IDENTIFICADO
             </h5>
             <textarea
@@ -135,8 +136,8 @@ export function BoxArbolProblemasMML({ definition = {}, values = {}, onChange = 
           </div>
 
           {/* Nivel Inferior: Causas Raíz */}
-          <div style={{ background: 'rgba(239, 68, 68, 0.05)', border: '1px solid rgba(239, 68, 68, 0.2)', borderRadius: '8px', padding: '16px' }}>
-            <h5 style={{ margin: '0 0 10px 0', color: '#f87171', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <div style={{ background: 'var(--bg-panel-hover, rgba(0,0,0,0.02))', border: '1px solid rgba(239, 68, 68, 0.25)', borderRadius: '8px', padding: '16px' }}>
+            <h5 style={{ margin: '0 0 10px 0', color: '#ef4444', fontSize: '0.85rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
               <ArrowDown size={14} /> CAUSAS RAÍZ SUBYACENTES
             </h5>
             {tree.causas.map((causa, i) => (
@@ -156,8 +157,8 @@ export function BoxArbolProblemasMML({ definition = {}, values = {}, onChange = 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           
           {/* Nivel Superior: Fines */}
-          <div style={{ background: 'rgba(16, 185, 129, 0.05)', border: '1px solid rgba(16, 185, 129, 0.2)', borderRadius: '8px', padding: '16px' }}>
-            <h5 style={{ margin: '0 0 10px 0', color: '#34d399', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <div style={{ background: 'var(--bg-panel-hover, rgba(0,0,0,0.02))', border: '1px solid rgba(16, 185, 129, 0.25)', borderRadius: '8px', padding: '16px' }}>
+            <h5 style={{ margin: '0 0 10px 0', color: '#10b981', fontSize: '0.85rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
               <ArrowUp size={14} /> FINES Y RESULTADOS ESPERADOS
             </h5>
             {tree.fines.map((fin, i) => (
@@ -173,8 +174,8 @@ export function BoxArbolProblemasMML({ definition = {}, values = {}, onChange = 
           </div>
 
           {/* Nivel Medio: Propósito Central */}
-          <div style={{ background: 'rgba(16, 185, 129, 0.12)', border: '2px solid #10b981', borderRadius: '8px', padding: '16px' }}>
-            <h5 style={{ margin: '0 0 10px 0', color: '#6ee7b7', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <div style={{ background: 'rgba(16, 185, 129, 0.06)', border: '2px solid #10b981', borderRadius: '8px', padding: '16px' }}>
+            <h5 style={{ margin: '0 0 10px 0', color: '#047857', fontSize: '0.9rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
               <CheckCircle size={16} /> PROPÓSITO CENTRAL DEL PROYECTO
             </h5>
             <textarea
@@ -187,8 +188,8 @@ export function BoxArbolProblemasMML({ definition = {}, values = {}, onChange = 
           </div>
 
           {/* Nivel Inferior: Medios / Actividades */}
-          <div style={{ background: 'rgba(16, 185, 129, 0.05)', border: '1px solid rgba(16, 185, 129, 0.2)', borderRadius: '8px', padding: '16px' }}>
-            <h5 style={{ margin: '0 0 10px 0', color: '#34d399', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <div style={{ background: 'var(--bg-panel-hover, rgba(0,0,0,0.02))', border: '1px solid rgba(16, 185, 129, 0.25)', borderRadius: '8px', padding: '16px' }}>
+            <h5 style={{ margin: '0 0 10px 0', color: '#10b981', fontSize: '0.85rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
               <ArrowDown size={14} /> MEDIOS Y COMPONENTES DE SOLUCIÓN
             </h5>
             {tree.medios.map((medio, i) => (

@@ -12,3 +12,123 @@ Esperando actividad…
 [ModelRegistry] Obteniendo modelos dinámicos de OpenRouter...
 [ModelRegistry] Modelos de OpenRouter sincronizados.
 [ModelRegistry] Cron completado. 21 modelos en registro.
+Banxico SieAPI retornó código 400. Usando fallback.
+Banxico SieAPI retornó código 400. Usando fallback.
+
+════════════════════════════════════════════════════════════
+  🕵️  AGENTE DE INVESTIGACIÓN DE MERCADO
+════════════════════════════════════════════════════════════
+  📍 Coordenadas: 29.0948207, -110.9692202
+  🔎 Búsqueda: "comercial"
+  📏 Radio: 2500m 
+  🔑 Fuentes disponibles:
+     DENUE (INEGI): ✅
+     Google Places: ⏭️  Usando gratuitas
+     Bing Maps:     ⏭️  Omitido
+     OSM/Overpass:  ✅ (siempre activo)
+     DuckDuckGo:    ✅ (siempre activo)
+────────────────────────────────────────────────────────────
+[DENUE] Ejecutando 1 petición(es) concéntrica(s) para radio 2500m...
+
+════════════════════════════════════════════════════════════
+  🕵️  AGENTE DE INVESTIGACIÓN DE MERCADO
+════════════════════════════════════════════════════════════
+  📍 Coordenadas: 29.0948207, -110.9692202
+  🔎 Búsqueda: "servicios"
+  📏 Radio: 2500m 
+  🔑 Fuentes disponibles:
+     DENUE (INEGI): ✅
+     Google Places: ⏭️  Usando gratuitas
+     Bing Maps:     ⏭️  Omitido
+     OSM/Overpass:  ✅ (siempre activo)
+     DuckDuckGo:    ✅ (siempre activo)
+────────────────────────────────────────────────────────────
+[DENUE] Ejecutando 1 petición(es) concéntrica(s) para radio 2500m...
+
+════════════════════════════════════════════════════════════
+  🕵️  AGENTE DE INVESTIGACIÓN DE MERCADO
+════════════════════════════════════════════════════════════
+  📍 Coordenadas: 29.0948207, -110.9692202
+  🔎 Búsqueda: "finanzas asesoría seguros crédito inversión"
+  📏 Radio: 2500m 
+  🔑 Fuentes disponibles:
+     DENUE (INEGI): ✅
+     Google Places: ⏭️  Usando gratuitas
+     Bing Maps:     ⏭️  Omitido
+     OSM/Overpass:  ✅ (siempre activo)
+     DuckDuckGo:    ✅ (siempre activo)
+────────────────────────────────────────────────────────────
+[DENUE] Ejecutando 1 petición(es) concéntrica(s) para radio 2500m...
+[DENUE API Nacional] Encontrados 341 establecimientos oficiales.
+[DENUE] Total deduplicado: 341 establecimientos únicos.
+Cargando base de datos DENUE local en memoria (Fallback)...
+Base de datos local cargada: 39059 registros.
+[Offline DENUE] Fallback exitoso: 0 resultados en radio 2500m.
+[CompetitorEngine] Error en OSM/Overpass: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+[DENUE] Total deduplicado: 0 establecimientos únicos.
+[CompetitorEngine] Error en OSM/Overpass: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+[CompetitorEngine] Error en OSM/Overpass: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+[DENUE API Nacional] Encontrados 2047 establecimientos oficiales.
+[DENUE] Total deduplicado: 2047 establecimientos únicos.
+Error en búsqueda web: Error: DDG detected an anomaly in the request, you are likely making requests too quickly.
+    at search (/Users/robertoeduardocelisrobles/Documents/Proyectos/Open-Business-Plan/node_modules/duck-duck-scrape/lib/search/search.js:80:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async file:///Users/robertoeduardocelisrobles/Documents/Proyectos/Open-Business-Plan/server/index.js:379:24
+
+  📊 Resultados por fuente:
+     🏛️  DENUE:   341 establecimientos
+     🗺️  OSM:     0 POIs
+     📍 Google:  0 places
+     🔵 Bing:    0 places
+     🦆 DDG:     0 resultados web
+
+  ✅ Fusión completada en 4816ms:
+     📊 330 registros únicos
+     🟢 Alta confianza:  0
+     🟡 Media confianza: 0
+     🔴 Baja confianza:  330
+     👻 Posibles zombies: 330
+════════════════════════════════════════════════════════════
+
+Error en búsqueda web: Error: DDG detected an anomaly in the request, you are likely making requests too quickly.
+    at search (/Users/robertoeduardocelisrobles/Documents/Proyectos/Open-Business-Plan/node_modules/duck-duck-scrape/lib/search/search.js:80:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async file:///Users/robertoeduardocelisrobles/Documents/Proyectos/Open-Business-Plan/server/index.js:379:24
+
+  📊 Resultados por fuente:
+     🏛️  DENUE:   0 establecimientos
+     🗺️  OSM:     0 POIs
+     📍 Google:  0 places
+     🔵 Bing:    0 places
+     🦆 DDG:     0 resultados web
+
+  ⚡ [Generador Geoespacial IA] Fuentes externas devolvieron 0 resultados. Generando 16 competidores sintéticos hiper-realistas para "finanzas asesoría seguros crédito inversión"...
+
+  ✅ Fusión completada en 4771ms:
+     📊 16 registros únicos
+     🟢 Alta confianza:  16
+     🟡 Media confianza: 0
+     🔴 Baja confianza:  0
+     👻 Posibles zombies: 0
+════════════════════════════════════════════════════════════
+
+Error en búsqueda web: Error: DDG detected an anomaly in the request, you are likely making requests too quickly.
+    at search (/Users/robertoeduardocelisrobles/Documents/Proyectos/Open-Business-Plan/node_modules/duck-duck-scrape/lib/search/search.js:80:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async file:///Users/robertoeduardocelisrobles/Documents/Proyectos/Open-Business-Plan/server/index.js:379:24
+
+  📊 Resultados por fuente:
+     🏛️  DENUE:   2047 establecimientos
+     🗺️  OSM:     0 POIs
+     📍 Google:  0 places
+     🔵 Bing:    0 places
+     🦆 DDG:     0 resultados web
+
+  ✅ Fusión completada en 6227ms:
+     📊 2008 registros únicos
+     🟢 Alta confianza:  0
+     🟡 Media confianza: 0
+     🔴 Baja confianza:  2008
+     👻 Posibles zombies: 2008
+════════════════════════════════════════════════════════════
+
