@@ -24,12 +24,7 @@ import HumanCapitalMatrix from '../components/HumanCapitalMatrix';
 import MultiScenarioFinancialSection from '../components/MultiScenarioFinancialSection';
 import { BOX_REGISTRY } from '../config/boxRegistry';
 import { getBoxIdsForModule } from '../config/moduleBoxMap';
-import { BoxFormula } from '../components/boxes/BoxFormula';
-import { BoxMatrix } from '../components/boxes/BoxMatrix';
-import { BoxCanvas } from '../components/boxes/BoxCanvas';
-import { BoxChecklist } from '../components/boxes/BoxChecklist';
-import { BoxBenchmark } from '../components/boxes/BoxBenchmark';
-import { BoxTable } from '../components/boxes/BoxTable';
+import { RenderBox } from '../components/boxes';
 
 function readJson(raw, fallback) {
   if (!raw || typeof raw !== 'string') return fallback;
@@ -3189,23 +3184,14 @@ export default function VistaPrevia() {
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                       {boxes.map((boxDef) => {
                         const boxValues = moduleBoxData[boxDef.id] || {};
-                        
-                        switch (boxDef.type) {
-                          case 'formula':
-                            return <BoxFormula key={boxDef.id} definition={boxDef} values={boxValues} onChange={(_v) => {}} />;
-                          case 'matrix':
-                            return <BoxMatrix key={boxDef.id} definition={boxDef} data={boxValues} />;
-                          case 'canvas':
-                            return <BoxCanvas key={boxDef.id} definition={boxDef} data={boxValues} />;
-                          case 'checklist':
-                            return <BoxChecklist key={boxDef.id} definition={boxDef} values={boxValues} />;
-                          case 'benchmark':
-                            return <BoxBenchmark key={boxDef.id} definition={boxDef} values={boxValues} />;
-                          case 'table':
-                            return <BoxTable key={boxDef.id} definition={boxDef} values={boxValues} />;
-                          default:
-                            return null;
-                        }
+                        return (
+                          <RenderBox
+                            key={boxDef.id}
+                            definition={boxDef}
+                            values={boxValues}
+                            onChange={() => {}}
+                          />
+                        );
                       })}
                     </div>
                   </div>

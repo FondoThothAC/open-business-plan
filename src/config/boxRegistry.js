@@ -40,6 +40,27 @@ export const BOX_REGISTRY = {
       title: 'Evaluación Financiera Maestra (WACC, VAN, TIR)',
       description: 'Modelo de descuento de flujos con costo de capital CAPM.',
       source: { book: 'The Nature of Value', page: 'Ch. 5' }
+    },
+    {
+      id: 'box_canvas_osterwalder',
+      type: BOX_TYPES.CANVAS,
+      title: 'Business Model Canvas (Alexander Osterwalder — 9 Bloques)',
+      description: 'Lienzo clásico de modelo de negocio con los 9 bloques estratégicos.',
+      source: { book: 'Business Model Generation (Osterwalder)', page: 'p. 14' }
+    },
+    {
+      id: 'box_benchmark_cac_ltv',
+      type: BOX_TYPES.BENCHMARK,
+      title: 'Benchmark Sectorial CAC / LTV / Churn Rate',
+      description: 'Evaluación de eficiencia comercial contra estándares de la industria.',
+      source: { book: 'Starting a Business QuickStart Guide', page: 'p. 112' }
+    },
+    {
+      id: 'box_kpi_otd_dso_dio_ccc',
+      type: BOX_TYPES.BENCHMARK,
+      title: 'Indicadores de Eficiencia Operativa (OTD, DSO, DPO, CCC)',
+      description: 'Métricas de cadena de suministro y ciclo de conversión de efectivo.',
+      source: { book: 'Operations Management (Slack)', page: 'p. 210' }
     }
   ],
   agile_startup: [

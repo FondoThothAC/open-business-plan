@@ -418,8 +418,8 @@ ${JSON.stringify(seed, null, 2)}\n`
     : '';
 
   const documentsContext = (allPlanData.config?.documents || []).length > 0
-    ? `\nDOCUMENTOS DE REFERENCIA (RAG):
-${allPlanData.config.documents.map(d => d.text).join('\n---\n').substring(0, 5000)}\n`
+    ? `\nDOCUMENTOS DE REFERENCIA (RAG COMPLETO):
+${allPlanData.config.documents.map(d => `--- INICIO DOCUMENTO: ${d.name || 'Archivo Adjunto'} ---\n${d.text || ''}\n--- FIN DOCUMENTO ---`).join('\n\n')}\n`
     : '';
 
   const isLocalProvider = primaryProvider === 'ollama' || primaryProvider === 'lmstudio';
