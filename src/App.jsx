@@ -16,13 +16,13 @@ import ErrorBoundary from './components/ErrorBoundary';
 
 // [HDD] Primer arranque: si no hay setup en localStorage, mostramos el wizard
 function AppContent() {
-  const { planData, updateConfig } = usePlan();
+  const { planData = {}, updateConfig = () => {} } = usePlan() || {};
   const [showWizard, setShowWizard] = useState(false);
 
   useEffect(() => {
-    const theme = planData.config?.theme || 'dark';
+    const theme = planData?.config?.theme || 'dark';
     document.documentElement.setAttribute('data-theme', theme);
-  }, [planData.config?.theme]);
+  }, [planData?.config?.theme]);
 
   useEffect(() => {
     // [TDD] Solo mostrar wizard si no hay configuración previa

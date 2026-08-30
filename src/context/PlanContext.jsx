@@ -23,7 +23,7 @@ const EXAMPLE_FRAMEWORK_MAP = {
 };
 
 const PlanContext = createContext();
-export const usePlan = () => useContext(PlanContext);
+export const usePlan = () => useContext(PlanContext) || {};
 
 const deepMerge = (target, source) => {
   const result = { ...target };
