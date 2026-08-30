@@ -31,10 +31,14 @@ export class LegalComplianceChecker {
       { ley: 'LISR (Ley del Impuesto sobre la Renta)', articulos: 'Art. 9 (Tasa 30%), Art. 25, 27 (Deducciones), Art. 34-35 (Depreciación CAPEX)', materia: 'Fiscal / Impuestos' },
       { ley: 'LIVA & CFF (IVA y Código Fiscal)', articulos: 'LIVA Art. 1 (Tasa 16%), CFF Art. 29 (CFDI 4.0), Art. 32-D (Opinión Positiva)', materia: 'Facturación y Cumplimiento' },
       { ley: 'LFT (Ley Federal del Trabajo)', articulos: 'Art. 76 (Vacaciones 12d+), Art. 87 (Aguinaldo 15d), Art. 117 (PTU 10%), Art. 15 (REPSE)', materia: 'Laboral / Nómina' },
-      { ley: 'LMV (Ley del Mercado de Valores)', articulos: 'Art. 12-19 (Régimen S.A.P.I. de C.V., Tag-Along, Drag-Along, Pactos Parasociales)', materia: 'Corporativo / Inversión' },
+      { ley: 'LMV & LGSM (Sociedades y Mercado de Valores)', articulos: 'LMV Art. 12-19 (Régimen S.A.P.I. de C.V., Tag-Along, Drag-Along, Pactos Parasociales), LGSM Art. 6', materia: 'Corporativo / Inversión' },
       { ley: 'NOM-STPS (Seguridad Minera e Industrial)', articulos: 'NOM-023-STPS (Minas), NOM-004-STPS (Maquinaria/Presión 40k PSI), NOM-017-STPS (EPP)', materia: 'Seguridad Operativa' },
       { ley: 'LFPPI & LFDA (Propiedad Intelectual)', articulos: 'LFPPI Art. 170 (Marcas Clases 37/42), Art. 45 (Modelos Utilidad), LFDA Art. 101 (Software IoT)', materia: 'Propiedad Intelectual' },
-      { ley: 'LGPGIR & SEMARNAT (Medio Ambiente)', articulos: 'Art. 42 (Residuos Peligrosos/Aceites usados), Principio DNSH (Do No Significant Harm)', materia: 'Ambiental / ESG' }
+      { ley: 'LGPGIR & LGEEPA (Medio Ambiente)', articulos: 'LGPGIR Art. 42 (Residuos Peligrosos/Aceites usados), LGEEPA Art. 28 (MIA), Principio DNSH', materia: 'Ambiental / ESG' },
+      { ley: 'LIGIE (Ley de Impuestos de Importación y Exportación)', articulos: 'Cap. 40 (Mangueras 4009.22), Cap. 84/90 (Bancos de prueba, Sensores IoT), Reglas T-MEC, DTA', materia: 'Comercio Exterior / Aduanas' },
+      { ley: 'CCom (Código de Comercio)', articulos: 'Art. 75, 78 (Actos de comercio y libertad contractual), Art. 362 (Mora comercial), Art. 89 (Firma electrónica)', materia: 'Mercantil / Contratos' },
+      { ley: 'Ley Minera y Reglamento R103', articulos: 'Ley Minera Art. 6-19, R103 (Talleres móviles en bocamina/tajo, credencialización e inducción)', materia: 'Operación Minera' },
+      { ley: 'Reforma STPS REPSE (DOF 24/05/2021)', articulos: 'Art. 15 LFT, Padrón REPSE, Requisitos de Especialización, Prohibición de Outsourcing simulado', materia: 'Servicios Especializados' }
     ];
   }
 

@@ -236,9 +236,12 @@ describe('Suite Completa de 10 Herramientas Analíticas y Boxes (13 Libros) - TD
       assert.strictEqual(taxes.ptuUtilidades, 0.10);
 
       const framework = LegalComplianceChecker.getMexicanRegulatoryFramework();
-      assert.strictEqual(framework.length, 7);
+      assert.strictEqual(framework.length, 11);
       assert.ok(framework.some(f => f.ley.includes('LISR')));
       assert.ok(framework.some(f => f.ley.includes('NOM-STPS')));
+      assert.ok(framework.some(f => f.ley.includes('LIGIE')));
+      assert.ok(framework.some(f => f.ley.includes('CCom')));
+      assert.ok(framework.some(f => f.ley.includes('REPSE')));
     });
   });
 
