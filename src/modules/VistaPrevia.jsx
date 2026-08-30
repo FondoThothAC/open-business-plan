@@ -22,7 +22,8 @@ import XMatrixHoshinKanri from '../components/XMatrixHoshinKanri';
 import AmoebaStructureViewer from '../components/AmoebaStructureViewer';
 import HumanCapitalMatrix from '../components/HumanCapitalMatrix';
 import MultiScenarioFinancialSection from '../components/MultiScenarioFinancialSection';
-import { getBoxesForDocType } from '../config/boxRegistry';
+import { BOX_REGISTRY } from '../config/boxRegistry';
+import { getBoxIdsForModule } from '../config/moduleBoxMap';
 import { BoxFormula } from '../components/boxes/BoxFormula';
 import { BoxMatrix } from '../components/boxes/BoxMatrix';
 import { BoxCanvas } from '../components/boxes/BoxCanvas';
@@ -3161,10 +3162,20 @@ export default function VistaPrevia() {
                 <CorporatePrintFooter pageNum={pageNum} sectionName={mod.title} />
               </div>
 
-              {/* Box Components Integration - Metodologías metodológicas por tipo de documento */}
+              {/* Box Components Integration - Metodologías metodológicas por módulo específico */}
               {(() => {
                 const projectType = planData.config?.projectType || 'business';
-                const boxes = getBoxesForDocType(projectType);
+                const boxIds = getBoxIdsForModule(mod.key, projectType);
+                if (!boxIds.length) return null;
+
+                const boxes = boxIds.map(id => {
+                  for (const methodology of Object.values(BOX_REGISTRY)) {
+                    const box = methodology.find(b => b.id === id);
+                    if (box) return box;
+                  }
+                  return null;
+                }).filter(Boolean);
+
                 if (!boxes.length) return null;
 
                 const moduleBoxData = planData?.[mod.pillarKey]?.[mod.key] || {};

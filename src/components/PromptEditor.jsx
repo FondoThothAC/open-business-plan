@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { X, Save, AlignLeft, Lightbulb, TrendingUp, Quote, CheckSquare, Sparkles } from 'lucide-react';
 
 export default function PromptEditor({ isOpen, onClose, fieldLabel, fieldKey, promptData, onSave }) {
@@ -78,7 +78,7 @@ export default function PromptEditor({ isOpen, onClose, fieldLabel, fieldKey, pr
               Editor de Prompt
             </h3>
             <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>
-              Campo: <strong>{fieldLabel}</strong>
+              Campo: <strong>{fieldLabel}</strong> {fieldKey && <span style={{ opacity: 0.6 }}>({fieldKey})</span>}
             </p>
           </div>
           <button className="icon-btn-rounded" onClick={onClose}>

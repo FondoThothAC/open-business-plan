@@ -19,7 +19,7 @@ import FieldComments from './FieldComments';
 import HumanCapitalMatrix from './HumanCapitalMatrix';
 import { safeStr } from '../utils/formatters';
 import { BOX_REGISTRY } from '../config/boxRegistry';
-import { getBoxesForModule } from '../config/moduleBoxMap';
+import { getBoxIdsForModule } from '../config/moduleBoxMap';
 import { BoxFormula } from '../components/boxes/BoxFormula';
 import { BoxMatrix } from '../components/boxes/BoxMatrix';
 import { BoxCanvas } from '../components/boxes/BoxCanvas';
@@ -29,7 +29,7 @@ import { BoxTable } from '../components/boxes/BoxTable';
 import PromptEditor from './PromptEditor';
 
 export default function ModuleWrapper({ pillar, moduleKey, title, description, fields, extraAction }) {
-  const { planData, updateSection, toggleLock, toggleModuleVisibility, addComment, deleteComment } = usePlan();
+  const { planData, updateSection, updateConfig, toggleLock, toggleModuleVisibility, addComment, deleteComment } = usePlan();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [stage, setStage] = useState('');
@@ -58,21 +58,12 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
   };
 
   const getFieldGuide = (fieldKey) => {
+    const custom = planData.config?.customPrompts?.[fieldKey];
+    if (custom) return custom;
     const guide = FIELD_GUIDES[fieldKey];
     if (guide) return guide;
     return { instruccion: `Completa este campo con información relevante para ${fieldKey}.`, ejemplo: '' };
   };
-
-  const getPromptPreview = (fieldLabel, fieldKey, fieldType) => {
-    const guide = FIELD_GUIDES[fieldKey];
-    const isVisual = fieldType === 'mermaid' || fieldType === 'heatmap';
-    return `PROMPT QUE SE ENVÍA A LA IA:\n\n` +
-           `"Eres un experto en planes de negocio. Redacta ${fieldLabel}${isVisual ? ' en formato visual Mermaid.js' : ''}."\n\n` +
-           `CONTEXTO: Se inyecta TODO el plan actual como JSON para coherencia.\n\n` +
-           `FASE 1 – ANALISTA:\n"Genera un borrador profesional para ${fieldLabel}. ${guide ? guide.instruccion : ''}"\n\n` +
-           `FASE 2 – CRÍTICO:\n"Actúa como inversor. ¿Qué falta en el borrador de ${fieldLabel}? ¿Hay datos débiles?"\n\n` +
-           `FASE 3 – REDACTOR:\n"Integra la crítica y genera la versión final con tono ejecutivo para un plan de 100 páginas."`;
-   };
 
   const handleChange = (fieldKey, value) => {
     if (isLocked(fieldKey)) return;
@@ -591,9 +582,10 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
             ))
           )}
 
-          {/* Box Components Integration - Metodologías metodológicas por tipo de documento */}
+          {/* Box Components Integration - Metodologías metodológicas por módulo específico */}
           {(() => {
-            const boxIds = getBoxesForModule(moduleKey);
+            const projectType = planData.config?.projectType || 'business';
+            const boxIds = getBoxIdsForModule(moduleKey, projectType);
             if (!boxIds.length) return null;
 
             const boxes = boxIds.map(id => {
@@ -665,8 +657,9 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
         fieldKey={activePromptField?.key}
         promptData={activePromptField ? getFieldGuide(activePromptField.key) : null}
         onSave={(newPrompt) => {
-          // TODO: Implementar guardado en customOverrides o planData
-          console.log('Saved prompt override for', activePromptField?.key, newPrompt);
+          if (activePromptField?.key) {
+            updateConfig('customPrompts', activePromptField.key, newPrompt);
+          }
           setActivePromptField(null);
         }}
       />

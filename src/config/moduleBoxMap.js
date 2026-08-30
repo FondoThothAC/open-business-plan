@@ -1,176 +1,182 @@
-import { BOX_TYPES } from './boxes.js';
+import { getBoxesForDocType } from './boxRegistry.js';
 
 /**
  * Mapa selectivo: moduleKey → boxIds[]
  * Define qué boxes metodológicos aparecen en cada módulo específico.
  * Evita mostrar todos los boxes en todos los módulos.
+ * 
+ * Las claves usan el formato "tipoDoc:moduleKey" para evitar colisiones
+ * entre frameworks que comparten nombres de módulos (ej. "business:canvas" vs "agile_startup:canvas")
  */
 export const MODULE_BOX_MAP = {
   // ============ PLAN COMERCIAL (business) ============
   // Naturaleza
-  introduccion: ['box_resumen_ejecutivo_1p'],
-  identidad: ['box_resumen_ejecutivo_1p'],
-  objetivos: [],
-  foda: ['box_swot_foda'],
-  pestel: [],
-  legal: [],
-  canvas: ['box_canvas_osterwalder', 'box_lean_canvas'],
+  'business:introduccion': ['box_resumen_ejecutivo_1p'],
+  'business:identidad': ['box_resumen_ejecutivo_1p'],
+  'business:objetivos': [],
+  'business:foda': ['box_swot_foda'],
+  'business:pestel': [],
+  'business:legal': [],
+  'business:canvas': ['box_canvas_osterwalder', 'box_lean_canvas'],
   
   // Mercado
-  analisis: ['box_tam_sam_som'],
-  segmentacion: ['box_tam_sam_som'],
-  mapa: [],
-  competencia: ['box_swot_foda'],
-  benchmarking: [],
-  comercializacion: [],
-  ventas: ['box_unit_economics', 'box_benchmark_cac_ltv'],
+  'business:analisis': ['box_tam_sam_som'],
+  'business:segmentacion': ['box_tam_sam_som'],
+  'business:mapa': [],
+  'business:competencia': ['box_swot_foda'],
+  'business:benchmarking': [],
+  'business:comercializacion': [],
+  'business:ventas': ['box_unit_economics', 'box_benchmark_cac_ltv'],
   
   // Técnico
-  ubicacion: [],
-  operacion: ['box_kpi_otd_dso_dio_ccc'],
-  recursos: [],
-  insumos: [],
-  capacidad: ['box_kpi_otd_dso_dio_ccc'],
-  operativa: ['box_kpi_otd_dso_dio_ccc'],
-  ambiental: [],
+  'business:ubicacion': [],
+  'business:operacion': ['box_kpi_otd_dso_dio_ccc'],
+  'business:recursos': [],
+  'business:insumos': [],
+  'business:capacidad': ['box_kpi_otd_dso_dio_ccc'],
+  'business:operativa': ['box_kpi_otd_dso_dio_ccc'],
+  'business:ambiental': [],
   
   // Organización y Finanzas
-  estructura: ['box_unit_economics', 'box_benchmark_cac_ltv'],
-  recursos_humanos: ['box_unit_economics', 'box_benchmark_cac_ltv'],
-  inversion: ['box_wacc_van_tir', 'box_tornado_sensibilidad'],
-  costos: ['box_unit_economics'],
-  estados_financieros: ['box_wacc_van_tir', 'box_tornado_sensibilidad', 'box_montecarlo_sim'],
-  rentabilidad: ['box_wacc_van_tir', 'box_unit_economics', 'box_benchmark_cac_ltv'],
-  simulador: ['box_wacc_van_tir', 'box_montecarlo_sim'],
+  'business:estructura': ['box_unit_economics', 'box_benchmark_cac_ltv'],
+  'business:recursos_humanos': ['box_unit_economics', 'box_benchmark_cac_ltv'],
+  'business:inversion': ['box_wacc_van_tir', 'box_tornado_sensibilidad'],
+  'business:costos': ['box_unit_economics'],
+  'business:estados_financieros': ['box_wacc_van_tir', 'box_tornado_sensibilidad', 'box_montecarlo_sim'],
+  'business:rentabilidad': ['box_wacc_van_tir', 'box_unit_economics', 'box_benchmark_cac_ltv'],
+  'business:simulador': ['box_wacc_van_tir', 'box_montecarlo_sim'],
   
   // ============ AGILE STARTUP ============
   // Validación
-  canvas: ['box_lean_canvas', 'box_canvas_osterwalder'],
-  buyer_persona: [],
+  'agile_startup:canvas': ['box_lean_canvas', 'box_canvas_osterwalder'],
+  'agile_startup:buyer_persona': [],
   
   // Experimento
-  mvp_design: ['box_mvp_protocol'],
-  critical_hypotheses: ['box_mvp_protocol'],
+  'agile_startup:mvp_design': ['box_mvp_protocol'],
+  'agile_startup:critical_hypotheses': ['box_mvp_protocol'],
   
   // Aprendizaje
-  pilot_results: ['box_burn_runway'],
-  pivot_persevere: ['box_burn_runway', 'box_mvp_protocol'],
+  'agile_startup:pilot_results': ['box_burn_runway'],
+  'agile_startup:pivot_persevere': ['box_burn_runway', 'box_mvp_protocol'],
   
   // Finanzas Ágiles
-  unit_economics: ['box_unit_economics', 'box_benchmark_cac_ltv'],
-  burn_rate: ['box_burn_runway', 'box_benchmark_cac_ltv'],
-  simulador: ['box_burn_runway'],
+  'agile_startup:unit_economics': ['box_unit_economics', 'box_benchmark_cac_ltv'],
+  'agile_startup:burn_rate': ['box_burn_runway', 'box_benchmark_cac_ltv'],
+  'agile_startup:simulador': ['box_burn_runway'],
   
   // ============ INVESTMENT PROJECT ============
-  demanda: ['box_tam_sam_som'],
-  oferta: [],
-  ingenieria: [],
-  layout: [],
-  presupuesto: ['box_capex_csi_table'],
-  cronograma: [],
-  capital: ['box_wacc_van_tir'],
-  deuda: ['box_wacc_van_tir'],
-  sensibilidad: ['box_tornado_sensibilidad'],
-  probabilidad: ['box_montecarlo_sim'],
-  simulador: ['box_wacc_van_tir', 'box_montecarlo_sim'],
+  'investment_project:demanda': ['box_tam_sam_som'],
+  'investment_project:oferta': [],
+  'investment_project:ingenieria': [],
+  'investment_project:layout': [],
+  'investment_project:presupuesto': ['box_capex_csi_table'],
+  'investment_project:cronograma': [],
+  'investment_project:capital': ['box_wacc_van_tir'],
+  'investment_project:deuda': ['box_wacc_van_tir'],
+  'investment_project:sensibilidad': ['box_tornado_sensibilidad'],
+  'investment_project:probabilidad': ['box_montecarlo_sim'],
+  'investment_project:simulador': ['box_wacc_van_tir', 'box_montecarlo_sim'],
   
   // ============ SOCIAL BID ============
-  involucrados: ['box_matriz_interes_poder'],
-  arbol_problemas: ['box_arbol_problemas_mml'],
-  arbol_objetivos: ['box_arbol_problemas_mml'],
-  alternativas: ['box_arbol_problemas_mml'],
-  fin_proposito: [],
-  componentes: [],
-  actividades: [],
-  monitoreo: [],
-  gobernanza: [],
-  edt: [],
-  riesgos: ['box_zopp_mpp_4x4'],
-  comunicaciones: [],
-  presupuesto_detallado: [],
-  evaluacion_exante: [],
-  sostenibilidad: [],
+  'social_bid:involucrados': ['box_matriz_interes_poder'],
+  'social_bid:arbol_problemas': ['box_arbol_problemas_mml'],
+  'social_bid:arbol_objetivos': ['box_arbol_problemas_mml'],
+  'social_bid:alternativas': ['box_arbol_problemas_mml'],
+  'social_bid:fin_proposito': [],
+  'social_bid:componentes': [],
+  'social_bid:actividades': [],
+  'social_bid:monitoreo': [],
+  'social_bid:gobernanza': [],
+  'social_bid:edt': [],
+  'social_bid:riesgos': ['box_zopp_mpp_4x4'],
+  'social_bid:comunicaciones': [],
+  'social_bid:presupuesto_detallado': [],
+  'social_bid:evaluacion_exante': [],
+  'social_bid:sostenibilidad': [],
   
   // ============ TECHNOLOGY_ID ============
-  tech_invention: ['box_trl_assessment'],
-  property_intellectual: ['box_ipc_classifier'],
-  technical_id: ['box_trl_assessment'],
-  prototyping: ['box_trl_assessment'],
-  tech_market: ['box_ipc_classifier'],
-  transfer_model: ['box_ipc_classifier'],
-  rse_impact: [],
-  circular_economy: [],
-  simulador: [],
+  'technology_id:tech_invention': ['box_trl_assessment'],
+  'technology_id:property_intellectual': ['box_ipc_classifier'],
+  'technology_id:technical_id': ['box_trl_assessment'],
+  'technology_id:prototyping': ['box_trl_assessment'],
+  'technology_id:tech_market': ['box_ipc_classifier'],
+  'technology_id:transfer_model': ['box_ipc_classifier'],
+  'technology_id:rse_impact': [],
+  'technology_id:circular_economy': [],
+  'technology_id:simulador': [],
   
   // ============ MICRO BUSINESS ============
-  introduccion: ['box_apertura_30dias'],
-  identidad: ['box_apertura_30dias'],
-  clientes: ['box_apertura_30dias'],
-  competencia: ['box_apertura_30dias'],
-  comercializacion: ['box_apertura_30dias'],
-  operacion: ['box_apertura_30dias'],
-  recursos: ['box_apertura_30dias'],
-  croquis: ['box_micro_canvas_3b'],
-  inversion: ['box_apertura_30dias'],
-  costos: ['box_micro_canvas_3b'],
-  
-  // ============ TECHNOLOGY_ID (duplicado, ya está arriba) ============
-  // ... ya definido
+  'micro_business:introduccion': ['box_apertura_30dias'],
+  'micro_business:identidad': ['box_apertura_30dias'],
+  'micro_business:clientes': ['box_apertura_30dias'],
+  'micro_business:competencia': ['box_apertura_30dias'],
+  'micro_business:comercializacion': ['box_apertura_30dias'],
+  'micro_business:operacion': ['box_apertura_30dias'],
+  'micro_business:recursos': ['box_apertura_30dias'],
+  'micro_business:croquis': ['box_micro_canvas_3b'],
+  'micro_business:inversion': ['box_apertura_30dias'],
+  'micro_business:costos': ['box_micro_canvas_3b'],
   
   // ============ HOSHIN KANRI ============
-  norte_verdadero: ['box_matriz_x_hoshin'],
-  disrupcion: ['box_matriz_x_hoshin'],
-  matriz_x: ['box_matriz_x_hoshin'],
-  seguimiento: ['box_matriz_x_hoshin'],
+  'hoshin_kanri:norte_verdadero': ['box_matriz_x_hoshin'],
+  'hoshin_kanri:disrupcion': ['box_matriz_x_hoshin'],
+  'hoshin_kanri:matriz_x': ['box_matriz_x_hoshin'],
+  'hoshin_kanri:seguimiento': ['box_matriz_x_hoshin'],
   
   // ============ AMOEBA MANAGEMENT ============
-  celulas: ['box_rentabilidad_hora_amoeba'],
-  filosofia_corp: ['box_rentabilidad_hora_amoeba'],
-  precios: ['box_rentabilidad_hora_amoeba'],
-  rentabilidad: ['box_rentabilidad_hora_amoeba'],
-  simulador: ['box_rentabilidad_hora_amoeba'],
+  'amoeba_management:celulas': ['box_rentabilidad_hora_amoeba'],
+  'amoeba_management:filosofia_corp': ['box_rentabilidad_hora_amoeba'],
+  'amoeba_management:precios': ['box_rentabilidad_hora_amoeba'],
+  'amoeba_management:rentabilidad': ['box_rentabilidad_hora_amoeba'],
+  'amoeba_management:simulador': ['box_rentabilidad_hora_amoeba'],
   
   // ============ GUANXI PLAN ============
-  mapa_relacional: ['box_mapa_guanxi_mianzi'],
-  alineacion_estado: ['box_mapa_guanxi_mianzi'],
-  favores: ['box_mapa_guanxi_mianzi'],
-  mianzi: ['box_mapa_guanxi_mianzi'],
+  'guanxi_plan:mapa_relacional': ['box_mapa_guanxi_mianzi'],
+  'guanxi_plan:alineacion_estado': ['box_mapa_guanxi_mianzi'],
+  'guanxi_plan:favores': ['box_mapa_guanxi_mianzi'],
+  'guanxi_plan:mianzi': ['box_mapa_guanxi_mianzi'],
   
   // ============ ONUDI PROJECT ============
-  tecnologia: [],
-  costo_capital: ['box_fcff_onudi_model'],
-  flujo_firma: ['box_fcff_onudi_model'],
-  riesgo: ['box_fcff_onudi_model'],
-  simulador: ['box_fcff_onudi_model'],
+  'onudi_project:tecnologia': [],
+  'onudi_project:costo_capital': ['box_fcff_onudi_model'],
+  'onudi_project:flujo_firma': ['box_fcff_onudi_model'],
+  'onudi_project:riesgo': ['box_fcff_onudi_model'],
+  'onudi_project:simulador': ['box_fcff_onudi_model'],
   
   // ============ ZOPP ============
-  participacion: ['box_zopp_mpp_4x4'],
-  problemas: ['box_zopp_mpp_4x4'],
-  objetivos: ['box_zopp_mpp_4x4'],
-  matriz_logica: ['box_zopp_mpp_4x4'],
+  'zopp:participacion': ['box_zopp_mpp_4x4'],
+  'zopp:problemas': ['box_zopp_mpp_4x4'],
+  'zopp:objetivos': ['box_zopp_mpp_4x4'],
+  'zopp:matriz_logica': ['box_zopp_mpp_4x4'],
   
   // ============ HORIZON EUROPE ============
-  consorcio: ['box_dnsh_ue_6'],
-  ciencia_abierta: ['box_dnsh_ue_6'],
-  dnsh_principle: ['box_dnsh_ue_6'],
-  impacto: ['box_dnsh_ue_6'],
+  'horizon_europe:consorcio': ['box_dnsh_ue_6'],
+  'horizon_europe:ciencia_abierta': ['box_dnsh_ue_6'],
+  'horizon_europe:dnsh_principle': ['box_dnsh_ue_6'],
+  'horizon_europe:impacto': ['box_dnsh_ue_6'],
 };
 
 /**
  * Obtiene los boxes para un módulo específico (solo los específicos, sin fallback global)
- * @param {string} moduleKey - Clave del módulo
+ * @param {string} moduleKey - Clave del módulo (formato "tipoDoc:moduleKey")
  * @param {string} docType - Tipo de documento (fallback)
  * @returns {Array} Array de boxIds
  */
 export function getBoxIdsForModule(moduleKey, docType = 'business') {
-  // Primero buscar en el mapa específico
-  const specificBoxes = MODULE_BOX_MAP[moduleKey];
+  // Primero buscar en el mapa específico con clave compuesta
+  const compositeKey = `${docType}:${moduleKey}`;
+  const specificBoxes = MODULE_BOX_MAP[compositeKey];
   if (specificBoxes && specificBoxes.length > 0) {
     return specificBoxes;
   }
   
+  // Fallback: intentar sin prefijo (compatibilidad hacia atrás)
+  const legacyBoxes = MODULE_BOX_MAP[moduleKey];
+  if (legacyBoxes && legacyBoxes.length > 0) {
+    return legacyBoxes;
+  }
+  
   // Fallback: usar boxes por tipo de documento (existente)
-  // Esto se importa dinámicamente para evitar dependencias circulares
   return [];
 }
 
@@ -180,8 +186,6 @@ export function getBoxIdsForModule(moduleKey, docType = 'business') {
  * @returns {Array}
  */
 export function getGlobalBoxesForDocType(docType = 'business') {
-  // Se resuelve dinámicamente para evitar import circular
-  const { getBoxesForDocType } = require('./boxRegistry');
   return getBoxesForDocType(docType);
 }
 
