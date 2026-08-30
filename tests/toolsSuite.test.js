@@ -223,9 +223,22 @@ describe('Suite Completa de 10 Herramientas Analíticas y Boxes (13 Libros) - TD
       assert.strictEqual(checklist.length, 8);
     });
 
-    it('Debe entregar cláusulas maestras para contratos de proveedores', () => {
+    it('Debe entregar cláusulas maestras para contratos de proveedores y REPSE', () => {
       const contract = LegalComplianceChecker.getProviderContractTemplate();
-      assert.strictEqual(contract.clausulasClave.length, 4);
+      assert.strictEqual(contract.clausulasClave.length, 5);
+      assert.ok(contract.clausulasClave.some(c => c.detalle.includes('REPSE')));
+    });
+
+    it('Debe exponer las tasas fiscales y marco regulatorio de México', () => {
+      const taxes = LegalComplianceChecker.getTaxRates();
+      assert.strictEqual(taxes.isrCorporativo, 0.30);
+      assert.strictEqual(taxes.ivaGeneral, 0.16);
+      assert.strictEqual(taxes.ptuUtilidades, 0.10);
+
+      const framework = LegalComplianceChecker.getMexicanRegulatoryFramework();
+      assert.strictEqual(framework.length, 7);
+      assert.ok(framework.some(f => f.ley.includes('LISR')));
+      assert.ok(framework.some(f => f.ley.includes('NOM-STPS')));
     });
   });
 
