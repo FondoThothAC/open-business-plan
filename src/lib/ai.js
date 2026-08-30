@@ -430,8 +430,10 @@ ${allPlanData.config.documents.map(d => d.text).join('\n---\n').substring(0, 500
 
   const fieldsPromptContext = (currentModule.fields || []).map(f => {
     const guide = guides[f.key] || {};
+    const citaStr = guide.cita ? `\n  Fundamento Metodológico: ${guide.cita}` : '';
+    const benchStr = guide.benchmark ? `\n  Benchmark de Referencia: ${guide.benchmark}` : '';
     return `- Campo "${f.key}":
-  Instrucción: ${guide.desc || 'Describir detalladamente.'}
+  Instrucción: ${guide.desc || 'Describir detalladamente.'}${citaStr}${benchStr}
   Ejemplo corporativo/Límite de relleno: ${guide.ejemplo || guide.placeholder || 'Redactar con enfoque analítico y sin relleno.'}`;
   }).join('\n\n');
 

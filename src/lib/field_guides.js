@@ -28,9 +28,24 @@ export const BUSINESS_GUIDES = {
   valor: { desc: 'Tu promesa única al cliente. ¿Por qué te elegirían sobre la competencia?', ejemplo: 'Ej: "Asesoría sin conflicto de interés: cobramos honorarios fijos, no comisiones por producto vendido."' },
   demanda: { desc: 'Evidencia de que existe un mercado real dispuesto a pagar. Datos duros, encuestas, tendencias.', ejemplo: 'Ej: "Según AMAFORE, solo 22% de trabajadores en Sonora tiene un plan de retiro privado. Encuesta propia: 78% de 200 encuestados pagaría por asesoría."' },
   cliente: { desc: 'Perfil detallado de tu comprador ideal. Edad, ingreso, dolor principal, comportamiento.', ejemplo: 'Ej: "Profesionista de 28-42 años, ingreso $20-50K/mes, preocupado por su retiro, busca opciones digitales y transparentes."' },
-  tam: { desc: 'Mercado Total Direccionable. Todo el mercado posible si no tuvieras limitaciones.', ejemplo: 'Ej: "3.2M de profesionistas en México que no tienen asesor financiero = $9.6B MXN anuales en fees potenciales."' },
-  sam: { desc: 'Mercado Alcanzable. La porción del TAM que podrías servir con tu modelo actual.', ejemplo: 'Ej: "185,000 profesionistas en Sonora con ingreso >$20K/mes = $370M MXN anuales en servicios de consultoría."' },
-  som: { desc: 'Mercado Obtenible. La rebanada realista que planeas capturar en 1-3 años.', ejemplo: 'Ej: "Capturar 0.5% del SAM = 925 clientes generando $5.5M MXN anuales en el tercer año."' },
+  tam: { 
+    desc: 'Mercado Total Direccionable. Todo el mercado posible si no tuvieras limitaciones.', 
+    ejemplo: 'Ej: "3.2M de profesionistas en México que no tienen asesor financiero = $9.6B MXN anuales en fees potenciales."',
+    cita: 'Linda Pinson — Anatomy of a Business Plan (Ch. 4, p. 78)',
+    benchmark: 'TAM = Población Total x Gasto Anual Promedio.'
+  },
+  sam: { 
+    desc: 'Mercado Alcanzable. La porción del TAM que podrías servir con tu modelo actual.', 
+    ejemplo: 'Ej: "185,000 profesionistas en Sonora con ingreso >$20K/mes = $370M MXN anuales en servicios de consultoría."',
+    cita: 'Creating a Business Plan For Dummies (Ch. 5)',
+    benchmark: 'SAM = TAM x Porcentaje de Segmento Geográfico / Económico.'
+  },
+  som: { 
+    desc: 'Mercado Obtenible. La rebanada realista que planeas capturar en 1-3 años.', 
+    ejemplo: 'Ej: "Capturar 0.5% del SAM = 925 clientes generando $5.5M MXN anuales en el tercer año."',
+    cita: 'The Lean Startup (p. 89) & Starting a Business QuickStart Guide (p. 112)',
+    benchmark: 'SOM esperado: entre 1% y 5% del SAM en etapas tempranas.'
+  },
   perfil: { desc: 'Características psicográficas: estilo de vida, valores, motivaciones y hábitos de compra.', ejemplo: 'Ej: "Valora la seguridad sobre el riesgo. Investiga en YouTube antes de comprar. Prefiere apps sobre llamadas telefónicas."' },
   competidores: { desc: 'Lista de competidores directos e indirectos con sus fortalezas y debilidades.', ejemplo: 'Ej: "Directos: GBM+ (digital, masivo), Actinver (premium). Indirectos: YouTube financiero, apps como Fintual."' },
   ventajas: { desc: 'Lo que te hace superior frente a cada competidor identificado.', ejemplo: 'Ej: "vs GBM+: Asesoría personalizada humana. vs Actinver: Accesibilidad (monto mínimo de $500 vs $100K)."' },
