@@ -46,7 +46,7 @@ export const FRAMEWORKS = {
         key: 'organizacion',
         title: 'Organización y Finanzas',
         modules: [
-          { key: 'estructura', title: 'Estructura Organizativa', description: 'Organigrama y descripción de puestos clave.', fields: ['organigrama_visual', 'puestos', 'funciones'] },
+          { key: 'estructura', title: 'Estructura Organizativa', description: 'Organigrama y descripción de puestos clave.', fields: ['organigrama_visual', 'puestos', 'funciones', 'puestos_lista'] },
           { key: 'recursos_humanos', title: 'Gestión de Recursos Humanos', description: 'Políticas de contratación, capacitación y sueldos.', fields: ['reclutamiento', 'contratacion', 'sueldos'] },
           { key: 'inversion', title: 'Inversión Inicial (CAPEX)', description: 'Requerimientos de capital para arranque.', fields: ['inversion_fija', 'inversion_diferida', 'opex_inicial', 'financiamiento'] },
           { key: 'costos', title: 'Costos y Gastos (OPEX)', description: 'Estructura de costos fijos y variables mensuales.', fields: ['fijos', 'variables', 'unitario'] },
@@ -143,6 +143,13 @@ export const FRAMEWORKS = {
           { key: 'unit_economics', title: 'Unit Economics', description: 'Estructura detallada de costos e ingresos unitarios.', fields: ['cac_adquisicion', 'ltv_vida_cliente', 'margen_contribucion_unitario', 'retorno_inversion_marketing'] },
           { key: 'burn_rate', title: 'Runway y Burn Rate', description: 'Monitoreo de flujo mensual y supervivencia de caja.', fields: ['burn_rate_mensual', 'runway_meses', 'capital_supervivencia'] }
         ]
+      },
+      {
+        key: 'simulador_financiero',
+        title: 'Simulador y Corridas',
+        modules: [
+          { key: 'simulador', title: 'Simulador Financiero', description: 'Simulador interactivo avanzado con corridas dinámicas y unit economics a 5 años.', fields: ['iframe_simulador'] }
+        ]
       }
     ]
   },
@@ -180,6 +187,13 @@ export const FRAMEWORKS = {
         modules: [
           { key: 'rse_impact', title: 'Responsabilidad Social (RSE)', description: 'Evaluación del impacto ético, social y ambiental directo del desarrollo tecnológico.', fields: ['impacto_socioambiental', 'generacion_empleo_calificado', 'politica_rse'] },
           { key: 'circular_economy', title: 'Economía Circular', description: 'Ecodiseño, ciclo de vida del producto tecnológico y manejo sostenible de insumos/residuos.', fields: ['analisis_ciclo_vida', 'estrategia_economia_circular', 'sustentabilidad_energetica'] }
+        ]
+      },
+      {
+        key: 'simulador_financiero',
+        title: 'Simulador y Corridas',
+        modules: [
+          { key: 'simulador', title: 'Simulador Financiero', description: 'Simulador interactivo con proyecciones de I+D, VAN y TIR a 5 años.', fields: ['iframe_simulador'] }
         ]
       }
     ]
@@ -266,6 +280,13 @@ export const FRAMEWORKS = {
         modules: [
           { key: 'sensibilidad', title: 'Análisis de Sensibilidad', description: 'Sensibilidad unidimensional y multivariable.', fields: ['sensibilidad_unidimensional', 'escenarios'] },
           { key: 'probabilidad', title: 'Simulación de Riesgo', description: 'Simulación probabilística tipo Monte Carlo.', fields: ['simulacion_montecarlo'] }
+        ]
+      },
+      {
+        key: 'simulador_financiero',
+        title: 'Simulador y Corridas',
+        modules: [
+          { key: 'simulador', title: 'Simulador Financiero', description: 'Simulador interactivo avanzado con corridas dinámicas de inversión a 5 años.', fields: ['iframe_simulador'] }
         ]
       }
     ]
@@ -355,6 +376,13 @@ export const FRAMEWORKS = {
           { key: 'precios', title: 'Precios de Transferencia', description: 'Ventas entre células.', fields: ['precios_transferencia'] },
           { key: 'rentabilidad', title: 'Rentabilidad por Hora', description: 'Cálculo de utilidad.', fields: ['rentabilidad_hora'] }
         ]
+      },
+      {
+        key: 'simulador_financiero',
+        title: 'Simulador de Células',
+        modules: [
+          { key: 'simulador', title: 'Simulador Financiero', description: 'Simulador de rentabilidad por hora y micro-ganancias amoeba.', fields: ['iframe_simulador'] }
+        ]
       }
     ]
   },
@@ -398,6 +426,13 @@ export const FRAMEWORKS = {
           { key: 'costo_capital', title: 'WACC ONUDI', description: 'Costo de capital internacional.', fields: ['wacc_onudi'] },
           { key: 'flujo_firma', title: 'FCFF', description: 'Flujo de caja para la firma.', fields: ['fcff'] },
           { key: 'riesgo', title: 'Sensibilidad', description: 'Análisis de riesgo global.', fields: ['sensibilidad_riesgo'] }
+        ]
+      },
+      {
+        key: 'simulador_financiero',
+        title: 'Simulador y Factibilidad',
+        modules: [
+          { key: 'simulador', title: 'Simulador Financiero', description: 'Simulador cuantitativo de factibilidad industrial ONUDI a 5 años.', fields: ['iframe_simulador'] }
         ]
       }
     ]

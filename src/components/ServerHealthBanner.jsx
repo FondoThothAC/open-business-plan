@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { AlertCircle, RefreshCw, Terminal, CheckCircle2 } from 'lucide-react';
 import { getApiBase, safeFetchJson } from '../config/apiConfig';
 

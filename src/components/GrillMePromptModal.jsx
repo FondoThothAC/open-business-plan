@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { HelpCircle, Sparkles, Send, CheckCircle, Mic, ArrowRight } from 'lucide-react';
+import { HelpCircle, CheckCircle, ArrowRight } from 'lucide-react';
 
 export default function GrillMePromptModal({ promptData, onSubmitResponse, onCancel }) {
   if (!promptData) return null;
@@ -12,7 +12,7 @@ export default function GrillMePromptModal({ promptData, onSubmitResponse, onCan
     e?.preventDefault();
     if (isSubmitting) return;
 
-    let finalResponse = '';
+    let finalResponse;
     if (selectedKey) {
       const opt = promptData.options?.find(o => o.key === selectedKey);
       finalResponse = opt ? opt.text : selectedKey;

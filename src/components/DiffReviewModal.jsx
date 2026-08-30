@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Check, X, RefreshCw, Sparkles, MessageSquare, ArrowRight, Eye, Layers } from 'lucide-react';
+import { useState } from 'react';
+import { Check, X, RefreshCw, Sparkles, MessageSquare, Eye, Layers } from 'lucide-react';
 import DiffViewer from './DiffViewer';
 
 /**

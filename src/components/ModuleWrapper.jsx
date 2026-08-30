@@ -16,6 +16,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import DiffViewer from './DiffViewer';
 import FieldComments from './FieldComments';
+import HumanCapitalMatrix from './HumanCapitalMatrix';
 import { safeStr } from '../utils/formatters';
 
 export default function ModuleWrapper({ pillar, moduleKey, title, description, fields, extraAction }) {
@@ -28,6 +29,7 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
   const [depth, setDepth] = useState(planData.config?.ai?.depth || 1);
   const [fodaEditMode, setFodaEditMode] = useState(false);
   const [pestelEditMode, setPestelEditMode] = useState(false);
+  const [puestosEditMode, setPuestosEditMode] = useState(false);
   const [isAiCompleted, setIsAiCompleted] = useState(false);
   const [draftValues, setDraftValues] = useState({});
   const [showComments, setShowComments] = useState({});
@@ -370,6 +372,19 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
         </div>
       ) : null}
 
+      {(moduleKey === 'estructura' || moduleKey === 'recursos_humanos') ? (
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem' }}>
+          <div className="view-toggle">
+            <button className={!puestosEditMode ? 'active' : ''} onClick={() => setPuestosEditMode(false)}>
+              <Layout className="w-3.5 h-3.5" /> Matriz de Capital Humano & Organigrama
+            </button>
+            <button className={puestosEditMode ? 'active' : ''} onClick={() => setPuestosEditMode(true)}>
+              <Edit3 className="w-3.5 h-3.5" /> Editar Texto Libre
+            </button>
+          </div>
+        </div>
+      ) : null}
+
       <div style={{ 
         display: 'grid', 
         gridTemplateColumns: extraAction ? 'repeat(auto-fit, minmax(450px, 1fr))' : '1fr', 
@@ -382,6 +397,28 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
             <FodaMatrix data={moduleData} />
           ) : moduleKey === 'pestel' && !pestelEditMode ? (
             <PestelAnalysis data={moduleData} />
+          ) : (moduleKey === 'estructura' || moduleKey === 'recursos_humanos') && !puestosEditMode ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+              <HumanCapitalMatrix 
+                data={moduleData} 
+                onChange={(field, val) => handleChange(field, val)} 
+              />
+              <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '1.5rem' }}>
+                <h4 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '1rem' }}>Descripción Narrativa y Políticas</h4>
+                {fields.filter(f => f.key !== 'puestos_lista').map(field => (
+                  <div key={field.key} style={{ opacity: isLocked(field.key) ? 0.75 : 1, marginBottom: '1.5rem' }}>
+                    <label className="form-label" style={{ fontWeight: 700 }}>{field.label}</label>
+                    <textarea 
+                      className="form-control"
+                      rows={4}
+                      value={moduleData[field.key] || ''}
+                      onChange={(e) => handleChange(field.key, e.target.value)}
+                      placeholder={`Detalles de ${field.label}...`}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
           ) : (
             fields.map(field => (
               <div key={field.key} style={{ opacity: isLocked(field.key) ? 0.75 : 1, transition: 'opacity 0.2s' }}>

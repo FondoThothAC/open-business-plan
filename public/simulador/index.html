@@ -1,14 +1,82 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My Google AI Studio App</title>
+    <title>Simulador Financiero Inteligente | Open Business Plan</title>
     <script type="module" crossorigin src="./assets/index-BJXQY0Xj.js"></script>
     <link rel="stylesheet" crossorigin href="./assets/index-BmXY2xAb.css">
+    <style>
+      /* Estilos para integración transparente */
+      body {
+        background-color: #f8fafc !important;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+      }
+      .badge-project {
+        background: linear-gradient(135deg, #4f46e5, #7c3aed);
+        color: #ffffff;
+        padding: 2px 8px;
+        border-radius: 9999px;
+        font-weight: 800;
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+    </style>
+    <script>
+      // Puente dinámico con Open Business Plan
+      (function() {
+        let activeProjectTitle = 'COMERCIO CUÁNTICO INTERNACIONAL';
+        let activeBadge = 'MAAS IOT / INVERSIÓN MINERA';
+
+        function updateDOMTexts() {
+          // Reemplazar textos en el header
+          document.querySelectorAll('span, h1, h2, h3, h4, p, div').forEach(el => {
+            if (el.children.length === 0 && el.textContent) {
+              let txt = el.textContent;
+              if (txt.includes('FAPPA / PROMETE') || txt.includes('MAAS IOT')) {
+                el.textContent = activeBadge;
+                el.className = 'badge-project';
+              }
+              if (txt.includes('CIBERCAFE') || txt.includes('COMERCIO CUÁNTICO')) {
+                el.textContent = activeProjectTitle;
+              }
+              if (txt.includes('Metodología SAGARPA')) {
+                el.textContent = 'Modelo Atómico Cuántico (SAPI de CV)';
+              }
+              if (txt.includes('este Cibercafé')) {
+                el.textContent = 'este proyecto de Mantenimiento Minero';
+              }
+              if (txt.includes('Reducción del 25% en ventas de internet')) {
+                el.textContent = 'Reducción del 25% en órdenes de servicio y +10% en insumos importados.';
+              }
+            }
+          });
+        }
+
+        // Observar cambios en el DOM para actualizar cualquier texto renderizado por React
+        const observer = new MutationObserver(() => {
+          updateDOMTexts();
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+          observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+          updateDOMTexts();
+        });
+
+        // Escuchar mensajes del padre (DynamicModule / PlanContext)
+        window.addEventListener('message', (event) => {
+          if (event.data && event.data.type === 'OBP_SET_PROJECT') {
+            const { title, badge } = event.data;
+            if (title) activeProjectTitle = title.toUpperCase();
+            if (badge) activeBadge = badge.toUpperCase();
+            updateDOMTexts();
+          }
+        });
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
   </body>
 </html>
-

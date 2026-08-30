@@ -6,9 +6,8 @@ import TokenTelemetryDashboard from '../components/TokenTelemetryDashboard';
 import AiTraceabilityPanel from '../components/AiTraceabilityPanel';
 import DigitalTwinDashboard from '../components/DigitalTwinDashboard';
 import ApiQuotaMeter from '../components/ApiQuotaMeter';
-import GlobalTokenMonitor from '../components/GlobalTokenMonitor';
 import { FRAMEWORKS } from '../config/frameworks';
-
+import { getApiBase, safeFetchJson } from '../config/apiConfig';
 import { API_COSTS } from '../config/pricing';
 const CTX_PRESETS = [
   { label: '8k',   value: 8192   },
@@ -90,7 +89,7 @@ const CLOUD_PROVIDER_DEFAULTS = {
   ollama:      'minimax-m3:cloud',
 };
 
-const getModelLabel = (p) => {
+const _getModelLabel = (p) => {
   if (p === 'ollama') return 'Modelo Local (Ollama)';
   if (p === 'lmstudio') return 'Modelo Local (LM Studio)';
   if (p === 'nvidia') return 'Modelo Cloud (NVIDIA NIM)';
@@ -110,8 +109,6 @@ function estimateMesaCost(contextTokens, model) {
   const costUSD = (avgInput / 1e6 * pricing.input) + (avgOutput / 1e6 * pricing.output);
   return { costUSD, tokensIn: Math.round(avgInput), tokensOut: avgOutput };
 }
-
-import { getApiBase } from '../config/apiConfig';
 
 // ─────────────────────────────────────────────────────────
 //  Hook & Component to test API Connections
@@ -400,7 +397,7 @@ export default function Configuracion() {
   } = apiStatus;
 
   const [ollamaModels, setOllamaModels] = useState([]);
-  const [isFetchingModels, setIsFetchingModels] = useState(false);
+  const [_isFetchingModels, setIsFetchingModels] = useState(false);
   const [ollamaOnline, setOllamaOnline] = useState(false);
   // [EDD] Rastreo local de sesión de tokens (estimado)
   const [_sessionTokens, _setSessionTokens] = useState(() => {
@@ -581,6 +578,11 @@ export default function Configuracion() {
   const updateInstitutionLogoName = (logoId, newName) => {
     const current = planData.config?.coverDesign?.institutionLogos || [];
     handleCoverChange('institutionLogos', current.map(l => l.id === logoId ? { ...l, name: newName } : l));
+  };
+
+  const toggleInstitutionLogoName = (logoId) => {
+    const current = planData.config?.coverDesign?.institutionLogos || [];
+    handleCoverChange('institutionLogos', current.map(l => l.id === logoId ? { ...l, hideName: !l.hideName } : l));
   };
 
   const dataSources = planData.config?.dataSources || [];
@@ -1712,6 +1714,7 @@ export default function Configuracion() {
                 <option value="small">Chico</option>
                 <option value="medium">Mediano</option>
                 <option value="large">Grande</option>
+                <option value="extra_large">Extra Grande</option>
               </select>
             </div>
 
@@ -1810,6 +1813,15 @@ export default function Configuracion() {
                       }}
                       placeholder="Nombre"
                     />
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.6rem', color: 'var(--text-secondary)', cursor: 'pointer', marginTop: '2px' }}>
+                      <input 
+                        type="checkbox" 
+                        checked={!logo.hideName} 
+                        onChange={() => toggleInstitutionLogoName(logo.id)} 
+                        style={{ width: '10px', height: '10px', margin: 0 }}
+                      />
+                      Mostrar
+                    </label>
                     <button
                       onClick={() => removeInstitutionLogo(logo.id)}
                       style={{
@@ -2024,7 +2036,7 @@ export default function Configuracion() {
                     src={planData.config.brandKit.logoUrl} 
                     alt="Logo preview" 
                     style={{
-                      width: coverDesign.logoSize === 'small' ? '30px' : coverDesign.logoSize === 'large' ? '70px' : '50px',
+                      width: coverDesign.logoSize === 'small' ? '30px' : coverDesign.logoSize === 'extra_large' ? '100px' : coverDesign.logoSize === 'large' ? '70px' : '50px',
                       height: 'auto',
                       maxHeight: '40px',
                       objectFit: 'contain',
@@ -2035,7 +2047,7 @@ export default function Configuracion() {
                   />
                 ) : (
                   <div style={{
-                    width: coverDesign.logoSize === 'small' ? '30px' : coverDesign.logoSize === 'large' ? '70px' : '50px',
+                    width: coverDesign.logoSize === 'small' ? '30px' : coverDesign.logoSize === 'extra_large' ? '100px' : coverDesign.logoSize === 'large' ? '70px' : '50px',
                     height: '25px',
                     borderRadius: '4px',
                     border: ['dark_executive', 'blueprint_tech', 'golden_prestige'].includes(coverDesign.layout) ? '1px dashed #475569' : coverDesign.layout === 'brutalist_bold' ? '2px solid #000000' : '1px dashed #cbd5e1',

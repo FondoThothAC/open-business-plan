@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Target, AlertTriangle, Zap, GitBranch, ArrowUp, ArrowDown } from 'lucide-react';
+import { useState } from 'react';
+import { Target, AlertTriangle, GitBranch, ArrowUp, ArrowDown } from 'lucide-react';
 import MermaidViewer from './MermaidViewer';
 
 /**

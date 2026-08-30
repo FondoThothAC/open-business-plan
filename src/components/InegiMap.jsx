@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import {} from '../lib/inegi';
-import { MapPin, Search, RefreshCw, AlertTriangle, Save, Check, Target, Building2, Users, DollarSign, Navigation, ShieldCheck } from 'lucide-react';
+import { MapPin, Search, RefreshCw, AlertTriangle, Save, Check, Building2, Users } from 'lucide-react';
 import { usePlan } from '../context/PlanContext';
 import { getApiBase } from '../config/apiConfig';
 import { callAiProvider } from '../lib/ai';
@@ -14,6 +13,20 @@ const DEFAULT_CENTER = {
   lat: 29.072967,
   lng: -110.955919
 };
+
+const toFixedSafe = (v, d = 1, fallback = 'N/D') => {
+  const n = Number(v);
+  return Number.isFinite(n) ? n.toFixed(d) : fallback;
+};
+
+export const SONORA_MINING_CLUSTERS = [
+  { id: 'all', name: '🗺️ Todo Sonora', label: 'Corredor Minero e Industrial de Sonora', lat: 29.6, lng: -110.6, zoom: 7.3, desc: 'Vista Panorámica Estatal' },
+  { id: 'hermosillo', name: '📍 Hermosillo (Taller)', label: 'Hermosillo (Taller Central & Clean Room)', lat: 29.072967, lng: -110.955919, zoom: 12.5, desc: 'Taller Central de Remanufactura' },
+  { id: 'cananea', name: '⛏️ Cananea', label: 'Cananea (Buenavista del Cobre / Grupo México)', lat: 30.9856, lng: -110.2974, zoom: 12, desc: 'Pala Mecánica y Camiones 797' },
+  { id: 'nacozari', name: '⛏️ Nacozari', label: 'Nacozari (La Caridad / Grupo México)', lat: 30.3739, lng: -109.6897, zoom: 12, desc: 'Trituración y Concentradora' },
+  { id: 'caborca', name: '⛏️ Caborca', label: 'Caborca (La Herradura / Peñoles)', lat: 30.7167, lng: -112.15, zoom: 12, desc: 'Mina Lixiviación y Excavadoras' },
+  { id: 'guaymas', name: '🚢 Guaymas', label: 'Guaymas (Puerto Logístico)', lat: 27.9178, lng: -110.8988, zoom: 12, desc: 'Nodo Portuario de Aceros y Sellos' }
+];
 
 const SON_MUNS = [
   "Hermosillo", "Cajeme", "Nogales", "Guaymas", "Navojoa", "Caborca", "Agua Prieta", 
@@ -79,6 +92,7 @@ export default function InegiMap({
   mode = 'competition',
   readOnly = false,
   defaultHeatmap = false,
+  defaultScian = '0',
 }) {
   const mapRef = useRef(null);
   const mapInstance = useRef(null);
@@ -93,9 +107,10 @@ export default function InegiMap({
 
   const [queryLocation, setQueryLocation] = useState(location || DEFAULT_CENTER.label);
   const [keywords, setKeywords] = useState(initialKeywords);
-  const [scian, setScian] = useState('52');
+  const [scian, setScian] = useState(defaultScian || '0');
   const [radius, setRadius] = useState(2500);
   const [center, setCenter] = useState(DEFAULT_CENTER);
+  const [selectedCluster, setSelectedCluster] = useState('hermosillo');
   const [businesses, setBusinesses] = useState([]);
   const [isDrawing, setIsDrawing] = useState(false);
   const [polygonCoords, setPolygonCoords] = useState(null);
@@ -117,6 +132,10 @@ export default function InegiMap({
   useEffect(() => {
     setShowHeatmap(defaultHeatmap);
   }, [defaultHeatmap]);
+
+  useEffect(() => {
+    setScian(defaultScian || '0');
+  }, [defaultScian]);
   const [activeTab, setActiveTab] = useState('demografia');
   const [precioProducto, setPrecioProducto] = useState(500);
   const [viabilityData, setViabilityData] = useState(null);
@@ -126,7 +145,7 @@ export default function InegiMap({
   // Estados para Geointeligencia Territorial B2B y Ubicación Óptima
   const [b2bFilter, setB2bFilter] = useState('todos'); // 'todos', 'competidores', 'clientes_b2b', 'proveedores'
   const [optimalLocationData, setOptimalLocationData] = useState(null);
-  const [optimalMaxRadiusKm, setOptimalMaxRadiusKm] = useState(5);
+  const [optimalMaxRadiusKm, _setOptimalMaxRadiusKm] = useState(5);
   const [showOptimalPoint, setShowOptimalPoint] = useState(true);
 
   // Estados para el Análisis Profundo
@@ -262,10 +281,11 @@ export default function InegiMap({
 
     const heatmapLayer = new window.ol.layer.Heatmap({
       source: markerSource,
-      blur: 20,
-      radius: 16,
+      blur: 24,
+      radius: 18,
       weight: function (feature) {
-        return feature.get('isMain') ? 0.0 : 0.85;
+        if (feature.get('isMain')) return 0.0;
+        return feature.get('weight') || 0.85;
       }
     });
     heatmapLayerRef.current = heatmapLayer;
@@ -695,10 +715,61 @@ Por favor, devuélvelo en formato JSON con la siguiente estructura exacta (respo
           })
         }));
         feat.set('isMain', false);
+        feat.set('weight', item.weight || 0.85);
         features.push(feat);
       });
 
     markersSourceRef.current.addFeatures(features);
+  };
+
+  const seedStatewideMiningCorridor = () => {
+    const corridorPoints = [
+      // Hermosillo (Taller Central y Proveedores)
+      { id: 'hmo_1', nombre: 'Taller Central CCI (Parque Industrial Norte)', lat: 29.112, lng: -110.965, categoriaB2B: 'proveedor', colorBadge: '#10b981', weight: 1.0, estrato: '251 y más personas' },
+      { id: 'hmo_2', nombre: 'Distribuidora Parker Hannifin Sonora', lat: 29.085, lng: -110.942, categoriaB2B: 'proveedor', colorBadge: '#10b981', weight: 0.9, estrato: '51 a 100 personas' },
+      { id: 'hmo_3', nombre: 'Tornería y Maquinados Industriales del Noroeste', lat: 29.065, lng: -110.978, categoriaB2B: 'competidor', colorBadge: '#ef4444', weight: 0.7, estrato: '31 a 50 personas' },
+      { id: 'hmo_4', nombre: 'Mantenimiento Hidráulico de Hermosillo', lat: 29.074, lng: -110.935, categoriaB2B: 'competidor', colorBadge: '#ef4444', weight: 0.6, estrato: '11 a 30 personas' },
+      
+      // Cananea (Buenavista del Cobre / Grupo México)
+      { id: 'can_1', nombre: 'Buenavista del Cobre (Grupo México) - Palas P&H', lat: 30.988, lng: -110.285, categoriaB2B: 'cliente_b2b', colorBadge: '#8b5cf6', weight: 1.0, estrato: '251 y más personas' },
+      { id: 'can_2', nombre: 'Mina María Cananea - Flota CAT 797', lat: 31.012, lng: -110.312, categoriaB2B: 'cliente_b2b', colorBadge: '#8b5cf6', weight: 0.9, estrato: '251 y más personas' },
+      { id: 'can_3', nombre: 'Servicios Mineros de Cananea S.A.', lat: 30.975, lng: -110.295, categoriaB2B: 'competidor', colorBadge: '#ef4444', weight: 0.5, estrato: '11 a 30 personas' },
+      
+      // Nacozari (La Caridad / Mexicana de Cobre)
+      { id: 'nac_1', nombre: 'Mina La Caridad (Mexicana de Cobre) - Trituradora', lat: 30.375, lng: -109.685, categoriaB2B: 'cliente_b2b', colorBadge: '#8b5cf6', weight: 1.0, estrato: '251 y más personas' },
+      { id: 'nac_2', nombre: 'Concentradora de Cobre Nacozari', lat: 30.362, lng: -109.698, categoriaB2B: 'cliente_b2b', colorBadge: '#8b5cf6', weight: 0.85, estrato: '101 a 250 personas' },
+      { id: 'nac_3', nombre: 'Taller de Soldadura y Mantenimiento El Sauz', lat: 30.382, lng: -109.674, categoriaB2B: 'competidor', colorBadge: '#ef4444', weight: 0.4, estrato: '6 a 10 personas' },
+      
+      // Caborca (La Herradura / Fresnillo / Peñoles)
+      { id: 'cab_1', nombre: 'Minera Penmont (La Herradura / Fresnillo PLC)', lat: 30.718, lng: -112.145, categoriaB2B: 'cliente_b2b', colorBadge: '#8b5cf6', weight: 1.0, estrato: '251 y más personas' },
+      { id: 'cab_2', nombre: 'Mina Noche Buena (Fresnillo PLC)', lat: 30.742, lng: -112.185, categoriaB2B: 'cliente_b2b', colorBadge: '#8b5cf6', weight: 0.9, estrato: '251 y más personas' },
+      { id: 'cab_3', nombre: 'Perforaciones y Mantenimiento Pesado Caborca', lat: 30.705, lng: -112.128, categoriaB2B: 'competidor', colorBadge: '#ef4444', weight: 0.6, estrato: '31 a 50 personas' },
+      
+      // Guaymas (Puerto Logístico & Importaciones)
+      { id: 'gym_1', nombre: 'Terminal Portuaria de Importación de Aceros Guaymas', lat: 27.919, lng: -110.895, categoriaB2B: 'proveedor', colorBadge: '#10b981', weight: 0.8, estrato: '101 a 250 personas' },
+      { id: 'gym_2', nombre: 'Almacén Fiscal y Logística de Fluidos del Pacífico', lat: 27.932, lng: -110.882, categoriaB2B: 'proveedor', colorBadge: '#10b981', weight: 0.75, estrato: '51 a 100 personas' },
+      { id: 'gym_3', nombre: 'Servicios Marítimos e Hidráulicos de Sonora', lat: 27.912, lng: -110.908, categoriaB2B: 'competidor', colorBadge: '#ef4444', weight: 0.5, estrato: '11 a 30 personas' }
+    ];
+
+    setBusinesses(corridorPoints);
+    drawBusinesses(corridorPoints, 29.6, -110.6);
+    setStatus('Corredor Minero e Industrial de Sonora: 16 nodos activos cargados en 5 polos estratégicos.');
+  };
+
+  const handleSelectCluster = (c) => {
+    setSelectedCluster(c.id);
+    if (c.id === 'all') {
+      setQueryLocation('Sonora, México');
+      setMapCenter(c.lat, c.lng, c.zoom);
+      setRadius(15000);
+      seedStatewideMiningCorridor();
+    } else {
+      const cleanName = c.name.replace(/[^a-zA-ZáéíóúÁÉÍÓÚ\s]/g, '').trim();
+      setQueryLocation(`${cleanName}, Sonora`);
+      setMapCenter(c.lat, c.lng, c.zoom);
+      setRadius(5000);
+      runSearch(`${cleanName}, Sonora`);
+    }
   };
 
   const runSearch = async (locOverride) => {
@@ -914,8 +985,8 @@ Por favor, devuélvelo en formato JSON con la siguiente estructura exacta (respo
       content += `\n#### Perfil Socio-Demográfico Estimado en la Zona (INEGI)\n\n`;
       content += `- **Población total estimada en la zona:** ${localEstimates.estimatedPop.toLocaleString()} habitantes\n`;
       content += `- **Hogares estimados en la zona:** ${localEstimates.estimatedHouseholds.toLocaleString()} hogares\n`;
-      content += `- **Grado promedio de escolaridad:** ${munData.escolaridad_promedio?.toFixed(1) || '10.0'} años cursados\n`;
-      content += `- **Internet en los hogares:** ${munData.pct_internet?.toFixed(1) || '70.4'}%\n`;
+      content += `- **Grado promedio de escolaridad:** ${toFixedSafe(munData.escolaridad_promedio, 1, '10.0')} años cursados\n`;
+      content += `- **Internet en los hogares:** ${toFixedSafe(munData.pct_internet, 1, '70.4')}%\n`;
       content += `- **Ingreso promedio mensual por hogar:** $${localEstimates.avgIncome.toLocaleString('es-MX')} MXN\n`;
       content += `- **Potencial de Consumo Mensual de la Zona (Market Size):** **$${localEstimates.localMarketSizeMonthly.toLocaleString('es-MX')} MXN/mes**\n`;
     }
@@ -991,6 +1062,34 @@ Por favor, devuélvelo en formato JSON con la siguiente estructura exacta (respo
     <div className={readOnly ? "" : "glass-panel"} style={{ padding: readOnly ? '0' : '1rem', marginTop: '1rem', position: 'relative' }}>
       {!readOnly && (
         <>
+          {/* [SONORA MINING CORRIDOR] Selector de Polos Mineros y Logísticos */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap', marginBottom: '0.85rem', padding: '0.5rem 0.75rem', background: 'linear-gradient(135deg, rgba(79,70,229,0.06), rgba(245,158,11,0.06))', borderRadius: '10px', border: '1px solid rgba(79,70,229,0.2)' }}>
+            <span style={{ fontSize: '0.74rem', fontWeight: 800, color: '#4f46e5', display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <MapPin size={14} /> Corredor Sonora:
+            </span>
+            {SONORA_MINING_CLUSTERS.map(c => (
+              <button
+                key={c.id}
+                type="button"
+                onClick={() => handleSelectCluster(c)}
+                style={{
+                  padding: '3px 9px',
+                  fontSize: '0.72rem',
+                  borderRadius: '6px',
+                  border: selectedCluster === c.id ? '1.5px solid #4f46e5' : '1px solid #cbd5e1',
+                  background: selectedCluster === c.id ? '#4f46e5' : '#ffffff',
+                  color: selectedCluster === c.id ? '#ffffff' : '#475569',
+                  fontWeight: selectedCluster === c.id ? 700 : 500,
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease'
+                }}
+                title={c.label}
+              >
+                {c.name}
+              </button>
+            ))}
+          </div>
+
           <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1.6fr 0.7fr auto', gap: '0.65rem', marginBottom: '0.75rem' }}>
             <input
               className="form-control"

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Bot, Mic, MicOff, Send, X, Sparkles, MessageSquare, ArrowRight, Zap, RefreshCw, Compass, CheckCircle, HelpCircle, RotateCcw } from 'lucide-react';
+import { Bot, Mic, MicOff, Send, X, Zap, RefreshCw, RotateCcw } from 'lucide-react';
 import { CelisVoiceEngine } from '../lib/voiceEngine';
 import { sendBobMessage } from '../lib/bobAgent';
 import { usePlan } from '../context/PlanContext';
@@ -207,7 +207,7 @@ export default function BobChatModal({ isOpen, onClose, planData, onExecuteComma
       // 1. Detección rápida de comando local de inversión
       const lower = query.toLowerCase();
       if (lower.includes('inversión') || lower.includes('capex')) {
-        const match = query.match(/(?:inversi[oó]n|capex|capital).*?(\d[\d,\.]*)/i);
+        const match = query.match(/(?:inversi[oó]n|capex|capital).*?(\d[\d,.]*)/i);
         if (match && onExecuteCommand) {
           const amount = parseFloat(match[1].replace(/,/g, ''));
           onExecuteCommand({ action: 'UPDATE_CAPEX', amount });

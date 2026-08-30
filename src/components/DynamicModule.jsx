@@ -67,8 +67,8 @@ export default function DynamicModule() {
   const { planData, updateStaff, updateProcesses, updateSection } = usePlan();
   
   const projectType = planData?.config?.projectType || 'business';
-  let framework = FRAMEWORKS[projectType] || FRAMEWORKS.business;
-  let pillar = framework?.pillars?.find(p => p.key === pillarId);
+  const activeFramework = FRAMEWORKS[projectType] || FRAMEWORKS.business;
+  let pillar = activeFramework?.pillars?.find(p => p.key === pillarId);
 
   // Si el pilar no se encuentra en el framework activo (ej. navegación directa a mercado_cuantitativo),
   // buscar en todos los frameworks disponibles en el sistema
@@ -76,7 +76,6 @@ export default function DynamicModule() {
     for (const fwKey of Object.keys(FRAMEWORKS)) {
       const foundPillar = FRAMEWORKS[fwKey]?.pillars?.find(p => p.key === pillarId);
       if (foundPillar) {
-        framework = FRAMEWORKS[fwKey];
         pillar = foundPillar;
         break;
       }
@@ -144,16 +143,28 @@ export default function DynamicModule() {
     );
   }
 
-  const locationHint =
+  let locationHint =
     planData?.semilla?.cobertura ||
     planData?.semilla?.ubicacion ||
     planData?.semilla?.cliente_ubicacion ||
     planData?.semilla?.negocio?.ubicacion ||
     planData?.tecnico?.ubicacion?.micro ||
     planData?.tecnico?.ubicacion?.macro ||
-    'Cananea, Sonora';
+    'Hermosillo, Sonora';
+
+  if (locationHint.trim().toLowerCase() === 'sonora') {
+    locationHint = 'Hermosillo, Sonora';
+  }
 
   const projectContext = planData?.semilla?.negocio?.giro || planData?.semilla?.negocio?.nombre || 'servicios profesionales';
+  
+  let defaultScian = '0'; // '0' = Todos los sectores
+  const contextLower = projectContext.toLowerCase();
+  if (contextLower.includes('miner') || contextLower.includes('hidráulic') || contextLower.includes('cuántico')) {
+    defaultScian = '213'; // Servicios relacionados con la minería
+  } else if (contextLower.includes('alimento') || contextLower.includes('restaurante')) {
+    defaultScian = '722';
+  }
 
   // Especial: panel geoespacial.
   const isMapModule = (
@@ -177,6 +188,7 @@ export default function DynamicModule() {
       }
       initialKeywords={projectContext}
       defaultHeatmap={moduleId === 'mapa'}
+      defaultScian={defaultScian}
     />
   ) : isPESTELModule ? (
     <MacroDashboard token={planData?.config?.externalApis?.banxicoToken} />
@@ -188,6 +200,8 @@ export default function DynamicModule() {
     const rawBase = import.meta.env.BASE_URL || '/';
     const basePath = rawBase.endsWith('/') ? rawBase : `${rawBase}/`;
     const iframeSrc = `${basePath}simulador/index.html`;
+    const projectTitle = planData?.semilla?.negocio?.nombre || 'Comercio Cuántico Internacional';
+    const projectGiro = planData?.semilla?.negocio?.giro || 'MaaS IoT / Inversión Minera';
 
     return (
       <div className="module-view" style={{ padding: 0, height: 'calc(100vh - 80px)', overflow: 'hidden' }}>
@@ -196,6 +210,17 @@ export default function DynamicModule() {
             src={iframeSrc} 
             style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}
             title="Simulador Financiero"
+            onLoad={(e) => {
+              try {
+                e.target.contentWindow?.postMessage({
+                  type: 'OBP_SET_PROJECT',
+                  title: projectTitle,
+                  badge: projectGiro
+                }, '*');
+              } catch (err) {
+                console.warn('Could not postMessage to simulator iframe', err);
+              }
+            }}
           />
         </div>
       </div>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FileSpreadsheet, LineChart, PieChart, Settings, Eye, BrainCircuit, ChevronDown, ChevronRight, ChevronLeft, Save, FilePlus, FolderOpen, Check, Image as ImageIcon, Sprout, Copy, Star, Briefcase, Zap, Globe, Cpu, ShoppingBag, Landmark, ListChecks, Compass, Target, Layers, Share2, Factory, Files, UploadCloud } from 'lucide-react';
+import { LayoutDashboard, FileSpreadsheet, LineChart, PieChart, Settings, Eye, BrainCircuit, ChevronDown, ChevronRight, ChevronLeft, Save, FilePlus, FolderOpen, Check, Image as ImageIcon, Sprout, Copy, Star, Briefcase, Zap, Globe, Cpu, ShoppingBag, Landmark, ListChecks, Compass, Target, Layers, Share2, Factory, UploadCloud } from 'lucide-react';
 import { usePlan } from '../context/PlanContext';
 import { PROJECT_EXAMPLES } from '../lib/projects_db';
 import { FRAMEWORKS } from '../config/frameworks';
@@ -1406,8 +1406,10 @@ export default function Layout() {
         <GrillMePromptModal
           promptData={activeGrillMePrompt}
           onSubmitResponse={(resp) => {
-            if (typeof handleGrillMeResponse === 'function') {
-              handleGrillMeResponse(resp);
+            if (typeof activeGrillMePrompt?.callback === 'function') {
+              activeGrillMePrompt.callback(resp);
+            } else if (typeof activeGrillMePrompt?.onResponse === 'function') {
+              activeGrillMePrompt.onResponse(resp);
             }
             setActiveGrillMePrompt(null);
           }}

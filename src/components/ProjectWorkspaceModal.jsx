@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { X, Folder, FileText, BarChart2, Activity, Play, Bot, RotateCcw, Clock, Trash2, Cpu } from 'lucide-react';
 import { getApiBase } from '../config/apiConfig';
 
 export default function ProjectWorkspaceModal({ isOpen, onClose, onLoadProject, onDeleteProject }) {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedProject, setSelectedProject] = useState(null);
+  const [_selectedProject, setSelectedProject] = useState(null);
   const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [trajectories, setTrajectories] = useState([]);
 

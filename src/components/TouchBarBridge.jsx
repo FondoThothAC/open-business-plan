@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { usePlan } from '../context/PlanContext';
 import { touchBarManager, createTouchBarStatusPayload } from '../lib/touchbar/touchBarManager';
 import { getApiBase } from '../config/apiConfig';
@@ -9,7 +9,7 @@ import { getApiBase } from '../config/apiConfig';
  * Escucha el estado global del plan, logs del monitor y eventos de MediaSession en macOS.
  */
 export default function TouchBarBridge({ activeModuleKey = 'introduccion', activeModuleTitle = 'Introducción' }) {
-  const { planData, globalProgress, navigateToModule } = usePlan();
+  const { planData, globalProgress } = usePlan();
   const [lastLog, setLastLog] = useState('Monitor conectado');
   const [aiState, setAiState] = useState('listo');
   const activeModel = planData?.config?.ai?.model || 'minimax-m3:cloud';

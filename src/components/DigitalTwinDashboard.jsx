@@ -1,8 +1,5 @@
-import React, { useState } from 'react';
-import { 
-  Activity, RefreshCw, CheckCircle, AlertTriangle, ExternalLink, 
-  TrendingUp, Globe, DollarSign, Shield, Database, Zap 
-} from 'lucide-react';
+import { useState } from 'react';
+import { RefreshCw, CheckCircle, Globe } from 'lucide-react';
 import { usePlan } from '../context/PlanContext';
 import { 
   fetchAlphaVantageData, 

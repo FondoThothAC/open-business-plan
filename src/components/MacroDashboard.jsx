@@ -13,6 +13,11 @@ import {
   Zap
 } from 'lucide-react';
 
+const toFixedSafe = (v, d = 2, fallback = 'N/D') => {
+  const n = Number(v);
+  return Number.isFinite(n) ? n.toFixed(d) : fallback;
+};
+
 const _formatMXN = (value) => 
   new Intl.NumberFormat('es-MX', { 
     style: 'currency', 
@@ -303,7 +308,7 @@ export default function MacroDashboard({ token }) {
               <div>
                 <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', textTransform: 'uppercase', fontWeight: 700 }}>Paridad Dólar (USD/MXN FIX)</div>
                 <div style={{ fontSize: '1.4rem', fontWeight: 900, marginTop: '4px' }}>
-                  ${data.tipoCambio?.valor?.toFixed(2)}
+                  ${toFixedSafe(data.tipoCambio?.valor, 2)}
                 </div>
                 <div style={{ fontSize: '0.65rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
                   Cierre FIX · {data.tipoCambio?.fecha}
@@ -328,7 +333,7 @@ export default function MacroDashboard({ token }) {
               <div>
                 <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', textTransform: 'uppercase', fontWeight: 700 }}>Valor de la UDI (Pesos)</div>
                 <div style={{ fontSize: '1.4rem', fontWeight: 900, marginTop: '4px' }}>
-                  ${data.udis?.valor?.toFixed(4)}
+                  ${toFixedSafe(data.udis?.valor, 4)}
                 </div>
                 <div style={{ fontSize: '0.65rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
                   Unidades de Inversión · {data.udis?.fecha}

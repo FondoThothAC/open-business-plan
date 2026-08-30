@@ -7,7 +7,7 @@
 import { estimateBusinessMetrics, classifyEstablishmentType, calculateOptimalLocation } from './territorialEngine.js';
 import { getApiBase } from '../config/apiConfig.js';
 
-export function runQuantumDiagnostic({ areas = ['operativo'], teamSize = 3 } = {}) {
+export function runQuantumDiagnostic({ areas = ['operativo'], _teamSize = 3 } = {}) {
   const normalizedAreas = (areas || []).map(a => String(a).toLowerCase().trim());
   const hasFinanzas = normalizedAreas.some(a => a.includes('finan'));
   const hasOperativo = normalizedAreas.some(a => a.includes('operat'));
@@ -409,7 +409,7 @@ export async function executeAgentTool(toolName, args, planContext = {}) {
       }
 
       case 'tool_critic_validator': {
-        const { sectionKey, draftContent, context = {} } = args;
+        const { sectionKey, draftContent, _context = {} } = args;
         const length = draftContent ? draftContent.length : 0;
         const hasNumbers = /\d+/.test(draftContent || '');
         const score = (length > 200 ? 5 : 2) + (hasNumbers ? 3 : 1) + 2;

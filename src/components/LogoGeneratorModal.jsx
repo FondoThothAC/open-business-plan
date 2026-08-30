@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Sparkles, RefreshCw, Check, X, Palette, Image as ImageIcon, Download } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Sparkles, RefreshCw, Check, X } from 'lucide-react';
 import { LOGO_STYLES, buildLogoPrompt, generateLogoVariants } from '../lib/logoGenerator';
 import { getApiBase } from '../config/apiConfig';
 

@@ -1,5 +1,4 @@
-import React from 'react';
-import { Zap, Activity, AlertCircle, CheckCircle2, ShieldCheck, Gauge, Clock, DollarSign, Flame } from 'lucide-react';
+import { Gauge, Clock, Flame } from 'lucide-react';
 
 const PROVIDER_METADATA = {
   groq: {

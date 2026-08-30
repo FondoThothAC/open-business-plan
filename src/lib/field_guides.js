@@ -77,7 +77,20 @@ export const BUSINESS_GUIDES = {
   balance: { desc: 'Foto financiera: Activos = Pasivos + Capital. Proyectado a 3-5 años.', ejemplo: 'Ej: "Año 1: Activos $710K | Pasivos $430K | Capital $280K. Año 3: Activos $2.8M | Pasivos $180K | Capital $2.62M."' },
   flujo_caja: { desc: 'Entradas y salidas de efectivo reales por mes. Crucial para no quedarte sin liquidez.', ejemplo: 'Ej: "Mes 1: Entrada $30K, Salida $150K, Saldo -$120K. Mes 6: Entrada $180K, Salida $135K, Saldo +$45K."' },
   punto_equilibrio: { desc: 'Número de clientes o ventas necesarias para cubrir todos los costos. Fórmula: CF ÷ (PVU - CVU).', ejemplo: 'Ej: "$123K ÷ ($1,500 - $280) = 101 clientes/mes para cubrir costos. Meta: alcanzarlo en el mes 8."' },
-  indicadores: { desc: 'VAN (Valor Actual Neto) y TIR (Tasa Interna de Retorno) del proyecto a 5 años.', ejemplo: 'Ej: "VAN a 5 años (tasa 12%): $1.8M MXN (positivo = viable). TIR: 34% (superior al costo de capital). Payback: 22 meses."' }
+  indicadores: { desc: 'VAN (Valor Actual Neto) y TIR (Tasa Interna de Retorno) del proyecto a 5 años.', ejemplo: 'Ej: "VAN a 5 años (tasa 12%): $1.8M MXN (positivo = viable). TIR: 34% (superior al costo de capital). Payback: 22 meses."' },
+  punto_reorden: { desc: 'Nivel mínimo de existencias de insumos que dispara automáticamente una nueva orden de compra.', ejemplo: 'Ej: "Mangueras de alta presión: Punto de reorden en 15 unidades (lead time de entrega de 5 días). Sellos hidráulicos: 50 sets."' },
+  otd: { desc: 'On-Time Delivery: Porcentaje de entregas o servicios ejecutados a tiempo respecto al compromiso.', ejemplo: 'Ej: "Meta OTD: 98.5% en contratos mineros Tier 1. Monitoreo semanal mediante sistema ERP."' },
+  rotacion: { desc: 'Rotación de Inventarios: Veces que se renueva el stock en un periodo determinado.', ejemplo: 'Ej: "Rotación objetivo: 6.0 veces al año (60 días de permanencia promedio en almacén)."' },
+  dso: { desc: 'Days Sales Outstanding: Días promedio de cobro a clientes corporativos.', ejemplo: 'Ej: "DSO objetivo: 45 días para mineras y 30 días para contratistas locales."' },
+  dpo: { desc: 'Days Payable Outstanding: Días promedio de pago a proveedores clave.', ejemplo: 'Ej: "DPO negociado: 60 días con fabricantes OEM de mangueras y conexiones."' },
+  ccc: { desc: 'Cash Conversion Cycle (Ciclo de Conversión de Efectivo): Días que toma convertir inventario en flujo de caja.', ejemplo: 'Ej: "CCC = Días Inventario (60) + DSO (45) - DPO (60) = 45 días de requerimiento de capital de trabajo."' },
+  puestos_lista: { desc: 'Matriz consolidada de capital humano, niveles salariales, prestaciones de ley (IMSS/ISN) y organigrama.', ejemplo: 'Ej: "14 puestos distribuidos en 4 Gerencias: Operaciones, Calidad/IoT, Finanzas y B2B, con costo patronal total de $5.6M MXN/año."' },
+  inversion_fija: { desc: 'Activos tangibles no corrientes indispensables para la operación (bancos de prueba, vehículos, maquinaria).', ejemplo: 'Ej: "Taller central en Hermosillo ($4.5M), banco de pruebas hidráulicas ($2.5M), instrumental de telemetría IoT ($1.8M)."' },
+  inversion_diferida: { desc: 'Activos intangibles y gastos pre-operativos (constitución legal, certificaciones ISO, software ERP).', ejemplo: 'Ej: "Certificación ISO 9001/4406 ($350K), constitución legal y patentes ($150K), licencias de software ($250K)."' },
+  amortizacion_creditos: { desc: 'Tabla y estrategia de servicio de deuda: capital, tasa de interés, amortización y saldo insoluto.', ejemplo: 'Ej: "Crédito bancario de $5M MXN a 48 meses con tasa TIIE+3.5% fija, amortizaciones mensuales de $135K MXN."' },
+  memorias_calculo: { desc: 'Bases cuantitativas, supuestos de costos unitarios, tarifas por servicio y fórmulas de proyección.', ejemplo: 'Ej: "Tarifa MaaS: $68,000 MXN/mes por camión minero monitoreado. Costo marginal de reparación: $18,500 MXN."' },
+  relacion_bc: { desc: 'Relación Beneficio-Costo (B/C): Valor presente de beneficios dividido entre valor presente de costos.', ejemplo: 'Ej: "Relación B/C de 1.38 a tasa de descuento del 12%, lo que indica que por cada peso invertido se generan $1.38 MXN en valor presente."' },
+  corrida_automatica: { desc: 'Proyección financiera completa automatizada (flujo de caja libre, estado de resultados y balances a 5 años).', ejemplo: 'Ej: "Modelo maestro con WACC de 12%, TIR de 15.11%, VAN de $1.83M MXN y periodo de recuperación de 4.1 años."' }
 };
 
 export const SOCIAL_GUIDES = {
@@ -130,6 +143,7 @@ export const SOCIAL_GUIDES = {
   tir_social: { desc: 'Tasa Interna de Retorno pero midiendo beneficios a la sociedad, no ganancias.', ejemplo: 'Ej: TIR Social estimada: 25% (muy superior a la tasa de descuento social del 10%).' },
   vpn_social: { desc: 'Valor Presente Neto de los beneficios sociales menos el costo del proyecto.', ejemplo: 'Ej: Valor Presente Neto Social: +$4.5 Millones a 5 años.' },
   sostenibilidad_institucional: { desc: 'Cómo se hará cargo de administrar el proyecto a futuro.', ejemplo: 'Ej: La asociación de padres asumirá el control directivo en el Año 3.' },
+  sostenibilidad_financiera: { desc: 'Estrategia de ingresos propios, cuotas de recuperación o patrocinios para operar sin depender de fondos iniciales.', ejemplo: 'Ej: 40% ingresos por cuotas simbólicas de talleres vespertinos, 60% donaciones recurrentes.' },
   apropiacion_comunitaria: { desc: 'Cómo asegurar que la comunidad defienda y mantenga el proyecto.', ejemplo: 'Ej: Involucrar a los jóvenes en pintar y decorar el aula para generar sentido de pertenencia.' }
 };
 

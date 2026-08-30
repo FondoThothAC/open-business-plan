@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Activity, Cpu, RotateCcw, Calendar, TrendingUp, Clock, RefreshCw } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Activity, Cpu, RotateCcw, Calendar, TrendingUp, RefreshCw } from 'lucide-react';
 import { getApiBase, safeFetchJson } from '../config/apiConfig';
 
 export default function GlobalTokenMonitor() {

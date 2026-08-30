@@ -117,7 +117,7 @@ export function estimateBusinessMetrics(estratoStr = '', scianCode = '') {
 /**
  * Clasifica si un establecimiento del DENUE actúa como Competidor, Cliente Potencial B2B o Proveedor.
  */
-export function classifyEstablishmentType(item = {}, targetKeywords = '', targetSector = '') {
+export function classifyEstablishmentType(item = {}, targetKeywords = '', _targetSector = '') {
   const nombre = (item.nombre || item.Nombre || '').toLowerCase();
   const actividad = (item.actividad || item.Clase_actividad || item.tipoEstablecimiento || '').toLowerCase();
   const keywordsLower = (targetKeywords || '').toLowerCase();
@@ -265,6 +265,7 @@ export function calculateOptimalLocation(establishments = [], maxRadiusKm = 5) {
     competitorsWithinRadius,
     totalNearbyRevenue,
     totalNearbyRevenueFormatted: `$${(totalNearbyRevenue / 1000000).toFixed(1)}M MXN`,
+    totalClusterRevenue: totalEstimatedRevenue,
     totalEstimatedEmployees,
     scoreAccesibilidad: clientsWithinRadius >= 3 ? 'Óptima (Clúster Activo)' : 'Media (Zona en Desarrollo)',
     recomendacionOperativa: `Ubicarse en este centroide ponderado permite dar cobertura en menos de ${(maxRadiusKm * 2.5).toFixed(0)} minutos a ${clientsWithinRadius} clientes industriales/mineros clave en un radio de ${maxRadiusKm} km.`

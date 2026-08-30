@@ -7,7 +7,7 @@
  * Registra cada trayectoria en el estándar DeepSeek Harness para trazabilidad completa.
  */
 
-import { executeAgentTool, AGENT_TOOLS_MANIFEST } from './agentTools.js';
+import { executeAgentTool } from './agentTools.js';
 import { callAiProvider } from './ai.js';
 
 const TRAJECTORY_STORAGE_KEY = 'openplan_agent_trajectories';

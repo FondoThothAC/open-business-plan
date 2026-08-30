@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from 'react';
-import { ShieldAlert, AlertTriangle, CheckCircle2, Flame, DollarSign, Users, Building, FileText, ChevronDown, ChevronUp, Info, HelpCircle } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { ShieldAlert, AlertTriangle, CheckCircle2, Flame, FileText, ChevronDown, ChevronUp } from 'lucide-react';
 import { calculateLiquidationReserve, analyzeBurnRateAndSurvival, getQuantumExitProtocol } from '../lib/finanzas/liquidationEngine';
 
 export default function LiquidationReserveWidget({ planData, projections, staff = [] }) {

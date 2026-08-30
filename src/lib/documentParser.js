@@ -64,14 +64,10 @@ export async function parseDocxToMarkdown(fileOrBuffer, customExtractor) {
     arrayBuffer = await readFileAsArrayBuffer(fileOrBuffer);
   }
 
-  let htmlResult = '';
-  if (customExtractor) {
-    const res = await customExtractor(arrayBuffer);
-    htmlResult = res.value || '';
-  } else {
-    const res = await mammoth.convertToHtml({ arrayBuffer });
-    htmlResult = res.value || '';
-  }
+  const res = customExtractor 
+    ? await customExtractor(arrayBuffer)
+    : await mammoth.convertToHtml({ arrayBuffer });
+  const htmlResult = res?.value || '';
 
   const markdown = turndownService.turndown(htmlResult);
   return cleanExtractedText(markdown);
@@ -179,8 +175,8 @@ export async function transcribeAudioFile(file, groqKey) {
 export async function parseDocumentFile(file, options = {}) {
   const fileName = file.name || 'documento';
   const ext = fileName.split('.').pop().toLowerCase();
-  let text = '';
-  let format = 'text';
+  let text;
+  let format;
 
   const imageExts = ['png', 'jpg', 'jpeg', 'webp', 'bmp', 'tiff'];
   const audioExts = ['mp3', 'wav', 'm4a', 'ogg', 'webm', 'aac', 'flac'];

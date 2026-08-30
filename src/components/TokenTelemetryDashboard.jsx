@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Activity, RefreshCw, Wifi, WifiOff, Database } from 'lucide-react';
 import { getApiBase } from '../config/apiConfig';
 
@@ -12,7 +12,7 @@ function cacheTelemetry(data) {
       data,
       timestamp: new Date().toISOString()
     }));
-  } catch (e) {
+  } catch {
     // Silencioso — localStorage lleno o no disponible
   }
 }
@@ -24,7 +24,9 @@ function getCachedTelemetry() {
       const parsed = JSON.parse(cached);
       return { data: parsed.data, timestamp: parsed.timestamp };
     }
-  } catch (e) {}
+  } catch {
+    // Fallback silencioso
+  }
   return null;
 }
 

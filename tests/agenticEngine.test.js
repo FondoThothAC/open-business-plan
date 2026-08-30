@@ -1,7 +1,7 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
 import { executeAgentTool, AGENT_TOOLS_MANIFEST } from '../src/lib/agentTools.js';
-import { TrajectoryRecorder, runAgenticModuleGeneration } from '../src/lib/agenticEngine.js';
+import { TrajectoryRecorder } from '../src/lib/agenticEngine.js';
 
 describe('CELIS Agentic Engine & DeepSeek Harness Trajectories - TDD Test Suite', () => {
   it('Debe exponer el manifiesto completo de herramientas agénticas', () => {

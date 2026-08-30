@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Network, DollarSign, Clock, Award, ShieldCheck, ArrowRightLeft } from 'lucide-react';
+import { useState } from 'react';
+import { Network, ArrowRightLeft } from 'lucide-react';
 
 /**
  * Widget Visual e Interactivo para Amoeba Management (Gestión por Amebas - Kyocera / Kazuo Inamori):

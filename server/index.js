@@ -8,7 +8,7 @@ import { busquedaMultiFuente, analizarViabilidad } from './competitorEngine.js';
 import { FRAMEWORKS } from '../src/config/frameworks.js';
 import { swarmOrchestrator } from './swarm/SwarmOrchestrator.js';
 import { agentStore } from './swarm/AgentStore.js';
-import { generateLogoVariants, buildLogoPrompt, generateProceduralSvgLogo } from '../src/lib/logoGenerator.js';
+import { generateLogoVariants } from '../src/lib/logoGenerator.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -1486,7 +1486,7 @@ app.post('/api/test/groq', async (req, res) => {
       if (response.ok && !data.error) {
         return res.json({ success: true, message: `Groq está en línea (${model}) ✓` });
       }
-    } catch (err) {
+    } catch {
       // Continuar al siguiente modelo
     }
   }
@@ -1561,7 +1561,9 @@ app.post('/api/test/gemini', async (req, res) => {
       if (response.ok && !data.error && data.candidates?.[0]?.content?.parts?.[0]?.text) {
         return res.json({ success: true, message: `Google Gemini está en línea (${model}) ✓` });
       }
-    } catch (err) {}
+    } catch {
+      // Continuar al siguiente modelo
+    }
   }
   res.json({ success: false, error: 'No se pudo conectar con Google Gemini.' });
 });
@@ -1739,7 +1741,7 @@ app.post('/api/test/tokenrouter', async (req, res) => {
           message = `TokenRouter en línea — ${count} modelos disponibles ✓`;
           break;
         }
-      } catch (e) {}
+      } catch {}
     }
     if (passed || (apiKey.startsWith('sk-') && apiKey.length > 20)) {
       res.json({ success: true, message });
@@ -2090,7 +2092,7 @@ app.post('/api/telemetry/tokens', (req, res) => {
     if (fs.existsSync(tokenFilePath)) {
       try {
         data = JSON.parse(fs.readFileSync(tokenFilePath, 'utf8'));
-      } catch (e) {}
+      } catch {}
     }
 
     data[provider] = (data[provider] || 0) + tokens;
@@ -2138,7 +2140,7 @@ app.get('/api/telemetry/trajectories', (req, res) => {
       try {
         const t = JSON.parse(line);
         if (t.id) map.set(t.id, t);
-      } catch (e) {}
+      } catch {}
     });
     
     // Devolver un arreglo ordenado por timestamp (más recientes primero)
@@ -2222,7 +2224,7 @@ function loadModelRegistry() {
     if (fs.existsSync(modelRegistryPath)) {
       return JSON.parse(fs.readFileSync(modelRegistryPath, 'utf8'));
     }
-  } catch (e) {
+  } catch {
     console.warn('[ModelRegistry] Error cargando registro, usando defaults');
   }
   return { models: {}, lastCronRun: null, cronStatus: 'never_run' };
@@ -2239,7 +2241,7 @@ function saveModelRegistry(data) {
 }
 
 // Verificar disponibilidad de un proveedor haciendo un ping ligero
-async function pingProvider(providerName, endpoint, apiKey, timeoutMs = 8000) {
+async function _pingProvider(providerName, endpoint, apiKey, timeoutMs = 8000) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   
@@ -2426,7 +2428,7 @@ app.post('/api/telemetry/call-log', (req, res) => {
     const tokenFilePath = path.join(telemetryDir, 'tokens_usage.json');
     let tokenData = {};
     if (fs.existsSync(tokenFilePath)) {
-      try { tokenData = JSON.parse(fs.readFileSync(tokenFilePath, 'utf8')); } catch (e) {}
+      try { tokenData = JSON.parse(fs.readFileSync(tokenFilePath, 'utf8')); } catch {}
     }
     tokenData[provider] = (tokenData[provider] || 0) + logEntry.totalTokens;
     fs.writeFileSync(tokenFilePath, JSON.stringify(tokenData, null, 2), 'utf8');
@@ -2456,7 +2458,7 @@ app.get('/api/telemetry/call-log', (req, res) => {
     for (let i = lines.length - 1; i >= Math.max(0, lines.length - 500); i--) {
       try {
         entries.push(JSON.parse(lines[i]));
-      } catch (e) {}
+      } catch {}
     }
 
     // Estadísticas agregadas
@@ -2500,11 +2502,13 @@ if (fs.existsSync(distPath)) {
   });
 }
 
-app.listen(PORT, () => {
+const HOST = process.env.HOST || '127.0.0.1';
+
+app.listen(PORT, HOST, () => {
   console.log('');
   console.log('╔══════════════════════════════════════════════════╗');
   console.log('║     🏭  OpenPlan — Backend Industrial v2         ║');
-  console.log(`║     Puerto: http://localhost:${PORT}                ║`);
+  console.log(`║     Puerto: http://${HOST}:${PORT}                ║`);
   console.log('║     Monitor de IA: /api/log activo               ║');
   console.log('╚══════════════════════════════════════════════════╝');
   console.log('');

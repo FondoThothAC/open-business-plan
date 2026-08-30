@@ -42,8 +42,8 @@ export function calculateLiquidationReserve(planData, staff = [], options = {}) 
   // 1. PASIVO LABORAL CONSTITUCIONAL (LFT)
   // 3 meses de salario integrado + 20 días por año (asumiendo año 1 = proporcional)
   // + 15 días aguinaldo proporcional + 6 días vacaciones + 25% prima vacacional
-  let totalNominaMensual = 0;
-  let desglosePersonal = [];
+  let totalNominaMensual;
+  let desglosePersonal;
 
   if (Array.isArray(staff) && staff.length > 0) {
     totalNominaMensual = staff.reduce((acc, curr) => acc + (Number(curr.salary || curr.monthlySalary) || 0), 0);

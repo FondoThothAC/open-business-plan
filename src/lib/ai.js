@@ -103,7 +103,7 @@ async function getInstalledOllamaModels(endpoint) {
       const data = await res.json();
       return data && data.models ? data.models.map(m => m.name) : [];
     }
-  } catch (e) {
+  } catch {
     // Si no hay respuesta o timeout, continuar silenciosamente
   }
   return [];
@@ -350,7 +350,7 @@ function cleanPlanDataForAi(allPlanData, isLocalProvider = false) {
 export async function generateModuleContent(config, currentModule, allPlanData) {
   const {
     primaryProvider, _secondaryProvider,
-    apiKey, groqKey, nvidiaKey, orcaRouterKey, lmStudioEndpoint, endpoint, openrouterKey, minimaxKey, mistralKey,
+    apiKey, groqKey, nvidiaKey, orcaRouterKey, lmStudioEndpoint, endpoint, openrouterKey, mistralKey,
     ollamaKey, bobOllamaKey,
     model, depth = 1,
     agentModels = {},
@@ -686,7 +686,6 @@ ${fieldsPromptContext}
   // [EDD] Si el proveedor primario es nube: falla → siguiente proveedor nube.
   // Si el proveedor primario es local (Ollama): falla → pregunta antes de saltar a nube.
 
-  const opencodeKey   = allPlanData?.config?.ai?.opencodeKey   || '';
   const isCloudPrimary = primaryProvider && primaryProvider !== 'ollama' && primaryProvider !== 'lmstudio';
 
   let fallbackResult;
@@ -974,7 +973,7 @@ export async function callAiProvider(config, prompt, expectJson = true, expected
   };
 
   let text;
-  let primaryError = null;
+  let primaryError;
 
   try {
     text = await invokeSingle(provider, model, null);
@@ -1141,7 +1140,7 @@ async function callOllama(endpoint, model, prompt, expectJson, ollamaKey = '') {
       });
     } catch (e) {
       if (e.name === 'TimeoutError' || e.name === 'AbortError') {
-        throw new Error(`Ollama Cloud (${targetModel}) timeout 90s: ${e.message}`);
+        throw new Error(`Ollama Cloud (${targetModel}) timeout 90s: ${e.message}`, { cause: e });
       }
       throw e;
     }
@@ -1330,13 +1329,15 @@ async function callGroq(apiKey, model, prompt, expectJson) {
   if (preferredModel === 'openai/gpt-oss-20b') preferredModel = 'openai/gpt-oss-20b';
   if (preferredModel === 'qwen/qwen3.6-27b') preferredModel = 'qwen/qwen3-32b';
 
-  // Modelos oficiales y reales de Groq API (2026)
+  // Modelos oficiales y reales de Groq API (2026) con rotación resiliente
   const groqCandidateModels = [
+    model,
     preferredModel,
     'llama-3.1-8b-instant',
     'openai/gpt-oss-120b',
     'openai/gpt-oss-20b',
-    'qwen/qwen3-32b'
+    'qwen/qwen3-32b',
+    'llama-3.3-70b-versatile'
   ];
   const uniqueModels = [...new Set(groqCandidateModels.filter(Boolean))];
 
@@ -1468,18 +1469,19 @@ async function callOpenRouter(apiKey, model, prompt, expectJson) {
 }
 
 async function callOpenAI(apiKey, model, prompt, expectJson) {
+  const resolvedModel = model || 'gpt-4o';
   const response = await fetchWithRetry('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
     body: JSON.stringify({
-      model: model || 'gpt-4o',
+      model: resolvedModel,
       messages: [{ role: 'user', content: prompt }],
       response_format: expectJson ? { type: 'json_object' } : undefined
     })
   });
   const data = await response.json();
   if (data.usage && data.usage.total_tokens) {
-    recordTokenTelemetry('openai', data.usage.total_tokens, targetModel, data.usage.prompt_tokens, data.usage.completion_tokens);
+    recordTokenTelemetry('openai', data.usage.total_tokens, resolvedModel, data.usage.prompt_tokens, data.usage.completion_tokens);
   }
   return data.choices[0].message.content;
 }
@@ -1521,14 +1523,15 @@ function recordTokenTelemetry(provider, totalTokens, model = null, promptTokens 
         status: 'success'
       })
     }).catch(() => {});
-  } catch (e) {}
+  } catch {
+    // Fallback silencioso de telemetría
+  }
 }
 
 async function callOrcaRouter(apiKey, model, prompt, expectJson) {
   const keys = parseApiKeys(apiKey);
   if (keys.length === 0) throw new Error('No se proporcionó API Key de Orca Router válida');
 
-  let lastError = null;
   const currentKey = keys[0];
   const targetModel = model || 'orcarouter/auto';
 
@@ -1551,7 +1554,7 @@ async function callOrcaRouter(apiKey, model, prompt, expectJson) {
     
     return data.choices[0].message.content;
   } catch (err) {
-    throw new Error(`Error en Orca Router: ${err.message}`);
+    throw new Error(`Error en Orca Router: ${err.message}`, { cause: err });
   }
 }
 
@@ -1628,17 +1631,18 @@ async function callTokenRouter(apiKey, model, prompt, expectJson) {
 }
 
 async function callMistral(apiKey, model, prompt) {
+  const resolvedModel = model || 'mistral-large-latest';
   const response = await fetchWithRetry('https://api.mistral.ai/v1/chat/completions', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
     body: JSON.stringify({
-      model: model || 'mistral-large-latest',
+      model: resolvedModel,
       messages: [{ role: 'user', content: prompt }]
     })
   });
   const data = await response.json();
   if (data.usage && data.usage.total_tokens) {
-    recordTokenTelemetry('mistral', data.usage.total_tokens, targetModel, data.usage.prompt_tokens, data.usage.completion_tokens);
+    recordTokenTelemetry('mistral', data.usage.total_tokens, resolvedModel, data.usage.prompt_tokens, data.usage.completion_tokens);
   }
   return data.choices[0].message.content;
 }
@@ -2038,9 +2042,12 @@ Extrae y devuelve ÚNICAMENTE un objeto JSON válido con estas claves (sin bloqu
       if (jsonMatch) {
         try {
           result = JSON.parse(jsonMatch[0]);
-        } catch (innerErr) {
-          // Último intento: quitar caracteres de control
-          const ultraClean = jsonMatch[0].replace(/[\x00-\x1F\x7F]/g, ' ');
+        } catch {
+          // Último intento: filtrar caracteres de control no imprimibles (conservando saltos y tabulaciones)
+          const ultraClean = jsonMatch[0].split('').filter(c => {
+            const code = c.charCodeAt(0);
+            return (code >= 32 && code !== 127) || code === 10 || code === 13 || code === 9;
+          }).join('');
           result = JSON.parse(ultraClean);
         }
       } else {

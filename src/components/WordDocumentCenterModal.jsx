@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { 
-  X, Briefcase, FileText, CheckCircle2, RotateCcw, Cpu, 
-  Calendar, Layers, Search, Filter, Sparkles, History, 
-  ChevronRight, Copy, ArrowRight, Eye, Code, Flame, RefreshCw, FileCheck
+  X, FileText, RotateCcw, Cpu, 
+  Search, Sparkles, History, 
+  Copy, ArrowRight, RefreshCw, FileCheck
 } from 'lucide-react';
 import { getApiBase, safeFetchJson } from '../config/apiConfig';
 import { usePlan } from '../context/PlanContext';
 
 export default function WordDocumentCenterModal({ isOpen, onClose }) {
-  const { planData, setPlanData, loadPlan } = usePlan();
+  const { loadPlan } = usePlan();
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');

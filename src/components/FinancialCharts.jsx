@@ -290,8 +290,8 @@ const MonthlyDetailTable = ({ data, headers, keys, showSalesPercentage, colSpan 
                   const value = row[key];
                   const isCurrency = typeof value === 'number' && key !== 'month' && key !== 'year';
                   const isPercentage = key.toLowerCase().includes('percentage') || key === 'bepPercentage';
-                  const shouldShowPercentage = showSalesPercentage && isCurrency && key !== 'sales' && row.sales > 0;
-                  const percentage = shouldShowPercentage ? `(${(isFinite(Number(value) / Number(row.sales)) ? (Number(value) / Number(row.sales) * 100) : 0).toFixed(1)}%)` : null;
+                  const shouldShowPercentage = showSalesPercentage && isCurrency && key !== 'sales' && Number.isFinite(Number(row.sales)) && Number(row.sales) > 0 && Number.isFinite(Number(value));
+                  const percentage = shouldShowPercentage ? `(${((Number(value) / Number(row.sales)) * 100).toFixed(1)}%)` : null;
 
                   let displayValue;
                   if (isCurrency) {
@@ -459,8 +459,8 @@ export const ReportTable = ({ headers, annualData, keys, monthlyData, monthlyHea
                       const value = row[key];
                       const isCurrency = typeof value === 'number' && key !== 'year';
                       const isPercentage = key.toLowerCase().includes('percentage') || key === 'bepPercentage';
-                      const shouldShowPercentage = showSalesPercentage && isCurrency && key !== 'sales' && row.sales > 0;
-                      const percentage = shouldShowPercentage ? `(${(isFinite(Number(value) / Number(row.sales)) ? (Number(value) / Number(row.sales) * 100) : 0).toFixed(1)}%)` : null;
+                      const shouldShowPercentage = showSalesPercentage && isCurrency && key !== 'sales' && Number.isFinite(Number(row.sales)) && Number(row.sales) > 0 && Number.isFinite(Number(value));
+                      const percentage = shouldShowPercentage ? `(${((Number(value) / Number(row.sales)) * 100).toFixed(1)}%)` : null;
 
                       let displayValue;
                       if (isCurrency) {
@@ -517,8 +517,8 @@ export const ReportTable = ({ headers, annualData, keys, monthlyData, monthlyHea
                       const value = row[key];
                       const isCurrency = typeof value === 'number' && key !== 'month' && key !== 'year';
                       const isPercentage = key.toLowerCase().includes('percentage') || key === 'bepPercentage';
-                      const shouldShowPercentage = showSalesPercentage && isCurrency && key !== 'sales' && row.sales > 0;
-                      const percentage = shouldShowPercentage ? `(${(isFinite(Number(value) / Number(row.sales)) ? (Number(value) / Number(row.sales) * 100) : 0).toFixed(1)}%)` : null;
+                      const shouldShowPercentage = showSalesPercentage && isCurrency && key !== 'sales' && Number.isFinite(Number(row.sales)) && Number(row.sales) > 0 && Number.isFinite(Number(value));
+                      const percentage = shouldShowPercentage ? `(${((Number(value) / Number(row.sales)) * 100).toFixed(1)}%)` : null;
 
                       let displayValue;
                       if (isCurrency) {
@@ -1178,7 +1178,7 @@ export const PrintableFinancialReports = ({ projections, staff = [] }) => {
 
           {(() => {
             const firstYearSales = annualIncomeData?.[0]?.sales || 1;
-            const firstYearNet = annualIncomeData?.[0]?.netIncome || 1;
+            const _firstYearNet = annualIncomeData?.[0]?.netIncome || 1;
             const firstYearEbitda = (annualIncomeData?.[0]?.ebt || 0) + (annualIncomeData?.[0]?.annualInterest || 0) + (annualIncomeData?.[0]?.annualDepreciation || 0) || (firstYearSales * 0.25);
             
             // Estimación de plantilla promedio (default 4 personas o extraído)

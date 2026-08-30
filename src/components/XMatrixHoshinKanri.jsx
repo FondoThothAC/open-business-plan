@@ -1,5 +1,4 @@
-import React from 'react';
-import { Compass, Target, CheckCircle2, TrendingUp, Users } from 'lucide-react';
+import { Compass, Target, TrendingUp, Users } from 'lucide-react';
 
 /**
  * Widget Visual e Interactivo para Metodología Hoshin Kanri:

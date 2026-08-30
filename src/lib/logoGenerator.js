@@ -106,7 +106,7 @@ export function buildLogoPrompt(brandData = {}, style = 'flat_vector', userCusto
   const styleInfo = LOGO_STYLES[style] || LOGO_STYLES.flat_vector;
 
   // Extraer términos visuales del isotipo o del giro
-  let visualSubject = '';
+  let visualSubject;
   if (isotipoDesc) {
     visualSubject = extractEnglishKeywords(isotipoDesc) || isotipoDesc;
   } else if (giro) {
@@ -164,7 +164,7 @@ export function generateProceduralSvgLogo(brandData = {}, archetypeIndex = 0) {
   }
 
   const archetype = Math.abs(Number(archetypeIndex) || 0) % 4;
-  let innerElements = '';
+  let innerElements;
 
   if (archetype === 0) {
     // Squircle Moderno
@@ -222,12 +222,9 @@ export function generateProceduralSvgLogo(brandData = {}, archetypeIndex = 0) {
   ${innerElements}
 </svg>`;
 
-  let base64 = '';
-  if (typeof btoa !== 'undefined') {
-    base64 = btoa(unescape(encodeURIComponent(svg)));
-  } else {
-    base64 = Buffer.from(svg).toString('base64');
-  }
+  const base64 = typeof btoa !== 'undefined'
+    ? btoa(unescape(encodeURIComponent(svg)))
+    : Buffer.from(svg).toString('base64');
 
   return {
     svg,

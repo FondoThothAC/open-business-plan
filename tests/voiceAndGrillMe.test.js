@@ -7,7 +7,7 @@ function parseVoiceCommand(transcript) {
   const text = transcript.toLowerCase().trim();
 
   // Comandos de inversión / capex
-  const capexMatch = text.match(/(?:inversi[oó]n|capex|capital inicial).*?(\d[\d,\.]*)/i);
+  const capexMatch = text.match(/(?:inversi[oó]n|capex|capital inicial).*?(\d[\d,.]*)/i);
   if (capexMatch) {
     const rawVal = capexMatch[1].replace(/,/g, '');
     const amount = parseFloat(rawVal);

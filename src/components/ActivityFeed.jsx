@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Activity, X, Minimize2, Maximize2, Bot, CheckCircle, AlertTriangle, XCircle, Zap, Cloud, Save, Sparkles, Cpu, Clock, ChevronRight, Check, Module, Brain, Loader2, TrendingUp, Target } from 'lucide-react';
+import { Activity, X, Minimize2, Maximize2, Bot, CheckCircle, AlertTriangle, XCircle, Zap, Cloud, Save, Sparkles, Cpu, Clock, ChevronRight, Brain, Target } from 'lucide-react';
 import { usePlan } from '../context/PlanContext';
 import { getApiBase } from '../config/apiConfig';
 import { getSavedTrajectories } from '../lib/agenticEngine';

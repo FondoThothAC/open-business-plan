@@ -48,8 +48,8 @@ export function adaptExchangeRates(rawData, baseCurrency = 'USD', error = null) 
     metadata: {
       base: baseCurrency,
       usd_mxn: mxnRate,
-      eur_mxn: rates.EUR ? (mxnRate / rates.EUR).toFixed(4) : null,
-      cad_mxn: rates.CAD ? (mxnRate / rates.CAD).toFixed(4) : null,
+      eur_mxn: eurRate ? (mxnRate / eurRate).toFixed(4) : null,
+      cad_mxn: cadRate ? (mxnRate / cadRate).toFixed(4) : null,
       lastUpdate: rawData.time_last_update_utc || now
     }
   };

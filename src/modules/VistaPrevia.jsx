@@ -20,13 +20,16 @@ import DiffReviewModal from '../components/DiffReviewModal';
 import ArbolProblemasObjetivos from '../components/ArbolProblemasObjetivos';
 import XMatrixHoshinKanri from '../components/XMatrixHoshinKanri';
 import AmoebaStructureViewer from '../components/AmoebaStructureViewer';
+import HumanCapitalMatrix from '../components/HumanCapitalMatrix';
+import MultiScenarioFinancialSection from '../components/MultiScenarioFinancialSection';
 
 function readJson(raw, fallback) {
   if (!raw || typeof raw !== 'string') return fallback;
   try {
     const parsed = JSON.parse(raw);
     return Array.isArray(fallback) ? (Array.isArray(parsed) ? parsed : fallback) : (parsed || fallback);
-  } catch {
+  } catch (err) {
+    console.warn('[VistaPrevia:readJson] JSON inválido:', err);
     return fallback;
   }
 }
@@ -426,7 +429,7 @@ function ImpactoAmbientalWidget({ data }) {
 }
 
 // --- SUBCOMPONENTE: MAQUINARIA Y TECNOLOGIA TABLE ---
-function MaquinariaTable({ data, planData }) {
+function MaquinariaTable({ data }) {
   const maquinaria = data?.maquinaria || '';
   const equipo = data?.equipo || '';
   const herramientas = data?.herramientas || '';
@@ -456,14 +459,14 @@ function MaquinariaTable({ data, planData }) {
       const years = yearsMatch ? Number(yearsMatch[1]) : (type === 'Maquinaria' ? 10 : type === 'Equipo' ? 5 : 3);
 
       let name = line
-        .replace(/^\d+[\.\)]\s*/, '')
+        .replace(/^\d+[.)]\s*/, '')
         .replace(/\([^)]*?(?:\$|\baños\b|MXN)[^)]*?\)/gi, '')
         .replace(/:\s*\$[\d,]+.*/, '')
         .replace(/\$[\d,]+(\s*MXN)?/gi, '')
         .replace(/,\s*\d+\s*años.*/i, '')
         .trim();
 
-      name = name.replace(/^[-–—:\s]+|[-–—:\s,\.]+$/g, '').trim();
+      name = name.replace(/^[-–—:\s]+|[-–—:\s,.]+$/g, '').trim();
 
       if (name.length > 70) name = name.substring(0, 70) + '...';
 
@@ -571,13 +574,13 @@ function InsumosTable({ data, planData }) {
       const freq = freqMatch ? freqMatch[0] : 'Mensual';
 
       let cleanName = m
-        .replace(/^\d+[\.\)]\s*/, '')
+        .replace(/^\d+[.)]\s*/, '')
         .replace(/\([^)]*?(?:\$|MXN|\/mes|\/lote)[^)]*?\)/gi, '')
         .replace(/:\s*\$[\d,]+.*/, '')
         .replace(/\$[\d,]+.*/, '')
         .trim();
 
-      cleanName = cleanName.replace(/^[-–—:\s]+|[-–—:\s,\.]+$/g, '').trim();
+      cleanName = cleanName.replace(/^[-–—:\s]+|[-–—:\s,.]+$/g, '').trim();
       if (cleanName.length > 65) cleanName = cleanName.substring(0, 65) + '...';
 
       const p = rawProv[idx] || rawProv[0] || 'Proveedor Certificado / Fabricante OEM';
@@ -585,7 +588,7 @@ function InsumosTable({ data, planData }) {
       if (cleanName && cleanName.length > 2 && !/^\d+$/.test(cleanName)) {
         parsedItems.push({
           insumo: cleanName,
-          proveedor: p.replace(/^\d+[\.\)]\s*/, '').replace(/Proveedor\s*\d+:\s*/i, '').trim(),
+          proveedor: p.replace(/^\d+[.)]\s*/, '').replace(/Proveedor\s*\d+:\s*/i, '').trim(),
           direccion: planLocation,
           precio: price,
           cantidad: qty,
@@ -1515,7 +1518,9 @@ export default function VistaPrevia() {
       if (raw && typeof raw === 'string') {
         return JSON.parse(raw);
       }
-    } catch {}
+    } catch (err) {
+      console.warn('[VistaPrevia] Error parseando corrida_automatica:', err);
+    }
 
     // Fallback: calcular corrida financiera al vuelo si no existe
     try {
@@ -1673,7 +1678,6 @@ export default function VistaPrevia() {
   const allFrameworkModules = useMemo(() => {
     const list = [];
     currentFramework.pillars.forEach(pillar => {
-      if (pillar.key === 'simulador_financiero') return;
       pillar.modules.forEach(mod => {
         list.push({
           pillarKey: pillar.key,
@@ -1825,6 +1829,13 @@ export default function VistaPrevia() {
 
               if (typeof displayValue === 'string') {
                 displayValue = displayValue.replace(/\\n/g, '\n');
+                // Limpiar separadores ASCII crudos (=== o ---) y transformarlos en títulos limpios
+                displayValue = displayValue.replace(/={5,}\s*([^\n]+)?/g, (_match, title) => {
+                  return title && title.trim() ? `\n\n### ${title.trim()}\n` : '\n\n---\n';
+                });
+                displayValue = displayValue.replace(/-{5,}\s*([^\n]+)?/g, (_match, title) => {
+                  return title && title.trim() ? `\n\n#### ${title.trim()}\n` : '\n\n---\n';
+                });
               }
 
               const looksLikeMermaid = typeof displayValue === 'string' && /^(graph|flowchart)\s+/i.test(displayValue.trim());
@@ -1842,7 +1853,22 @@ export default function VistaPrevia() {
                     {key.replace(/_/g, ' ')}
                   </strong>
                   <div style={{ marginTop: '0.25rem', color: '#334155', lineHeight: '1.6' }} className="markdown-content">
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    <ReactMarkdown 
+                      remarkPlugins={[remarkGfm]}
+                      components={{
+                        table: ({ _node, ...props }) => (
+                          <div className="wide-table-wrapper" style={{ overflowX: 'auto', margin: '1.25rem 0', pageBreakInside: 'avoid', border: '1px solid #e2e8f0', borderRadius: '10px' }}>
+                            <table className="report-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' }} {...props} />
+                          </div>
+                        ),
+                        th: ({ _node, ...props }) => (
+                          <th style={{ background: '#f8fafc', padding: '0.65rem 0.75rem', fontWeight: 700, color: '#0f172a', borderBottom: '2px solid #cbd5e1', textAlign: 'left' }} {...props} />
+                        ),
+                        td: ({ _node, ...props }) => (
+                          <td style={{ padding: '0.6rem 0.75rem', borderBottom: '1px solid #f1f5f9', color: '#334155' }} {...props} />
+                        )
+                      }}
+                    >
                       {displayValue}
                     </ReactMarkdown>
                   </div>
@@ -1980,7 +2006,7 @@ export default function VistaPrevia() {
     const isGoldenPrestige = cover.layout === 'golden_prestige';
     const isBrutalistBold = cover.layout === 'brutalist_bold';
     
-    const logoWidth = cover.logoSize === 'small' ? '80px' : cover.logoSize === 'large' ? '180px' : '130px';
+    const logoWidth = cover.logoSize === 'small' ? '80px' : cover.logoSize === 'extra_large' ? '280px' : cover.logoSize === 'large' ? '180px' : '130px';
     const logoAlignment = cover.logoAlign === 'left' ? 'flex-start' : cover.logoAlign === 'right' ? 'flex-end' : 'center';
     const titleFontSize = cover.titleSize === 'small' ? '2.2rem' : cover.titleSize === 'large' ? '4.2rem' : '3.2rem';
     const primaryColor = planData.config?.brandKit?.primaryColor || '#6366f1';
@@ -2180,7 +2206,7 @@ export default function VistaPrevia() {
               style={{ 
                 width: logoWidth, 
                 height: 'auto', 
-                maxHeight: '140px', 
+                maxHeight: cover.logoSize === 'extra_large' ? '220px' : '140px', 
                 objectFit: 'contain',
                 background: isDarkExecutive || isBlueprintTech || isGoldenPrestige ? '#ffffff' : 'transparent',
                 padding: isDarkExecutive || isBlueprintTech || isGoldenPrestige ? '8px' : '0',
@@ -2288,8 +2314,10 @@ export default function VistaPrevia() {
             }}>
               {cover.institutionLogos.map(logo => (
                 <div key={logo.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem' }}>
-                  <img src={logo.url} alt={logo.name} style={{ height: '45px', width: 'auto', maxWidth: '100px', objectFit: 'contain', background: isDarkExecutive || isBlueprintTech || isGoldenPrestige ? '#ffffff' : 'transparent', padding: isDarkExecutive || isBlueprintTech || isGoldenPrestige ? '4px' : '0', borderRadius: '4px' }} />
-                  <span style={{ fontSize: '0.7rem', color: isDarkExecutive || isGoldenPrestige ? '#94a3b8' : isBlueprintTech ? '#93c5fd' : isBrutalistBold ? '#000000' : '#64748b', fontWeight: 500 }}>{logo.name}</span>
+                  <img src={logo.url} alt={logo.name} style={{ height: '70px', width: 'auto', maxWidth: '140px', objectFit: 'contain', background: isDarkExecutive || isBlueprintTech || isGoldenPrestige ? '#ffffff' : 'transparent', padding: isDarkExecutive || isBlueprintTech || isGoldenPrestige ? '4px' : '0', borderRadius: '4px' }} />
+                  {!logo.hideName && (
+                    <span style={{ fontSize: '0.7rem', color: isDarkExecutive || isGoldenPrestige ? '#94a3b8' : isBlueprintTech ? '#93c5fd' : isBrutalistBold ? '#000000' : '#64748b', fontWeight: 500 }}>{logo.name}</span>
+                  )}
                 </div>
               ))}
             </div>
@@ -2980,37 +3008,27 @@ export default function VistaPrevia() {
                       hideTitle={true}
                     />
                   </div>
-                ) : mod.key === 'rentabilidad' && previewFinancialData ? (
-                  <div key={mod.key} style={{ marginBottom: '1.5rem' }}>
+                ) : (mod.key === 'estructura' || mod.key === 'recursos_humanos') ? (
+                  <div style={{ marginBottom: '1.5rem' }}>
+                    <h3 style={{ fontSize: '1.25rem', color: '#0f172a', marginBottom: '1.25rem', fontWeight: 800 }}>
+                      {sectionNumber} {mod.title}
+                    </h3>
+                    <HumanCapitalMatrix data={planData?.[mod.pillarKey]?.[mod.key] || planData?.organizacion?.estructura} readOnly={true} />
+                    <Section 
+                      number=""
+                      title={`Detalle de ${mod.title}`} 
+                      data={planData?.[mod.pillarKey]?.[mod.key]} 
+                      pillarKey={mod.pillarKey}
+                      moduleKey={mod.key}
+                      hideTitle={true}
+                    />
+                  </div>
+                ) : (mod.key === 'rentabilidad' || mod.key === 'simulador' || mod.key === 'estados_financieros' || mod.key === 'presupuesto_obra' || mod.key === 'estructura_capital' || mod.key === 'riesgo_matematico') ? (
+                  <div key={mod.key} style={{ marginBottom: '2rem' }}>
                     <h3 style={{ fontSize: '1.25rem', color: '#0f172a', marginBottom: '1rem', fontWeight: 800 }}>
                       {sectionNumber} {mod.title}
                     </h3>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem', marginBottom: '1.5rem' }}>
-                      <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '10px', border: '1px solid #e2e8f0', textAlign: 'center' }}>
-                        <div style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 'bold', textTransform: 'uppercase' }}>TIR</div>
-                        <div style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#10b981', marginTop: '0.25rem' }}>
-                          {Number(previewFinancialData.financialMetrics?.irr || 0).toFixed(2)}%
-                        </div>
-                      </div>
-                      <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '10px', border: '1px solid #e2e8f0', textAlign: 'center' }}>
-                        <div style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 'bold', textTransform: 'uppercase' }}>VAN</div>
-                        <div style={{ fontSize: '1.25rem', fontWeight: 'bold', color: (previewFinancialData.financialMetrics?.npv || 0) > 0 ? '#10b981' : '#ef4444', marginTop: '0.25rem' }}>
-                          {new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', maximumFractionDigits: 0 }).format(previewFinancialData.financialMetrics?.npv || 0)}
-                        </div>
-                      </div>
-                      <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '10px', border: '1px solid #e2e8f0', textAlign: 'center' }}>
-                        <div style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 'bold', textTransform: 'uppercase' }}>ROI</div>
-                        <div style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#4f46e5', marginTop: '0.25rem' }}>
-                          {Number(previewFinancialData.financialMetrics?.roi || 0).toFixed(1)}%
-                        </div>
-                      </div>
-                      <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '10px', border: '1px solid #e2e8f0', textAlign: 'center' }}>
-                        <div style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 'bold', textTransform: 'uppercase' }}>PAYBACK</div>
-                        <div style={{ fontSize: '0.85rem', fontWeight: 'bold', color: '#334155', marginTop: '0.5rem', lineHeight: 1.1 }}>
-                          {(previewFinancialData.financialMetrics?.paybackPeriod || '').replace(/\|/g, ' ')}
-                        </div>
-                      </div>
-                    </div>
+                    <MultiScenarioFinancialSection planData={planData} />
                     <Section 
                       number={sectionNumber}
                       title={mod.title} 

@@ -35,7 +35,7 @@ test('DocumentParser - Conversión y extracción multiformato (TDD)', async (t) 
     const mockArrayBuffer = new ArrayBuffer(8);
     const result = await parseDocumentFile(mockFile, {
       readAsArrayBuffer: async () => mockArrayBuffer,
-      mammothExtractor: async (buffer) => {
+      mammothExtractor: async (_buffer) => {
         return { value: '<h1>Modelo de Negocio</h1><p>Venta de suscripciones SaaS B2B.</p>' };
       }
     });

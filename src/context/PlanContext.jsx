@@ -300,6 +300,7 @@ export const PlanProvider = ({ children }) => {
       // Si no hay proyecto activo, intentamos auto-cargar el último modificado en el backend
       if (!activeId) {
         try {
+          const backendBase = getApiBase();
           const listRes = await fetch(`${backendBase}/api/projects`);
           if (listRes.ok) {
             const projectsObj = await listRes.json();
@@ -525,7 +526,7 @@ export const PlanProvider = ({ children }) => {
   const updateSection = (pillar, module, field, value) => {
     setPlanData(prev => ({
       ...prev,
-      [pillar]: { ...prev[pillar], [module]: { ...prev[pillar][module], [field]: value } }
+      [pillar]: { ...(prev[pillar] || {}), [module]: { ...(prev[pillar]?.[module] || {}), [field]: value } }
     }));
   };
 
@@ -553,11 +554,11 @@ export const PlanProvider = ({ children }) => {
   };
 
   const updateStaff = (newStaff) => {
-    setPlanData(prev => ({ ...prev, organizacion: { ...prev.organizacion, staff: newStaff } }));
+    setPlanData(prev => ({ ...prev, organizacion: { ...(prev.organizacion || {}), staff: newStaff } }));
   };
 
   const updateProcesses = (newProcesses) => {
-    setPlanData(prev => ({ ...prev, tecnico: { ...prev.tecnico, processes: newProcesses } }));
+    setPlanData(prev => ({ ...prev, tecnico: { ...(prev.tecnico || {}), processes: newProcesses } }));
   };
 
   const addAnexo = (anexo) => {
@@ -821,8 +822,6 @@ export const PlanProvider = ({ children }) => {
     let isSubscribed = true;
 
     const runLoop = async () => {
-      const { generateModuleContent } = await import('../lib/ai');
-
       while (queueRef.current.length > 0 && statusRef.current === 'running' && isSubscribed) {
         const currentItem = queueRef.current[0];
         setGenerationProgress(prev => ({ ...prev, currentModule: currentItem.title }));
@@ -906,8 +905,8 @@ export const PlanProvider = ({ children }) => {
             setPlanData(prev => ({
               ...prev,
               [pillar]: {
-                ...prev[pillar],
-                [modKey]: { ...prev[pillar][modKey], ...resultData }
+                ...(prev[pillar] || {}),
+                [modKey]: { ...(prev[pillar]?.[modKey] || {}), ...resultData }
               },
               telemetry: {
                 ...prev.telemetry,

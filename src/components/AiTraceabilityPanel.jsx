@@ -1,17 +1,17 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, Fragment } from 'react';
 import { 
   Activity, RefreshCw, Trash2, Download, Search, Filter, 
   Clock, DollarSign, Cpu, CheckCircle2, AlertCircle, Database, 
-  ChevronDown, ChevronRight, Zap, ExternalLink 
+  ChevronDown, ChevronRight, Zap 
 } from 'lucide-react';
 import { getApiBase } from '../config/apiConfig';
 import { calculateCost } from '../config/pricing';
 
 export default function AiTraceabilityPanel() {
   const [entries, setEntries] = useState([]);
-  const [stats, setStats] = useState({});
+  const [_stats, setStats] = useState({});
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [_error, setError] = useState(null);
   const [selectedProvider, setSelectedProvider] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedRow, setExpandedRow] = useState(null);
@@ -260,7 +260,7 @@ export default function AiTraceabilityPanel() {
                 const isErr = entry.status === 'error';
 
                 return (
-                  <React.Fragment key={idx}>
+                  <Fragment key={idx}>
                     <tr 
                       onClick={() => setExpandedRow(isExpanded ? null : idx)}
                       style={{ 
@@ -345,7 +345,7 @@ export default function AiTraceabilityPanel() {
                         </td>
                       </tr>
                     )}
-                  </React.Fragment>
+                  </Fragment>
                 );
               })}
             </tbody>

@@ -1586,4 +1586,39 @@ textarea.form-control {
     stroke: #6366f1 !important;
     stroke-width: 2px !important;
   }
+
+  /* Wide Tables & Multi-Scenario Print Optimization */
+  .wide-table-wrapper {
+    overflow-x: visible !important;
+    width: 100% !important;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  .report-table {
+    width: 100% !important;
+    font-size: 7.5pt !important;
+  }
+
+  .multi-scenario-financial-section,
+  .human-capital-matrix {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
 }
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   WIDE TABLE & MATRIX STYLES (SCREEN)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.wide-table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  max-width: 100%;
+}
+
+.report-table th, 
+.report-table td {
+  white-space: normal;
+  word-break: break-word;
+}
+

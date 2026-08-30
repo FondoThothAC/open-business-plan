@@ -1028,55 +1028,147 @@ export const PROJECT_EXAMPLES = {
     }
   },
   hidraulica_minera: {
-    name: "Hidráulica Minera S.A. de C.V.",
+    name: "Comercio Cuántico Internacional TR SAPI de CV",
     data: {
+      config: {
+        projectName: "Comercio Cuántico Internacional TR SAPI de CV",
+        projectType: "investment_project",
+        brandKit: {
+          companyName: "Comercio Cuántico Internacional TR SAPI de CV",
+          logoUrl: "/media/cci/Comercio Cuantico Internacional TR SAPI de CV Logo y Isotipo.png",
+          primaryColor: "#4f46e5"
+        },
+        coverDesign: {
+          layout: "classic",
+          logoSize: "extra_large",
+          logoAlign: "center",
+          titleSize: "large",
+          creatorName: "Roberto Eduardo Celis Robles",
+          subtitle: "PLAN ESTRATÉGICO MAESTRO",
+          institution: "Formulación y Evaluación Académica 2026",
+          showDate: true,
+          institutionLogos: []
+        }
+      },
       naturaleza: {
         introduccion: {
-          justificacion: 'La industria minera requiere mantenimiento continuo y especializado en sus sistemas hidráulicos de maquinaria pesada. Las paradas no programadas por fallas cuestan millones, y existe una alta demanda de un socio estratégico local.',
-          origen: 'Crear una empresa estructurada con un CAPEX fuerte para soportar SLAs (Service Level Agreements) a largo plazo en minas de Sonora y el Noroeste.',
-          nombre: 'Hidráulica Minera S.A. de C.V.',
-          descripcion: 'Empresa especializada en el mantenimiento preventivo, predictivo y correctivo de sistemas e infraestructura hidráulica a nivel industrial para el sector minero.'
+          origen: "Creación de un centro de alta ingeniería y servicio técnico especializado en Hermosillo, Sonora, enfocado en el mantenimiento de precisión para pistones, grúas móviles y sistemas hidráulicos de gran tonelaje en el corredor minero e industrial del Pacífico.",
+          necesidad: "Mitigar las pérdidas millonarias por paros no programados en minas de Grupo México, Fresnillo PLC y contratistas Tier 1/2 provocadas por fallas en cilindros y contaminación de fluidos (< 0.5 micras).",
+          modelo_negocio: "Mantenimiento como Servicio (MaaS) y contratos recurrentes con acuerdos de nivel de servicio (SLAs) garantizados, telemetría IoT predictiva (Parker SensoNODE) y respaldo de tesorería institucional a 90 días.",
+          propuesta_valor: "Tolerancia cero a fugas, certificación ISO 9001/4406 en clean room presurizado, banco de pruebas de 5,000 PSI y absorción del ciclo de crédito minero a 90 días mediante reserva líquida de $7,000,000 MXN."
         },
         identidad: {
-          mision: 'Asegurar la continuidad operativa de la industria minera mediante servicios de mantenimiento hidráulico de la más alta precisión y seguridad.',
-          vision: 'Ser el socio estratégico líder en soluciones hidráulicas para la minería en el noroeste de México.',
-          valores: 'Seguridad, Precisión, Disponibilidad, Innovación.'
+          mision: "Garantizar la continuidad operativa de la industria minera e industrial mediante servicios de ingeniería hidráulica de precisión, diagnóstico predictivo IoT y tiempos récord de entrega.",
+          vision: "Consolidarse como el centro de excelencia e ingeniería hidráulica multiactivo líder en el noroeste de México para 2030, integrando analítica predictiva y certificación internacional.",
+          valores: "Precisión Técnica Milimétrica, Seguridad Operativa, Transparencia en Telemetría y Compromiso con la Continuidad de Negocio.",
+          imagen: "Símbolo de gota/átomo cuántico en azul índigo y dorado de alta resistencia, que transmite solidez industrial, precisión tecnológica y pureza en fluidos."
         },
         objetivos: {
-          general: 'Alcanzar el retorno de inversión del CAPEX inicial de 20 millones de pesos en un periodo de 60 meses mediante contratos recurrentes.',
-          especificos: '• Obtener 5 contratos a largo plazo (SLAs) con mineras Tier 1.\n• Reducir el tiempo de inactividad de los clientes en un 30%.\n• Recuperar la inversión mensual y generar ganancia distribuible a inversores.'
+          general: "Alcanzar el retorno de inversión del capital emitido de $20,000,000 MXN en un horizonte de 60 meses con una TIR del 15.11% y un VAN de $1,836,412.50 MXN.",
+          especificos: "• Equipar y certificar el taller de maquinado (torno bancada 6m, fresadora CNC, clean room y banco de 5,000 PSI) en los primeros 120 días.\n• Captar una cuota de mercado del 12% del parque de pistones en minas de Sonora en el Año 1 ($16,000,000 MXN en ventas).\n• Instalar 150 sensores IoT SensoNODE en equipos críticos en campo durante los primeros 18 meses.\n• Recomprar ordenadamente el 100% de las acciones Serie B de los 200 inversionistas al mes 60.",
+          metas: "Año 1: $16.0M MXN | Año 2: $19.2M MXN | Año 3: $23.04M MXN | Año 4: $27.65M MXN | Año 5: $33.18M MXN."
         },
         legal: {
-          constitucion: 'S.A. de C.V. (Sociedad Anónima de Capital Variable)',
-          socios: '60% Grupo Inversionista (Capital), 40% Socios Operativos (Capital Intelectual / Know-how)'
+          constitucion: "SAPI de CV (Sociedad Anónima Promotora de Inversión de Capital Variable).",
+          socios: "Serie A (Fundadores/Operadores): 100% derechos de voto y control corporativo. Serie B (200 Inversionistas preferentes con dividendo anual y cláusula de recompra obligatoria al mes 60).",
+          permisos: "Licencia de Uso de Suelo Industrial (Hermosillo), Dictamen de Protección Civil, Licencia Ambiental Única (LAU) y Registro de Generador de Residuos de Manejo Especial."
         }
       },
       mercado: {
         analisis: {
-          producto: 'Mantenimiento preventivo, overhaul de cilindros y bombas hidráulicas, diagnóstico predictivo y refacciones.',
-          valor: 'SLA garantizado, respuesta 24/7 y financiamiento de refacciones de alta rotación.',
-          demanda: 'Minas a tajo abierto y subterráneas en Sonora y Chihuahua.',
-          cliente: 'Directores de Mantenimiento y Operaciones de grandes conglomerados mineros.'
+          producto: "Reconstrucción mayor de pistones hidráulicos, cromado y bruñido de vástagos/camisas, maquinado CNC de precisión, banco de prueba de 5,000 PSI, monitoreo IoT predictivo y contratos MaaS.",
+          valor: "Disponibilidad 24/7, monitoreo en tiempo real de presión y temperatura, garantía extendida y cero paros no programados.",
+          demanda: "Mercado sonorense con más de 3,200 unidades/año de pistones y cilindros en operación continua (330+ días/año) en palas, camiones de extracción y perforadoras.",
+          cliente: "Directores de Mina, Superintendentes de Mantenimiento y Contratistas Especializados de Grupo México (Buenavista, La Caridad), Fresnillo PLC, Agnico Eagle y constructoras pesadas.",
+          ciclo_vida: "Etapa de Crecimiento acelerado impulsado por la tecnificación minera, nearshoring y demanda de proveedores con certificación técnica formal."
+        },
+        segmentacion: {
+          tam: "$240,000,000 MXN (Mercado total de mantenimiento y componentes hidráulicos en el Noroeste minero).",
+          sam: "$65,000,000 MXN (Demanda de cilindros, bombas y grúas móviles en el estado de Sonora).",
+          som: "$16,000,000 MXN (Cuota objetivo capturable en el Año 1, equivalente al 24.6% del SAM).",
+          perfil: "Empresas mineras y contratistas con flotas de 10 a 50 equipos pesados que demandan tiempos de respuesta menores a 48 horas y crédito comercial a 90 días.",
+          sensibilidad_demanda: "Inelástica ante el precio: el costo de un paro minero ($580k-$1.2M MXN/hr) supera ampliamente el costo del servicio hidráulico."
+        }
+      },
+      mercado_cuantitativo: {
+        demanda: {
+          demanda_historica: "El parque de maquinaria instalada en Sonora supera los 800 equipos de gran tonelaje (CAT 797, Komatsu 930E, palas hidráulicas P&H). Se estima un recambio y mantenimiento preventivo de 2,400 a 3,200 cilindros al año con un valor promedio por servicio mayor de $85,000 a $220,000 MXN.",
+          elasticidad: "Elasticidad precio cruzada altamente inelástica (-0.28): las mineras priorizan el cumplimiento estricto de SLAs y la disponibilidad operativa sobre el precio de cotización."
+        },
+        oferta: {
+          proyeccion_oferta: "La oferta regional actual se encuentra atomizada en talleres rústicos sin banco de pruebas hidrostático ni clean room. MHI proyecta capturar 140 reparaciones mayores en el Año 1, escalando a 280 servicios anuales en el Año 5."
         }
       },
       tecnico: {
-        ubicacion: { macro: 'Sonora', micro: 'Corredor Industrial / Minero', local: 'Taller de reparación con capacidades de izaje pesado.' },
-        operacion: { proceso: 'Recepción, lavado y desarme, evaluación con metrología, maquinado/cambio de sellos, ensamble, prueba en banco (hasta 5000 PSI) y liberación.' }
+        ubicacion: {
+          macro: "Hermosillo, Sonora (Eje logístico del Noroeste y cercanía a los principales distritos mineros de Cananea, Nacozari, Caborca y Sahuaripa).",
+          micro: "Parque Industrial Hermosillo Norte, lote de 1,200 m² con nave techada de 800 m², piso epóxico reforzado y subestación eléctrica trifásica de 150 kVA.",
+          local: "Nave con distribución técnica en 4 bahías: Recepción/Desarme, Maquinado/Tornos, Clean Room Presurizado ISO 4406 y Banco de Pruebas Hidráulicas de 5,000 PSI."
+        },
+        operacion: {
+          proceso: "1. Recepción y escaneo QR con telemetría previa | 2. Desensamble en mesa automatizada y lavado ultrasónico | 3. Metrología láser y diagnóstico | 4. Maquinado en torno bancada 6m o rectificado | 5. Armado en Clean Room con sellos Parker | 6. Prueba en banco 5,000 PSI con gráfica de estanqueidad | 7. Liberación y entrega con reporte técnico digital.",
+          diagrama: "Flujo Lineal Certificado ISO 9001:2015 con estaciones de control de calidad intermedias y trazabilidad total por número de serie.",
+          tecnologia: "Torno paralelo de 6 metros, Fresadora universal, Banco de pruebas hidrostático con adquisición de datos digital, Sensores inalámbricos Parker SensoNODE Gold y software de mantenimiento CMMS."
+        }
       },
       organizacion: {
+        estructura: {
+          puestos: "14 puestos clave estructurados en 4 áreas fundamentales: Dirección General (1), Operaciones y Taller (7), Comercialización B2B (2), y Administración/Finanzas (4).",
+          funciones: "Definición rigurosa de responsabilidades bajo marco de gobierno corporativo y segregación de funciones entre socios capitalistas y socios operadores.",
+          puestos_lista: [
+            { id: "1", puesto: "Director General (CEO)", area: "Dirección", nivel: "Directivo", sueldoBase: 75000, cargaSocialPct: 32, funciones: "Estrategia macro, relaciones con mineras y gobierno corporativo.", perfil: "Ing. Industrial / MBA con 15+ años de experiencia B2B." },
+            { id: "2", puesto: "Gerente de Operaciones", area: "Operaciones", nivel: "Gerencia", sueldoBase: 50000, cargaSocialPct: 32, funciones: "Gestión integral del taller, control de calidad ISO 9001/4406 y SLAs.", perfil: "Ing. Mecánico/Mecatrónico con 10+ años en sistemas hidráulicos." },
+            { id: "3", puesto: "Gerente Comercial B2B", area: "Ventas", nivel: "Gerencia", sueldoBase: 45000, cargaSocialPct: 32, funciones: "Licitaciones mineras, prospección de contratos y convenios corporativos.", perfil: "Lic. Comercial/Ingeniero con cartera en sector minero." },
+            { id: "4", puesto: "Gerente de Administración y Finanzas", area: "Finanzas", nivel: "Gerencia", sueldoBase: 45000, cargaSocialPct: 32, funciones: "Tesorería, control de cartera a 90 días, back-to-back y finanzas.", perfil: "C.P. / Finanzas con experiencia en crédito comercial corporativo." },
+            { id: "5", puesto: "Supervisor de Taller y Metrología", area: "Operaciones", nivel: "Mando Medio", sueldoBase: 32000, cargaSocialPct: 32, funciones: "Inspección dimensional de vástagos/camisas y pruebas hidrostáticas.", perfil: "Ing. Técnico Mecánico con especialidad en metrología dimensional." },
+            { id: "6", puesto: "Líder de Servicio en Campo y Grúas", area: "Operaciones", nivel: "Mando Medio", sueldoBase: 30000, cargaSocialPct: 32, funciones: "Diagnóstico in situ en minas y telemetría IoT SensoNODE.", perfil: "Técnico Especialista en Grúas Móviles y Sistemas Hidráulicos." },
+            { id: "7", puesto: "Tornero Industrial Especialista A (6m)", area: "Taller", nivel: "Operativo", sueldoBase: 26000, cargaSocialPct: 32, funciones: "Mecanizado de precisión en vástagos y camisas de gran escala (<0.02mm).", perfil: "Técnico Tornero Industrial A con 8+ años de experiencia." },
+            { id: "8", puesto: "Tornero Industrial B", area: "Taller", nivel: "Operativo", sueldoBase: 20000, cargaSocialPct: 32, funciones: "Fabricación de tapas, émbolos, bujes y piezas secundarias de cilindros.", perfil: "Técnico Tornero con 4+ años en torno paralelo." },
+            { id: "9", puesto: "Fresador / Rectificador CNC", area: "Taller", nivel: "Operativo", sueldoBase: 22000, cargaSocialPct: 32, funciones: "Rectificado de bancadas y mecanizado de manifolds hidráulicos.", perfil: "Operador CNC / Fresador con programación G/M." },
+            { id: "10", puesto: "Técnico Especialista en Clean Room", area: "Calidad", nivel: "Técnico", sueldoBase: 20000, cargaSocialPct: 32, funciones: "Ensamble en atmósfera limpia y pruebas de micropartículas ISO 4406.", perfil: "Técnico en control de contaminación y ensamble de sellos." },
+            { id: "11", puesto: "Técnico de Banco de Pruebas 5,000 PSI", area: "Taller", nivel: "Técnico", sueldoBase: 20000, cargaSocialPct: 32, funciones: "Certificación hidrostática y monitoreo de fugas internas.", perfil: "Técnico Hidráulico con certificación en seguridad de alta presión." },
+            { id: "12", puesto: "Técnico de Instalación y Telemetría IoT", area: "Campo", nivel: "Técnico", sueldoBase: 18000, cargaSocialPct: 32, funciones: "Configuración de sensores SensoNODE y gateways de telemetría.", perfil: "Técnico Electrónico / Mecatrónico." },
+            { id: "13", puesto: "Ejecutivo de Cuentas Mineras B2B", area: "Ventas", nivel: "Operativo", sueldoBase: 22000, cargaSocialPct: 32, funciones: "Atención a contratistas de Grupo México/Fresnillo y cotizaciones.", perfil: "Lic. Mercadotecnia / Ventas Técnicas Industriales." },
+            { id: "14", puesto: "Auxiliar Contable y Control de Cartera", area: "Finanzas", nivel: "Administrativo", sueldoBase: 16000, cargaSocialPct: 32, funciones: "Facturación electrónica, cobranza a 90 días y conciliación bancaria.", perfil: "Técnico Contable / Estudiante de Contabilidad." }
+          ]
+        },
+        recursos_humanos: {
+          reclutamiento: "Atracción de talento técnico certificado en el corredor industrial de Sonora mediante pruebas prácticas de mecanizado y exámenes de seguridad.",
+          contratacion: "Contratos individuales por tiempo indeterminado con periodo de prueba de 90 días, prestaciones superiores a la ley y seguro de vida contra accidentes de trabajo.",
+          sueldos: "Nómina mensual base de $441,000 MXN más $141,120 MXN de cargas sociales (IMSS/Infonavit al 32%), totalizando $582,120 MXN mensuales ($6,985,440 MXN anuales)."
+        },
         inversion: {
-          capex: '$20,000,000 MXN',
-          estructura: '60% Aporte Inversionistas, 40% Know-how y Desarrollo (Capital Intelectual)',
-          retorno: 'ROI planificado a 60 meses con distribuciones mensuales para cubrir la inversión y generar rendimientos.'
+          inversion_fija: "$10,000,000 MXN (Torno bancada 6m, fresadora universal, banco de pruebas 5000 PSI, grúa viajera 10T, cabina clean room y herramental).",
+          inversion_diferida: "$1,000,000 MXN (Inventario inicial de sellos Parker, barras cromadas y camisas bruñidas).",
+          opex_inicial: "$2,000,000 MXN (Capital de trabajo operativo para nómina e insumos en etapa de arranque).",
+          financiamiento: "$7,000,000 MXN (Reserva líquida de tesorería colocada en renta fija como garantía colateral y absorción de crédito minero a 90 días). Total Inversión: $20,000,000 MXN."
+        },
+        costos: {
+          fijos: "$285,000 MXN mensuales (Renta de nave industrial, servicios, seguros, software CMMS y administración).",
+          variables: "65% del ingreso operativo (Acero, barras cromadas, kits de sellos Parker, fluidos hidráulicos, soldadura especial y energía de maquinado).",
+          unitario: "Costo unitario promedio de overhaul integral: $48,000 MXN con precio de venta promedio de $115,000 MXN (Margen bruto ~58%)."
+        },
+        estados_financieros: {
+          resultados: "Proyección a 5 Años: Año 1: $16.0M | Año 2: $19.2M | Año 3: $23.04M | Año 4: $27.65M | Año 5: $33.18M.",
+          balance: "Activo Total Inicial de $20,000,000 MXN ($10M Fijo, $1M Inventario, $2M Bancos, $7M Inversiones Financieras CP).",
+          flujo_caja: "Flujo neto libre disponible: A1 $3.94M | A2 $4.66M | A3 $5.54M | A4 $6.59M | A5 $7.84M + $7.0M Reserva = $14.84M.",
+          amortizacion_creditos: "Sin deuda bancaria externa inicial; 100% fondeado por emisión de capital Serie B a 200 inversionistas con dividendo preferente anual.",
+          memorias_calculo: "Cálculo de flujos con WACC del 12.0%, ISR/PTU del 35% y tasa de rendimiento de tesorería del 6.5% neto anual."
+        },
+        rentabilidad: {
+          punto_equilibrio: "$641,666 MXN mensuales (~22 servicios mayores de pistones por mes).",
+          indicadores: "TIR: 15.11% | VAN (12%): $1,836,412.50 MXN | Relación B/C: 1.092 | Periodo de Recuperación: 4.1 años.",
+          relacion_bc: "1.092 (Por cada peso invertido a valor presente, el proyecto genera $1.092 pesos netos)."
         }
       },
       semilla: {
-        proyecto: 'Mantenimiento de hidraulica a nivel industrial para empresas en minas.',
-        inversion_esperada: '20000000',
-        esquema_accionistas: '60% inversionistas, 40% socios por capital intelectual/know-how',
-        plazo_retorno: '60 meses',
-        estrategia: 'Pagos mensuales para cubrir la inversión y ganancias'
+        proyecto: "Comercio Cuántico Internacional TR SAPI de CV - Mantenimiento Hidráulico Inteligente (MHI)",
+        inversion_esperada: "20000000",
+        esquema_accionistas: "Serie A (Fundadores 100% voto/control), Serie B (200 Inversionistas preferentes sin voto con dividendo preferente y recompra al año 5)",
+        plazo_retorno: "60 meses (5 años)",
+        estrategia: "Centro de ingeniería hidráulica especializada con telemetría IoT y absorción de crédito a 90 días con respaldo de tesorería de 7M MXN."
       }
     }
   }
 };
+
