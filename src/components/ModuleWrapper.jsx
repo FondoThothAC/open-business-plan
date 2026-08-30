@@ -18,13 +18,15 @@ import DiffViewer from './DiffViewer';
 import FieldComments from './FieldComments';
 import HumanCapitalMatrix from './HumanCapitalMatrix';
 import { safeStr } from '../utils/formatters';
-import { getBoxesForDocType } from '../config/boxRegistry';
+import { BOX_REGISTRY } from '../config/boxRegistry';
+import { getBoxesForModule } from '../config/moduleBoxMap';
 import { BoxFormula } from '../components/boxes/BoxFormula';
 import { BoxMatrix } from '../components/boxes/BoxMatrix';
 import { BoxCanvas } from '../components/boxes/BoxCanvas';
 import { BoxChecklist } from '../components/boxes/BoxChecklist';
 import { BoxBenchmark } from '../components/boxes/BoxBenchmark';
 import { BoxTable } from '../components/boxes/BoxTable';
+import PromptEditor from './PromptEditor';
 
 export default function ModuleWrapper({ pillar, moduleKey, title, description, fields, extraAction }) {
   const { planData, updateSection, toggleLock, toggleModuleVisibility, addComment, deleteComment } = usePlan();
@@ -43,6 +45,7 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
   const [activeTrajectory, setActiveTrajectory] = useState(null);
   const [currentTrajectory, setCurrentTrajectory] = useState(null);
   const [showTelemetryModal, setShowTelemetryModal] = useState(false);
+  const [activePromptField, setActivePromptField] = useState(null);
   
   const isLocked = (fieldKey) => planData.config.locks?.[`${pillar}.${moduleKey}.${fieldKey}`];
   const isModuleVisible = planData.config?.visibility?.[`${pillar}.${moduleKey}`] !== false;
@@ -57,7 +60,7 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
   const getFieldGuide = (fieldKey) => {
     const guide = FIELD_GUIDES[fieldKey];
     if (guide) return guide;
-    return { desc: `Completa este campo con información relevante para ${fieldKey}.`, ejemplo: '' };
+    return { instruccion: `Completa este campo con información relevante para ${fieldKey}.`, ejemplo: '' };
   };
 
   const getPromptPreview = (fieldLabel, fieldKey, fieldType) => {
@@ -66,7 +69,7 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
     return `PROMPT QUE SE ENVÍA A LA IA:\n\n` +
            `"Eres un experto en planes de negocio. Redacta ${fieldLabel}${isVisual ? ' en formato visual Mermaid.js' : ''}."\n\n` +
            `CONTEXTO: Se inyecta TODO el plan actual como JSON para coherencia.\n\n` +
-           `FASE 1 – ANALISTA:\n"Genera un borrador profesional para ${fieldLabel}. ${guide ? guide.desc : ''}"\n\n` +
+           `FASE 1 – ANALISTA:\n"Genera un borrador profesional para ${fieldLabel}. ${guide ? guide.instruccion : ''}"\n\n` +
            `FASE 2 – CRÍTICO:\n"Actúa como inversor. ¿Qué falta en el borrador de ${fieldLabel}? ¿Hay datos débiles?"\n\n` +
            `FASE 3 – REDACTOR:\n"Integra la crítica y genera la versión final con tono ejecutivo para un plan de 100 páginas."`;
    };
@@ -438,7 +441,7 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
                       <HelpCircle className="w-4 h-4 text-secondary" style={{ opacity: 0.7 }} />
                       <div className="tooltip-text">
                         <strong>¿Qué es este campo?</strong><br/>
-                        {getFieldGuide(field.key).desc}
+                        {getFieldGuide(field.key).instruccion}
                         {getFieldGuide(field.key).ejemplo && (
                           <div style={{ marginTop: '8px', padding: '8px 10px', background: 'rgba(99, 102, 241, 0.15)', borderRadius: '8px', fontSize: '0.7rem', lineHeight: '1.4', border: '1px solid rgba(99, 102, 241, 0.2)' }}>
                             <strong>Ejemplo:</strong> {getFieldGuide(field.key).ejemplo}
@@ -484,21 +487,14 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
                     )}
 
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                      <div className="tooltip-container" style={{ position: 'relative' }}>
-                        <button 
-                          onClick={() => setActiveExpertField(field)}
-                          className="btn-icon" 
-                          style={{ width: '30px', height: '30px', color: 'var(--accent-color)' }}
-                        >
-                          <Brain className="w-4 h-4" />
-                        </button>
-                        <div className="tooltip-text" style={{ right: '0', left: 'auto', marginLeft: '0', width: '340px' }}>
-                          <strong>Prompt de IA mesa de expertos:</strong><br/>
-                          {getPromptPreview(field.label, field.key, field.type).split('\n').map((line, i) => (
-                            <div key={i} style={{ marginBottom: '4px' }}>{line}</div>
-                          ))}
-                        </div>
-                      </div>
+                      <button 
+                        onClick={() => setActivePromptField(field)}
+                        className="btn-icon" 
+                        style={{ width: '30px', height: '30px', color: 'var(--accent-color)' }}
+                        title="Editar Prompt de IA"
+                      >
+                        <Brain className="w-4 h-4" />
+                      </button>
 
                       <button 
                         onClick={() => toggleLock(pillar, moduleKey, field.key)}
@@ -597,8 +593,17 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
 
           {/* Box Components Integration - Metodologías metodológicas por tipo de documento */}
           {(() => {
-            const projectType = planData.config?.projectType || 'business';
-            const boxes = getBoxesForDocType(projectType);
+            const boxIds = getBoxesForModule(moduleKey);
+            if (!boxIds.length) return null;
+
+            const boxes = boxIds.map(id => {
+              for (const methodology of Object.values(BOX_REGISTRY)) {
+                const box = methodology.find(b => b.id === id);
+                if (box) return box;
+              }
+              return null;
+            }).filter(Boolean);
+
             if (!boxes.length) return null;
 
             const moduleBoxData = planData?.[pillar]?.[moduleKey] || {};
@@ -650,6 +655,19 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
         onApply={(newText) => {
           handleChange(activeExpertField.key, newText);
           setActiveExpertField(null);
+        }}
+      />
+
+      <PromptEditor
+        isOpen={!!activePromptField}
+        onClose={() => setActivePromptField(null)}
+        fieldLabel={activePromptField?.label}
+        fieldKey={activePromptField?.key}
+        promptData={activePromptField ? getFieldGuide(activePromptField.key) : null}
+        onSave={(newPrompt) => {
+          // TODO: Implementar guardado en customOverrides o planData
+          console.log('Saved prompt override for', activePromptField?.key, newPrompt);
+          setActivePromptField(null);
         }}
       />
 
