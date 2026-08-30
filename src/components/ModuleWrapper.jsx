@@ -644,6 +644,8 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
         fieldLabel={activePromptField?.label}
         fieldKey={activePromptField?.key}
         promptData={activePromptField ? getFieldGuide(activePromptField.key) : null}
+        semilla={planData?.semilla}
+        documents={planData?.config?.documents}
         onSave={(newPrompt) => {
           if (activePromptField?.key) {
             updateConfig('customPrompts', activePromptField.key, newPrompt);

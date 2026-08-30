@@ -494,11 +494,11 @@ export const BUSINESS_GUIDES = {
     "placeholder": "Descuentos, paquetes y términos..."
   },
   "tecnologia": {
-    "instruccion": "Redacta con rigor metodológico, analítico y cuantitativo el campo tecnologia para el modelo Plan de Negocios Comercial.",
-    "ejemplo": "Ejemplo corporativo específico para tecnologia en el sector seleccionado.",
-    "benchmark": "Alineado a mejores prácticas y fuentes oficiales.",
-    "cita": "Plan de Negocios Comercial — Guía Metodológica de Formulación",
-    "placeholder": "Información requerida para tecnologia..."
+    "instruccion": "Detalla el paquete tecnológico, software de control, hardware especializado y nivel de automatización que sustentan la ventaja operativa.",
+    "ejemplo": "Ej: Banco de pruebas de 300 HP con telemetría digital en tiempo real y software SCADA para diagnóstico de bombas hidráulicas.",
+    "benchmark": "Nivel de madurez tecnológica TRL >= 7.",
+    "cita": "The Innovator's Dilemma (Christensen, Ch. 1) & Operations Management (Slack, p. 140)",
+    "placeholder": "Tecnología, software, patentes y automatización..."
   },
   "economias_escala": {
     "instruccion": "Explica cómo los costos unitarios decrecen a medida que aumenta el volumen de producción.",
@@ -515,18 +515,18 @@ export const BUSINESS_GUIDES = {
     "placeholder": "Por lotes, continuo, proyecto..."
   },
   "instalada": {
-    "instruccion": "Redacta con rigor metodológico, analítico y cuantitativo el campo instalada para el modelo Plan de Negocios Comercial.",
-    "ejemplo": "Ejemplo corporativo específico para instalada en el sector seleccionado.",
-    "benchmark": "Alineado a mejores prácticas y fuentes oficiales.",
-    "cita": "Plan de Negocios Comercial — Guía Metodológica de Formulación",
-    "placeholder": "Información requerida para instalada..."
+    "instruccion": "Calcula la capacidad instalada máxima vs la capacidad utilizada en turnos normales de operación (unidades/mes u horas de servicio).",
+    "ejemplo": "Ej: Capacidad máxima: 80 overhauls de cilindros al mes (2 turnos de 8 hrs). Operación inicial al 45% (36 servicios/mes).",
+    "benchmark": "Utilización inicial óptima entre 40% y 65% para permitir escalabilidad sin nuevo CAPEX.",
+    "cita": "Operations Management (Slack, p. 280) & Anatomy of a Business Plan (Ch. 6)",
+    "placeholder": "Capacidad máxima, turnos y nivel de utilización inicial..."
   },
   "puestos": {
-    "instruccion": "Redacta con rigor metodológico, analítico y cuantitativo el campo puestos para el modelo Plan de Negocios Comercial.",
-    "ejemplo": "Ejemplo corporativo específico para puestos en el sector seleccionado.",
-    "benchmark": "Alineado a mejores prácticas y fuentes oficiales.",
-    "cita": "Plan de Negocios Comercial — Guía Metodológica de Formulación",
-    "placeholder": "Información requerida para puestos..."
+    "instruccion": "Describe los perfiles, responsabilidades críticas, requisitos de experiencia y jerarquía de los puestos clave de la organización.",
+    "ejemplo": "Ej: Gerente Técnico (Ing. Mecatrónico, 8+ años en minería), Técnico Hidráulico Senior (Certificación IFPS), Ejecutivo de Cuenta B2B.",
+    "benchmark": "Modelo Atómico de 3 Áreas de Empresas Cuánticas (Finanzas, Operativo, Administrativo).",
+    "cita": "Empresas Cuánticas (Fondo Thoth AC, Regla 13) & Anatomy of a Business Plan (Ch. 5)",
+    "placeholder": "Perfiles de puesto, responsabilidades y competencias..."
   },
   "iframe_simulador": {
     "instruccion": "Describe las variables y memorias de cálculo utilizadas en las simulaciones estocásticas.",
