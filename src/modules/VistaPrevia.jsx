@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { usePlan } from '../context/PlanContext';
-import { Printer, MessageSquare, Sparkles, Wand2, Bot, BrainCircuit, RefreshCw, ZoomIn, ZoomOut, Maximize2, RotateCcw } from 'lucide-react';
+import { Printer, MessageSquare, Sparkles, Wand2, Bot, BrainCircuit, RefreshCw, ZoomIn, ZoomOut, Maximize2, RotateCcw, Layout } from 'lucide-react';
 import { refactorFieldWithComments } from '../lib/ai';
 import FinancialCharts, { PrintableFinancialReports } from '../components/FinancialCharts';
 import MermaidViewer from '../components/MermaidViewer';
@@ -22,6 +22,13 @@ import XMatrixHoshinKanri from '../components/XMatrixHoshinKanri';
 import AmoebaStructureViewer from '../components/AmoebaStructureViewer';
 import HumanCapitalMatrix from '../components/HumanCapitalMatrix';
 import MultiScenarioFinancialSection from '../components/MultiScenarioFinancialSection';
+import { getBoxesForDocType } from '../config/boxRegistry';
+import { BoxFormula } from '../components/boxes/BoxFormula';
+import { BoxMatrix } from '../components/boxes/BoxMatrix';
+import { BoxCanvas } from '../components/boxes/BoxCanvas';
+import { BoxChecklist } from '../components/boxes/BoxChecklist';
+import { BoxBenchmark } from '../components/boxes/BoxBenchmark';
+import { BoxTable } from '../components/boxes/BoxTable';
 
 function readJson(raw, fallback) {
   if (!raw || typeof raw !== 'string') return fallback;
@@ -3153,6 +3160,46 @@ export default function VistaPrevia() {
                 {/* Pie de página con numeración de página calculada */}
                 <CorporatePrintFooter pageNum={pageNum} sectionName={mod.title} />
               </div>
+
+              {/* Box Components Integration - Metodologías metodológicas por tipo de documento */}
+              {(() => {
+                const projectType = planData.config?.projectType || 'business';
+                const boxes = getBoxesForDocType(projectType);
+                if (!boxes.length) return null;
+
+                const moduleBoxData = planData?.[mod.pillarKey]?.[mod.key] || {};
+                
+                return (
+                  <div style={{ marginTop: '2rem', paddingTop: '1.5rem', borderTop: '1px solid var(--border-color)' }}>
+                    <h4 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--accent-color)', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <Layout className="w-5 h-5" />
+                      Metodologías y Herramientas Analíticas ({boxes.length} disponibles)
+                    </h4>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                      {boxes.map((boxDef) => {
+                        const boxValues = moduleBoxData[boxDef.id] || {};
+                        
+                        switch (boxDef.type) {
+                          case 'formula':
+                            return <BoxFormula key={boxDef.id} definition={boxDef} values={boxValues} onChange={(_v) => {}} />;
+                          case 'matrix':
+                            return <BoxMatrix key={boxDef.id} definition={boxDef} data={boxValues} />;
+                          case 'canvas':
+                            return <BoxCanvas key={boxDef.id} definition={boxDef} data={boxValues} />;
+                          case 'checklist':
+                            return <BoxChecklist key={boxDef.id} definition={boxDef} values={boxValues} />;
+                          case 'benchmark':
+                            return <BoxBenchmark key={boxDef.id} definition={boxDef} values={boxValues} />;
+                          case 'table':
+                            return <BoxTable key={boxDef.id} definition={boxDef} values={boxValues} />;
+                          default:
+                            return null;
+                        }
+                      })}
+                    </div>
+                  </div>
+                );
+              })()}
 
               {/* Panel de Refinamiento de IA por módulo individual (oculto al imprimir y fuera de la página) */}
               <div className="no-print" style={{ 

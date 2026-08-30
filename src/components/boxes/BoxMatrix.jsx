@@ -1,4 +1,4 @@
-import { Grid3X3, ShieldAlert } from 'lucide-react';
+import { Layout, ShieldAlert } from 'lucide-react';
 
 /**
  * Componente BoxMatrix - Renderiza matrices bidimensionales (FODA, Porter 5F, ZOPP 4x4, Matriz X)
@@ -23,7 +23,7 @@ export function BoxMatrix({ definition = {}, values = {} }) {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <div style={{ padding: '8px', background: 'rgba(245,158,11,0.15)', borderRadius: '8px', color: '#fbbf24' }}>
-            <Grid3X3 size={20} />
+            <Layout size={20} />
           </div>
           <div>
             <h4 style={{ margin: 0, fontSize: '1.1rem', color: 'var(--text-primary, #f8fafc)', fontWeight: 600 }}>

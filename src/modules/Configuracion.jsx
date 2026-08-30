@@ -1543,6 +1543,30 @@ export default function Configuracion() {
               placeholder="Pega aquí tu API Key de enter.pollinations.ai"
             />
           </div>
+
+          <div className="form-group" style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px dashed var(--border-color)' }}>
+            <label className="form-label" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span>SerpAPI API Key (Búsqueda Avanzada de Competidores y Google Maps — Opcional)</span>
+              <a 
+                href="https://serpapi.com/manage-api-key" 
+                target="_blank" 
+                rel="noreferrer" 
+                style={{ fontSize: '0.75rem', color: '#10b981', textDecoration: 'none', fontWeight: 600 }}
+              >
+                Obtener Key en SerpAPI ↗
+              </a>
+            </label>
+            <input 
+              type="password" 
+              className="form-control" 
+              value={planData.config.ai.serpApiKey || ''}
+              onChange={(e) => handleAiChange('serpApiKey', e.target.value)}
+              placeholder="Opcional: Si no se ingresa, se usa DENUE/INEGI oficial y DuckDuckGo gratuito..."
+            />
+            <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', marginTop: '0.3rem' }}>
+              💡 El motor de competidores usa por defecto DENUE/INEGI gratuito. Esta key es opcional para enriquecer con reseñas de Google Maps.
+            </div>
+          </div>
         </div>
 
         <div className="glass-panel" style={{ padding: '2rem' }}>

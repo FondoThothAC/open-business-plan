@@ -18,6 +18,13 @@ import DiffViewer from './DiffViewer';
 import FieldComments from './FieldComments';
 import HumanCapitalMatrix from './HumanCapitalMatrix';
 import { safeStr } from '../utils/formatters';
+import { getBoxesForDocType } from '../config/boxRegistry';
+import { BoxFormula } from '../components/boxes/BoxFormula';
+import { BoxMatrix } from '../components/boxes/BoxMatrix';
+import { BoxCanvas } from '../components/boxes/BoxCanvas';
+import { BoxChecklist } from '../components/boxes/BoxChecklist';
+import { BoxBenchmark } from '../components/boxes/BoxBenchmark';
+import { BoxTable } from '../components/boxes/BoxTable';
 
 export default function ModuleWrapper({ pillar, moduleKey, title, description, fields, extraAction }) {
   const { planData, updateSection, toggleLock, toggleModuleVisibility, addComment, deleteComment } = usePlan();
@@ -587,7 +594,46 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
               </div>
             ))
           )}
-        </div>
+
+          {/* Box Components Integration - Metodologías metodológicas por tipo de documento */}
+          {(() => {
+            const projectType = planData.config?.projectType || 'business';
+            const boxes = getBoxesForDocType(projectType);
+            if (!boxes.length) return null;
+
+            const moduleBoxData = planData?.[pillar]?.[moduleKey] || {};
+            
+            return (
+              <div style={{ marginTop: '2rem', paddingTop: '1.5rem', borderTop: '1px solid var(--border-color)' }}>
+                <h4 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--accent-color)', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <Layout className="w-5 h-5" />
+                  Metodologías y Herramientas Analíticas ({boxes.length} disponibles)
+                </h4>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                  {boxes.map((boxDef) => {
+                    const boxValues = moduleBoxData[boxDef.id] || {};
+                    
+                    switch (boxDef.type) {
+                      case 'formula':
+                        return <BoxFormula key={boxDef.id} definition={boxDef} values={boxValues} onChange={(_v) => {}} />;
+                      case 'matrix':
+                        return <BoxMatrix key={boxDef.id} definition={boxDef} data={boxValues} />;
+                      case 'canvas':
+                        return <BoxCanvas key={boxDef.id} definition={boxDef} data={boxValues} />;
+                      case 'checklist':
+                        return <BoxChecklist key={boxDef.id} definition={boxDef} values={boxValues} />;
+                      case 'benchmark':
+                        return <BoxBenchmark key={boxDef.id} definition={boxDef} values={boxValues} />;
+                      case 'table':
+                        return <BoxTable key={boxDef.id} definition={boxDef} values={boxValues} />;
+                      default:
+                        return null;
+                    }
+                  })}
+                </div>
+              </div>
+            );
+          })()}
 
         {extraAction && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '100%' }}>
@@ -675,5 +721,6 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
         </div>
       )}
     </div>
+  </div>
   );
 }
