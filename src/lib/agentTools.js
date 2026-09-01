@@ -129,6 +129,18 @@ export const AGENT_TOOLS_MANIFEST = [
       },
       required: ['sectionKey', 'draftContent']
     }
+  },
+  {
+    name: 'tool_legal_compliance',
+    description: 'Consulta leyes federales mexicanas y Normas Oficiales Mexicanas (NOMs) para fundamentar requisitos legales, fiscales, laborales y de cumplimiento del proyecto.',
+    parameters: {
+      type: 'object',
+      properties: {
+        topic: { type: 'string', description: 'Tema o área jurídica a consultar (ej. laboral, fiscal, datos, alimentos, teletrabajo, sociedad civil)' },
+        industry: { type: 'string', description: 'Giro de negocio o sector (ej. fintech, restaurante, software, minería, A.C.)' }
+      },
+      required: ['topic']
+    }
   }
 ];
 
@@ -404,6 +416,49 @@ export async function executeAgentTool(toolName, args, planContext = {}) {
             diagramType,
             mermaidSyntax: mermaidCode.trim(),
             isValid: true
+          }
+        };
+      }
+
+      
+      case 'tool_legal_compliance': {
+        const topic = (args.topic || '').toLowerCase();
+        const industry = (args.industry || seedGiro || '').toLowerCase();
+        
+        let applicableLaws = [];
+        let keyRequirements = [];
+
+        if (topic.includes('laboral') || topic.includes('empleo') || topic.includes('trabajador')) {
+          applicableLaws.push('Ley Federal del Trabajo (LFT)', 'Ley del Seguro Social (LSS)', 'NOM-035-STPS-2018');
+          keyRequirements.push('Contratos individuales de trabajo', 'Alta obligatoria ante el IMSS desde el día 1', 'Evaluación de clima y prevención de riesgos psicosociales (NOM-035)');
+          if (topic.includes('remoto') || topic.includes('teletrabajo') || industry.includes('software') || industry.includes('tech')) {
+            applicableLaws.push('NOM-037-STPS-2023 (Teletrabajo)');
+            keyRequirements.push('Pago proporcional de servicios (internet y luz) y suministro de equipo ergonómico para home office');
+          }
+        } else if (topic.includes('datos') || topic.includes('privacidad') || topic.includes('digital') || industry.includes('app') || industry.includes('software')) {
+          applicableLaws.push('LFPDPPP (Datos Personales)', 'LFDA (Derecho de Autor de Software)', 'NMX-COE-001-SCFI-2018 (E-Commerce)');
+          keyRequirements.push('Aviso de Privacidad Integral y procedimiento de derechos ARCO', 'Registro de código fuente ante INDAUTOR', 'Términos y condiciones con desglose transparente de precios');
+        } else if (topic.includes('alimento') || topic.includes('comida') || topic.includes('restaurante') || industry.includes('taco') || industry.includes('cafeter')) {
+          applicableLaws.push('NOM-251-SSA1-2009 (Higiene de Alimentos)', 'NOM-051-SCFI/SSA1-2010 (Etiquetado y Sellos)', 'Ley General de Salud');
+          keyRequirements.push('Aviso de Funcionamiento ante COFEPRIS', 'Bitácoras de temperatura y control de fauna nociva', 'Etiquetado frontal si se preenvasan productos');
+        } else if (topic.includes('social') || topic.includes('asociacion') || topic.includes('ong') || industry.includes('a.c.')) {
+          applicableLaws.push('LFFOPASC (Fomento a OSC)', 'Ley del Impuesto sobre la Renta (Título III - Donatarias Autorizadas)', 'Código Civil Federal');
+          keyRequirements.push('Estatutos sociales con cláusula irrevocable de liquidación y patrimonio', 'Obtención de la CLUNI ante INDESOL/Bienestar', 'Autorización del SAT como Donataria para emitir recibos deducibles');
+        } else {
+          applicableLaws.push('Código de Comercio (CCom)', 'Ley General de Sociedades Mercantiles (LGSM)', 'Código Fiscal de la Federación (CFF)', 'Ley del ISR', 'Ley del IVA');
+          keyRequirements.push('Constitución ante Fedatario Público y Registro Público de Comercio', 'Inscripción en el RFC con e.firma', 'Cumplimiento de facturación electrónica CFDI 4.0');
+        }
+
+        return {
+          success: true,
+          toolName,
+          executionTimeMs: Date.now() - startTime,
+          data: {
+            topicQueried: args.topic || 'General',
+            industryEvaluated: args.industry || seedGiro || 'General',
+            applicableLaws,
+            keyRequirements,
+            ragIndexRef: 'leyes_md/INDICE_LEYES.md'
           }
         };
       }
