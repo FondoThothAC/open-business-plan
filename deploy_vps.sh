@@ -64,75 +64,18 @@ rsync -avz \
 echo "   ✓ package.json sincronizado"
 
 # ──────────────────────────────────────────────────────────────────────────────
-# 5. Configurar Nginx en el VPS (sin tocar el sitio principal)
+# 5. Validar y recargar Nginx en el VPS
 # ──────────────────────────────────────────────────────────────────────────────
 echo ""
-echo "⚙️  Configurando Nginx para /obp/ ..."
+echo "⚙️  Validando y recargando Nginx ..."
 
 ssh -i "$SSH_KEY" -o StrictHostKeyChecking=no "$VPS" 'bash -s' << 'SSHEOF'
 set -e
-
-# Crear carpeta destino si no existe
-sudo mkdir -p /var/www/open-business-plan/dist
-
-# Crear el archivo de snippets Nginx para OBP
-sudo tee /etc/nginx/snippets/obp-locations.conf > /dev/null << 'NGINXEOF'
-# ── Open Business Plan: /obp/ ──────────────────────────────────────────────
-# Frontend estático React
-location /obp/ {
-    alias /var/www/open-business-plan/dist/;
-    try_files $uri $uri/ /obp/index.html;
-    add_header Cache-Control "no-cache, no-store, must-revalidate" always;
-    add_header X-Content-Type-Options "nosniff" always;
-}
-
-# Proxy API al backend Express (puerto 3001)
-location /obp/api/ {
-    rewrite ^/obp/api/(.*) /api/$1 break;
-    proxy_pass http://127.0.0.1:3001;
-    proxy_http_version 1.1;
-    proxy_set_header Upgrade $http_upgrade;
-    proxy_set_header Connection "upgrade";
-    proxy_set_header Host $host;
-    proxy_set_header X-Real-IP $remote_addr;
-    proxy_cache_bypass $http_upgrade;
-    proxy_read_timeout 86400s;
-    proxy_buffering off;
-    proxy_cache off;
-}
-NGINXEOF
-
-echo "✓ Snippet /etc/nginx/snippets/obp-locations.conf creado"
-
-# Buscar el archivo de configuración del sitio fondothoth.com
-SITE_CONF=""
-for f in /etc/nginx/sites-enabled/fondothoth* /etc/nginx/sites-available/fondothoth* /etc/nginx/conf.d/fondothoth* /etc/nginx/sites-enabled/default; do
-  if [ -f "$f" ]; then
-    SITE_CONF="$f"
-    break
-  fi
-done
-
-if [ -n "$SITE_CONF" ]; then
-  echo "Sitio encontrado: $SITE_CONF"
-  if ! grep -q "obp-locations.conf" "$SITE_CONF"; then
-    # Insertar include antes del cierre del último server block
-    sudo sed -i 's|^}$|    include /etc/nginx/snippets/obp-locations.conf;\n}|' "$SITE_CONF"
-    echo "✓ Include agregado en $SITE_CONF"
-  else
-    echo "ℹ️  Include ya existía en $SITE_CONF"
-  fi
-else
-  echo "⚠️  Config de fondothoth.com no encontrada. Agrega manualmente en tu server block:"
-  echo "    include /etc/nginx/snippets/obp-locations.conf;"
-fi
-
-# Validar y recargar Nginx
 sudo nginx -t && sudo systemctl reload nginx
-echo "✓ Nginx recargado exitosamente"
+echo "✓ Nginx validado y recargado exitosamente"
 SSHEOF
 
-echo "   ✓ Nginx configurado"
+echo "   ✓ Nginx listo"
 
 # ──────────────────────────────────────────────────────────────────────────────
 # 6. Instalar dependencias del backend en el VPS y reiniciar PM2

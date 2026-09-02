@@ -1326,10 +1326,13 @@ export default function VistaPrevia() {
   const [fitToWidth, setFitToWidth] = React.useState(false); // Modo de ajuste automático al ancho de ventana
   const [refactorStatus, setRefactorStatus] = React.useState({ active: false, total: 0, completed: 0, currentField: '' });
 
+  // Guard de seguridad DESPUÉS de todos los hooks (regla: hooks no pueden ser condicionales)
+  // El useMemo y useState ya se ejecutaron — ahora sí podemos salir si planData es null
+
   const commentedFieldsCount = useMemo(() => {
-    const commentsObj = planData.config?.comments || {};
+    const commentsObj = planData?.config?.comments || {};
     return Object.values(commentsObj).filter(arr => Array.isArray(arr) && arr.length > 0).length;
-  }, [planData.config?.comments]);
+  }, [planData?.config?.comments]);
 
   const handleRefactorWithComments = async () => {
     const commentsObj = planData.config?.comments || {};
@@ -1342,6 +1345,9 @@ export default function VistaPrevia() {
     });
 
     if (activeCommentedFields.length === 0) return;
+
+    // Guard de carga tardía post-hooks
+  if (!planData) return;
 
     const confirmMsg = `Se guardará la versión actual y se creará una NUEVA versión con las correcciones sugeridas en los ${activeCommentedFields.length} campos comentados.\n\n¿Deseas continuar?`;
     if (!window.confirm(confirmMsg)) return;
@@ -3295,6 +3301,7 @@ export default function VistaPrevia() {
             <PrintableFinancialReports
               projections={previewFinancialData}
               staff={planData?.organizacion?.staff}
+              planData={planData}
             />
 
             <CorporatePrintFooter pageNum={financialReportsPage} sectionName="Reportes Financieros" />

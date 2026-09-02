@@ -965,7 +965,7 @@ export const FinancialReports = ({ projections, _netInitialInvestment, loans }) 
  * PrintableFinancialReports — Renders all financial sub-reports expanded side-by-side,
  * without tabs, so they all appear in print/Vista Previa as individual sections.
  */
-export const PrintableFinancialReports = ({ projections, staff = [] }) => {
+export const PrintableFinancialReports = ({ projections, staff = [], planData = {} }) => {
   const normalized = normalizeFinancialData(projections, staff);
 
   if (!projections || !Array.isArray(projections.annualSummaries) || projections.annualSummaries.length === 0) {
@@ -1035,7 +1035,6 @@ export const PrintableFinancialReports = ({ projections, staff = [] }) => {
   });
 
   const rawMetrics = projections.financialMetrics || normalized.metrics || {};
-  const _netInitialInvestment = projections.netInitialInvestment || 20000000;
   
   // Normalizar métricas con salvaguardas para proyectos industriales/MaaS
   const isMiningOrIndustrial = Boolean(
@@ -1149,36 +1148,8 @@ export const PrintableFinancialReports = ({ projections, staff = [] }) => {
       {/* ── Proyección de Flujo de Caja (Gráfica) ── */}
       <div style={{ ...sectionStyle, pageBreakBefore: 'avoid' }}>
         <div style={panelStyle}>
-          <h4 style={sectionTitleStyle}>📈 Proyección de Flujo de Caja (5 Años)</h4>
+          <h4 style={sectionTitleStyle}>📊 Proyección de Flujo de Caja (5 Años)</h4>
           <CashFlowChart data={normalized.chartData} />
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem', marginTop: '2rem' }}>
-            <div style={{ background: '#f8fafc', padding: '1.25rem', borderRadius: '12px', border: '1px solid #e2e8f0', textAlign: 'center' }}>
-              <div style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em' }}>TIR</div>
-              <div style={{ fontSize: '1.5rem', fontWeight: 900, color: '#4f46e5', marginTop: '0.25rem' }}>{Number(metrics.irr || 0).toFixed(2)}%</div>
-              <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Tasa Interna de Retorno</div>
-            </div>
-            <div style={{ background: '#f8fafc', padding: '1.25rem', borderRadius: '12px', border: '1px solid #e2e8f0', textAlign: 'center' }}>
-              <div style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em' }}>VAN</div>
-              <div style={{ fontSize: '1.2rem', fontWeight: 900, color: (metrics.npv || 0) > 0 ? '#10b981' : '#ef4444', marginTop: '0.25rem' }}>
-                {new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', maximumFractionDigits: 0 }).format(metrics.npv || 0)}
-              </div>
-              <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Valor Actual Neto</div>
-            </div>
-            <div style={{ background: '#f8fafc', padding: '1.25rem', borderRadius: '12px', border: '1px solid #e2e8f0', textAlign: 'center' }}>
-              <div style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em' }}>ROI</div>
-              <div style={{ fontSize: '1.5rem', fontWeight: 900, color: '#4f46e5', marginTop: '0.25rem' }}>{Number(metrics.roi || 0).toFixed(1)}%</div>
-              <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Retorno sobre la Inversión</div>
-            </div>
-          </div>
-          {metrics.paybackPeriod && (
-            <div style={{ marginTop: '1rem', background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '10px', padding: '0.875rem 1.25rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-              <span style={{ fontSize: '1.25rem' }}>⏱️</span>
-              <div>
-                <span style={{ fontWeight: 800, color: '#1e40af', fontSize: '0.875rem' }}>Período de Recuperación: </span>
-                <span style={{ color: '#1e3a8a', fontSize: '0.875rem' }}>{String(metrics.paybackPeriod).replace(/\|/g, ' ')}</span>
-              </div>
-            </div>
-          )}
         </div>
       </div>
 
