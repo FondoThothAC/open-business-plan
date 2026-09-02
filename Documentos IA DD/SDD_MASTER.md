@@ -108,4 +108,14 @@ flowchart LR
 * **Resolución Automática de Pilar:** El enrutador deduce el pilar contenedor a partir del módulo mediante `resolvePillarFromModule` sin requerir que el usuario lo escriba en la URL.
 * **Hidratación por Slug:** Si el parámetro `:slug` cambia o se ingresa por enlace externo, `loadProjectBySlug` localiza e hidrata automáticamente el proyecto correspondiente (plantilla de demostración o proyecto guardado en disco del VPS).
 
+### 3.3 Persistencia de Alta Capacidad en Cliente (IndexedDB Nativo)
+* **Base de Datos:** `OpenBusinessPlanDB` (Versión 1).
+* **Object Stores:**
+  * `projects`: Almacena el `planData` completo con resolución original de imágenes, planos, diagramas Mermaid y documentos RAG (soporta cientos de megabytes).
+  * `project_meta`: Índices ligeros (`updatedAt`, `projectType`, `name`) para navegación y listados rápidos.
+  * `settings`: Configuraciones de tema y variables de sesión.
+* **Resiliencia y Fallback:** `localStorage` se utiliza exclusivamente para almacenar punteros ultraligeros (<5KB) protegidos con `try/catch`. En caso de saturación, el estado íntegro se mantiene garantizado en IndexedDB.
+* **Migración Automática:** Al iniciar la app, `migrateFromLocalStorage` traspasa de forma transparente cualquier dato preexistente de `openplan_v2_data` hacia IndexedDB.
+
+
 

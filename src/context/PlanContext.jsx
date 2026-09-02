@@ -3,6 +3,7 @@ import { PROJECT_EXAMPLES } from '../lib/projects_db';
 import { FRAMEWORKS } from '../config/frameworks';
 import { getApiBase } from '../config/apiConfig';
 import { slugify, KNOWN_PROJECT_SLUGS } from '../config/urlRouting';
+import { saveProjectToIDB, loadProjectFromIDB, migrateFromLocalStorage } from '../lib/storage/indexedDbStorage';
 
 const EXAMPLE_FRAMEWORK_MAP = {
   brujula: 'business',
@@ -282,6 +283,13 @@ export const PlanProvider = ({ children }) => {
   // Hook de montaje para cargar el proyecto activo directamente del backend local (resuelve bugs de recarga)
   useEffect(() => {
     const syncWithBackend = async () => {
+      // Migración transparente de proyectos legacy almacenados en localStorage
+      try {
+        await migrateFromLocalStorage();
+      } catch (migErr) {
+        console.warn('[IndexedDB] Migración omitida:', migErr);
+      }
+
       let activeId = localStorage.getItem('openplan_active_project_id');
       let activeType = localStorage.getItem('openplan_active_project_type') || 'negocios';
 
@@ -296,6 +304,19 @@ export const PlanProvider = ({ children }) => {
       if (localStorage.getItem('openplan_is_unsaved_new') === 'true') {
         console.log('Proyecto nuevo en edición (aún no guardado en backend). Omitiendo auto-carga.');
         return;
+      }
+
+      // Carga rápida desde IndexedDB local si ya tenemos activeId
+      if (activeId) {
+        try {
+          const idbData = await loadProjectFromIDB(activeId);
+          if (idbData && idbData.config) {
+            console.log('[IndexedDB] Proyecto activo cargado instantáneamente desde IndexedDB:', activeId);
+            setPlanData(idbData);
+          }
+        } catch (idbErr) {
+          console.warn('[IndexedDB] Fallo lectura inicial de IDB:', idbErr);
+        }
       }
 
       // Si no hay proyecto activo, intentamos auto-cargar el último modificado en el backend
@@ -356,7 +377,15 @@ export const PlanProvider = ({ children }) => {
               merged.config.activeMethodologies = [merged.config.projectType || 'business'];
             }
             setPlanData(merged);
-            localStorage.setItem('openplan_v2_data', JSON.stringify(merged));
+
+            // Persistir de forma segura en IndexedDB de alta capacidad
+            saveProjectToIDB(activeId, merged);
+
+            try {
+              localStorage.setItem('openplan_v2_data', JSON.stringify(merged));
+            } catch {
+              console.warn('[LocalStorage] Cuota superada en sync de montaje. Datos persistidos en IndexedDB.');
+            }
           }
         } catch (err) {
           console.error('Error syncing project from backend on mount:', err);
@@ -367,7 +396,29 @@ export const PlanProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('openplan_v2_data', JSON.stringify(planData));
+    // 1. Guardado de alta capacidad en IndexedDB (cero límite de tamaño)
+    const activeProjId = planData.config?.projectId || localStorage.getItem('openplan_active_project_id') || 'active_project';
+    saveProjectToIDB(activeProjId, planData);
+
+    // 2. Respaldo ligero en localStorage con protección ante QuotaExceededError
+    try {
+      localStorage.setItem('openplan_v2_data', JSON.stringify(planData));
+    } catch {
+      try {
+        const lightweight = {
+          ...planData,
+          config: {
+            ...planData.config,
+            anexos: (planData.config?.anexos || []).map(a => ({ id: a.id, name: a.name, caption: a.caption })),
+            documents: (planData.config?.documents || []).map(d => ({ id: d.id, name: d.name, type: d.type }))
+          }
+        };
+        localStorage.setItem('openplan_v2_data', JSON.stringify(lightweight));
+      } catch {
+        console.warn('[LocalStorage] Cuota superada. Plan completo asegurado en IndexedDB.');
+      }
+    }
+
     document.documentElement.setAttribute('data-theme', planData.config?.theme || 'dark');
     if (planData.config?.brandKit) {
       document.documentElement.style.setProperty('--accent-color', planData.config.brandKit.primaryColor);
@@ -400,6 +451,7 @@ export const PlanProvider = ({ children }) => {
             }));
             localStorage.setItem('openplan_active_project_id', resData.file);
             localStorage.removeItem('openplan_is_unsaved_new');
+            saveProjectToIDB(resData.file, planData);
           }
           setSaveStatus('saved');
         } else {
