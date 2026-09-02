@@ -354,7 +354,7 @@ export default function Layout() {
     const match = location.pathname.match(/\/modulo\/([^/]+)/);
     const currentRoutePillarKey = match ? match[1] : null;
 
-    // Si la ruta actual apunta a un pilar de otra metodología, resolverlo y agregarlo al menú lateral
+    // Si la ruta actual apunta a un pilar de otra metodología, resolverlo y agregarlo al menú lateral de forma contextual
     if (currentRoutePillarKey && !list.some(p => p.key === currentRoutePillarKey)) {
       for (const [_fwKey, fw] of Object.entries(FRAMEWORKS)) {
         const foundPillar = fw.pillars?.find(p => p.key === currentRoutePillarKey);
@@ -369,31 +369,8 @@ export default function Layout() {
       }
     }
 
-    // Agregar pilares de otras metodologías que ya tengan datos registrados en planData
-    for (const [fwKey, fw] of Object.entries(FRAMEWORKS)) {
-      if (fwKey === activeFrameworkKey) continue;
-      fw.pillars?.forEach(p => {
-        if (!list.some(bp => bp.key === p.key)) {
-          const pData = planData?.[p.key];
-          if (pData && typeof pData === 'object' && Object.keys(pData).length > 0) {
-            const hasContent = Object.values(pData).some(modData => {
-              if (!modData || typeof modData !== 'object') return false;
-              return Object.values(modData).some(val => val && String(val).trim().length > 0);
-            });
-            if (hasContent) {
-              list.push({
-                ...p,
-                frameworkSource: fw.name,
-                isForeign: true
-              });
-            }
-          }
-        }
-      });
-    }
-
     return list;
-  }, [activeFramework, location.pathname, planData, activeFrameworkKey]);
+  }, [activeFramework, location.pathname]);
 
   return (
     <div className={`app-container theme-${planData?.config?.theme || 'light'}`}>
