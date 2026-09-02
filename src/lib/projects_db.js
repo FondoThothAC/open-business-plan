@@ -244,15 +244,29 @@ export const PROJECT_EXAMPLES = {
 
   sove: {
     name: "Sové - Postres para Eventos",
+    projectType: 'micro_business',
     data: {
+      config: {
+        projectType: 'micro_business',
+        brandKit: {
+          companyName: 'Sové - Postres para Eventos',
+          primaryColor: '#ec4899',
+          secondaryColor: '#f43f5e'
+        }
+      },
       naturaleza: {
         introduccion: {
+          idea_negocio: 'Elaboración y venta de postres artesanales gourmet en porciones individuales (vasos de postre decorados, mini tartas temáticas y mousses) para eventos sociales, cumpleaños, bautizos y reuniones familiares en Hermosillo.',
+          objetivo_basico: 'Cubrir 12 a 15 eventos al mes en el primer semestre, generando ventas de $38,000 MXN mensuales y un ingreso neto para la repostera fundadora de $14,000 MXN libres.',
           justificacion: 'En el mercado local existe una creciente necesidad de postres personalizados con diseño visual, alineados a la temática de cada evento. Pocas empresas ofrecen un nivel alto de personalización y estética cuidada.',
-          origen: 'El nombre evoca el concepto francés "sauvé" (salvador): entregar soluciones dulces, estéticas y cuidadas que elevar la experiencia de cada evento.',
+          origen: 'El nombre evoca el concepto francés "sauvé" (salvador): entregar soluciones dulces, estéticas y cuidadas que eleven la experiencia de cada evento.',
           nombre: 'Sové',
           descripcion: 'Microempresa de repostería especializada en postres personalizados para eventos: vasos de postre decorados, mini tartas, mousses temáticas, postres por temporada, presentaciones especiales.'
         },
         identidad: {
+          nombre: 'Sové - Repostería Creativa y Postres para Eventos',
+          quienes_somos: 'Emprendimiento de autoempleo familiar liderado por Danna Valeria Marmolejo (repostera con 4 años de experiencia en repostería fina casera) y Alondra Elena Noriega en logística de montaje y redes.',
+          que_ofrecemos: 'Vasos gourmet individuales de 4 oz (cheesecake de frutos rojos, mousse de maracuyá, tiramisú, chocolate belga), mini tartas decoradas y montaje de mesas de postres temáticas.',
           mision: 'Combinar elaboración artesanal de postres con personalización visual, temática y emocional para elevar la experiencia de eventos.',
           vision: 'Consolidarse como marca reconocida por el detalle, buen gusto y experiencia sensorial en cada entrega.',
           valores: 'Creatividad, Calidad artesanal, Personalización, Estética, Innovación constante.'
@@ -279,6 +293,18 @@ export const PROJECT_EXAMPLES = {
         }
       },
       mercado: {
+        clientes: {
+          perfil_cliente: 'Madres de familia y profesionistas de 25 a 45 años, nivel socioeconómico C+ y B, que organizan festejos infantiles, bautizos, despedidas y aniversarios buscando una presentación elegante que sorprenda a sus invitados.',
+          ubicacion_clientes: 'Hermosillo, Sonora. Colonias prioritarias: Modelo, Centenario, Pitic, Villa Satélite, Montecarlo y Los Lagos (radio de 10 km con entrega a domicilio o en punto medio).'
+        },
+        competencia: {
+          competidores_locales: 'Pastelerías tradicionales de cadena (Suspiros, Dairy Queen, Pastelería San José) que venden pasteles grandes genéricos pero no mesas de postres individuales, y reposteras caseras informales sin marca ni catálogo formal.',
+          nuestra_ventaja: 'Diseño 100% temático y personalizado, higiene en vaso sellado individual (cero merma ni platos sucios), variedad de 6 sabores por evento y montaje incluido en la contratación de paquetes.'
+        },
+        comercializacion: {
+          lista_precios: 'Vaso individual: $38 MXN. Docena surtida: $420 MXN. Paquete Mini (40 postres): $1,600 MXN. Paquete Celebración (80 postres + montaje básico): $3,100 MXN. Paquete Magna Fiesta (150 postres + montaje completo temático): $5,500 MXN.',
+          como_promocionamos: 'Fotografía y videos en Instagram y TikTok (@sove_postres), degustaciones a Wedding & Event Planners de Hermosillo, convenios con salones de eventos infantiles (Happy World, Piccolo) y WhatsApp Business con catálogo interactivo.'
+        },
         analisis: {
           producto: 'Postres artesanales temáticos: vasos decorados, mini tartas personalizadas, mousses y cremas temáticas, postres por temporada.',
           valor: 'Diseño + sabor + personalización total. Cada celebración merece un detalle que comunique emociones.',
@@ -290,11 +316,31 @@ export const PROJECT_EXAMPLES = {
         }
       },
       tecnico: {
-        ubicacion: { macro: 'Sonora', micro: 'Hermosillo', local: 'Taller de producción artesanal.' },
-        operacion: { proceso: 'Recepción de pedido temático, horneado, diseño decorativo, empaque personalizado, entrega.' },
-        recursos: { maquinaria: 'Hornos industriales, Batidoras profesionales.', equipo: 'Utensilios de decoración, Cámaras de refrigeración.' }
+        operacion: {
+          paso_a_paso_diario: '1. Lunes a Miércoles: Confirmación de agenda de eventos, anticipos y compra de materias primas frescas. 2. Jueves: Elaboración de bases de galleta, compotas y bizcochos. 3. Viernes: Preparación de mousses, rellenos y montado en vasos. 4. Sábado mañana: Decoración final con frutas frescas y coberturas, empaque en cajas térmicas y ruta de entrega/montaje en eventos. 5. Domingo: Sanitización profunda de utensilios y cierre de caja semanal.',
+          proceso: 'Recepción de pedido temático, horneado, diseño decorativo, empaque personalizado, entrega.'
+        },
+        recursos: {
+          herramientas_necesarias: 'Horno eléctrico con control de temperatura, batidora planetaria de 6 litros KitchenAid, refrigerador vertical de dos puertas exclusivo para producto terminado, mesa de trabajo de acero inoxidable de 1.80m, mangas reposteras y báscula digital de precisión.',
+          materiales_basicos: 'Crema para batir Lyncott, chocolate belga Callebaut, queso crema Philadelphia, pulpas de fruta natural (maracuyá, frambuesa, mango), vasos de plástico cristal PET de 4 oz con tapa domo, cucharitas de madera biodegradable y stickers adhesivos con logo Sové.',
+          maquinaria: 'Hornos industriales, Batidoras profesionales.',
+          equipo: 'Utensilios de decoración, Cámaras de refrigeración.'
+        },
+        croquis: {
+          descripcion_espacio: 'Área de producción artesanal de 12 m² (4m x 3m) adaptada en planta baja de domicilio, con azulejo lavable en muros, piso cerámico antiderrapante y adecuada iluminación LED natural y fría.',
+          distribucion_areas: 'Área 1 (Izquierda): Fregadero doble y repisas para secado de moldes. Área 2 (Centro): Mesa central de acero inoxidable para ensamble y decoración. Área 3 (Fondo): Horno y estantería de ingredientes secos. Área 4 (Derecha): Refrigerador de producto terminado y estación de empaque en cajas.'
+        },
+        ubicacion: { macro: 'Sonora', micro: 'Hermosillo', local: 'Taller de producción artesanal.' }
       },
       organizacion: {
+        inversion: {
+          total_inversion: '$26,500 MXN en total desglosado en: Horno y batidora ($12,000 MXN), mesa de acero inoxidable y estantes ($4,500 MXN), utensilios y moldes ($2,500 MXN), lote inicial de empaques e impresiones de marca ($2,500 MXN), e inventario de insumos para el primer mes ($5,000 MXN).',
+          de_donde_sale: 'Aportación de ahorros personales de la repostera titular ($18,000 MXN) y préstamo familiar a 12 meses sin intereses ($8,500 MXN con abonos mensuales de $708 MXN).'
+        },
+        costos: {
+          lista_gastos_mensuales: 'Gastos fijos mensuales de $14,800 MXN: Electricidad adicional de taller ($1,100), gas ($500), publicidad en redes sociales ($800), teléfono/WhatsApp Business ($400), mantenimiento menor de equipo ($400) y sueldo/retiro de autoempleo para la fundadora ($11,600 MXN).',
+          costos_por_producto: 'Costo unitario por vaso de postre: $13.80 MXN (ingredientes $10.20 + envase y etiqueta $3.60). Precio promedio de venta por vaso: $38.00 MXN. Margen de contribución unitario: $24.20 MXN (63.7%). Punto de equilibrio mensual: 612 vasos (equivalente a 8 a 9 eventos medianos al mes).'
+        },
         staff: [
           { id: '1', role: 'Directora Creativa / Repostera', salary: 12000, reportsTo: null },
           { id: '2', role: 'Asistente de Producción', salary: 8000, reportsTo: '1' }
@@ -305,49 +351,94 @@ export const PROJECT_EXAMPLES = {
 
   mixroom: { 
     name: "MixRoom - Estudio de Grabación", 
+    projectType: 'micro_business',
     data: { 
+      config: {
+        projectType: 'micro_business',
+        brandKit: {
+          companyName: 'MixRoom - Estudio de Grabación',
+          primaryColor: '#6366f1',
+          secondaryColor: '#a855f7'
+        }
+      },
       naturaleza: { 
         introduccion: { 
+          idea_negocio: 'Estudio de grabación y producción de audio acústicamente tratado para músicos independientes, creadores de podcast y comerciales en Hermosillo.',
+          objetivo_basico: 'Alcanzar 40 horas de grabación y mezcla facturadas al mes en el primer trimestre, generando ingresos de $32,000 MXN mensuales y un ingreso de autoempleo de $15,000 MXN.',
           justificacion: 'La industria musical independiente en Sonora carece de espacios profesionales con tratamiento acústico de alta gama y equipo de clase mundial a precios accesibles.',
           origen: 'Surge de la pasión por la ingeniería de sonido y la necesidad de elevar la calidad de las producciones locales.',
           nombre: 'MixRoom', 
           descripcion: 'Estudio de grabación, mezcla y masterización profesional. Ofrecemos servicios de producción musical integral, post-producción de audio para cine y publicidad.' 
         },
-        identidad: {
+        identidad: { 
+          nombre: 'MixRoom - Estudio de Grabación y Audio Creativo',
+          quienes_somos: 'Emprendimiento de autoempleo encabezado por ingeniero de sonido con 5 años de experiencia en grabación y mezcla musical y producción de jingles comerciales.',
+          que_ofrecemos: 'Servicio de grabación multipista por hora, edición y afinación vocal, mezcla y masterización para Spotify/Apple Music, y locución comercial.',
           mision: 'Brindar a los artistas las herramientas técnicas y el entorno creativo necesario para capturar su esencia musical con la máxima calidad sonora.',
           vision: 'Ser el estudio de referencia en el noroeste de México para la producción de música independiente y audio comercial.',
           valores: 'Excelencia Sonora, Creatividad, Precisión Técnica, Pasión por el Audio.'
         },
-        objetivos: {
+        objetivos: { 
           general: 'Elevar el estándar de producción musical en la región.',
           especificos: '• Grabar 3 álbumes completos por trimestre.\n• Lograr una nominación a premios de industria regional en el año 2.\n• Implementar sistema de mezcla Dolby Atmos.'
         },
-        foda: {
+        foda: { 
           fortalezas: 'Tratamiento acústico único. Equipo outboard analógico.',
           oportunidades: 'Creciente escena urbana y de corridos en Sonora.',
           debilidades: 'Mercado local acostumbrado a producciones caseras.',
           amenazas: 'Software de emulación que reduce la necesidad de hardware real.'
         },
-        pestel: {
+        pestel: { 
           economico: 'Aumento en el consumo de streaming musical.',
           tecnologico: 'Nuevos estándares de audio inmersivo.'
         }
       }, 
-      mercado: {
-        analisis: {
-          producto: 'Grabación multipista, Edición de audio, Mezcla estéreo y envolvente, Masterización, Locución para comerciales.',
-          valor: 'Uso de equipo analógico de alta gama (Outboard gear) combinado con la precisión digital moderna.'
+      mercado: { 
+        clientes: {
+          perfil_cliente: 'Bandas y solistas de música urbana, regional y rock independiente de Sonora, agencias de publicidad locales y creadores de contenido/podcasters.',
+          ubicacion_clientes: 'Hermosillo y municipios cercanos (Guaymas, Obregón), con atención presencial en estudio y servicio de mezcla remota en línea.'
+        },
+        competencia: {
+          competidores_locales: 'Estudios caseros home-studio de baja calidad acústica sin micrófonos profesionales, y dos estudios grandes con tarifas elevadas ($1,200/hr) inaccesibles para artistas emergentes.',
+          nuestra_ventaja: 'Tratamiento acústico profesional de sala, micrófonos de alta gama (Neumann, AKG) a precio accesible ($450/hr), ambiente de trabajo creativo y entrega rápida de mezclas en 72 hrs.'
         },
         comercializacion: {
+          lista_precios: 'Hora de grabación: $450 MXN. Paquete Canción Completa (grabación 6 hrs + mezcla + master): $3,800 MXN. Paquete EP 4 canciones: $12,500 MXN. Sesión de Podcast (grabación + edición básica 2 hrs): $1,200 MXN.',
+          como_promocionamos: 'Clips de antes/después de mezclas en Instagram y TikTok (@mixroom_hmo), sesiones en vivo de artistas locales en YouTube y descuentos por recomendación boca a boca.',
           promocion: 'Sesiones en vivo (Live Sessions) grabadas en video para YouTube para demostrar calidad sonora.'
+        },
+        analisis: { 
+          producto: 'Grabación multipista, Edición de audio, Mezcla estéreo y envolvente, Masterización, Locución para comerciales.',
+          valor: 'Uso de equipo analógico de alta gama (Outboard gear) combinado con la precisión digital moderna.'
         }
       },
       tecnico: { 
-        ubicacion: { macro: 'Sonora', micro: 'Hermosillo, Colonia Centenario', local: 'Estudio con tratamiento acústico profesional (Room-within-a-room).' },
-        operacion: { proceso: '1. Pre-producción. 2. Grabación de pistas. 3. Edición y Tuning. 4. Mezcla. 5. Masterización. 6. Entrega de Masters.' },
-        recursos: { maquinaria: 'Consola analógica, Micrófonos de condensador (Neumann, AKG).', equipo: 'Monitores de estudio Focal, Interfaz Universal Audio.', herramientas: 'Pro Tools Ultimate, Plugins Waves/UAD, Instrumentos virtuales.' }
+        operacion: { 
+          paso_a_paso_diario: '1. 9:00 AM: Calibración de monitores y preparación de sesión en Pro Tools. 2. 10:00 AM - 2:00 PM: Bloque 1 de grabación con cliente. 3. 3:00 PM - 7:00 PM: Bloque 2 de grabación o sesión de mezcla crítica. 4. 7:00 PM - 8:30 PM: Respaldo en disco duro externo y nube, y envío de previas a clientes.',
+          proceso: '1. Pre-producción. 2. Grabación de pistas. 3. Edición y Tuning. 4. Mezcla. 5. Masterización. 6. Entrega de Masters.'
+        },
+        recursos: { 
+          herramientas_necesarias: 'Computadora Mac Studio M2, interfaz Universal Audio Apollo x8, par de monitores Focal Shape 65, micrófonos Neumann TLM 103 y Shure SM7B, audífonos Sennheiser HD650 y paneles acústicos absorbentes de lana mineral.',
+          materiales_basicos: 'Cables XLR Mogami, atriles de micrófono K&M, antipop, cuerdas de guitarra de repuesto, licencias de software (Pro Tools, FabFilter, Waves) y café para clientes.',
+          maquinaria: 'Consola analógica, Micrófonos de condensador (Neumann, AKG).',
+          equipo: 'Monitores de estudio Focal, Interfaz Universal Audio.',
+          herramientas: 'Pro Tools Ultimate, Plugins Waves/UAD, Instrumentos virtuales.'
+        },
+        croquis: {
+          descripcion_espacio: 'Espacio de 16 m² (4m x 4m) en habitación dedicada con diseño acústico flotante room within a room, doble puerta aislante y piso de madera flotante.',
+          distribucion_areas: 'Zona de Control: Escritorio con monitores, interfaz y controladora. Zona de Grabación: Cabina vocal aislada con difusores traseros y trampa de graves en las 4 esquinas.'
+        },
+        ubicacion: { macro: 'Sonora', micro: 'Hermosillo, Colonia Centenario', local: 'Estudio con tratamiento acústico profesional (Room-within-a-room).' }
       },
       organizacion: {
+        inversion: {
+          total_inversion: '$42,000 MXN iniciales ($18,000 en interfaz y micrófonos, $12,000 en acondicionamiento acústico de sala, $6,000 en software/plugins y $6,000 en mobiliario y cables).',
+          de_donde_sale: 'Ahorros personales del productor ($30,000 MXN) y tarjeta de crédito bancaria a 12 meses sin intereses ($12,000 MXN).'
+        },
+        costos: {
+          lista_gastos_mensuales: 'Gastos fijos de $16,200 MXN: Electricidad adicional ($1,400), internet fibra óptica ($800), suscripciones de software ($900), publicidad digital ($600), fondo de reposición de equipo ($500) y sueldo de autoempleo del productor ($12,000 MXN).',
+          costos_por_producto: 'Costo marginal por hora de grabación: $55 MXN (energía y desgaste). Precio por hora: $450 MXN. Margen de contribución: $395 MXN/hr (87.7%). Punto de equilibrio mensual: 41 horas de servicio al mes.'
+        },
         staff: [
           { id: '1', role: 'Ingeniero en Jefe / Dueño', salary: 15000, reportsTo: null },
           { id: '2', role: 'Asistente de Grabación', salary: 9000, reportsTo: '1' }
