@@ -6,15 +6,25 @@ export default function HumanCapitalMatrix({ data, onChange, readOnly = false })
   const puestosList = Array.isArray(data?.puestos_lista) && data.puestos_lista.length > 0 
     ? data.puestos_lista 
     : [
-        { id: "1", puesto: "Director General (CEO)", area: "Dirección", nivel: "Directivo", sueldoBase: 75000, cargaSocialPct: 32, funciones: "Estrategia macro, alianzas corporativas y gobernanza.", perfil: "Ing. Industrial / MBA con 10+ años de experiencia." },
-        { id: "2", puesto: "Gerente de Operaciones", area: "Operaciones", nivel: "Gerencia", sueldoBase: 50000, cargaSocialPct: 32, funciones: "Gestión técnica del taller, calidad ISO 9001/4406 y SLAs.", perfil: "Ing. Mecánico/Mecatrónico." },
-        { id: "3", puesto: "Gerente Comercial B2B", area: "Ventas", nivel: "Gerencia", sueldoBase: 45000, cargaSocialPct: 32, funciones: "Licitaciones, prospección de contratos y convenios marco.", perfil: "Lic. Comercial/Ingeniero." },
-        { id: "4", puesto: "Gerente de Finanzas", area: "Finanzas", nivel: "Gerencia", sueldoBase: 45000, cargaSocialPct: 32, funciones: "Tesorería, control de cobranza a 90 días y contabilidad.", perfil: "C.P. / Finanzas." }
+        { id: "1", puesto: "Director General (CEO / Socio Operativo)", area: "Dirección", nivel: "Directivo", sueldoBase: 75000, cargaSocialPct: 32, funciones: "Estrategia macro, relaciones gubernamentales, alianzas con mineras Tier-1 y gobernanza corporativa.", perfil: "Ing. Industrial / MBA con 15+ años de experiencia en minería." },
+        { id: "2", puesto: "Gerente de Operaciones (COO / Gerente Técnico)", area: "Operaciones", nivel: "Gerencia", sueldoBase: 50000, cargaSocialPct: 32, funciones: "Gestión técnica del taller multiactivo, control de calidad ISO 9001/4406 y cumplimiento de SLAs.", perfil: "Ing. Mecánico/Mecatrónico con 10+ años en sistemas oleohidráulicos." },
+        { id: "3", puesto: "Gerente Comercial y Desarrollo B2B", area: "Ventas", nivel: "Gerencia", sueldoBase: 45000, cargaSocialPct: 32, funciones: "Licitaciones mineras, prospección de contratos marco MaaS y convenios corporativos.", perfil: "Lic. Comercial / Ingeniero con cartera en sector minero." },
+        { id: "4", puesto: "Gerente de Administración y Finanzas (CFO)", area: "Finanzas", nivel: "Gerencia", sueldoBase: 45000, cargaSocialPct: 32, funciones: "Tesorería, control de cobranza a 90 días, gestión de fideicomiso y cumplimiento fiscal.", perfil: "C.P. / Maestría en Finanzas con experiencia en crédito corporativo." },
+        { id: "5", puesto: "Gerente de Calidad, IoT y Predictivo", area: "Calidad", nivel: "Gerencia", sueldoBase: 42000, cargaSocialPct: 32, funciones: "Gestión de telemetría Parker SensoNODE, plataforma cloud VOM y certificaciones de fluidos ISO 4406.", perfil: "Ing. Electrónico / Sistemas / Mecatrónica." },
+        { id: "6", puesto: "Supervisor de Taller y Metrología Láser", area: "Operaciones", nivel: "Mando Medio", sueldoBase: 32000, cargaSocialPct: 32, funciones: "Inspección dimensional de vástagos/camisas y supervisión de pruebas hidrostáticas.", perfil: "Ing. Técnico Mecánico con especialidad en metrología." },
+        { id: "7", puesto: "Líder de Servicio en Campo y Grúas Móviles", area: "Campo", nivel: "Mando Medio", sueldoBase: 30000, cargaSocialPct: 32, funciones: "Diagnóstico in situ en tajos mineros y montaje de kits de sensores IoT.", perfil: "Técnico Especialista en Grúas y Maquinaria Pesada." },
+        { id: "8", puesto: "Tornero Industrial Especialista A (Bancada 6m)", area: "Operaciones", nivel: "Técnico", sueldoBase: 26000, cargaSocialPct: 32, funciones: "Mecanizado de precisión en cilindros y vástagos de gran escala (<0.02 mm).", perfil: "Técnico Tornero Industrial con 8+ años de experiencia." },
+        { id: "9", puesto: "Tornero Industrial B (Piezas Secundarias)", area: "Operaciones", nivel: "Operativo", sueldoBase: 20000, cargaSocialPct: 32, funciones: "Fabricación y rectificado de tapas, émbolos, bujes y sellos mecánicos.", perfil: "Técnico Tornero con 4+ años en torno convencional." },
+        { id: "10", puesto: "Operador / Programador Fresadora CNC", area: "Operaciones", nivel: "Técnico", sueldoBase: 22000, cargaSocialPct: 32, funciones: "Rectificado de manifolds hidráulicos y bloques de válvulas en centro CNC.", perfil: "Técnico en Programación y Operación CNC." },
+        { id: "11", puesto: "Técnico Especialista en Clean Room ISO 4406", area: "Calidad", nivel: "Técnico", sueldoBase: 20000, cargaSocialPct: 32, funciones: "Ensamble en atmósfera limpia, sellado Parker y conteo de partículas de fluidos.", perfil: "Técnico en Control de Contaminación de Fluidos." },
+        { id: "12", puesto: "Técnico de Banco de Pruebas 5,000 PSI", area: "Operaciones", nivel: "Técnico", sueldoBase: 20000, cargaSocialPct: 32, funciones: "Certificación de estanqueidad y pruebas de carga hidrostática certificada.", perfil: "Técnico Hidráulico con certificación en seguridad de alta presión." },
+        { id: "13", puesto: "Ejecutivo de Cuentas Mineras B2B", area: "Ventas", nivel: "Operativo", sueldoBase: 22000, cargaSocialPct: 32, funciones: "Atención técnica y seguimiento a superintendentes de Grupo México, Fresnillo y Peñoles.", perfil: "Lic. Mercadotecnia / Ventas Técnicas Industriales." },
+        { id: "14", puesto: "Jefe de Nómina, CxC y Crédito Minero", area: "Finanzas", nivel: "Administrativo", sueldoBase: 20000, cargaSocialPct: 32, funciones: "Facturación electrónica CFDI, administración de factoraje y conciliaciones bancarias.", perfil: "Lic. en Contabilidad / Administración." }
       ];
 
   const [editingId, setEditingId] = useState(null);
   const [showAddForm, setShowAddForm] = useState(false);
-  const [showOrganigramView, setShowOrganigramView] = useState(true);
+  const [viewMode, setViewMode] = useState("cards");
   const [newPuesto, setNewPuesto] = useState({
     puesto: '',
     area: 'Operaciones',
@@ -122,19 +132,27 @@ export default function HumanCapitalMatrix({ data, onChange, readOnly = false })
         <div style={{ display: 'flex', gap: '0.5rem' }}>
           <button 
             type="button"
-            className={`btn ${!showOrganigramView ? 'btn-primary' : 'btn-ghost'}`}
-            onClick={() => setShowOrganigramView(false)}
+            className={`btn ${viewMode === 'cards' ? 'btn-primary' : 'btn-ghost'}`}
+            onClick={() => setViewMode('cards')}
             style={{ fontSize: '0.8rem', padding: '0.4rem 0.8rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
           >
-            <Briefcase style={{ width: '14px', height: '14px' }} /> Matriz de Puestos y Nómina
+            <span>📇</span> Fichas de Puesto (14 Roles)
           </button>
           <button 
             type="button"
-            className={`btn ${showOrganigramView ? 'btn-primary' : 'btn-ghost'}`}
-            onClick={() => setShowOrganigramView(true)}
+            className={`btn ${viewMode === 'organigram' ? 'btn-primary' : 'btn-ghost'}`}
+            onClick={() => setViewMode('organigram')}
             style={{ fontSize: '0.8rem', padding: '0.4rem 0.8rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
           >
             <Network style={{ width: '14px', height: '14px' }} /> Organigrama Jerárquico
+          </button>
+          <button 
+            type="button"
+            className={`btn ${viewMode === 'table' ? 'btn-primary' : 'btn-ghost'}`}
+            onClick={() => setViewMode('table')}
+            style={{ fontSize: '0.8rem', padding: '0.4rem 0.8rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+          >
+            <Briefcase style={{ width: '14px', height: '14px' }} /> Tabla y Nómina
           </button>
         </div>
 
@@ -255,7 +273,86 @@ export default function HumanCapitalMatrix({ data, onChange, readOnly = false })
       )}
 
       {/* Vista de Organigrama Visual */}
-      {showOrganigramView ? (
+      {viewMode === 'cards' ? (
+        /* Vista 1: Fichas de Puesto Premium */
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem' }}>
+          {puestosList.map((p, idx) => {
+            const areaColors = {
+              'Dirección': { bg: '#eff6ff', border: '#3b82f6', text: '#1e40af', icon: '👔' },
+              'Operaciones': { bg: '#f8fafc', border: '#64748b', text: '#334155', icon: '⚙️' },
+              'Ventas': { bg: '#ecfdf5', border: '#10b981', text: '#065f46', icon: '🤝' },
+              'Finanzas': { bg: '#fefce8', border: '#eab308', text: '#854d0e', icon: '💰' },
+              'Calidad': { bg: '#f5f3ff', border: '#8b5cf6', text: '#5b21b6', icon: '✨' },
+              'Campo': { bg: '#fff7ed', border: '#f97316', text: '#9a3412', icon: '🚛' }
+            };
+            const col = areaColors[p.area] || { bg: '#f8fafc', border: '#cbd5e1', text: '#475569', icon: '🛠️' };
+
+            return (
+              <div 
+                key={p.id || idx}
+                style={{
+                  background: '#ffffff',
+                  borderRadius: '14px',
+                  border: '1px solid #e2e8f0',
+                  padding: '1.25rem',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.85rem',
+                  boxShadow: '0 4px 15px rgba(0,0,0,0.03)',
+                  position: 'relative',
+                  overflow: 'hidden'
+                }}
+              >
+                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '4px', background: col.border }} />
+                
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.5rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <span style={{ fontSize: '1.4rem' }}>{col.icon}</span>
+                    <div>
+                      <span style={{ fontSize: '0.65rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: col.text }}>
+                        {p.area} • {p.nivel}
+                      </span>
+                      <h5 style={{ margin: '2px 0 0 0', fontSize: '0.95rem', fontWeight: 800, color: '#0f172a' }}>
+                        {p.puesto}
+                      </h5>
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ background: col.bg, padding: '0.6rem 0.85rem', borderRadius: '8px', border: `1px solid ${col.border}33` }}>
+                  <div style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: 600 }}>COMPENSACIÓN INTEGRADA</div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginTop: '2px' }}>
+                    <span style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0f172a' }}>
+                      ${(Number(p.sueldoBase) || 0).toLocaleString('es-MX')} <span style={{ fontSize: '0.7rem', color: '#64748b' }}>base/mes</span>
+                    </span>
+                    <span style={{ fontSize: '0.72rem', color: '#16a34a', fontWeight: 700 }}>
+                      +${Math.round((Number(p.sueldoBase) || 0) * ((Number(p.cargaSocialPct) || 32)/100)).toLocaleString('es-MX')} IMSS
+                    </span>
+                  </div>
+                </div>
+
+                {p.funciones && (
+                  <div>
+                    <span style={{ fontSize: '0.68rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Funciones Principales:</span>
+                    <p style={{ margin: '3px 0 0 0', fontSize: '0.78rem', color: '#334155', lineHeight: '1.45' }}>
+                      {p.funciones}
+                    </p>
+                  </div>
+                )}
+
+                {p.perfil && (
+                  <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '0.6rem', marginTop: 'auto' }}>
+                    <span style={{ fontSize: '0.68rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase' }}>Perfil Requerido:</span>
+                    <p style={{ margin: '2px 0 0 0', fontSize: '0.74rem', color: '#64748b' }}>
+                      {p.perfil}
+                    </p>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      ) : viewMode === 'organigram' ? (
         <div style={{
           padding: '1.75rem',
           background: 'var(--bg-card)',

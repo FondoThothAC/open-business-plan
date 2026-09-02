@@ -11,6 +11,9 @@ import BusinessModelCanvas from '../components/BusinessModelCanvas';
 import HubspotBuyerPersona from '../components/HubspotBuyerPersona';
 import PresupuestoEmpresa from '../components/PresupuestoEmpresa';
 import InegiMap from '../components/InegiMap';
+import FloorPlanDiagram from '../components/FloorPlanDiagram';
+import RACIMatrix from '../components/RACIMatrix';
+import ExecutiveFinancialDashboard from '../components/ExecutiveFinancialDashboard';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { safeStr } from '../utils/formatters';
@@ -1542,30 +1545,52 @@ export default function VistaPrevia() {
       let monthlyFixedCostsVal = 15000;
       let monthlyVariableCostsVal = 8000;
 
-      // Buscar si hay números en el texto de inversión
-      const inversionTexto = planData.organizacion?.inversion?.monto_total || planData.organizacion?.inversion?.capex || planData.semilla?.finanzas?.inversion_total || '';
+      // 1. Inversión Total (Soporte prioritario para campos corporativos M)
+      const inversionTexto = planData.organizacion?.inversion?.financiamiento ||
+                             planData.organizacion?.inversion?.inversion_fija ||
+                             planData.organizacion?.inversion?.monto_total ||
+                             planData.organizacion?.inversion?.capex ||
+                             planData.semilla?.inversion_esperada ||
+                             planData.semilla?.finanzas?.inversion_total || '';
       if (inversionTexto) {
-        initialInvestmentVal = parseNumericAmount(inversionTexto, 120000);
+        initialInvestmentVal = parseNumericAmount(inversionTexto, 20000000);
+      } else {
+        initialInvestmentVal = 20000000;
       }
 
-      // Buscar si hay números en costos fijos
+      // 2. Costos Fijos Mensuales
       const fijosTexto = planData.organizacion?.costos?.fijos || planData.semilla?.finanzas?.costos_fijos || '';
       if (fijosTexto) {
-        const rawFijos = parseNumericAmount(fijosTexto, 180000);
-        monthlyFixedCostsVal = rawFijos > 1000000 ? Math.round(rawFijos / 12) : rawFijos;
+        const rawFijos = parseNumericAmount(fijosTexto, 285000);
+        monthlyFixedCostsVal = rawFijos > 2000000 ? Math.round(rawFijos / 12) : rawFijos;
+      } else {
+        monthlyFixedCostsVal = 285000;
       }
 
-      // Buscar si hay números en costos variables
+      // 3. Ventas Anuales Año 1 (ej. M)
+      const resultadosTexto = planData.organizacion?.estados_financieros?.resultados || 
+                              planData.organizacion?.objetivos?.metas ||
+                              planData.semilla?.finanzas?.meta_ingresos || '';
+      if (resultadosTexto) {
+        annualSalesGoalVal = parseNumericAmount(resultadosTexto, 16000000);
+      } else {
+        annualSalesGoalVal = 16000000;
+      }
+
+      // 4. Costos Variables Mensuales (65% del ingreso operativo base)
       const variablesTexto = planData.organizacion?.costos?.variables || '';
       if (variablesTexto) {
-        const rawVars = parseNumericAmount(variablesTexto, 96000);
-        monthlyVariableCostsVal = rawVars > 1000000 ? Math.round(rawVars / 12) : rawVars;
-      }
-
-      // Buscar si hay números en resultados de ventas
-      const resultadosTexto = planData.organizacion?.estados_financieros?.resultados || planData.semilla?.finanzas?.meta_ingresos || '';
-      if (resultadosTexto) {
-        annualSalesGoalVal = parseNumericAmount(resultadosTexto, 500000);
+        const rawVars = parseNumericAmount(variablesTexto, 0);
+        if (rawVars > 0 && rawVars < 100) {
+          // Si viene como porcentaje (ej. 65%)
+          monthlyVariableCostsVal = Math.round((annualSalesGoalVal / 12) * (rawVars / 100));
+        } else if (rawVars > 0) {
+          monthlyVariableCostsVal = rawVars > 2000000 ? Math.round(rawVars / 12) : rawVars;
+        } else {
+          monthlyVariableCostsVal = Math.round((annualSalesGoalVal / 12) * 0.65);
+        }
+      } else {
+        monthlyVariableCostsVal = Math.round((annualSalesGoalVal / 12) * 0.65);
       }
 
       const financeData = {
@@ -3000,6 +3025,7 @@ export default function VistaPrevia() {
                     <h3 style={{ fontSize: '1.25rem', color: '#0f172a', marginBottom: '1rem', fontWeight: 800 }}>
                       {sectionNumber} {mod.title}
                     </h3>
+                    <ExecutiveFinancialDashboard planData={planData} />
                     <PresupuestoEmpresa projections={previewFinancialData} staff={planData.organizacion?.staff} planData={planData} />
                     <BalanceGeneralEstandar projections={previewFinancialData} planData={planData} />
                     <Section 
@@ -3017,6 +3043,7 @@ export default function VistaPrevia() {
                       {sectionNumber} {mod.title}
                     </h3>
                     <HumanCapitalMatrix data={planData?.[mod.pillarKey]?.[mod.key] || planData?.organizacion?.estructura} readOnly={true} />
+                    <RACIMatrix planData={planData} />
                     <Section 
                       number=""
                       title={`Detalle de ${mod.title}`} 
@@ -3063,7 +3090,7 @@ export default function VistaPrevia() {
                           planData?.semilla?.negocio?.ubicacion ||
                           planData?.tecnico?.ubicacion?.micro ||
                           planData?.tecnico?.ubicacion?.macro ||
-                          'Cananea, Sonora'
+                          'Hermosillo, Sonora'
                         }
                         mode="competition"
                         readOnly={true}
@@ -3082,6 +3109,7 @@ export default function VistaPrevia() {
                       pillarKey={mod.pillarKey}
                       moduleKey={mod.key}
                     />
+                    <FloorPlanDiagram data={planData?.[mod.pillarKey]?.[mod.key]} planData={planData} />
                     <div style={{ marginTop: '1rem', padding: '1rem', background: '#ffffff', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
                       <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#0f172a', marginBottom: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                         📍 Localización y Ubicación Estratégica
@@ -3095,7 +3123,7 @@ export default function VistaPrevia() {
                           planData?.semilla?.negocio?.ubicacion ||
                           planData?.tecnico?.ubicacion?.micro ||
                           planData?.tecnico?.ubicacion?.macro ||
-                          'Cananea, Sonora'
+                          'Hermosillo, Sonora'
                         }
                         mode="location"
                         readOnly={true}
@@ -3125,7 +3153,7 @@ export default function VistaPrevia() {
                           planData?.semilla?.negocio?.ubicacion ||
                           planData?.tecnico?.ubicacion?.micro ||
                           planData?.tecnico?.ubicacion?.macro ||
-                          'Cananea, Sonora'
+                          'Hermosillo, Sonora'
                         }
                         mode="competition"
                         readOnly={true}

@@ -49,6 +49,30 @@ export function runQuantumDiagnostic({ areas = ['operativo'], _teamSize = 3 } = 
 
 export const AGENT_TOOLS_MANIFEST = [
   {
+    name: 'tool_machinery_search',
+    description: 'Busca cotizaciones, distribuidores y precios de mercado de maquinaria, equipos e insumos industriales (DuckDuckGo + Google Places + Benchmarks).',
+    parameters: {
+      type: 'object',
+      properties: {
+        item: { type: 'string', description: 'Nombre o tipo de maquinaria/equipo/insumo a cotizar' },
+        location: { type: 'string', description: 'Ciudad o estado para buscar distribuidores locales' }
+      },
+      required: ['item']
+    }
+  },
+  {
+    name: 'tool_supplier_search',
+    description: 'Busca proveedores reales verificados combinando DENUE (INEGI), Google Places y DuckDuckGo con coordenadas y contactos.',
+    parameters: {
+      type: 'object',
+      properties: {
+        category: { type: 'string', description: 'Categoría de insumos o materiales requeridos' },
+        location: { type: 'string', description: 'Ciudad o región de interés' }
+      },
+      required: ['category']
+    }
+  },
+  {
     name: 'tool_web_search',
     description: 'Busca competidores, precios promedio y tendencias de mercado en la web en tiempo real.',
     parameters: {
@@ -460,6 +484,28 @@ export async function executeAgentTool(toolName, args, planContext = {}) {
             keyRequirements,
             ragIndexRef: 'leyes_md/INDICE_LEYES.md'
           }
+        };
+      }
+
+            case 'tool_machinery_search': {
+        const { searchMachineryQuotes } = await import('./tools/tool_machinery_search.js');
+        const quoteRes = await searchMachineryQuotes(args.item, args.location || 'Hermosillo, Sonora');
+        return {
+          success: true,
+          toolName,
+          executionTimeMs: Date.now() - startTime,
+          data: quoteRes
+        };
+      }
+
+      case 'tool_supplier_search': {
+        const { searchRealSuppliers } = await import('./tools/tool_supplier_search.js');
+        const supplierRes = await searchRealSuppliers(args.category, args.location || 'Hermosillo, Sonora');
+        return {
+          success: true,
+          toolName,
+          executionTimeMs: Date.now() - startTime,
+          data: supplierRes
         };
       }
 

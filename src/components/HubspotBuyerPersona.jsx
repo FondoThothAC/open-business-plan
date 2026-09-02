@@ -22,13 +22,20 @@ export default function HubspotBuyerPersona({ value = '' }) {
       return defaultVal;
     };
 
-    const nombre = extractSection(['nombre', 'buyer persona', 'cliente ideal', 'avatar'], 'Cliente Ideal Promedio');
-    const demografia = extractSection(['demografía', 'perfil', 'edad', 'género', 'ubicación'], 'Edad: 25-50 años. Ubicación: Zonas urbanas y residenciales.');
-    const metas = extractSection(['metas', 'objetivos', 'intereses', 'que busca'], 'Obtener productos duraderos, de buena calidad y con servicio de asesoría personalizada.');
-    const retos = extractSection(['retos', 'problemas', 'obstáculos', 'dolores'], 'Falta de tiempo, desconocimiento técnico sobre herramientas e insumos de ferretería.');
-    const canales = extractSection(['canales', 'preferidos', 'medios', 'redes'], 'Recomendaciones boca a boca, búsquedas en Google Maps y redes sociales locales (Facebook).');
+    const isB2B = /mina|minería|industrial|b2b|empresa|corporativ|contratista|maquinaria|hidráulic/i.test(text);
+    const defaultNombre = isB2B ? 'Directores de Mina y Superintendentes de Mantenimiento B2B' : 'Cliente Ideal Promedio';
+    const defaultDemografia = isB2B ? 'Sector: Minería e Industria Pesada de Sonora. Empresas con flotas de 10 a 50 equipos de gran tonelaje.' : 'Edad: 25-50 años. Ubicación: Zonas urbanas y residenciales.';
+    const defaultMetas = isB2B ? 'Cero paros no programados, disponibilidad operativa 24/7 y contratos MaaS con SLAs garantizados.' : 'Obtener productos duraderos, de buena calidad y con servicio de asesoría personalizada.';
+    const defaultRetos = isB2B ? 'Tiempos de entrega excesivos en talleres rústicos, contaminación de fluidos (ISO 4406) y paros de k-.2M MXN/hr.' : 'Falta de tiempo, desconocimiento técnico sobre herramientas e insumos de ferretería.';
+    const defaultCanales = isB2B ? 'Venta consultiva técnica B2B, licitaciones mineras directas, visitas a tajo y convenios corporativos.' : 'Recomendaciones boca a boca, búsquedas en Google Maps y redes sociales locales (Facebook).';
 
-    return { nombre, demografia, metas, retos, canales };
+    const nombre = extractSection(['nombre', 'buyer persona', 'buyer business', 'cliente ideal', 'avatar', 'empresa ideal'], defaultNombre);
+    const demografia = extractSection(['demografía', 'perfil', 'edad', 'género', 'ubicación', 'sector', 'industria'], defaultDemografia);
+    const metas = extractSection(['metas', 'objetivos', 'intereses', 'que busca', 'kpis'], defaultMetas);
+    const retos = extractSection(['retos', 'problemas', 'obstáculos', 'dolores', 'puntos de dolor'], defaultRetos);
+    const canales = extractSection(['canales', 'preferidos', 'medios', 'redes', 'adquisición'], defaultCanales);
+
+    return { nombre, demografia, metas, retos, canales, isB2B };
   }, [value]);
 
   return (
@@ -69,7 +76,7 @@ export default function HubspotBuyerPersona({ value = '' }) {
           <User size={28} />
         </div>
         <div>
-          <span style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.1em', opacity: 0.85, fontWeight: '700' }}>Perfil del Buyer Persona (Cliente Ideal)</span>
+          <span style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.1em', opacity: 0.85, fontWeight: '700' }}>{structuredData.isB2B ? 'Perfil del Cliente Corporativo (Buyer Business B2B)' : 'Perfil del Buyer Persona (Cliente Ideal)'}</span>
           <h4 style={{ fontSize: '1.35rem', fontWeight: 800, margin: '2px 0 0 0', fontFamily: 'var(--font-display)' }}>
             {structuredData.nombre}
           </h4>
@@ -93,7 +100,7 @@ export default function HubspotBuyerPersona({ value = '' }) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#ff7a59', fontWeight: 'bold', fontSize: '0.85rem' }}>
             <BookOpen size={16} />
-            <span>DATOS DEMOGRÁFICOS</span>
+            <span>{structuredData.isB2B ? 'DATOS FIRMOGRÁFICOS / SECTOR' : 'DATOS DEMOGRÁFICOS'}</span>
           </div>
           <div style={{ fontSize: '0.84rem', color: '#475569', lineHeight: '1.6', background: '#fff8f6', padding: '1rem', borderRadius: '10px', borderLeft: '3px solid #ff7a59', height: '100%' }}>
             {structuredData.demografia}
@@ -126,7 +133,7 @@ export default function HubspotBuyerPersona({ value = '' }) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#3b82f6', fontWeight: 'bold', fontSize: '0.85rem' }}>
             <Heart size={16} />
-            <span>CANALES PREFERIDOS</span>
+            <span>{structuredData.isB2B ? 'CANALES DE PROSPECCIÓN B2B' : 'CANALES PREFERIDOS'}</span>
           </div>
           <div style={{ fontSize: '0.84rem', color: '#475569', lineHeight: '1.6', background: '#eff6ff', padding: '1rem', borderRadius: '10px', borderLeft: '3px solid #3b82f6', height: '100%' }}>
             {structuredData.canales}

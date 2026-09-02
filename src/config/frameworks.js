@@ -20,7 +20,7 @@ export const FRAMEWORKS = {
         key: 'mercado',
         title: 'El Mercado',
         modules: [
-          { key: 'analisis', title: 'Análisis de Producto y Valor', description: 'Descripción detallada del producto y beneficios.', fields: ['producto', 'valor', 'demanda', 'cliente', 'ciclo_vida'] },
+          { key: 'analisis', title: 'Análisis de Producto y Valor', description: 'Descripción detallada del producto y beneficios.', fields: ['producto', 'valor', 'demanda', 'ventaja_diferencial'] },
           { key: 'segmentacion', title: 'Segmentación y Tamaño', description: 'TAM, SAM, SOM y perfil del buyer persona.', fields: ['tam', 'sam', 'som', 'perfil', 'sensibilidad_demanda'] },
           { key: 'mapa', title: 'Mapa de Calor y Densidad', description: 'Visualización geográfica de la demanda y densidad de mercado.', fields: ['analisis_espacial'] },
           { key: 'competencia', title: 'Análisis de Competencia', description: 'Competidores directos, indirectos y ventaja competitiva.', fields: ['competidores', 'ventajas'] },

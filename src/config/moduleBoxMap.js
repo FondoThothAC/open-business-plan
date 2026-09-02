@@ -17,11 +17,11 @@ export const MODULE_BOX_MAP = {
   'business:foda': ['box_swot_foda'],
   'business:pestel': [],
   'business:legal': [],
-  'business:canvas': ['box_canvas_osterwalder', 'box_lean_canvas'],
+  'business:canvas': [],
   
   // Mercado
   'business:analisis': ['box_tam_sam_som'],
-  'business:segmentacion': ['box_tam_sam_som'],
+  'business:segmentacion': [],
   'business:mapa': [],
   'business:competencia': ['box_swot_foda'],
   'business:benchmarking': [],
@@ -48,7 +48,7 @@ export const MODULE_BOX_MAP = {
   
   // ============ AGILE STARTUP ============
   // Validación
-  'agile_startup:canvas': ['box_lean_canvas', 'box_canvas_osterwalder'],
+  'agile_startup:canvas': [],
   'agile_startup:buyer_persona': [],
   
   // Experimento
