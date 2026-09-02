@@ -1,72 +1,72 @@
 # SDD MASTER — Software Design Document & API Contracts
 **Proyecto:** Open Business Plan (Fondo Thoth AC)  
-**Versión:** 2.7.0 (Agéntico ReAct + DeepSeek Harness Trajectories)  
-**Estado:** Activo / Producción  
+**Versión:** 3.1.0 (UX Swarm Dual + Deep Research Híbrido + RFQ Asíncrono de Maquinaria + Gemelo Digital Temporal)  
+**Estado:** Activo / Especificación Integral  
 
 ---
 
-## 1. Arquitectura del Sistema Agéntico ReAct & DeepSeek Harness
+## 1. Arquitectura de 3 Niveles y Ecosistema de Agentes
 
-Open Business Plan implementa una arquitectura **Local-First con Resiliencia Cloud Híbrida, Agentes Autónomos ReAct y Trazabilidad Cognitiva DeepSeek Harness**.
+Open Business Plan implementa una arquitectura escalonada orientada a rendimiento, control de costos y capacidad de ingeniería institucional:
 
 ```mermaid
 graph TD
-    UI[Frontend React 18 / Vite] --> PlanCtx[PlanContext.jsx State Management]
-    PlanCtx --> AgenticEngine[CELIS Agentic Engine - src/lib/agenticEngine.js]
-    
-    subgraph "Motor de Trazabilidad DeepSeek Harness"
-        AgenticEngine --> TrajRecorder[TrajectoryRecorder - DAG Nodes]
-        TrajRecorder --> TrajViewer[AgentTrajectoryViewer.jsx Modal & Inspector]
-        TrajRecorder --> LocalStorage[Persistencia Local & Events openplan_trajectory_updated]
+    subgraph "Nivel 1: UX Ágil & Swarm Onboarding (Inmediato / Local / Gratis)"
+        ChatUI[Chat Conversacional Swarm] <--> SyncBridge[Puente de Sincronización Bidireccional]
+        SyncBridge <--> WizardUI[Wizard Guiado por Pasos]
+        Onboarding60[Onboarding Express 60s] --> SyncBridge
+        SyncBridge --> LiveSwarm[Live Swarm Hub: CFO, COO, CMO, Risk Agentes]
     end
 
-    subgraph "Suite de Herramientas Agénticas (agentTools.js)"
-        AgenticEngine --> TSearch[tool_web_search]
-        AgenticEngine --> TDenue[tool_inegi_denue]
-        AgenticEngine --> TFin[tool_financial_engine]
-        AgenticEngine --> TQtm[tool_quantum_diagnostic]
-        AgenticEngine --> TMermaid[tool_mermaid_generator]
-        AgenticEngine --> TCritic[tool_critic_validator]
+    subgraph "Nivel 2: Deep Research Swarm (Capa Híbrida Base vs Premium)"
+        RouterSearch[Enrutador de Búsqueda Inteligente]
+        LiveSwarm --> RouterSearch
+        RouterSearch --> FreeTier[Capa Base Gratis: DuckDuckGo + Scraping Local + INEGI/Banxico Público]
+        RouterSearch --> PaidTier[Capa Premium: Tavily API + Perplexity + Serper + Gemini 2.5 Pro / Claude 3.5]
+        PaidTier --> CostQuotaMonitor[Monitor de Cuotas y Costos en Tiempo Real]
     end
 
-    subgraph "Jerarquía de Proveedores de IA con Fast Failover"
-        AgenticEngine --> AIOrch[AI Provider Router - ai.js]
-        AIOrch --> Minimax[1° Minimax: minimax-m3:cloud / API directa]
-        AIOrch --> Groq[2° Groq: Qwen 27B / GPT-OSS 120B / Llama 3.3]
-        AIOrch --> Gemini[3° Google Gemini: 3.6 Flash / 3.7 Flash]
-        AIOrch --> OpenRouter[4° OpenRouter: Nemotron 3.5 Free]
-        AIOrch --> Nvidia[5° NVIDIA NIM / Mistral / Ollama Local]
+    subgraph "Nivel 3: Agente Asíncrono de Maquinaria Pesada & RFQ B2B"
+        HeavyMachineryReq[Requerimiento de Maquinaria Pesada / CAPEX Industrial]
+        HeavyMachineryReq --> RFQGenerator[Generador Formal de RFQ / Ficha Técnica]
+        RFQGenerator --> EmailDispatcher[Despachador de Correos a Distribuidores Autorizados]
+        RFQGenerator --> ManualPkg[Descarga de Paquete RFQ para Trámite Manual]
+        EmailDispatcher --> InboxWatcher[Bandeja de Recepción / Webhook / Upload PDF]
+        ManualPkg --> InboxWatcher
+        InboxWatcher --> DocOCR[Parser Documental OCR & Extracción de Cotización]
+        DocOCR --> CapexRecalc[Recálculo Automático de CAPEX, VAN, TIR y Viabilidad]
+    end
+
+    subgraph "Gobernanza Continua: Gemelo Digital & Forking Temporal"
+        MacroWatch[Vigilancia Periódica PESTEL, Banxico, Inflación, Insumos]
+        MacroWatch --> AutoForkEngine[Motor de Forking Temporal: 'Gemelo Digital [Fecha]']
+        AutoForkEngine --> DiffVisualizer[Visualizador Diff de Viabilidad & Semáforo de Impacto]
+        CapexRecalc --> AutoForkEngine
     end
 ```
 
 ---
 
-## 2. Contratos de Funciones y Servicios de IA
+## 2. Contratos de API y Servicios del Sistema
 
-### 2.1 `runAgenticModuleGeneration({ aiConfig, currentModule, planData, onStepUpdate, onLog })`
-* **Entrada:** Configuración de IA, módulo a redactar, datos del plan, callbacks de actualización de pasos y logs.
-* **Salida:** `{ result: Object, trajectory: Object (DeepSeek Harness v1.0) }`.
-* **Garantía:** Ejecuta ciclo completo ReAct (Pensamiento ➔ Tool Call ➔ Observación ➔ Crítica ➔ Síntesis) persistiendo el DAG de ejecución en tiempo real.
+### 2.1 Módulo Dual de Entrada (Chat Swarm + Wizard Sincronizado)
+* **`useDualInputSync(initialSeed)`**: Hook de sincronización en tiempo real entre el chat de agentes y los formularios del Wizard.
+* **Payload**: `{ seedData: Object, activeStep: number, pendingQuestions: Array, agentVotes: Object, confidenceScore: number }`.
 
-### 2.2 `executeAgentTool(toolName, args)`
-* **Entrada:** Nombre de herramienta (`tool_web_search`, `tool_financial_engine`, etc.) y parámetros JSON.
-* **Salida:** `{ success: boolean, toolName: string, executionTimeMs: number, data: Object }`.
+### 2.2 Motor de Deep Research Híbrido (`src/lib/tools/deepResearchEngine.js`)
+* **`runDeepResearch({ query, domain, depth, forcePaidTier, budgetLimitUsd })`**:
+  * Si `forcePaidTier === false`: ejecuta scraping local + DuckDuckGo + INEGI/DENUE.
+  * Si `forcePaidTier === true` o complejidad alta: orquesta llamada a Tavily/Perplexity/Serper + modelo de síntesis con registro de costo en `ApiQuotaMeter`.
+* **Retorno**: `{ synthesizedReport: string, sources: Array<{ title, url, snippet, reliability }>, costUsd: number, executionTimeMs: number }`.
 
-### 2.3 `TrajectoryRecorder(taskId, context)`
-* **Métodos:**
-  * `addStep(type, payload)`: Inserta nodo en el árbol DAG con `parentId`, `stepIndex`, `durationMs` y timestamp.
-  * `finish(finalOutput, status)`: Sella la trayectoria con métricas acumuladas y estructura estándar `deepseek-harness-1.0`.
+### 2.3 Agente Asíncrono de Maquinaria y RFQ (`src/lib/tools/machineryRfqEngine.js`)
+* **`generateRfqPackage({ machineryItem, specs, targetDistributors, deliveryLocation })`**:
+  * Genera documento formal RFQ (PDF/Markdown), ficha técnica, carta de intención y cuerpo de correo para proveedores.
+* **`dispatchRfqEmails({ rfqId, recipients, smtpConfig })`**: Envía las solicitudes formales y registra la tarea en estado `PENDING_SUPPLIER_RESPONSE`.
+* **`processIncomingQuote({ rfqId, quoteFile, manualData })`**: Procesa cotización en PDF vía OCR/LLM o entrada manual, extrae precio unitario, flete, garantías y tiempo de entrega, y actualiza el plan financiero automáticamente.
 
-### 2.4 `callAiProvider(config, prompt, expectJson, expectedKeys, onThink)`
-* **Entrada:** Configuración, prompt, parámetros JSON y callback de tokens de pensamiento.
-* **Prioridad:** Minimax-M3 Cloud ➔ Groq ➔ Gemini Flash ➔ OpenRouter ➔ NVIDIA ➔ Ollama Local.
-
----
-
-## 3. Niveles de Profundidad de la Mesa de Expertos
-
-| Nivel | Nombre | Fases / Agentes | Modelos Típicos | Trazabilidad |
-|---|---|---|---|---|
-| **1 (⚡)** | Rápido | Analista ➔ Redactor | `minimax-m3:cloud` / Groq Qwen 27B | DAG 3 pasos (~15s) |
-| **2 (🧠)** | Pro | Analista ➔ Crítico ➔ Tools ➔ Redactor | `minimax-m3:cloud` / GPT-OSS 120B | DAG 5-8 pasos (~45s) |
-| **3 (🔬)** | Profundo | Mesa Completa (9 Agentes + 6 Tools) | Multi-Model Cascade | DAG 12-16 pasos (~120s) |
+### 2.4 Motor de Forking Temporal y Gemelo Digital (`src/lib/digitalTwinEngine.js`)
+* **`createTemporalFork({ projectId, triggerReason, newMacroData, newCostData })`**:
+  * Clona el estado del proyecto bajo una nueva versión ramificada `Gemelo Digital — YYYY-MM-DD`.
+  * Recalcula VAN, TIR, ROI, Punto de Equilibrio y PESTEL.
+  * Retorna matriz comparativa `{ baseMetrics, forkMetrics, deltaPercentage, impactTrafficLight: 'GREEN' | 'YELLOW' | 'RED' }`.

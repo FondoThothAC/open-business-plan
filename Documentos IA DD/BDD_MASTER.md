@@ -1,46 +1,46 @@
 # BDD MASTER — Behavior-Driven Development (Gherkin Scenarios)
-**Proyecto:** Open Business Plan  
+**Proyecto:** Open Business Plan (Fondo Thoth AC)  
+**Versión:** 3.1.0  
 
 ---
 
-## Escenario 1: Prioridad de Minimax-M3 Cloud y Ejecución ReAct con Tools
+## Escenario 1: Onboarding Express Dual (Chat + Wizard Sincronizado)
 ```gherkin
-Dado que el usuario inicia la generación con IA de un módulo de negocio
-Y tiene configurado el proveedor "Ollama Cloud" o la API de Minimax
-Cuando el motor agéntico inicia el razonamiento
-Entonces selecciona prioritariamente el modelo "minimax-m3:cloud"
-Y ejecuta llamadas a herramientas en vivo (tool_web_search, tool_financial_engine)
-Y registra cada paso (Pensamiento ➔ Tool Call ➔ Observación ➔ Crítica ➔ Síntesis).
+Escenario: El usuario inicia un nuevo plan usando el Onboarding Express con Swarm
+  Dado que el usuario ingresa a la plataforma por primera vez
+  Cuando responde a las 3 preguntas clave o sube una nota de voz
+  Entonces el Swarm de agentes procesa la información en paralelo
+  Y la Semilla se autocompleta en tiempo real en la vista Wizard
+  Y el usuario puede alternar entre el Chat y el Wizard viendo los mismos datos sincronizados.
 ```
 
-## Escenario 2: Inspección de Trayectoria estilo DeepSeek Harness
+## Escenario 2: Deep Research Híbrido con Control de Presupuesto
 ```gherkin
-Dado que un módulo ha finalizado su generación agéntica
-Cuando el usuario hace clic en el botón "🔍 Trayectoria" en la cabecera del módulo o en el Monitor de IA
-Entonces se despliega el modal interactivo "Agent Trajectory Viewer (DeepSeek Harness)"
-Y muestra la línea de tiempo completa del árbol DAG con badges de color por tipo de paso
-Y permite inspeccionar argumentos, outputs JSON estructurados, duración en ms y métricas globales
-Y ofrece botones para copiar o descargar la traza en formato JSON estándar.
+Escenario: Búsqueda profunda de mercado con fallback automático de costos
+  Dado que el proyecto requiere un análisis competitivo de alta precisión
+  Cuando el usuario activa el modo Deep Research
+  Y existe presupuesto disponible en la API de pago
+  Entonces el sistema ejecuta la búsqueda profunda vía Tavily/Serper y sintetiza con Gemini 2.5 Pro
+  Pero si la API de pago no está configurada o se agota la cuota
+  Entonces el sistema realiza la búsqueda gratuita vía DuckDuckGo y scraping local sin arrojar error.
 ```
 
-## Escenario 3: Rotación transparente de modelo ante Rate Limit (429) en Groq
+## Escenario 3: Flujo Asíncrono de Cotización de Maquinaria Pesada (RFQ)
 ```gherkin
-Dado que el usuario tiene seleccionado el proveedor "Groq" y el nivel "Industrial (9 agentes)"
-Y se encuentra generando el módulo "Análisis de Demanda"
-Cuando el modelo "qwen/qwen3.6-27b" alcanza el límite de tokens por minuto (HTTP 429) en la Fase 3
-Entonces el sistema detecta inmediatamente el error sin demoras
-Y conmuta la consulta al siguiente modelo en el catálogo ("openai/gpt-oss-120b")
-Y el Monitor de IA muestra el evento "🔄 Rotando a modelo en Groq: openai/gpt-oss-120b..."
-Y la Fase 3 se completa exitosamente sin reiniciar las Fases 1 y 2.
+Escenario: Cotización formal y recepción diferida de maquinaria industrial
+  Dado que el plan requiere una maquinaria pesada que no tiene precio público en internet
+  Cuando el agente genera el paquete formal de RFQ técnica
+  Y se envían las solicitudes a los distribuidores autorizados
+  Entonces el módulo de maquinaria marca el ítem como "En espera de cotización B2B"
+  Y cuando se recibe la cotización por correo o subida manual de PDF
+  Entonces el sistema extrae el precio y recalcula automáticamente el CAPEX, VAN y TIR del proyecto.
 ```
 
-## Escenario 4: Cascade Fallback a Google Gemini al agotarse Groq
+## Escenario 4: Creación de Fork Temporal en el Gemelo Digital
 ```gherkin
-Dado que todos los modelos de Groq configurados han agotado su cuota diaria
-Y el usuario tiene configurada su clave de "Google Gemini"
-Cuando se ejecuta la Fase 4 de la Mesa de Expertos
-Entonces el orquestador activa la conmutación multi-proveedor
-Y emite el mensaje "⚠️ [Rotación IA] Groq saturado o con error. Rotando automáticamente a Gemini (gemini-3.6-flash)..."
-Y la consulta se resuelve con Gemini Flash
-Y el plan continúa fluidamente hasta la Fase 9.
+Escenario: Recalibración periódica de factores macroeconómicos y costos
+  Dado un proyecto activo con corrida financiera establecida
+  Cuando transcurren 30 días o se detecta un cambio sustancial en la tasa de interés de Banxico
+  Entonces el motor del Gemelo Digital genera automáticamente una versión ramificada "Gemelo Digital [Fecha]"
+  Y muestra un panel Diff visual con la comparativa de viabilidad y semáforo de impacto.
 ```

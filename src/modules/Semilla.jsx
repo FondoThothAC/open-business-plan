@@ -3,6 +3,7 @@ import { usePlan } from '../context/PlanContext';
 import { ChevronRight, ChevronLeft, CheckCircle2, Sparkles, User, Lightbulb, Users, Trophy, Wrench, Megaphone, DollarSign, Heart, FileText, Image as ImageIcon } from 'lucide-react';
 import PdfOcrReader from '../components/PdfOcrReader';
 import LogoGeneratorModal from '../components/LogoGeneratorModal';
+import DualInputSyncHub from '../components/DualInputSyncHub';
 
 const BUSINESS_STEPS = [
   {
@@ -190,6 +191,7 @@ export default function Semilla() {
   const { planData, updateSection, updateConfig } = usePlan();
   const [currentStep, setCurrentStep] = useState(0);
   const [isLogoModalOpen, setIsLogoModalOpen] = useState(false);
+  const [showDualHub, setShowDualHub] = useState(true);
   const semillaData = planData.semilla || {};
 
   const projectType = planData.config?.projectType || 'business';
@@ -198,7 +200,6 @@ export default function Semilla() {
   const step = STEPS[currentStep] || STEPS[0];
   const StepIcon = step.icon;
   const progress = ((currentStep + 1) / STEPS.length) * 100;
-
 
   const handleChange = (key, value) => {
     updateSection('semilla', step.id, key, value);
@@ -225,11 +226,45 @@ export default function Semilla() {
           <h1 className="view-title">🌱 Semilla del Proyecto</h1>
           <p className="text-secondary mt-1">Entrevista inicial con el emprendedor — Esta información es el contexto prioritario para la IA.</p>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--success-color)', fontSize: '0.85rem' }}>
-          <CheckCircle2 className="w-4 h-4" />
-          <span>{completedSteps} de {STEPS.length} secciones</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <button
+            onClick={() => setShowDualHub(prev => !prev)}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '6px 12px',
+              borderRadius: '8px',
+              border: '1px solid rgba(99, 102, 241, 0.3)',
+              background: showDualHub ? 'rgba(99, 102, 241, 0.15)' : 'transparent',
+              color: '#818cf8',
+              fontSize: '0.75rem',
+              fontWeight: 700,
+              cursor: 'pointer'
+            }}
+          >
+            <Sparkles className="w-4 h-4" />
+            <span>{showDualHub ? 'Ocultar Swarm Express' : 'Mostrar Swarm Express'}</span>
+          </button>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--success-color)', fontSize: '0.85rem' }}>
+            <CheckCircle2 className="w-4 h-4" />
+            <span>{completedSteps} de {STEPS.length} secciones</span>
+          </div>
         </div>
       </div>
+
+      {/* Centro de Entrada Dual & Swarm */}
+      {showDualHub && (
+        <DualInputSyncHub 
+          onCompleteSeed={() => {
+            setShowDualHub(false);
+          }}
+          onSwitchToStudio={() => {
+            setShowDualHub(false);
+          }}
+        />
+      )}
 
       {/* Progress Bar */}
       <div style={{ 
