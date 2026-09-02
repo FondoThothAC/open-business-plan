@@ -396,34 +396,13 @@ export const PlanProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    // 1. Guardado de alta capacidad en IndexedDB (cero límite de tamaño)
-    const activeProjId = planData.config?.projectId || localStorage.getItem('openplan_active_project_id') || 'active_project';
-    saveProjectToIDB(activeProjId, planData);
-
-    // 2. Respaldo ligero en localStorage con protección ante QuotaExceededError
-    try {
-      localStorage.setItem('openplan_v2_data', JSON.stringify(planData));
-    } catch {
-      try {
-        const lightweight = {
-          ...planData,
-          config: {
-            ...planData.config,
-            anexos: (planData.config?.anexos || []).map(a => ({ id: a.id, name: a.name, caption: a.caption })),
-            documents: (planData.config?.documents || []).map(d => ({ id: d.id, name: d.name, type: d.type }))
-          }
-        };
-        localStorage.setItem('openplan_v2_data', JSON.stringify(lightweight));
-      } catch {
-        console.warn('[LocalStorage] Cuota superada. Plan completo asegurado en IndexedDB.');
-      }
-    }
-
     document.documentElement.setAttribute('data-theme', planData.config?.theme || 'dark');
     if (planData.config?.brandKit) {
       document.documentElement.style.setProperty('--accent-color', planData.config.brandKit.primaryColor);
       document.documentElement.style.setProperty('--accent-hover', planData.config.brandKit.secondaryColor);
     }
+
+    const activeProjId = planData.config?.projectId || localStorage.getItem('openplan_active_project_id') || 'active_project';
 
     if (planData.config?.projectId) {
       localStorage.setItem('openplan_active_project_id', planData.config.projectId);
@@ -432,9 +411,36 @@ export const PlanProvider = ({ children }) => {
       localStorage.setItem('openplan_active_project_type', projectType);
     }
 
-    // Auto-save to Backend (Local o Remoto en VPS)
+    // Auto-save debounced a IndexedDB y al Backend (Local o Remoto en VPS)
     setSaveStatus('saving');
     const saveTimer = setTimeout(async () => {
+      // 1. Guardado asíncrono y debounced en IndexedDB de alta capacidad
+      try {
+        await saveProjectToIDB(activeProjId, planData);
+      } catch (idbErr) {
+        console.warn('[IndexedDB] Error en guardado debounced:', idbErr);
+      }
+
+      // 2. Respaldo ligero en localStorage con protección estricta ante QuotaExceededError
+      try {
+        localStorage.setItem('openplan_v2_data', JSON.stringify(planData));
+      } catch {
+        try {
+          const lightweight = {
+            ...planData,
+            config: {
+              ...planData.config,
+              anexos: (planData.config?.anexos || []).map(a => ({ id: a.id, name: a.name, caption: a.caption })),
+              documents: (planData.config?.documents || []).map(d => ({ id: d.id, name: d.name, type: d.type }))
+            }
+          };
+          localStorage.setItem('openplan_v2_data', JSON.stringify(lightweight));
+        } catch {
+          console.warn('[LocalStorage] Cuota superada. Plan completo asegurado en IndexedDB.');
+        }
+      }
+
+      // 3. Envío al backend del VPS
       try {
         const backendBase = getApiBase();
         const response = await fetch(`${backendBase}/api/save`, {
@@ -460,7 +466,7 @@ export const PlanProvider = ({ children }) => {
       } catch {
         setSaveStatus('error');
       }
-    }, 2000); // 2 second debounce
+    }, 1500); // 1.5 second debounce
 
     return () => clearTimeout(saveTimer);
   }, [planData]);

@@ -1318,7 +1318,7 @@ app.post('/api/logo/save', async (req, res) => {
 app.post('/api/log', (req, res) => {
   const { type = 'stage', module, message, provider, elapsed, projectId, projectType } = req.body;
   const icon = ICONS[type] || '·';
-  const time = new Date().toLocaleTimeString('es-MX');
+  const time = new Date().toLocaleTimeString('es-MX', { timeZone: 'America/Hermosillo' });
   const elapsedStr = elapsed ? ` [${(elapsed / 1000).toFixed(1)}s]` : '';
   const providerStr = provider ? ` (${provider.toUpperCase()})` : '';
   const moduleStr   = module   ? ` [${module}]` : '';

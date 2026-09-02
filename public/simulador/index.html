@@ -24,39 +24,48 @@
       }
     </style>
     <script>
-      // Puente dinámico con Open Business Plan
+      // Puente dinámico con Open Business Plan con protección estricta contra bucles de mutación
       (function() {
         let activeProjectTitle = 'COMERCIO CUÁNTICO INTERNACIONAL';
         let activeBadge = 'MAAS IOT / INVERSIÓN MINERA';
+        let isUpdating = false;
+        let updateTimeout = null;
 
         function updateDOMTexts() {
-          // Reemplazar textos en el header
-          document.querySelectorAll('span, h1, h2, h3, h4, p, div').forEach(el => {
-            if (el.children.length === 0 && el.textContent) {
-              let txt = el.textContent;
-              if (txt.includes('FAPPA / PROMETE') || txt.includes('MAAS IOT')) {
-                el.textContent = activeBadge;
-                el.className = 'badge-project';
+          if (isUpdating) return;
+          isUpdating = true;
+
+          try {
+            // Reemplazar textos en el header de forma idempotente
+            document.querySelectorAll('span, h1, h2, h3, h4, p, div').forEach(el => {
+              if (el.children.length === 0 && el.textContent) {
+                const txt = el.textContent;
+                if (txt.includes('FAPPA / PROMETE') && el.textContent !== activeBadge) {
+                  el.textContent = activeBadge;
+                  el.className = 'badge-project';
+                } else if (txt.includes('CIBERCAFE') && el.textContent !== activeProjectTitle) {
+                  el.textContent = activeProjectTitle;
+                } else if (txt.includes('Metodología SAGARPA') && !txt.includes('Modelo Atómico')) {
+                  el.textContent = 'Modelo Atómico Cuántico (SAPI de CV)';
+                } else if (txt.includes('este Cibercafé') && !txt.includes('Mantenimiento Minero')) {
+                  el.textContent = 'este proyecto de Mantenimiento Minero';
+                } else if (txt.includes('Reducción del 25% en ventas de internet') && !txt.includes('órdenes de servicio')) {
+                  el.textContent = 'Reducción del 25% en órdenes de servicio y +10% en insumos importados.';
+                }
               }
-              if (txt.includes('CIBERCAFE') || txt.includes('COMERCIO CUÁNTICO')) {
-                el.textContent = activeProjectTitle;
-              }
-              if (txt.includes('Metodología SAGARPA')) {
-                el.textContent = 'Modelo Atómico Cuántico (SAPI de CV)';
-              }
-              if (txt.includes('este Cibercafé')) {
-                el.textContent = 'este proyecto de Mantenimiento Minero';
-              }
-              if (txt.includes('Reducción del 25% en ventas de internet')) {
-                el.textContent = 'Reducción del 25% en órdenes de servicio y +10% en insumos importados.';
-              }
-            }
-          });
+            });
+          } finally {
+            isUpdating = false;
+          }
         }
 
-        // Observar cambios en el DOM para actualizar cualquier texto renderizado por React
+        // Observar cambios en el DOM con debounce para evitar congelamientos de la pestaña
         const observer = new MutationObserver(() => {
-          updateDOMTexts();
+          if (isUpdating) return;
+          if (updateTimeout) clearTimeout(updateTimeout);
+          updateTimeout = setTimeout(() => {
+            updateDOMTexts();
+          }, 150);
         });
 
         document.addEventListener('DOMContentLoaded', () => {
