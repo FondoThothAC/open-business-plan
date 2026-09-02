@@ -70,3 +70,23 @@ graph TD
   * Clona el estado del proyecto bajo una nueva versión ramificada `Gemelo Digital — YYYY-MM-DD`.
   * Recalcula VAN, TIR, ROI, Punto de Equilibrio y PESTEL.
   * Retorna matriz comparativa `{ baseMetrics, forkMetrics, deltaPercentage, impactTrafficLight: 'GREEN' | 'YELLOW' | 'RED' }`.
+
+---
+
+## 3. Topología de Despliegue en Producción & Enrutamiento Subfolder (`/obp/`)
+
+```mermaid
+flowchart LR
+    Client[Navegador del Usuario] -->|HTTPS fondothoth.com| Nginx[Nginx Reverse Proxy en VPS]
+    
+    subgraph "VPS Ubuntu 22.04 LTS (129.146.213.8)"
+        Nginx -->|/ (sitio raíz)| LandingApp[Landing Fondo Thoth :8080]
+        Nginx -->|/obp/ (Frontend SPA)| StaticDist["/var/www/open-business-plan/dist/\ntry_files $uri $uri/ /obp/index.html;"]
+        Nginx -->|/obp/api/ (API Proxy)| ExpressServer["Express Backend PM2 (:3001)\nGET /api/health\nPOST /api/chat-stream\nGET /api/log/stream (SSE)"]
+    end
+```
+
+### Contratos de Enrutamiento y Base Path:
+* **Base Path del Frontend:** `VITE_BASE_PATH=/obp/` inyectado en tiempo de compilación para que React Router opere con `basename="/obp/"` y todos los assets apunten a `/obp/assets/`.
+* **Contrato de Salud:** `GET /obp/api/health` retorna `{ status: "ok", version: string, service: string, uptime: string }`.
+* **Aislamiento Total:** El sitio raíz `https://fondothoth.com` no es alterado; las directivas de OBP se integran exclusivamente bajo el prefijo `/obp/`.

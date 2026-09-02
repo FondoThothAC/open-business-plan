@@ -21,9 +21,10 @@
 * `BobChatModal`: Modal interactivo de copiloto con soporte de reconocimiento de voz y debate estratégico.
 * `InegiMap`: Mapa geoespacial interactivo con capas de competidores DENUE y cálculo de densidad.
 * `FinancialCharts`: Gráficas interactivas de punto de equilibrio, estados proforma y corrida financiera.
+* `PrintableFinancialReports`: Subcomponente de reportes financieros expandidos para impresión y vista previa, con soporte defensivo `planData = {}` y cálculos de rentabilidad industrial/minera.
 * `Anteproyecto`: Formulario estructurado para captura de la Semilla del proyecto y diagnóstico cuántico inicial.
 
 ### Vistas / Páginas
 * `DynamicModule` / `ModuleWrapper`: Vista modular con botón de trazabilidad agéntica y controles de edición.
-* `VistaPrevia`: Renderizador de documento completo con paginación modular y continua.
+* `VistaPrevia`: Renderizador de documento completo con paginación modular y continua, protegido por `ErrorBoundary` y guard de hidratación asíncrona de `planData`.
 * `Configuracion`: Panel de administración con presets de Minimax-M3 Cloud, Groq, Gemini y pools de API Keys.
