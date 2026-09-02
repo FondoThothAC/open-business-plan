@@ -1,7 +1,8 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useContext, useEffect, useMemo } from 'react';
 import { PROJECT_EXAMPLES } from '../lib/projects_db';
 import { FRAMEWORKS } from '../config/frameworks';
 import { getApiBase } from '../config/apiConfig';
+import { slugify, KNOWN_PROJECT_SLUGS } from '../config/urlRouting';
 
 const EXAMPLE_FRAMEWORK_MAP = {
   brujula: 'business',
@@ -523,6 +524,58 @@ export const PlanProvider = ({ children }) => {
     }
   };
 
+  const currentProjectSlug = useMemo(() => {
+    const name = planData?.config?.brandKit?.companyName || planData?.semilla?.nombre_proyecto || planData?.config?.projectId || 'proyecto';
+    return slugify(name);
+  }, [planData?.config?.brandKit?.companyName, planData?.semilla?.nombre_proyecto, planData?.config?.projectId]);
+
+  const loadProjectBySlug = async (targetSlug) => {
+    if (!targetSlug) return false;
+    const cleanSlug = slugify(targetSlug);
+
+    // Si ya coincide con el proyecto activo en memoria, no recargar
+    if (currentProjectSlug === cleanSlug) return true;
+
+    // 1. Verificar alias conocidos (ej. comercio-cuantico -> hidraulica_minera)
+    const resolvedId = KNOWN_PROJECT_SLUGS[cleanSlug];
+    if (resolvedId && PROJECT_EXAMPLES[resolvedId]) {
+      loadProject(resolvedId);
+      return true;
+    }
+
+    // 2. Verificar coincidencia directa por ID en plantillas maestras
+    if (PROJECT_EXAMPLES[cleanSlug]) {
+      loadProject(cleanSlug);
+      return true;
+    }
+
+    // 3. Buscar por nombre normalizado en plantillas
+    for (const [id, ex] of Object.entries(PROJECT_EXAMPLES)) {
+      if (slugify(ex.name) === cleanSlug) {
+        loadProject(id);
+        return true;
+      }
+    }
+
+    // 4. Buscar en proyectos guardados del servidor VPS
+    try {
+      const backendBase = getApiBase();
+      const res = await fetch(`${backendBase}/api/projects`);
+      if (res.ok) {
+        const data = await res.json();
+        const allSaved = [...(data.negocios || []), ...(data.social || [])];
+        const found = allSaved.find(p => slugify(p.name) === cleanSlug || p.id === cleanSlug);
+        if (found) {
+          return await loadSavedProject(found.projectType || 'negocios', found.id);
+        }
+      }
+    } catch (err) {
+      console.warn('Error buscando proyecto por slug en backend:', err);
+    }
+
+    return false;
+  };
+
   const updateSection = (pillar, module, field, value) => {
     setPlanData(prev => ({
       ...prev,
@@ -995,7 +1048,7 @@ export const PlanProvider = ({ children }) => {
   }, [generationStatus]);
 
   return (
-    <PlanContext.Provider value={{ planData, updateSection, updateConfig, toggleLock, toggleModuleVisibility, updateStaff, updateProcesses, loadProject, loadSavedProject, createNewProject, initNewProjectFromSeed, updateProjectName, addAnexo, removeAnexo, updateAnexo, addComment, deleteComment, saveStatus, manualSaveProject, saveProjectAs, generationStatus, generationProgress, startIndustrialization, pauseIndustrialization, stopIndustrialization, getProjectCompletion, autoFillProject: startIndustrialization, updateSemilla }}>
+    <PlanContext.Provider value={{ planData, currentProjectSlug, loadProjectBySlug, updateSection, updateConfig, toggleLock, toggleModuleVisibility, updateStaff, updateProcesses, loadProject, loadSavedProject, createNewProject, initNewProjectFromSeed, updateProjectName, addAnexo, removeAnexo, updateAnexo, addComment, deleteComment, saveStatus, manualSaveProject, saveProjectAs, generationStatus, generationProgress, startIndustrialization, pauseIndustrialization, stopIndustrialization, getProjectCompletion, autoFillProject: startIndustrialization, updateSemilla }}>
       {children}
     </PlanContext.Provider>
   );

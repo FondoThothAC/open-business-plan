@@ -5,6 +5,7 @@ import { usePlan } from '../context/PlanContext';
 import { PROJECT_EXAMPLES } from '../lib/projects_db';
 import { FRAMEWORKS } from '../config/frameworks';
 import { getApiBase } from '../config/apiConfig';
+import { buildSemanticUrl } from '../config/urlRouting';
 import ActivityFeed from './ActivityFeed';
 import GenerationControls from './GenerationControls';
 import BobChatModal from './BobChatModal';
@@ -67,7 +68,7 @@ const PILLAR_ICONS = {
 
 export default function Layout() {
   const { 
-    planData, updateConfig, createNewProject, loadProject, loadSavedProject, saveStatus, updateProjectName,
+    planData, currentProjectSlug, updateConfig, createNewProject, loadProject, loadSavedProject, saveStatus, updateProjectName,
     manualSaveProject, saveProjectAs,
     generationStatus, _generationProgress, startIndustrialization, _pauseIndustrialization, _stopIndustrialization, getProjectCompletion
   } = usePlan();
@@ -427,7 +428,12 @@ export default function Layout() {
         <nav className="sidebar-nav">
           <div className="nav-section">
             {!isSidebarCollapsed && <span className="nav-section-title">Paso 0</span>}
-            <NavLink to="/semilla" className="nav-item" title="Semilla del Proyecto" style={isSidebarCollapsed ? { justifyContent: 'center' } : {}}>
+            <NavLink 
+              to={buildSemanticUrl({ projectType: planData?.config?.projectType, section: 'semilla', slug: currentProjectSlug })} 
+              className="nav-item" 
+              title="Semilla del Proyecto" 
+              style={isSidebarCollapsed ? { justifyContent: 'center' } : {}}
+            >
               <div className="nav-icon-box"><Sprout size={18} /></div>
               {!isSidebarCollapsed && <span>🌱 Semilla del Proyecto</span>}
             </NavLink>
@@ -489,7 +495,7 @@ export default function Layout() {
                   updateConfig('projectType', null, newType);
                   const fw = FRAMEWORKS[newType];
                   if (fw?.pillars?.[0]?.modules?.[0]) {
-                    navigate(`/modulo/${fw.pillars[0].key}/${fw.pillars[0].modules[0].key}`);
+                    navigate(buildSemanticUrl({ projectType: newType, moduleId: fw.pillars[0].modules[0].key, slug: currentProjectSlug }));
                   }
                 }}
                 style={{
@@ -520,7 +526,7 @@ export default function Layout() {
 
               if (isSidebarCollapsed) {
                 const firstModule = pillar.modules[0];
-                const destPath = `/modulo/${pillar.key}/${firstModule.key}`;
+                const destPath = buildSemanticUrl({ projectType: planData?.config?.projectType, moduleId: firstModule.key, slug: currentProjectSlug });
                 return (
                   <NavLink 
                     key={pillar.key} 
@@ -566,7 +572,7 @@ export default function Layout() {
                       {pillar.modules.map(module => (
                         <NavLink 
                            key={module.key} 
-                           to={`/modulo/${pillar.key}/${module.key}`} 
+                           to={buildSemanticUrl({ projectType: planData?.config?.projectType, moduleId: module.key, slug: currentProjectSlug })} 
                            className="module-item"
                         >
                            {module.title}
@@ -581,15 +587,30 @@ export default function Layout() {
 
           <div className="nav-section" style={{ marginTop: 'auto', borderTop: '1px solid var(--border-color)', paddingTop: '1rem' }}>
             {!isSidebarCollapsed && <span className="nav-section-title">Exportación y Ajustes</span>}
-            <NavLink to="/preview" className="nav-item" title="Vista Previa del Plan" style={isSidebarCollapsed ? { justifyContent: 'center' } : {}}>
+            <NavLink 
+              to={buildSemanticUrl({ projectType: planData?.config?.projectType, section: 'vista-previa', slug: currentProjectSlug })} 
+              className="nav-item" 
+              title="Vista Previa del Plan" 
+              style={isSidebarCollapsed ? { justifyContent: 'center' } : {}}
+            >
               <div className="nav-icon-box"><Eye size={18} /></div>
               {!isSidebarCollapsed && <span>Vista Previa del Plan</span>}
             </NavLink>
-            <NavLink to="/anexos" className="nav-item" title="Anexos y Evidencia" style={isSidebarCollapsed ? { justifyContent: 'center' } : {}}>
+            <NavLink 
+              to={buildSemanticUrl({ projectType: planData?.config?.projectType, section: 'anexos', slug: currentProjectSlug })} 
+              className="nav-item" 
+              title="Anexos y Evidencia" 
+              style={isSidebarCollapsed ? { justifyContent: 'center' } : {}}
+            >
               <div className="nav-icon-box"><ImageIcon size={18} /></div>
               {!isSidebarCollapsed && <span>Anexos y Evidencia</span>}
             </NavLink>
-            <NavLink to="/configuracion" className="nav-item" title="Configuración" style={isSidebarCollapsed ? { justifyContent: 'center' } : {}}>
+            <NavLink 
+              to={buildSemanticUrl({ projectType: planData?.config?.projectType, section: 'configuracion', slug: currentProjectSlug })} 
+              className="nav-item" 
+              title="Configuración" 
+              style={isSidebarCollapsed ? { justifyContent: 'center' } : {}}
+            >
               <div className="nav-icon-box"><Settings size={18} /></div>
               {!isSidebarCollapsed && <span>Configuración</span>}
             </NavLink>
@@ -611,18 +632,20 @@ export default function Layout() {
                   onChange={(e) => {
                     const val = e.target.value;
                     setPlanType(val);
-                    if (val === 'lean') navigate('/lean-canvas');
-                    else if (val === 'pitch') navigate('/pitch-deck');
-                    else {
+                    if (val === 'lean') {
+                      navigate(buildSemanticUrl({ projectType: planData?.config?.projectType, section: 'lean-canvas', slug: currentProjectSlug }));
+                    } else if (val === 'pitch') {
+                      navigate(buildSemanticUrl({ projectType: planData?.config?.projectType, section: 'pitch-deck', slug: currentProjectSlug }));
+                    } else {
                       // Redirigir al primer módulo de la metodología activa actual
                       const activeKey = planData?.config?.projectType || 'business';
                       const activeFramework = FRAMEWORKS[activeKey] || FRAMEWORKS.business;
                       const firstPillar = activeFramework.pillars?.[0];
                       const firstMod = firstPillar?.modules?.[0];
                       if (firstPillar && firstMod) {
-                        navigate(`/modulo/${firstPillar.key}/${firstMod.key}`);
+                        navigate(buildSemanticUrl({ projectType: activeKey, moduleId: firstMod.key, slug: currentProjectSlug }));
                       } else {
-                        navigate('/modulo/naturaleza/introduccion');
+                        navigate(buildSemanticUrl({ projectType: activeKey, moduleId: 'introduccion', slug: currentProjectSlug }));
                       }
                     }
                   }}

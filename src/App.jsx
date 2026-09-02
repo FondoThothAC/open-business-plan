@@ -44,6 +44,27 @@ function AppContent() {
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Navigate to="/semilla" replace />} />
+
+          {/* Rutas Semánticas de Secciones Globales (con y sin slug) */}
+          <Route path=":tipoDoc/semilla/:slug" element={<Anteproyecto />} />
+          <Route path=":tipoDoc/semilla" element={<Anteproyecto />} />
+          <Route path=":tipoDoc/vista-previa/:slug" element={<ErrorBoundary><VistaPrevia /></ErrorBoundary>} />
+          <Route path=":tipoDoc/vista-previa" element={<ErrorBoundary><VistaPrevia /></ErrorBoundary>} />
+          <Route path=":tipoDoc/lean-canvas/:slug" element={<LeanCanvas />} />
+          <Route path=":tipoDoc/lean-canvas" element={<LeanCanvas />} />
+          <Route path=":tipoDoc/pitch-deck/:slug" element={<PitchDeck />} />
+          <Route path=":tipoDoc/pitch-deck" element={<PitchDeck />} />
+          <Route path=":tipoDoc/anexos/:slug" element={<Anexos />} />
+          <Route path=":tipoDoc/anexos" element={<Anexos />} />
+          <Route path=":tipoDoc/configuracion/:slug" element={<Configuracion />} />
+          <Route path=":tipoDoc/configuracion" element={<Configuracion />} />
+
+          {/* Rutas Semánticas de Módulos (Opción A: /:tipoDoc/:modulo/:slug) */}
+          <Route path=":tipoDoc/:pillarId/:moduleId/:slug" element={<ErrorBoundary><DynamicModule /></ErrorBoundary>} />
+          <Route path=":tipoDoc/:moduleId/:slug" element={<ErrorBoundary><DynamicModule /></ErrorBoundary>} />
+          <Route path=":tipoDoc/:moduleId" element={<ErrorBoundary><DynamicModule /></ErrorBoundary>} />
+
+          {/* Rutas Clásicas Retrocompatibles */}
           <Route path="modulo/:pillarId/:moduleId" element={<ErrorBoundary><DynamicModule /></ErrorBoundary>} />
           <Route path="vista-previa" element={<ErrorBoundary><VistaPrevia /></ErrorBoundary>} />
           <Route path="preview" element={<Navigate to="/vista-previa" replace />} />

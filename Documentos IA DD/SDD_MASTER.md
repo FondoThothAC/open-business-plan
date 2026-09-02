@@ -100,3 +100,12 @@ flowchart LR
   * Endpoint `GET /api/banxico/indicators`: TTL 6 horas.
   * Protección: Máximo 1,000 llaves concurrentes con política de desalojo FIFO/LRU.
 
+### 3.2 Estructura Canónica de URLs Semánticas (Opción A)
+* **Patrón Canónico de Módulo:** `https://fondothoth.com/obp/:tipoDoc/:modulo/:slug`
+  * Ejemplo: `https://fondothoth.com/obp/proyecto-inversion/demanda/comercio-cuantico`
+* **Patrón Canónico de Secciones:** `https://fondothoth.com/obp/:tipoDoc/:seccion/:slug`
+  * Ejemplo: `https://fondothoth.com/obp/proyecto-inversion/vista-previa/comercio-cuantico`
+* **Resolución Automática de Pilar:** El enrutador deduce el pilar contenedor a partir del módulo mediante `resolvePillarFromModule` sin requerir que el usuario lo escriba en la URL.
+* **Hidratación por Slug:** Si el parámetro `:slug` cambia o se ingresa por enlace externo, `loadProjectBySlug` localiza e hidrata automáticamente el proyecto correspondiente (plantilla de demostración o proyecto guardado en disco del VPS).
+
+

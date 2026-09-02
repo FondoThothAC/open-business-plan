@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useParams, Navigate } from 'react-router-dom';
 import { usePlan } from '../context/PlanContext';
 import { FRAMEWORKS } from '../config/frameworks';
+import { FRAMEWORK_SLUG_MAP, resolvePillarFromModule } from '../config/urlRouting';
 import ModuleWrapper from './ModuleWrapper';
 import ModuloFinanciero from './ModuloFinanciero';
 import StaffTable from './StaffTable';
@@ -63,11 +64,38 @@ const BusinessModelSelector = ({ value, onChange }) => {
 };
 
 export default function DynamicModule() {
-  const { pillarId, moduleId } = useParams();
-  const { planData, updateStaff, updateProcesses, updateSection } = usePlan();
-  
-  const projectType = planData?.config?.projectType || 'business';
-  const activeFramework = FRAMEWORKS[projectType] || FRAMEWORKS.business;
+  const { pillarId: paramPillarId, moduleId: paramModuleId, tipoDoc, slug } = useParams();
+  const { planData, updateStaff, updateProcesses, updateSection, loadProjectBySlug } = usePlan();
+
+  // Si la URL contiene un slug de proyecto, intentar hidratarlo automáticamente
+  useEffect(() => {
+    if (slug && loadProjectBySlug) {
+      loadProjectBySlug(slug);
+    }
+  }, [slug, loadProjectBySlug]);
+
+  const effectiveFrameworkKey = FRAMEWORK_SLUG_MAP[tipoDoc] || planData?.config?.projectType || 'business';
+  const moduleId = paramModuleId;
+  let pillarId = paramPillarId;
+
+  // Si la URL viene simplificada sin pillarId (ej. /obp/proyecto-inversion/demanda/comercio-cuantico),
+  // inferir automáticamente el pilar padre a partir del marco y módulo
+  if (!pillarId && moduleId) {
+    pillarId = resolvePillarFromModule(effectiveFrameworkKey, moduleId);
+  }
+
+  // Si aún no se encontró el pilar, buscar en todos los frameworks registrados
+  if (!pillarId && moduleId) {
+    for (const fw of Object.values(FRAMEWORKS)) {
+      const found = fw.pillars?.find(p => p.modules?.some(m => m.key === moduleId));
+      if (found) {
+        pillarId = found.key;
+        break;
+      }
+    }
+  }
+
+  const activeFramework = FRAMEWORKS[effectiveFrameworkKey] || FRAMEWORKS.business;
   let pillar = activeFramework?.pillars?.find(p => p.key === pillarId);
 
   // Si el pilar no se encuentra en el framework activo (ej. navegación directa a mercado_cuantitativo),
@@ -227,7 +255,7 @@ export default function DynamicModule() {
     );
   }
 
-  if (isFinancialModule && projectType === 'business') {
+  if (isFinancialModule && effectiveFrameworkKey === 'business') {
     return (
       <ModuloFinanciero 
         moduleKey={moduleId}
@@ -272,14 +300,14 @@ export default function DynamicModule() {
 
   // Especial: Hoshin Kanri Matriz X
   const isHoshinKanri = (
-    projectType === 'hoshin_kanri' ||
+    effectiveFrameworkKey === 'hoshin_kanri' ||
     moduleId === 'matriz_x' ||
     moduleId === 'alineacion_estrategica'
   );
 
   // Especial: Amoeba Management Estructura Celular
   const isAmoeba = (
-    projectType === 'amoeba_management' &&
+    effectiveFrameworkKey === 'amoeba_management' &&
     (moduleId === 'celulas_autonomas' || moduleId === 'rentabilidad' || moduleId === 'estructura')
   );
 
