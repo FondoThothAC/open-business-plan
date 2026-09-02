@@ -17,6 +17,7 @@
 | **TDD-06** | `DigitalTwinForkEngine` | Unitaria / Regresión | Genera un fork temporal independiente preservando el plan original y calcula el Delta de VAN/TIR con semáforo correcto. |
 | **TDD-07** | `QuantumProfileDiagnostic` | Unitaria | Detecta anti-patrones del fundador (micromanagement, dinero rápido) y emite perfiles de puesto con bandas salariales válidas. |
 | **TDD-08** | `PrintableFinancialReports & VistaPrevia` | Unitaria / Render | Renderiza todos los sub-reportes financieros sin lanzar ReferenceError cuando `planData` se hidrata de forma asíncrona o con props parciales. |
+| **TDD-09** | `MemoryCache & HTTP Cache Policy` | Integración / Headers | Las consultas repetidas a INEGI y Banxico se resuelven desde memoria en <1ms; Nginx entrega index.html con no-cache y assets con immutable. |
 
 ---
 

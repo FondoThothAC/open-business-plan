@@ -513,6 +513,33 @@ function getDistance(lat1, lon1, lat2, lon2) {
   return R * c; // distancia en metros
 }
 
+// ─────────────────────────────────────────────────────────
+//  Sistema de Caché en Memoria con TTL (In-Memory Cache)
+// ─────────────────────────────────────────────────────────
+const memoryCache = new Map();
+const CACHE_DEFAULT_TTL = 12 * 60 * 60 * 1000; // 12 horas
+
+function getFromMemoryCache(key) {
+  const entry = memoryCache.get(key);
+  if (!entry) return null;
+  if (Date.now() > entry.expiresAt) {
+    memoryCache.delete(key);
+    return null;
+  }
+  return entry.data;
+}
+
+function setToMemoryCache(key, data, ttl = CACHE_DEFAULT_TTL) {
+  if (memoryCache.size >= 1000) {
+    const oldestKey = memoryCache.keys().next().value;
+    memoryCache.delete(oldestKey);
+  }
+  memoryCache.set(key, {
+    data,
+    expiresAt: Date.now() + ttl
+  });
+}
+
 app.get('/api/inegi/denue', async (req, res) => {
   const token = String(req.query.token || '').trim();
   const lat = Number(req.query.lat);
@@ -527,6 +554,14 @@ app.get('/api/inegi/denue', async (req, res) => {
 
   const keywordsClean = keywords === 'todos' || keywords === '' ? '' : keywords;
   const scianClean = scian === '0' || scian === '' ? '' : scian;
+  const apiQueryTerm = scianClean || keywordsClean || 'todos';
+
+  // Verificar caché en memoria antes de hacer peticiones de red
+  const cacheKey = `denue:${lat.toFixed(4)}_${lng.toFixed(4)}_${radius}_${apiQueryTerm}`;
+  const cached = getFromMemoryCache(cacheKey);
+  if (cached) {
+    return res.json({ ...cached, source: 'cache_hit' });
+  }
 
   // Función para normalizar la respuesta de la API oficial del DENUE (22 campos)
   const normalizeDenueItem = (item) => {
@@ -562,8 +597,6 @@ app.get('/api/inegi/denue', async (req, res) => {
   };
 
   // 1. Intentar búsqueda en la API oficial de INEGI si hay token
-  const apiQueryTerm = scianClean || keywordsClean || 'todos';
-
   if (token) {
     try {
       const candidates = [
@@ -596,7 +629,9 @@ app.get('/api/inegi/denue', async (req, res) => {
         }
 
         console.log(`[DENUE API Nacional] Encontrados ${apiResults.length} establecimientos oficiales.`);
-        return res.json({ success: true, total: apiResults.length, businesses: apiResults, source: 'inegi_api' });
+        const responseData = { success: true, total: apiResults.length, businesses: apiResults, source: 'inegi_api' };
+        setToMemoryCache(cacheKey, responseData, 6 * 3600 * 1000); // 6 horas de caché
+        return res.json(responseData);
       }
     } catch (apiErr) {
       console.warn('[DENUE API] Fallo la consulta oficial, intentando fallback local:', apiErr.message);
@@ -890,6 +925,12 @@ app.get('/api/inegi/indicadores', async (req, res) => {
   if (!token) return res.status(400).json({ success: false, error: 'Token del Banco de Indicadores INEGI requerido' });
   if (!ids) return res.status(400).json({ success: false, error: 'ID(s) de indicador(es) requerido(s). Separa múltiples con coma.' });
 
+  const cacheKey = `indicadores:${ids}_${area}_${ultimo}`;
+  const cached = getFromMemoryCache(cacheKey);
+  if (cached) {
+    return res.json({ ...cached, source: 'cache_hit' });
+  }
+
   try {
     // Formato: /INDICATOR/{ids}/es/{areaGeo}/{ultimo}/BISE/2.0/{token}?type=json
     const url = `https://www.inegi.org.mx/app/api/indicadores/desarrolladores/jsonxml/INDICATOR/${ids}/es/${area}/${ultimo}/BISE/2.0/${token}?type=json`;
@@ -927,14 +968,16 @@ app.get('/api/inegi/indicadores', async (req, res) => {
     });
 
     console.log(`[INEGI Indicadores] IDs: ${ids} → ${series.length} series, Área: ${area}`);
-    return res.json({
+    const responseData = {
       success: true,
       header: {
         nombre: data.Header?.Name || 'INEGI',
         email: data.Header?.Email || ''
       },
       series
-    });
+    };
+    setToMemoryCache(cacheKey, responseData, 12 * 3600 * 1000); // 12 horas de caché
+    return res.json(responseData);
   } catch (error) {
     console.error('[INEGI Indicadores] Error:', error.message);
     return res.status(500).json({ success: false, error: error.message });
@@ -1804,6 +1847,12 @@ app.get('/api/banxico/indicators', async (req, res) => {
   startDateObj.setMonth(startDateObj.getMonth() - 6);
   const startDate = startDateObj.toISOString().split('T')[0];
   
+  const banxicoCacheKey = `banxico:${startDate}_${endDate}`;
+  const cachedBanxico = getFromMemoryCache(banxicoCacheKey);
+  if (cachedBanxico) {
+    return res.json({ ...cachedBanxico, source: 'cache_hit' });
+  }
+  
   // Datos Mock de respaldo (Fallback) en caso de que falle la API de Banxico
   const generateMockTrend = (base, vol, length = 15) => {
     const trend = [];
@@ -1922,14 +1971,17 @@ app.get('/api/banxico/indicators', async (req, res) => {
     const tipoCambio = parseSeries('SF43718') || fallbackData.tipoCambio;
     const udis = parseSeries('SP68257') || fallbackData.udis;
 
-    return res.json({
+    const responsePayload = {
       success: true,
       isFallback: false,
       inflacion,
       tiie,
       tipoCambio,
       udis
-    });
+    };
+
+    setToMemoryCache(banxicoCacheKey, responsePayload, 6 * 3600 * 1000); // 6 horas de caché
+    return res.json(responsePayload);
 
   } catch (error) {
     console.error('Error al consultar Banxico SieAPI:', error.message);

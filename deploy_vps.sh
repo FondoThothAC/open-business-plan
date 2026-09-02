@@ -71,6 +71,7 @@ echo "⚙️  Validando y recargando Nginx ..."
 
 ssh -i "$SSH_KEY" -o StrictHostKeyChecking=no "$VPS" 'bash -s' << 'SSHEOF'
 set -e
+sudo cp /etc/nginx/sites-available/fondothoth-landing /etc/nginx/sites-enabled/fondothoth-landing
 sudo nginx -t && sudo systemctl reload nginx
 echo "✓ Nginx validado y recargado exitosamente"
 SSHEOF

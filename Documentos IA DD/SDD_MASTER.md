@@ -90,3 +90,13 @@ flowchart LR
 * **Base Path del Frontend:** `VITE_BASE_PATH=/obp/` inyectado en tiempo de compilación para que React Router opere con `basename="/obp/"` y todos los assets apunten a `/obp/assets/`.
 * **Contrato de Salud:** `GET /obp/api/health` retorna `{ status: "ok", version: string, service: string, uptime: string }`.
 * **Aislamiento Total:** El sitio raíz `https://fondothoth.com` no es alterado; las directivas de OBP se integran exclusivamente bajo el prefijo `/obp/`.
+
+### 3.1 Políticas de Caché HTTP (Nginx) y Caché en Memoria (Backend)
+* **HTML (`/obp/index.html`):** Cabeceras `Cache-Control: no-cache, no-store, must-revalidate`. Garantiza que el cliente descargue siempre el HTML más reciente con los hashes JS vigentes.
+* **Assets Estáticos (`/obp/assets/*`):** Cabeceras `Cache-Control: public, max-age=31536000, immutable`. Carga instantánea desde el disco/memoria del navegador (0 ms).
+* **Backend In-Memory Cache con TTL:**
+  * Endpoint `GET /api/inegi/denue`: TTL 6 horas.
+  * Endpoint `GET /api/inegi/indicadores`: TTL 12 horas.
+  * Endpoint `GET /api/banxico/indicators`: TTL 6 horas.
+  * Protección: Máximo 1,000 llaves concurrentes con política de desalojo FIFO/LRU.
+
