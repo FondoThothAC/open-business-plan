@@ -117,5 +117,25 @@ flowchart LR
 * **Resiliencia y Fallback:** `localStorage` se utiliza exclusivamente para almacenar punteros ultraligeros (<5KB) protegidos con `try/catch`. En caso de saturación, el estado íntegro se mantiene garantizado en IndexedDB.
 * **Migración Automática:** Al iniciar la app, `migrateFromLocalStorage` traspasa de forma transparente cualquier dato preexistente de `openplan_v2_data` hacia IndexedDB.
 
+---
+
+## 4. Diagrama Maestro de Arquitectura y Flujos en yEd Graph Editor
+
+Se cuenta con la especificación visual completa y formal en formato **GraphML estándar** para **yEd Graph Editor**, replicando la metodología de visualización de Backstage-RED pero adaptada a la complejidad multi-método de Open Business Plan:
+
+* **Ruta de Archivos GraphML / SVG:**
+  * Archivo yEd: [`diagrams/OpenBusinessPlan_Master_Architecture.graphml`](file:///Users/robertoeduardocelisrobles/Documents/Proyectos/Open-Business-Plan/diagrams/OpenBusinessPlan_Master_Architecture.graphml)
+  * Respaldo XML: [`diagrams/OpenBusinessPlan_Master_Architecture.graphml.xml`](file:///Users/robertoeduardocelisrobles/Documents/Proyectos/Open-Business-Plan/diagrams/OpenBusinessPlan_Master_Architecture.graphml.xml)
+  * Render Vectorial: [`diagrams/OpenBusinessPlan_Master_Architecture.svg`](file:///Users/robertoeduardocelisrobles/Documents/Proyectos/Open-Business-Plan/diagrams/OpenBusinessPlan_Master_Architecture.svg)
+  * Guía y Mapeo: [`diagrams/README_DIAGRAMA_OPENPLAN_YED.md`](file:///Users/robertoeduardocelisrobles/Documents/Proyectos/Open-Business-Plan/diagrams/README_DIAGRAMA_OPENPLAN_YED.md)
+* **Métricas Estructurales:** 61 nodos y 67 aristas dirigidas cubriendo:
+  1. *Entrada & Semilla Adaptativa:* `Anteproyecto.jsx`, `AdaptiveSeedForm.jsx`, `DualInputSyncHub.jsx`.
+  2. *Empresas Cuánticas (Fondo Thoth AC):* Modelo Atómico de 3 Áreas (Finanzas, Operaciones, Administrativo), Principio Nuclear, Delegación Estructurada y Saltos Cuánticos de Escala.
+  3. *Mesa de Expertos IA:* 4 Niveles de profundidad, cascada inteligente de fallback (Ollama Local-First ➔ NIM ➔ Groq/Gemini/OpenAI) y streaming SSE.
+  4. *Los 12 Métodos de Industrialización:* Definidos en `src/config/frameworks.js`.
+  5. *Hubs Especializados:* Mercado Territorial (DENUE/INEGI), Operaciones & Lay-out, Motor Financiero (NIF B-2/B-3/B-6, Monte Carlo 10,000 runs) y Gobernanza.
+  6. *Persistencia & Exportación:* `PlanContext.jsx`, sistema de archivos local y exportación ejecutiva a Word/PDF.
+
+
 
 

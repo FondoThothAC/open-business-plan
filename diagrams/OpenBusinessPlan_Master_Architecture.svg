@@ -1,0 +1,396 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-600 -60 2640 2215" width="2640" height="2215">
+  <defs>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap");
+      text { font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+      .node-text { fill: #FFFFFF; font-size: 11px; text-anchor: middle; dominant-baseline: middle; }
+      .edge-line { stroke-width: 1.8px; fill: none; }
+      .edge-text { fill: #94A3B8; font-size: 10px; text-anchor: middle; }
+    </style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#00F3FF"/>
+    </marker>
+  </defs>
+  <rect x="-600" y="-60" width="2640" height="2215" fill="#05070D"/>
+  <g opacity="0.1">
+    <line x1="-600" y1="-60" x2="-600" y2="2155" stroke="#38BDF8" stroke-width="0.5"/>
+    <line x1="-500" y1="-60" x2="-500" y2="2155" stroke="#38BDF8" stroke-width="0.5"/>
+    <line x1="-400" y1="-60" x2="-400" y2="2155" stroke="#38BDF8" stroke-width="0.5"/>
+    <line x1="-300" y1="-60" x2="-300" y2="2155" stroke="#38BDF8" stroke-width="0.5"/>
+    <line x1="-200" y1="-60" x2="-200" y2="2155" stroke="#38BDF8" stroke-width="0.5"/>
+    <line x1="-100" y1="-60" x2="-100" y2="2155" stroke="#38BDF8" stroke-width="0.5"/>
+    <line x1="0" y1="-60" x2="0" y2="2155" stroke="#38BDF8" stroke-width="0.5"/>
+    <line x1="100" y1="-60" x2="100" y2="2155" stroke="#38BDF8" stroke-width="0.5"/>
+    <line x1="200" y1="-60" x2="200" y2="2155" stroke="#38BDF8" stroke-width="0.5"/>
+    <line x1="300" y1="-60" x2="300" y2="2155" stroke="#38BDF8" stroke-width="0.5"/>
+    <line x1="400" y1="-60" x2="400" y2="2155" stroke="#38BDF8" stroke-width="0.5"/>
+    <line x1="500" y1="-60" x2="500" y2="2155" stroke="#38BDF8" stroke-width="0.5"/>
+    <line x1="600" y1="-60" x2="600" y2="2155" stroke="#38BDF8" stroke-width="0.5"/>
+    <line x1="700" y1="-60" x2="700" y2="2155" stroke="#38BDF8" stroke-width="0.5"/>
+    <line x1="800" y1="-60" x2="800" y2="2155" stroke="#38BDF8" stroke-width="0.5"/>
+    <line x1="900" y1="-60" x2="900" y2="2155" stroke="#38BDF8" stroke-width="0.5"/>
+    <line x1="1000" y1="-60" x2="1000" y2="2155" stroke="#38BDF8" stroke-width="0.5"/>
+    <line x1="1100" y1="-60" x2="1100" y2="2155" stroke="#38BDF8" stroke-width="0.5"/>
+    <line x1="1200" y1="-60" x2="1200" y2="2155" stroke="#38BDF8" stroke-width="0.5"/>
+    <line x1="1300" y1="-60" x2="1300" y2="2155" stroke="#38BDF8" stroke-width="0.5"/>
+    <line x1="1400" y1="-60" x2="1400" y2="2155" stroke="#38BDF8" stroke-width="0.5"/>
+    <line x1="1500" y1="-60" x2="1500" y2="2155" stroke="#38BDF8" stroke-width="0.5"/>
+    <line x1="1600" y1="-60" x2="1600" y2="2155" stroke="#38BDF8" stroke-width="0.5"/>
+    <line x1="1700" y1="-60" x2="1700" y2="2155" stroke="#38BDF8" stroke-width="0.5"/>
+    <line x1="1800" y1="-60" x2="1800" y2="2155" stroke="#38BDF8" stroke-width="0.5"/>
+    <line x1="1900" y1="-60" x2="1900" y2="2155" stroke="#38BDF8" stroke-width="0.5"/>
+    <line x1="2000" y1="-60" x2="2000" y2="2155" stroke="#38BDF8" stroke-width="0.5"/>
+    <line x1="-600" y1="-60" x2="2040" y2="-60" stroke="#38BDF8" stroke-width="0.5"/>
+    <line x1="-600" y1="40" x2="2040" y2="40" stroke="#38BDF8" stroke-width="0.5"/>
+    <line x1="-600" y1="140" x2="2040" y2="140" stroke="#38BDF8" stroke-width="0.5"/>
+    <line x1="-600" y1="240" x2="2040" y2="240" stroke="#38BDF8" stroke-width="0.5"/>
+    <line x1="-600" y1="340" x2="2040" y2="340" stroke="#38BDF8" stroke-width="0.5"/>
+    <line x1="-600" y1="440" x2="2040" y2="440" stroke="#38BDF8" stroke-width="0.5"/>
+    <line x1="-600" y1="540" x2="2040" y2="540" stroke="#38BDF8" stroke-width="0.5"/>
+    <line x1="-600" y1="640" x2="2040" y2="640" stroke="#38BDF8" stroke-width="0.5"/>
+    <line x1="-600" y1="740" x2="2040" y2="740" stroke="#38BDF8" stroke-width="0.5"/>
+    <line x1="-600" y1="840" x2="2040" y2="840" stroke="#38BDF8" stroke-width="0.5"/>
+    <line x1="-600" y1="940" x2="2040" y2="940" stroke="#38BDF8" stroke-width="0.5"/>
+    <line x1="-600" y1="1040" x2="2040" y2="1040" stroke="#38BDF8" stroke-width="0.5"/>
+    <line x1="-600" y1="1140" x2="2040" y2="1140" stroke="#38BDF8" stroke-width="0.5"/>
+    <line x1="-600" y1="1240" x2="2040" y2="1240" stroke="#38BDF8" stroke-width="0.5"/>
+    <line x1="-600" y1="1340" x2="2040" y2="1340" stroke="#38BDF8" stroke-width="0.5"/>
+    <line x1="-600" y1="1440" x2="2040" y2="1440" stroke="#38BDF8" stroke-width="0.5"/>
+    <line x1="-600" y1="1540" x2="2040" y2="1540" stroke="#38BDF8" stroke-width="0.5"/>
+    <line x1="-600" y1="1640" x2="2040" y2="1640" stroke="#38BDF8" stroke-width="0.5"/>
+    <line x1="-600" y1="1740" x2="2040" y2="1740" stroke="#38BDF8" stroke-width="0.5"/>
+    <line x1="-600" y1="1840" x2="2040" y2="1840" stroke="#38BDF8" stroke-width="0.5"/>
+    <line x1="-600" y1="1940" x2="2040" y2="1940" stroke="#38BDF8" stroke-width="0.5"/>
+    <line x1="-600" y1="2040" x2="2040" y2="2040" stroke="#38BDF8" stroke-width="0.5"/>
+    <line x1="-600" y1="2140" x2="2040" y2="2140" stroke="#38BDF8" stroke-width="0.5"/>
+  </g>
+  <g id="edges">
+    <line x1="850.0" y1="42.5" x2="850.0" y2="147.5" stroke="#00F3FF" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="850.0" y="90.0" class="edge-text">Arranque</text>
+    <line x1="850.0" y1="147.5" x2="1250.0" y2="147.5" stroke="#F59E0B" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="1050.0" y="142.5" class="edge-text">Verificar config</text>
+    <line x1="1250.0" y1="147.5" x2="850.0" y2="247.5" stroke="#A855F7" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="1050.0" y="192.5" class="edge-text">Configurado</text>
+    <line x1="850.0" y1="147.5" x2="850.0" y2="247.5" stroke="#A855F7" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="850.0" y="192.5" class="edge-text">Listo</text>
+    <line x1="850.0" y1="247.5" x2="850.0" y2="350.0" stroke="#38BDF8" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="850.0" y="293.75" class="edge-text">Nuevo Plan / Cargar</text>
+    <line x1="850.0" y1="350.0" x2="850.0" y2="447.5" stroke="#38BDF8" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="850.0" y="393.75" class="edge-text">Extracción NLP</text>
+    <line x1="850.0" y1="447.5" x2="850.0" y2="545.0" stroke="#10B981" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="850.0" y="491.25" class="edge-text">Semilla Universal</text>
+    <line x1="850.0" y1="350.0" x2="1260.0" y2="452.5" stroke="#818CF8" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="1055.0" y="396.25" class="edge-text">Sync</text>
+    <line x1="850.0" y1="545.0" x2="1260.0" y2="452.5" stroke="#818CF8" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="1055.0" y="493.75" class="edge-text">Sync bidireccional</text>
+    <line x1="850.0" y1="545.0" x2="-290.0" y2="350.0" stroke="#C084FC" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="280.0" y="442.5" class="edge-text">Diagnóstico Cuántico</text>
+    <line x1="-290.0" y1="350.0" x2="-290.0" y2="447.5" stroke="#E879F9" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="-290.0" y="393.75" class="edge-text">Perfil Fundador</text>
+    <line x1="-290.0" y1="447.5" x2="-290.0" y2="540.0" stroke="#C084FC" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="-290.0" y="488.75" class="edge-text">3 Áreas</text>
+    <line x1="-290.0" y1="540.0" x2="-290.0" y2="635.0" stroke="#F43F5E" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="-290.0" y="582.5" class="edge-text">Evaluación</text>
+    <line x1="-290.0" y1="635.0" x2="-290.0" y2="732.5" stroke="#A78BFA" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="-290.0" y="678.75" class="edge-text">Áreas débiles</text>
+    <line x1="-290.0" y1="635.0" x2="-290.0" y2="1015.0" stroke="#FB923C" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="-290.0" y="820.0" class="edge-text">Alerta sesgos</text>
+    <line x1="-290.0" y1="732.5" x2="-290.0" y2="830.0" stroke="#38BDF8" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="-290.0" y="776.25" class="edge-text">Plan de escala</text>
+    <line x1="-290.0" y1="830.0" x2="-290.0" y2="922.5" stroke="#34D399" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="-290.0" y="871.25" class="edge-text">Ruta autonomía</text>
+    <line x1="850.0" y1="545.0" x2="850.0" y2="657.5" stroke="#C084FC" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="850.0" y="596.25" class="edge-text">Semilla Confirmada</text>
+    <line x1="850.0" y1="657.5" x2="850.0" y2="772.5" stroke="#818CF8" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="850.0" y="710.0" class="edge-text">Nivel Seleccionado</text>
+    <line x1="850.0" y1="657.5" x2="1320.0" y2="665.0" stroke="#F59E0B" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="1085.0" y="656.25" class="edge-text">Despacho IA</text>
+    <line x1="850.0" y1="657.5" x2="1320.0" y2="777.5" stroke="#38BDF8" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="1085.0" y="712.5" class="edge-text">Eventos SSE</text>
+    <line x1="850.0" y1="772.5" x2="850.0" y2="897.5" stroke="#2DD4BF" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="850.0" y="830.0" class="edge-text">Mesa de Expertos</text>
+    <line x1="850.0" y1="897.5" x2="-370.0" y2="1007.5" stroke="#5EEAD4" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="240.0" y="947.5" class="edge-text">Comercial</text>
+    <line x1="850.0" y1="897.5" x2="-40.0" y2="1007.5" stroke="#5EEAD4" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="405.0" y="947.5" class="edge-text">Social BID</text>
+    <line x1="850.0" y1="897.5" x2="290.0" y2="1007.5" stroke="#5EEAD4" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="570.0" y="947.5" class="edge-text">Lean MVP</text>
+    <line x1="850.0" y1="897.5" x2="620.0" y2="1007.5" stroke="#5EEAD4" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="735.0" y="947.5" class="edge-text">Tecnología I+D</text>
+    <line x1="850.0" y1="897.5" x2="950.0" y2="1007.5" stroke="#5EEAD4" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="900.0" y="947.5" class="edge-text">Microempresa</text>
+    <line x1="850.0" y1="897.5" x2="1280.0" y2="1007.5" stroke="#5EEAD4" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="1065.0" y="947.5" class="edge-text">Inversión</text>
+    <line x1="850.0" y1="897.5" x2="-370.0" y2="1097.5" stroke="#5EEAD4" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="240.0" y="992.5" class="edge-text">ZOPP</text>
+    <line x1="850.0" y1="897.5" x2="-40.0" y2="1097.5" stroke="#5EEAD4" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="405.0" y="992.5" class="edge-text">Horizon EU</text>
+    <line x1="850.0" y1="897.5" x2="290.0" y2="1097.5" stroke="#5EEAD4" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="570.0" y="992.5" class="edge-text">Hoshin Kanri</text>
+    <line x1="850.0" y1="897.5" x2="620.0" y2="1097.5" stroke="#5EEAD4" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="735.0" y="992.5" class="edge-text">Amoeba</text>
+    <line x1="850.0" y1="897.5" x2="950.0" y2="1097.5" stroke="#5EEAD4" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="900.0" y="992.5" class="edge-text">Guanxi</text>
+    <line x1="850.0" y1="897.5" x2="1280.0" y2="1097.5" stroke="#5EEAD4" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="1065.0" y="992.5" class="edge-text">ONUDI</text>
+    <line x1="-370.0" y1="1007.5" x2="-320.0" y2="1232.5" stroke="#38BDF8" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="-345.0" y="1115.0" class="edge-text">Pilar Mercado</text>
+    <line x1="-370.0" y1="1007.5" x2="110.0" y2="1232.5" stroke="#FB923C" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="-130.0" y="1115.0" class="edge-text">Pilar Técnico</text>
+    <line x1="-370.0" y1="1007.5" x2="565.0" y2="1232.5" stroke="#34D399" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="97.5" y="1115.0" class="edge-text">Pilar Finanzas</text>
+    <line x1="-370.0" y1="1007.5" x2="1020.0" y2="1232.5" stroke="#818CF8" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="325.0" y="1115.0" class="edge-text">Pilar Organización</text>
+    <line x1="-290.0" y1="732.5" x2="1020.0" y2="1232.5" stroke="#C084FC" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="365.0" y="977.5" class="edge-text">Inyección Vacantes</text>
+    <line x1="-290.0" y1="540.0" x2="565.0" y2="1232.5" stroke="#C084FC" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="137.5" y="881.25" class="edge-text">Presupuesto Operativo</text>
+    <line x1="-320.0" y1="1232.5" x2="-320.0" y2="1320.0" stroke="#7DD3FC" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="-320.0" y="1271.25" class="edge-text">DENUE</text>
+    <line x1="-320.0" y1="1232.5" x2="-320.0" y2="1407.5" stroke="#38BDF8" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="-320.0" y="1315.0" class="edge-text">Google / Uber</text>
+    <line x1="-320.0" y1="1232.5" x2="-320.0" y2="1492.5" stroke="#0284C7" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="-320.0" y="1357.5" class="edge-text">Segmentación</text>
+    <line x1="-320.0" y1="1232.5" x2="-320.0" y2="1577.5" stroke="#38BDF8" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="-320.0" y="1400.0" class="edge-text">Estrategia</text>
+    <line x1="110.0" y1="1232.5" x2="110.0" y2="1320.0" stroke="#FDBA74" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="110.0" y="1271.25" class="edge-text">Lay-out</text>
+    <line x1="110.0" y1="1232.5" x2="110.0" y2="1407.5" stroke="#FB923C" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="110.0" y="1315.0" class="edge-text">Flujo</text>
+    <line x1="110.0" y1="1232.5" x2="110.0" y2="1492.5" stroke="#FED7AA" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="110.0" y="1357.5" class="edge-text">Maquinaria</text>
+    <line x1="110.0" y1="1232.5" x2="110.0" y2="1577.5" stroke="#FFEDD5" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="110.0" y="1400.0" class="edge-text">Métricas</text>
+    <line x1="565.0" y1="1232.5" x2="565.0" y2="1322.5" stroke="#6EE7B7" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="565.0" y="1272.5" class="edge-text">NIF B-2/B-3/B-6</text>
+    <line x1="565.0" y1="1232.5" x2="565.0" y2="1412.5" stroke="#A7F3D0" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="565.0" y="1317.5" class="edge-text">P.E. & Margen</text>
+    <line x1="565.0" y1="1232.5" x2="565.0" y2="1497.5" stroke="#34D399" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="565.0" y="1360.0" class="edge-text">VPN / TIR</text>
+    <line x1="565.0" y1="1232.5" x2="565.0" y2="1587.5" stroke="#D1FAE5" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="565.0" y="1405.0" class="edge-text">10,000 runs</text>
+    <line x1="565.0" y1="1232.5" x2="565.0" y2="1680.0" stroke="#6EE7B7" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="565.0" y="1451.25" class="edge-text">Escenarios & LFT</text>
+    <line x1="1020.0" y1="1232.5" x2="1020.0" y2="1317.5" stroke="#A5B4FC" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="1020.0" y="1270.0" class="edge-text">Estructura</text>
+    <line x1="1020.0" y1="1232.5" x2="1020.0" y2="1405.0" stroke="#C7D2FE" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="1020.0" y="1313.75" class="edge-text">Sueldos & IMSS</text>
+    <line x1="1020.0" y1="1232.5" x2="1020.0" y2="1495.0" stroke="#E0E7FF" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="1020.0" y="1358.75" class="edge-text">RACI / Hoshin</text>
+    <line x1="1020.0" y1="1232.5" x2="1020.0" y2="1582.5" stroke="#EEF2FF" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="1020.0" y="1402.5" class="edge-text">Amoeba</text>
+    <line x1="-320.0" y1="1232.5" x2="565.0" y2="1790.0" stroke="#FACC15" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="122.5" y="1506.25" class="edge-text">Estado</text>
+    <line x1="110.0" y1="1232.5" x2="565.0" y2="1790.0" stroke="#FACC15" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="337.5" y="1506.25" class="edge-text">Estado</text>
+    <line x1="565.0" y1="1232.5" x2="565.0" y2="1790.0" stroke="#FACC15" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="565.0" y="1506.25" class="edge-text">Estado</text>
+    <line x1="1020.0" y1="1232.5" x2="565.0" y2="1790.0" stroke="#FACC15" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="792.5" y="1506.25" class="edge-text">Estado</text>
+    <line x1="565.0" y1="1790.0" x2="565.0" y2="1880.0" stroke="#FDE047" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="565.0" y="1830.0" class="edge-text">Auto-save</text>
+    <line x1="565.0" y1="1790.0" x2="565.0" y2="1972.5" stroke="#FEF08A" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="565.0" y="1876.25" class="edge-text">Exportar</text>
+    <line x1="565.0" y1="1790.0" x2="565.0" y2="2062.5" stroke="#E4E4E7" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="565.0" y="1921.25" class="edge-text">Revisar Diff</text>
+    <line x1="850.0" y1="42.5" x2="1780.0" y2="355.0" stroke="#FB7185" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="1315.0" y="193.75" class="edge-text">Copiloto IA</text>
+    <line x1="1780.0" y1="355.0" x2="1780.0" y2="452.5" stroke="#FDA4AF" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="1780.0" y="398.75" class="edge-text">Shortcuts</text>
+    <line x1="1780.0" y1="355.0" x2="1780.0" y2="547.5" stroke="#FECDD3" stroke-width="1.8" marker-end="url(#arrow)"/>
+    <text x="1780.0" y="446.25" class="edge-text">Git Sync</text>
+  </g>
+  <g id="nodes">
+    <rect x="600" y="0" width="500" height="85" rx="10" ry="10" fill="#0A0D18" stroke="#00F3FF" stroke-width="2"/>
+    <text x="850.0" y="28.5" font-size="13" font-weight="bold" fill="#FFFFFF" text-anchor="middle">Open Business Plan (OpenPlan) • Master Architecture</text>
+    <text x="850.0" y="42.5" font-size="13" font-weight="bold" fill="#FFFFFF" text-anchor="middle">Industrialization &amp; Business Formulation Engine</text>
+    <text x="850.0" y="56.5" font-size="13" font-weight="bold" fill="#FFFFFF" text-anchor="middle">Powered by Fondo Thoth AC</text>
+    <rect x="640" y="115" width="420" height="65" rx="10" ry="10" fill="#0F172A" stroke="#38BDF8" stroke-width="2"/>
+    <text x="850.0" y="140.5" font-size="11" font-weight="bold" fill="#F8FAFC" text-anchor="middle">Inicialización del Sistema &amp; Detección de Hardware</text>
+    <text x="850.0" y="154.5" font-size="11" font-weight="bold" fill="#F8FAFC" text-anchor="middle">(GPU VRAM, Ollama Local Serve, Electron Desktop Bridge, Node/Vite)</text>
+    <polygon points="1250.0,115 1400,147.5 1250.0,180 1100,147.5" fill="#1E1B4B" stroke="#F59E0B" stroke-width="2"/>
+    <text x="1250.0" y="140.5" font-size="10" font-weight="bold" fill="#FEF3C7" text-anchor="middle">¿Primera Ejecución?</text>
+    <text x="1250.0" y="154.5" font-size="10" font-weight="bold" fill="#FEF3C7" text-anchor="middle">SetupWizard (Hardware, Ollama &amp; Puertos)</text>
+    <rect x="630" y="210" width="440" height="75" rx="10" ry="10" fill="#111827" stroke="#A855F7" stroke-width="2"/>
+    <text x="850.0" y="233.5" font-size="10" font-weight="normal" fill="#E5E7EB" text-anchor="middle">Matriz de Usuarios &amp; Aislamiento de Proyectos</text>
+    <text x="850.0" y="247.5" font-size="10" font-weight="normal" fill="#E5E7EB" text-anchor="middle">• Super-Users (admin / roberto) con Escaneo Global Multi-Plan</text>
+    <text x="850.0" y="261.5" font-size="10" font-weight="normal" fill="#E5E7EB" text-anchor="middle">• Sub-usuarios aislados en carpetas locales proyectos/negocios/ y proyectos/social/</text>
+    <polygon points="660,315 1060,315 1040,385 640,385" fill="#1E293B" stroke="#0284C7" stroke-width="2"/>
+    <text x="850.0" y="343.0" font-size="11" font-weight="bold" fill="#F0F9FF" text-anchor="middle">Vaciado de Cerebro (Entrada No Estructurada)</text>
+    <text x="850.0" y="357.0" font-size="11" font-weight="bold" fill="#F0F9FF" text-anchor="middle">Audio con Whisper/Dictado • Texto Libre • Carga de PDFs con OCR</text>
+    <rect x="640" y="415" width="420" height="65" rx="10" ry="10" fill="#0F2847" stroke="#38BDF8" stroke-width="2"/>
+    <text x="850.0" y="440.5" font-size="11" font-weight="bold" fill="#FFFFFF" text-anchor="middle">Mesa de Extracción NLP de Semilla Universal</text>
+    <text x="850.0" y="454.5" font-size="11" font-weight="bold" fill="#FFFFFF" text-anchor="middle">(6 Pilares: Propósito, Problema/Solución, Mercado, Técnico, Finanzas, Equipo)</text>
+    <rect x="640" y="510" width="420" height="70" rx="10" ry="10" fill="#064E3B" stroke="#10B981" stroke-width="2"/>
+    <text x="850.0" y="538.0" font-size="11" font-weight="bold" fill="#ECFDF5" text-anchor="middle">AdaptiveSeedForm (Revisión Interactiva de Semilla)</text>
+    <text x="850.0" y="552.0" font-size="11" font-weight="bold" fill="#ECFDF5" text-anchor="middle">Validación Campo por Campo con Asistencia Contextual de Dudas por IA</text>
+    <rect x="1100" y="415" width="320" height="75" rx="10" ry="10" fill="#1E1B4B" stroke="#818CF8" stroke-width="2"/>
+    <text x="1260.0" y="445.5" font-size="10" font-weight="normal" fill="#E0E7FF" text-anchor="middle">DualInputSyncHub (Sincronización Bidireccional)</text>
+    <text x="1260.0" y="459.5" font-size="10" font-weight="normal" fill="#E0E7FF" text-anchor="middle">Sincroniza en Tiempo Real el Prompt Libre y los Campos Estructurados</text>
+    <rect x="-520" y="315" width="460" height="70" rx="10" ry="10" fill="#2E1065" stroke="#C084FC" stroke-width="2"/>
+    <text x="-290.0" y="343.0" font-size="12" font-weight="bold" fill="#FAF5FF" text-anchor="middle">METODOLOGÍA PROPIETARIA: EMPRESAS CUÁNTICAS</text>
+    <text x="-290.0" y="357.0" font-size="12" font-weight="bold" fill="#FAF5FF" text-anchor="middle">Capa Transversal de Diagnóstico, Delegación &amp; Escala (Fondo Thoth AC)</text>
+    <rect x="-500" y="415" width="420" height="65" rx="10" ry="10" fill="#3B0764" stroke="#E879F9" stroke-width="2"/>
+    <text x="-290.0" y="440.5" font-size="11" font-weight="bold" fill="#FFFFFF" text-anchor="middle">QuantumProfileCard (Diagnóstico Inicial del Fundador)</text>
+    <text x="-290.0" y="454.5" font-size="11" font-weight="bold" fill="#FFFFFF" text-anchor="middle">Evaluación Transversal Inyectada en Semilla, Organización y Finanzas</text>
+    <rect x="-500" y="505" width="420" height="70" rx="10" ry="10" fill="#2A0845" stroke="#C084FC" stroke-width="2"/>
+    <text x="-290.0" y="533.0" font-size="11" font-weight="bold" fill="#F3E8FF" text-anchor="middle">Modelo Atómico de 3 Áreas Cardinales:</text>
+    <text x="-290.0" y="547.0" font-size="11" font-weight="bold" fill="#F3E8FF" text-anchor="middle">⚛️ Finanzas • ⚙️ Operativo • 📋 Administrativo</text>
+    <polygon points="-290.0,600 -80,635.0 -290.0,670 -500,635.0" fill="#4C0519" stroke="#F43F5E" stroke-width="2"/>
+    <text x="-290.0" y="628.0" font-size="10" font-weight="bold" fill="#FFE4E6" text-anchor="middle">Principio Nuclear: Máximo 1 o 2 Áreas Activas</text>
+    <text x="-290.0" y="642.0" font-size="10" font-weight="bold" fill="#FFE4E6" text-anchor="middle">¡Prohibido operar las 3! Evita fusión atómica, sesgo y micromanagement</text>
+    <rect x="-500" y="695" width="420" height="75" rx="10" ry="10" fill="#1E1B4B" stroke="#A78BFA" stroke-width="2"/>
+    <text x="-290.0" y="725.5" font-size="10" font-weight="normal" fill="#EDE9FE" text-anchor="middle">Principio de Delegación Estructurada:</text>
+    <text x="-290.0" y="739.5" font-size="10" font-weight="normal" fill="#EDE9FE" text-anchor="middle">Generación automática de vacantes, perfiles complementarios y bandas salariales</text>
+    <rect x="-500" y="795" width="420" height="70" rx="10" ry="10" fill="#0F172A" stroke="#38BDF8" stroke-width="2"/>
+    <text x="-290.0" y="823.0" font-size="10" font-weight="normal" fill="#E0F2FE" text-anchor="middle">Saltos Cuánticos de Escala (Crecimiento No Lineal):</text>
+    <text x="-290.0" y="837.0" font-size="10" font-weight="normal" fill="#E0F2FE" text-anchor="middle">Alertas en umbrales de reestructuración atómica (1-5, 5-20, multi-sucursal)</text>
+    <rect x="-500" y="890" width="420" height="65" rx="10" ry="10" fill="#064E3B" stroke="#34D399" stroke-width="2"/>
+    <text x="-290.0" y="915.5" font-size="11" font-weight="bold" fill="#D1FAE5" text-anchor="middle">Principio de Independencia del Fundador:</text>
+    <text x="-290.0" y="929.5" font-size="11" font-weight="bold" fill="#D1FAE5" text-anchor="middle">Medición de dependencia operativa y hoja de ruta para operar SIN el fundador</text>
+    <rect x="-500" y="980" width="420" height="70" rx="10" ry="10" fill="#431407" stroke="#FB923C" stroke-width="2"/>
+    <text x="-290.0" y="1008.0" font-size="10" font-weight="normal" fill="#FFEDD5" text-anchor="middle">Detector de 4 Anti-Patrones Cuánticos:</text>
+    <text x="-290.0" y="1022.0" font-size="10" font-weight="normal" fill="#FFEDD5" text-anchor="middle">1. Solo quiere ser jefe • 2. Solo invertir • 3. Dinero rápido • 4. Fusión atómica</text>
+    <rect x="620" y="620" width="460" height="75" rx="10" ry="10" fill="#1E1B4B" stroke="#C084FC" stroke-width="2"/>
+    <text x="850.0" y="650.5" font-size="12" font-weight="bold" fill="#FAF5FF" text-anchor="middle">Orquestador Multi-Agente (src/lib/ai.js &amp; server/index.js)</text>
+    <text x="850.0" y="664.5" font-size="12" font-weight="bold" fill="#FAF5FF" text-anchor="middle">Mesa de Expertos Virtuales para Redacción, Crítica y Calibración Técnica</text>
+    <rect x="600" y="725" width="500" height="95" rx="10" ry="10" fill="#0F172A" stroke="#818CF8" stroke-width="2"/>
+    <text x="850.0" y="744.5" font-size="10" font-weight="normal" fill="#F1F5F9" text-anchor="middle">Matriz de 4 Niveles de Profundidad de Agentes:</text>
+    <text x="850.0" y="758.5" font-size="10" font-weight="normal" fill="#F1F5F9" text-anchor="middle">• Nivel 1 (Rápido): Analista ➔ Redactor (~30-60s)</text>
+    <text x="850.0" y="772.5" font-size="10" font-weight="normal" fill="#F1F5F9" text-anchor="middle">• Nivel 2 (Pro): Analista ➔ Crítico ➔ Redactor (~2-4 min)</text>
+    <text x="850.0" y="786.5" font-size="10" font-weight="normal" fill="#F1F5F9" text-anchor="middle">• Nivel 3 (Profundo): 5 Agentes Especialistas + Devil's Advocate (~8-15 min)</text>
+    <text x="850.0" y="800.5" font-size="10" font-weight="normal" fill="#F1F5F9" text-anchor="middle">• Nivel 4 (Industrial): Cadena de 9 Agentes en bucle cerrado (~20 min)</text>
+    <rect x="1130" y="620" width="380" height="90" rx="10" ry="10" fill="#1C1917" stroke="#F59E0B" stroke-width="2"/>
+    <text x="1320.0" y="637.0" font-size="10" font-weight="normal" fill="#FEF3C7" text-anchor="middle">Cascada Inteligente de Proveedores &amp; Fallback:</text>
+    <text x="1320.0" y="651.0" font-size="10" font-weight="normal" fill="#FEF3C7" text-anchor="middle">1º Ollama Local (qwen3.5:9b / gemma4:12b) [Local-First]</text>
+    <text x="1320.0" y="665.0" font-size="10" font-weight="normal" fill="#FEF3C7" text-anchor="middle">2º Modelos Locales de Respaldo según VRAM disponible</text>
+    <text x="1320.0" y="679.0" font-size="10" font-weight="normal" fill="#FEF3C7" text-anchor="middle">3º Nube NVIDIA NIM (llama-3.1-nemotron-70b-instruct)</text>
+    <text x="1320.0" y="693.0" font-size="10" font-weight="normal" fill="#FEF3C7" text-anchor="middle">4º Nube Groq (llama-3.3-70b) / Gemini 2.0 / OpenAI (gpt-4o)</text>
+    <rect x="1130" y="735" width="380" height="85" rx="10" ry="10" fill="#0C4A6E" stroke="#38BDF8" stroke-width="2"/>
+    <text x="1320.0" y="756.5" font-size="10" font-weight="normal" fill="#E0F2FE" text-anchor="middle">Telemetría, Streaming SSE &amp; Reintentos:</text>
+    <text x="1320.0" y="770.5" font-size="10" font-weight="normal" fill="#E0F2FE" text-anchor="middle">• ActivityFeed en tiempo real por Server-Sent Events</text>
+    <text x="1320.0" y="784.5" font-size="10" font-weight="normal" fill="#E0F2FE" text-anchor="middle">• fetchWithRetry con Backoff Exponencial en HTTP 429</text>
+    <text x="1320.0" y="798.5" font-size="10" font-weight="normal" fill="#E0F2FE" text-anchor="middle">• Monitor de Tokens y Cuotas de API (GlobalTokenMonitor)</text>
+    <rect x="620" y="860" width="460" height="75" rx="10" ry="10" fill="#042F2E" stroke="#2DD4BF" stroke-width="2"/>
+    <text x="850.0" y="890.5" font-size="12" font-weight="bold" fill="#F0FDFA" text-anchor="middle">Motor de Industrialización de Métodos (FIELD_GUIDES_MAP)</text>
+    <text x="850.0" y="904.5" font-size="12" font-weight="bold" fill="#F0FDFA" text-anchor="middle">Transforma la Semilla Universal inyectando jerga técnica y reglas del método</text>
+    <rect x="-520" y="975" width="300" height="65" rx="10" ry="10" fill="#134E4A" stroke="#5EEAD4" stroke-width="2"/>
+    <text x="-370.0" y="1000.5" font-size="10" font-weight="bold" fill="#FFFFFF" text-anchor="middle">1. Plan Comercial Clásico</text>
+    <text x="-370.0" y="1014.5" font-size="10" font-weight="bold" fill="#FFFFFF" text-anchor="middle">Naturaleza, Mercado, Técnico, Org &amp; Finanzas</text>
+    <rect x="-190" y="975" width="300" height="65" rx="10" ry="10" fill="#134E4A" stroke="#5EEAD4" stroke-width="2"/>
+    <text x="-40.0" y="1000.5" font-size="10" font-weight="bold" fill="#FFFFFF" text-anchor="middle">2. Social BID / PM4R</text>
+    <text x="-40.0" y="1014.5" font-size="10" font-weight="bold" fill="#FFFFFF" text-anchor="middle">Involucrados, Árboles, MML, EDT &amp; Riesgos</text>
+    <rect x="140" y="975" width="300" height="65" rx="10" ry="10" fill="#134E4A" stroke="#5EEAD4" stroke-width="2"/>
+    <text x="290.0" y="1000.5" font-size="10" font-weight="bold" fill="#FFFFFF" text-anchor="middle">3. Agile Startup (Lean Canvas)</text>
+    <text x="290.0" y="1014.5" font-size="10" font-weight="bold" fill="#FFFFFF" text-anchor="middle">9 Bloques, Buyer Persona, CAC/LTV &amp; Runway</text>
+    <rect x="470" y="975" width="300" height="65" rx="10" ry="10" fill="#134E4A" stroke="#5EEAD4" stroke-width="2"/>
+    <text x="620.0" y="1000.5" font-size="10" font-weight="bold" fill="#FFFFFF" text-anchor="middle">4. Base Tecnológica I+D</text>
+    <text x="620.0" y="1014.5" font-size="10" font-weight="bold" fill="#FFFFFF" text-anchor="middle">Nivel TRL 1-9, Patentes, Prototipos &amp; RSE</text>
+    <rect x="800" y="975" width="300" height="65" rx="10" ry="10" fill="#134E4A" stroke="#5EEAD4" stroke-width="2"/>
+    <text x="950.0" y="1000.5" font-size="10" font-weight="bold" fill="#FFFFFF" text-anchor="middle">5. Microempresa &amp; Autoempleo</text>
+    <text x="950.0" y="1014.5" font-size="10" font-weight="bold" fill="#FFFFFF" text-anchor="middle">Flujo Paso a Paso, Local &amp; Gastos Clave</text>
+    <rect x="1130" y="975" width="300" height="65" rx="10" ry="10" fill="#134E4A" stroke="#5EEAD4" stroke-width="2"/>
+    <text x="1280.0" y="1000.5" font-size="10" font-weight="bold" fill="#FFFFFF" text-anchor="middle">6. Proyecto de Inversión</text>
+    <text x="1280.0" y="1014.5" font-size="10" font-weight="bold" fill="#FFFFFF" text-anchor="middle">Demanda Elástica, Layout, CAPEX &amp; WACC</text>
+    <rect x="-520" y="1065" width="300" height="65" rx="10" ry="10" fill="#134E4A" stroke="#5EEAD4" stroke-width="2"/>
+    <text x="-370.0" y="1090.5" font-size="10" font-weight="bold" fill="#FFFFFF" text-anchor="middle">7. ZOPP / Marco Lógico Alemán</text>
+    <text x="-370.0" y="1104.5" font-size="10" font-weight="bold" fill="#FFFFFF" text-anchor="middle">Matriz Participación, Objetivos &amp; MPP</text>
+    <rect x="-190" y="1065" width="300" height="65" rx="10" ry="10" fill="#134E4A" stroke="#5EEAD4" stroke-width="2"/>
+    <text x="-40.0" y="1090.5" font-size="10" font-weight="bold" fill="#FFFFFF" text-anchor="middle">8. Horizon Europe (UE)</text>
+    <text x="-40.0" y="1104.5" font-size="10" font-weight="bold" fill="#FFFFFF" text-anchor="middle">Consorcios, Open Science &amp; Principio DNSH</text>
+    <rect x="140" y="1065" width="300" height="65" rx="10" ry="10" fill="#134E4A" stroke="#5EEAD4" stroke-width="2"/>
+    <text x="290.0" y="1090.5" font-size="10" font-weight="bold" fill="#FFFFFF" text-anchor="middle">9. Hoshin Kanri (Japón)</text>
+    <text x="290.0" y="1104.5" font-size="10" font-weight="bold" fill="#FFFFFF" text-anchor="middle">True North, Breakthroughs, Matriz X &amp; Bowler</text>
+    <rect x="470" y="1065" width="300" height="65" rx="10" ry="10" fill="#134E4A" stroke="#5EEAD4" stroke-width="2"/>
+    <text x="620.0" y="1090.5" font-size="10" font-weight="bold" fill="#FFFFFF" text-anchor="middle">10. Amoeba Management (Kyocera)</text>
+    <text x="620.0" y="1104.5" font-size="10" font-weight="bold" fill="#FFFFFF" text-anchor="middle">Células Micro-Ganancia &amp; Rentabilidad/Hora</text>
+    <rect x="800" y="1065" width="300" height="65" rx="10" ry="10" fill="#134E4A" stroke="#5EEAD4" stroke-width="2"/>
+    <text x="950.0" y="1090.5" font-size="10" font-weight="bold" fill="#FFFFFF" text-anchor="middle">11. Metodología Guanxi (China)</text>
+    <text x="950.0" y="1104.5" font-size="10" font-weight="bold" fill="#FFFFFF" text-anchor="middle">Mapa Relaciones, Plan Quinquenal &amp; Mianzi</text>
+    <rect x="1130" y="1065" width="300" height="65" rx="10" ry="10" fill="#134E4A" stroke="#5EEAD4" stroke-width="2"/>
+    <text x="1280.0" y="1090.5" font-size="10" font-weight="bold" fill="#FFFFFF" text-anchor="middle">12. Factibilidad ONUDI Global</text>
+    <text x="1280.0" y="1104.5" font-size="10" font-weight="bold" fill="#FFFFFF" text-anchor="middle">Ingeniería Base, FCFF &amp; Sensibilidad WACC</text>
+    <rect x="-520" y="1200" width="400" height="65" rx="10" ry="10" fill="#0F2847" stroke="#38BDF8" stroke-width="2"/>
+    <text x="-320.0" y="1232.5" font-size="11" font-weight="bold" fill="#F0F9FF" text-anchor="middle">HUB DE INTELIGENCIA DE MERCADO &amp; TERRITORIALIDAD</text>
+    <rect x="-520" y="1285" width="400" height="70" rx="10" ry="10" fill="#0284C7" stroke="#7DD3FC" stroke-width="2"/>
+    <text x="-320.0" y="1313.0" font-size="10" font-weight="normal" fill="#FFFFFF" text-anchor="middle">Scraping Espacial DENUE / INEGI (InegiMap.jsx)</text>
+    <text x="-320.0" y="1327.0" font-size="10" font-weight="normal" fill="#FFFFFF" text-anchor="middle">Geolocalización de Competidores, Polígonos y Mapa de Calor Leaflet</text>
+    <rect x="-520" y="1375" width="400" height="65" rx="10" ry="10" fill="#0369A1" stroke="#38BDF8" stroke-width="2"/>
+    <text x="-320.0" y="1400.5" font-size="10" font-weight="normal" fill="#FFFFFF" text-anchor="middle">Scraping de Competencia Digital (Google / Places / UberEats / ML)</text>
+    <text x="-320.0" y="1414.5" font-size="10" font-weight="normal" fill="#FFFFFF" text-anchor="middle">Extracción de Precios, Calificaciones y Reseñas de Clientes</text>
+    <rect x="-520" y="1460" width="400" height="65" rx="10" ry="10" fill="#075985" stroke="#0284C7" stroke-width="2"/>
+    <text x="-320.0" y="1485.5" font-size="10" font-weight="normal" fill="#FFFFFF" text-anchor="middle">Segmentación TAM • SAM • SOM &amp; Buyer Persona</text>
+    <text x="-320.0" y="1499.5" font-size="10" font-weight="normal" fill="#FFFFFF" text-anchor="middle">Cálculo de Mercado Total, Disponible y Arquetipo Psicológico HubSpot</text>
+    <rect x="-520" y="1545" width="400" height="65" rx="10" ry="10" fill="#0C4A6E" stroke="#38BDF8" stroke-width="2"/>
+    <text x="-320.0" y="1570.5" font-size="10" font-weight="normal" fill="#FFFFFF" text-anchor="middle">Matrices Estratégicas Cruzadas (FODA / PESTEL)</text>
+    <text x="-320.0" y="1584.5" font-size="10" font-weight="normal" fill="#FFFFFF" text-anchor="middle">Estrategias FO, FA, DO, DA amarradas al Entorno Macroeconómico</text>
+    <rect x="-90" y="1200" width="400" height="65" rx="10" ry="10" fill="#431407" stroke="#FB923C" stroke-width="2"/>
+    <text x="110.0" y="1232.5" font-size="11" font-weight="bold" fill="#FFF7ED" text-anchor="middle">HUB TÉCNICO, OPERACIONES &amp; PLANTA (ModuloOperaciones.jsx)</text>
+    <rect x="-90" y="1285" width="400" height="70" rx="10" ry="10" fill="#7C2D12" stroke="#FDBA74" stroke-width="2"/>
+    <text x="110.0" y="1313.0" font-size="10" font-weight="normal" fill="#FFFFFF" text-anchor="middle">Layout de Planta &amp; Espacios Físicos (FloorPlanDiagram.jsx)</text>
+    <text x="110.0" y="1327.0" font-size="10" font-weight="normal" fill="#FFFFFF" text-anchor="middle">Diseño de Zonas de Producción, Líneas de Ensamble y Flujo Continuo Lean</text>
+    <rect x="-90" y="1375" width="400" height="65" rx="10" ry="10" fill="#9A3412" stroke="#FB923C" stroke-width="2"/>
+    <text x="110.0" y="1400.5" font-size="10" font-weight="normal" fill="#FFFFFF" text-anchor="middle">Diagrama de Procesos &amp; Tiempos de Ciclo (ProcessTable.jsx)</text>
+    <text x="110.0" y="1414.5" font-size="10" font-weight="normal" fill="#FFFFFF" text-anchor="middle">Mapeo de Pasos Críticos, Cuellos de Botella TOC y Economías de Escala</text>
+    <rect x="-90" y="1460" width="400" height="65" rx="10" ry="10" fill="#C2410C" stroke="#FED7AA" stroke-width="2"/>
+    <text x="110.0" y="1485.5" font-size="10" font-weight="normal" fill="#FFFFFF" text-anchor="middle">Cotizador de Maquinaria &amp; Equipamiento (MachineryRfqModal.jsx)</text>
+    <text x="110.0" y="1499.5" font-size="10" font-weight="normal" fill="#FFFFFF" text-anchor="middle">Fichas Técnicas, Requerimientos Trifásicos y Amortización Física</text>
+    <rect x="-90" y="1545" width="400" height="65" rx="10" ry="10" fill="#EA580C" stroke="#FFEDD5" stroke-width="2"/>
+    <text x="110.0" y="1570.5" font-size="10" font-weight="normal" fill="#FFFFFF" text-anchor="middle">KPIs de Desempeño Operativo (Lean Supply Chain)</text>
+    <text x="110.0" y="1584.5" font-size="10" font-weight="normal" fill="#FFFFFF" text-anchor="middle">OTD (On-Time Delivery), Rotación de Stock, DSO, DPO y Ciclo de Efectivo CCC</text>
+    <rect x="340" y="1200" width="450" height="65" rx="10" ry="10" fill="#064E3B" stroke="#34D399" stroke-width="2"/>
+    <text x="565.0" y="1232.5" font-size="11" font-weight="bold" fill="#ECFDF5" text-anchor="middle">MOTOR FINANCIERO INTEGRAL (calculadoraFinanciera.js &amp; ModuloFinanciero)</text>
+    <rect x="340" y="1285" width="450" height="75" rx="10" ry="10" fill="#065F46" stroke="#6EE7B7" stroke-width="2"/>
+    <text x="565.0" y="1308.5" font-size="10" font-weight="normal" fill="#FFFFFF" text-anchor="middle">Estados Financieros Normativos Proyectados a 5 Años (60 Meses):</text>
+    <text x="565.0" y="1322.5" font-size="10" font-weight="normal" fill="#FFFFFF" text-anchor="middle">• Estado de Resultados NIF B-3 • Flujo de Efectivo NIF B-2</text>
+    <text x="565.0" y="1336.5" font-size="10" font-weight="normal" fill="#FFFFFF" text-anchor="middle">• Balance General NIF B-6 • Tablas de Amortización Bancaria</text>
+    <rect x="340" y="1380" width="450" height="65" rx="10" ry="10" fill="#047857" stroke="#A7F3D0" stroke-width="2"/>
+    <text x="565.0" y="1405.5" font-size="10" font-weight="normal" fill="#FFFFFF" text-anchor="middle">Punto de Equilibrio (PE en Pesos y Unidades) &amp; Márgenes</text>
+    <text x="565.0" y="1419.5" font-size="10" font-weight="normal" fill="#FFFFFF" text-anchor="middle">Análisis Costo-Volumen-Utilidad y Margen de Contribución Ponderado</text>
+    <rect x="340" y="1465" width="450" height="65" rx="10" ry="10" fill="#059669" stroke="#34D399" stroke-width="2"/>
+    <text x="565.0" y="1490.5" font-size="10" font-weight="normal" fill="#FFFFFF" text-anchor="middle">Indicadores de Evaluación de Proyectos:</text>
+    <text x="565.0" y="1504.5" font-size="10" font-weight="normal" fill="#FFFFFF" text-anchor="middle">VPN (Valor Presente Neto), TIR, Periodo de Recuperación y Relación B/C</text>
+    <rect x="340" y="1550" width="450" height="75" rx="10" ry="10" fill="#10B981" stroke="#D1FAE5" stroke-width="2"/>
+    <text x="565.0" y="1580.5" font-size="11" font-weight="bold" fill="#064E3B" text-anchor="middle">Simulador Estocástico Monte Carlo (10,000 Iteraciones)</text>
+    <text x="565.0" y="1594.5" font-size="11" font-weight="bold" fill="#064E3B" text-anchor="middle">Distribuciones Triangular/Normal, VaR al 95% y Probabilidad de Pérdida</text>
+    <rect x="340" y="1645" width="450" height="70" rx="10" ry="10" fill="#047857" stroke="#6EE7B7" stroke-width="2"/>
+    <text x="565.0" y="1673.0" font-size="10" font-weight="normal" fill="#FFFFFF" text-anchor="middle">Multi-Escenario (Pesimista/Base/Optimista) &amp; Reserva Laboral</text>
+    <text x="565.0" y="1687.0" font-size="10" font-weight="normal" fill="#FFFFFF" text-anchor="middle">LiquidationReserveWidget (Provisión de Pasivo Laboral según LFT)</text>
+    <rect x="820" y="1200" width="400" height="65" rx="10" ry="10" fill="#1E1B4B" stroke="#818CF8" stroke-width="2"/>
+    <text x="1020.0" y="1232.5" font-size="11" font-weight="bold" fill="#EEF2FF" text-anchor="middle">HUB DE ORGANIZACIÓN, TALENTO &amp; GOBERNANZA</text>
+    <rect x="820" y="1285" width="400" height="65" rx="10" ry="10" fill="#312E81" stroke="#A5B4FC" stroke-width="2"/>
+    <text x="1020.0" y="1310.5" font-size="10" font-weight="normal" fill="#FFFFFF" text-anchor="middle">Organigrama Interactivo Jerárquico (OrganigramaInteractivo.jsx)</text>
+    <text x="1020.0" y="1324.5" font-size="10" font-weight="normal" fill="#FFFFFF" text-anchor="middle">Visualización de Puestos, Departamentos, Jerarquías y Dependencias</text>
+    <rect x="820" y="1370" width="400" height="70" rx="10" ry="10" fill="#3730A3" stroke="#C7D2FE" stroke-width="2"/>
+    <text x="1020.0" y="1398.0" font-size="10" font-weight="normal" fill="#FFFFFF" text-anchor="middle">Matriz de Capital Humano (HumanCapitalMatrix.jsx)</text>
+    <text x="1020.0" y="1412.0" font-size="10" font-weight="normal" fill="#FFFFFF" text-anchor="middle">Tabulador Salarial, Cargas Patronales IMSS/INFONAVIT y Plan de Carrera</text>
+    <rect x="820" y="1460" width="400" height="70" rx="10" ry="10" fill="#4338CA" stroke="#E0E7FF" stroke-width="2"/>
+    <text x="1020.0" y="1488.0" font-size="10" font-weight="normal" fill="#FFFFFF" text-anchor="middle">Matriz RACI &amp; Hoshin Kanri X-Matrix (XMatrixHoshinKanri.jsx)</text>
+    <text x="1020.0" y="1502.0" font-size="10" font-weight="normal" fill="#FFFFFF" text-anchor="middle">Asignación de Roles Operativos y Alineación de Tácticas con Objetivos</text>
+    <rect x="820" y="1550" width="400" height="65" rx="10" ry="10" fill="#4F46E5" stroke="#EEF2FF" stroke-width="2"/>
+    <text x="1020.0" y="1575.5" font-size="10" font-weight="normal" fill="#FFFFFF" text-anchor="middle">Estructura Celular Amoeba (Inamori / Kyocera)</text>
+    <text x="1020.0" y="1589.5" font-size="10" font-weight="normal" fill="#FFFFFF" text-anchor="middle">Centros Autónomos de Micro-ganancia y Rentabilidad por Hora Trabajada</text>
+    <rect x="340" y="1755" width="450" height="70" rx="10" ry="10" fill="#18181B" stroke="#FACC15" stroke-width="2"/>
+    <text x="565.0" y="1783.0" font-size="11" font-weight="bold" fill="#FEF08A" text-anchor="middle">PlanContext.jsx (Single Source of Truth)</text>
+    <text x="565.0" y="1797.0" font-size="11" font-weight="bold" fill="#FEF08A" text-anchor="middle">Estado Reactivo Centralizado: Pilares, Módulos, Configuración y Versiones</text>
+    <rect x="340" y="1845" width="450" height="70" rx="10" ry="10" fill="#27272A" stroke="#FDE047" stroke-width="2"/>
+    <text x="565.0" y="1873.0" font-size="10" font-weight="normal" fill="#FAFAFA" text-anchor="middle">Persistencia Atómica en Sistema de Archivos Local</text>
+    <text x="565.0" y="1887.0" font-size="10" font-weight="normal" fill="#FAFAFA" text-anchor="middle">Auto-guardado en proyectos/negocios/ y proyectos/social/ (.json + .md)</text>
+    <rect x="340" y="1935" width="450" height="75" rx="10" ry="10" fill="#3F3F46" stroke="#FEF08A" stroke-width="2"/>
+    <text x="565.0" y="1965.5" font-size="11" font-weight="bold" fill="#FFFFFF" text-anchor="middle">Centro de Exportación Documental (WordDocumentCenterModal.jsx)</text>
+    <text x="565.0" y="1979.5" font-size="11" font-weight="bold" fill="#FFFFFF" text-anchor="middle">Generación de Expediente Ejecutivo en Word (.docx), PDF Gráfico y Markdown</text>
+    <rect x="340" y="2030" width="450" height="65" rx="10" ry="10" fill="#52525B" stroke="#E4E4E7" stroke-width="2"/>
+    <text x="565.0" y="2055.5" font-size="10" font-weight="normal" fill="#FFFFFF" text-anchor="middle">DiffReviewModal &amp; DiffViewer (Control de Versiones)</text>
+    <text x="565.0" y="2069.5" font-size="10" font-weight="normal" fill="#FFFFFF" text-anchor="middle">Aprobación de Cambios Generados por IA con Comparación Lado a Lado</text>
+    <rect x="1600" y="315" width="360" height="80" rx="10" ry="10" fill="#4C0519" stroke="#FB7185" stroke-width="2"/>
+    <text x="1780.0" y="341.0" font-size="12" font-weight="bold" fill="#FFF1F2" text-anchor="middle">🤖 Bob Concierge AI (BobChatModal.jsx)</text>
+    <text x="1780.0" y="355.0" font-size="12" font-weight="bold" fill="#FFF1F2" text-anchor="middle">Asistente Copiloto Multimodal Flotante</text>
+    <text x="1780.0" y="369.0" font-size="12" font-weight="bold" fill="#FFF1F2" text-anchor="middle">Acompañamiento, Sugerencias y Dudas en Tiempo Real</text>
+    <rect x="1600" y="420" width="360" height="65" rx="10" ry="10" fill="#881337" stroke="#FDA4AF" stroke-width="2"/>
+    <text x="1780.0" y="445.5" font-size="10" font-weight="normal" fill="#FFE4E6" text-anchor="middle">TouchBarBridge (Hardware Shortcuts)</text>
+    <text x="1780.0" y="459.5" font-size="10" font-weight="normal" fill="#FFE4E6" text-anchor="middle">Atajos Físicos para Generación, Guardado y Simulación</text>
+    <rect x="1600" y="510" width="360" height="75" rx="10" ry="10" fill="#9F1239" stroke="#FECDD3" stroke-width="2"/>
+    <text x="1780.0" y="540.5" font-size="10" font-weight="normal" fill="#FFFFFF" text-anchor="middle">Sincronización Proactiva Git (./git_sync.sh)</text>
+    <text x="1780.0" y="554.5" font-size="10" font-weight="normal" fill="#FFFFFF" text-anchor="middle">Respaldos y Versionado Automático con Mensajes Descriptivos en Español</text>
+  </g>
+</svg>
