@@ -9,6 +9,7 @@
 
 import { executeAgentTool } from './agentTools.js';
 import { callAiProvider } from './ai.js';
+import { getApiBase } from '../config/apiConfig.js';
 
 const TRAJECTORY_STORAGE_KEY = 'openplan_agent_trajectories';
 
@@ -77,14 +78,16 @@ export class TrajectoryRecorder {
       const snapshot = this.exportHarness();
       
       // Guardado Asíncrono en Backend (Native Telemetry Engine)
-      import('../config/apiConfig.js').then(({ getApiBase }) => {
+      try {
         const apiBase = getApiBase();
         fetch(`${apiBase}/api/telemetry/log`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(snapshot)
         }).catch(err => console.warn('[Telemetry] Error sincronizando con backend:', err));
-      }).catch(() => {});
+      } catch (err) {
+        console.warn('[Telemetry] Error resolviendo apiBase:', err);
+      }
 
       // Fallback y caché local rápido
       if (typeof window !== 'undefined' && window.localStorage) {
@@ -145,7 +148,6 @@ export class TrajectoryRecorder {
 // ─────────────────────────────────────────────────────────────────────────
 export async function getSavedTrajectories(filter = {}) {
   try {
-    const { getApiBase } = await import('../config/apiConfig.js');
     const apiBase = getApiBase();
     const res = await fetch(`${apiBase}/api/telemetry/trajectories`);
     if (res.ok) {

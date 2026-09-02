@@ -20,7 +20,10 @@
 | **TDD-09** | `MemoryCache & HTTP Cache Policy` | Integración / Headers | Las consultas repetidas a INEGI y Banxico se resuelven desde memoria en <1ms; Nginx entrega index.html con no-cache y assets con immutable. |
 | **TDD-10** | `Semantic URLs & Slug Routing (Opción A)` | Unitaria / Enrutamiento | Resuelve rutas canónicas /:tipoDoc/:modulo/:slug, normaliza cadenas con slugify, deduce pilares e hidrata proyectos de forma transparente. |
 | **TDD-11** | `IndexedDB Storage Engine & Migration` | Unitaria / Almacenamiento | Almacena y recupera proyectos completos sin el límite de 5MB de localStorage, con soporte para anexos masivos y migración automática de datos legacy. |
+| **TDD-12** | `Safe Web Search & Anomaly Handling` | Unitaria / Resiliencia | `safeDdgSearch` aplica ventana mínima de 1200ms, backoff ante rate limit y fallback limpio sin arrojar error 500 al cliente. |
+| **TDD-13** | `Vite Build Consistency & Clean Chunking` | Integración / Build | Cero advertencias de importaciones mixtas en `apiConfig.js`, `ai.js` y `agenticEngine.js`; compilación limpia en <6s. |
 
+**Estado de Ejecución:** 109 tests pasando al 100% (24 suites, 0 fallos).
 
 ---
 

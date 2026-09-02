@@ -10,6 +10,35 @@ import { swarmOrchestrator } from './swarm/SwarmOrchestrator.js';
 import { agentStore } from './swarm/AgentStore.js';
 import { generateLogoVariants } from '../src/lib/logoGenerator.js';
 
+// ─────────────────────────────────────────────────────────
+//  Helper Seguro para Búsqueda DuckDuckGo (Control de Tasa y Backoff)
+// ─────────────────────────────────────────────────────────
+let ultimaPeticionDdg = 0;
+const INTERVALO_MINIMO_DDG_MS = 1200;
+
+export async function safeDdgSearch(query, reintentos = 2) {
+  const ahora = Date.now();
+  const tiempoDesdeUltima = ahora - ultimaPeticionDdg;
+  if (tiempoDesdeUltima < INTERVALO_MINIMO_DDG_MS) {
+    await new Promise(resolve => setTimeout(resolve, INTERVALO_MINIMO_DDG_MS - tiempoDesdeUltima));
+  }
+  ultimaPeticionDdg = Date.now();
+
+  try {
+    const respuesta = await ddgSearch(query);
+    return respuesta.results || [];
+  } catch (error) {
+    if (reintentos > 0 && error.message?.includes('too quickly')) {
+      console.warn(`[DDG Seguro] Límite de tasa detectado para "${query}". Pausando 2500ms... (${reintentos} reintentos restantes)`);
+      await new Promise(resolve => setTimeout(resolve, 2500));
+      ultimaPeticionDdg = Date.now();
+      return safeDdgSearch(query, reintentos - 1);
+    }
+    console.warn(`[DDG Seguro] Búsqueda no disponible para "${query}":`, error.message);
+    return [];
+  }
+}
+
 const app = express();
 const PORT = process.env.PORT || 3001;
 
@@ -344,7 +373,7 @@ app.get('/api/projects/:type/:id', (req, res) => {
 app.post('/api/search', async (req, res) => {
   const { query, provider = 'tavily', apiKey = '' } = req.body;
   if (!query) {
-    return res.status(400).json({ success: false, error: 'Query is requerido' });
+    return res.status(400).json({ success: false, error: 'Query es requerido' });
   }
 
   try {
@@ -376,11 +405,11 @@ app.post('/api/search', async (req, res) => {
       }));
       return res.json({ success: true, provider: 'tavily', results });
     } else if (provider === 'duckduckgo') {
-      const response = await ddgSearch(query);
-      const results = (response.results || []).slice(0, 5).map(r => ({
+      const searchResults = await safeDdgSearch(query);
+      const results = (searchResults || []).slice(0, 5).map(r => ({
         title: r.title,
         url: r.url,
-        snippet: r.description
+        snippet: r.description || r.snippet || ''
       }));
       return res.json({ success: true, provider: 'duckduckgo', results });
     } else {
@@ -1034,14 +1063,13 @@ app.post('/api/market/enrich', async (req, res) => {
   }
 
   try {
-    // 1. Buscar perfiles sociales y plataformas relevantes del competidor usando DuckDuckGo
+    // 1. Buscar perfiles sociales y plataformas relevantes del competidor usando DuckDuckGo seguro
     const searchQuery = `"${name}" ${address} (site:facebook.com OR site:instagram.com OR site:ubereats.com OR site:rappi.com OR site:airbnb.com OR site:tripadvisor.com OR site:linkedin.com OR site:mercadolibre.com.mx)`;
     console.log(`[Enrich] Buscando perfiles para: "${name}" con query: "${searchQuery}"`);
     
     let searchResults = [];
     try {
-      const searchResponse = await ddgSearch(searchQuery);
-      searchResults = searchResponse.results || [];
+      searchResults = await safeDdgSearch(searchQuery);
     } catch (searchErr) {
       console.warn('[Enrich] Error buscando perfiles:', searchErr.message);
     }

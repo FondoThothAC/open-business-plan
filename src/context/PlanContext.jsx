@@ -4,6 +4,7 @@ import { FRAMEWORKS } from '../config/frameworks';
 import { getApiBase } from '../config/apiConfig';
 import { slugify, KNOWN_PROJECT_SLUGS } from '../config/urlRouting';
 import { saveProjectToIDB, loadProjectFromIDB, migrateFromLocalStorage } from '../lib/storage/indexedDbStorage';
+import { runAgenticModuleGeneration } from '../lib/agenticEngine';
 
 const EXAMPLE_FRAMEWORK_MAP = {
   brujula: 'business',
@@ -959,8 +960,6 @@ export const PlanProvider = ({ children }) => {
             if (typeof window !== 'undefined') {
               window.dispatchEvent(new CustomEvent('openplan_navigate', { detail: `/modulo/${pillar}/${modKey}` }));
             }
-            const { runAgenticModuleGeneration } = await import('../lib/agenticEngine');
-            const { getApiBase } = await import('../config/apiConfig');
             const aiConfig = planDataRef.current.config.ai;
 
             const rawName = planDataRef.current?.semilla?.negocio?.nombre_marca || planDataRef.current?.config?.brandKit?.companyName || '';
@@ -1048,7 +1047,7 @@ export const PlanProvider = ({ children }) => {
               const rawName = planDataRef.current?.semilla?.negocio?.nombre_marca || planDataRef.current?.config?.brandKit?.companyName || '';
               const projectId = planDataRef.current?.config?.projectId || (rawName ? rawName.replace(/[^a-z0-9]/gi, '_').toLowerCase() : '');
               const projectType = planDataRef.current?.config?.projectType === 'social_bid' ? 'social' : 'negocios';
-              const apiBase = (await import('../config/apiConfig')).getApiBase();
+              const apiBase = getApiBase();
               fetch(`${apiBase}/api/log`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },

@@ -68,7 +68,7 @@ const PILLAR_ICONS = {
 
 export default function Layout() {
   const { 
-    planData, currentProjectSlug, updateConfig, createNewProject, loadProject, loadSavedProject, saveStatus, updateProjectName,
+    planData, currentProjectSlug, updateConfig, updateSection, createNewProject, loadProject, loadSavedProject, saveStatus, updateProjectName,
     manualSaveProject, saveProjectAs,
     generationStatus, _generationProgress, startIndustrialization, _pauseIndustrialization, _stopIndustrialization, getProjectCompletion
   } = usePlan();
@@ -1466,7 +1466,27 @@ export default function Layout() {
         onClose={() => setIsBobOpen(false)}
         planData={planData}
         onExecuteCommand={(cmd) => {
-          if (cmd.action === 'UPDATE_CAPEX') {
+          if (cmd.action === 'NAVIGATE') {
+            const dest = cmd.module?.startsWith('/') ? cmd.module : `/modulo/${cmd.module}`;
+            navigate(dest);
+          } else if (cmd.action === 'UPDATE_FIELD') {
+            const framework = FRAMEWORKS[planData.config?.projectType || 'business'] || FRAMEWORKS.business;
+            let targetPillar = cmd.pillar;
+            if (!targetPillar) {
+              for (const p of framework.pillars) {
+                if (p.modules.some(m => m.key === cmd.moduleKey)) {
+                  targetPillar = p.key;
+                  break;
+                }
+              }
+            }
+            if (targetPillar && updateSection) {
+              updateSection(targetPillar, cmd.moduleKey, {
+                ...(planData[targetPillar]?.[cmd.moduleKey] || {}),
+                [cmd.fieldKey]: cmd.value
+              });
+            }
+          } else if (cmd.action === 'UPDATE_CAPEX') {
             updateConfig('organizacion', 'inversion', {
               ...planData.organizacion?.inversion,
               monto_inversion: cmd.amount

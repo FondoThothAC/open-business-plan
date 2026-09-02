@@ -117,6 +117,22 @@ flowchart LR
 * **Resiliencia y Fallback:** `localStorage` se utiliza exclusivamente para almacenar punteros ultraligeros (<5KB) protegidos con `try/catch`. En caso de saturación, el estado íntegro se mantiene garantizado en IndexedDB.
 * **Migración Automática:** Al iniciar la app, `migrateFromLocalStorage` traspasa de forma transparente cualquier dato preexistente de `openplan_v2_data` hacia IndexedDB.
 
+### 3.4 Motor de Búsqueda Web Resiliente (`safeDdgSearch`), Chunking Limpio de Vite y Comandos Agénticos
+* **Búsqueda Web Resiliente (`safeDdgSearch`):**
+  * Rate limiter estricto con ventana mínima de 1,200 ms entre consultas consecutivas.
+  * Captura de anomalías por saturación de peticiones de DuckDuckGo con backoff automático de 2,500 ms y hasta 2 reintentos.
+  * Manejo de fallo elegante (fallback silencioso): En caso de limitación irreversible, retorna array vacío sin arrojar error HTTP 500 ni interrumpir el proceso de enriquecimiento de competidores ni de industrialización.
+* **Consistencia de Empaquetado y Eliminación de Advertencias en Vite:**
+  * Estandarización de importaciones estáticas para módulos del núcleo compartido (`apiConfig.js`, `ai.js` y `agenticEngine.js`).
+  * Supresión total de advertencias de Rollup por mezcla de `import(...)` dinámico y estático.
+  * Tiempos de compilación de producción verificados: 5.86s con 0 errores y 0 advertencias de imports mixtos.
+* **Comandos Agénticos del Asistente BOB (`Layout.jsx` & `BobChatModal.jsx`):**
+  * `NAVIGATE`: Navega directamente a cualquier módulo del plan de negocios vía React Router o `openplan_navigate`.
+  * `UPDATE_FIELD`: Resuelve dinámicamente el pilar y actualiza el campo del plan de negocios en el estado central.
+  * `UPDATE_CAPEX`: Ajusta el monto de inversión inicial y recalcula los indicadores financieros.
+  * `CONFIGURE_MULTIBRANCH`: Configura parámetros de expansión de sucursales y escalamiento cuántico.
+  * `TRIGGER_INDUSTRIALIZE`: Inicia la cola de auto-llenado industrial agéntico.
+
 ---
 
 ## 4. Diagrama Maestro de Arquitectura y Flujos en yEd Graph Editor

@@ -1347,7 +1347,7 @@ export default function VistaPrevia() {
     if (activeCommentedFields.length === 0) return;
 
     // Guard de carga tardía post-hooks
-  if (!planData) return;
+    if (!planData) return;
 
     const confirmMsg = `Se guardará la versión actual y se creará una NUEVA versión con las correcciones sugeridas en los ${activeCommentedFields.length} campos comentados.\n\n¿Deseas continuar?`;
     if (!window.confirm(confirmMsg)) return;
@@ -1376,8 +1376,6 @@ export default function VistaPrevia() {
       const newPlanData = JSON.parse(JSON.stringify(planData));
       newPlanData.config.brandKit.companyName = newName;
       newPlanData.config.projectId = undefined; // Forzar creación de nuevo archivo en backend
-
-      const { refactorFieldWithComments } = await import('../lib/ai');
 
       let count = 0;
       for (const item of activeCommentedFields) {

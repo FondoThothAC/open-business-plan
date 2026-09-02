@@ -7,7 +7,7 @@ import { usePlan } from '../context/PlanContext';
 export default function BobChatModal({ isOpen, onClose, planData, onExecuteCommand }) {
   if (!isOpen) return null;
 
-  const { navigateToModule, activeModuleKey } = usePlan();
+  const { activeModuleKey } = usePlan();
 
   // Clave de persistencia por proyecto
   const projectName = planData?.semilla?.nombre_proyecto || planData?.id || 'default_project';
@@ -122,10 +122,10 @@ export default function BobChatModal({ isOpen, onClose, planData, onExecuteComma
 
     if (toolName === 'navigate_to_module') {
       const mod = params.moduleKey;
-      if (typeof navigateToModule === 'function') {
-        navigateToModule(mod);
-      } else if (onExecuteCommand) {
+      if (onExecuteCommand) {
         onExecuteCommand({ action: 'NAVIGATE', module: mod });
+      } else {
+        window.dispatchEvent(new CustomEvent('openplan_navigate', { detail: `/modulo/${mod}` }));
       }
       return `Navegación realizada al módulo: ${mod}`;
     }
