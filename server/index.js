@@ -2490,6 +2490,17 @@ app.get('/api/telemetry/call-log', (req, res) => {
   }
 });
 
+// GET /api/health — Verificación de estado del backend (usado por deploy_vps.sh)
+app.get('/api/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    version: '2.6',
+    service: 'OpenPlan Backend',
+    timestamp: new Date().toISOString(),
+    uptime: Math.floor(process.uptime()) + 's'
+  });
+});
+
 // Servir archivos estáticos del frontend en producción
 const distPath = path.resolve('dist');
 if (fs.existsSync(distPath)) {
