@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { LayoutDashboard, FileSpreadsheet, LineChart, PieChart, Settings, Eye, BrainCircuit, ChevronDown, ChevronRight, ChevronLeft, Save, FilePlus, FolderOpen, Check, Image as ImageIcon, Sprout, Copy, Star, Briefcase, Zap, Globe, Cpu, ShoppingBag, Landmark, ListChecks, Compass, Target, Layers, Share2, Factory, UploadCloud } from 'lucide-react';
 import { usePlan } from '../context/PlanContext';
@@ -54,7 +54,15 @@ const PILLAR_ICONS = {
   mercado: FileSpreadsheet,
   tecnico: Settings,
   organizacion: PieChart,
-  finanzas: LineChart
+  finanzas: LineChart,
+  mercado_cuantitativo: LineChart,
+  ingenieria_tecnica: Cpu,
+  presupuesto_obra: FileSpreadsheet,
+  estructura_capital: Landmark,
+  riesgo_matematico: Target,
+  identificacion: ListChecks,
+  diseno: Compass,
+  ejecucion: Layers
 };
 
 export default function Layout() {
@@ -128,6 +136,15 @@ export default function Layout() {
       setPlanType('pitch');
     } else {
       setPlanType('negocios');
+    }
+  }, [location.pathname]);
+
+  // [UXDD] Auto-expandir el pilar de la ruta activa en el acordeón del sidebar
+  useEffect(() => {
+    const match = location.pathname.match(/\/modulo\/([^/]+)/);
+    if (match && match[1]) {
+      const activePillarKey = match[1];
+      setExpandedPillars(prev => prev.includes(activePillarKey) ? prev : [...prev, activePillarKey]);
     }
   }, [location.pathname]);
 
@@ -325,6 +342,59 @@ export default function Layout() {
     startIndustrialization(customQueue);
   };
 
+  // [UXDD] Cálculo dinámico de pilares a renderizar en la barra lateral:
+  // - Pilares de la metodología activa (ej. business)
+  // - Más el pilar activo en la ruta actual si pertenece a otra metodología (ej. mercado_cuantitativo de investment_project)
+  // - Más cualquier pilar de cualquier metodología que contenga datos capturados en planData
+  const activeFrameworkKey = planData?.config?.projectType || 'business';
+  const activeFramework = FRAMEWORKS[activeFrameworkKey] || FRAMEWORKS.business;
+
+  const displayedPillars = useMemo(() => {
+    const list = [...(activeFramework.pillars || [])];
+    const match = location.pathname.match(/\/modulo\/([^/]+)/);
+    const currentRoutePillarKey = match ? match[1] : null;
+
+    // Si la ruta actual apunta a un pilar de otra metodología, resolverlo y agregarlo al menú lateral
+    if (currentRoutePillarKey && !list.some(p => p.key === currentRoutePillarKey)) {
+      for (const [_fwKey, fw] of Object.entries(FRAMEWORKS)) {
+        const foundPillar = fw.pillars?.find(p => p.key === currentRoutePillarKey);
+        if (foundPillar) {
+          list.push({
+            ...foundPillar,
+            frameworkSource: fw.name,
+            isForeign: true
+          });
+          break;
+        }
+      }
+    }
+
+    // Agregar pilares de otras metodologías que ya tengan datos registrados en planData
+    for (const [fwKey, fw] of Object.entries(FRAMEWORKS)) {
+      if (fwKey === activeFrameworkKey) continue;
+      fw.pillars?.forEach(p => {
+        if (!list.some(bp => bp.key === p.key)) {
+          const pData = planData?.[p.key];
+          if (pData && typeof pData === 'object' && Object.keys(pData).length > 0) {
+            const hasContent = Object.values(pData).some(modData => {
+              if (!modData || typeof modData !== 'object') return false;
+              return Object.values(modData).some(val => val && String(val).trim().length > 0);
+            });
+            if (hasContent) {
+              list.push({
+                ...p,
+                frameworkSource: fw.name,
+                isForeign: true
+              });
+            }
+          }
+        }
+      });
+    }
+
+    return list;
+  }, [activeFramework, location.pathname, planData, activeFrameworkKey]);
+
   return (
     <div className={`app-container theme-${planData?.config?.theme || 'light'}`}>
       {/* Sidebar Navigation */}
@@ -426,27 +496,40 @@ export default function Layout() {
             </div>
           </div>
 
-          {planData?.config?.activeMethodologies?.length > 1 && !isSidebarCollapsed && (
-            <div className="nav-section" style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '1rem', marginBottom: '1rem' }}>
-              <span className="nav-section-title" style={{ display: 'block', marginBottom: '0.5rem' }}>Metodología Activa</span>
+          {/* Selector de Metodología Activa en la barra lateral */}
+          {!isSidebarCollapsed && (
+            <div className="nav-section" style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem', marginBottom: '0.75rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.35rem' }}>
+                <span className="nav-section-title" style={{ margin: 0 }}>Metodología Activa</span>
+                <span style={{ fontSize: '0.65rem', color: 'var(--accent-color)', fontWeight: 700 }}>
+                  {displayedPillars.length} pilares
+                </span>
+              </div>
               <select
                 value={planData?.config?.projectType || 'business'}
-                onChange={(e) => updateConfig('projectType', null, e.target.value)}
+                onChange={(e) => {
+                  const newType = e.target.value;
+                  updateConfig('projectType', null, newType);
+                  const fw = FRAMEWORKS[newType];
+                  if (fw?.pillars?.[0]?.modules?.[0]) {
+                    navigate(`/modulo/${fw.pillars[0].key}/${fw.pillars[0].modules[0].key}`);
+                  }
+                }}
                 style={{
                   width: '100%',
                   background: 'var(--bg-panel)',
                   color: 'var(--text-primary)',
                   border: '1px solid var(--border-color)',
                   borderRadius: '8px',
-                  padding: '0.5rem',
-                  fontSize: '0.8rem',
+                  padding: '0.4rem 0.6rem',
+                  fontSize: '0.75rem',
                   outline: 'none',
                   cursor: 'pointer',
                   fontWeight: '600'
                 }}
               >
-                {planData.config.activeMethodologies.map(mKey => (
-                  <option key={mKey} value={mKey}>{FRAMEWORKS[mKey]?.name || mKey}</option>
+                {Object.entries(FRAMEWORKS).map(([mKey, fw]) => (
+                  <option key={mKey} value={mKey}>{fw.name}</option>
                 ))}
               </select>
             </div>
@@ -454,7 +537,7 @@ export default function Layout() {
 
           <div className="nav-section">
             {!isSidebarCollapsed && <span className="nav-section-title">Pilares Académicos</span>}
-            {(FRAMEWORKS[planData?.config?.projectType || 'business'] || FRAMEWORKS.business).pillars.map(pillar => {
+            {displayedPillars.map(pillar => {
               const Icon = PILLAR_ICONS[pillar.key] || LayoutDashboard;
               const isExpanded = expandedPillars.includes(pillar.key);
 
@@ -477,10 +560,27 @@ export default function Layout() {
               return (
                 <div key={pillar.key} className="pillar-group">
                   <div className={`pillar-header ${isExpanded ? 'active' : ''}`} onClick={() => togglePillar(pillar.key)}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flex: 1, overflow: 'hidden' }}>
                       <div className="nav-icon-box"><Icon size={18} /></div>
-                      <span>{pillar.title}</span>
+                      <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{pillar.title}</span>
                     </div>
+                    {pillar.isForeign && (
+                      <span 
+                        title={`Metodología: ${pillar.frameworkSource}`}
+                        style={{ 
+                          fontSize: '0.55rem', 
+                          color: 'var(--accent-color)', 
+                          background: 'rgba(99, 102, 241, 0.12)', 
+                          padding: '2px 5px', 
+                          borderRadius: '5px', 
+                          marginRight: '4px',
+                          whiteSpace: 'nowrap',
+                          fontWeight: 700
+                        }}
+                      >
+                        {pillar.frameworkSource ? pillar.frameworkSource.split(' ')[0] : 'Extra'}
+                      </span>
+                    )}
                     {isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
                   </div>
                   
