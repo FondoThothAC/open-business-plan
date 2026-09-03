@@ -316,7 +316,7 @@ export default function DynamicModule() {
         extraAction={extraAction}
       />
 
-      {(moduleId === 'croquis' || moduleId === 'layout' || moduleId === 'instalaciones') && (
+      {(moduleId === 'layout' || moduleId === 'instalaciones') && (
         <MicroCroquisEditor 
           data={planData?.[pillarId]?.[moduleId] || planData?.tecnico?.croquis || planData?.ingenieria?.layout} 
           onUpdateField={(field, val) => updateSection(pillarId, moduleId, { [field]: val })}

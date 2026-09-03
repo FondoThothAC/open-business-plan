@@ -132,4 +132,12 @@ describe('Microempresa y Autoempleo (micro_business) - TDD Test Suite', () => {
     assert.ok(croquisBox, 'box_micro_croquis_2d debe estar registrado en BOX_REGISTRY.micro_business');
     assert.strictEqual(croquisBox.type, 'canvas');
   });
+
+  it('CroquisPreviewWidget debe estar exportado y listo para VistaPrevia', async () => {
+    const fs = await import('node:fs');
+    const content = fs.readFileSync(new URL('../src/components/MicroCroquisEditor.jsx', import.meta.url), 'utf8');
+    assert.ok(content.includes('export function CroquisPreviewWidget'), 'MicroCroquisEditor.jsx debe exportar CroquisPreviewWidget');
+    assert.ok(content.includes('data?.layout_vector?.elements'), 'CroquisPreviewWidget debe procesar elementos del vector');
+    assert.ok(content.includes('data?.layout_vector?.aiRenderUrl'), 'CroquisPreviewWidget debe soportar el render arquitectónico de IA');
+  });
 });

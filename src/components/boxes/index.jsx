@@ -11,6 +11,7 @@ import { BoxGuanxi } from './BoxGuanxi.jsx';
 import { BoxONUDI } from './BoxONUDI.jsx';
 import { BoxArbolProblemasMML } from './BoxArbolProblemasMML.jsx';
 import { BoxLayoutIndustrial } from './BoxLayoutIndustrial.jsx';
+import MicroCroquisEditor from '../MicroCroquisEditor.jsx';
 import { BOX_TYPES } from '../../config/boxes.js';
 
 export {
@@ -26,7 +27,8 @@ export {
   BoxGuanxi,
   BoxONUDI,
   BoxArbolProblemasMML,
-  BoxLayoutIndustrial
+  BoxLayoutIndustrial,
+  MicroCroquisEditor
 };
 
 /**
@@ -37,6 +39,13 @@ export function RenderBox({ definition = {}, values = {}, onChange = () => {} })
 
   // 1. Enrutamiento por ID especializado (Componentes Personalizados 100%)
   switch (definition.id) {
+    case 'box_micro_croquis_2d':
+      return (
+        <MicroCroquisEditor 
+          data={values} 
+          onUpdateField={(field, val) => onChange({ ...values, [field]: val })} 
+        />
+      );
     case 'box_dnsh_ue_6':
       return <BoxDNSH definition={definition} values={values} onChange={onChange} />;
     case 'box_matriz_x_hoshin':

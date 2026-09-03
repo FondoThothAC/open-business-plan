@@ -113,7 +113,7 @@ export const MODULE_BOX_MAP = {
   'micro_business:comercializacion': ['box_apertura_30dias'],
   'micro_business:operacion': ['box_apertura_30dias'],
   'micro_business:recursos': ['box_apertura_30dias'],
-  'micro_business:croquis': ['box_micro_croquis_2d', 'box_micro_canvas_3b'],
+  'micro_business:croquis': ['box_micro_croquis_2d'],
   'micro_business:inversion': ['box_apertura_30dias'],
   'micro_business:costos': ['box_micro_canvas_3b'],
   
