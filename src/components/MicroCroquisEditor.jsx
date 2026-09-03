@@ -678,3 +678,109 @@ export default function MicroCroquisEditor({ data = {}, onUpdateField = () => {}
     </div>
   );
 }
+
+/**
+ * Widget de previsualización para el Documento Maestro / Vista Previa e impresión en PDF
+ */
+export function CroquisPreviewWidget({ data = {} }) {
+  // Soporte tanto para microempresa (layout_vector) como para planta industrial (zones)
+  const isIndustrial = Array.isArray(data?.zones) || Array.isArray(data?.layout_industrial?.zones);
+  const zones = isIndustrial ? (data?.zones || data?.layout_industrial?.zones) : null;
+
+  const widthMeters = Number(data?.layout_vector?.widthMeters) || 4;
+  const lengthMeters = Number(data?.layout_vector?.lengthMeters) || 3;
+  const elements = Array.isArray(data?.layout_vector?.elements) && data.layout_vector.elements.length > 0
+    ? data.layout_vector.elements
+    : [
+        { id: 'el_1', name: 'Tarja Sanitaria Doble', x: 0.3, y: 0.3, widthM: 1.4, lengthM: 0.7, color: '#10b981', icon: '🧼' },
+        { id: 'el_2', name: 'Mesa de Trabajo Inox', x: 1.1, y: 1.2, widthM: 1.8, lengthM: 0.8, color: '#3b82f6', icon: '🪵' },
+        { id: 'el_3', name: 'Horno / Zona Calor', x: 2.8, y: 0.3, widthM: 1.0, lengthM: 0.9, color: '#ef4444', icon: '🔥' },
+        { id: 'el_4', name: 'Refrigerador / Vitrina', x: 2.6, y: 1.8, widthM: 1.2, lengthM: 0.8, color: '#06b6d4', icon: '🧊' }
+      ];
+
+  const totalM2 = isIndustrial 
+    ? zones.reduce((acc, z) => acc + (Number(z.m2) || 0), 0)
+    : Math.round(widthMeters * lengthMeters * 10) / 10;
+
+  const svgScale = 75;
+  const svgW = widthMeters * svgScale;
+  const svgH = lengthMeters * svgScale;
+  const aiUrl = data?.layout_vector?.aiRenderUrl;
+
+  if (isIndustrial) {
+    return (
+      <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '18px', margin: '16px 0' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+          <div style={{ fontWeight: 800, fontSize: '0.92rem', color: '#0f172a' }}>
+            🏭 Distribución de Planta Industrial (Superficie Total: {totalM2.toLocaleString()} m²)
+          </div>
+          <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#6366f1', background: 'rgba(99, 102, 241, 0.1)', padding: '4px 8px', borderRadius: '6px' }}>
+            {zones.length} Zonas Operativas
+          </span>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '10px' }}>
+          {zones.map((z, idx) => (
+            <div key={z.id || idx} style={{ borderLeft: `4px solid ${z.color || '#3b82f6'}`, background: '#ffffff', padding: '10px 14px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+              <div style={{ fontWeight: 700, fontSize: '0.85rem', color: '#0f172a' }}>{z.name}</div>
+              <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '2px' }}>
+                Superficie: <strong>{z.m2} m²</strong> | Tipo: {z.tipo || 'Operativo'}
+              </div>
+              {z.equipo && <div style={{ fontSize: '0.7rem', color: '#475569', marginTop: '4px', fontStyle: 'italic' }}>{z.equipo}</div>}
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '18px', margin: '16px 0' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', flexWrap: 'wrap', gap: '8px' }}>
+        <div style={{ fontWeight: 800, fontSize: '0.92rem', color: '#0f172a' }}>
+          📐 Distribución Espacial de Planta ({totalM2} m² — {widthMeters}m x {lengthMeters}m)
+        </div>
+        <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#10b981', background: '#dcfce7', padding: '4px 8px', borderRadius: '6px' }}>
+          {elements.length} Estaciones Operativas Ubicadas
+        </span>
+      </div>
+
+      <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap', alignItems: 'flex-start' }}>
+        {/* SVG Técnico Vectorial */}
+        <div style={{ overflowX: 'auto', background: '#ffffff', borderRadius: '8px', border: '1px solid #cbd5e1', padding: '14px', flexShrink: 0 }}>
+          <svg width={svgW + 50} height={svgH + 50} viewBox={`-25 -25 ${svgW + 50} ${svgH + 50}`}>
+            <rect x="0" y="0" width={svgW} height={svgH} fill="#fcfcfd" stroke="#0f172a" strokeWidth="4" />
+            <text x={svgW / 2} y="-8" textAnchor="middle" fontSize="10" fontWeight="700" fill="#64748b">← {widthMeters} m →</text>
+            <text x="-8" y={svgH / 2} textAnchor="middle" transform={`rotate(-90 -8 ${svgH / 2})`} fontSize="10" fontWeight="700" fill="#64748b">← {lengthMeters} m →</text>
+            
+            {elements.map(el => {
+              const bx = el.x * svgScale;
+              const by = el.y * svgScale;
+              const bw = el.widthM * svgScale;
+              const bh = el.lengthM * svgScale;
+              return (
+                <g key={el.id}>
+                  <rect x={bx} y={by} width={bw} height={bh} rx="4" fill={el.color || '#3b82f6'} fillOpacity="0.85" stroke="#0f172a" strokeWidth="1" />
+                  <text x={bx + bw/2} y={by + bh/2 - 2} textAnchor="middle" fill="#ffffff" fontSize="9" fontWeight="700">
+                    {el.icon || '▪'} {el.name}
+                  </text>
+                  <text x={bx + bw/2} y={by + bh/2 + 10} textAnchor="middle" fill="rgba(255,255,255,0.85)" fontSize="7.5">
+                    {el.widthM}x{el.lengthM}m
+                  </text>
+                </g>
+              );
+            })}
+          </svg>
+        </div>
+
+        {/* Render con IA si existe */}
+        {aiUrl && (
+          <div style={{ flex: '1', minWidth: '260px', background: '#ffffff', borderRadius: '8px', border: '1px solid #cbd5e1', padding: '12px', textAlign: 'center' }}>
+            <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#475569', marginBottom: '8px' }}>Render Asistido por IA (Perspectiva Visual)</div>
+            <img src={aiUrl} alt="Render de Planta" style={{ width: '100%', maxHeight: '240px', objectFit: 'contain', borderRadius: '6px', boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }} />
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

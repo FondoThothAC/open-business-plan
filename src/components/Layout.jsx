@@ -5,7 +5,7 @@ import { usePlan } from '../context/PlanContext';
 import { PROJECT_EXAMPLES } from '../lib/projects_db';
 import { FRAMEWORKS } from '../config/frameworks';
 import { getApiBase } from '../config/apiConfig';
-import { buildSemanticUrl } from '../config/urlRouting';
+import { buildSemanticUrl, FRAMEWORK_SLUG_MAP } from '../config/urlRouting';
 import ActivityFeed from './ActivityFeed';
 import GenerationControls from './GenerationControls';
 import BobChatModal from './BobChatModal';
@@ -344,10 +344,11 @@ export default function Layout() {
   };
 
   // [UXDD] Cálculo dinámico de pilares a renderizar en la barra lateral:
-  // - Pilares de la metodología activa (ej. business)
-  // - Más el pilar activo en la ruta actual si pertenece a otra metodología (ej. mercado_cuantitativo de investment_project)
-  // - Más cualquier pilar de cualquier metodología que contenga datos capturados en planData
-  const activeFrameworkKey = planData?.config?.projectType || 'business';
+  // 1. Detectar si la ruta actual es semántica (ej. /microempresa/croquis/sove o /obp/microempresa/...)
+  const cleanPath = location.pathname.replace(/^\/obp\//, '/').replace(/^\//, '');
+  const pathSegments = cleanPath.split('/').filter(Boolean);
+  const semanticDocType = pathSegments.length > 0 ? FRAMEWORK_SLUG_MAP[pathSegments[0]] : null;
+  const activeFrameworkKey = semanticDocType || planData?.config?.projectType || 'business';
   const activeFramework = FRAMEWORKS[activeFrameworkKey] || FRAMEWORKS.business;
 
   const displayedPillars = useMemo(() => {
@@ -489,7 +490,7 @@ export default function Layout() {
                 </span>
               </div>
               <select
-                value={planData?.config?.projectType || 'business'}
+                value={activeFrameworkKey}
                 onChange={(e) => {
                   const newType = e.target.value;
                   updateConfig('projectType', null, newType);
@@ -526,7 +527,7 @@ export default function Layout() {
 
               if (isSidebarCollapsed) {
                 const firstModule = pillar.modules[0];
-                const destPath = buildSemanticUrl({ projectType: planData?.config?.projectType, moduleId: firstModule.key, slug: currentProjectSlug });
+                const destPath = buildSemanticUrl({ projectType: activeFrameworkKey, moduleId: firstModule.key, slug: currentProjectSlug });
                 return (
                   <NavLink 
                     key={pillar.key} 
@@ -572,7 +573,7 @@ export default function Layout() {
                       {pillar.modules.map(module => (
                         <NavLink 
                            key={module.key} 
-                           to={buildSemanticUrl({ projectType: planData?.config?.projectType, moduleId: module.key, slug: currentProjectSlug })} 
+                           to={buildSemanticUrl({ projectType: activeFrameworkKey, moduleId: module.key, slug: currentProjectSlug })} 
                            className="module-item"
                         >
                            {module.title}

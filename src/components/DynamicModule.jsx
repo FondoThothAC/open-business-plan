@@ -316,11 +316,11 @@ export default function DynamicModule() {
         extraAction={extraAction}
       />
 
-      {pillarId === 'tecnico' && moduleId === 'croquis' && (
+      {(moduleId === 'croquis' || moduleId === 'layout' || moduleId === 'instalaciones') && (
         <MicroCroquisEditor 
-          data={planData?.tecnico?.croquis} 
-          onUpdateField={(field, val) => updateSection('tecnico', 'croquis', { [field]: val })}
-          companyName={planData?.config?.brandKit?.companyName || planData?.semilla?.nombre_proyecto || 'Mi Microempresa'}
+          data={planData?.[pillarId]?.[moduleId] || planData?.tecnico?.croquis || planData?.ingenieria?.layout} 
+          onUpdateField={(field, val) => updateSection(pillarId, moduleId, { [field]: val })}
+          companyName={planData?.config?.brandKit?.companyName || planData?.semilla?.nombre_proyecto || planData?.semilla?.negocio?.nombre || 'Mi Empresa'}
         />
       )}
 

@@ -28,6 +28,7 @@ import MultiScenarioFinancialSection from '../components/MultiScenarioFinancialS
 import { BOX_REGISTRY } from '../config/boxRegistry';
 import { getBoxIdsForModule } from '../config/moduleBoxMap';
 import { RenderBox } from '../components/boxes';
+import { CroquisPreviewWidget } from '../components/MicroCroquisEditor';
 
 function readJson(raw, fallback) {
   if (!raw || typeof raw !== 'string') return fallback;
@@ -2974,6 +2975,17 @@ export default function VistaPrevia() {
                         <HubspotBuyerPersona value={planData?.[mod.pillarKey]?.[mod.key]?.perfil} />
                       </>
                     )}
+                  </div>
+                ) : (mod.key === 'croquis' || mod.key === 'layout' || mod.key === 'instalaciones') ? (
+                  <div style={{ marginBottom: '1.5rem' }}>
+                    <Section 
+                      number={sectionNumber}
+                      title={mod.title} 
+                      data={planData?.[mod.pillarKey]?.[mod.key]} 
+                      pillarKey={mod.pillarKey}
+                      moduleKey={mod.key}
+                    />
+                    <CroquisPreviewWidget data={planData?.[mod.pillarKey]?.[mod.key] || planData?.tecnico?.croquis || planData?.ingenieria?.layout} />
                   </div>
                 ) : (mod.key === 'arbol_problemas' || mod.key === 'arbol_objetivos') ? (
                   <div style={{ marginBottom: '1.5rem' }}>
