@@ -162,6 +162,13 @@ export const BOX_REGISTRY = {
       title: 'Micro-Canvas de 3 Bloques (Clientes, Oferta, Finanzas)',
       description: 'Lienzo simplificado para negocios locales de autoempleo.',
       source: { book: 'Starting a Business QuickStart Guide', page: 'Ch. 3' }
+    },
+    {
+      id: 'box_micro_croquis_2d',
+      type: BOX_TYPES.CANVAS,
+      title: 'Diseñador de Croquis 2D y Distribución con IA',
+      description: 'Plano interactivo con bloques de equipamiento comercial y renders arquitectónicos.',
+      source: { book: 'Manual de Plan de Negocios Panamá (Cap. 9)', page: 'p. 24' }
     }
   ],
   hoshin_kanri: [

@@ -18,6 +18,7 @@ import OrganigramaInteractivo from './OrganigramaInteractivo';
 import ArbolProblemasObjetivos from './ArbolProblemasObjetivos';
 import XMatrixHoshinKanri from './XMatrixHoshinKanri';
 import AmoebaStructureViewer from './AmoebaStructureViewer';
+import MicroCroquisEditor from './MicroCroquisEditor';
 
 const BusinessModelSelector = ({ value, onChange }) => {
   const models = [
@@ -67,7 +68,6 @@ export default function DynamicModule() {
   const { pillarId: paramPillarId, moduleId: paramModuleId, tipoDoc, slug } = useParams();
   const { planData, updateStaff, updateProcesses, updateSection, loadProjectBySlug } = usePlan();
 
-  // Si la URL contiene un slug de proyecto, intentar hidratarlo automáticamente
   useEffect(() => {
     if (slug && loadProjectBySlug) {
       loadProjectBySlug(slug);
@@ -78,13 +78,10 @@ export default function DynamicModule() {
   const moduleId = paramModuleId;
   let pillarId = paramPillarId;
 
-  // Si la URL viene simplificada sin pillarId (ej. /obp/proyecto-inversion/demanda/comercio-cuantico),
-  // inferir automáticamente el pilar padre a partir del marco y módulo
   if (!pillarId && moduleId) {
     pillarId = resolvePillarFromModule(effectiveFrameworkKey, moduleId);
   }
 
-  // Si aún no se encontró el pilar, buscar en todos los frameworks registrados
   if (!pillarId && moduleId) {
     for (const fw of Object.values(FRAMEWORKS)) {
       const found = fw.pillars?.find(p => p.modules?.some(m => m.key === moduleId));
@@ -98,8 +95,6 @@ export default function DynamicModule() {
   const activeFramework = FRAMEWORKS[effectiveFrameworkKey] || FRAMEWORKS.business;
   let pillar = activeFramework?.pillars?.find(p => p.key === pillarId);
 
-  // Si el pilar no se encuentra en el framework activo (ej. navegación directa a mercado_cuantitativo),
-  // buscar en todos los frameworks disponibles en el sistema
   if (!pillar) {
     for (const fwKey of Object.keys(FRAMEWORKS)) {
       const foundPillar = FRAMEWORKS[fwKey]?.pillars?.find(p => p.key === pillarId);
@@ -115,7 +110,6 @@ export default function DynamicModule() {
   const moduleDef = pillar.modules?.find(m => m.key === moduleId);
   if (!moduleDef) return <Navigate to="/semilla" replace />;
 
-  // Special Case: OrgEstructura (Organigrama + Staff Table)
   useEffect(() => {
     if (pillarId === 'organizacion' && moduleId === 'estructura' && planData?.organizacion?.staff) {
       const staff = planData.organizacion.staff || [];
@@ -132,7 +126,6 @@ export default function DynamicModule() {
     }
   }, [planData?.organizacion?.staff, pillarId, moduleId]);
 
-  // Special Case: TecnicoOperacion (Auto-generate Mermaid from Process Table)
   useEffect(() => {
     if (pillarId === 'tecnico' && moduleId === 'operacion' && planData?.tecnico?.processes) {
       const processes = planData.tecnico.processes || [];
@@ -151,7 +144,6 @@ export default function DynamicModule() {
     }
   }, [planData?.tecnico?.processes, pillarId, moduleId]);
 
-  // Transform fields
   let fieldsFormatted = (moduleDef.fields || []).map(f => {
     if (typeof f === 'string') {
       return {
@@ -163,7 +155,6 @@ export default function DynamicModule() {
     return f;
   });
 
-  // Special Case: OrgCostos (Dynamic Payroll label)
   if (pillarId === 'organizacion' && moduleId === 'costos') {
     const payroll = planData?.organizacion?.staff?.reduce((acc, curr) => acc + (curr.salary || 0), 0) || 0;
     fieldsFormatted = fieldsFormatted.map(f => 
@@ -186,15 +177,14 @@ export default function DynamicModule() {
 
   const projectContext = planData?.semilla?.negocio?.giro || planData?.semilla?.negocio?.nombre || 'servicios profesionales';
   
-  let defaultScian = '0'; // '0' = Todos los sectores
+  let defaultScian = '0';
   const contextLower = projectContext.toLowerCase();
   if (contextLower.includes('miner') || contextLower.includes('hidráulic') || contextLower.includes('cuántico')) {
-    defaultScian = '213'; // Servicios relacionados con la minería
+    defaultScian = '213';
   } else if (contextLower.includes('alimento') || contextLower.includes('restaurante')) {
     defaultScian = '722';
   }
 
-  // Especial: panel geoespacial.
   const isMapModule = (
     (pillarId === 'mercado' && moduleId === 'competencia') ||
     (pillarId === 'mercado' && moduleId === 'mapa') ||
@@ -291,25 +281,10 @@ export default function DynamicModule() {
     );
   }
 
-  // Especial: Social BID & ZOPP Árbol de Problemas y Objetivos
-  const isArbolLogico = (
-    moduleId === 'arbol_problemas' ||
-    moduleId === 'arbol_objetivos' ||
-    (pillarId === 'diagnostico' && moduleId === 'arbol_problemas')
-  );
-
-  // Especial: Hoshin Kanri Matriz X
-  const isHoshinKanri = (
-    effectiveFrameworkKey === 'hoshin_kanri' ||
-    moduleId === 'matriz_x' ||
-    moduleId === 'alineacion_estrategica'
-  );
-
-  // Especial: Amoeba Management Estructura Celular
-  const isAmoeba = (
-    effectiveFrameworkKey === 'amoeba_management' &&
-    (moduleId === 'celulas_autonomas' || moduleId === 'rentabilidad' || moduleId === 'estructura')
-  );
+  const isZopp = effectiveFrameworkKey === 'zopp' || activeFramework?.id === 'zopp';
+  const isArbolLogico = isZopp && (moduleId === 'problemas' || moduleId === 'objetivos' || moduleId === 'arbol_logico' || moduleId === 'arbol_problemas');
+  const isHoshinKanri = effectiveFrameworkKey === 'hoshin_kanri' || activeFramework?.id === 'hoshin_kanri' || moduleId === 'matriz_x' || moduleId === 'alineacion_estrategica';
+  const isAmoeba = effectiveFrameworkKey === 'amoeba_management' || activeFramework?.id === 'amoeba_management' || (moduleId === 'celulas_autonomas' || moduleId === 'rentabilidad' || moduleId === 'estructura');
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
@@ -340,6 +315,14 @@ export default function DynamicModule() {
         fields={fieldsFormatted}
         extraAction={extraAction}
       />
+
+      {pillarId === 'tecnico' && moduleId === 'croquis' && (
+        <MicroCroquisEditor 
+          data={planData?.tecnico?.croquis} 
+          onUpdateField={(field, val) => updateSection('tecnico', 'croquis', { [field]: val })}
+          companyName={planData?.config?.brandKit?.companyName || planData?.semilla?.nombre_proyecto || 'Mi Microempresa'}
+        />
+      )}
 
       {pillarId === 'organizacion' && moduleId === 'estructura' && (
         <>

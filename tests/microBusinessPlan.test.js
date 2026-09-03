@@ -81,4 +81,55 @@ describe('Microempresa y Autoempleo (micro_business) - TDD Test Suite', () => {
     const mode = CanvasBuilder.resolveModeForDocType('micro_business');
     assert.strictEqual(mode, CanvasBuilder.MODES.MICRO, 'micro_business debe usar el canvas simplificado de 3 bloques');
   });
+
+  it('calculateLayoutMetrics debe calcular superficie, áreas ocupadas y circulación ergonómica', async () => {
+    const { calculateLayoutMetrics } = await import('../src/lib/croquisGenerator.js');
+    
+    // Taller de 4m x 3m = 12 m² con 2 bloques
+    const elements = [
+      { id: '1', name: 'Mesa Inox', widthM: 1.8, lengthM: 0.8 }, // 1.44 m²
+      { id: '2', name: 'Horno', widthM: 1.0, lengthM: 0.9 }       // 0.90 m² -> Total ocupado: 2.34 m²
+    ];
+
+    const metrics = calculateLayoutMetrics(4, 3, elements);
+    assert.strictEqual(metrics.totalM2, 12);
+    assert.strictEqual(metrics.occupiedM2, 2.34);
+    assert.strictEqual(metrics.freeM2, 9.66);
+    assert.strictEqual(metrics.freePercentage, 81); // (9.66 / 12) * 100 ~ 81%
+    assert.strictEqual(metrics.circulationStatus, 'Optima');
+  });
+
+  it('buildArchitecturalPrompt y buildCroquisImageUrl deben construir payloads válidos para IA', async () => {
+    const { buildArchitecturalPrompt, buildCroquisImageUrl, CROQUIS_STYLES } = await import('../src/lib/croquisGenerator.js');
+
+    const elements = [
+      { name: 'Mesa Central de Acero' },
+      { name: 'Horno de Convección' }
+    ];
+
+    const promptBlueprint = buildArchitecturalPrompt({ giro: 'Repostería', widthMeters: 4, lengthMeters: 3 }, elements, 'cad_blueprint');
+    assert.ok(promptBlueprint.includes('Repostería'));
+    assert.ok(promptBlueprint.includes('12 square meters'));
+    assert.ok(promptBlueprint.includes(CROQUIS_STYLES.cad_blueprint.promptSuffix));
+
+    const promptIsometric = buildArchitecturalPrompt({ giro: 'Estudio de Grabación', widthMeters: 5, lengthMeters: 4 }, elements, 'isometric_3d');
+    assert.ok(promptIsometric.includes('Estudio de Grabación'));
+    assert.ok(promptIsometric.includes('20 square meters'));
+    assert.ok(promptIsometric.includes(CROQUIS_STYLES.isometric_3d.promptSuffix));
+
+    const url = buildCroquisImageUrl(promptBlueprint, { width: 1024, height: 768 });
+    assert.ok(url.startsWith('https://image.pollinations.ai/prompt/'));
+    assert.ok(url.includes('width=1024'));
+    assert.ok(url.includes('height=768'));
+    assert.ok(url.includes('model=flux'));
+  });
+
+  it('boxRegistry debe incluir box_micro_croquis_2d en micro_business', async () => {
+    const { BOX_REGISTRY } = await import('../src/config/boxRegistry.js');
+    const microBoxes = BOX_REGISTRY.micro_business || [];
+    const croquisBox = microBoxes.find(b => b.id === 'box_micro_croquis_2d');
+    
+    assert.ok(croquisBox, 'box_micro_croquis_2d debe estar registrado en BOX_REGISTRY.micro_business');
+    assert.strictEqual(croquisBox.type, 'canvas');
+  });
 });
