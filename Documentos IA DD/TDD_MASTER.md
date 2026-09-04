@@ -28,8 +28,12 @@
 | **TDD-17** | `Data Provenance Contract & Goal-Oriented Loop` | Unitaria / Integración | Valida contrato estricto de procedencia (`verified_real`, `synthetic_estimate`, `not_found`), prohibición de alucinación silenciosa en `tool_web_search` e `tool_inegi_denue`, priorización de Fila 1 (Freemium/Local) sobre Fila 2 (Premium), y bucle ReAct autónomo con criterios de parada. |
 | **TDD-18** | `Search Config Canonical Schema & Provenance Library` | Unitaria / Integración | Valida normalización de `config.search`, migración de aliases legacy (`tavilyApiKey` -> `apiKey`, `duckDuckGoEnabled` -> `enableDdg`), funciones puras de procedencia y estado honesto vacío. |
 | **TDD-19** | `tool_web_search Real Search & Anti-Fabrication` | Unitaria / Integración | Redirección formal de `tool_web_search` a `POST /api/search` con contrato de procedencia, eliminación de los 3 competidores fake, retorno de estado honesto vacío y serialización estricta de fuentes reales en el prompt. |
+| **TDD-20** | `Synthetic Data Eradication & Explicit Opt-In` | Unitaria / Integración | `allowSynthetic: false` por defecto en `/api/market/competitors` y `busquedaMultiFuente`; si no hay competidores reales, retorna lista vacía con `provenance: 'none'` sin fabricar datos a menos que el usuario lo solicite explícitamente. |
+| **TDD-21** | `Brave Search Freemium & Monthly Quota Tracking` | Unitaria / Integración | Soporte formal para Brave Search API (`GET /res/v1/web/search`), persistencia mensual de consumo en `search_quota.json`, pausa automática al agotar cuota y failover seguro a DuckDuckGo. |
+| **TDD-22** | `Real Machinery & Supplier Endpoints (Anti-Fake)` | Unitaria / Integración | Implementación de `/api/market/search` y `/api/market/suppliers` con datos reales; erradicación completa de tablas de benchmark ficticias y proveedores ficticios en `tool_machinery_search` y `tool_supplier_search`. |
+| **TDD-23** | `ProvenanceBadge & Reactive Quota Drawer (UI/UX)` | Unitaria / Componente | Exportación de `getProvenanceBadgeConfig` y `ProvenanceBadge` en `TerminalDrawer`, alertas reactivas de autorización de cuota Fila 1/2 y visualización de fuentes 100% factuales. |
 
-**Estado de Ejecución:** 157 tests pasando al 100% (26 suites, 0 fallos).
+**Estado de Ejecución:** 180 tests pasando al 100% (26 suites, 0 fallos).
 
 ---
 

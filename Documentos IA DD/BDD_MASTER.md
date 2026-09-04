@@ -82,3 +82,16 @@ Escenario: Investigación web sin fabricación de datos y con priorización de F
   Y el bucle ReAct autónomo evalúa hasta 3 rondas y se detiene automáticamente al cumplir la meta o agotar las rondas.
 ```
 
+## Escenario 8: Control Reactivo de Cuotas y Visualización de Procedencia en TerminalDrawer
+```gherkin
+Escenario: Pausa por cuota en Fila 1 y autorización inmediata desde la interfaz
+  Dado que una investigación en ejecución alcanza el límite mensual gratuito de Brave Search (2,000 req) o Tavily (1,000 req)
+  Y el usuario no ha autorizado la Fila 2 de pago (allowPaidTier = false)
+  Cuando el servidor detecta el agotamiento de la cuota
+  Entonces la tarea se transfiere a estado "paused_waiting_quota" sin fallar
+  Y la consola TerminalDrawer despliega una tarjeta de alerta con dos opciones de resolución
+  Y si el usuario presiona "💎 Autorizar Fila 2 (Pago)", el sistema activa allowPaidTier y reanuda la tarea en Exa/Perplexity
+  Y si el usuario presiona "🦆 Usar DuckDuckGo (Gratis)", el sistema conmuta a DuckDuckGo y reanuda la tarea sin costo
+  Y todas las fuentes recopiladas se muestran con su ProvenanceBadge (Factual Verificado / Hardware Local / Estimación / Sin Datos).
+```
+

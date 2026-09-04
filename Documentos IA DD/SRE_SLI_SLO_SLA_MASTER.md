@@ -11,6 +11,7 @@
 * **SLI-04 (Latencia de Registro de Trayectoria DeepSeek Harness):** Tiempo de cálculo y persistencia del DAG de razonamiento por paso (Target: < 15ms).
 * **SLI-05 (Disponibilidad Subfolder `/obp/` & API Health):** Porcentaje de sondeos exitosos (HTTP 200) a `https://fondothoth.com/obp/api/health` y assets estáticos (Target: > 99.9%).
 * **SLI-06 (Latencia de Auto-Pausa por Cuota en Deep Research):** Tiempo transcurrido entre la detección de saturación de cuota y el resguardo de la tarea en estado `paused_waiting_quota` (Target: < 50ms).
+* **SLI-07 (Integridad Factual de Datos Externos):** Porcentaje de registros de mercado, maquinaria y proveedores con procedencia real verificada o estado honesto vacío sin fabricación sintética no autorizada (Target: 100.0%).
 
 ---
 
@@ -21,6 +22,7 @@
 * **SLO-03:** 100% de persistencia de trazas agénticas accesibles para auditoría en el navegador.
 * **SLO-04:** 0 errores 404/502 al navegar directamente a rutas internas (ej. `/obp/semilla`, `/obp/vista-previa`) gracias al fallback SPA en Nginx.
 * **SLO-05:** 100% de tareas de Deep Research interrumpidas por falta de cuota o saldo deben resguardar sus fuentes parciales, estado y linaje Cordis sin pérdida de datos.
+* **SLO-06 (Cero Fabricación de Datos):** 0 inserciones silenciosas de cotizaciones, precios de benchmark o competidores fabricados en planes de negocio; cualquier vacío de mercado debe declararse explícitamente como limitación en la formulación.
 
 ---
 

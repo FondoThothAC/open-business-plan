@@ -7,7 +7,8 @@
 
 ### Átomos
 * `Button`: Botones primarios, secundarios, de IA y estados de carga.
-* `Badge`: Indicadores de estado de proveedores (`ApiStatusBadge.jsx`), semáforos de viabilidad, tags de área atómica y badges de procedencia de datos (`verified_real`, `synthetic_estimate`, `not_found`).
+* `Badge`: Indicadores de estado de proveedores (`ApiStatusBadge.jsx`), semáforos de viabilidad, tags de área atómica.
+* `ProvenanceBadge`: Badge atómico de procedencia de datos (`real` / `verified_real`, `local_offline`, `synthetic` / `synthetic_estimate`, `none`) con iconos distintivos (🟢, 🟡, 🔴, ⚪), tooltips contextuales y colores de alto contraste dark mode.
 * `Input` / `Select`: Entradas de texto sanitizadas, campos de clave y selectores de modelo.
 
 ### Moléculas
@@ -20,7 +21,7 @@
 
 ### Organismos
 * `AgentTrajectoryViewer`: Modal interactivo y visor DAG compatible con `dsh-session-v0.1` (meta-kernel Cordis), con controles de Replay interactivo (Play/Pause, scrub lineal, velocidad 1x/2x/5x), modal de Hot Forking para bifurcación en caliente desde cualquier nodo, inspector JSON y métricas.
-* `TerminalDrawer`: Consola inferior retráctil estilo IDE con pestañas de logs streaming SSE en vivo, visor de trayectorias Harness/Cordis, lanzador de Deep Research Online con autorización de presupuesto y monitor de tareas activas.
+* `TerminalDrawer`: Consola inferior retráctil estilo IDE con pestañas de logs streaming SSE en vivo, visor de trayectorias Harness/Cordis, lanzador de Deep Research Online con autorización de presupuesto, panel de fuentes factuales verificadas (`ProvenanceBadge`), control reactivo de auto-pausa por cuotas y monitor dedicado de cuotas mensuales persistidas (`Cuotas & Fila 1/2`).
 * `MachineryRfqModal`: Modal formal para cotización de maquinaria pesada B2B conectado directamente a `ModuloOperaciones`, con descarga de paquetes RFQ, envío de correos a distribuidores autorizados y actualización automática de CAPEX/VAN/TIR.
 * `BobChatModal`: Modal interactivo de copiloto con soporte de reconocimiento de voz y debate estratégico.
 * `InegiMap`: Mapa geoespacial interactivo con capas de competidores DENUE y cálculo de densidad.

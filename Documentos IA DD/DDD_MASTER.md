@@ -12,6 +12,9 @@
 * **CELIS Agentic Engine (Domain Service):** Motor autónomo ReAct que orquesta pensamientos, llamadas a herramientas, observaciones y reflexiones.
 * **Trayectoria Cognitiva (Value Object / DeepSeek Harness):** Registro inmutable en formato DAG que captura cada paso de razonamiento, duración y herramientas utilizadas.
 * **Herramienta Agéntica (Domain Tool):** Función ejecutable en vivo (`tool_web_search`, `tool_inegi_denue`, `tool_financial_engine`, `tool_quantum_diagnostic`, etc.).
+* **Procedencia de Datos (Value Object):** Clasificación ontológica estricta del origen de un registro (`real`, `local_offline`, `synthetic`, `none`), con URL de origen y nivel de confianza.
+* **Estado Honesto Vacío (Value Object):** Representación de ausencia de información factual en fuentes abiertas; prohíbe la invención de empresas o precios inexistentes.
+* **Cuota Persistida (Value Object):** Contador mensual por proveedor (`YYYY-MM`) que regula el consumo de Fila 1 (Brave/Tavily) y bloquea cargos accidentales de Fila 2 sin autorización.
 * **Átomo de 3 Áreas (Value Object - Metodología Cuántica):** Tríada fundamental compuesta por Finanzas, Operaciones y Administración.
 * **Fusión Atómica (Anti-patrón):** Anomalía donde el fundador concentra las 3 áreas simultáneamente, exigiendo plan de delegación obligatorio.
 

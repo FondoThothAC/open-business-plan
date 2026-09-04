@@ -8,6 +8,8 @@
 * **Trazabilidad Cognitiva DeepSeek Harness:** Cada llamada a modelo o herramienta genera una traza visual navegable (DAG), permitiendo al usuario auditar el razonamiento, las fuentes consultadas y las decisiones del agente sin complejidad técnica.
 * **Feedback Continuo y Transparente:** La generación con IA en segundo plano nunca congela la pantalla; siempre expone el Monitor flotante en vivo con el paso exacto (ej. `Fase 3/9: Analista de Operaciones`) y pestañas para alternar entre logs SSE y trayectorias.
 * **Zero Interruption on Quotas:** Las saturaciones de cuotas de tokens (429) no alertan con modales de error que bloquean al usuario; se resuelven silenciosamente rotando de modelo o proveedor con Minimax-M3 como primera opción.
+* **Transparencia Radical de Procedencia (`ProvenanceBadge`):** Toda cifra, competidor y cotización exhibe su grado de veracidad mediante badges distintivos (🟢 Factual Verificado, 🟡 Hardware Local, 🔴 Estimación Sintética, ⚪ Sin Datos). Si un dato no se encuentra, el sistema no inventa; expone el estado honesto vacío para que el usuario conozca la limitación del mercado.
+* **Control Reactivo de Presupuesto:** Al alcanzar el tope mensual de Fila 1 gratuita (Brave/Tavily), la consola TerminalDrawer no lanza errores crípticos; muestra una tarjeta interactiva con botones de un solo clic para autorizar Fila 2 de pago o reanudar de inmediato en DuckDuckGo.
 * **Control Humano (HITL):** En todo momento el usuario puede pausar, detener, editar directamente o revisar sugerencias mediante control de cambios (Diff visual).
 * **Estética Premium:** Paleta en modos claro/oscuro balanceados, tipografías sans-serif de alta legibilidad, efectos de glassmorphism y micro-interacciones suaves.
 

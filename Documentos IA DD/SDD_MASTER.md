@@ -200,6 +200,27 @@ flowchart LR
     3. **Criterios de Parada:** El bucle concluye tempranamente cuando se satisface el objetivo, se alcanza la procedencia real requerida, o se agota el número máximo de rondas (evitando bucles infinitos y consumo excesivo de tokens).
     4. **Integración con Industrialización:** Activación granular de Deep Research por módulo o submódulo desde el modal de Industrialización, inyectando directivas estrictas de no-alucinación al modelo de síntesis final.
 
+* **Arquitectura de Cuotas Persistidas y Failover Seguro (`server/quotaTracker.js`):**
+  * Persistencia mensual en disco (`server/data/search_quota.json`) con llave temporal `YYYY-MM`.
+  * Límites configurables: Brave Search Freemium (2,000 req/mes) y Tavily Freemium (1,000 req/mes).
+  * Auto-pausa reactiva (`paused_waiting_quota`) cuando se alcanza el límite mensual y `allowPaidTier` está desactivado.
+  * Failover seguro a DuckDuckGo (Fila 1 Gratis Ilimitada) para garantizar continuidad operativa sin cargos monetarios accidentales.
+  * Endpoints de monitoreo: `GET /api/search/quota`, `GET /api/test/brave` y `GET /api/test/search`.
+
+* **Endpoints Reales de Mercado y Proveedores (Erradicación de Alucinaciones):**
+  * `ALL /api/market/search`: Scraping en tiempo real de cotizaciones industriales de maquinaria mediante DuckDuckGo industrial query builder y extracción limpia con Cheerio.
+  * `ALL /api/market/suppliers`: Geocodificación y búsqueda combinada en fuentes abiertas de proveedores y distribuidores en la región solicitada.
+  * Erradicación total de tablas y marcas hardcodeadas en `tool_machinery_search.js` y `tool_supplier_search.js`; estado honesto vacío `provenance: 'none'` cuando no existen cotizaciones verificadas.
+
+* **Visualización de Procedencia y Control Reactivo en UI (`TerminalDrawer.jsx`):**
+  * Componente `ProvenanceBadge` con codificación visual universal:
+    * 🟢 `real`: Factual Verificado (Brave, Tavily, DENUE Oficial).
+    * 🟡 `local_offline`: Hardware Local (Scraping local o caché offline).
+    * 🔴 `synthetic`: Estimación Sintética Heurística (solo con autorización explícita).
+    * ⚪ `none`: Sin Datos (Estado honesto vacío cuando no hay fuentes).
+  * Pestaña dedicada `Cuotas & Fila 1/2` con barras de progreso de consumo mensual.
+  * Control reactivo directo en tarjetas pausadas por cuota: botones para "💎 Autorizar Fila 2 (Pago)" o "🦆 Usar DuckDuckGo (Gratis)".
+
 ---
 
 ## 4. Diagrama Maestro de Arquitectura y Flujos en yEd Graph Editor

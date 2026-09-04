@@ -21,3 +21,7 @@
 | **F12** | Monitor de Eventos | ActivityFeed en tiempo real con streaming de CoT / logs SSE | ✅ Implementado |
 | **F13** | Motor Agéntico ReAct | Ciclo cognitivo autónomo con ejecución de herramientas en vivo (`agentTools.js`) | ✅ Implementado |
 | **F14** | Trazabilidad DeepSeek Harness | Visor interactivo y exportador de árboles DAG de razonamiento y tools | ✅ Implementado |
+| **F15** | Deep Research & Cuotas Fila 1/2 | Búsqueda profunda multinivel con Brave Search Freemium (2,000 req/mes), Tavily y cuotas persistidas | ✅ Implementado |
+| **F16** | Endpoints Reales de Mercado | Cotizaciones reales de maquinaria y proveedores con erradicación total de benchmarks inventados | ✅ Implementado |
+| **F17** | ProvenanceBadge & Control Reactivo | Visualización universal de procedencia en 4 niveles y auto-pausa reactiva en TerminalDrawer | ✅ Implementado |
+

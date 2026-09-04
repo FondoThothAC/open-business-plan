@@ -28,3 +28,7 @@ npm run build
 * `VITE_OPENROUTER_KEY`: Clave de OpenRouter (capa free/paid).
 * `VITE_NVIDIA_KEY`: Clave de NVIDIA NIM.
 * `VITE_DENUE_KEY`: Token de consulta a la API de INEGI DENUE.
+* `BRAVE_SEARCH_KEY`: Clave de Brave Search API (Fila 1 Freemium, 2,000 req/mes).
+* `TAVILY_API_KEY`: Clave de Tavily AI Search (Fila 1 Freemium, 1,000 req/mes).
+* `EXA_API_KEY`: Clave de Exa.ai Neural Search (Fila 2 Premium).
+* `PERPLEXITY_API_KEY`: Clave de Perplexity Sonar (Fila 2 Premium).

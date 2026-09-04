@@ -15,7 +15,8 @@
 | `openplan_module_completed` | `PlanContext` (Industrialización) | `{ moduleTitle, moduleKey, pillar, progress, tokens, provider, model }` | ActivityFeed, Barra de Progreso |
 | `openplan_navigate` | `PlanContext` / `BobChatModal` | `{ detail: '/modulo/pilar/modulo' }` | `Layout.jsx` (Navegación reactiva) |
 | `openplan_research_started` | `TerminalDrawer` / `deepResearchEngine` | `{ taskId, query, budgetLimitUsd }` | `Layout.jsx` (Campana de Notificaciones) |
-| `openplan_research_completed` | `TerminalDrawer` / `deepResearchEngine` | `{ taskId, query, sourcesCount, status }` | `Layout.jsx` (Campana de Notificaciones) |
+| `openplan_research_completed` | `TerminalDrawer` / `deepResearchEngine` | `{ taskId, query, sourcesCount, status, sources }` | `TerminalDrawer.jsx`, `Layout.jsx` (Notificaciones) |
+| `openplan_research_paused` | `TerminalDrawer` / `quotaTracker` | `{ taskId, query, warning, status: 'paused_waiting_quota' }` | `TerminalDrawer.jsx`, `Layout.jsx` (Alerta reactiva) |
 | `success` | Orquestador de Fase | `{ type: 'success', message: '✓ Completado', provider }` | Barra de Progreso Global |
 | `error` | Fallback Handler | `{ type: 'error', message: 'Fallo...', provider }` | Toast Alerts / Error Boundary |
 

@@ -39,7 +39,24 @@
       "openrouterKey": "String (Pool)",
       "depth": 1,
       "model": "String"
+    },
+    "search": {
+      "provider": "duckduckgo | brave | tavily | exa | perplexity",
+      "apiKey": "String (Tavily API Key)",
+      "braveApiKey": "String (Brave Search API Key)",
+      "enableDdg": "Boolean",
+      "scraperEngine": "local | cheerio | puppeteer",
+      "allowPaidTier": "Boolean",
+      "failover": "Boolean"
     }
+  },
+  "provenance_contract": {
+    "provenance": "real | local_offline | synthetic | none",
+    "provider": "String | null",
+    "sourceUrl": "String | null",
+    "retrievedAt": "ISO8601 String",
+    "confidenceScore": "Number (0.0 a 1.0)",
+    "warning": "String | undefined"
   },
   "modulos": {
     "demanda": {
