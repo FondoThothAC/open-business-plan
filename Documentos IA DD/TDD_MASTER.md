@@ -27,8 +27,9 @@
 | **TDD-16** | `DeepSeek Harness dsh v0.1 & Deep Research Engine` | Unitaria / Integración | Valida especificación `dsh-session-v0.1` Cordis, forking de sesión con preservación de linaje (`forkAtNode`), timeline de replay (`getReplayTimeline`), registro de `tool_deep_research`, ejecución con capa gratuita y auto-pausa por cuota (`paused_waiting_quota`). |
 | **TDD-17** | `Data Provenance Contract & Goal-Oriented Loop` | Unitaria / Integración | Valida contrato estricto de procedencia (`verified_real`, `synthetic_estimate`, `not_found`), prohibición de alucinación silenciosa en `tool_web_search` e `tool_inegi_denue`, priorización de Fila 1 (Freemium/Local) sobre Fila 2 (Premium), y bucle ReAct autónomo con criterios de parada. |
 | **TDD-18** | `Search Config Canonical Schema & Provenance Library` | Unitaria / Integración | Valida normalización de `config.search`, migración de aliases legacy (`tavilyApiKey` -> `apiKey`, `duckDuckGoEnabled` -> `enableDdg`), funciones puras de procedencia y estado honesto vacío. |
+| **TDD-19** | `tool_web_search Real Search & Anti-Fabrication` | Unitaria / Integración | Redirección formal de `tool_web_search` a `POST /api/search` con contrato de procedencia, eliminación de los 3 competidores fake, retorno de estado honesto vacío y serialización estricta de fuentes reales en el prompt. |
 
-**Estado de Ejecución:** 151 tests pasando al 100% (26 suites, 0 fallos).
+**Estado de Ejecución:** 157 tests pasando al 100% (26 suites, 0 fallos).
 
 ---
 
