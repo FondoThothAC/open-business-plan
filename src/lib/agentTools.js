@@ -6,7 +6,7 @@
 
 import { estimateBusinessMetrics, classifyEstablishmentType, calculateOptimalLocation } from './territorialEngine.js';
 import { getApiBase } from '../config/apiConfig.js';
-import { summarizeProvenance, buildSearchApiKeys } from './tools/provenance.js';
+import { summarizeProvenance, buildSearchApiKeys, tagReal } from './tools/provenance.js';
 
 export function runQuantumDiagnostic({ areas = ['operativo'], _teamSize = 3 } = {}) {
   const normalizedAreas = (areas || []).map(a => String(a).toLowerCase().trim());
@@ -183,6 +183,88 @@ export const AGENT_TOOLS_MANIFEST = [
   }
 ];
 
+// Función completa de búsqueda web conectada a endpoint real /api/search con contrato de procedencia
+export async function executeToolWebSearch(args = {}, planContext = {}, startTime = Date.now(), seedGiro = '', seedLocation = 'México') {
+  const query = args.query || seedGiro || 'negocio';
+  const location = args.location || seedLocation;
+  const limit = args.limit || 5;
+  const forceSimulateNoResults = Boolean(args.forceSimulateNoResults);
+
+  let results = [];
+  if (!forceSimulateNoResults) {
+    try {
+      const apiBase = planContext?.config?.apiBase || getApiBase();
+      const searchConfig = planContext?.config?.search || {};
+      const provider = searchConfig.provider || 'duckduckgo';
+      const apiKey = searchConfig.apiKey || '';
+      const searchQuery = `${query} en ${location}`;
+
+      const resp = await fetch(`${apiBase}/api/search`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          query: searchQuery,
+          provider,
+          apiKey
+        }),
+        signal: AbortSignal.timeout(6000)
+      });
+
+      if (resp.ok) {
+        const data = await resp.json();
+        if (data?.results && Array.isArray(data.results) && data.results.length > 0) {
+          results = data.results.slice(0, limit).map(r => {
+            const realTag = tagReal(r.provider || data.provider || provider, r.url);
+            return {
+              title: r.title || 'Resultado Web',
+              url: r.url || null,
+              snippet: r.snippet || '',
+              pricingAvg: r.pricingAvg || null,
+              location,
+              ...realTag
+            };
+          });
+        }
+      }
+    } catch {
+      // Fallo de red o servidor no disponible: se asume ausencia de fuentes verificadas
+    }
+  }
+
+  // Estado honesto vacío: CERO fabricación silenciosa de competidores falsos
+  if (results.length === 0) {
+    return {
+      success: true,
+      toolName: 'tool_web_search',
+      executionTimeMs: Date.now() - startTime,
+      data: {
+        provenance: 'none',
+        isFactualVerified: false,
+        warning: `Sin datos verificados para "${query} en ${location}" en fuentes web públicas. No se inventaron competidores sintéticos.`,
+        searchQuery: `${query} (${location})`,
+        competitorsFound: 0,
+        results: [],
+        marketInsight: `Sin datos verificados para "${query} en ${location}". Se declara la limitación informativa.`
+      }
+    };
+  }
+
+  return {
+    success: true,
+    toolName: 'tool_web_search',
+    executionTimeMs: Date.now() - startTime,
+    data: {
+      provenance: 'real',
+      isFactualVerified: true,
+      warning: null,
+      searchQuery: `${query} (${location})`,
+      competitorsFound: results.length,
+      results,
+      marketInsight: `El mercado en ${location} para ${query} presenta ${results.length} competidores verificados en fuentes web activas.`
+    }
+  };
+}
+
 // Ejecutor interno de herramientas agénticas
 async function _executeAgentToolInternal(toolName, args, planContext = {}) {
   const startTime = Date.now();
@@ -212,93 +294,7 @@ async function _executeAgentToolInternal(toolName, args, planContext = {}) {
       }
 
       case 'tool_web_search': {
-        const query = args.query || seedGiro || 'negocio';
-        const location = args.location || seedLocation;
-        const limit = args.limit || 5;
-        const allowSyntheticEstimate = args.allowSyntheticEstimate !== false;
-        const forceSimulateNoResults = Boolean(args.forceSimulateNoResults);
-
-        // Intentar consultar backend o generar simulación de alta fidelidad basada en datos de mercado
-        let results = [];
-        if (!forceSimulateNoResults) {
-          try {
-            const apiBase = planContext?.config?.apiBase || 'http://localhost:3001';
-            const resp = await fetch(`${apiBase}/api/scraping/competitors?query=${encodeURIComponent(`${query} en ${location}`)}&limit=${limit}`, {
-              signal: AbortSignal.timeout(4000)
-            });
-            if (resp.ok) {
-              const data = await resp.json();
-              if (data?.results && data.results.length > 0) {
-                results = data.results.map(r => ({
-                  ...r,
-                  provenance: 'verified_real',
-                  retrievedAt: new Date().toISOString()
-                }));
-              }
-            }
-          } catch {
-            // Fallo de backend o red
-          }
-        }
-
-        // Si no se hallaron resultados reales
-        if (results.length === 0) {
-          if (allowSyntheticEstimate) {
-            // Estimación heurística explícitamente autorizada por el usuario
-            results = [
-              { title: `Competidor Líder (Estimado): ${query} Central`, pricingAvg: '$45 - $120 MXN', marketShare: '28%', rating: 4.6, location, provenance: 'synthetic_estimate', retrievedAt: new Date().toISOString() },
-              { title: `Servicio Alternativo (Estimado): ${query} Express`, pricingAvg: '$35 - $85 MXN', marketShare: '19%', rating: 4.2, location, provenance: 'synthetic_estimate', retrievedAt: new Date().toISOString() },
-              { title: `Opción Premium (Estimada): ${query} Boutique`, pricingAvg: '$95 - $260 MXN', marketShare: '14%', rating: 4.8, location, provenance: 'synthetic_estimate', retrievedAt: new Date().toISOString() }
-            ];
-
-            return {
-              success: true,
-              toolName,
-              executionTimeMs: Date.now() - startTime,
-              data: {
-                provenance: 'synthetic_estimate',
-                isFactualVerified: false,
-                warning: 'Estimación heurística referencial no verificada en web directa.',
-                searchQuery: `${query} (${location})`,
-                competitorsFound: results.length,
-                results,
-                marketInsight: `[ESTIMACIÓN HEURÍSTICA]: El mercado en ${location} para ${query} presenta una dispersión de precios referencial.`
-              }
-            };
-          } else {
-            // Contrato estricto: NO inventar competidores falsos
-            return {
-              success: true,
-              toolName,
-              executionTimeMs: Date.now() - startTime,
-              data: {
-                provenance: 'not_found',
-                isFactualVerified: false,
-                requiresManualEstimateApproval: true,
-                warning: 'No se encontraron fuentes verificadas en internet para esta consulta.',
-                searchQuery: `${query} (${location})`,
-                competitorsFound: 0,
-                results: [],
-                marketInsight: `No se encontraron fuentes web verificadas para ${query} en ${location}. Se requiere aprobación manual para generar estimaciones sintéticas.`
-              }
-            };
-          }
-        }
-
-        return {
-          success: true,
-          toolName,
-          executionTimeMs: Date.now() - startTime,
-          data: {
-            provenance: 'verified_real',
-            isFactualVerified: true,
-            warning: null,
-            searchQuery: `${query} (${location})`,
-            competitorsFound: results.length,
-            results,
-            marketInsight: `El mercado en ${location} para ${query} presenta ${results.length} competidores verificados en fuentes web activas.`
-          }
-        };
+        return await executeToolWebSearch(args, planContext, startTime, seedGiro, seedLocation);
       }
 
       case 'tool_inegi_denue': {

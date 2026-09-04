@@ -265,10 +265,10 @@ export async function runDeepResearch({
             url: r.link || r.url || 'https://duckduckgo.com',
             snippet: r.snippet || r.body || r.pricingAvg || '',
             score: 0.80,
-            provider: 'DuckDuckGo Web',
-            provenance: 'verified_real',
-            retrievedAt: new Date().toISOString(),
-            confidenceScore: 0.82
+            provider: r.provider || 'DuckDuckGo Web',
+            provenance: r.provenance || 'real',
+            retrievedAt: r.retrievedAt || new Date().toISOString(),
+            confidenceScore: r.confidenceScore || 0.82
           }));
           sources.push(...ddgSources);
           gatheredTier1 = true;
@@ -377,7 +377,7 @@ export async function runDeepResearch({
     }
   }
 
-  rawSnippets = sources.map(s => `[${s.provider}] (${s.provenance === 'verified_real' ? 'Verificado' : 'Estimación'}): ${s.title} — ${s.snippet}`);
+  rawSnippets = sources.map(s => `[${s.provider}] (${(s.provenance === 'real' || s.provenance === 'verified_real') ? 'Verificado' : 'Estimación'}): ${s.title} — ${s.snippet}`);
 
   const durationMs = Date.now() - startTime;
   const synthesizedSummary = rawSnippets.join('\n\n');

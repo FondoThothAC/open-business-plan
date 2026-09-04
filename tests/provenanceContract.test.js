@@ -159,3 +159,69 @@ test('Fase 3: Cable de Claves hacia Deep Research y Prioridad en Servidor', asyn
   });
 });
 
+test('Fase 4: tool_web_search conectado a /api/search y Erradicación de Competidores Fake', async (t) => {
+  await t.test('con fetch caído o sin resultados, debe devolver estado honesto vacío sin fabricar competidores', async () => {
+    const res = await executeAgentTool('tool_web_search', {
+      query: 'Termofusión Minera Cananea Hiper-Especializada XYZ99',
+      location: 'Cananea, Sonora',
+      forceSimulateNoResults: true
+    });
+
+    assert.strictEqual(res.success, true);
+    assert.strictEqual(res.data.provenance, 'none');
+    assert.strictEqual(res.data.competitorsFound, 0);
+    assert.deepStrictEqual(res.data.results, []);
+    assert.ok(res.data.warning.includes('Sin datos verificados'));
+  });
+
+  await t.test('debe consultar POST /api/search con los parámetros correctos y marcar resultados como real', async () => {
+    const originalFetch = globalThis.fetch;
+    try {
+      globalThis.fetch = async (url, opts) => {
+        if (String(url).includes('/api/search')) {
+          assert.strictEqual(opts.method, 'POST');
+          const body = JSON.parse(opts.body);
+          assert.strictEqual(body.provider, 'tavily');
+          assert.strictEqual(body.apiKey, 'tvly-phase4-token');
+          assert.ok(body.query.includes('Panadería Artesanal'));
+
+          return {
+            ok: true,
+            json: async () => ({
+              success: true,
+              provider: 'tavily',
+              results: [
+                { title: 'Panadería La Espiga', url: 'https://laespiga.mx', snippet: 'Pan de masa madre' }
+              ]
+            })
+          };
+        }
+        return originalFetch(url, opts);
+      };
+
+      const res = await executeAgentTool('tool_web_search', {
+        query: 'Panadería Artesanal',
+        location: 'Colonia Roma, CDMX'
+      }, {
+        config: {
+          apiBase: 'http://localhost:3001',
+          search: {
+            provider: 'tavily',
+            apiKey: 'tvly-phase4-token'
+          }
+        }
+      });
+
+      assert.strictEqual(res.success, true);
+      assert.strictEqual(res.data.provenance, 'real');
+      assert.strictEqual(res.data.competitorsFound, 1);
+      assert.strictEqual(res.data.results[0].title, 'Panadería La Espiga');
+      assert.strictEqual(res.data.results[0].provenance, 'real');
+      assert.strictEqual(res.data.results[0].provider, 'tavily');
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+});
+
+

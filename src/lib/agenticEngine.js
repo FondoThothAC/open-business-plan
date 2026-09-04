@@ -266,8 +266,6 @@ export async function getSavedTrajectories(filter = {}) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────
-// MOTOR PRINCIPAL AGÉNTICO (ReAct Autonomous Agent Loop)
-// ─────────────────────────────────────────────────────────────────────────
 // MOTOR PRINCIPAL AGÉNTICO (ReAct Autonomous Agent Goal-Oriented Loop)
 // ─────────────────────────────────────────────────────────────────────────
 export async function runAgenticModuleGeneration({
@@ -302,7 +300,6 @@ export async function runAgenticModuleGeneration({
   };
 
   try {
-    // ─── RESOLUCIÓN ROBUSTA DEL CONTEXTO DE LA SEMILLA ───
     const seed = planData?.semilla || {};
     const queryGiro = seed.nombre_proyecto || seed.negocio?.nombre_marca || seed.negocio?.giro || seed.negocio?.nombre || seed.solucion || title;
     const location = seed.cobertura || seed.negocio?.ubicacion || seed.negocio?.cobertura || 'México';
@@ -312,7 +309,6 @@ export async function runAgenticModuleGeneration({
     const revenueModel = seed.modelo_ingresos || seed.finanzas?.como_gana_dinero || '';
     const unfairAdvantage = seed.ventaja_injusta || seed.negocio?.diferencial || '';
 
-    // ─── DEFINICIÓN FORMAL DE LA META AGÉNTICA (Goal-Oriented ReAct) ───
     const agentGoal = {
       description: `Validar factibilidad, identificar competidores/precios verificados y fundamentar "${title}"`,
       minVerifiedSources: useDeepResearch ? 2 : 1,
@@ -334,12 +330,10 @@ export async function runAgenticModuleGeneration({
     let quantumData = null;
     let verifiedSourcesFound = 0;
 
-    // ─── BUCLE AUTÓNOMO ITERATIVO ORIENTADO A METAS (Up to 3 Rounds) ───
     while (agentGoal.currentRound <= agentGoal.maxRounds && !agentGoal.isAchieved) {
       const round = agentGoal.currentRound;
 
       if (round === 1) {
-        // RONDA 1: Invocación de herramientas primarias
         if (useDeepResearch) {
           const toolStart = Date.now();
           notifyStep('tool_call', {
@@ -360,10 +354,10 @@ export async function runAgenticModuleGeneration({
 
           marketObservation = researchResult.data;
           const sources = marketObservation?.sources || [];
-          verifiedSourcesFound = sources.filter(s => s.provenance === 'verified_real').length;
+          verifiedSourcesFound = sources.filter(s => s.provenance === 'real' || s.provenance === 'verified_real').length;
 
           notifyStep('observation', {
-            title: `Observación Ronda 1: Fuentes Recopiladas (${verifiedSourcesFound} verificadas)`,
+            title: `Observación Ronda 1: Fuentes Recopiladas (${verifiedSourcesFound > 0 ? `${verifiedSourcesFound} verificadas` : 'sin datos verificados'})`,
             toolName: 'tool_deep_research',
             toolResult: marketObservation,
             content: `Se obtuvieron ${sources.length} fuentes totales (${verifiedSourcesFound} verificadas). Costo API: $${marketObservation?.costUsd || 0} USD.`,
@@ -374,25 +368,27 @@ export async function runAgenticModuleGeneration({
           notifyStep('tool_call', {
             title: `Ronda 1: Búsqueda Web Estándar`,
             toolName: 'tool_web_search',
-            toolArgs: { query: queryGiro, location, limit: 3, allowSyntheticEstimate: true },
+            toolArgs: { query: queryGiro, location, limit: 3, allowSyntheticEstimate: false },
             content: `Consultando competidores y referencias para "${queryGiro}" en ${location}.`,
             durationMs: 0
           });
 
-          const webResult = await executeAgentTool('tool_web_search', { query: queryGiro, location, limit: 3, allowSyntheticEstimate: true }, planData);
+          const webResult = await executeAgentTool('tool_web_search', { query: queryGiro, location, limit: 3, allowSyntheticEstimate: false }, planData);
           marketObservation = webResult.data;
-          verifiedSourcesFound = marketObservation?.provenance === 'verified_real' ? (marketObservation.results?.length || 0) : 0;
+          const isReal = marketObservation?.provenance === 'real' || marketObservation?.provenance === 'verified_real';
+          verifiedSourcesFound = isReal ? (marketObservation.results?.length || 0) : 0;
 
           notifyStep('observation', {
-            title: `Observación Ronda 1: Datos de Mercado`,
+            title: `Observación Ronda 1: Datos de Mercado (${verifiedSourcesFound > 0 ? `${verifiedSourcesFound} verificados` : 'sin datos verificados'})`,
             toolName: 'tool_web_search',
             toolResult: marketObservation,
-            content: `Competidores identificados: ${marketObservation?.competitorsFound || 0}. Procedencia: ${marketObservation?.provenance || 'desconocida'}.`,
+            content: verifiedSourcesFound > 0
+              ? `Fuentes web verificadas: ${verifiedSourcesFound}. Procedencia: real.`
+              : `Sin datos verificados para "${queryGiro}" en ${location}. Se declara limitación informativa.`,
             durationMs: Date.now() - toolStart
           });
         }
 
-        // Si el módulo requiere validación financiera matemática
         if (pillar === 'organizacion' || pillar === 'finanzas' || moduleKey === 'inversion' || moduleKey === 'costos' || moduleKey === 'rentabilidad') {
           const toolFinStart = Date.now();
           const capex = planData?.organizacion?.inversion?.monto_inversion || seed.finanzas?.inversion_inicial || 150000;
@@ -423,7 +419,6 @@ export async function runAgenticModuleGeneration({
           });
         }
 
-        // Si el módulo requiere diagnóstico cuántico de delegación
         if (moduleKey === 'estructura' || moduleKey === 'recursos_humanos' || moduleKey === 'introduccion') {
           const toolQuantumStart = Date.now();
           notifyStep('tool_call', {
@@ -446,7 +441,6 @@ export async function runAgenticModuleGeneration({
           });
         }
       } else if (round === 2) {
-        // RONDA 2: Si no se alcanzó la meta de fuentes verificadas, recurrir a fuentes oficiales DENUE
         const tool2Start = Date.now();
         notifyStep('thought', {
           title: `Ronda 2: Refinamiento de Búsqueda Factual`,
@@ -481,15 +475,14 @@ export async function runAgenticModuleGeneration({
         });
       }
 
-      // ─── EVALUACIÓN DE PARADA DE LA META (Stopping Criteria) ───
       const evalStart = Date.now();
       if (verifiedSourcesFound >= agentGoal.minVerifiedSources || round >= agentGoal.maxRounds) {
         agentGoal.isAchieved = true;
-        agentGoal.provenanceLevel = verifiedSourcesFound >= agentGoal.minVerifiedSources ? 'verified_real' : 'synthetic_estimate';
+        agentGoal.provenanceLevel = verifiedSourcesFound >= agentGoal.minVerifiedSources ? 'real' : 'none';
 
         notifyStep('reflection', {
           title: `Evaluación de Criterios de Parada (Ronda ${round})`,
-          content: `Meta satisfecha: Criterio de procedencia alcanzado (${verifiedSourcesFound} fuentes verificadas). Procediendo a la síntesis ejecutiva.`,
+          content: `Meta satisfecha: Criterio de procedencia (${verifiedSourcesFound} fuentes verificadas). Procediendo a la síntesis ejecutiva.`,
           isApproved: true,
           durationMs: Date.now() - evalStart
         });
@@ -504,18 +497,22 @@ export async function runAgenticModuleGeneration({
       agentGoal.currentRound++;
     }
 
-    // ─── PASO 3: SÍNTESIS Y GENERACIÓN CON MODELO PRIORITARIO ───
     const expectedKeys = fields.map(f => f.key);
     const locationInstruction = location ? `\nREGLA ESTRICTA DE UBICACIÓN: El negocio opera o tiene cobertura en "${location}". NO inventes ciudades ni asumas capitales (ej. no pongas Hermosillo si se te pidió Cananea). Respeta estrictamente esta ubicación.` : '';
 
     const provenanceDirective = `\nDIRECTIVA ESTRICTA DE PROCEDENCIA DE DATOS:
 - Nivel de Procedencia Detectado: ${agentGoal.provenanceLevel.toUpperCase()}
 - Si las fuentes provienen de internet verificada o DENUE, cita los datos, nombres y rangos observados fielmente.
-- Si no hay fuentes reales verificadas (provenance === 'not_found' o 'synthetic_estimate'), NO inventes nombres de competidores ficticios como si fueran reales; formula el análisis como estimación metodológica y análisis de potencial sectorial.`;
+- Si no hay fuentes reales verificadas (provenance === 'none' o 'not_found'), NO inventes nombres de competidores ficticios como si fueran reales; declara la limitación informativa explícitamente.`;
 
     const documentsContext = (planData.config?.documents || []).length > 0
       ? `\nDOCUMENTOS DE REFERENCIA RAG:\n${planData.config.documents.map(d => d.text).join('\n---\n').substring(0, 4000)}\n`
       : '';
+
+    const hasRealMarketData = marketObservation && (marketObservation.provenance === 'real' || marketObservation.provenance === 'verified_real') && Array.isArray(marketObservation.results) && marketObservation.results.length > 0;
+    const marketObservationContent = hasRealMarketData
+      ? JSON.stringify(marketObservation.results.filter(r => r.provenance === 'real' || r.provenance === 'verified_real'))
+      : '(sin datos verificados — NO inventes cifras de mercado, precios ni cuota; declara la limitación)';
 
     const systemPrompt = `Eres el Agente Autónomo Especialista en "${title}" de Open Business Plan (Fondo Thoth AC).
 Debes redactar contenido ejecutivo de nivel profesional con datos duros para un plan de negocios de alta inversión.${locationInstruction}${provenanceDirective}
@@ -532,7 +529,7 @@ ${Object.keys(seed).length > 0 ? `\nDatos Crudos de Semilla:\n${JSON.stringify(s
 ${documentsContext}
 
 DATOS OBSERVADOS POR HERRAMIENTAS EN TIEMPO REAL (CONTRATO DE PROCEDENCIA):
-- Competencia y Mercado: ${JSON.stringify(marketObservation || {})}
+- Competencia y Mercado: ${marketObservationContent}
 ${financialData ? `- Métricas Financieras Validadas: ${JSON.stringify(financialData)}` : ''}
 ${quantumData ? `- Diagnóstico Cuántico Atómico: ${JSON.stringify(quantumData)}` : ''}
 
@@ -556,7 +553,6 @@ ${fields.map(f => `"${f.key}": "${f.label || f.key} - ${f.type === 'mermaid' ? '
     };
     const generatedResult = await callAiProvider(strictConfig, systemPrompt, true, expectedKeys);
 
-    // ─── PASO 4: REFLEXIÓN Y VALIDACIÓN CRÍTICA (Critic-in-the-Loop) ───
     const criticStart = Date.now();
     const firstFieldKey = expectedKeys[0] || 'contenido';
     const firstFieldText = typeof generatedResult === 'object' ? String(generatedResult[firstFieldKey] || '') : String(generatedResult);

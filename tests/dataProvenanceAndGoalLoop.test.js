@@ -4,38 +4,34 @@ import { executeAgentTool, AGENT_TOOLS_MANIFEST } from '../src/lib/agentTools.js
 import { runDeepResearch, SEARCH_TIERS } from '../src/lib/tools/deepResearchEngine.js';
 
 test('Contrato Estricto de Procedencia de Datos (Data Provenance)', async (t) => {
-  await t.test('tool_web_search no debe inventar empresas falsas si no hay resultados ni aprobación sintética', async () => {
-    // Si la búsqueda web falla o no hay conexión y allowSyntheticEstimate es false
+  await t.test('tool_web_search no debe inventar empresas falsas si no hay resultados', async () => {
+    // Si la búsqueda web falla o no hay conexión
     const res = await executeAgentTool('tool_web_search', {
       query: 'Termofusión Minera Cananea Hiper-Especializada XYZ99',
       location: 'Cananea, Sonora',
-      allowSyntheticEstimate: false,
       forceSimulateNoResults: true
     });
 
     assert.strictEqual(res.success, true);
-    assert.ok(res.data.provenance === 'not_found' || res.data.provenance === 'verified_real');
-    
-    // Si no encontró resultados reales, NO debe entregar competidores inventados como reales
-    if (res.data.provenance === 'not_found') {
-      assert.strictEqual(res.data.competitorsFound, 0);
-      assert.strictEqual(res.data.results.length, 0);
-      assert.strictEqual(res.data.requiresManualEstimateApproval, true);
-    }
+    assert.strictEqual(res.data.provenance, 'none');
+    assert.strictEqual(res.data.competitorsFound, 0);
+    assert.strictEqual(res.data.results.length, 0);
+    assert.ok(res.data.warning.includes('Sin datos verificados'));
   });
 
-  await t.test('tool_web_search solo genera estimación si se aprueba explícitamente y la marca como synthetic_estimate', async () => {
+  await t.test('tool_web_search retorna estado honesto vacío sin fabricar cuando no hay resultados', async () => {
     const res = await executeAgentTool('tool_web_search', {
       query: 'Negocio Desconocido 987654321',
       location: 'Ubicación Remota',
-      allowSyntheticEstimate: true,
       forceSimulateNoResults: true
     });
 
     assert.strictEqual(res.success, true);
-    assert.strictEqual(res.data.provenance, 'synthetic_estimate');
-    assert.ok(res.data.warning.includes('estimación') || res.data.warning.includes('heurística'));
+    assert.strictEqual(res.data.provenance, 'none');
+    assert.strictEqual(res.data.competitorsFound, 0);
+    assert.deepStrictEqual(res.data.results, []);
     assert.strictEqual(res.data.isFactualVerified, false);
+    assert.ok(res.data.warning.includes('Sin datos verificados'));
   });
 
   await t.test('tool_inegi_denue debe reportar provenance: verified_real o not_found sin inventar empresas por defecto', async () => {

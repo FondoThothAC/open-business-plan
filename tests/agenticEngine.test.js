@@ -17,7 +17,7 @@ describe('CELIS Agentic Engine & DeepSeek Harness Trajectories - TDD Test Suite'
     assert.ok(toolNames.includes('tool_critic_validator'), 'Debe incluir tool_critic_validator');
   });
 
-  it('tool_web_search debe retornar competidores y precios de mercado en tiempo real', async () => {
+  it('tool_web_search debe retornar competidores reales o estado honesto vacío sin fabricar', async () => {
     const result = await executeAgentTool('tool_web_search', {
       query: 'Cafetería de Especialidad',
       location: 'Hermosillo, Sonora',
@@ -27,8 +27,13 @@ describe('CELIS Agentic Engine & DeepSeek Harness Trajectories - TDD Test Suite'
     assert.strictEqual(result.success, true);
     assert.strictEqual(result.toolName, 'tool_web_search');
     assert.ok(result.executionTimeMs >= 0);
-    assert.ok(result.data.results.length > 0, 'Debe retornar resultados de competidores');
-    assert.ok(result.data.marketInsight.includes('Hermosillo'), 'Debe incluir insight contextual');
+    assert.ok(result.data.provenance === 'real' || result.data.provenance === 'none');
+    if (result.data.provenance === 'real') {
+      assert.ok(result.data.results.length > 0);
+    } else {
+      assert.strictEqual(result.data.results.length, 0);
+      assert.ok(result.data.warning.includes('Sin datos verificados'));
+    }
   });
 
   it('tool_financial_engine debe calcular TIR, VPN y Punto de Equilibrio exactos', async () => {
