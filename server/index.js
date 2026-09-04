@@ -2287,6 +2287,169 @@ app.delete('/api/telemetry/trajectories', (req, res) => {
 });
 
 // ─────────────────────────────────────────────────────────
+//  DEEP RESEARCH ONLINE API — Motor Asíncrono Resiliente (Modo /goal)
+// ─────────────────────────────────────────────────────────
+const activeResearchTasks = new Map();
+const researchDir = path.resolve('proyectos', 'research');
+if (!fs.existsSync(researchDir)) {
+  fs.mkdirSync(researchDir, { recursive: true });
+}
+
+// Iniciar investigación en background
+app.post('/api/research/start', async (req, res) => {
+  try {
+    const { query, domain = 'mercado', depth = 'rapido', forcePaidTier = false, apiKeys = {} } = req.body;
+    if (!query) return res.status(400).json({ success: false, error: 'Query requerida' });
+
+    const taskId = `research_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
+    const taskRecord = {
+      id: taskId,
+      query,
+      domain,
+      depth,
+      status: 'running',
+      startTime: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      progress: 15,
+      logs: [`Iniciando Deep Research: "${query}"`],
+      sources: [],
+      result: null,
+      error: null
+    };
+
+    activeResearchTasks.set(taskId, taskRecord);
+
+    broadcastLog({
+      type: 'research_started',
+      taskId,
+      query,
+      message: `Deep Research iniciado: "${query}"`
+    });
+
+    // Ejecutar asíncronamente
+    (async () => {
+      try {
+        taskRecord.logs.push('Descomponiendo preguntas estratégicas...');
+        taskRecord.progress = 35;
+
+        const { runDeepResearch } = await import('../src/lib/tools/deepResearchEngine.js');
+        const researchResult = await runDeepResearch({
+          query,
+          domain,
+          depth,
+          forcePaidTier,
+          apiKeys,
+          onLog: (msg) => {
+            taskRecord.logs.push(msg);
+            broadcastLog({ type: 'research_log', taskId, message: msg });
+          }
+        });
+
+        if (researchResult.data?.status === 'paused_waiting_quota') {
+          taskRecord.status = 'paused_waiting_quota';
+          taskRecord.progress = 50;
+          taskRecord.resumeAfterMs = researchResult.data.resumeAfterMs;
+          taskRecord.resumeAt = researchResult.data.resumeAt;
+          broadcastLog({
+            type: 'research_paused',
+            taskId,
+            message: `Deep Research pausado por cuota. Reanudación automática programada.`
+          });
+        } else {
+          taskRecord.status = 'completed';
+          taskRecord.progress = 100;
+          taskRecord.sources = researchResult.data?.sources || researchResult.sources || [];
+          taskRecord.result = researchResult.data?.summary || researchResult.summary;
+          taskRecord.completedAt = new Date().toISOString();
+
+          // Persistir en disco
+          const filePath = path.join(researchDir, `${taskId}.json`);
+          fs.writeFileSync(filePath, JSON.stringify(taskRecord, null, 2));
+
+          broadcastLog({
+            type: 'research_completed',
+            taskId,
+            query,
+            sourcesCount: taskRecord.sources.length,
+            message: `✅ Deep Research completado: ${taskRecord.sources.length} fuentes encontradas.`
+          });
+        }
+      } catch (err) {
+        taskRecord.status = 'failed';
+        taskRecord.error = err.message;
+        broadcastLog({ type: 'research_failed', taskId, error: err.message });
+      }
+    })();
+
+    res.json({ success: true, taskId, status: 'running' });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.get('/api/research/status/:taskId', (req, res) => {
+  const { taskId } = req.params;
+  const memoryTask = activeResearchTasks.get(taskId);
+  if (memoryTask) return res.json({ success: true, task: memoryTask });
+
+  const filePath = path.join(researchDir, `${taskId}.json`);
+  if (fs.existsSync(filePath)) {
+    try {
+      const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+      return res.json({ success: true, task: data });
+    } catch {
+      return res.status(500).json({ success: false, error: 'Error leyendo archivo de investigación' });
+    }
+  }
+
+  res.status(404).json({ success: false, error: 'Tarea no encontrada' });
+});
+
+app.post('/api/research/pause/:taskId', (req, res) => {
+  const { taskId } = req.params;
+  const task = activeResearchTasks.get(taskId);
+  if (task) {
+    task.status = 'paused';
+    task.logs.push('Pausa manual solicitada por el usuario');
+    broadcastLog({ type: 'research_paused', taskId, message: 'Investigación pausada por el usuario' });
+    return res.json({ success: true, status: 'paused' });
+  }
+  res.status(404).json({ success: false, error: 'Tarea no encontrada' });
+});
+
+app.post('/api/research/resume/:taskId', (req, res) => {
+  const { taskId } = req.params;
+  const task = activeResearchTasks.get(taskId);
+  if (task) {
+    task.status = 'running';
+    task.logs.push('Reanudación de tarea solicitada...');
+    broadcastLog({ type: 'research_resumed', taskId, message: 'Investigación reanudada' });
+    return res.json({ success: true, status: 'running' });
+  }
+  res.status(404).json({ success: false, error: 'Tarea no encontrada' });
+});
+
+app.get('/api/research/history', (req, res) => {
+  try {
+    const list = Array.from(activeResearchTasks.values());
+    if (fs.existsSync(researchDir)) {
+      const files = fs.readdirSync(researchDir).filter(f => f.endsWith('.json'));
+      for (const file of files) {
+        const id = file.replace('.json', '');
+        if (!activeResearchTasks.has(id)) {
+          try {
+            list.push(JSON.parse(fs.readFileSync(path.join(researchDir, file), 'utf-8')));
+          } catch {}
+        }
+      }
+    }
+    res.json({ success: true, history: list.slice(-20).reverse() });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// ─────────────────────────────────────────────────────────
 //  TOUCH BAR API — Telemetría para BetterTouchTool / Raycast
 // ─────────────────────────────────────────────────────────
 let touchBarState = {

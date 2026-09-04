@@ -56,3 +56,14 @@ Escenario: Generación de módulos de negocio usando B.AI con extracción de raz
   Pero si B.AI reporta falta de balance o rate limit (HTTP 429/402)
   Entonces el orquestador conmuta automáticamente al siguiente proveedor en cascada (Groq, Gemini, Ollama Cloud) sin perder el progreso del usuario.
 ```
+
+## Escenario 6: Deep Research Online Resiliente, Replay Interactivo y Forking en DeepSeek Harness
+```gherkin
+Escenario: Lanzamiento de Deep Research con autorización de presupuesto, auto-pausa por cuota y Replay/Forking
+  Dado que el usuario abre la consola Terminal Drawer o un agente invoca tool_deep_research
+  Cuando el usuario valida la consulta, autoriza el presupuesto máximo en USD e inicia la tarea
+  Entonces el backend ejecuta la investigación asíncrona registrando la trayectoria bajo el estándar dsh-session-v0.1 del meta-kernel Cordis
+  Y si los proveedores de búsqueda agotan su cuota o sufren rate-limiting estricto
+  Entonces la tarea se resguarda en estado "paused_waiting_quota", programa auto-reintentos y emite una alerta en la campana de notificaciones del encabezado
+  Y cuando la tarea finaliza, el usuario puede inspeccionar el grafo causal DAG, ejecutar Replay interactivo (play/pause/scrub) o bifurcar (Fork) la sesión desde cualquier nodo para probar otro enfoque o modelo.
+```

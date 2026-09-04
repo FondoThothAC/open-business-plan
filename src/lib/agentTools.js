@@ -165,6 +165,20 @@ export const AGENT_TOOLS_MANIFEST = [
       },
       required: ['topic']
     }
+  },
+  {
+    name: 'tool_deep_research',
+    description: 'Ejecuta investigación profunda online multietapa (Tavily/DuckDuckGo + INEGI + Banxico) con síntesis estructurada y control de cuotas.',
+    parameters: {
+      type: 'object',
+      properties: {
+        query: { type: 'string', description: 'Tema o consulta de investigación profunda' },
+        domain: { type: 'string', enum: ['mercado', 'maquinaria', 'competencia', 'legal'], description: 'Dominio de investigación' },
+        depth: { type: 'string', enum: ['rapido', 'profundo'], description: 'Nivel de profundidad' },
+        forcePaidTier: { type: 'boolean', description: 'Priorizar proveedores premium' }
+      },
+      required: ['query']
+    }
   }
 ];
 
@@ -177,6 +191,25 @@ export async function executeAgentTool(toolName, args, planContext = {}) {
 
   try {
     switch (toolName) {
+      case 'tool_deep_research': {
+        const { runDeepResearch } = await import('./tools/deepResearchEngine.js');
+        const researchRes = await runDeepResearch({
+          query: args.query || seedGiro || 'Investigación de Mercado',
+          domain: args.domain || 'mercado',
+          depth: args.depth || 'rapido',
+          forcePaidTier: Boolean(args.forcePaidTier),
+          simulateQuotaExhausted: Boolean(args.simulateQuotaExhausted),
+          apiKeys: planContext?.config?.ai || {},
+          onLog: args.onLog || (() => {})
+        });
+        return {
+          success: researchRes.success,
+          toolName: 'tool_deep_research',
+          executionTimeMs: Date.now() - startTime,
+          data: researchRes.data || researchRes
+        };
+      }
+
       case 'tool_web_search': {
         const query = args.query || seedGiro || 'negocio';
         const location = args.location || seedLocation;

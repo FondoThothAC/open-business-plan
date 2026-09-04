@@ -44,14 +44,44 @@ export default function AgentTrajectoryViewer({ trajectory, onClose }) {
 
   const [expandedNodes, setExpandedNodes] = useState({});
   const [filterType, setFilterType] = useState('all'); // 'all' | 'tools' | 'thoughts'
+  
+  // Estados para Replay interactivo
+  const [isReplaying, setIsReplaying] = useState(false);
+  const [replayIndex, setReplayIndex] = useState(0);
+  const [replaySpeed, setReplaySpeed] = useState(1); // 1x, 2x, 5x
+
+  // Estados para Modal de Forking en Caliente
+  const [forkModalNode, setForkModalNode] = useState(null);
+  const [forkModel, setForkModel] = useState(trajectory.modelUsed || 'gpt-5.2');
+  const [forkProvider, setForkProvider] = useState(trajectory.providerUsed || 'bai');
+  const [forkNote, setForkNote] = useState('');
+  const [forkSuccessMsg, setForkSuccessMsg] = useState(null);
+
+  const steps = trajectory.trajectoryDAG || trajectory.steps || [];
+
+  // Temporizador para el Replay animado
+  useEffect(() => {
+    let timer = null;
+    if (isReplaying) {
+      const stepDuration = Math.max(300, (steps[replayIndex]?.durationMs || 1000) / replaySpeed);
+      timer = setTimeout(() => {
+        if (replayIndex < steps.length - 1) {
+          setReplayIndex(prev => prev + 1);
+        } else {
+          setIsReplaying(false);
+        }
+      }, stepDuration);
+    }
+    return () => clearTimeout(timer);
+  }, [isReplaying, replayIndex, steps, replaySpeed]);
 
   const toggleNode = (idx) => {
     setExpandedNodes(prev => ({ ...prev, [idx]: !prev[idx] }));
   };
 
-  const steps = trajectory.trajectoryDAG || trajectory.steps || [];
-  
-  const filteredSteps = steps.filter(step => {
+  const visibleSteps = isReplaying ? steps.slice(0, replayIndex + 1) : steps;
+
+  const filteredSteps = visibleSteps.filter(step => {
     if (filterType === 'tools') return step.type === 'tool_call' || step.type === 'observation';
     if (filterType === 'thoughts') return step.type === 'thought' || step.type === 'reflection';
     return true;
@@ -72,6 +102,34 @@ export default function AgentTrajectoryViewer({ trajectory, onClose }) {
     URL.revokeObjectURL(url);
   };
 
+  const handleStartReplay = () => {
+    setReplayIndex(0);
+    setIsReplaying(true);
+  };
+
+  const handleExecuteFork = () => {
+    if (!forkModalNode) return;
+
+    // Disparar evento para reanudar la trayectoria con la bifurcación en caliente
+    const forkedPayload = {
+      parentSessionId: trajectory.id,
+      forkedFromNodeId: forkModalNode.id || `node_${forkModalNode.stepIndex}`,
+      targetModuleKey: trajectory.moduleKey,
+      targetPillar: trajectory.pillar,
+      model: forkModel,
+      provider: forkProvider,
+      branchNote: forkNote || `Bifurcación desde ${forkModalNode.title}`,
+      inheritedStepsCount: forkModalNode.stepIndex
+    };
+
+    window.dispatchEvent(new CustomEvent('openplan_fork_trajectory', { detail: forkedPayload }));
+    setForkSuccessMsg(`✅ Bifurcación creada exitosamente desde "${forkModalNode.title}". La nueva rama está activa.`);
+    setTimeout(() => {
+      setForkModalNode(null);
+      setForkSuccessMsg(null);
+    }, 2000);
+  };
+
   return (
     <div
       style={{
@@ -80,8 +138,8 @@ export default function AgentTrajectoryViewer({ trajectory, onClose }) {
         left: 0,
         right: 0,
         bottom: 0,
-        background: 'rgba(0, 0, 0, 0.82)',
-        backdropFilter: 'blur(12px)',
+        background: 'rgba(0, 0, 0, 0.85)',
+        backdropFilter: 'blur(14px)',
         zIndex: 99999,
         display: 'flex',
         alignItems: 'center',
@@ -94,13 +152,13 @@ export default function AgentTrajectoryViewer({ trajectory, onClose }) {
       <div
         className="glass-panel"
         style={{
-          width: '900px',
+          width: '940px',
           maxWidth: '96vw',
-          maxHeight: '90vh',
+          maxHeight: '92vh',
           background: 'var(--bg-panel)',
           border: '1px solid var(--border-color)',
           borderRadius: '16px',
-          boxShadow: '0 25px 70px rgba(0, 0, 0, 0.5)',
+          boxShadow: '0 25px 70px rgba(0, 0, 0, 0.6)',
           display: 'flex',
           flexDirection: 'column',
           overflow: 'hidden',
@@ -115,27 +173,50 @@ export default function AgentTrajectoryViewer({ trajectory, onClose }) {
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          background: 'linear-gradient(90deg, rgba(99, 102, 241, 0.08), rgba(139, 92, 246, 0.04))'
+          background: 'linear-gradient(90deg, rgba(99, 102, 241, 0.08), rgba(6, 182, 212, 0.05))'
         }}>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
               <Sparkles size={20} color="var(--accent-color)" />
               <h2 style={{ fontSize: '1.15rem', fontWeight: 800, margin: 0, color: 'var(--text-primary)' }}>
-                Trayectoria Agéntica · DeepSeek Harness
+                DeepSeek Harness · Trajectory DAG
               </h2>
               <span style={{
                 fontSize: '0.65rem',
                 padding: '2px 8px',
                 borderRadius: '12px',
-                background: 'rgba(16, 185, 129, 0.15)',
-                color: '#10b981',
+                background: 'rgba(6, 182, 212, 0.15)',
+                color: '#06b6d4',
+                fontWeight: 800,
+                border: '1px solid rgba(6, 182, 212, 0.3)'
+              }}>
+                {trajectory.harnessVersion || 'dsh-session-v0.1'}
+              </span>
+              <span style={{
+                fontSize: '0.65rem',
+                padding: '2px 8px',
+                borderRadius: '12px',
+                background: 'rgba(139, 92, 246, 0.15)',
+                color: '#8b5cf6',
                 fontWeight: 700,
                 textTransform: 'uppercase'
               }}>
-                {trajectory.status || 'COMPLETADO'}
+                Modo: {trajectory.mode || 'Standard'}
+              </span>
+              <span style={{
+                fontSize: '0.65rem',
+                padding: '2px 8px',
+                borderRadius: '12px',
+                background: trajectory.status === 'paused_waiting_quota' ? 'rgba(245, 158, 11, 0.2)' : 'rgba(16, 185, 129, 0.15)',
+                color: trajectory.status === 'paused_waiting_quota' ? '#f59e0b' : '#10b981',
+                fontWeight: 700,
+                textTransform: 'uppercase'
+              }}>
+                {trajectory.status === 'paused_waiting_quota' ? '⏸️ PAUSADO POR CUOTA' : (trajectory.status || 'COMPLETADO')}
               </span>
             </div>
-            <div style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', marginTop: '4px', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+
+            <div style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', marginTop: '6px', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
               <span><strong>Módulo:</strong> {trajectory.moduleTitle || trajectory.moduleKey}</span>
               <span><strong>Pilar:</strong> {trajectory.pillar}</span>
               <span style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
@@ -146,6 +227,11 @@ export default function AgentTrajectoryViewer({ trajectory, onClose }) {
                 <Clock size={12} color="#60a5fa" />
                 <strong>Duración:</strong> {((trajectory.totalDurationMs || 0) / 1000).toFixed(2)}s
               </span>
+              {trajectory.parentSessionId && (
+                <span style={{ color: '#ec4899', fontWeight: 700 }}>
+                  🔀 Bifurcación de: {trajectory.parentSessionId.slice(0, 16)}... ({trajectory.forkedFromNodeId})
+                </span>
+              )}
             </div>
           </div>
 
@@ -208,9 +294,89 @@ export default function AgentTrajectoryViewer({ trajectory, onClose }) {
           </div>
         </div>
 
+        {/* Barra de Replay & Time-Travel Controls */}
+        <div style={{
+          padding: '0.65rem 1.5rem',
+          background: 'rgba(99, 102, 241, 0.06)',
+          borderBottom: '1px solid var(--border-color)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: '0.75rem'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+            <button
+              type="button"
+              onClick={() => isReplaying ? setIsReplaying(false) : handleStartReplay()}
+              style={{
+                background: isReplaying ? '#f59e0b' : 'var(--accent-color)',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '6px',
+                padding: '0.35rem 0.8rem',
+                fontSize: '0.75rem',
+                fontWeight: 800,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.35rem'
+              }}
+            >
+              {isReplaying ? '⏸️ Pausar Replay' : '▶️ Iniciar Replay'}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setIsReplaying(false);
+                setReplayIndex(steps.length - 1);
+              }}
+              style={{
+                background: 'rgba(255, 255, 255, 0.06)',
+                color: 'var(--text-secondary)',
+                border: '1px solid var(--border-color)',
+                borderRadius: '6px',
+                padding: '0.35rem 0.6rem',
+                fontSize: '0.72rem',
+                cursor: 'pointer'
+              }}
+            >
+              Saltar al Final
+            </button>
+
+            <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 700 }}>
+              Paso {replayIndex + 1} de {steps.length}
+            </span>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Velocidad:</span>
+            {[1, 2, 5].map(spd => (
+              <button
+                key={spd}
+                type="button"
+                onClick={() => setReplaySpeed(spd)}
+                style={{
+                  background: replaySpeed === spd ? 'rgba(6, 182, 212, 0.2)' : 'transparent',
+                  color: replaySpeed === spd ? '#06b6d4' : 'var(--text-secondary)',
+                  border: `1px solid ${replaySpeed === spd ? '#06b6d4' : 'var(--border-color)'}`,
+                  borderRadius: '4px',
+                  padding: '2px 6px',
+                  fontSize: '0.7rem',
+                  fontWeight: 700,
+                  cursor: 'pointer'
+                }}
+              >
+                {spd}x
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* Barra de Filtros y Métricas */}
         <div style={{
-          padding: '0.6rem 1.5rem',
+          padding: '0.5rem 1.5rem',
           borderBottom: '1px solid var(--border-color)',
           display: 'flex',
           alignItems: 'center',
@@ -267,6 +433,7 @@ export default function AgentTrajectoryViewer({ trajectory, onClose }) {
               const Icon = cfg.icon;
               const isExpanded = !!expandedNodes[idx];
               const hasJsonData = !!(step.toolArgs || step.toolResult);
+              const isCurrentReplayNode = isReplaying && idx === replayIndex;
 
               return (
                 <div
@@ -275,7 +442,8 @@ export default function AgentTrajectoryViewer({ trajectory, onClose }) {
                     display: 'flex',
                     flexDirection: 'column',
                     background: cfg.bgColor,
-                    border: `1px solid ${cfg.borderColor}`,
+                    border: `1.5px solid ${isCurrentReplayNode ? '#38bdf8' : cfg.borderColor}`,
+                    boxShadow: isCurrentReplayNode ? '0 0 16px rgba(56, 189, 248, 0.4)' : 'none',
                     borderRadius: '12px',
                     overflow: 'hidden',
                     transition: 'all 0.2s ease'
@@ -316,7 +484,32 @@ export default function AgentTrajectoryViewer({ trajectory, onClose }) {
                       </div>
                     </div>
 
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      {/* Botón Fork en Caliente */}
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setForkModalNode(step);
+                        }}
+                        title="Bifurcar trayectoria desde este nodo"
+                        style={{
+                          background: 'rgba(236, 72, 153, 0.15)',
+                          border: '1px solid rgba(236, 72, 153, 0.4)',
+                          color: '#ec4899',
+                          borderRadius: '6px',
+                          padding: '2px 8px',
+                          fontSize: '0.68rem',
+                          fontWeight: 700,
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '3px'
+                        }}
+                      >
+                        <span>🔀 Fork</span>
+                      </button>
+
                       {step.durationMs > 0 && (
                         <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', fontFamily: 'monospace' }}>
                           +{step.durationMs}ms
@@ -382,6 +575,117 @@ export default function AgentTrajectoryViewer({ trajectory, onClose }) {
             })
           )}
         </div>
+
+        {/* Modal de Forking en Caliente */}
+        {forkModalNode && (
+          <div style={{
+            position: 'absolute',
+            top: 0, left: 0, right: 0, bottom: 0,
+            background: 'rgba(0, 0, 0, 0.8)',
+            backdropFilter: 'blur(8px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '1.5rem',
+            zIndex: 100000
+          }}>
+            <div style={{
+              background: 'var(--bg-panel)',
+              border: '1.5px solid #ec4899',
+              borderRadius: '14px',
+              padding: '1.5rem',
+              width: '520px',
+              maxWidth: '92vw',
+              boxShadow: '0 20px 50px rgba(236, 72, 153, 0.25)'
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                <h3 style={{ margin: 0, fontSize: '1.05rem', color: '#ec4899', fontWeight: 800 }}>
+                  🔀 Bifurcar Trayectoria (Fork)
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => setForkModalNode(null)}
+                  style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer' }}
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '1rem' }}>
+                Se clonarán los primeros <strong>{forkModalNode.stepIndex} pasos</strong> hasta <em>"{forkModalNode.title}"</em>. La nueva rama continuará la ejecución con los parámetros que indiques a continuación:
+              </p>
+
+              <div style={{ marginBottom: '0.85rem' }}>
+                <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-primary)', display: 'block', marginBottom: '0.35rem' }}>
+                  Proveedor y Modelo para la nueva rama:
+                </label>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+                  <select
+                    className="form-control"
+                    value={forkProvider}
+                    onChange={(e) => setForkProvider(e.target.value)}
+                    style={{ fontSize: '0.8rem' }}
+                  >
+                    <option value="bai">⚡ B.AI</option>
+                    <option value="groq">⚡ Groq</option>
+                    <option value="gemini">🌐 Google Gemini</option>
+                    <option value="ollama">💻 Ollama Local</option>
+                  </select>
+                  <select
+                    className="form-control"
+                    value={forkModel}
+                    onChange={(e) => setForkModel(e.target.value)}
+                    style={{ fontSize: '0.8rem' }}
+                  >
+                    <option value="gpt-5.2">gpt-5.2</option>
+                    <option value="qwen3.8-flash">qwen3.8-flash</option>
+                    <option value="llama-3.3-70b-versatile">llama-3.3-70b</option>
+                    <option value="minimax-m3:cloud">minimax-m3:cloud</option>
+                  </select>
+                </div>
+              </div>
+
+              <div style={{ marginBottom: '1.25rem' }}>
+                <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-primary)', display: 'block', marginBottom: '0.35rem' }}>
+                  Nota o hipótesis de la bifurcación:
+                </label>
+                <textarea
+                  className="form-control"
+                  rows={3}
+                  placeholder="Ej. Simular escenario alternativo con mayor volumen de ventas o costos más bajos..."
+                  value={forkNote}
+                  onChange={(e) => setForkNote(e.target.value)}
+                  style={{ fontSize: '0.8rem', width: '100%' }}
+                />
+              </div>
+
+              {forkSuccessMsg && (
+                <div style={{ fontSize: '0.8rem', color: '#10b981', fontWeight: 700, marginBottom: '1rem' }}>
+                  {forkSuccessMsg}
+                </div>
+              )}
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.6rem' }}>
+                <button
+                  type="button"
+                  onClick={() => setForkModalNode(null)}
+                  className="btn btn-secondary"
+                  style={{ fontSize: '0.8rem' }}
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="button"
+                  onClick={handleExecuteFork}
+                  className="btn btn-primary"
+                  style={{ background: '#ec4899', borderColor: '#ec4899', fontSize: '0.8rem', fontWeight: 800 }}
+                >
+                  Confirmar y Crear Fork
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

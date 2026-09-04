@@ -25,16 +25,26 @@ export class TrajectoryRecorder {
     this.moduleTitle = metadata.title || metadata.moduleKey || 'Módulo';
     this.model = metadata.model || 'minimax-m3:cloud';
     this.provider = metadata.provider || 'ollama';
-    this.steps = [];
+    this.mode = metadata.mode || 'standard'; // 'standard' | 'code' | 'minimal' | 'creator'
+    this.parentSessionId = metadata.parentSessionId || null;
+    this.forkedFromNodeId = metadata.forkedFromNodeId || null;
+    this.branchNote = metadata.branchNote || null;
+    this.pluginsLoaded = metadata.pluginsLoaded || ['cordis-kernel', 'trajectory-logger', 'tool-executor', 'sandbox-session'];
+    this.cordisContext = metadata.cordisContext || {
+      spatiotemporalId: `cordis_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+      lifecycleState: 'active',
+      sideEffectsCount: 0
+    };
+    this.steps = Array.isArray(metadata.initialSteps) ? [...metadata.initialSteps] : [];
     this.startTime = Date.now();
-    this.totalDurationMs = 0;
-    this.status = 'running'; // 'running' | 'completed' | 'failed'
+    this.totalDurationMs = metadata.initialDurationMs || 0;
+    this.status = 'running'; // 'running' | 'completed' | 'failed' | 'paused_waiting_quota'
     this.finalOutput = null;
-    this.metrics = {
+    this.metrics = metadata.initialMetrics ? { ...metadata.initialMetrics } : {
       totalToolCalls: 0,
       successfulToolCalls: 0,
       criticApprovals: 0,
-      totalSteps: 0
+      totalSteps: this.steps.length
     };
   }
 
@@ -43,6 +53,8 @@ export class TrajectoryRecorder {
     const stepIndex = this.steps.length + 1;
     
     const stepObj = {
+      id: `node_${stepIndex}`,
+      parent: stepIndex === 1 ? (this.forkedFromNodeId || null) : `node_${stepIndex - 1}`,
       stepIndex,
       type, // 'thought' | 'tool_call' | 'observation' | 'reflection' | 'synthesis'
       timestamp: new Date().toISOString(),
@@ -73,6 +85,68 @@ export class TrajectoryRecorder {
     return this.exportHarness();
   }
 
+  forkAtNode(nodeId, newParams = {}) {
+    const targetIdx = this.steps.findIndex(s => s.id === nodeId || `node_${s.stepIndex}` === nodeId);
+    const inheritedSteps = targetIdx >= 0 ? this.steps.slice(0, targetIdx + 1) : [...this.steps];
+    
+    const forkedTaskId = `fork_${this.id}_${nodeId}_${Date.now()}`;
+    const forkedRecorder = new TrajectoryRecorder(forkedTaskId, {
+      pillar: this.pillar,
+      moduleKey: this.moduleKey,
+      title: `${this.moduleTitle} (Bifurcación)`,
+      model: newParams.newModel || this.model,
+      provider: newParams.newProvider || this.provider,
+      mode: newParams.newMode || this.mode,
+      parentSessionId: this.id,
+      forkedFromNodeId: nodeId,
+      branchNote: newParams.branchNote || `Bifurcación desde ${nodeId}`,
+      pluginsLoaded: [...this.pluginsLoaded],
+      initialSteps: inheritedSteps,
+      initialDurationMs: inheritedSteps.reduce((acc, s) => acc + (s.durationMs || 0), 0),
+      initialMetrics: {
+        totalToolCalls: inheritedSteps.filter(s => s.type === 'tool_call').length,
+        successfulToolCalls: inheritedSteps.filter(s => s.type === 'observation' && s.status !== 'error').length,
+        criticApprovals: inheritedSteps.filter(s => s.type === 'reflection').length,
+        totalSteps: inheritedSteps.length
+      }
+    });
+
+    forkedRecorder.saveSnapshot();
+    return forkedRecorder;
+  }
+
+  getReplayTimeline() {
+    let currentRelativeMs = 0;
+    const timeline = this.steps.map((step) => {
+      const stepStart = currentRelativeMs;
+      const stepDuration = step.durationMs || 100;
+      currentRelativeMs += stepDuration;
+      return {
+        ...step,
+        relativeStartTimeMs: stepStart,
+        accumulatedDurationMs: currentRelativeMs
+      };
+    });
+
+    if (this.finalOutput) {
+      timeline.push({
+        id: `node_synthesis_final`,
+        parent: timeline.length > 0 ? timeline[timeline.length - 1].id : null,
+        stepIndex: timeline.length + 1,
+        type: 'synthesis',
+        timestamp: new Date().toISOString(),
+        title: 'Síntesis y Finalización de Trayectoria',
+        content: typeof this.finalOutput === 'string' ? this.finalOutput : JSON.stringify(this.finalOutput),
+        durationMs: 50,
+        relativeStartTimeMs: currentRelativeMs,
+        accumulatedDurationMs: currentRelativeMs + 50,
+        status: 'success'
+      });
+    }
+
+    return timeline;
+  }
+
   saveSnapshot() {
     try {
       const snapshot = this.exportHarness();
@@ -80,16 +154,18 @@ export class TrajectoryRecorder {
       // Guardado Asíncrono en Backend (Native Telemetry Engine)
       try {
         const apiBase = getApiBase();
-        fetch(`${apiBase}/api/telemetry/log`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(snapshot)
-        }).catch(err => console.warn('[Telemetry] Error sincronizando con backend:', err));
-      } catch (err) {
-        console.warn('[Telemetry] Error resolviendo apiBase:', err);
+        if (typeof fetch === 'function') {
+          fetch(`${apiBase}/api/telemetry/log`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(snapshot)
+          }).catch(() => {});
+        }
+      } catch {
+        // Silencioso ante ausencia de backend local
       }
 
-      // Fallback y caché local rápido
+      // Fallback y caché local rápido en navegador
       if (typeof window !== 'undefined' && window.localStorage) {
         const raw = localStorage.getItem(TRAJECTORY_STORAGE_KEY);
         let list = [];
@@ -109,14 +185,14 @@ export class TrajectoryRecorder {
       if (typeof window !== 'undefined') {
         window.dispatchEvent(new CustomEvent('openplan_trajectory_updated', { detail: snapshot }));
       }
-    } catch (e) {
-      console.warn('[TrajectoryRecorder] Error guardando snapshot:', e);
+    } catch {
+      // Ignorar fallos de serialización de telemetría en tests
     }
   }
 
   exportHarness() {
     return {
-      harnessVersion: 'deepseek-harness-1.0',
+      harnessVersion: 'dsh-session-v0.1',
       id: this.id,
       timestamp: this.timestamp,
       pillar: this.pillar,
@@ -124,13 +200,19 @@ export class TrajectoryRecorder {
       moduleTitle: this.moduleTitle,
       modelUsed: this.model,
       providerUsed: this.provider,
+      mode: this.mode,
+      parentSessionId: this.parentSessionId,
+      forkedFromNodeId: this.forkedFromNodeId,
+      branchNote: this.branchNote,
+      pluginsLoaded: [...this.pluginsLoaded],
+      cordisContext: { ...this.cordisContext },
       totalDurationMs: this.totalDurationMs || (Date.now() - this.startTime),
       status: this.status,
       metrics: { ...this.metrics },
       stepsCount: this.steps.length,
       trajectoryDAG: this.steps.map((s, idx) => ({
-        id: `node_${idx + 1}`,
-        parent: idx === 0 ? null : `node_${idx}`,
+        id: s.id || `node_${idx + 1}`,
+        parent: s.parent || (idx === 0 ? null : `node_${idx}`),
         ...s
       })),
       finalOutputSummary: typeof this.finalOutput === 'object' && this.finalOutput !== null

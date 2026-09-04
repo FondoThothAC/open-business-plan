@@ -24,8 +24,9 @@
 | **TDD-13** | `Vite Build Consistency & Clean Chunking` | Integración / Build | Cero advertencias de importaciones mixtas en `apiConfig.js`, `ai.js` y `agenticEngine.js`; compilación limpia en <6s. |
 | **TDD-14** | `Microempresa y Autoempleo (micro_business) Integrity` | Unitaria / Dominio | Cobertura total de 20 campos en 4 pilares, guías metodológicas completas, datos demo en Sové/MixRoom, enrutamiento semántico, modo Micro Canvas, y Diseñador Interactivo de Croquis 2D (`MicroCroquisEditor`) con cálculo de m² y prompts de IA. |
 | **TDD-15** | `B.AI (B ia) Provider & GPT-5.2 / Qwen 3.8 Suite` | Unitaria / Integración | Valida registro en `MODEL_REGISTRY`, invocación compatible con OpenAI v1, extracción de tokens de razonamiento (`reasoning_content`) y fallback automático ante cuota/errores. |
+| **TDD-16** | `DeepSeek Harness dsh v0.1 & Deep Research Engine` | Unitaria / Integración | Valida especificación `dsh-session-v0.1` Cordis, forking de sesión con preservación de linaje (`forkAtNode`), timeline de replay (`getReplayTimeline`), registro de `tool_deep_research`, ejecución con capa gratuita y auto-pausa por cuota (`paused_waiting_quota`). |
 
-**Estado de Ejecución:** 122 tests pasando al 100% (26 suites, 0 fallos).
+**Estado de Ejecución:** 131 tests pasando al 100% (26 suites, 0 fallos).
 
 ---
 

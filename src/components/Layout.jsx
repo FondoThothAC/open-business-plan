@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FileSpreadsheet, LineChart, PieChart, Settings, Eye, BrainCircuit, ChevronDown, ChevronRight, ChevronLeft, Save, FilePlus, FolderOpen, Check, Image as ImageIcon, Sprout, Copy, Star, Briefcase, Zap, Globe, Cpu, ShoppingBag, Landmark, ListChecks, Compass, Target, Layers, Share2, Factory, UploadCloud } from 'lucide-react';
+import { LayoutDashboard, FileSpreadsheet, LineChart, PieChart, Settings, Eye, BrainCircuit, ChevronDown, ChevronRight, ChevronLeft, Save, FilePlus, FolderOpen, Check, Image as ImageIcon, Sprout, Copy, Star, Briefcase, Zap, Globe, Cpu, ShoppingBag, Landmark, ListChecks, Compass, Target, Layers, Share2, Factory, UploadCloud, Bell, Terminal } from 'lucide-react';
 import { usePlan } from '../context/PlanContext';
 import { PROJECT_EXAMPLES } from '../lib/projects_db';
 import { FRAMEWORKS } from '../config/frameworks';
@@ -14,6 +14,7 @@ import TouchBarBridge from './TouchBarBridge';
 import ServerHealthBanner from './ServerHealthBanner';
 import WordDocumentCenterModal from './WordDocumentCenterModal';
 import DocumentUploader from './DocumentUploader';
+import TerminalDrawer from './TerminalDrawer';
 
 
 const METHODOLOGY_CONFIG = {
@@ -100,6 +101,11 @@ export default function Layout() {
   const [lastAiInfo, setLastAiInfo] = useState({ provider: 'Local/Auto', model: 'En Espera' });
   const [isAiHot, setIsAiHot] = useState(false);
 
+  // Estados de TerminalDrawer y Notificaciones de Deep Research
+  const [isTerminalOpen, setIsTerminalOpen] = useState(false);
+  const [researchNotifications, setResearchNotifications] = useState([]);
+  const [showNotificationsDropdown, setShowNotificationsDropdown] = useState(false);
+
   useEffect(() => {
     const handleTrajectory = (e) => {
       const detail = e.detail || {};
@@ -118,14 +124,34 @@ export default function Layout() {
       }
     };
 
+    const handleResearchStarted = (e) => {
+      const { taskId, query } = e.detail || {};
+      setResearchNotifications(prev => [
+        { id: taskId || Date.now(), title: 'Investigación Iniciada', message: query || 'Nueva tarea en background', time: new Date().toLocaleTimeString(), unread: true },
+        ...prev
+      ]);
+    };
+
+    const handleResearchCompleted = (e) => {
+      const { taskId, query, sourcesCount } = e.detail || {};
+      setResearchNotifications(prev => [
+        { id: taskId || Date.now(), title: '✅ Investigación Completada', message: `${query || 'Búsqueda'} (${sourcesCount || 0} fuentes recopiladas)`, time: new Date().toLocaleTimeString(), unread: true },
+        ...prev
+      ]);
+    };
+
     window.addEventListener('openplan_trajectory_updated', handleTrajectory);
     window.addEventListener('openplan_new_trajectory', handleTrajectory); // También escuchar la de agenticEngine
     window.addEventListener('openplan_navigate', handleNavigate);
+    window.addEventListener('openplan_research_started', handleResearchStarted);
+    window.addEventListener('openplan_research_completed', handleResearchCompleted);
     
     return () => {
       window.removeEventListener('openplan_trajectory_updated', handleTrajectory);
       window.removeEventListener('openplan_new_trajectory', handleTrajectory);
       window.removeEventListener('openplan_navigate', handleNavigate);
+      window.removeEventListener('openplan_research_started', handleResearchStarted);
+      window.removeEventListener('openplan_research_completed', handleResearchCompleted);
     };
   }, [navigate]);
 
@@ -1025,19 +1051,94 @@ export default function Layout() {
                 </div>
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', color: saveStatus === 'saved' ? 'var(--success-color)' : (saveStatus === 'saving' ? '#6366f1' : 'var(--danger-color)') }}>
-                    {saveStatus === 'saved' ? <Check className="w-3.5 h-3.5" /> : <Save className="w-3.5 h-3.5 animate-pulse" />}
-                    <span style={{ fontSize: '0.65rem', fontWeight: 'bold' }}>
-                      {saveStatus === 'saved' ? 'SINC' : (saveStatus === 'saving' ? 'GUARDANDO...' : 'ERROR')}
-                    </span>
-                   </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  {/* Botón Consola IDE / DeepSeek Harness */}
+                  <button
+                    className="icon-btn-rounded"
+                    title={isTerminalOpen ? "Cerrar Consola IDE" : "Abrir Consola IDE (DeepSeek Harness / Research)"}
+                    onClick={() => setIsTerminalOpen(prev => !prev)}
+                    style={{
+                      background: isTerminalOpen ? 'rgba(88, 166, 255, 0.2)' : 'transparent',
+                      color: isTerminalOpen ? '#58a6ff' : 'var(--text-secondary)',
+                      position: 'relative'
+                    }}
+                  >
+                    <Terminal className="w-4 h-4" />
+                  </button>
+
+                  {/* Campana de Notificaciones de Deep Research */}
+                  <div style={{ position: 'relative' }}>
+                    <button
+                      className="icon-btn-rounded"
+                      title="Notificaciones de Deep Research"
+                      onClick={() => {
+                        setShowNotificationsDropdown(prev => !prev);
+                        setResearchNotifications(prev => prev.map(n => ({ ...n, unread: false })));
+                      }}
+                      style={{ position: 'relative' }}
+                    >
+                      <Bell className="w-4 h-4" />
+                      {researchNotifications.some(n => n.unread) && (
+                        <span style={{
+                          position: 'absolute', top: '-2px', right: '-2px',
+                          width: '8px', height: '8px', borderRadius: '50%',
+                          background: '#ec4899'
+                        }} />
+                      )}
+                    </button>
+
+                    {showNotificationsDropdown && (
+                      <div 
+                        className="glass-panel"
+                        style={{
+                          position: 'absolute', top: 'calc(100% + 8px)', right: 0,
+                          width: '320px', maxHeight: '350px', overflowY: 'auto',
+                          background: 'var(--bg-panel)', border: '1px solid var(--border-color)',
+                          borderRadius: '10px', boxShadow: '0 10px 30px rgba(0,0,0,0.4)',
+                          zIndex: 10000, padding: '0.75rem'
+                        }}
+                      >
+                        <div style={{ fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <span>🔔 Notificaciones de Research</span>
+                          {researchNotifications.length > 0 && (
+                            <button
+                              type="button"
+                              onClick={() => setResearchNotifications([])}
+                              style={{ background: 'transparent', border: 'none', color: '#8b949e', fontSize: '0.68rem', cursor: 'pointer' }}
+                            >
+                              Limpiar
+                            </button>
+                          )}
+                        </div>
+                        {researchNotifications.length === 0 ? (
+                          <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', padding: '1rem 0', textAlign: 'center' }}>
+                            No hay notificaciones pendientes.
+                          </div>
+                        ) : (
+                          researchNotifications.map((notif, idx) => (
+                            <div key={idx} style={{ padding: '0.45rem 0', borderBottom: '1px solid var(--border-color)', fontSize: '0.72rem' }}>
+                              <div style={{ fontWeight: 700, color: '#ec4899' }}>{notif.title}</div>
+                              <div style={{ color: 'var(--text-primary)', marginTop: '2px' }}>{notif.message}</div>
+                              <div style={{ color: 'var(--text-secondary)', fontSize: '0.62rem', marginTop: '2px' }}>{notif.time}</div>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', color: saveStatus === 'saved' ? 'var(--success-color)' : (saveStatus === 'saving' ? '#6366f1' : 'var(--danger-color)') }}>
+                      {saveStatus === 'saved' ? <Check className="w-3.5 h-3.5" /> : <Save className="w-3.5 h-3.5 animate-pulse" />}
+                      <span style={{ fontSize: '0.65rem', fontWeight: 'bold' }}>
+                        {saveStatus === 'saved' ? 'SINC' : (saveStatus === 'saving' ? 'GUARDANDO...' : 'ERROR')}
+                      </span>
+                     </div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </header>
+          </header>
 
         <div className="view-container">
           <Outlet />
@@ -1537,6 +1638,12 @@ export default function Layout() {
           onCancel={() => setActiveGrillMePrompt(null)}
         />
       )}
+
+      {/* Terminal Drawer y Consola de Deep Research / DeepSeek Harness */}
+      <TerminalDrawer
+        isOpen={isTerminalOpen}
+        onToggle={() => setIsTerminalOpen(prev => !prev)}
+      />
     </div>
   );
 }

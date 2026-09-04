@@ -143,6 +143,28 @@ flowchart LR
 * **Endpoint de Diagnóstico en Tiempo Real:** `POST /api/test/bai` para verificación de conectividad y latencia mediante handshake instantáneo.
 * **Soporte Agéntico Multi-Rol:** Integrado en el motor de ejecución Swarm (`LlmExecutionEngine.js`) y orquestador cliente (`callAiProvider` en `ai.js`).
 
+### 3.6 DeepSeek Harness dsh v0.1 (Meta-Kernel Cordis), Replay Interactivo, Forking en Caliente y Deep Research Online
+* **Especificación Oficial DeepSeek Harness (`dsh-session-v0.1`):**
+  * Basado en la arquitectura del meta-kernel **Cordis** de DeepSeek, estructurado sobre registros inmutables append-only y DAGs causales.
+  * **Modos de Operación Soportados:** `standard`, `code`, `minimal`, `creator`.
+  * **Estructura del Nodo:** `{ id: 'node_X', parent: 'node_Y' | null, type: 'thought'|'tool_call'|'observation'|'reflection', title, content, toolName, toolArgs, toolResult, isApproved, durationMs, timestamp }`.
+  * **Contexto Cordis:** Metadatos de kernel `{ kernel: 'cordis-v1', runtime: 'openplan-agentic-sandbox', securityLevel: 'isolated', lineage: [...] }`.
+* **Replay Interactivo Paso a Paso (`getReplayTimeline` & `AgentTrajectoryViewer.jsx`):**
+  * Extracción cronológica ordenada de la trayectoria para depuración visual.
+  * Controles de reproducción interactiva: Play, Pause, Scrubber deslizable, selector de velocidad (1x, 2x, 5x) y foco visual en el nodo activo.
+* **Bifurcación en Caliente (Hot Forking de Sesión):**
+  * Método `forkAtNode(nodeId, newParams)` en `TrajectoryRecorder`: clona los nodos exactos hasta el punto de bifurcación, asigna un nuevo `sessionId`, preserva `parentSessionId` y `forkedFromNodeId`.
+  * Interfaz de usuario en `AgentTrajectoryViewer.jsx` que despliega modal de bifurcación para cambiar el modelo (ej. conmutar de Ollama a B.AI GPT-5.2) o refinar el prompt antes de relanzar la rama hija.
+* **Motor de Deep Research Online Resiliente & Background Tasks (`server/index.js` y `src/lib/tools/deepResearchEngine.js`):**
+  * **Endpoints de Servidor Registrados:**
+    * `POST /api/research/start`: Inicia investigación asíncrona en segundo plano con validación de presupuesto.
+    * `GET /api/research/status/:taskId`: Consulta el progreso porcentual, estado (`running`, `paused_waiting_quota`, `completed`) y logs.
+    * `POST /api/research/pause/:taskId` y `POST /api/research/resume/:taskId`: Control manual de pausa y reactivación.
+    * `GET /api/research/history`: Listado de tareas históricas persistidas en disco (`proyectos/research/`).
+  * **Gobernanza de Cuotas y Resiliencia:** Si las APIs de búsqueda o inferencia exceden el límite de tasa o saldo, el motor transiciona automáticamente a `paused_waiting_quota`, programa auto-reintento con backoff y emite un evento persistente en la interfaz.
+  * **TerminalDrawer (`src/components/TerminalDrawer.jsx`):** Consola inferior deslizable con estética de IDE para desarrolladores, con pestañas de Streaming/Logs en vivo, Visualizador de Trayectorias Harness/Cordis, Lanzador de Investigación con autorización presupuestaria y Gestión de Tareas/Cuotas.
+  * **Centro de Notificaciones en Cabecera (`Layout.jsx`):** Campana de notificaciones con badge de conteo no leído y menú desplegable para alertar al usuario cuando las tareas finalizan o entran en espera de cuota.
+
 ---
 
 ## 4. Diagrama Maestro de Arquitectura y Flujos en yEd Graph Editor

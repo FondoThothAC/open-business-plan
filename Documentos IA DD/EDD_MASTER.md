@@ -14,6 +14,8 @@
 | `openplan_new_trajectory` | `runAgenticModuleGeneration` | CustomEvent con trayectoria completada | ActivityFeed, AgentTrajectoryViewer |
 | `openplan_module_completed` | `PlanContext` (Industrialización) | `{ moduleTitle, moduleKey, pillar, progress, tokens, provider, model }` | ActivityFeed, Barra de Progreso |
 | `openplan_navigate` | `PlanContext` / `BobChatModal` | `{ detail: '/modulo/pilar/modulo' }` | `Layout.jsx` (Navegación reactiva) |
+| `openplan_research_started` | `TerminalDrawer` / `deepResearchEngine` | `{ taskId, query, budgetLimitUsd }` | `Layout.jsx` (Campana de Notificaciones) |
+| `openplan_research_completed` | `TerminalDrawer` / `deepResearchEngine` | `{ taskId, query, sourcesCount, status }` | `Layout.jsx` (Campana de Notificaciones) |
 | `success` | Orquestador de Fase | `{ type: 'success', message: '✓ Completado', provider }` | Barra de Progreso Global |
 | `error` | Fallback Handler | `{ type: 'error', message: 'Fallo...', provider }` | Toast Alerts / Error Boundary |
 

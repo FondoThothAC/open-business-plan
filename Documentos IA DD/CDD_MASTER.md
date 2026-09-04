@@ -15,9 +15,11 @@
 * `ActivityFeed`: Monitor dual con pestañas de logs en vivo SSE y lista de trayectorias.
 * `FodaMatrix`: Cuadrícula interactiva de 4 cuadrantes con adición y eliminación dinámica de viñetas.
 * `CorporatePrintHeader` / `CorporatePrintFooter`: Encabezados y pies de página corporativos para exportación de documentos.
+* `NotificationsBell`: Campana de notificaciones en el encabezado con badge de alertas y menú desplegable para eventos de tareas en background (Deep Research finalizada, pausa por cuota agotada).
 
 ### Organismos
-* `AgentTrajectoryViewer`: Modal interactivo y visor DAG estilo DeepSeek Harness con inspector JSON de inputs/outputs y métricas.
+* `AgentTrajectoryViewer`: Modal interactivo y visor DAG compatible con `dsh-session-v0.1` (meta-kernel Cordis), con controles de Replay interactivo (Play/Pause, scrub lineal, velocidad 1x/2x/5x), modal de Hot Forking para bifurcación en caliente desde cualquier nodo, inspector JSON y métricas.
+* `TerminalDrawer`: Consola inferior retráctil estilo IDE con pestañas de logs streaming SSE en vivo, visor de trayectorias Harness/Cordis, lanzador de Deep Research Online con autorización de presupuesto y monitor de tareas activas.
 * `BobChatModal`: Modal interactivo de copiloto con soporte de reconocimiento de voz y debate estratégico.
 * `InegiMap`: Mapa geoespacial interactivo con capas de competidores DENUE y cálculo de densidad.
 * `FinancialCharts`: Gráficas interactivas de punto de equilibrio, estados proforma y corrida financiera.
