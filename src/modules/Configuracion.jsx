@@ -127,6 +127,7 @@ function estimateMesaCost(contextTokens, model) {
 // ─────────────────────────────────────────────────────────
 function useApiStatus(planData) {
   const [tavilyStatus, setTavilyStatus] = useState({ state: 'idle', message: '' });
+  const [braveStatus, setBraveStatus] = useState({ state: 'idle', message: '' });
   const [inegiStatus, setInegiStatus] = useState({ state: 'idle', message: '' });
   const [banxicoStatus, setBanxicoStatus] = useState({ state: 'idle', message: '' });
   const [baiStatus, setBaiStatus] = useState({ state: 'idle', message: '' });
@@ -216,6 +217,31 @@ function useApiStatus(planData) {
     }
   };
 
+  const testBrave = async (forcedKey = null) => {
+    const key = forcedKey !== null ? forcedKey : (planData.config?.search?.braveApiKey || '');
+    if (!key) {
+      setBraveStatus({ state: 'idle', message: 'No configurado' });
+      return;
+    }
+    setBraveStatus({ state: 'checking', message: 'Probando...' });
+    try {
+      const backendBase = getApiBase();
+      const res = await fetch(`${backendBase}/api/test/brave`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ apiKey: key })
+      });
+      const data = await safeJsonParse(res);
+      if (data.success) {
+        setBraveStatus({ state: 'online', message: 'En línea ✓' });
+      } else {
+        setBraveStatus({ state: 'offline', message: data.error || 'API Key inválida' });
+      }
+    } catch (err) {
+      setBraveStatus({ state: 'offline', message: err.message });
+    }
+  };
+
   const testInegi = async (forcedToken = null) => {
     const token = forcedToken !== null ? forcedToken : (planData.config?.externalApis?.inegiToken || '');
     if (!token) {
@@ -268,6 +294,7 @@ function useApiStatus(planData) {
 
   useEffect(() => {
     if (planData?.config?.search?.apiKey) testTavily(planData.config.search.apiKey);
+    if (planData?.config?.search?.braveApiKey) testBrave(planData.config.search.braveApiKey);
     if (planData?.config?.externalApis?.inegiToken) testInegi(planData.config.externalApis.inegiToken);
     if (planData?.config?.externalApis?.banxicoToken) testBanxico(planData.config.externalApis.banxicoToken);
     if (planData?.config?.ai?.baiKey) testLlmProvider('bai', planData.config.ai.baiKey, setBaiStatus);
@@ -293,6 +320,7 @@ function useApiStatus(planData) {
 
   return {
     tavilyStatus, setTavilyStatus, testTavily,
+    braveStatus, setBraveStatus, testBrave,
     inegiStatus, setInegiStatus, testInegi,
     banxicoStatus, setBanxicoStatus, testBanxico,
     baiStatus, setBaiStatus, testBai: (k) => testLlmProvider('bai', k || planData.config?.ai?.baiKey, setBaiStatus),
@@ -2258,9 +2286,15 @@ export default function Configuracion() {
                 value={searchConfig.provider || 'duckduckgo'}
                 onChange={(e) => handleSearchConfigChange('provider', e.target.value)}
               >
-                <option value="duckduckgo">🦆 DuckDuckGo (Gratis / Sin API key / Sin tarjeta)</option>
-                <option value="tavily">📡 Tavily Search (1,000 búsquedas gratis/mes)</option>
-                <option value="brave">🦁 Brave Search API (2,000 queries gratis/mes)</option>
+                <optgroup label="⚡ Fila 1 — Sin tarjeta (Gratis / Heurístico)">
+                  <option value="duckduckgo">🦆 DuckDuckGo (Gratis / Sin API key / Sin tarjeta)</option>
+                  <option value="tavily">📡 Tavily Search (1,000 búsquedas gratis/mes)</option>
+                  <option value="brave">🦁 Brave Search API (2,000 queries gratis/mes)</option>
+                </optgroup>
+                <optgroup label="💎 Fila 2 — Con tarjeta / Facturación API">
+                  <option value="tavily_pro">📡 Tavily Pro (Búsqueda profunda ilimitada)</option>
+                  <option value="brave_pro">🦁 Brave Search Pro (Consultas avanzadas)</option>
+                </optgroup>
               </select>
             </div>
 
@@ -2338,9 +2372,17 @@ export default function Configuracion() {
                   className="form-control" 
                   placeholder="BSA..."
                   value={searchConfig.braveApiKey || ''}
-                  onChange={(e) => handleSearchConfigChange('braveApiKey', e.target.value)}
+                  onChange={(e) => {
+                    handleSearchConfigChange('braveApiKey', e.target.value);
+                    apiStatus.setBraveStatus({ state: 'idle', message: '' });
+                  }}
                 />
-                <small style={{ color: 'var(--text-secondary)', fontSize: '0.7rem' }}>
+                <ApiStatusBadge 
+                  status={apiStatus.braveStatus} 
+                  onTest={() => apiStatus.testBrave(searchConfig.braveApiKey)} 
+                  disabled={!searchConfig.braveApiKey} 
+                />
+                <small style={{ color: 'var(--text-secondary)', fontSize: '0.7rem', display: 'block', marginTop: '4px' }}>
                   Índice web independiente sin censura ni tracking comercial.
                 </small>
               </div>

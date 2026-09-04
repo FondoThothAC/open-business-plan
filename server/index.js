@@ -9,6 +9,7 @@ import { FRAMEWORKS } from '../src/config/frameworks.js';
 import { swarmOrchestrator } from './swarm/SwarmOrchestrator.js';
 import { agentStore } from './swarm/AgentStore.js';
 import { generateLogoVariants } from '../src/lib/logoGenerator.js';
+import { checkSearchQuota, incrementSearchQuota, getSearchQuotaStats } from './quotaTracker.js';
 
 // ─────────────────────────────────────────────────────────
 //  Helper Seguro para Búsqueda DuckDuckGo (Control de Tasa y Backoff)
@@ -368,57 +369,210 @@ app.get('/api/projects/:type/:id', (req, res) => {
 });
 
 // ─────────────────────────────────────────────────────────
-//  Búsqueda Web (Tavily / DuckDuckGo)
+//  Búsqueda Web Multi-Tier (DuckDuckGo / Tavily / Brave Search)
 // ─────────────────────────────────────────────────────────
 app.post('/api/search', async (req, res) => {
-  const { query, provider = 'tavily', apiKey = '' } = req.body;
+  const {
+    query,
+    provider = 'duckduckgo',
+    apiKey = '',
+    braveApiKey = '',
+    failover = true,
+    allowPaidTier = false,
+    limit = 5
+  } = req.body;
+
   if (!query) {
     return res.status(400).json({ success: false, error: 'Query es requerido' });
   }
 
+  const normProvider = String(provider).toLowerCase();
+
+  // 1. Verificación de Cuota Mensual Persistida
+  const quotaCheck = checkSearchQuota(normProvider, Boolean(allowPaidTier));
+  if (!quotaCheck.allowed) {
+    if (failover) {
+      console.warn(`[API Search] Cuota excedida para ${normProvider}. Ejecutando failover hacia DuckDuckGo...`);
+      try {
+        const searchResults = await safeDdgSearch(query);
+        const results = (searchResults || []).slice(0, limit).map(r => ({
+          title: r.title,
+          url: r.url,
+          snippet: r.description || r.snippet || '',
+          provider: 'duckduckgo',
+          provenance: 'real'
+        }));
+        incrementSearchQuota('duckduckgo');
+        return res.json({
+          success: true,
+          provider: 'duckduckgo',
+          cascadedFrom: normProvider,
+          quotaWarning: quotaCheck.message,
+          results
+        });
+      } catch (ddgErr) {
+        return res.status(429).json({
+          success: false,
+          quotaExceeded: true,
+          requiresAuthorization: true,
+          error: `${quotaCheck.message} Failover a DuckDuckGo también falló: ${ddgErr.message}`
+        });
+      }
+    } else {
+      return res.status(429).json({
+        success: false,
+        quotaExceeded: true,
+        requiresAuthorization: true,
+        error: quotaCheck.message
+      });
+    }
+  }
+
+  // 2. Ejecución según el proveedor seleccionado
   try {
-    if (provider === 'tavily') {
-      if (!apiKey) {
+    if (normProvider === 'tavily' || normProvider === 'tavily_pro') {
+      const resolvedKey = apiKey || process.env.TAVILY_API_KEY || '';
+      if (!resolvedKey) {
+        if (failover) {
+          console.warn('[API Search] Sin API key para Tavily. Derivando a DuckDuckGo...');
+          const searchResults = await safeDdgSearch(query);
+          const results = (searchResults || []).slice(0, limit).map(r => ({
+            title: r.title,
+            url: r.url,
+            snippet: r.description || r.snippet || '',
+            provider: 'duckduckgo',
+            provenance: 'real'
+          }));
+          incrementSearchQuota('duckduckgo');
+          return res.json({ success: true, provider: 'duckduckgo', cascadedFrom: 'tavily', results });
+        }
         return res.status(400).json({ success: false, error: 'Se requiere API key de Tavily' });
       }
-      const response = await fetch('https://api.tavily.com/search', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          api_key: apiKey,
-          query: query,
-          search_depth: "basic",
-          include_answer: false,
-          max_results: 5
-        }),
-      });
-      const data = await response.json();
-      if (data.error) {
-        return res.status(400).json({ success: false, error: data.error });
+
+      try {
+        const response = await fetch('https://api.tavily.com/search', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            api_key: resolvedKey,
+            query: query,
+            search_depth: normProvider === 'tavily_pro' ? 'advanced' : 'basic',
+            include_answer: false,
+            max_results: limit
+          }),
+          signal: AbortSignal.timeout(9000)
+        });
+        const data = await response.json();
+        if (data.error || response.status === 429) {
+          throw new Error(data.error || `Error HTTP ${response.status} en Tavily`);
+        }
+        const results = (data.results || []).map(r => ({
+          title: r.title,
+          url: r.url,
+          snippet: r.content,
+          provider: 'tavily',
+          provenance: 'real'
+        }));
+        incrementSearchQuota('tavily');
+        return res.json({ success: true, provider: 'tavily', results });
+      } catch (tavilyErr) {
+        if (failover) {
+          console.warn('[API Search] Fallo en Tavily:', tavilyErr.message, 'Ejecutando failover a DuckDuckGo...');
+          const searchResults = await safeDdgSearch(query);
+          const results = (searchResults || []).slice(0, limit).map(r => ({
+            title: r.title,
+            url: r.url,
+            snippet: r.description || r.snippet || '',
+            provider: 'duckduckgo',
+            provenance: 'real'
+          }));
+          incrementSearchQuota('duckduckgo');
+          return res.json({ success: true, provider: 'duckduckgo', cascadedFrom: 'tavily', results });
+        }
+        throw tavilyErr;
       }
-      const results = (data.results || []).map(r => ({
-        title: r.title,
-        url: r.url,
-        snippet: r.content
-      }));
-      return res.json({ success: true, provider: 'tavily', results });
-    } else if (provider === 'duckduckgo') {
+
+    } else if (normProvider === 'brave' || normProvider === 'brave_pro') {
+      const resolvedKey = braveApiKey || apiKey || process.env.BRAVE_SEARCH_KEY || process.env.BRAVE_API_KEY || '';
+      if (!resolvedKey) {
+        if (failover) {
+          console.warn('[API Search] Sin API key para Brave Search. Derivando a DuckDuckGo...');
+          const searchResults = await safeDdgSearch(query);
+          const results = (searchResults || []).slice(0, limit).map(r => ({
+            title: r.title,
+            url: r.url,
+            snippet: r.description || r.snippet || '',
+            provider: 'duckduckgo',
+            provenance: 'real'
+          }));
+          incrementSearchQuota('duckduckgo');
+          return res.json({ success: true, provider: 'duckduckgo', cascadedFrom: 'brave', results });
+        }
+        return res.status(400).json({ success: false, error: 'Se requiere API key de Brave Search' });
+      }
+
+      try {
+        const braveUrl = `https://api.search.brave.com/res/v1/web/search?q=${encodeURIComponent(query)}&count=${limit}`;
+        const response = await fetch(braveUrl, {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+            'X-Subscription-Token': resolvedKey
+          },
+          signal: AbortSignal.timeout(9000)
+        });
+        if (!response.ok) {
+          throw new Error(`Brave Search HTTP ${response.status}`);
+        }
+        const data = await response.json();
+        const results = (data.web?.results || []).map(r => ({
+          title: r.title,
+          url: r.url,
+          snippet: r.description || '',
+          provider: 'brave',
+          provenance: 'real'
+        }));
+        incrementSearchQuota('brave');
+        return res.json({ success: true, provider: 'brave', results });
+      } catch (braveErr) {
+        if (failover) {
+          console.warn('[API Search] Fallo en Brave Search:', braveErr.message, 'Ejecutando failover a DuckDuckGo...');
+          const searchResults = await safeDdgSearch(query);
+          const results = (searchResults || []).slice(0, limit).map(r => ({
+            title: r.title,
+            url: r.url,
+            snippet: r.description || r.snippet || '',
+            provider: 'duckduckgo',
+            provenance: 'real'
+          }));
+          incrementSearchQuota('duckduckgo');
+          return res.json({ success: true, provider: 'duckduckgo', cascadedFrom: 'brave', results });
+        }
+        throw braveErr;
+      }
+
+    } else if (normProvider === 'duckduckgo') {
       const searchResults = await safeDdgSearch(query);
-      const results = (searchResults || []).slice(0, 5).map(r => ({
+      const results = (searchResults || []).slice(0, limit).map(r => ({
         title: r.title,
         url: r.url,
-        snippet: r.description || r.snippet || ''
+        snippet: r.description || r.snippet || '',
+        provider: 'duckduckgo',
+        provenance: 'real'
       }));
+      incrementSearchQuota('duckduckgo');
       return res.json({ success: true, provider: 'duckduckgo', results });
     } else {
-      return res.status(400).json({ success: false, error: 'Proveedor desconocido' });
+      return res.status(400).json({ success: false, error: `Proveedor desconocido: ${provider}` });
     }
   } catch (err) {
     console.error('Error en búsqueda web:', err);
     return res.status(500).json({ success: false, error: err.message });
   }
+});
+
+app.get('/api/search/quota', (req, res) => {
+  res.json({ success: true, stats: getSearchQuotaStats() });
 });
 
 // ─────────────────────────────────────────────────────────
@@ -1516,6 +1670,65 @@ app.post('/api/test/tavily', async (req, res) => {
     }
   } catch (error) {
     res.json({ success: false, error: error.message });
+  }
+});
+
+app.post('/api/test/brave', async (req, res) => {
+  const { apiKey } = req.body;
+  const key = apiKey || process.env.BRAVE_SEARCH_KEY || process.env.BRAVE_API_KEY || '';
+  if (!key) {
+    return res.status(400).json({ success: false, error: 'Token/API Key de Brave no proporcionado' });
+  }
+  try {
+    const resp = await fetch('https://api.search.brave.com/res/v1/web/search?q=test&count=1', {
+      headers: { 'Accept': 'application/json', 'X-Subscription-Token': key },
+      signal: AbortSignal.timeout(8000)
+    });
+    if (resp.ok) {
+      return res.json({ success: true, message: 'Brave Search API está en línea y la API Key es válida.' });
+    }
+    return res.json({ success: false, error: `Error HTTP: ${resp.status}` });
+  } catch (err) {
+    return res.json({ success: false, error: err.message });
+  }
+});
+
+app.post('/api/test/search', async (req, res) => {
+  const { provider = 'duckduckgo', apiKey = '', braveApiKey = '' } = req.body;
+  const normProvider = String(provider).toLowerCase();
+
+  try {
+    if (normProvider === 'tavily') {
+      const key = apiKey || process.env.TAVILY_API_KEY || '';
+      if (!key) return res.status(400).json({ success: false, error: 'API Key de Tavily no proporcionada' });
+      const resp = await fetch('https://api.tavily.com/search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ api_key: key, query: 'test ping', max_results: 1 }),
+        signal: AbortSignal.timeout(8000)
+      });
+      const data = await resp.json();
+      if (resp.status === 200 && !data.error) {
+        return res.json({ success: true, provider: 'tavily', message: 'Tavily AI conectado exitosamente.' });
+      }
+      return res.json({ success: false, provider: 'tavily', error: data.error || `HTTP ${resp.status}` });
+    } else if (normProvider === 'brave') {
+      const key = braveApiKey || apiKey || process.env.BRAVE_SEARCH_KEY || process.env.BRAVE_API_KEY || '';
+      if (!key) return res.status(400).json({ success: false, error: 'API Key de Brave no proporcionada' });
+      const resp = await fetch('https://api.search.brave.com/res/v1/web/search?q=test&count=1', {
+        headers: { 'Accept': 'application/json', 'X-Subscription-Token': key },
+        signal: AbortSignal.timeout(8000)
+      });
+      if (resp.ok) {
+        return res.json({ success: true, provider: 'brave', message: 'Brave Search conectado exitosamente.' });
+      }
+      return res.json({ success: false, provider: 'brave', error: `HTTP ${resp.status}` });
+    } else if (normProvider === 'duckduckgo') {
+      return res.json({ success: true, provider: 'duckduckgo', message: 'DuckDuckGo disponible sin credenciales.' });
+    }
+    return res.status(400).json({ success: false, error: `Proveedor no soportado: ${provider}` });
+  } catch (err) {
+    return res.json({ success: false, provider: normProvider, error: err.message });
   }
 });
 

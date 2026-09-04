@@ -13,6 +13,7 @@ import {
 import { executeAgentTool } from '../src/lib/agentTools.js';
 import { busquedaMultiFuente } from '../server/competitorEngine.js';
 import { runDeepResearch } from '../src/lib/tools/deepResearchEngine.js';
+import { checkSearchQuota, incrementSearchQuota, resetSearchQuota } from '../server/quotaTracker.js';
 
 test('Fase 1: Unificación de Esquema config.search y Migración de Aliases Legacy', async (t) => {
   await t.test('debe normalizar el esquema canónico por defecto', () => {
@@ -300,6 +301,86 @@ test('Fase 5: Erradicación de Fuentes Sintéticas No Autorizadas y Etiquetado H
     assert.strictEqual(res.success, true);
     const radarUrls = res.data.sources.filter(s => s.url && s.url.includes('fondothoth.com/radar'));
     assert.strictEqual(radarUrls.length, 0);
+  });
+});
+
+test('Fase 6: Soporte para Brave Search, Cuotas Persistidas y Cascada con Autorización', async (t) => {
+  await t.test('checkSearchQuota para duckduckgo siempre debe estar permitido sin autorización', () => {
+    const q = checkSearchQuota('duckduckgo');
+    assert.strictEqual(q.allowed, true);
+    assert.strictEqual(q.quotaExceeded, false);
+    assert.strictEqual(q.requiresAuthorization, false);
+  });
+
+  await t.test('incrementSearchQuota debe incrementar y persistir conteo', () => {
+    resetSearchQuota();
+    const c1 = incrementSearchQuota('brave');
+    assert.strictEqual(c1, 1);
+    const c2 = incrementSearchQuota('brave');
+    assert.strictEqual(c2, 2);
+  });
+
+  await t.test('cuota excedida sin allowPaidTier debe requerir autorización', () => {
+    resetSearchQuota();
+    // Simular que tavily alcanzó el límite de 950
+    for (let i = 0; i < 950; i++) {
+      incrementSearchQuota('tavily');
+    }
+    const q = checkSearchQuota('tavily', false);
+    assert.strictEqual(q.allowed, false);
+    assert.strictEqual(q.quotaExceeded, true);
+    assert.strictEqual(q.requiresAuthorization, true);
+  });
+
+  await t.test('cuota excedida con allowPaidTier=true debe permitir ejecución en nivel de pago', () => {
+    const q = checkSearchQuota('tavily', true);
+    assert.strictEqual(q.allowed, true);
+    assert.strictEqual(q.paidTierActive, true);
+    assert.strictEqual(q.requiresAuthorization, false);
+  });
+
+  await t.test('tool_web_search con failover debe consultar y preservar procedencia real', async () => {
+    const originalFetch = globalThis.fetch;
+    try {
+      globalThis.fetch = async (url, opts) => {
+        if (String(url).includes('/api/search')) {
+          const body = JSON.parse(opts.body);
+          assert.strictEqual(body.provider, 'brave');
+          // Simular respuesta exitosa de Brave Search
+          return {
+            ok: true,
+            json: async () => ({
+              success: true,
+              provider: 'brave',
+              results: [
+                { title: 'Tornos CNC México', url: 'https://maquinaria.mx', snippet: 'Venta de maquinaria' }
+              ]
+            })
+          };
+        }
+        return originalFetch(url, opts);
+      };
+
+      const res = await executeAgentTool('tool_web_search', {
+        query: 'Tornos CNC Industriales',
+        location: 'Monterrey, NL'
+      }, {
+        config: {
+          search: {
+            provider: 'brave',
+            braveApiKey: 'brave-test-key-valid'
+          }
+        }
+      });
+
+      assert.strictEqual(res.success, true);
+      assert.strictEqual(res.data.provenance, 'real');
+      assert.strictEqual(res.data.results[0].provider, 'brave');
+      assert.strictEqual(res.data.results[0].provenance, 'real');
+    } finally {
+      globalThis.fetch = originalFetch;
+      resetSearchQuota();
+    }
   });
 });
 
