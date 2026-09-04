@@ -5,9 +5,10 @@
  * Estrategia de búsqueda escalonada:
  * - Fila 1 (Gratis / Freemium / Local): Se agota primero:
  *     1. INEGI DENUE / Banxico SIE (APIs oficiales del estado mexicano)
- *     2. Tavily Free Tier (1,000 créditos mensuales gratuitos)
- *     3. Brave Search Free API (2,000 req/mes)
- *     4. DuckDuckGo + Scraping de Hardware Local (Puppeteer/Chromium local)
+ *     2. DuckDuckGo + Scraping Local: Respaldo gratuito ilimitado.
+ *     3. Tavily: 1,000 búsquedas/mes con cuenta Researcher.
+ *     4. Brave Search: 1,000 búsquedas/mes con los $5 de crédito gratuito.
+ *     5. Puppeteer/Chromium hardware local
  * - Fila 2 (Premium):
  *     1. Exa.ai (Búsqueda neuronal semántica B2B para competidores reales)
  *     2. Perplexity Sonar Pro (Razonamiento en vivo con citas verificadas)
@@ -20,7 +21,7 @@
 import { executeAgentTool } from '../agentTools.js';
 
 export const SEARCH_TIERS = {
-  tier1_free: ['inegi_denue', 'banxico_sie', 'duckduckgo', 'brave', 'tavily_free', 'local_puppeteer'],
+  tier1_free: ['inegi_denue', 'banxico_sie', 'duckduckgo', 'tavily_free', 'brave', 'local_puppeteer'],
   tier2_premium: ['exa', 'perplexity', 'tavily_pro', 'serper']
 };
 
@@ -211,6 +212,10 @@ export async function runDeepResearch({
 
   // ─────────────────────────────────────────────────────────────────────────
   // FASE 1: AGOTAR PRIMERO FILA 1 (GRATIS / FREEMIUM / HARDWARE LOCAL)
+  // ORDEN ESTABLECIDO:
+  // 1. DuckDuckGo: Respaldo gratuito ilimitado.
+  // 2. Tavily: 1,000 búsquedas/mes con tu cuenta Researcher.
+  // 3. Brave Search: 1,000 búsquedas/mes con tus $5 de crédito gratuito.
   // ─────────────────────────────────────────────────────────────────────────
   const braveKey = apiKeys.braveKey || (typeof process !== 'undefined' ? process.env.BRAVE_SEARCH_KEY : null);
   const tavilyKey = apiKeys.tavilyKey || (typeof process !== 'undefined' ? process.env.TAVILY_API_KEY : null);
@@ -222,42 +227,10 @@ export async function runDeepResearch({
   if (tierPreference !== 'tier2_premium' && !forcePaidTier) {
     onLog('⚡ Consultando Fila 1 (Gratis / Freemium / Oficiales)...');
 
-    // 1.1 Intentar Tavily Free (1,000 consultas gratis/mes)
-    if (tavilyKey && sources.length === 0) {
-      try {
-        onLog('📡 Consultando Tavily Free Tier para extracción limpia...');
-        const tavilySources = await fetchTavilySearch(query, tavilyKey, depth);
-        if (tavilySources && tavilySources.length > 0) {
-          sources.push(...tavilySources);
-          costAccumulated += PRICING_ESTIMATES.tavily;
-          gatheredTier1 = true;
-          onLog(`✅ Tavily Free devolvió ${tavilySources.length} fuentes reales.`);
-        }
-      } catch (err) {
-        onLog(`⚠️ Tavily Free no disponible (${err.message}). Pasando a siguiente proveedor Fila 1...`);
-      }
-    }
-
-    // 1.2 Intentar Brave Search (2,000 consultas gratis/mes)
-    if (braveKey && sources.length === 0) {
-      try {
-        onLog('🦁 Consultando Brave Search API (Freemium)...');
-        const braveSources = await fetchBraveSearch(query, braveKey, depth);
-        if (braveSources && braveSources.length > 0) {
-          sources.push(...braveSources);
-          costAccumulated += PRICING_ESTIMATES.brave;
-          gatheredTier1 = true;
-          onLog(`✅ Brave Search devolvió ${braveSources.length} fuentes reales.`);
-        }
-      } catch (err) {
-        onLog(`⚠️ Brave Search no disponible (${err.message}). Pasando a DuckDuckGo / Local...`);
-      }
-    }
-
-    // 1.3 DuckDuckGo & Scraping de Hardware Local
+    // 1.1 DuckDuckGo & Scraping de Hardware Local (Respaldo gratuito ilimitado)
     if (sources.length === 0) {
       try {
-        onLog('🦆 Consultando DuckDuckGo + Scraping de Hardware Local...');
+        onLog('🦆 Consultando DuckDuckGo + Scraping de Hardware Local (Respaldo gratuito ilimitado)...');
         const ddgResult = await executeAgentTool('tool_web_search', { query, limit: 5, allowSyntheticEstimate: false });
         if (ddgResult?.data?.results && ddgResult.data.results.length > 0) {
           const ddgSources = ddgResult.data.results.map(r => ({
@@ -272,10 +245,42 @@ export async function runDeepResearch({
           }));
           sources.push(...ddgSources);
           gatheredTier1 = true;
-          onLog(`✅ Capa local recopiló ${ddgSources.length} resultados web reales.`);
+          onLog(`✅ Capa DuckDuckGo recopiló ${ddgSources.length} resultados web reales.`);
         }
       } catch (err) {
-        onLog(`⚠️ Búsqueda local no completó resultados: ${err.message}`);
+        onLog(`⚠️ DuckDuckGo no completó resultados (${err.message}). Pasando a Tavily...`);
+      }
+    }
+
+    // 1.2 Tavily (1,000 búsquedas/mes con cuenta Researcher)
+    if (tavilyKey && sources.length === 0) {
+      try {
+        onLog('📡 Consultando Tavily Researcher / Free Tier (1,000 búsquedas/mes)...');
+        const tavilySources = await fetchTavilySearch(query, tavilyKey, depth);
+        if (tavilySources && tavilySources.length > 0) {
+          sources.push(...tavilySources);
+          costAccumulated += PRICING_ESTIMATES.tavily;
+          gatheredTier1 = true;
+          onLog(`✅ Tavily devolvió ${tavilySources.length} fuentes reales.`);
+        }
+      } catch (err) {
+        onLog(`⚠️ Tavily no disponible (${err.message}). Pasando a Brave Search...`);
+      }
+    }
+
+    // 1.3 Brave Search (1,000 búsquedas/mes con $5 crédito gratuito)
+    if (braveKey && sources.length === 0) {
+      try {
+        onLog('🦁 Consultando Brave Search API (1,000 búsquedas/mes con crédito de $5)...');
+        const braveSources = await fetchBraveSearch(query, braveKey, depth);
+        if (braveSources && braveSources.length > 0) {
+          sources.push(...braveSources);
+          costAccumulated += PRICING_ESTIMATES.brave;
+          gatheredTier1 = true;
+          onLog(`✅ Brave Search devolvió ${braveSources.length} fuentes reales.`);
+        }
+      } catch (err) {
+        onLog(`⚠️ Brave Search no disponible (${err.message})...`);
       }
     }
   }
