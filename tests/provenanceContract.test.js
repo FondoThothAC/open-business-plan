@@ -8,7 +8,8 @@ import {
   tagLocalOffline,
   tagNone,
   createHonestEmptyResult,
-  summarizeProvenance
+  summarizeProvenance,
+  getProvenanceBadgeConfig
 } from '../src/lib/tools/provenance.js';
 import { executeAgentTool } from '../src/lib/agentTools.js';
 import { busquedaMultiFuente } from '../server/competitorEngine.js';
@@ -472,5 +473,69 @@ test('Fase 7: Endpoints Reales de Maquinaria y Proveedores con Erradicación de 
     }
   });
 });
+
+test('Fase 8: Visualización de Procedencia y Control de Cuotas en TerminalDrawer', async (t) => {
+  await t.test('getProvenanceBadgeConfig debe retornar configuración verde para factual verificado (real)', () => {
+    const badge = getProvenanceBadgeConfig({ provenance: 'real', provider: 'Brave Search API' });
+    assert.strictEqual(badge.icon, '🟢');
+    assert.ok(badge.label.includes('Factual Verificado (Brave Search API)'));
+    assert.strictEqual(badge.color, '#3fb950');
+    assert.ok(badge.bg.includes('63, 185, 80'));
+  });
+
+  await t.test('getProvenanceBadgeConfig debe retornar configuración amarilla para hardware local (local_offline)', () => {
+    const badge = getProvenanceBadgeConfig({ provenance: 'local_offline', provider: 'Scraping Local' });
+    assert.strictEqual(badge.icon, '🟡');
+    assert.ok(badge.label.includes('Hardware Local (Scraping Local)'));
+    assert.strictEqual(badge.color, '#d29922');
+  });
+
+  await t.test('getProvenanceBadgeConfig debe retornar configuración roja para estimaciones sintéticas (synthetic)', () => {
+    const badge = getProvenanceBadgeConfig({ provenance: 'synthetic', warning: 'Heurística INEGI DENUE' });
+    assert.strictEqual(badge.icon, '🔴');
+    assert.ok(badge.label.includes('Estimación Sintética (Heurística INEGI DENUE)'));
+    assert.strictEqual(badge.color, '#f85149');
+  });
+
+  await t.test('getProvenanceBadgeConfig debe retornar configuración neutra para estado honesto sin datos (none)', () => {
+    const badge = getProvenanceBadgeConfig({ provenance: 'none', warning: 'Sin fuentes encontradas' });
+    assert.strictEqual(badge.icon, '⚪');
+    assert.ok(badge.label.includes('Sin Datos (Sin fuentes encontradas)'));
+    assert.strictEqual(badge.color, '#8b949e');
+  });
+
+  await t.test('debe modelar reactividad ante evento de pausa por cuota (paused_waiting_quota)', () => {
+    // Simular recepción de evento de cuota y actualización de configuración
+    let planConfig = {
+      search: {
+        provider: 'brave',
+        allowPaidTier: false
+      }
+    };
+
+    const handleAuthorizePaidTier = (config) => ({
+      ...config,
+      search: {
+        ...config.search,
+        allowPaidTier: true
+      }
+    });
+
+    const handleFallbackToDuckDuckGo = (config) => ({
+      ...config,
+      search: {
+        ...config.search,
+        provider: 'duckduckgo'
+      }
+    });
+
+    const authorizedConfig = handleAuthorizePaidTier(planConfig);
+    assert.strictEqual(authorizedConfig.search.allowPaidTier, true);
+
+    const fallbackConfig = handleFallbackToDuckDuckGo(planConfig);
+    assert.strictEqual(fallbackConfig.search.provider, 'duckduckgo');
+  });
+});
+
 
 

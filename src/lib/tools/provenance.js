@@ -140,3 +140,45 @@ export function summarizeProvenance(items = []) {
 
   return summary;
 }
+
+/**
+ * Genera la configuración visual (colores, etiqueta, icono, tooltip) para badges de procedencia.
+ * @param {{ provenance?: string, provider?: string, warning?: string }} params
+ * @returns {{ bg: string, color: string, icon: string, label: string, title: string }}
+ */
+export function getProvenanceBadgeConfig({ provenance, provider, warning } = {}) {
+  let bg = '#21262d';
+  let color = '#8b949e';
+  let icon = '⚪';
+  let label = 'Sin Datos';
+
+  if (provenance === 'real' || provenance === 'verified_real') {
+    bg = 'rgba(63, 185, 80, 0.15)';
+    color = '#3fb950';
+    icon = '🟢';
+    label = `Factual Verificado (${provider || 'Web'})`;
+  } else if (provenance === 'local_offline') {
+    bg = 'rgba(210, 153, 34, 0.2)';
+    color = '#d29922';
+    icon = '🟡';
+    label = `Hardware Local (${provider || 'Offline'})`;
+  } else if (provenance === 'synthetic' || provenance === 'synthetic_estimate') {
+    bg = 'rgba(248, 81, 73, 0.15)';
+    color = '#f85149';
+    icon = '🔴';
+    label = `Estimación Sintética (${warning || 'No Verificado'})`;
+  } else {
+    bg = 'rgba(139, 148, 158, 0.15)';
+    color = '#8b949e';
+    icon = '⚪';
+    label = `Sin Datos (${warning || 'Vacío'})`;
+  }
+
+  return {
+    bg,
+    color,
+    icon,
+    label,
+    title: warning || label
+  };
+}

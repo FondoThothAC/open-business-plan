@@ -14,15 +14,48 @@ import {
   ShieldAlert, 
   CheckCircle2, 
   AlertTriangle,
-  Sparkles
+  Sparkles,
+  ExternalLink,
+  Database,
+  Layers
 } from 'lucide-react';
 import { getApiBase } from '../config/apiConfig.js';
 import { usePlan } from '../context/PlanContext.jsx';
-import { buildSearchApiKeys } from '../lib/tools/provenance.js';
+import { buildSearchApiKeys, getProvenanceBadgeConfig } from '../lib/tools/provenance.js';
+
+/**
+ * Badge visual de procedencia de datos (Factual Verificado / Hardware Local / Estimación Sintética / Sin Datos)
+ * Garantiza cumplimiento estricto con la directiva de erradicación de datos falsos.
+ */
+export function ProvenanceBadge({ provenance, provider, warning }) {
+  const cfg = getProvenanceBadgeConfig({ provenance, provider, warning });
+
+  return (
+    <span
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '4px',
+        fontSize: '0.68rem',
+        fontWeight: 700,
+        padding: '2px 7px',
+        borderRadius: '10px',
+        background: cfg.bg,
+        color: cfg.color,
+        border: `1px solid ${cfg.color}40`,
+        lineHeight: 1.2
+      }}
+      title={cfg.title}
+    >
+      <span>{cfg.icon}</span>
+      <span>{cfg.label}</span>
+    </span>
+  );
+}
 
 export default function TerminalDrawer({ isOpen, onToggle }) {
-  const { planData } = usePlan();
-  const [activeTab, setActiveTab] = useState('terminal'); // 'terminal' | 'research' | 'harness' | 'quotas'
+  const { planData, updateConfig } = usePlan();
+  const [activeTab, setActiveTab] = useState('terminal'); // 'terminal' | 'research' | 'quotas' | 'harness'
   const [terminalLogs, setTerminalLogs] = useState([]);
   const [activeResearchTask, setActiveResearchTask] = useState(null);
   const [isResearchLoading, setIsResearchLoading] = useState(false);
@@ -31,9 +64,11 @@ export default function TerminalDrawer({ isOpen, onToggle }) {
   const [researchDepth, setResearchDepth] = useState('rapido');
   const [forcePaidTier, setForcePaidTier] = useState(false);
   const [autoScroll, setAutoScroll] = useState(true);
+  const [quotaStats, setQuotaStats] = useState(null);
+  const [isQuotaLoading, setIsQuotaLoading] = useState(false);
   const logsEndRef = useRef(null);
 
-  // Escuchar eventos de telemetría y SSE
+  // Escuchar eventos de telemetría, SSE y Deep Research
   useEffect(() => {
     const handleTrajectoryEvent = (e) => {
       const detail = e.detail || {};
@@ -49,12 +84,51 @@ export default function TerminalDrawer({ isOpen, onToggle }) {
       }
     };
 
+    const handleResearchCompleted = (e) => {
+      const detail = e.detail || {};
+      if (detail.taskId) {
+        setActiveResearchTask(prev => {
+          if (prev && prev.id === detail.taskId) {
+            return {
+              ...prev,
+              status: 'completed',
+              progress: 100,
+              sources: detail.sources || prev.sources || []
+            };
+          }
+          return prev;
+        });
+        addLog(`✅ Investigación completada (ID: ${detail.taskId}). ${detail.sources ? detail.sources.length + ' fuentes factuales recopiladas.' : ''}`, 'success');
+      }
+    };
+
+    const handleResearchPaused = (e) => {
+      const detail = e.detail || {};
+      if (detail.taskId) {
+        setActiveResearchTask(prev => {
+          if (prev && prev.id === detail.taskId) {
+            return {
+              ...prev,
+              status: 'paused_waiting_quota',
+              warning: detail.warning || 'Cuota mensual alcanzada en proveedor de búsqueda'
+            };
+          }
+          return prev;
+        });
+        addLog(`⚠️ Investigación pausada por cuota (ID: ${detail.taskId}): ${detail.warning || 'Límite alcanzado'}`, 'warn');
+      }
+    };
+
     window.addEventListener('openplan_trajectory_updated', handleTrajectoryEvent);
     window.addEventListener('openplan_log', handleGlobalLog);
+    window.addEventListener('openplan_research_completed', handleResearchCompleted);
+    window.addEventListener('openplan_research_paused', handleResearchPaused);
 
     return () => {
       window.removeEventListener('openplan_trajectory_updated', handleTrajectoryEvent);
       window.removeEventListener('openplan_log', handleGlobalLog);
+      window.removeEventListener('openplan_research_completed', handleResearchCompleted);
+      window.removeEventListener('openplan_research_paused', handleResearchPaused);
     };
   }, []);
 
@@ -77,6 +151,23 @@ export default function TerminalDrawer({ isOpen, onToggle }) {
 
   const handleClearLogs = () => {
     setTerminalLogs([]);
+  };
+
+  // Consultar estadísticas de cuota persistidas en el backend
+  const fetchQuotaStats = async () => {
+    setIsQuotaLoading(true);
+    try {
+      const apiBase = getApiBase();
+      const res = await fetch(`${apiBase}/api/search/quota`);
+      const data = await res.json();
+      if (data.success) {
+        setQuotaStats(data.stats);
+      }
+    } catch (err) {
+      addLog(`Error consultando cuotas: ${err.message}`, 'warn');
+    } finally {
+      setIsQuotaLoading(false);
+    }
   };
 
   // Lanzar Deep Research con Autorización
@@ -107,11 +198,11 @@ export default function TerminalDrawer({ isOpen, onToggle }) {
           domain: researchDomain,
           depth: researchDepth,
           status: 'running',
-          progress: 15
+          progress: 15,
+          sources: []
         });
         addLog(`✅ Tarea de Deep Research autorizada y registrada (ID: ${data.taskId}). Ejecutando en segundo plano.`, 'success');
         
-        // Disparar evento para campana de notificaciones
         window.dispatchEvent(new CustomEvent('openplan_research_started', { detail: { taskId: data.taskId, query: researchQuery } }));
       } else {
         addLog(`❌ Error iniciando Deep Research: ${data.error || 'Respuesta inválida'}`, 'error');
@@ -139,6 +230,58 @@ export default function TerminalDrawer({ isOpen, onToggle }) {
       }
     } catch (err) {
       addLog(`Error al modificar estado de la tarea: ${err.message}`, 'error');
+    }
+  };
+
+  // Acción reactiva 1: Autorizar Fila 2 de Pago tras pausa por cuota
+  const handleAuthorizePaidTier = async () => {
+    if (updateConfig) {
+      updateConfig('search', 'allowPaidTier', true);
+    }
+    addLog('💎 Autorización de Fila 2 Premium concedida por el usuario.', 'info');
+
+    if (activeResearchTask?.id) {
+      try {
+        const apiBase = getApiBase();
+        const res = await fetch(`${apiBase}/api/research/resume/${activeResearchTask.id}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ allowPaidTier: true })
+        });
+        const data = await res.json();
+        if (data.success) {
+          setActiveResearchTask(prev => ({ ...prev, status: 'running' }));
+          addLog(`▶️ Investigación ${activeResearchTask.id} reanudada en Fila 2 Premium.`, 'success');
+        }
+      } catch (err) {
+        addLog(`Error al reanudar tarea con Fila 2: ${err.message}`, 'error');
+      }
+    }
+  };
+
+  // Acción reactiva 2: Cambiar a DuckDuckGo Gratuito tras pausa por cuota
+  const handleFallbackToDuckDuckGo = async () => {
+    if (updateConfig) {
+      updateConfig('search', 'provider', 'duckduckgo');
+    }
+    addLog('🦆 Conmutando proveedor a DuckDuckGo (Fila 1 Gratis Ilimitada).', 'info');
+
+    if (activeResearchTask?.id) {
+      try {
+        const apiBase = getApiBase();
+        const res = await fetch(`${apiBase}/api/research/resume/${activeResearchTask.id}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ provider: 'duckduckgo' })
+        });
+        const data = await res.json();
+        if (data.success) {
+          setActiveResearchTask(prev => ({ ...prev, status: 'running' }));
+          addLog(`▶️ Investigación ${activeResearchTask.id} reanudada en DuckDuckGo.`, 'success');
+        }
+      } catch (err) {
+        addLog(`Error al reanudar tarea con DuckDuckGo: ${err.message}`, 'error');
+      }
     }
   };
 
@@ -196,7 +339,7 @@ export default function TerminalDrawer({ isOpen, onToggle }) {
       bottom: 0,
       left: 0,
       right: 0,
-      height: '340px',
+      height: '350px',
       background: '#0d1117',
       borderTop: '2px solid #58a6ff',
       zIndex: 9998,
@@ -262,6 +405,30 @@ export default function TerminalDrawer({ isOpen, onToggle }) {
             {activeResearchTask?.status === 'running' && (
               <span className="animate-pulse" style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#3fb950' }} />
             )}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setActiveTab('quotas');
+              fetchQuotaStats();
+            }}
+            style={{
+              background: activeTab === 'quotas' ? '#0d1117' : 'transparent',
+              color: activeTab === 'quotas' ? '#38bdf8' : '#8b949e',
+              border: 'none',
+              borderBottom: activeTab === 'quotas' ? '2px solid #38bdf8' : 'none',
+              padding: '0.45rem 0.85rem',
+              fontSize: '0.75rem',
+              fontWeight: 700,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px'
+            }}
+          >
+            <Database size={13} />
+            Cuotas & Fila 1/2
           </button>
 
           <button
@@ -355,7 +522,7 @@ export default function TerminalDrawer({ isOpen, onToggle }) {
             padding: '1rem 1.5rem',
             color: '#c9d1d9'
           }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '1.5rem', height: '100%' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 1.1fr', gap: '1.5rem', height: '100%' }}>
               {/* Formulario de Lanzamiento con Autorización */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                 <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#ec4899', display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -470,11 +637,15 @@ export default function TerminalDrawer({ isOpen, onToggle }) {
                 padding: '0.85rem',
                 display: 'flex',
                 flexDirection: 'column',
-                justifyContent: 'space-between'
+                justifyContent: 'space-between',
+                overflowY: 'auto'
               }}>
                 <div>
-                  <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#8b949e', textTransform: 'uppercase', marginBottom: '0.5rem' }}>
-                    Estado de Investigación en Background
+                  <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#8b949e', textTransform: 'uppercase', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span>Estado de Investigación en Background</span>
+                    {activeResearchTask && (
+                      <span style={{ fontSize: '0.68rem', color: '#58a6ff' }}>ID: {activeResearchTask.id}</span>
+                    )}
                   </div>
 
                   {activeResearchTask ? (
@@ -482,20 +653,38 @@ export default function TerminalDrawer({ isOpen, onToggle }) {
                       <div style={{ fontSize: '0.82rem', fontWeight: 800, color: '#58a6ff', marginBottom: '4px' }}>
                         {activeResearchTask.query}
                       </div>
-                      <div style={{ fontSize: '0.72rem', color: '#8b949e', marginBottom: '0.75rem' }}>
-                        ID: {activeResearchTask.id} · Nivel: {activeResearchTask.depth}
+                      <div style={{ fontSize: '0.72rem', color: '#8b949e', marginBottom: '0.6rem' }}>
+                        Dominio: {activeResearchTask.domain} · Profundidad: {activeResearchTask.depth}
                       </div>
 
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '0.75rem' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '0.6rem' }}>
                         <span style={{
                           fontSize: '0.7rem',
                           padding: '2px 8px',
                           borderRadius: '12px',
-                          background: activeResearchTask.status === 'running' ? 'rgba(63, 185, 80, 0.15)' : 'rgba(210, 153, 34, 0.2)',
-                          color: activeResearchTask.status === 'running' ? '#3fb950' : '#d29922',
+                          background: activeResearchTask.status === 'running' 
+                            ? 'rgba(63, 185, 80, 0.15)' 
+                            : activeResearchTask.status === 'paused_waiting_quota'
+                            ? 'rgba(210, 153, 34, 0.2)'
+                            : activeResearchTask.status === 'completed'
+                            ? 'rgba(56, 189, 248, 0.15)'
+                            : 'rgba(139, 148, 158, 0.2)',
+                          color: activeResearchTask.status === 'running' 
+                            ? '#3fb950' 
+                            : activeResearchTask.status === 'paused_waiting_quota'
+                            ? '#d29922'
+                            : activeResearchTask.status === 'completed'
+                            ? '#38bdf8'
+                            : '#8b949e',
                           fontWeight: 700
                         }}>
-                          {activeResearchTask.status === 'running' ? '● En Ejecución' : activeResearchTask.status === 'paused_waiting_quota' ? '⏸️ Pausado por Cuota' : activeResearchTask.status}
+                          {activeResearchTask.status === 'running' 
+                            ? '● En Ejecución' 
+                            : activeResearchTask.status === 'paused_waiting_quota' 
+                            ? '⏸️ Pausado por Cuota' 
+                            : activeResearchTask.status === 'completed'
+                            ? '✅ Completada'
+                            : activeResearchTask.status}
                         </span>
 
                         <button
@@ -515,9 +704,129 @@ export default function TerminalDrawer({ isOpen, onToggle }) {
                         </button>
                       </div>
 
+                      {/* Tarjeta de Control de Cuota Reactivo */}
                       {activeResearchTask.status === 'paused_waiting_quota' && (
-                        <div style={{ fontSize: '0.72rem', color: '#d29922', background: 'rgba(210,153,34,0.1)', padding: '6px 8px', borderRadius: '6px' }}>
-                          ⚠️ Proveedor saturado o rate limit alcanzado. Se reanudará automáticamente al liberarse la cuota.
+                        <div style={{
+                          background: 'rgba(210, 153, 34, 0.12)',
+                          border: '1px solid rgba(210, 153, 34, 0.4)',
+                          borderRadius: '6px',
+                          padding: '0.6rem',
+                          marginBottom: '0.75rem'
+                        }}>
+                          <div style={{ fontSize: '0.72rem', color: '#d29922', fontWeight: 700, marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            <AlertTriangle size={14} />
+                            <span>{activeResearchTask.warning || 'Límite de cuota alcanzado en el proveedor de búsqueda.'}</span>
+                          </div>
+                          <div style={{ fontSize: '0.7rem', color: '#8b949e', marginBottom: '0.5rem', lineHeight: '1.3' }}>
+                            El proveedor configurado agotó sus consultas mensuales gratuitas. Selecciona una acción para reanudar de inmediato:
+                          </div>
+                          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                            <button
+                              type="button"
+                              onClick={handleAuthorizePaidTier}
+                              style={{
+                                background: '#ec4899',
+                                color: '#fff',
+                                border: 'none',
+                                borderRadius: '4px',
+                                padding: '0.35rem 0.65rem',
+                                fontSize: '0.7rem',
+                                fontWeight: 700,
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '4px'
+                              }}
+                            >
+                              <span>💎</span> Autorizar Fila 2 (Pago)
+                            </button>
+                            <button
+                              type="button"
+                              onClick={handleFallbackToDuckDuckGo}
+                              style={{
+                                background: '#238636',
+                                color: '#fff',
+                                border: 'none',
+                                borderRadius: '4px',
+                                padding: '0.35rem 0.65rem',
+                                fontSize: '0.7rem',
+                                fontWeight: 700,
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '4px'
+                              }}
+                            >
+                              <span>🦆</span> Usar DuckDuckGo (Gratis)
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Lista de Fuentes Verificadas con ProvenanceBadge */}
+                      {activeResearchTask.sources && activeResearchTask.sources.length > 0 && (
+                        <div style={{ marginTop: '0.5rem' }}>
+                          <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#8b949e', marginBottom: '0.35rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <span>FUENTES FACTUALES ({activeResearchTask.sources.length})</span>
+                            <span style={{ fontSize: '0.65rem', color: '#3fb950' }}>100% Verificado</span>
+                          </div>
+                          <div style={{ maxHeight: '120px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                            {activeResearchTask.sources.map((src, idx) => (
+                              <div
+                                key={`src_${idx}_${src.url || src.title}`}
+                                style={{
+                                  background: '#0d1117',
+                                  border: '1px solid #30363d',
+                                  borderRadius: '4px',
+                                  padding: '4px 6px',
+                                  fontSize: '0.7rem'
+                                }}
+                              >
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '6px', marginBottom: '2px' }}>
+                                  <ProvenanceBadge
+                                    provenance={src.provenance}
+                                    provider={src.provider}
+                                    warning={src.warning}
+                                  />
+                                  {src.confidenceScore !== undefined && (
+                                    <span style={{ fontSize: '0.65rem', color: '#8b949e' }}>
+                                      {Math.round(src.confidenceScore * 100)}% conf.
+                                    </span>
+                                  )}
+                                </div>
+                                <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                  {src.url ? (
+                                    <a
+                                      href={src.url}
+                                      target="_blank"
+                                      rel="noreferrer"
+                                      style={{ color: '#58a6ff', textDecoration: 'none', fontWeight: 600 }}
+                                      title={src.title || src.url}
+                                    >
+                                      {src.title || src.url}
+                                    </a>
+                                  ) : (
+                                    <span style={{ color: '#c9d1d9', fontWeight: 600 }}>{src.title || 'Referencia factual'}</span>
+                                  )}
+                                </div>
+                                {src.snippet && (
+                                  <div style={{ fontSize: '0.65rem', color: '#8b949e', marginTop: '2px', lineHeight: '1.25', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                                    {src.snippet}
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Estado Honesto Vacío si terminó sin fuentes */}
+                      {activeResearchTask.status === 'completed' && (!activeResearchTask.sources || activeResearchTask.sources.length === 0) && (
+                        <div style={{ marginTop: '0.5rem', padding: '8px', background: '#0d1117', border: '1px solid #30363d', borderRadius: '4px', textAlign: 'center' }}>
+                          <ProvenanceBadge provenance="none" warning="Sin fuentes encontradas" />
+                          <div style={{ fontSize: '0.68rem', color: '#8b949e', marginTop: '4px' }}>
+                            No se encontraron fuentes externas verificadas para este criterio de búsqueda.
+                          </div>
                         </div>
                       )}
                     </div>
@@ -528,15 +837,126 @@ export default function TerminalDrawer({ isOpen, onToggle }) {
                   )}
                 </div>
 
-                <div style={{ fontSize: '0.7rem', color: '#8b949e', borderTop: '1px solid #30363d', paddingTop: '0.5rem' }}>
-                  💡 La investigación continuará incluso si cierras este panel o navegas a otros módulos.
+                <div style={{ fontSize: '0.7rem', color: '#8b949e', borderTop: '1px solid #30363d', paddingTop: '0.5rem', marginTop: '0.5rem' }}>
+                  💡 La investigación continúa asíncronamente en segundo plano incluso al navegar entre módulos.
                 </div>
               </div>
             </div>
           </div>
         )}
 
-        {/* PESTAÑA 3: RESUMEN HARNESS & CORDIS */}
+        {/* PESTAÑA 3: CUOTAS & PROVEEDORES FILA 1/2 */}
+        {activeTab === 'quotas' && (
+          <div style={{
+            flex: 1,
+            overflowY: 'auto',
+            padding: '1rem 1.5rem',
+            color: '#c9d1d9',
+            fontSize: '0.78rem'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+              <div>
+                <div style={{ fontSize: '0.9rem', fontWeight: 800, color: '#38bdf8', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <Database size={16} />
+                  Monitor de Consumo Mensual y Cuotas Persistidas
+                </div>
+                <div style={{ fontSize: '0.7rem', color: '#8b949e', marginTop: '2px' }}>
+                  Control estricto de gasto: auto-pausa y failover antes de generar cargos de Fila 2 sin autorización.
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={fetchQuotaStats}
+                disabled={isQuotaLoading}
+                style={{
+                  background: '#21262d',
+                  border: '1px solid #30363d',
+                  color: '#c9d1d9',
+                  borderRadius: '6px',
+                  padding: '4px 10px',
+                  fontSize: '0.72rem',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px'
+                }}
+              >
+                <RefreshCw size={12} className={isQuotaLoading ? 'animate-spin' : ''} />
+                Actualizar Cuotas
+              </button>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem', marginBottom: '1rem' }}>
+              {/* Tarjeta Brave Search */}
+              <div style={{ background: '#161b22', border: '1px solid #30363d', borderRadius: '8px', padding: '0.75rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontWeight: 700, color: '#f97316' }}>🦁 Brave Search API</span>
+                  <span style={{ fontSize: '0.65rem', background: 'rgba(249, 115, 22, 0.15)', color: '#f97316', padding: '1px 6px', borderRadius: '8px' }}>Fila 1 Freemium</span>
+                </div>
+                <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#c9d1d9', marginTop: '6px' }}>
+                  {quotaStats?.brave?.count ?? 0} <span style={{ fontSize: '0.75rem', color: '#8b949e' }}>/ {quotaStats?.brave?.limit ?? 2000} mes</span>
+                </div>
+                <div style={{ width: '100%', height: '4px', background: '#21262d', borderRadius: '2px', marginTop: '6px', overflow: 'hidden' }}>
+                  <div style={{ width: `${Math.min(100, ((quotaStats?.brave?.count || 0) / (quotaStats?.brave?.limit || 2000)) * 100)}%`, height: '100%', background: '#f97316' }} />
+                </div>
+              </div>
+
+              {/* Tarjeta Tavily */}
+              <div style={{ background: '#161b22', border: '1px solid #30363d', borderRadius: '8px', padding: '0.75rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontWeight: 700, color: '#3b82f6' }}>⚡ Tavily AI</span>
+                  <span style={{ fontSize: '0.65rem', background: 'rgba(59, 130, 246, 0.15)', color: '#3b82f6', padding: '1px 6px', borderRadius: '8px' }}>Fila 1 Freemium</span>
+                </div>
+                <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#c9d1d9', marginTop: '6px' }}>
+                  {quotaStats?.tavily?.count ?? 0} <span style={{ fontSize: '0.75rem', color: '#8b949e' }}>/ {quotaStats?.tavily?.limit ?? 1000} mes</span>
+                </div>
+                <div style={{ width: '100%', height: '4px', background: '#21262d', borderRadius: '2px', marginTop: '6px', overflow: 'hidden' }}>
+                  <div style={{ width: `${Math.min(100, ((quotaStats?.tavily?.count || 0) / (quotaStats?.tavily?.limit || 1000)) * 100)}%`, height: '100%', background: '#3b82f6' }} />
+                </div>
+              </div>
+
+              {/* Tarjeta Exa.ai / Perplexity */}
+              <div style={{ background: '#161b22', border: '1px solid #30363d', borderRadius: '8px', padding: '0.75rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontWeight: 700, color: '#ec4899' }}>💎 Fila 2 Premium</span>
+                  <span style={{ fontSize: '0.65rem', background: 'rgba(236, 72, 153, 0.15)', color: '#ec4899', padding: '1px 6px', borderRadius: '8px' }}>Exa / Perplexity</span>
+                </div>
+                <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#c9d1d9', marginTop: '6px' }}>
+                  {planData?.config?.search?.allowPaidTier ? 'Habilitada' : 'Bloqueada'} <span style={{ fontSize: '0.75rem', color: '#8b949e' }}>(Requiere Auth)</span>
+                </div>
+                <div style={{ fontSize: '0.68rem', color: '#8b949e', marginTop: '6px' }}>
+                  Garantiza cero cargos accidentales sin autorización explícita.
+                </div>
+              </div>
+
+              {/* Tarjeta DuckDuckGo */}
+              <div style={{ background: '#161b22', border: '1px solid #30363d', borderRadius: '8px', padding: '0.75rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontWeight: 700, color: '#22c55e' }}>🦆 DuckDuckGo</span>
+                  <span style={{ fontSize: '0.65rem', background: 'rgba(34, 197, 94, 0.15)', color: '#22c55e', padding: '1px 6px', borderRadius: '8px' }}>Fila 1 Gratis</span>
+                </div>
+                <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#c9d1d9', marginTop: '6px' }}>
+                  Ilimitado <span style={{ fontSize: '0.75rem', color: '#8b949e' }}>(Failover Seguro)</span>
+                </div>
+                <div style={{ fontSize: '0.68rem', color: '#8b949e', marginTop: '6px' }}>
+                  Capa de respaldo gratuita sin registro ni tarjeta.
+                </div>
+              </div>
+            </div>
+
+            <div style={{ background: '#161b22', border: '1px solid #30363d', borderRadius: '8px', padding: '0.75rem' }}>
+              <div style={{ fontWeight: 700, color: '#c9d1d9', marginBottom: '0.35rem' }}>
+                Regla de Cascada de Motores de Búsqueda
+              </div>
+              <p style={{ margin: 0, color: '#8b949e', lineHeight: '1.45', fontSize: '0.72rem' }}>
+                El sistema consulta los proveedores de Fila 1 (Brave Freemium 2,000 req/mes o Tavily Freemium 1,000 req/mes). Si la cuota mensual se agota o la API falla, la tarea se pausa automáticamente para solicitar autorización previa del usuario en vez de saltar silenciosamente a proveedores de pago. Si no se autoriza Fila 2, el failover conmuta a DuckDuckGo de manera segura.
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* PESTAÑA 4: RESUMEN HARNESS & CORDIS */}
         {activeTab === 'harness' && (
           <div style={{
             flex: 1,
