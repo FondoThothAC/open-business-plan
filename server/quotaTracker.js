@@ -132,6 +132,10 @@ export function getSearchQuotaStats() {
       count: monthData.brave?.count || 0,
       limit: monthData.brave?.limit || DEFAULT_QUOTA_LIMITS.brave
     },
+    serper: {
+      count: monthData.serper?.count || 0,
+      limit: monthData.serper?.limit || DEFAULT_QUOTA_LIMITS.serper
+    },
     duckduckgo: {
       count: monthData.duckduckgo?.count || 0,
       limit: monthData.duckduckgo?.limit || DEFAULT_QUOTA_LIMITS.duckduckgo
@@ -144,6 +148,7 @@ export function resetSearchQuota(monthKey = getCurrentMonthKey()) {
   allData[monthKey] = {
     tavily: { count: 0, limit: DEFAULT_QUOTA_LIMITS.tavily },
     brave: { count: 0, limit: DEFAULT_QUOTA_LIMITS.brave },
+    serper: { count: 0, limit: DEFAULT_QUOTA_LIMITS.serper },
     duckduckgo: { count: 0, limit: DEFAULT_QUOTA_LIMITS.duckduckgo }
   };
   saveQuotaData(allData);
