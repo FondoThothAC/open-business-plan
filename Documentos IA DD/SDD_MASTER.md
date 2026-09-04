@@ -165,6 +165,41 @@ flowchart LR
   * **TerminalDrawer (`src/components/TerminalDrawer.jsx`):** Consola inferior deslizable con estética de IDE para desarrolladores, con pestañas de Streaming/Logs en vivo, Visualizador de Trayectorias Harness/Cordis, Lanzador de Investigación con autorización presupuestaria y Gestión de Tareas/Cuotas.
   * **Centro de Notificaciones en Cabecera (`Layout.jsx`):** Campana de notificaciones con badge de conteo no leído y menú desplegable para alertar al usuario cuando las tareas finalizan o entran en espera de cuota.
 
+### 3.7 Arquitectura de Proveedores de Búsqueda (Fila 1 Freemium vs Fila 2 Premium), Contrato de Procedencia de Datos y Bucle ReAct Autónomo Orientado a Metas
+
+* **Estratificación de Proveedores de Búsqueda (`SEARCH_TIERS`):**
+  * **Fila 1 (Gratis / Freemium / Local):**
+    * `tavily_free`: Tavily AI Search en modalidad gratuita (1,000 consultas/mes de cortesía).
+    * `brave_search`: Brave Search API con cuota freemium de hasta 2,000 consultas/mes y privacidad estricta.
+    * `duckduckgo`: Motor de búsqueda web sin costo y sin clave (`safeDdgSearch`).
+    * `local_hardware_scrape`: Scraping local directo vía Puppeteer / Chromium sin costo de red externa.
+    * `inegi_denue`: Directorio Estadístico Nacional de Unidades Económicas de México (datos oficiales abiertos).
+    * `banxico_sie`: Sistema de Información Económica del Banco de México (series macroeconómicas oficiales abiertas).
+  * **Fila 2 (Premium / Pago por Consumo):**
+    * `exa_ai`: Búsqueda neuronal semántica y RAG web especializado ($0.010 USD / query).
+    * `perplexity_sonar`: Sonar Pro y Sonar Reasoning con síntesis y citaciones directas ($0.008 USD / query).
+    * `tavily_pro`: Búsqueda profunda en modo `advanced` para extracción exhaustiva ($0.005 USD / query).
+  * **Política de Agotamiento de Cascada:** El orquestador ejecuta rigurosamente la Fila 1 (gratuitos y freemium) hasta agotar cuotas o detectar insuficiencia temática antes de disparar peticiones a la Fila 2 (APIs con costo), salvo indicación explícita del usuario (`tierPreference === 'tier2_first'`).
+
+* **Contrato Estricto de Procedencia de Datos (Data Provenance Contract):**
+  * Toda herramienta de recolección (`tool_web_search`, `tool_inegi_denue`, `deepResearchEngine`) debe retornar metadatos explícitos:
+    * `provenance`: `'verified_real'` | `'synthetic_estimate'` | `'not_found'`.
+    * `sourceUrl`: URL canónica verificada del hallazgo o `null`.
+    * `retrievedAt`: Marca de tiempo ISO-8601 del momento de la consulta.
+    * `confidenceScore`: Valor flotante entre 0.0 y 1.0 indicando certidumbre de los datos.
+  * **Prohibición de Alucinación Silenciosa:** Si no se localizan registros reales o fallan los servicios externos, y `allowSyntheticEstimate` es `false`, las herramientas NO deben inventar competidores ni razones sociales ficticias; deben reportar limpiamente `provenance: 'not_found'` con `results: []` y `totalFound: 0`.
+  * **Señalización en Interfaz:** Los resultados en la UI portan badges visuales distintivos:
+    * Verde esmeralda: Datos Verificados Reales (`verified_real`).
+    * Ámbar / Naranja: Estimación Heurística Sintética (`synthetic_estimate`), sujeta a confirmación manual del usuario.
+    * Gris / Rojo: No encontrado (`not_found`).
+
+* **Bucle Autónomo ReAct Orientado a Metas (Goal-Oriented Autonomous Loop):**
+  * `runAgenticModuleGeneration` opera con hasta 3 rondas iterativas de refinamiento guiadas por objetivos (`goalCriteria`):
+    1. **Fase de Evaluación de Evidencia:** Analiza la completitud y procedencia de los datos recopilados contra el objetivo de negocio.
+    2. **Fase de Búsqueda Dirigida / Reformulación:** Si la información es insuficiente o no concluyente, genera queries especializadas adicionales aprovechando proveedores de Fila 1 y Fila 2.
+    3. **Criterios de Parada:** El bucle concluye tempranamente cuando se satisface el objetivo, se alcanza la procedencia real requerida, o se agota el número máximo de rondas (evitando bucles infinitos y consumo excesivo de tokens).
+    4. **Integración con Industrialización:** Activación granular de Deep Research por módulo o submódulo desde el modal de Industrialización, inyectando directivas estrictas de no-alucinación al modelo de síntesis final.
+
 ---
 
 ## 4. Diagrama Maestro de Arquitectura y Flujos en yEd Graph Editor

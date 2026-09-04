@@ -67,3 +67,18 @@ Escenario: Lanzamiento de Deep Research con autorización de presupuesto, auto-p
   Entonces la tarea se resguarda en estado "paused_waiting_quota", programa auto-reintentos y emite una alerta en la campana de notificaciones del encabezado
   Y cuando la tarea finaliza, el usuario puede inspeccionar el grafo causal DAG, ejecutar Replay interactivo (play/pause/scrub) o bifurcar (Fork) la sesión desde cualquier nodo para probar otro enfoque o modelo.
 ```
+
+## Escenario 7: Contrato de Procedencia de Datos (Cero Alucinación) y Bucle ReAct Autónomo
+```gherkin
+Escenario: Investigación web sin fabricación de datos y con priorización de Fila 1 gratuita
+  Dado que el motor agéntico o el usuario solicita una búsqueda de mercado o competidores
+  Cuando el sistema ejecuta la investigación
+  Entonces prioriza la Fila 1 (Brave Search freemium, DuckDuckGo, Scraping Local, INEGI DENUE, Banxico)
+  Y solo recurre a la Fila 2 (Exa.ai, Perplexity Sonar) si la Fila 1 se agota o se configura explícitamente
+  Y si no se localizan registros reales en internet
+  Entonces las herramientas devuelven provenance: "not_found" sin inventar nombres ni métricas falsas
+  Pero si el usuario activa deliberadamente la estimación heurística
+  Entonces el sistema genera la proyección advirtiendo claramente con badge "synthetic_estimate"
+  Y el bucle ReAct autónomo evalúa hasta 3 rondas y se detiene automáticamente al cumplir la meta o agotar las rondas.
+```
+

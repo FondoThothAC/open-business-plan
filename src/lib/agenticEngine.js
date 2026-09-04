@@ -268,6 +268,8 @@ export async function getSavedTrajectories(filter = {}) {
 // ─────────────────────────────────────────────────────────────────────────
 // MOTOR PRINCIPAL AGÉNTICO (ReAct Autonomous Agent Loop)
 // ─────────────────────────────────────────────────────────────────────────
+// MOTOR PRINCIPAL AGÉNTICO (ReAct Autonomous Agent Goal-Oriented Loop)
+// ─────────────────────────────────────────────────────────────────────────
 export async function runAgenticModuleGeneration({
   aiConfig,
   currentModule,
@@ -278,13 +280,15 @@ export async function runAgenticModuleGeneration({
   const { pillar, moduleKey, title, fields = [] } = currentModule;
   const preferredModel = aiConfig?.model || 'minimax-m3:cloud';
   const preferredProvider = aiConfig?.provider || 'ollama';
+  const useDeepResearch = Boolean(currentModule.useDeepResearch || aiConfig?.useDeepResearch || pillar === 'mercado');
 
   const recorder = new TrajectoryRecorder(`${pillar}_${moduleKey}_${Date.now()}`, {
     pillar,
     moduleKey,
     title,
     model: preferredModel,
-    provider: preferredProvider
+    provider: preferredProvider,
+    mode: useDeepResearch ? 'creator' : 'standard'
   });
 
   const notifyStep = (type, payload) => {
@@ -298,15 +302,7 @@ export async function runAgenticModuleGeneration({
   };
 
   try {
-    // ─── PASO 1: PENSAMIENTO Y PLANIFICACIÓN AGÉNTICA (Thought / CoT) ───
-    const step1Start = Date.now();
-    notifyStep('thought', {
-      title: 'Razonamiento Estratégico',
-      content: `Estructurando módulo "${title}" (${pillar}/${moduleKey}) con herramientas de validación de mercado y cálculo.`,
-      durationMs: Date.now() - step1Start
-    });
-
-    // ─── RESOLUCIÓN ROBUSTA DEL CONTEXTO DE LA SEMILLA (Soporte Dual: Plano y Anidado) ───
+    // ─── RESOLUCIÓN ROBUSTA DEL CONTEXTO DE LA SEMILLA ───
     const seed = planData?.semilla || {};
     const queryGiro = seed.nombre_proyecto || seed.negocio?.nombre_marca || seed.negocio?.giro || seed.negocio?.nombre || seed.solucion || title;
     const location = seed.cobertura || seed.negocio?.ubicacion || seed.negocio?.cobertura || 'México';
@@ -316,91 +312,213 @@ export async function runAgenticModuleGeneration({
     const revenueModel = seed.modelo_ingresos || seed.finanzas?.como_gana_dinero || '';
     const unfairAdvantage = seed.ventaja_injusta || seed.negocio?.diferencial || '';
 
-    // ─── PASO 2: SELECCIÓN E INVOCACIÓN DE HERRAMIENTAS EN VIVO (Tool Execution) ───
-    // Invocación 1: Búsqueda de Mercado Web
-    const tool1Start = Date.now();
-    notifyStep('tool_call', {
-      title: 'Búsqueda Web en Vivo',
-      toolName: 'tool_web_search',
-      toolArgs: { query: queryGiro, location, limit: 3 },
-      content: `Consultando competidores y precios para "${queryGiro}" en ${location}.`,
-      durationMs: 0
+    // ─── DEFINICIÓN FORMAL DE LA META AGÉNTICA (Goal-Oriented ReAct) ───
+    const agentGoal = {
+      description: `Validar factibilidad, identificar competidores/precios verificados y fundamentar "${title}"`,
+      minVerifiedSources: useDeepResearch ? 2 : 1,
+      maxRounds: 3,
+      currentRound: 1,
+      isAchieved: false,
+      provenanceLevel: 'unverified'
+    };
+
+    const step1Start = Date.now();
+    notifyStep('thought', {
+      title: 'Meta Cognitiva y Planificación ReAct',
+      content: `Objetivo: ${agentGoal.description}. Requisito de procedencia: mínimo ${agentGoal.minVerifiedSources} fuentes verificadas en ${location}. Modo: ${useDeepResearch ? 'Deep Research Multi-Hop' : 'Búsqueda Estándar'}.`,
+      durationMs: Date.now() - step1Start
     });
 
-    const webResult = await executeAgentTool('tool_web_search', { query: queryGiro, location, limit: 3 }, planData);
-    
-    notifyStep('observation', {
-      title: 'Observación: Datos de Mercado en Tiempo Real',
-      toolName: 'tool_web_search',
-      toolResult: webResult.data,
-      content: `Se obtuvieron ${webResult.data?.competitorsFound || 0} competidores clave. Precios promedio identificados.`,
-      durationMs: Date.now() - tool1Start
-    });
-
-    // Invocación 2: Si el módulo es financiero o de inversión, invocar motor financiero
+    let marketObservation = null;
     let financialData = null;
-    if (pillar === 'organizacion' || pillar === 'finanzas' || moduleKey === 'inversion' || moduleKey === 'costos' || moduleKey === 'rentabilidad') {
-      const tool2Start = Date.now();
-      const capex = planData?.organizacion?.inversion?.monto_inversion || seed.finanzas?.inversion_inicial || 150000;
-      const opex = planData?.organizacion?.costos?.total_costos_fijos || 30000;
-      const sales = planData?.mercado?.ventas?.proyeccion_mensual || 75000;
+    let quantumData = null;
+    let verifiedSourcesFound = 0;
 
-      notifyStep('tool_call', {
-        title: 'Invocando Herramienta: Motor Financiero Exacto',
-        toolName: 'tool_financial_engine',
-        toolArgs: { inversionInicial: capex, costosFijosMensuales: opex, ventasMensualesEstimadas: sales },
-        content: `Calculando métricas matemáticas de viabilidad (TIR, VPN, Punto de Equilibrio) para CAPEX de $${capex}.`,
-        durationMs: 0
-      });
+    // ─── BUCLE AUTÓNOMO ITERATIVO ORIENTADO A METAS (Up to 3 Rounds) ───
+    while (agentGoal.currentRound <= agentGoal.maxRounds && !agentGoal.isAchieved) {
+      const round = agentGoal.currentRound;
 
-      const finResult = await executeAgentTool('tool_financial_engine', {
-        inversionInicial: capex,
-        costosFijosMensuales: opex,
-        ventasMensualesEstimadas: sales
-      }, planData);
+      if (round === 1) {
+        // RONDA 1: Invocación de herramientas primarias
+        if (useDeepResearch) {
+          const toolStart = Date.now();
+          notifyStep('tool_call', {
+            title: `Ronda 1: Deep Research Online (Fila 1 Freemium / Fila 2)`,
+            toolName: 'tool_deep_research',
+            toolArgs: { query: `${queryGiro} ${location}`, domain: pillar, depth: 'rapido', tierPreference: 'tier1_first' },
+            content: `Ejecutando investigación profunda con cascada inteligente y resguardo de procedencia.`,
+            durationMs: 0
+          });
 
-      financialData = finResult.data;
-      notifyStep('observation', {
-        title: 'Observación: Resultados del Motor Financiero',
-        toolName: 'tool_financial_engine',
-        toolResult: finResult.data,
-        content: `Viabilidad: ${finResult.data?.viabilidad}. TIR estimada: ${finResult.data?.tirEstimadaPercent}%. Punto de equilibrio: $${finResult.data?.puntoEquilibrioVentasMensual} MXN/mes.`,
-        durationMs: Date.now() - tool2Start
-      });
+          const researchResult = await executeAgentTool('tool_deep_research', {
+            query: `${queryGiro} ${location}`,
+            domain: pillar,
+            depth: 'rapido',
+            tierPreference: 'tier1_first',
+            allowSyntheticEstimate: false
+          }, planData);
+
+          marketObservation = researchResult.data;
+          const sources = marketObservation?.sources || [];
+          verifiedSourcesFound = sources.filter(s => s.provenance === 'verified_real').length;
+
+          notifyStep('observation', {
+            title: `Observación Ronda 1: Fuentes Recopiladas (${verifiedSourcesFound} verificadas)`,
+            toolName: 'tool_deep_research',
+            toolResult: marketObservation,
+            content: `Se obtuvieron ${sources.length} fuentes totales (${verifiedSourcesFound} verificadas). Costo API: $${marketObservation?.costUsd || 0} USD.`,
+            durationMs: Date.now() - toolStart
+          });
+        } else {
+          const toolStart = Date.now();
+          notifyStep('tool_call', {
+            title: `Ronda 1: Búsqueda Web Estándar`,
+            toolName: 'tool_web_search',
+            toolArgs: { query: queryGiro, location, limit: 3, allowSyntheticEstimate: true },
+            content: `Consultando competidores y referencias para "${queryGiro}" en ${location}.`,
+            durationMs: 0
+          });
+
+          const webResult = await executeAgentTool('tool_web_search', { query: queryGiro, location, limit: 3, allowSyntheticEstimate: true }, planData);
+          marketObservation = webResult.data;
+          verifiedSourcesFound = marketObservation?.provenance === 'verified_real' ? (marketObservation.results?.length || 0) : 0;
+
+          notifyStep('observation', {
+            title: `Observación Ronda 1: Datos de Mercado`,
+            toolName: 'tool_web_search',
+            toolResult: marketObservation,
+            content: `Competidores identificados: ${marketObservation?.competitorsFound || 0}. Procedencia: ${marketObservation?.provenance || 'desconocida'}.`,
+            durationMs: Date.now() - toolStart
+          });
+        }
+
+        // Si el módulo requiere validación financiera matemática
+        if (pillar === 'organizacion' || pillar === 'finanzas' || moduleKey === 'inversion' || moduleKey === 'costos' || moduleKey === 'rentabilidad') {
+          const toolFinStart = Date.now();
+          const capex = planData?.organizacion?.inversion?.monto_inversion || seed.finanzas?.inversion_inicial || 150000;
+          const opex = planData?.organizacion?.costos?.total_costos_fijos || 30000;
+          const sales = planData?.mercado?.ventas?.proyeccion_mensual || 75000;
+
+          notifyStep('tool_call', {
+            title: 'Ronda 1: Motor Financiero Exacto',
+            toolName: 'tool_financial_engine',
+            toolArgs: { inversionInicial: capex, costosFijosMensuales: opex, ventasMensualesEstimadas: sales },
+            content: `Calculando métricas matemáticas de viabilidad para CAPEX de $${capex}.`,
+            durationMs: 0
+          });
+
+          const finResult = await executeAgentTool('tool_financial_engine', {
+            inversionInicial: capex,
+            costosFijosMensuales: opex,
+            ventasMensualesEstimadas: sales
+          }, planData);
+
+          financialData = finResult.data;
+          notifyStep('observation', {
+            title: 'Observación Financiera: Viabilidad Matemáticamente Validada',
+            toolName: 'tool_financial_engine',
+            toolResult: finResult.data,
+            content: `Viabilidad: ${finResult.data?.viabilidad}. TIR: ${finResult.data?.tirEstimadaPercent}%. VPN: $${Math.round(finResult.data?.vpn || 0)}.`,
+            durationMs: Date.now() - toolFinStart
+          });
+        }
+
+        // Si el módulo requiere diagnóstico cuántico de delegación
+        if (moduleKey === 'estructura' || moduleKey === 'recursos_humanos' || moduleKey === 'introduccion') {
+          const toolQuantumStart = Date.now();
+          notifyStep('tool_call', {
+            title: 'Ronda 1: Diagnóstico Cuántico (Fondo Thoth AC)',
+            toolName: 'tool_quantum_diagnostic',
+            toolArgs: { areasFundador: ['operativo'], tamanoEquipo: 3 },
+            content: 'Evaluando Modelo Atómico de 3 Áreas y Regla 13 de Empresas Cuánticas.',
+            durationMs: 0
+          });
+
+          const quantumResult = await executeAgentTool('tool_quantum_diagnostic', { areasFundador: ['operativo'], tamanoEquipo: 3 }, planData);
+          quantumData = quantumResult.data;
+
+          notifyStep('observation', {
+            title: 'Observación Cuántica: Diagnóstico de Delegación',
+            toolName: 'tool_quantum_diagnostic',
+            toolResult: quantumResult.data,
+            content: `Equilibrio atómico: ${quantumResult.data?.isBalanced}. Recomendación de delegación generada.`,
+            durationMs: Date.now() - toolQuantumStart
+          });
+        }
+      } else if (round === 2) {
+        // RONDA 2: Si no se alcanzó la meta de fuentes verificadas, recurrir a fuentes oficiales DENUE
+        const tool2Start = Date.now();
+        notifyStep('thought', {
+          title: `Ronda 2: Refinamiento de Búsqueda Factual`,
+          content: `Fuentes verificadas insuficientes (${verifiedSourcesFound}/${agentGoal.minVerifiedSources}). Consultando base de datos oficial del INEGI DENUE para la región ${location}.`,
+          durationMs: Date.now() - tool2Start
+        });
+
+        notifyStep('tool_call', {
+          title: 'Invocando DENUE Oficial',
+          toolName: 'tool_inegi_denue',
+          toolArgs: { keywords: queryGiro, location, allowSyntheticEstimate: false },
+          content: `Extrayendo establecimientos reales con registro geográfico formal.`,
+          durationMs: 0
+        });
+
+        const inegiResult = await executeAgentTool('tool_inegi_denue', {
+          keywords: queryGiro,
+          location,
+          allowSyntheticEstimate: false
+        }, planData);
+
+        if (inegiResult?.data?.establishments && inegiResult.data.establishments.length > 0) {
+          verifiedSourcesFound += inegiResult.data.establishments.length;
+        }
+
+        notifyStep('observation', {
+          title: 'Observación Ronda 2: Directorio DENUE Verificado',
+          toolName: 'tool_inegi_denue',
+          toolResult: inegiResult.data,
+          content: `Establecimientos reales recuperados: ${inegiResult.data?.totalFound || 0}.`,
+          durationMs: Date.now() - tool2Start
+        });
+      }
+
+      // ─── EVALUACIÓN DE PARADA DE LA META (Stopping Criteria) ───
+      const evalStart = Date.now();
+      if (verifiedSourcesFound >= agentGoal.minVerifiedSources || round >= agentGoal.maxRounds) {
+        agentGoal.isAchieved = true;
+        agentGoal.provenanceLevel = verifiedSourcesFound >= agentGoal.minVerifiedSources ? 'verified_real' : 'synthetic_estimate';
+
+        notifyStep('reflection', {
+          title: `Evaluación de Criterios de Parada (Ronda ${round})`,
+          content: `Meta satisfecha: Criterio de procedencia alcanzado (${verifiedSourcesFound} fuentes verificadas). Procediendo a la síntesis ejecutiva.`,
+          isApproved: true,
+          durationMs: Date.now() - evalStart
+        });
+      } else {
+        notifyStep('thought', {
+          title: `Criterio de Parada No Cumplido (Ronda ${round})`,
+          content: `Aún no se alcanzan las ${agentGoal.minVerifiedSources} fuentes verificadas. Avanzando a la siguiente ronda de refinamiento.`,
+          durationMs: Date.now() - evalStart
+        });
+      }
+
+      agentGoal.currentRound++;
     }
 
-    // Invocación 3: Diagnóstico Cuántico si aplica al fundador o estructura
-    if (moduleKey === 'estructura' || moduleKey === 'recursos_humanos' || moduleKey === 'introduccion') {
-      const tool3Start = Date.now();
-      notifyStep('tool_call', {
-        title: 'Invocando Herramienta: Diagnóstico Cuántico (Fondo Thoth AC)',
-        toolName: 'tool_quantum_diagnostic',
-        toolArgs: { areasFundador: ['operativo'], tamanoEquipo: 3 },
-        content: 'Verificando Regla 13 de Empresas Cuánticas (Modelo Atómico de 3 Áreas y Delegación).',
-        durationMs: 0
-      });
-
-      const quantumResult = await executeAgentTool('tool_quantum_diagnostic', { areasFundador: ['operativo'], tamanoEquipo: 3 }, planData);
-
-      notifyStep('observation', {
-        title: 'Observación: Diagnóstico Cuántico de Delegación',
-        toolName: 'tool_quantum_diagnostic',
-        toolResult: quantumResult.data,
-        content: `Áreas balanceadas: ${quantumResult.data?.isBalanced}. Recomendación de delegación generada.`,
-        durationMs: Date.now() - tool3Start
-      });
-    }
-
-    // ─── PASO 3: SÍNTESIS Y GENERACIÓN CON MODELO PRIORITARIO (Minimax-M3 / Groq) ───
+    // ─── PASO 3: SÍNTESIS Y GENERACIÓN CON MODELO PRIORITARIO ───
     const expectedKeys = fields.map(f => f.key);
     const locationInstruction = location ? `\nREGLA ESTRICTA DE UBICACIÓN: El negocio opera o tiene cobertura en "${location}". NO inventes ciudades ni asumas capitales (ej. no pongas Hermosillo si se te pidió Cananea). Respeta estrictamente esta ubicación.` : '';
+
+    const provenanceDirective = `\nDIRECTIVA ESTRICTA DE PROCEDENCIA DE DATOS:
+- Nivel de Procedencia Detectado: ${agentGoal.provenanceLevel.toUpperCase()}
+- Si las fuentes provienen de internet verificada o DENUE, cita los datos, nombres y rangos observados fielmente.
+- Si no hay fuentes reales verificadas (provenance === 'not_found' o 'synthetic_estimate'), NO inventes nombres de competidores ficticios como si fueran reales; formula el análisis como estimación metodológica y análisis de potencial sectorial.`;
 
     const documentsContext = (planData.config?.documents || []).length > 0
       ? `\nDOCUMENTOS DE REFERENCIA RAG:\n${planData.config.documents.map(d => d.text).join('\n---\n').substring(0, 4000)}\n`
       : '';
 
     const systemPrompt = `Eres el Agente Autónomo Especialista en "${title}" de Open Business Plan (Fondo Thoth AC).
-Debes redactar contenido ejecutivo de nivel profesional con datos duros para un plan de negocios de alta inversión.${locationInstruction}
+Debes redactar contenido ejecutivo de nivel profesional con datos duros para un plan de negocios de alta inversión.${locationInstruction}${provenanceDirective}
 
 CONTEXTO DETALLADO DEL PROYECTO (SEMILLA):
 - Nombre del Proyecto: ${queryGiro}
@@ -413,9 +531,10 @@ CONTEXTO DETALLADO DEL PROYECTO (SEMILLA):
 ${Object.keys(seed).length > 0 ? `\nDatos Crudos de Semilla:\n${JSON.stringify(seed, null, 2)}` : ''}
 ${documentsContext}
 
-DATOS OBSERVADOS POR HERRAMIENTAS EN TIEMPO REAL:
-- Competencia y Mercado: ${JSON.stringify(webResult?.data || {})}
+DATOS OBSERVADOS POR HERRAMIENTAS EN TIEMPO REAL (CONTRATO DE PROCEDENCIA):
+- Competencia y Mercado: ${JSON.stringify(marketObservation || {})}
 ${financialData ? `- Métricas Financieras Validadas: ${JSON.stringify(financialData)}` : ''}
+${quantumData ? `- Diagnóstico Cuántico Atómico: ${JSON.stringify(quantumData)}` : ''}
 
 CAMPOS REQUERIDOS (Devuelve ÚNICAMENTE un JSON válido con estas claves exactas):
 ${fields.map(f => `"${f.key}": "${f.label || f.key} - ${f.type === 'mermaid' ? 'Código Mermaid.js válido' : 'Texto detallado y ejecutivo directamente vinculado a la propuesta de valor y ubicación del proyecto'}"`).join('\n')}
@@ -424,12 +543,11 @@ ${fields.map(f => `"${f.key}": "${f.label || f.key} - ${f.type === 'mermaid' ? '
     const synthStart = Date.now();
     notifyStep('thought', {
       title: 'Síntesis Ejecutiva con IA Multimodal',
-      content: `Consolidando observaciones de herramientas en el prompt estructurado para los campos: ${fields.map(f => f.key).join(', ')}.`,
+      content: `Consolidando observaciones en el prompt estructurado para los campos: ${fields.map(f => f.key).join(', ')}.`,
       toolArgs: { prompt: systemPrompt },
       durationMs: Date.now() - synthStart
     });
 
-    // Priorizar el modelo configurado pero permitir fallback en timeout/500 para industrialización
     const strictConfig = { 
       ...aiConfig, 
       provider: preferredProvider, 
@@ -460,7 +578,7 @@ ${fields.map(f => `"${f.key}": "${f.label || f.key} - ${f.type === 'mermaid' ? '
     const finalHarness = recorder.finish(generatedResult, 'completed');
     notifyStep('synthesis', {
       title: 'Módulo Consolidado y Trayectoria Registrada',
-      content: `Generación completada en ${(recorder.totalDurationMs / 1000).toFixed(2)}s con ${recorder.steps.length} pasos cognitivos trazados en DeepSeek Harness.`,
+      content: `Generación completada en ${(recorder.totalDurationMs / 1000).toFixed(2)}s con ${recorder.steps.length} pasos cognitivos trazados en DeepSeek Harness dsh v0.1.`,
       durationMs: 0
     });
 

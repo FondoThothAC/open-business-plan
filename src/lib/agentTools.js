@@ -214,28 +214,74 @@ export async function executeAgentTool(toolName, args, planContext = {}) {
         const query = args.query || seedGiro || 'negocio';
         const location = args.location || seedLocation;
         const limit = args.limit || 5;
+        const allowSyntheticEstimate = args.allowSyntheticEstimate !== false;
+        const forceSimulateNoResults = Boolean(args.forceSimulateNoResults);
 
         // Intentar consultar backend o generar simulación de alta fidelidad basada en datos de mercado
         let results = [];
-        try {
-          const apiBase = planContext?.config?.apiBase || 'http://localhost:3001';
-          const resp = await fetch(`${apiBase}/api/scraping/competitors?query=${encodeURIComponent(`${query} en ${location}`)}&limit=${limit}`);
-          if (resp.ok) {
-            const data = await resp.json();
-            if (data?.results && data.results.length > 0) {
-              results = data.results;
+        if (!forceSimulateNoResults) {
+          try {
+            const apiBase = planContext?.config?.apiBase || 'http://localhost:3001';
+            const resp = await fetch(`${apiBase}/api/scraping/competitors?query=${encodeURIComponent(`${query} en ${location}`)}&limit=${limit}`, {
+              signal: AbortSignal.timeout(4000)
+            });
+            if (resp.ok) {
+              const data = await resp.json();
+              if (data?.results && data.results.length > 0) {
+                results = data.results.map(r => ({
+                  ...r,
+                  provenance: 'verified_real',
+                  retrievedAt: new Date().toISOString()
+                }));
+              }
             }
+          } catch {
+            // Fallo de backend o red
           }
-        } catch {
-          // Fallback a motor sintético con referencias de mercado reales
         }
 
+        // Si no se hallaron resultados reales
         if (results.length === 0) {
-          results = [
-            { title: `Competidor Líder: ${query} Central`, pricingAvg: '$45 - $120 MXN', marketShare: '28%', rating: 4.6, location },
-            { title: `Servicio Alternativo: ${query} Express`, pricingAvg: '$35 - $85 MXN', marketShare: '19%', rating: 4.2, location },
-            { title: `Opción Premium: ${query} Boutique`, pricingAvg: '$95 - $260 MXN', marketShare: '14%', rating: 4.8, location }
-          ];
+          if (allowSyntheticEstimate) {
+            // Estimación heurística explícitamente autorizada por el usuario
+            results = [
+              { title: `Competidor Líder (Estimado): ${query} Central`, pricingAvg: '$45 - $120 MXN', marketShare: '28%', rating: 4.6, location, provenance: 'synthetic_estimate', retrievedAt: new Date().toISOString() },
+              { title: `Servicio Alternativo (Estimado): ${query} Express`, pricingAvg: '$35 - $85 MXN', marketShare: '19%', rating: 4.2, location, provenance: 'synthetic_estimate', retrievedAt: new Date().toISOString() },
+              { title: `Opción Premium (Estimada): ${query} Boutique`, pricingAvg: '$95 - $260 MXN', marketShare: '14%', rating: 4.8, location, provenance: 'synthetic_estimate', retrievedAt: new Date().toISOString() }
+            ];
+
+            return {
+              success: true,
+              toolName,
+              executionTimeMs: Date.now() - startTime,
+              data: {
+                provenance: 'synthetic_estimate',
+                isFactualVerified: false,
+                warning: 'Estimación heurística referencial no verificada en web directa.',
+                searchQuery: `${query} (${location})`,
+                competitorsFound: results.length,
+                results,
+                marketInsight: `[ESTIMACIÓN HEURÍSTICA]: El mercado en ${location} para ${query} presenta una dispersión de precios referencial.`
+              }
+            };
+          } else {
+            // Contrato estricto: NO inventar competidores falsos
+            return {
+              success: true,
+              toolName,
+              executionTimeMs: Date.now() - startTime,
+              data: {
+                provenance: 'not_found',
+                isFactualVerified: false,
+                requiresManualEstimateApproval: true,
+                warning: 'No se encontraron fuentes verificadas en internet para esta consulta.',
+                searchQuery: `${query} (${location})`,
+                competitorsFound: 0,
+                results: [],
+                marketInsight: `No se encontraron fuentes web verificadas para ${query} en ${location}. Se requiere aprobación manual para generar estimaciones sintéticas.`
+              }
+            };
+          }
         }
 
         return {
@@ -243,10 +289,13 @@ export async function executeAgentTool(toolName, args, planContext = {}) {
           toolName,
           executionTimeMs: Date.now() - startTime,
           data: {
+            provenance: 'verified_real',
+            isFactualVerified: true,
+            warning: null,
             searchQuery: `${query} (${location})`,
             competitorsFound: results.length,
             results,
-            marketInsight: `El mercado en ${location} para ${query} presenta una dispersión de precios competitiva con oportunidad de diferenciación por servicio y valor agregado.`
+            marketInsight: `El mercado en ${location} para ${query} presenta ${results.length} competidores verificados en fuentes web activas.`
           }
         };
       }
@@ -255,39 +304,70 @@ export async function executeAgentTool(toolName, args, planContext = {}) {
         const keywords = args.keywords || seedGiro || 'minería hidráulica refacciones';
         const location = args.location || seedLocation || 'Cananea, Sonora';
         const token = args.token || planContext?.config?.externalApis?.inegiToken || '';
+        const allowSyntheticEstimate = args.allowSyntheticEstimate !== false;
+        const forceSimulateNoResults = Boolean(args.forceSimulateNoResults);
         const apiBase = getApiBase();
 
         let establishments = [];
-        let sourceUsed = 'synthetic_cluster';
+        let sourceUsed = 'denue_api';
         let centerCoords = { lat: 30.9847, lng: -110.2986 }; // Default Cananea, Sonora
 
-        try {
-          // 1. Intentar geocodificar la ubicación real
-          const geoRes = await fetch(`${apiBase}/api/geo/geocode?q=${encodeURIComponent(location)}`, { signal: AbortSignal.timeout(3500) });
-          const geoData = await geoRes.json();
-          if (geoData?.success && geoData?.lat && geoData?.lng) {
-            centerCoords = { lat: geoData.lat, lng: geoData.lng };
-            
-            // 2. Intentar buscar en DENUE local o API oficial
-            const denueRes = await fetch(`${apiBase}/api/inegi/denue?token=${encodeURIComponent(token)}&lat=${centerCoords.lat}&lng=${centerCoords.lng}&radius=5000&keywords=${encodeURIComponent(keywords)}`, { signal: AbortSignal.timeout(4500) });
-            const denueData = await denueRes.json();
-            if (denueData?.success && Array.isArray(denueData?.businesses) && denueData.businesses.length > 0) {
-              establishments = denueData.businesses;
-              sourceUsed = denueData.source || 'denue_api';
+        if (!forceSimulateNoResults) {
+          try {
+            // 1. Intentar geocodificar la ubicación real
+            const geoRes = await fetch(`${apiBase}/api/geo/geocode?q=${encodeURIComponent(location)}`, { signal: AbortSignal.timeout(3500) });
+            const geoData = await geoRes.json();
+            if (geoData?.success && geoData?.lat && geoData?.lng) {
+              centerCoords = { lat: geoData.lat, lng: geoData.lng };
+              
+              // 2. Intentar buscar en DENUE local o API oficial
+              const denueRes = await fetch(`${apiBase}/api/inegi/denue?token=${encodeURIComponent(token)}&lat=${centerCoords.lat}&lng=${centerCoords.lng}&radius=5000&keywords=${encodeURIComponent(keywords)}`, { signal: AbortSignal.timeout(4500) });
+              const denueData = await denueRes.json();
+              if (denueData?.success && Array.isArray(denueData?.businesses) && denueData.businesses.length > 0) {
+                establishments = denueData.businesses.map(b => ({
+                  ...b,
+                  provenance: 'verified_real',
+                  retrievedAt: new Date().toISOString()
+                }));
+                sourceUsed = denueData.source || 'denue_api';
+              }
             }
+          } catch {
+            // Fallback
           }
-        } catch {
-          // Fallback a clúster B2B especializado
         }
 
-        // Si no se obtuvieron resultados directos de la API, generar el clúster territorial B2B representativo
+        // Si no se obtuvieron resultados directos de la API
         if (!establishments || establishments.length === 0) {
+          if (!allowSyntheticEstimate) {
+            // NO inventar clúster falso si no fue aprobado
+            return {
+              success: true,
+              toolName,
+              executionTimeMs: Date.now() - startTime,
+              data: {
+                provenance: 'not_found',
+                isSynthetic: false,
+                requiresManualEstimateApproval: true,
+                warning: 'No se encontraron unidades económicas registradas en DENUE para este radio y actividad.',
+                region: location,
+                keywords,
+                totalFound: 0,
+                totalEstablecimientos: 0,
+                establishments: [],
+                establecimientos: []
+              }
+            };
+          }
+
+          // Si el usuario aprobó explícitamente la estimación sintética
+          sourceUsed = 'synthetic_cluster';
           const latBase = centerCoords.lat;
           const lngBase = centerCoords.lng;
           establishments = [
             {
               id: 'denue_1',
-              nombre: `Minera y Exploraciones de ${location.split(',')[0]}`,
+              nombre: `Minera y Exploraciones de ${location.split(',')[0]} (Estimado)`,
               razonSocial: `Operadora Minera del Norte S.A. de C.V.`,
               actividad: 'Minería de cobre y minerales metálicos',
               estrato: '251 y más personas',
@@ -295,11 +375,13 @@ export async function executeAgentTool(toolName, args, planContext = {}) {
               lat: latBase + 0.015,
               lng: lngBase - 0.012,
               direccion: `Carretera a Mina Km 4.5, ${location}`,
-              telefono: '645-102-3000'
+              telefono: '645-102-3000',
+              provenance: 'synthetic_estimate',
+              retrievedAt: new Date().toISOString()
             },
             {
               id: 'denue_2',
-              nombre: `Constructora y Movimientos de Tierra ${location.split(',')[0]}`,
+              nombre: `Constructora y Movimientos de Tierra ${location.split(',')[0]} (Estimado)`,
               razonSocial: `Infraestructura Pesada del Noroeste S.A.`,
               actividad: 'Construcción de obras de ingeniería pesada y caminos',
               estrato: '51 a 100 personas',
@@ -307,43 +389,9 @@ export async function executeAgentTool(toolName, args, planContext = {}) {
               lat: latBase - 0.008,
               lng: lngBase + 0.011,
               direccion: `Parque Industrial Lote 12, ${location}`,
-              telefono: '645-332-1144'
-            },
-            {
-              id: 'denue_3',
-              nombre: `Grúas y Maniobras Industriales del Cobre`,
-              razonSocial: `Servicios de Carga Especializada del Desierto`,
-              actividad: 'Autotransporte de carga y grúas de alto tonelaje',
-              estrato: '31 a 50 personas',
-              scianClase: '484230',
-              lat: latBase + 0.006,
-              lng: lngBase + 0.018,
-              direccion: `Av. Mineros No. 405, ${location}`,
-              telefono: '645-882-9900'
-            },
-            {
-              id: 'denue_4',
-              nombre: `Taller de Mantenimiento y Sistemas Hidráulicos del Norte`,
-              razonSocial: `Hidráulica Integral Minera S. de R.L.`,
-              actividad: 'Reparación de maquinaria pesada y mangueras de alta presión',
-              estrato: '6 a 10 personas',
-              scianClase: '333999',
-              lat: latBase - 0.012,
-              lng: lngBase - 0.005,
-              direccion: `Calle Sonora No. 88, Col. Industrial, ${location}`,
-              telefono: '645-442-8811'
-            },
-            {
-              id: 'denue_5',
-              nombre: `Distribuidora de Aceros y Conexiones Industriales`,
-              razonSocial: `Comercializadora Metalmecánica de Sonora`,
-              actividad: 'Comercio al por mayor de metales y suministros para minería',
-              estrato: '11 a 30 personas',
-              scianClase: '468111',
-              lat: latBase + 0.003,
-              lng: lngBase - 0.015,
-              direccion: `Blvd. Principal No. 1200, ${location}`,
-              telefono: '645-551-7722'
+              telefono: '645-332-1144',
+              provenance: 'synthetic_estimate',
+              retrievedAt: new Date().toISOString()
             }
           ];
         }
@@ -373,9 +421,13 @@ export async function executeAgentTool(toolName, args, planContext = {}) {
           toolName,
           executionTimeMs: Date.now() - startTime,
           data: {
+            provenance: sourceUsed === 'synthetic_cluster' ? 'synthetic_estimate' : 'verified_real',
+            isSynthetic: sourceUsed === 'synthetic_cluster',
+            warning: sourceUsed === 'synthetic_cluster' ? 'Clúster territorial estimado por falta de registro DENUE directo.' : null,
             region: location,
             keywords,
             sourceUsed,
+            totalFound: enrichedEstablishments.length,
             totalEstablecimientos: enrichedEstablishments.length,
             conteoClientesPotenciales: clientesPotenciales.length,
             conteoCompetidores: competidoresDirectos.length,
@@ -386,6 +438,7 @@ export async function executeAgentTool(toolName, args, planContext = {}) {
               personalImpactado: optimalLocation?.totalEstimatedEmployees || 0,
               accesibilidad: optimalLocation?.scoreAccesibilidad || 'Alta'
             },
+            establishments: enrichedEstablishments,
             establecimientos: enrichedEstablishments
           }
         };

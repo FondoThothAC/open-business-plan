@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { usePlan } from '../context/PlanContext';
-import { Sparkles, Loader2, Brain, CheckCircle2, Lock, Unlock, Map as MapIcon, Network, Eye, EyeOff, HelpCircle, Edit3, Layout, ArrowRight, MessageSquare, Check, X, Activity, BadgeDollarSign } from 'lucide-react';
+import { Sparkles, Loader2, Brain, CheckCircle2, Lock, Unlock, Map as MapIcon, Network, Eye, EyeOff, HelpCircle, Edit3, Layout, ArrowRight, MessageSquare, Check, X, Activity, BadgeDollarSign, Compass, Globe, ShieldCheck, AlertTriangle } from 'lucide-react';
 import { generateModuleContent } from '../lib/ai';
 import { runAgenticModuleGeneration, getSavedTrajectories } from '../lib/agenticEngine';
 import AgentTrajectoryViewer from './AgentTrajectoryViewer';
@@ -66,7 +66,8 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
   };
 
 
-  const handleAiGenerate = async () => {
+  const handleAiGenerate = async (options = {}) => {
+    const isDeep = Boolean(options.useDeepResearch);
     const rawAi = planData?.config?.ai || {};
     const hasAnyKey = rawAi.apiKey || rawAi.groqKey || rawAi.openrouterKey || rawAi.nvidiaKey || rawAi.mistralKey || rawAi.minimaxKey || rawAi.baiKey;
     const isLocalProvider = rawAi.provider === 'ollama' || rawAi.primaryProvider === 'ollama' || rawAi.primaryProvider === 'lmstudio';
@@ -80,7 +81,7 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
     if (unlockedFields.length === 0) return;
 
     setLoading(true);
-    setStage('Agente Autónomo ReAct: Iniciando razonamiento...');
+    setStage(isDeep ? 'Deep Research Online: Conectando con Fila 1 (Freemium/Local) y Fila 2...' : 'Agente Autónomo ReAct: Iniciando razonamiento...');
     
     try {
       const enrichedFields = unlockedFields.map(f => {
@@ -88,8 +89,8 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
         return f;
       });
 
-      const currentModule = { pillar, moduleKey, title, description, fields: enrichedFields };
-      const aiConfig = { ...planData.config.ai, depth };
+      const currentModule = { pillar, moduleKey, title, description, fields: enrichedFields, useDeepResearch: isDeep };
+      const aiConfig = { ...planData.config.ai, depth, useDeepResearch: isDeep };
 
       // Ejecutar motor agéntico autónomo ReAct con registro de trayectoria DeepSeek Harness
       let result;
@@ -121,6 +122,15 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
       
       if (result && result._trace) {
         updateSection(pillar, moduleKey, '_trace', result._trace);
+      }
+
+      // Detectar procedencia para badge informativo
+      if (currentTrajectory?.trajectoryDAG) {
+        const hasRealSources = currentTrajectory.trajectoryDAG.some(node => 
+          node.toolResult?.provenance === 'verified_real' || 
+          (Array.isArray(node.toolResult?.sources) && node.toolResult.sources.some(s => s.provenance === 'verified_real'))
+        );
+        updateSection(pillar, moduleKey, '_provenance', hasRealSources ? 'verified_real' : 'synthetic_estimate');
       }
       
       // Efecto Typewriter para simular la escritura en tiempo real de la IA
@@ -301,8 +311,31 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
             </button>
 
             <button 
+              className="btn" 
+              onClick={() => handleAiGenerate({ useDeepResearch: true })}
+              disabled={loading}
+              title="Investigación profunda online multi-hop (Fila 1 Freemium / Fila 2 Premium) con fuentes verificadas"
+              style={{ 
+                padding: '0.5rem 1.1rem',
+                fontSize: '0.85rem',
+                opacity: loading ? 0.7 : 1, 
+                cursor: loading ? 'not-allowed' : 'pointer',
+                background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(6, 182, 212, 0.15) 100%)',
+                border: '1px solid rgba(16, 185, 129, 0.4)',
+                color: '#34d399',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                fontWeight: 600
+              }}
+            >
+              <Compass className="w-4 h-4 text-emerald-400" />
+              <span>Deep Research</span>
+            </button>
+
+            <button 
               className="btn btn-ia" 
-              onClick={handleAiGenerate}
+              onClick={() => handleAiGenerate({ useDeepResearch: false })}
               disabled={loading}
               style={{ 
                 padding: '0.5rem 1.25rem',

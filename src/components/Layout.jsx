@@ -287,6 +287,7 @@ export default function Layout() {
   const [showIndustrializeModal, setShowIndustrializeModal] = useState(false);
   const [industrializeQueueCandidates, setIndustrializeQueueCandidates] = useState([]);
   const [selectedCandidates, setSelectedCandidates] = useState({}); // { [moduleKey]: boolean }
+  const [deepResearchCandidates, setDeepResearchCandidates] = useState({}); // { [moduleKey]: boolean }
 
   useEffect(() => {
     const checkAi = async () => {
@@ -356,9 +357,12 @@ export default function Layout() {
   };
 
   const handleStartIndustrialization = () => {
-    const customQueue = industrializeQueueCandidates.filter(
-      c => selectedCandidates[`${c.pillar}.${c.modKey}`]
-    );
+    const customQueue = industrializeQueueCandidates
+      .filter(c => selectedCandidates[`${c.pillar}.${c.modKey}`])
+      .map(c => ({
+        ...c,
+        useDeepResearch: Boolean(deepResearchCandidates[`${c.pillar}.${c.modKey}`])
+      }));
 
     if (customQueue.length === 0) {
       alert('Por favor selecciona al menos un módulo para generar.');
@@ -1364,9 +1368,39 @@ export default function Layout() {
                           />
                           <div style={{ flex: 1 }}>
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                              <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)' }}>
-                                {mod.title}
-                              </span>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+                                  {mod.title}
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    setDeepResearchCandidates(prev => ({
+                                      ...prev,
+                                      [key]: !prev[key]
+                                    }));
+                                  }}
+                                  style={{
+                                    background: deepResearchCandidates[key] ? 'rgba(16, 185, 129, 0.2)' : 'rgba(255, 255, 255, 0.05)',
+                                    border: `1px solid ${deepResearchCandidates[key] ? '#10b981' : 'var(--border-color)'}`,
+                                    color: deepResearchCandidates[key] ? '#34d399' : 'var(--text-secondary)',
+                                    borderRadius: '10px',
+                                    padding: '2px 8px',
+                                    fontSize: '0.65rem',
+                                    fontWeight: 600,
+                                    cursor: 'pointer',
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '3px'
+                                  }}
+                                  title="Activar investigación profunda online para este módulo"
+                                >
+                                  <span>🌐</span>
+                                  <span>{deepResearchCandidates[key] ? 'Deep Research ON' : 'Deep Research'}</span>
+                                </button>
+                              </div>
                               <span style={{ fontSize: '0.7rem', color: mod.isComplete ? 'var(--success-color)' : 'var(--text-secondary)', fontWeight: 650 }}>
                                 {mod.isComplete ? '✅ Completo' : `${completed} / ${total} campos`}
                               </span>

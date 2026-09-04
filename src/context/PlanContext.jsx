@@ -994,7 +994,8 @@ export const PlanProvider = ({ children }) => {
                 moduleKey: modKey,
                 title: currentItem.modKey,
                 description: `Generación automática de ${currentItem.modKey}`,
-                fields: currentItem.emptyFields.map(f => ({ key: f, label: f }))
+                fields: currentItem.emptyFields.map(f => ({ key: f, label: f })),
+                useDeepResearch: Boolean(currentItem.useDeepResearch)
               },
               planData: planDataRef.current,
               onLog: handleAgentLog

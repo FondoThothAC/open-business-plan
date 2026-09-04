@@ -1,41 +1,180 @@
 /**
- * deepResearchEngine.js — Motor de Investigación Profunda Híbrido (Capa Gratuita vs Premium)
+ * deepResearchEngine.js — Motor de Investigación Profunda Híbrido y Resiliente
+ * Fondo Thoth AC — Open Business Plan
  * 
- * Orquesta búsquedas web avanzadas, análisis de competidores y benchmarking de precios con una
- * estrategia de costos escalonada:
- * 1. Capa Base Gratuita: DuckDuckGo + Scraping Web Local + INEGI/DENUE + Banxico SieAPI.
- * 2. Capa Premium: Tavily AI Search + Perplexity Sonar + Google Serper con síntesis de alta fidelidad.
- * Incluye failover transparente y cálculo de costo estimado en USD para control de cuotas.
+ * Estrategia de búsqueda escalonada:
+ * - Fila 1 (Gratis / Freemium / Local): Se agota primero:
+ *     1. INEGI DENUE / Banxico SIE (APIs oficiales del estado mexicano)
+ *     2. Tavily Free Tier (1,000 créditos mensuales gratuitos)
+ *     3. Brave Search Free API (2,000 req/mes)
+ *     4. DuckDuckGo + Scraping de Hardware Local (Puppeteer/Chromium local)
+ * - Fila 2 (Premium):
+ *     1. Exa.ai (Búsqueda neuronal semántica B2B para competidores reales)
+ *     2. Perplexity Sonar Pro (Razonamiento en vivo con citas verificadas)
+ *     3. Tavily Pro
+ * 
+ * Contrato Estricto de Procedencia (Data Provenance):
+ * Cada fuente entrega { title, url, snippet, score, provider, provenance: 'verified_real' | 'synthetic_estimate', retrievedAt, confidenceScore }.
  */
 
 import { executeAgentTool } from '../agentTools.js';
 
-// Costos aproximados por consulta en proveedores de pago (USD)
-const PRICING_ESTIMATES = {
-  tavily: 0.005,      // $5 USD por 1,000 búsquedas
-  perplexity: 0.010,  // $10 USD por 1,000 queries complejas
-  serper: 0.001,      // $1 USD por 1,000 queries Google
-  gemini_pro: 0.002,  // Estimado por llamada de síntesis
-  free_tier: 0.000    // Capa base sin costo
+export const SEARCH_TIERS = {
+  tier1_free: ['inegi_denue', 'banxico_sie', 'duckduckgo', 'brave', 'tavily_free', 'local_puppeteer'],
+  tier2_premium: ['exa', 'perplexity', 'tavily_pro', 'serper']
+};
+
+export const PRICING_ESTIMATES = {
+  tavily: 0.005,      // ~$5 USD por 1,000 búsquedas
+  perplexity: 0.010,  // ~$10 USD por 1,000 queries Sonar
+  exa: 0.008,         // ~$8 USD por 1,000 queries semánticas de empresas
+  brave: 0.000,       // 2,000 consultas gratis al mes
+  serper: 0.001,      // 2,500 queries de prueba gratis
+  free_tier: 0.000    // Capa base sin costo de API
 };
 
 /**
+ * Conector para Brave Search API (Fila 1 Freemium)
+ */
+async function fetchBraveSearch(query, apiKey, depth = 'rapido') {
+  if (!apiKey) return null;
+  const count = depth === 'profundo' ? 8 : 4;
+  const res = await fetch(`https://api.search.brave.com/res/v1/web/search?q=${encodeURIComponent(query)}&count=${count}&text_decorations=false`, {
+    headers: {
+      'Accept': 'application/json',
+      'X-Subscription-Token': apiKey
+    }
+  });
+  if (!res.ok) throw new Error(`Brave Search HTTP ${res.status}`);
+  const data = await res.json();
+  const items = data?.web?.results || [];
+  return items.map(it => ({
+    title: it.title,
+    url: it.url,
+    snippet: it.description || '',
+    score: 0.88,
+    provider: 'Brave Search API',
+    provenance: 'verified_real',
+    retrievedAt: new Date().toISOString(),
+    confidenceScore: 0.90
+  }));
+}
+
+/**
+ * Conector para Exa.ai API (Fila 2 Premium — Búsqueda Semántica de Empresas y Competidores B2B)
+ */
+async function fetchExaSearch(query, apiKey, depth = 'rapido') {
+  if (!apiKey) return null;
+  const numResults = depth === 'profundo' ? 8 : 5;
+  const res = await fetch('https://api.exa.ai/search', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey
+    },
+    body: JSON.stringify({
+      query,
+      type: 'neural',
+      useAutoprompt: true,
+      numResults,
+      contents: {
+        text: { maxCharacters: 1000 }
+      }
+    })
+  });
+  if (!res.ok) throw new Error(`Exa.ai HTTP ${res.status}`);
+  const data = await res.json();
+  const items = data?.results || [];
+  return items.map(it => ({
+    title: it.title || it.url,
+    url: it.url,
+    snippet: it.text ? it.text.substring(0, 300) : '',
+    score: it.score || 0.95,
+    provider: 'Exa.ai Neural Search',
+    provenance: 'verified_real',
+    retrievedAt: new Date().toISOString(),
+    confidenceScore: 0.95
+  }));
+}
+
+/**
+ * Conector para Perplexity Sonar API (Fila 2 Premium — Razonamiento con Citas en Vivo)
+ */
+async function fetchPerplexitySearch(query, apiKey) {
+  if (!apiKey) return null;
+  const res = await fetch('https://api.perplexity.ai/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${apiKey}`
+    },
+    body: JSON.stringify({
+      model: 'sonar',
+      messages: [
+        { role: 'system', content: 'Eres un analista de mercado de alta precisión. Devuelve hallazgos factuales con URLs y fuentes de precios y competidores.' },
+        { role: 'user', content: query }
+      ]
+    })
+  });
+  if (!res.ok) throw new Error(`Perplexity HTTP ${res.status}`);
+  const data = await res.json();
+  const content = data?.choices?.[0]?.message?.content || '';
+  const citations = data?.citations || [];
+  return citations.map((url, idx) => ({
+    title: `Fuente Verificada Perplexity #${idx + 1}`,
+    url,
+    snippet: content.substring(idx * 150, (idx + 1) * 150) || content.substring(0, 200),
+    score: 0.94,
+    provider: 'Perplexity Sonar',
+    provenance: 'verified_real',
+    retrievedAt: new Date().toISOString(),
+    confidenceScore: 0.93
+  }));
+}
+
+/**
+ * Conector para Tavily AI Search (Fila 1 Freemium / Fila 2 Pro)
+ */
+async function fetchTavilySearch(query, apiKey, depth = 'rapido') {
+  if (!apiKey) return null;
+  const response = await fetch('https://api.tavily.com/search', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      api_key: apiKey,
+      query,
+      search_depth: depth === 'profundo' ? 'advanced' : 'basic',
+      include_answer: true,
+      max_results: depth === 'profundo' ? 7 : 4
+    })
+  });
+  if (!response.ok) throw new Error(`Tavily HTTP ${response.status}`);
+  const tavilyData = await response.json();
+  const results = tavilyData.results || [];
+  return results.map(r => ({
+    title: r.title,
+    url: r.url,
+    snippet: r.content,
+    score: r.score || 0.9,
+    provider: 'Tavily AI Search',
+    provenance: 'verified_real',
+    retrievedAt: new Date().toISOString(),
+    confidenceScore: 0.92
+  }));
+}
+
+/**
  * Ejecuta una investigación profunda en el ecosistema híbrido
- * @param {Object} params Parámetros de la investigación
- * @param {string} params.query Consulta de búsqueda o tema de investigación
- * @param {string} params.domain Dominio temático ('mercado' | 'maquinaria' | 'competencia' | 'legal')
- * @param {string} params.depth Nivel de profundidad ('rapido' | 'profundo')
- * @param {boolean} params.forcePaidTier Si es true, prioriza APIs de pago si están configuradas
- * @param {Object} params.apiKeys Claves configuradas { tavilyKey, perplexityKey, serperKey, geminiKey }
- * @param {Function} params.onLog Callback para emitir logs en vivo al feed
- * @returns {Promise<Object>} Reporte estructurado de investigación, fuentes y costo
+ * Prioriza agotar Fila 1 (Gratis/Freemium/Local) antes de activar Fila 2 (Premium).
  */
 export async function runDeepResearch({
   query,
   domain = 'mercado',
   depth = 'rapido',
   forcePaidTier = false,
+  tierPreference = 'tier1_first',
   simulateQuotaExhausted = false,
+  allowSyntheticEstimate = false,
   apiKeys = {},
   onLog = () => {}
 }) {
@@ -44,12 +183,13 @@ export async function runDeepResearch({
   let sources = [];
   let rawSnippets = [];
   let tierUsed = 'free';
+  let tierCategory = 'tier1_free';
 
   onLog(`🔍 Iniciando Deep Research para: "${query}" (Dominio: ${domain}, Nivel: ${depth})`);
 
   // Verificación de pausa por cuota / simulación
   if (simulateQuotaExhausted || (apiKeys.tavilyKey === 'fake_exhausted_key')) {
-    onLog(`⏸️ Cuota de proveedor de búsqueda agotada. Pausando investigación y programando reanudación automática...`);
+    onLog(`⏸️ Cuota de proveedor agotada. Pausando investigación y programando reanudación automática...`);
     const resumeAfterMs = 3600000;
     const quotaData = {
       status: 'paused_waiting_quota',
@@ -69,111 +209,136 @@ export async function runDeepResearch({
     };
   }
 
-  // 1. EVALUAR CAPA DE BÚSQUEDA: ¿PREMIUM O GRATUITA?
-  const hasPaidKeys = Boolean(apiKeys.tavilyKey || apiKeys.perplexityKey || apiKeys.serperKey);
+  // ─────────────────────────────────────────────────────────────────────────
+  // FASE 1: AGOTAR PRIMERO FILA 1 (GRATIS / FREEMIUM / HARDWARE LOCAL)
+  // ─────────────────────────────────────────────────────────────────────────
+  const braveKey = apiKeys.braveKey || (typeof process !== 'undefined' ? process.env.BRAVE_SEARCH_KEY : null);
+  const tavilyKey = apiKeys.tavilyKey || (typeof process !== 'undefined' ? process.env.TAVILY_API_KEY : null);
+  const exaKey = apiKeys.exaKey || (typeof process !== 'undefined' ? process.env.EXA_API_KEY : null);
+  const perplexityKey = apiKeys.perplexityKey || (typeof process !== 'undefined' ? process.env.PERPLEXITY_API_KEY : null);
 
-  if (forcePaidTier && hasPaidKeys) {
-    // === CAPA PREMIUM DE PAGO ===
-    tierUsed = 'premium';
-    onLog('💎 Activando Capa Premium: Consulta a motores de búsqueda enriquecidos (Tavily/Perplexity)...');
+  let gatheredTier1 = false;
 
-    try {
-      if (apiKeys.tavilyKey) {
-        onLog('📡 Consultando Tavily AI Search para extracción limpia de fuentes...');
-        const response = await fetch('https://api.tavily.com/search', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            api_key: apiKeys.tavilyKey,
-            query: query,
-            search_depth: depth === 'profundo' ? 'advanced' : 'basic',
-            include_answer: true,
-            max_results: depth === 'profundo' ? 7 : 4
-          })
-        });
+  if (tierPreference !== 'tier2_premium' && !forcePaidTier) {
+    onLog('⚡ Consultando Fila 1 (Gratis / Freemium / Oficiales)...');
 
-        if (response.ok) {
-          const tavilyData = await response.json();
+    // 1.1 Intentar Tavily Free (1,000 consultas gratis/mes)
+    if (tavilyKey && sources.length === 0) {
+      try {
+        onLog('📡 Consultando Tavily Free Tier para extracción limpia...');
+        const tavilySources = await fetchTavilySearch(query, tavilyKey, depth);
+        if (tavilySources && tavilySources.length > 0) {
+          sources.push(...tavilySources);
           costAccumulated += PRICING_ESTIMATES.tavily;
-          
-          if (tavilyData.results) {
-            sources = tavilyData.results.map(r => ({
-              title: r.title,
-              url: r.url,
-              snippet: r.content,
-              score: r.score || 0.9,
-              provider: 'Tavily AI'
-            }));
-            rawSnippets = sources.map(s => `${s.title}: ${s.snippet}`);
-          }
-          onLog(`✅ Tavily devolvió ${sources.length} fuentes verificadas.`);
-        } else {
-          throw new Error(`HTTP ${response.status} de Tavily`);
+          gatheredTier1 = true;
+          onLog(`✅ Tavily Free devolvió ${tavilySources.length} fuentes reales.`);
         }
+      } catch (err) {
+        onLog(`⚠️ Tavily Free no disponible (${err.message}). Pasando a siguiente proveedor Fila 1...`);
       }
-    } catch (err) {
-      onLog(`⚠️ Falló la consulta premium (${err.message}). Ejecutando Failover a Capa Base Gratuita...`);
-      tierUsed = 'free_fallback';
+    }
+
+    // 1.2 Intentar Brave Search (2,000 consultas gratis/mes)
+    if (braveKey && sources.length === 0) {
+      try {
+        onLog('🦁 Consultando Brave Search API (Freemium)...');
+        const braveSources = await fetchBraveSearch(query, braveKey, depth);
+        if (braveSources && braveSources.length > 0) {
+          sources.push(...braveSources);
+          costAccumulated += PRICING_ESTIMATES.brave;
+          gatheredTier1 = true;
+          onLog(`✅ Brave Search devolvió ${braveSources.length} fuentes reales.`);
+        }
+      } catch (err) {
+        onLog(`⚠️ Brave Search no disponible (${err.message}). Pasando a DuckDuckGo / Local...`);
+      }
+    }
+
+    // 1.3 DuckDuckGo & Scraping de Hardware Local
+    if (sources.length === 0) {
+      try {
+        onLog('🦆 Consultando DuckDuckGo + Scraping de Hardware Local...');
+        const ddgResult = await executeAgentTool('tool_web_search', { query, limit: 5, allowSyntheticEstimate: false });
+        if (ddgResult?.data?.results && ddgResult.data.results.length > 0) {
+          const ddgSources = ddgResult.data.results.map(r => ({
+            title: r.title || 'Referencia Web Verificada',
+            url: r.link || r.url || 'https://duckduckgo.com',
+            snippet: r.snippet || r.body || r.pricingAvg || '',
+            score: 0.80,
+            provider: 'DuckDuckGo Web',
+            provenance: 'verified_real',
+            retrievedAt: new Date().toISOString(),
+            confidenceScore: 0.82
+          }));
+          sources.push(...ddgSources);
+          gatheredTier1 = true;
+          onLog(`✅ Capa local recopiló ${ddgSources.length} resultados web reales.`);
+        }
+      } catch (err) {
+        onLog(`⚠️ Búsqueda local no completó resultados: ${err.message}`);
+      }
     }
   }
 
-  // 2. CAPA BASE GRATUITA (DEFAULT O FALLBACK)
-  if (tierUsed === 'free' || tierUsed === 'free_fallback') {
-    onLog('⚡ Ejecutando Capa Base Gratuita: DuckDuckGo + Scraping Local...');
-    try {
-      const ddgResult = await executeAgentTool('tool_web_search', { query, limit: 5 });
-      if (ddgResult && ddgResult.data && ddgResult.data.results && ddgResult.data.results.length > 0) {
-        sources = ddgResult.data.results.map(r => ({
-          title: r.title || 'Referencia Web',
-          url: r.link || r.url || '#',
-          snippet: r.snippet || r.body || r.pricingAvg || '',
-          score: 0.75,
-          provider: 'DuckDuckGo Gratuito'
-        }));
-        rawSnippets = sources.map(s => `${s.title}: ${s.snippet}`);
-        onLog(`✅ Capa base recopiló ${sources.length} resultados sin costo de API.`);
-      } else {
-        // Fallback defensivo para asegurar resultados en cualquier entorno
-        sources = [
-          {
-            title: `Búsqueda Territorial y Sectorial para: ${query}`,
-            url: 'https://fondothoth.com/radar',
-            snippet: `Análisis de demanda y densidad de competidores activos para el término "${query}".`,
-            score: 0.85,
-            provider: 'Radar Territorial Inteligente'
-          }
-        ];
-        rawSnippets = sources.map(s => `${s.title}: ${s.snippet}`);
-      }
-    } catch (fallbackErr) {
-      onLog(`⚠️ Búsqueda gratuita en fallback interno: ${fallbackErr.message}`);
-      sources = [
-        {
-          title: `Datos de Mercado: ${query}`,
-          url: 'https://fondothoth.com/radar',
-          snippet: `Muestreo de benchmarks sectoriales y proyecciones de oferta para "${query}".`,
-          score: 0.8,
-          provider: 'Radar Sintético'
+  // ─────────────────────────────────────────────────────────────────────────
+  // FASE 2: FILA 2 PREMIUM (EXA.AI / PERPLEXITY) SI FUE SOLICITADA O TRAS AGOTAR FILA 1
+  // ─────────────────────────────────────────────────────────────────────────
+  if ((forcePaidTier || tierPreference === 'tier2_premium' || (sources.length === 0 && (exaKey || perplexityKey)))) {
+    onLog('💎 Activando Fila 2 Premium (Exa.ai / Perplexity Sonar)...');
+    tierUsed = 'premium';
+    tierCategory = 'tier2_premium';
+
+    // 2.1 Intentar Exa.ai (Especialista en Empresas B2B y Competidores Reales)
+    if (exaKey && sources.length === 0) {
+      try {
+        onLog('🧠 Consultando Exa.ai Neural Search (Búsqueda Semántica de Empresas)...');
+        const exaSources = await fetchExaSearch(query, exaKey, depth);
+        if (exaSources && exaSources.length > 0) {
+          sources.push(...exaSources);
+          costAccumulated += PRICING_ESTIMATES.exa;
+          onLog(`✅ Exa.ai identificó ${exaSources.length} empresas y competidores reales verificados.`);
         }
-      ];
-      rawSnippets = sources.map(s => `${s.title}: ${s.snippet}`);
+      } catch (err) {
+        onLog(`⚠️ Exa.ai no disponible (${err.message})...`);
+      }
+    }
+
+    // 2.2 Intentar Perplexity Sonar
+    if (perplexityKey && sources.length === 0) {
+      try {
+        onLog('🔮 Consultando Perplexity Sonar (Razonamiento y Citas en Vivo)...');
+        const pplxSources = await fetchPerplexitySearch(query, perplexityKey);
+        if (pplxSources && pplxSources.length > 0) {
+          sources.push(...pplxSources);
+          costAccumulated += PRICING_ESTIMATES.perplexity;
+          onLog(`✅ Perplexity Sonar extrajo ${pplxSources.length} citas verificadas.`);
+        }
+      } catch (err) {
+        onLog(`⚠️ Perplexity no disponible (${err.message})...`);
+      }
     }
   }
 
-  // 3. CONSULTA COMPLEMENTARIA GEOESPACIAL / DENUE SI APLICA
-  if (domain === 'competencia' || domain === 'mercado') {
+  // ─────────────────────────────────────────────────────────────────────────
+  // FASE 3: ENRIQUECIMIENTO CON DATOS OFICIALES INEGI DENUE
+  // ─────────────────────────────────────────────────────────────────────────
+  if (domain === 'competencia' || domain === 'mercado' || domain === 'maquinaria') {
     try {
-      onLog('🗺️ Cruzando con base de datos geoespacial de establecimientos...');
-      const inegiResult = await executeAgentTool('tool_inegi_denue', { keywords: query });
-      if (inegiResult?.data) {
+      onLog('🗺️ Cruzando con base de datos geoespacial de establecimientos (INEGI DENUE)...');
+      const inegiResult = await executeAgentTool('tool_inegi_denue', {
+        keywords: query,
+        allowSyntheticEstimate: false
+      });
+      if (inegiResult?.data?.establishments && inegiResult.data.establishments.length > 0) {
         sources.push({
-          title: 'Directorio Estadístico Nacional de Unidades Económicas (DENUE)',
+          title: `Directorio DENUE INEGI (${inegiResult.data.establishments.length} establecimientos encontrados)`,
           url: 'https://www.inegi.org.mx/app/mapa/denue/',
-          snippet: `Establecimientos registrados en la zona de búsqueda: ${inegiResult.data.totalEstablecimientos || 0} encontrados.`,
-          score: 0.95,
-          provider: 'INEGI Oficial'
+          snippet: `Establecimientos reales registrados: ${inegiResult.data.establishments.slice(0, 3).map(e => e.nombre || e.razonSocial).join(', ')}.`,
+          score: 0.98,
+          provider: 'INEGI DENUE Oficial',
+          provenance: 'verified_real',
+          retrievedAt: new Date().toISOString(),
+          confidenceScore: 0.99
         });
       }
     } catch {
@@ -181,12 +346,41 @@ export async function runDeepResearch({
     }
   }
 
-  const durationMs = Date.now() - startTime;
+  // ─────────────────────────────────────────────────────────────────────────
+  // FASE 4: RESGUARDO CONTRA ALUCINACIONES (Data Provenance Contract)
+  // ─────────────────────────────────────────────────────────────────────────
+  if (sources.length === 0) {
+    if (allowSyntheticEstimate) {
+      onLog('ℹ️ No se hallaron fuentes web directas. Generando estimación heurística aprobada manualmente...');
+      sources.push({
+        title: `Estimación Heurística de Mercado: ${query}`,
+        url: 'https://fondothoth.com/estimaciones',
+        snippet: `Proyección heurística para "${query}" basada en densidad sectorial nacional. No constituye una cita factual confirmada.`,
+        score: 0.60,
+        provider: 'Motor Heurístico Local',
+        provenance: 'synthetic_estimate',
+        retrievedAt: new Date().toISOString(),
+        confidenceScore: 0.50
+      });
+    } else {
+      onLog('⚠️ No se encontraron fuentes verificadas para esta consulta en la web.');
+      sources.push({
+        title: `Sin Fuentes Verificadas para: ${query}`,
+        url: 'https://fondothoth.com/radar',
+        snippet: `No se encontraron resultados verificados en internet para los términos especificados. Se recomienda afinar la búsqueda.`,
+        score: 0.40,
+        provider: 'Verificador de Procedencia',
+        provenance: 'not_found',
+        retrievedAt: new Date().toISOString(),
+        confidenceScore: 0.0
+      });
+    }
+  }
 
-  // 4. SÍNTESIS DE RESULTADOS
-  const synthesizedSummary = rawSnippets.length > 0
-    ? `Resumen de Investigación (${tierUsed.toUpperCase()}):\n${rawSnippets.join('\n\n')}`
-    : `No se encontraron resultados web directos para "${query}". Se aplicaron proyecciones basadas en modelos de referencia.`;
+  rawSnippets = sources.map(s => `[${s.provider}] (${s.provenance === 'verified_real' ? 'Verificado' : 'Estimación'}): ${s.title} — ${s.snippet}`);
+
+  const durationMs = Date.now() - startTime;
+  const synthesizedSummary = rawSnippets.join('\n\n');
 
   const resultData = {
     status: 'completed',
@@ -194,6 +388,7 @@ export async function runDeepResearch({
     domain,
     depth,
     tierUsed,
+    tierCategory,
     durationMs,
     costUsd: Number(costAccumulated.toFixed(4)),
     sourcesCount: sources.length,
@@ -207,3 +402,4 @@ export async function runDeepResearch({
     ...resultData
   };
 }
+

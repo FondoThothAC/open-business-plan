@@ -1,8 +1,9 @@
 import { useState, useEffect, useMemo } from 'react';
 import { usePlan } from '../context/PlanContext';
-import { Sparkles, Package, TrendingUp, CreditCard, Calculator, RotateCcw, Activity, ArrowUpRight, ArrowDownRight, Minus, Brain } from 'lucide-react';
+import { Sparkles, Package, TrendingUp, CreditCard, Calculator, RotateCcw, Activity, ArrowUpRight, ArrowDownRight, Minus, Brain, Factory } from 'lucide-react';
 import { generateSingleField } from '../lib/ai';
 import ExpertPanel from './ExpertPanel';
+import MachineryRfqModal from './MachineryRfqModal';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
@@ -35,6 +36,7 @@ export default function ModuloOperaciones({ title, description }) {
   const [isGenerating, setIsGenerating] = useState(false);
   const [activeExpertField, setActiveExpertField] = useState(null);
   const [editAnalysis, setEditAnalysis] = useState(false);
+  const [showRfqModal, setShowRfqModal] = useState(false);
 
   // Initialize data from planData or defaults
   const data = planData.tecnico?.operativa || {
@@ -171,6 +173,15 @@ export default function ModuloOperaciones({ title, description }) {
           <p className="text-secondary mt-1">{description}</p>
         </div>
         <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+          <button
+            className="btn btn-secondary"
+            onClick={() => setShowRfqModal(true)}
+            style={{ padding: '0.5rem 1rem', fontSize: '0.8rem', borderColor: '#3b82f6', color: '#60a5fa', background: 'rgba(59, 130, 246, 0.1)' }}
+            title="Abrir cotizador formal de maquinaria pesada y gestión de RFQs B2B"
+          >
+            <Factory style={{ width: 14, height: 14 }} />
+            <span>Cotizar Maquinaria (RFQ)</span>
+          </button>
           <button className="btn btn-secondary" onClick={resetData} style={{ padding: '0.5rem 1rem', fontSize: '0.8rem' }}>
             <RotateCcw style={{ width: 14, height: 14 }} />
             <span>Reset</span>
@@ -428,6 +439,12 @@ export default function ModuloOperaciones({ title, description }) {
         }}
         aiConfig={planData.config?.ai}
         planData={planData}
+      />
+
+      {/* Modal de Cotización Formal y RFQ B2B de Maquinaria Pesada */}
+      <MachineryRfqModal
+        isOpen={showRfqModal}
+        onClose={() => setShowRfqModal(false)}
       />
     </div>
   );

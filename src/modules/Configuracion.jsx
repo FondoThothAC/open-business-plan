@@ -2211,55 +2211,73 @@ export default function Configuracion() {
       </div>
 
       <div className="glass-panel" style={{ marginTop: '2rem', padding: '2rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem' }}>
-          <Globe className="text-blue-400" />
-          <h2 style={{ fontSize: '1.25rem' }}>Investigación Web e Internet</h2>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <Globe className="text-blue-400" />
+            <h2 style={{ fontSize: '1.25rem' }}>Investigación Web & Deep Research Multi-Tier</h2>
+          </div>
+          <span style={{ fontSize: '0.75rem', padding: '0.25rem 0.75rem', borderRadius: '12px', background: 'rgba(59, 130, 246, 0.1)', color: '#60a5fa', border: '1px solid rgba(59, 130, 246, 0.2)' }}>
+            Fila 1 Freemium / Fila 2 Premium
+          </span>
         </div>
         
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', background: 'var(--bg-panel-hover)', padding: '1rem', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
-             <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
-               <input 
-                 type="checkbox" 
-                 checked={searchConfig.duckDuckGoEnabled !== false}
-                 onChange={(e) => {
-                   handleSearchConfigChange('duckDuckGoEnabled', e.target.checked);
-                   if (!e.target.checked && searchConfig.provider === 'duckduckgo') {
-                     handleSearchConfigChange('provider', 'tavily');
-                   }
-                 }}
-                 style={{ width: '1.2rem', height: '1.2rem' }}
-               />
-               <span>✅ Habilitar DuckDuckGo Scraper (Alternativa local sin costo — <strong>Activo por defecto</strong>)</span>
-             </label>
+          {/* Opciones de Hardware Local y Modo Desconectado */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div style={{ background: 'var(--bg-panel-hover)', padding: '1rem', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
+                <input 
+                  type="checkbox" 
+                  checked={searchConfig.duckDuckGoEnabled !== false}
+                  onChange={(e) => handleSearchConfigChange('duckDuckGoEnabled', e.target.checked)}
+                  style={{ width: '1.1rem', height: '1.1rem' }}
+                />
+                <span style={{ fontSize: '0.85rem' }}>✅ <strong>DuckDuckGo Scraper</strong> (Gratis, sin API key)</span>
+              </label>
+            </div>
+            <div style={{ background: 'var(--bg-panel-hover)', padding: '1rem', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
+                <input 
+                  type="checkbox" 
+                  checked={searchConfig.useLocalHardware !== false}
+                  onChange={(e) => handleSearchConfigChange('useLocalHardware', e.target.checked)}
+                  style={{ width: '1.1rem', height: '1.1rem' }}
+                />
+                <span style={{ fontSize: '0.85rem' }}>💻 <strong>Aprovechar Hardware Local</strong> (Puppeteer/Chromium local)</span>
+              </label>
+            </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
-            <div className="form-group">
-              <label className="form-label">Proveedor de Búsqueda Principal</label>
-              <select 
-                className="form-control"
-                value={searchConfig.provider}
-                onChange={(e) => handleSearchConfigChange('provider', e.target.value)}
-              >
-                <option value="tavily">Tavily AI (Recomendado)</option>
-                {searchConfig.duckDuckGoEnabled && (
-                  <option value="duckduckgo">DuckDuckGo Scraper</option>
-                )}
-              </select>
-              <small style={{ color: 'var(--text-secondary)', marginTop: '0.5rem', display: 'block' }}>
-                Tavily ofrece mejores resultados orientados a LLMs. DuckDuckGo es gratuito pero puede ser bloqueado.
-              </small>
-            </div>
+          {/* Selector de Cascada / Prioridad */}
+          <div className="form-group">
+            <label className="form-label">Estrategia de Búsqueda y Cascada de Costos</label>
+            <select 
+              className="form-control"
+              value={searchConfig.tierPreference || 'tier1_first'}
+              onChange={(e) => handleSearchConfigChange('tierPreference', e.target.value)}
+            >
+              <option value="tier1_first">⚡ Fila 1 Primero (Freemium/Local: Tavily/Brave Free + INEGI + DuckDuckGo) [Recomendado - Ahorro de Tokens]</option>
+              <option value="tier2_premium">💎 Fila 2 Premium Directa (Exa.ai Neural B2B + Perplexity Sonar Pro)</option>
+              <option value="local_only">🔒 Modo 100% Local / Desconectado (DuckDuckGo + Hardware Local)</option>
+            </select>
+            <small style={{ color: 'var(--text-secondary)', marginTop: '0.4rem', display: 'block', fontSize: '0.75rem' }}>
+              La cascada agota primero las cuotas gratuitas mensuales (Tavily 1,000 + Brave 2,000 req/mes) antes de recurrir a servicios de pago.
+            </small>
+          </div>
 
-            {searchConfig.provider === 'tavily' && (
+          {/* FILA 1: FREEMIUM (Tavily Free & Brave Search) */}
+          <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '1rem' }}>
+            <h3 style={{ fontSize: '0.95rem', color: 'var(--accent-color)', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <span>⚡ Fila 1: Proveedores Freemium (Con Créditos Gratuitos Mensuales)</span>
+            </h3>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
               <div className="form-group">
-                <label className="form-label">API Key de Tavily AI</label>
+                <label className="form-label">API Key de Tavily AI (1,000 búsquedas gratis/mes)</label>
                 <input 
                   type="password" 
                   className="form-control" 
                   placeholder="tvly-..."
-                  value={searchConfig.apiKey}
+                  value={searchConfig.apiKey || ''}
                   onChange={(e) => {
                     handleSearchConfigChange('apiKey', e.target.value);
                     apiStatus.setTavilyStatus({ state: 'idle', message: '' });
@@ -2271,7 +2289,57 @@ export default function Configuracion() {
                   disabled={!searchConfig.apiKey} 
                 />
               </div>
-            )}
+
+              <div className="form-group">
+                <label className="form-label">Brave Search API Key (2,000 queries gratis/mes)</label>
+                <input 
+                  type="password" 
+                  className="form-control" 
+                  placeholder="BSA..."
+                  value={searchConfig.braveKey || ''}
+                  onChange={(e) => handleSearchConfigChange('braveKey', e.target.value)}
+                />
+                <small style={{ color: 'var(--text-secondary)', fontSize: '0.7rem' }}>
+                  Índice web independiente sin censura ni tracking comercial.
+                </small>
+              </div>
+            </div>
+          </div>
+
+          {/* FILA 2: PREMIUM (Exa.ai & Perplexity Sonar) */}
+          <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '1rem' }}>
+            <h3 style={{ fontSize: '0.95rem', color: '#818cf8', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <span>💎 Fila 2: Proveedores Premium Especializados (Máxima Fidelidad Factual)</span>
+            </h3>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+              <div className="form-group">
+                <label className="form-label">Exa.ai API Key (Búsqueda Neuronal Semántica B2B)</label>
+                <input 
+                  type="password" 
+                  className="form-control" 
+                  placeholder="exa-..."
+                  value={searchConfig.exaKey || ''}
+                  onChange={(e) => handleSearchConfigChange('exaKey', e.target.value)}
+                />
+                <small style={{ color: 'var(--text-secondary)', fontSize: '0.7rem' }}>
+                  Especializado en empresas reales, directorios corporativos y competidores.
+                </small>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Perplexity Sonar API Key (Citas en Vivo y Razonamiento)</label>
+                <input 
+                  type="password" 
+                  className="form-control" 
+                  placeholder="pplx-..."
+                  value={searchConfig.perplexityKey || ''}
+                  onChange={(e) => handleSearchConfigChange('perplexityKey', e.target.value)}
+                />
+                <small style={{ color: 'var(--text-secondary)', fontSize: '0.7rem' }}>
+                  Inferencia y síntesis profunda con referencias bibliográficas reales.
+                </small>
+              </div>
+            </div>
           </div>
         </div>
       </div>
