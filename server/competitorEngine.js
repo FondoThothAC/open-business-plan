@@ -500,7 +500,7 @@ function cruzarResultados(resultadosPorFuente) {
  * @param {string} opciones.bingApiKey - API Key de Bing Maps (opcional)
  * @returns {Promise<Object>} Resultados fusionados con metadata
  */
-export async function busquedaMultiFuente({ lat, lng, query, radius = 2000, denueToken, googleApiKey, bingApiKey }) {
+export async function busquedaMultiFuente({ lat, lng, query, radius = 2000, denueToken, googleApiKey, bingApiKey, allowSynthetic = false }) {
   console.log(`\n${'═'.repeat(60)}`);
   console.log(`  🕵️  AGENTE DE INVESTIGACIÓN DE MERCADO`);
   console.log(`${'═'.repeat(60)}`);
@@ -513,6 +513,7 @@ export async function busquedaMultiFuente({ lat, lng, query, radius = 2000, denu
   console.log(`     Bing Maps:     ${bingApiKey ? '✅' : '⏭️  Omitido'}`);
   console.log(`     OSM/Overpass:  ✅ (siempre activo)`);
   console.log(`     DuckDuckGo:    ✅ (siempre activo)`);
+  console.log(`     Sintéticos:    ${allowSynthetic ? 'Autorizados' : 'Bloqueados (solo datos reales)'}`);
   console.log(`${'─'.repeat(60)}`);
 
   const inicio = Date.now();
@@ -553,10 +554,10 @@ export async function busquedaMultiFuente({ lat, lng, query, radius = 2000, denu
     resultados.ddg,
   ]);
 
-  // Si las APIs externas no devolvieron resultados suficientes (ej. sin Token DENUE o falló Overpass),
-  // generar competidores sintéticos basados en la geografía y giro del negocio para que el mapa y heatmap funcionen siempre
-  if (fusionados.length < 4) {
-    console.log(`\n  ⚡ [Generador Geoespacial IA] Fuentes externas devolvieron ${fusionados.length} resultados. Generando 16 competidores sintéticos hiper-realistas para "${query}"...`);
+  // Si las APIs externas no devolvieron resultados suficientes:
+  // Solo generar competidores sintéticos si allowSynthetic === true (ej. para InegiMap heatmap)
+  if (fusionados.length < 4 && allowSynthetic) {
+    console.log(`\n  ⚡ [Generador Geoespacial IA] Fuentes externas devolvieron ${fusionados.length} resultados. Generando competidores sintéticos para visualización...`);
     const sintetizados = generarCompetidoresSinteticos(lat, lng, query, 'Hermosillo, Sonora', 16);
     fusionados = [...fusionados, ...sintetizados];
   }
@@ -581,7 +582,7 @@ export async function busquedaMultiFuente({ lat, lng, query, radius = 2000, denu
   console.log(`${'═'.repeat(60)}\n`);
 
   return {
-    success: true,
+    success: fusionados.length > 0,
     total: fusionados.length,
     duracionMs: duracion,
     fuentesConsultadas: {
@@ -595,6 +596,7 @@ export async function busquedaMultiFuente({ lat, lng, query, radius = 2000, denu
     coloresFuente: COLORES_FUENTE,
     estadisticas: stats,
     competidores: fusionados,
+    reason: fusionados.length === 0 ? 'Sin competidores verificados en las fuentes consultadas' : undefined
   };
 }
 
@@ -712,7 +714,8 @@ export function generarCompetidoresSinteticos(centerLat, centerLng, query = '', 
       estrato: '1 a 10 personas',
       fuente: FUENTE.IA,
       color: COLORES_FUENTE[FUENTE.IA],
-      confianza: CONFIANZA.ALTA,
+      confianza: CONFIANZA.BAJA,
+      provenance: 'synthetic',
       numFuentes: 1,
       rating,
       reviews,

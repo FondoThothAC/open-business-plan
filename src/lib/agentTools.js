@@ -265,6 +265,152 @@ export async function executeToolWebSearch(args = {}, planContext = {}, startTim
   };
 }
 
+// Función completa de consulta INEGI DENUE con contrato de procedencia estricto
+export async function executeToolInegiDenue(args = {}, planContext = {}, startTime = Date.now(), seedGiro = '', seedLocation = 'Cananea, Sonora') {
+  const keywords = args.keywords || seedGiro || 'minería hidráulica refacciones';
+  const location = args.location || seedLocation || 'Cananea, Sonora';
+  const token = args.token || planContext?.config?.externalApis?.inegiToken || '';
+  const allowSyntheticEstimate = args.allowSyntheticEstimate !== false;
+  const forceSimulateNoResults = Boolean(args.forceSimulateNoResults);
+  const apiBase = getApiBase();
+
+  let establishments = [];
+  let sourceUsed = 'denue_api';
+  let centerCoords = { lat: 30.9847, lng: -110.2986 }; // Default Cananea, Sonora
+
+  if (!forceSimulateNoResults) {
+    try {
+      // 1. Intentar geocodificar la ubicación real
+      const geoRes = await fetch(`${apiBase}/api/geo/geocode?q=${encodeURIComponent(location)}`, { signal: AbortSignal.timeout(3500) });
+      const geoData = await geoRes.json();
+      if (geoData?.success && geoData?.lat && geoData?.lng) {
+        centerCoords = { lat: geoData.lat, lng: geoData.lng };
+        
+        // 2. Intentar buscar en DENUE local o API oficial
+        const denueRes = await fetch(`${apiBase}/api/inegi/denue?token=${encodeURIComponent(token)}&lat=${centerCoords.lat}&lng=${centerCoords.lng}&radius=5000&keywords=${encodeURIComponent(keywords)}`, { signal: AbortSignal.timeout(4500) });
+        const denueData = await denueRes.json();
+        if (denueData?.success && Array.isArray(denueData?.businesses) && denueData.businesses.length > 0) {
+          establishments = denueData.businesses.map(b => ({
+            ...b,
+            provenance: 'real',
+            retrievedAt: new Date().toISOString()
+          }));
+          sourceUsed = denueData.source || 'denue_api';
+        }
+      }
+    } catch {
+      // Fallback
+    }
+  }
+
+  // Si no se obtuvieron resultados directos de la API
+  if (!establishments || establishments.length === 0) {
+    if (!allowSyntheticEstimate) {
+      // NO inventar clúster falso si no fue aprobado
+      return {
+        success: true,
+        toolName: 'tool_inegi_denue',
+        executionTimeMs: Date.now() - startTime,
+        data: {
+          provenance: 'none',
+          isSynthetic: false,
+          requiresManualEstimateApproval: true,
+          warning: 'No se encontraron unidades económicas registradas en DENUE para este radio y actividad.',
+          region: location,
+          keywords,
+          sourceUsed: 'none',
+          totalFound: 0,
+          totalEstablecimientos: 0,
+          establishments: [],
+          establecimientos: []
+        }
+      };
+    }
+
+    // Si el usuario aprobó explícitamente la estimación sintética: clúster B2B con procedencia synthetic
+    sourceUsed = 'synthetic_cluster';
+    const latBase = centerCoords.lat;
+    const lngBase = centerCoords.lng;
+    establishments = [
+      {
+        id: 'denue_1',
+        nombre: `Minera y Exploraciones de ${location.split(',')[0]} (Estimado)`,
+        razonSocial: `Operadora Minera del Norte S.A. de C.V.`,
+        actividad: 'Minería de cobre y minerales metálicos',
+        estrato: '251 y más personas',
+        scianClase: '212232',
+        lat: latBase + 0.015,
+        lng: lngBase - 0.012,
+        direccion: `Carretera a Mina Km 4.5, ${location}`,
+        telefono: '645-102-3000',
+        provenance: 'synthetic',
+        retrievedAt: new Date().toISOString()
+      },
+      {
+        id: 'denue_2',
+        nombre: `Constructora y Movimientos de Tierra ${location.split(',')[0]} (Estimado)`,
+        razonSocial: `Infraestructura Pesada del Noroeste S.A.`,
+        actividad: 'Construcción de obras de ingeniería pesada y caminos',
+        estrato: '51 a 100 personas',
+        scianClase: '237990',
+        lat: latBase - 0.008,
+        lng: lngBase + 0.011,
+        direccion: `Parque Industrial Lote 12, ${location}`,
+        telefono: '645-332-1144',
+        provenance: 'synthetic',
+        retrievedAt: new Date().toISOString()
+      }
+    ];
+  }
+
+  // 3. Enriquecer cada establecimiento con clasificación B2B y estimación de facturación INEGI
+  const enrichedEstablishments = establishments.map(item => {
+    const b2bInfo = classifyEstablishmentType(item, keywords);
+    const financialMetrics = estimateBusinessMetrics(item.estrato, item.scianClase || item.scian);
+    return {
+      ...item,
+      tipoRelacion: b2bInfo.tipo,
+      categoriaB2B: b2bInfo.categoria,
+      colorBadge: b2bInfo.color,
+      financiero: financialMetrics
+    };
+  });
+
+  // 4. Calcular Ubicación Óptima (Centroide Ponderado por Demanda y Empleados)
+  const optimalLocation = calculateOptimalLocation(enrichedEstablishments, 5);
+
+  const clientesPotenciales = enrichedEstablishments.filter(e => e.categoriaB2B === 'cliente_b2b');
+  const competidoresDirectos = enrichedEstablishments.filter(e => e.categoriaB2B === 'competidor');
+  const proveedores = enrichedEstablishments.filter(e => e.categoriaB2B === 'proveedor');
+
+  return {
+    success: true,
+    toolName: 'tool_inegi_denue',
+    executionTimeMs: Date.now() - startTime,
+    data: {
+      provenance: sourceUsed === 'synthetic_cluster' ? 'synthetic' : 'real',
+      isSynthetic: sourceUsed === 'synthetic_cluster',
+      warning: sourceUsed === 'synthetic_cluster' ? 'Clúster territorial estimado por falta de registro DENUE directo.' : null,
+      region: location,
+      keywords,
+      sourceUsed,
+      totalFound: enrichedEstablishments.length,
+      totalEstablecimientos: enrichedEstablishments.length,
+      conteoClientesPotenciales: clientesPotenciales.length,
+      conteoCompetidores: competidoresDirectos.length,
+      conteoProveedores: proveedores.length,
+      ubicacionOptima: optimalLocation,
+      resumenMercadoB2B: {
+        valorMercadoCercanoEstimado: optimalLocation?.totalNearbyRevenueFormatted || '$0 MXN',
+        personalImpactado: optimalLocation?.totalEstimatedEmployees || 0,
+        accesibilidad: optimalLocation?.scoreAccesibilidad || 'Alta'
+      },
+      establishments: enrichedEstablishments,
+      establecimientos: enrichedEstablishments
+    }
+  };
+}
+
 // Ejecutor interno de herramientas agénticas
 async function _executeAgentToolInternal(toolName, args, planContext = {}) {
   const startTime = Date.now();
@@ -298,147 +444,7 @@ async function _executeAgentToolInternal(toolName, args, planContext = {}) {
       }
 
       case 'tool_inegi_denue': {
-        const keywords = args.keywords || seedGiro || 'minería hidráulica refacciones';
-        const location = args.location || seedLocation || 'Cananea, Sonora';
-        const token = args.token || planContext?.config?.externalApis?.inegiToken || '';
-        const allowSyntheticEstimate = args.allowSyntheticEstimate !== false;
-        const forceSimulateNoResults = Boolean(args.forceSimulateNoResults);
-        const apiBase = getApiBase();
-
-        let establishments = [];
-        let sourceUsed = 'denue_api';
-        let centerCoords = { lat: 30.9847, lng: -110.2986 }; // Default Cananea, Sonora
-
-        if (!forceSimulateNoResults) {
-          try {
-            // 1. Intentar geocodificar la ubicación real
-            const geoRes = await fetch(`${apiBase}/api/geo/geocode?q=${encodeURIComponent(location)}`, { signal: AbortSignal.timeout(3500) });
-            const geoData = await geoRes.json();
-            if (geoData?.success && geoData?.lat && geoData?.lng) {
-              centerCoords = { lat: geoData.lat, lng: geoData.lng };
-              
-              // 2. Intentar buscar en DENUE local o API oficial
-              const denueRes = await fetch(`${apiBase}/api/inegi/denue?token=${encodeURIComponent(token)}&lat=${centerCoords.lat}&lng=${centerCoords.lng}&radius=5000&keywords=${encodeURIComponent(keywords)}`, { signal: AbortSignal.timeout(4500) });
-              const denueData = await denueRes.json();
-              if (denueData?.success && Array.isArray(denueData?.businesses) && denueData.businesses.length > 0) {
-                establishments = denueData.businesses.map(b => ({
-                  ...b,
-                  provenance: 'verified_real',
-                  retrievedAt: new Date().toISOString()
-                }));
-                sourceUsed = denueData.source || 'denue_api';
-              }
-            }
-          } catch {
-            // Fallback
-          }
-        }
-
-        // Si no se obtuvieron resultados directos de la API
-        if (!establishments || establishments.length === 0) {
-          if (!allowSyntheticEstimate) {
-            // NO inventar clúster falso si no fue aprobado
-            return {
-              success: true,
-              toolName,
-              executionTimeMs: Date.now() - startTime,
-              data: {
-                provenance: 'not_found',
-                isSynthetic: false,
-                requiresManualEstimateApproval: true,
-                warning: 'No se encontraron unidades económicas registradas en DENUE para este radio y actividad.',
-                region: location,
-                keywords,
-                totalFound: 0,
-                totalEstablecimientos: 0,
-                establishments: [],
-                establecimientos: []
-              }
-            };
-          }
-
-          // Si el usuario aprobó explícitamente la estimación sintética
-          sourceUsed = 'synthetic_cluster';
-          const latBase = centerCoords.lat;
-          const lngBase = centerCoords.lng;
-          establishments = [
-            {
-              id: 'denue_1',
-              nombre: `Minera y Exploraciones de ${location.split(',')[0]} (Estimado)`,
-              razonSocial: `Operadora Minera del Norte S.A. de C.V.`,
-              actividad: 'Minería de cobre y minerales metálicos',
-              estrato: '251 y más personas',
-              scianClase: '212232',
-              lat: latBase + 0.015,
-              lng: lngBase - 0.012,
-              direccion: `Carretera a Mina Km 4.5, ${location}`,
-              telefono: '645-102-3000',
-              provenance: 'synthetic_estimate',
-              retrievedAt: new Date().toISOString()
-            },
-            {
-              id: 'denue_2',
-              nombre: `Constructora y Movimientos de Tierra ${location.split(',')[0]} (Estimado)`,
-              razonSocial: `Infraestructura Pesada del Noroeste S.A.`,
-              actividad: 'Construcción de obras de ingeniería pesada y caminos',
-              estrato: '51 a 100 personas',
-              scianClase: '237990',
-              lat: latBase - 0.008,
-              lng: lngBase + 0.011,
-              direccion: `Parque Industrial Lote 12, ${location}`,
-              telefono: '645-332-1144',
-              provenance: 'synthetic_estimate',
-              retrievedAt: new Date().toISOString()
-            }
-          ];
-        }
-
-        // 3. Enriquecer cada establecimiento con clasificación B2B y estimación de facturación INEGI
-        const enrichedEstablishments = establishments.map(item => {
-          const b2bInfo = classifyEstablishmentType(item, keywords);
-          const financialMetrics = estimateBusinessMetrics(item.estrato, item.scianClase || item.scian);
-          return {
-            ...item,
-            tipoRelacion: b2bInfo.tipo,
-            categoriaB2B: b2bInfo.categoria,
-            colorBadge: b2bInfo.color,
-            financiero: financialMetrics
-          };
-        });
-
-        // 4. Calcular Ubicación Óptima (Centroide Ponderado por Demanda y Empleados)
-        const optimalLocation = calculateOptimalLocation(enrichedEstablishments, 5);
-
-        const clientesPotenciales = enrichedEstablishments.filter(e => e.categoriaB2B === 'cliente_b2b');
-        const competidoresDirectos = enrichedEstablishments.filter(e => e.categoriaB2B === 'competidor');
-        const proveedores = enrichedEstablishments.filter(e => e.categoriaB2B === 'proveedor');
-
-        return {
-          success: true,
-          toolName,
-          executionTimeMs: Date.now() - startTime,
-          data: {
-            provenance: sourceUsed === 'synthetic_cluster' ? 'synthetic_estimate' : 'verified_real',
-            isSynthetic: sourceUsed === 'synthetic_cluster',
-            warning: sourceUsed === 'synthetic_cluster' ? 'Clúster territorial estimado por falta de registro DENUE directo.' : null,
-            region: location,
-            keywords,
-            sourceUsed,
-            totalFound: enrichedEstablishments.length,
-            totalEstablecimientos: enrichedEstablishments.length,
-            conteoClientesPotenciales: clientesPotenciales.length,
-            conteoCompetidores: competidoresDirectos.length,
-            conteoProveedores: proveedores.length,
-            ubicacionOptima: optimalLocation,
-            resumenMercadoB2B: {
-              valorMercadoCercanoEstimado: optimalLocation?.totalNearbyRevenueFormatted || '$0 MXN',
-              personalImpactado: optimalLocation?.totalEstimatedEmployees || 0,
-              accesibilidad: optimalLocation?.scoreAccesibilidad || 'Alta'
-            },
-            establishments: enrichedEstablishments,
-            establecimientos: enrichedEstablishments
-          }
-        };
+        return await executeToolInegiDenue(args, planContext, startTime, seedGiro, seedLocation);
       }
 
       case 'tool_financial_engine': {

@@ -31,6 +31,8 @@ describe('Competitor & Heatmap Engine - TDD Test Suite', () => {
     assert.ok(first.lat !== lat || first.lng !== lng, 'Competitors should be geographically dispersed');
     assert.ok(first.rating >= 3.0 && first.rating <= 5.0, 'Rating must be realistic');
     assert.ok(first.precioRango, 'Price range must be defined');
+    assert.strictEqual(first.confianza, 'baja', 'Synthetic competitor must have low confidence');
+    assert.strictEqual(first.provenance, 'synthetic', 'Synthetic competitor must have synthetic provenance');
   });
 
   it('should calculate market viability accurately based on competitor density', () => {

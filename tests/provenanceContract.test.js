@@ -11,6 +11,8 @@ import {
   summarizeProvenance
 } from '../src/lib/tools/provenance.js';
 import { executeAgentTool } from '../src/lib/agentTools.js';
+import { busquedaMultiFuente } from '../server/competitorEngine.js';
+import { runDeepResearch } from '../src/lib/tools/deepResearchEngine.js';
 
 test('Fase 1: Unificación de Esquema config.search y Migración de Aliases Legacy', async (t) => {
   await t.test('debe normalizar el esquema canónico por defecto', () => {
@@ -221,6 +223,83 @@ test('Fase 4: tool_web_search conectado a /api/search y Erradicación de Competi
     } finally {
       globalThis.fetch = originalFetch;
     }
+  });
+});
+
+test('Fase 5: Erradicación de Fuentes Sintéticas No Autorizadas y Etiquetado Honesto', async (t) => {
+  await t.test('executeToolInegiDenue sin allowSyntheticEstimate debe retornar provenance none sin inventar datos', async () => {
+    const res = await executeAgentTool('tool_inegi_denue', {
+      keywords: 'Mina Cobre Subterránea Inexistente 8888',
+      location: 'Ubicación Fantasma',
+      allowSyntheticEstimate: false,
+      forceSimulateNoResults: true
+    });
+
+    assert.strictEqual(res.success, true);
+    assert.strictEqual(res.data.provenance, 'none');
+    assert.strictEqual(res.data.totalFound, 0);
+    assert.strictEqual(res.data.isSynthetic, false);
+    assert.deepStrictEqual(res.data.establishments, []);
+    assert.ok(res.data.warning.includes('No se encontraron unidades económicas'));
+  });
+
+  await t.test('executeToolInegiDenue con allowSyntheticEstimate=true debe marcar provenance synthetic', async () => {
+    const res = await executeAgentTool('tool_inegi_denue', {
+      keywords: 'Minería y Refacciones',
+      location: 'Cananea, Sonora',
+      allowSyntheticEstimate: true,
+      forceSimulateNoResults: true
+    });
+
+    assert.strictEqual(res.success, true);
+    assert.strictEqual(res.data.provenance, 'synthetic');
+    assert.strictEqual(res.data.isSynthetic, true);
+    assert.strictEqual(res.data.sourceUsed, 'synthetic_cluster');
+    assert.ok(res.data.warning.includes('Clúster territorial estimado'));
+    assert.strictEqual(res.data.establishments[0].provenance, 'synthetic');
+  });
+
+  await t.test('busquedaMultiFuente con allowSynthetic=false debe devolver lista vacía sin fabricar 16 competidores', async () => {
+    const res = await busquedaMultiFuente({
+      lat: 29.072967,
+      lng: -110.955919,
+      query: 'Actividad Extremadamente Rara Inexistente 99999',
+      radius: 100,
+      allowSynthetic: false
+    });
+
+    assert.strictEqual(res.success, false);
+    assert.strictEqual(res.total, 0);
+    assert.deepStrictEqual(res.competidores, []);
+    assert.strictEqual(res.reason, 'Sin competidores verificados en las fuentes consultadas');
+  });
+
+  await t.test('busquedaMultiFuente con allowSynthetic=true debe marcar competidores con confianza baja y provenance synthetic', async () => {
+    const res = await busquedaMultiFuente({
+      lat: 29.072967,
+      lng: -110.955919,
+      query: 'Actividad Extremadamente Rara Inexistente 99999',
+      radius: 100,
+      allowSynthetic: true
+    });
+
+    assert.strictEqual(res.success, true);
+    assert.ok(res.competidores.length >= 1);
+    const synth = res.competidores[0];
+    assert.strictEqual(synth.confianza, 'baja');
+    assert.strictEqual(synth.provenance, 'synthetic');
+  });
+
+  await t.test('runDeepResearch sin fuentes no debe insertar URL fondothoth.com/radar', async () => {
+    const res = await runDeepResearch({
+      query: 'Consulta Sin Resultados Web 55555',
+      domain: 'general',
+      allowSyntheticEstimate: false
+    });
+
+    assert.strictEqual(res.success, true);
+    const radarUrls = res.data.sources.filter(s => s.url && s.url.includes('fondothoth.com/radar'));
+    assert.strictEqual(radarUrls.length, 0);
   });
 });
 

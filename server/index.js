@@ -1017,7 +1017,7 @@ app.get('/api/inegi/indicadores', async (req, res) => {
 //  Motor de Inteligencia Competitiva Multi-Fuente
 // ─────────────────────────────────────────────────────────
 app.post('/api/market/competitors', async (req, res) => {
-  const { lat, lng, query, radius = 2000, denueToken, googleApiKey, bingApiKey } = req.body;
+  const { lat, lng, query, radius = 2000, denueToken, googleApiKey, bingApiKey, allowSynthetic = false } = req.body;
 
   if (!lat || !lng) {
     return res.status(400).json({ success: false, error: 'Lat/Lng requeridos' });
@@ -1035,6 +1035,7 @@ app.post('/api/market/competitors', async (req, res) => {
       denueToken: denueToken || '',
       googleApiKey: googleApiKey || '',
       bingApiKey: bingApiKey || '',
+      allowSynthetic: Boolean(allowSynthetic)
     });
 
     return res.json(resultado);

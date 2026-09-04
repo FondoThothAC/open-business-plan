@@ -330,15 +330,20 @@ export async function runDeepResearch({
         allowSyntheticEstimate: false
       });
       if (inegiResult?.data?.establishments && inegiResult.data.establishments.length > 0) {
+        const isSyntheticCluster = inegiResult.data.isSynthetic || inegiResult.data.sourceUsed === 'synthetic_cluster' || inegiResult.data.provenance === 'synthetic' || inegiResult.data.provenance === 'synthetic_estimate';
+        const denueProvenance = isSyntheticCluster ? 'synthetic' : 'real';
+        const denueConfidence = isSyntheticCluster ? 0.40 : 0.95;
+        const denueProvider = isSyntheticCluster ? 'Clúster Estimado (DENUE Heurístico)' : 'INEGI DENUE Oficial';
+
         sources.push({
-          title: `Directorio DENUE INEGI (${inegiResult.data.establishments.length} establecimientos encontrados)`,
-          url: 'https://www.inegi.org.mx/app/mapa/denue/',
-          snippet: `Establecimientos reales registrados: ${inegiResult.data.establishments.slice(0, 3).map(e => e.nombre || e.razonSocial).join(', ')}.`,
-          score: 0.98,
-          provider: 'INEGI DENUE Oficial',
-          provenance: 'verified_real',
+          title: `Directorio DENUE INEGI (${inegiResult.data.establishments.length} establecimientos)`,
+          url: isSyntheticCluster ? null : 'https://www.inegi.org.mx/app/mapa/denue/',
+          snippet: `Establecimientos registrados: ${inegiResult.data.establishments.slice(0, 3).map(e => e.nombre || e.razonSocial).join(', ')}.`,
+          score: isSyntheticCluster ? 0.40 : 0.95,
+          provider: denueProvider,
+          provenance: denueProvenance,
           retrievedAt: new Date().toISOString(),
-          confidenceScore: 0.99
+          confidenceScore: denueConfidence
         });
       }
     } catch {
@@ -354,30 +359,24 @@ export async function runDeepResearch({
       onLog('ℹ️ No se hallaron fuentes web directas. Generando estimación heurística aprobada manualmente...');
       sources.push({
         title: `Estimación Heurística de Mercado: ${query}`,
-        url: 'https://fondothoth.com/estimaciones',
+        url: null,
         snippet: `Proyección heurística para "${query}" basada en densidad sectorial nacional. No constituye una cita factual confirmada.`,
-        score: 0.60,
+        score: 0.40,
         provider: 'Motor Heurístico Local',
-        provenance: 'synthetic_estimate',
+        provenance: 'synthetic',
         retrievedAt: new Date().toISOString(),
-        confidenceScore: 0.50
+        confidenceScore: 0.40,
+        warning: 'Estimación sintética de mercado autorizada'
       });
     } else {
       onLog('⚠️ No se encontraron fuentes verificadas para esta consulta en la web.');
-      sources.push({
-        title: `Sin Fuentes Verificadas para: ${query}`,
-        url: 'https://fondothoth.com/radar',
-        snippet: `No se encontraron resultados verificados en internet para los términos especificados. Se recomienda afinar la búsqueda.`,
-        score: 0.40,
-        provider: 'Verificador de Procedencia',
-        provenance: 'not_found',
-        retrievedAt: new Date().toISOString(),
-        confidenceScore: 0.0
-      });
+      // Estado honesto vacío: sources se mantiene vacío sin URLs falsas de radar
     }
   }
 
-  rawSnippets = sources.map(s => `[${s.provider}] (${(s.provenance === 'real' || s.provenance === 'verified_real') ? 'Verificado' : 'Estimación'}): ${s.title} — ${s.snippet}`);
+  rawSnippets = sources.length > 0
+    ? sources.map(s => `[${s.provider}] (${(s.provenance === 'real' || s.provenance === 'verified_real') ? 'Verificado' : 'Estimación'}): ${s.title} — ${s.snippet}`)
+    : [`Sin fuentes verificadas en internet para "${query}". Se declara limitación informativa en la formulación.`];
 
   const durationMs = Date.now() - startTime;
   const synthesizedSummary = rawSnippets.join('\n\n');

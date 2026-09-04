@@ -257,14 +257,14 @@ export async function getInegiMunicipio(municipioName) {
  * @param {string} params.bingApiKey - API Key de Bing Maps (opcional)
  * @returns {Promise<Object>}
  */
-export async function getMarketCompetitors({ lat, lng, query, radius, denueToken, googleApiKey, bingApiKey }) {
+export async function getMarketCompetitors({ lat, lng, query, radius, denueToken, googleApiKey, bingApiKey, allowSynthetic = false }) {
   try {
     const response = await fetch(`${API_BASE}/api/market/competitors`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ lat, lng, query, radius, denueToken, googleApiKey, bingApiKey }),
+      body: JSON.stringify({ lat, lng, query, radius, denueToken, googleApiKey, bingApiKey, allowSynthetic }),
     });
     return await response.json();
   } catch (error) {

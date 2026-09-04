@@ -437,7 +437,8 @@ export default function InegiMap({
         radius: 5000,
         denueToken: tokenToUse,
         googleApiKey,
-        bingApiKey
+        bingApiKey,
+        allowSynthetic: true
       });
 
       if (!result.success) throw new Error(result.error || 'Error consultando competidores');
@@ -796,7 +797,8 @@ Por favor, devuélvelo en formato JSON con la siguiente estructura exacta (respo
         radius: Number(radius),
         denueToken: tokenToUse,
         googleApiKey,
-        bingApiKey
+        bingApiKey,
+        allowSynthetic: true
       });
 
       if (!result.success) throw new Error(result.error || 'Error consultando competidores');
@@ -1566,6 +1568,7 @@ Por favor, devuélvelo en formato JSON con la siguiente estructura exacta (respo
                     <div>📍 Google Places: {searchStats.fuentesConsultadas?.google || 0}</div>
                     <div>🗺️ OSM / Maps: {searchStats.fuentesConsultadas?.osm || 0}</div>
                     <div>🦆 DuckDuckGo: {searchStats.fuentesConsultadas?.ddg || 0}</div>
+                    <div>🤖 IA Sintética: {searchStats.fuentesConsultadas?.ia_synthetic || 0}</div>
                   </div>
                 )}
               </div>
