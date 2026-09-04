@@ -6,6 +6,7 @@
 
 import { estimateBusinessMetrics, classifyEstablishmentType, calculateOptimalLocation } from './territorialEngine.js';
 import { getApiBase } from '../config/apiConfig.js';
+import { summarizeProvenance } from './tools/provenance.js';
 
 export function runQuantumDiagnostic({ areas = ['operativo'], _teamSize = 3 } = {}) {
   const normalizedAreas = (areas || []).map(a => String(a).toLowerCase().trim());
@@ -182,8 +183,8 @@ export const AGENT_TOOLS_MANIFEST = [
   }
 ];
 
-// Ejecutor unificado de herramientas agénticas
-export async function executeAgentTool(toolName, args, planContext = {}) {
+// Ejecutor interno de herramientas agénticas
+async function _executeAgentToolInternal(toolName, args, planContext = {}) {
   const startTime = Date.now();
   const seed = planContext?.semilla || {};
   const seedGiro = seed.nombre_proyecto || seed.negocio?.nombre_marca || seed.negocio?.giro || seed.negocio?.nombre || seed.solucion || '';
@@ -633,3 +634,14 @@ export async function executeAgentTool(toolName, args, planContext = {}) {
     };
   }
 }
+
+// Ejecutor unificado de herramientas agénticas con enriquecimiento de procedencia
+export async function executeAgentTool(toolName, args, planContext = {}) {
+  const result = await _executeAgentToolInternal(toolName, args, planContext);
+  if (result && result.success && result.data) {
+    const rawItems = result.data.results || result.data.sources || result.data.establishments || result.data.quotes || result.data.suppliers || [];
+    result.provenanceSummary = summarizeProvenance(rawItems);
+  }
+  return result;
+}
+

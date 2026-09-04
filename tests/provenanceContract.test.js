@@ -10,6 +10,7 @@ import {
   createHonestEmptyResult,
   summarizeProvenance
 } from '../src/lib/tools/provenance.js';
+import { executeAgentTool } from '../src/lib/agentTools.js';
 
 test('Fase 1: Unificación de Esquema config.search y Migración de Aliases Legacy', async (t) => {
   await t.test('debe normalizar el esquema canónico por defecto', () => {
@@ -109,5 +110,15 @@ test('Fase 2: Contrato Estricto de Procedencia y Estado Honesto Vacío', async (
     assert.strictEqual(summary.localOffline, 1);
     assert.strictEqual(summary.none, 1);
     assert.strictEqual(summary.total, 5);
+  });
+
+  await t.test('executeAgentTool debe enriquecer la respuesta con provenanceSummary', async () => {
+    const res = await executeAgentTool('tool_critic_validator', {
+      sectionKey: 'test',
+      draftContent: 'Este es un contenido de prueba extenso para validación de agentes con 100 usuarios y 50000 pesos.'
+    });
+    assert.strictEqual(res.success, true);
+    assert.ok(res.provenanceSummary);
+    assert.strictEqual(typeof res.provenanceSummary.total, 'number');
   });
 });

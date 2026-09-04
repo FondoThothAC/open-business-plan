@@ -28,7 +28,7 @@
 | **TDD-17** | `Data Provenance Contract & Goal-Oriented Loop` | Unitaria / Integración | Valida contrato estricto de procedencia (`verified_real`, `synthetic_estimate`, `not_found`), prohibición de alucinación silenciosa en `tool_web_search` e `tool_inegi_denue`, priorización de Fila 1 (Freemium/Local) sobre Fila 2 (Premium), y bucle ReAct autónomo con criterios de parada. |
 | **TDD-18** | `Search Config Canonical Schema & Provenance Library` | Unitaria / Integración | Valida normalización de `config.search`, migración de aliases legacy (`tavilyApiKey` -> `apiKey`, `duckDuckGoEnabled` -> `enableDdg`), funciones puras de procedencia y estado honesto vacío. |
 
-**Estado de Ejecución:** 150 tests pasando al 100% (26 suites, 0 fallos).
+**Estado de Ejecución:** 151 tests pasando al 100% (26 suites, 0 fallos).
 
 ---
 
