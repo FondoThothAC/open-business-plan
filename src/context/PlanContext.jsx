@@ -53,6 +53,7 @@ const KEYS = {
   ollama:       import.meta.env.VITE_OLLAMA_KEY       || '',
   bobOllama:    import.meta.env.VITE_BOB_OLLAMA_KEY   || '1846f31536ce449d952c415332369d0e.lJy1pkJcXD23IBn-WWrdVhTg',
   pollinations: import.meta.env.VITE_POLLINATIONS_KEY || '',
+  bai:          import.meta.env.VITE_BAI_KEY          || 'sk-ot9784lxbkdpedgsxlnf55400obu54ie',
   denue:        import.meta.env.VITE_DENUE_KEY        || '1b9e230f-2ae0-48db-bd20-8810b1db575e',
   banxico:      import.meta.env.VITE_BANXICO_KEY      || '',
   alphaVantage: import.meta.env.VITE_ALPHAVANTAGE_KEY || '38CEHMYW5CGOHUX1',
@@ -75,6 +76,7 @@ const createEmptyPlan = (projectType = 'business') => {
         openrouterKey: KEYS.openrouter, opencodeKey: KEYS.opencode,
         tokenrouterKey: KEYS.tokenrouter,
         pollinationsKey: KEYS.pollinations,
+        baiKey: KEYS.bai,
         endpoint: 'http://localhost:11434', lmStudioEndpoint: 'http://localhost:1234/v1',
         model: 'minimax-m3:cloud',   // Modelo principal activo por defecto (1M tokens, gratis en Ollama Cloud)
         depth: 1,              // 1=Rápido, 2=Pro, 3=Profundo
@@ -216,6 +218,7 @@ export const PlanProvider = ({ children }) => {
         if (!merged.config.ai.ollamaKey) merged.config.ai.ollamaKey = KEYS.ollama;
         if (!merged.config.ai.bobOllamaKey) merged.config.ai.bobOllamaKey = KEYS.bobOllama;
         if (!merged.config.ai.pollinationsKey) merged.config.ai.pollinationsKey = KEYS.pollinations;
+        if (!merged.config.ai.baiKey) merged.config.ai.baiKey = KEYS.bai;
       }
       if (merged.config?.externalApis) {
         if (!merged.config.externalApis.inegiToken) merged.config.externalApis.inegiToken = KEYS.denue;

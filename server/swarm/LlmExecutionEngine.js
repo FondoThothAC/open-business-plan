@@ -9,7 +9,7 @@
 
 export class LlmExecutionEngine {
   constructor() {
-    this.providers = ['ollama', 'gemini', 'groq', 'openai', 'kimi'];
+    this.providers = ['ollama', 'gemini', 'groq', 'openai', 'kimi', 'bai'];
   }
 
   /**
@@ -38,6 +38,38 @@ export class LlmExecutionEngine {
 
     // 1. Intentar proveedor configurado por el usuario (Nube o Local)
     const provider = aiConfig.primaryProvider || aiConfig.provider || 'groq';
+
+    // B.AI (B ia - OpenAI Compatible Multi-Model)
+    if (aiConfig.baiKey || (provider === 'bai' && (aiConfig.apiKey || process.env.VITE_BAI_KEY || process.env.BAI_KEY))) {
+      try {
+        const baiKey = aiConfig.baiKey || aiConfig.apiKey || process.env.VITE_BAI_KEY || process.env.BAI_KEY;
+        const res = await fetch('https://api.b.ai/v1/chat/completions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${baiKey}` },
+          body: JSON.stringify({
+            model: aiConfig.model || 'gpt-5.2',
+            messages: [
+              { role: 'system', content: systemPrompt },
+              { role: 'user', content: userPrompt }
+            ],
+            temperature: 0.7
+          }),
+          signal: AbortSignal.timeout(20000)
+        });
+        const data = await res.json();
+        if (data.choices?.[0]?.message?.content) {
+          onThought(`Análisis completado exitosamente con B.AI (${aiConfig.model || 'gpt-5.2'}).`);
+          return {
+            status: 'success',
+            providerUsed: 'bai',
+            generatedText: data.choices[0].message.content,
+            timestamp: new Date().toISOString()
+          };
+        }
+      } catch (e) {
+        console.warn('[LlmExecutionEngine] B.AI falló, intentando siguiente fallback:', e.message);
+      }
+    }
     
     // Groq Cloud (Ultra rápido)
     if (aiConfig.groqKey || (provider === 'groq' && process.env.VITE_GROQ_KEY)) {

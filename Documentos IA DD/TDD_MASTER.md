@@ -23,8 +23,9 @@
 | **TDD-12** | `Safe Web Search & Anomaly Handling` | Unitaria / Resiliencia | `safeDdgSearch` aplica ventana mínima de 1200ms, backoff ante rate limit y fallback limpio sin arrojar error 500 al cliente. |
 | **TDD-13** | `Vite Build Consistency & Clean Chunking` | Integración / Build | Cero advertencias de importaciones mixtas en `apiConfig.js`, `ai.js` y `agenticEngine.js`; compilación limpia en <6s. |
 | **TDD-14** | `Microempresa y Autoempleo (micro_business) Integrity` | Unitaria / Dominio | Cobertura total de 20 campos en 4 pilares, guías metodológicas completas, datos demo en Sové/MixRoom, enrutamiento semántico, modo Micro Canvas, y Diseñador Interactivo de Croquis 2D (`MicroCroquisEditor`) con cálculo de m² y prompts de IA. |
+| **TDD-15** | `B.AI (B ia) Provider & GPT-5.2 / Qwen 3.8 Suite` | Unitaria / Integración | Valida registro en `MODEL_REGISTRY`, invocación compatible con OpenAI v1, extracción de tokens de razonamiento (`reasoning_content`) y fallback automático ante cuota/errores. |
 
-**Estado de Ejecución:** 118 tests pasando al 100% (25 suites, 0 fallos).
+**Estado de Ejecución:** 122 tests pasando al 100% (26 suites, 0 fallos).
 
 ---
 

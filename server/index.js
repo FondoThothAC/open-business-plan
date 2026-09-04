@@ -1197,11 +1197,22 @@ const ICONS = {
   fallback: '☁️ '
 };
 
-// CORS proxy for external AI providers (NVIDIA, Groq, Mistral, OpenAI, etc.)
+// CORS proxy for external AI providers (NVIDIA, Groq, Mistral, OpenAI, B.AI, etc.)
 app.post('/api/ai/proxy', async (req, res) => {
   let { url, method = 'POST', headers = {}, body } = req.body;
   try {
     const finalHeaders = { 'Content-Type': 'application/json', ...headers };
+
+    // ── Inyección automática de B.AI Key desde .env ─────────────────────────
+    if (
+      url &&
+      url.includes('api.b.ai') &&
+      !finalHeaders['Authorization'] &&
+      (process.env.BAI_KEY || process.env.VITE_BAI_KEY)
+    ) {
+      finalHeaders['Authorization'] = `Bearer ${process.env.BAI_KEY || process.env.VITE_BAI_KEY}`;
+      console.log('[proxy] Inyectando BAI_KEY del servidor para:', url);
+    }
 
     // ── Inyección automática de Ollama Cloud Key desde .env ──────────────────
     if (
@@ -1656,6 +1667,32 @@ app.post('/api/test/openai', async (req, res) => {
     const data = await response.json();
     if (response.ok && !data.error) {
       res.json({ success: true, message: 'OpenAI GPT está en línea y operativo.' });
+    } else {
+      res.json({ success: false, error: data.error?.message || `HTTP ${response.status}` });
+    }
+  } catch (err) {
+    res.json({ success: false, error: err.message });
+  }
+});
+
+app.post('/api/test/bai', async (req, res) => {
+  const { apiKey } = req.body;
+  if (!apiKey) return res.status(400).json({ success: false, error: 'API Key requerida' });
+  try {
+    // Probar con qwen3.8-flash como prueba de ping inmediata (disponible sin saldo inicial)
+    const response = await fetch('https://api.b.ai/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+      body: JSON.stringify({
+        model: 'qwen3.8-flash',
+        messages: [{ role: 'user', content: 'ping' }],
+        max_tokens: 5
+      }),
+      signal: AbortSignal.timeout(10000)
+    });
+    const data = await response.json();
+    if (response.ok && !data.error) {
+      res.json({ success: true, message: 'B.AI (B ia) está en línea y operativo.' });
     } else {
       res.json({ success: false, error: data.error?.message || `HTTP ${response.status}` });
     }

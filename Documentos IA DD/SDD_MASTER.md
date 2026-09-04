@@ -133,6 +133,16 @@ flowchart LR
   * `CONFIGURE_MULTIBRANCH`: Configura parámetros de expansión de sucursales y escalamiento cuántico.
   * `TRIGGER_INDUSTRIALIZE`: Inicia la cola de auto-llenado industrial agéntico.
 
+### 3.5 Integración del Proveedor B.AI (B ia) y Modelos Flagship GPT-5.2 / Qwen 3.8 Flash
+* **Endpoint Canónico:** `https://api.b.ai/v1/chat/completions` (Arquitectura compatible OpenAI v1).
+* **Modelos Registrados:**
+  * `gpt-5.2`: Modelo insignia insignia de alta capacidad para formulación estratégica profunda.
+  * `qwen3.8-flash`: Modelo ultra-rápido con soporte de tokens de razonamiento (`reasoning_content`) transformados a etiquetas `<think>` para visualización interactiva.
+  * `glm-5.3-flash` y `kimi-k3`: Modelos complementarios de alto rendimiento y bajo costo.
+* **Proxy de Servidor Seguro:** `/api/ai/proxy` intercepta llamadas con target `https://api.b.ai/` e inyecta dinámicamente `BAI_KEY` desde variables de entorno de servidor en caso de omisión en cliente.
+* **Endpoint de Diagnóstico en Tiempo Real:** `POST /api/test/bai` para verificación de conectividad y latencia mediante handshake instantáneo.
+* **Soporte Agéntico Multi-Rol:** Integrado en el motor de ejecución Swarm (`LlmExecutionEngine.js`) y orquestador cliente (`callAiProvider` en `ai.js`).
+
 ---
 
 ## 4. Diagrama Maestro de Arquitectura y Flujos en yEd Graph Editor

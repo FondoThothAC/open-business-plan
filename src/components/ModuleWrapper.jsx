@@ -68,11 +68,11 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
 
   const handleAiGenerate = async () => {
     const rawAi = planData?.config?.ai || {};
-    const hasAnyKey = rawAi.apiKey || rawAi.groqKey || rawAi.openrouterKey || rawAi.nvidiaKey || rawAi.mistralKey || rawAi.minimaxKey;
+    const hasAnyKey = rawAi.apiKey || rawAi.groqKey || rawAi.openrouterKey || rawAi.nvidiaKey || rawAi.mistralKey || rawAi.minimaxKey || rawAi.baiKey;
     const isLocalProvider = rawAi.provider === 'ollama' || rawAi.primaryProvider === 'ollama' || rawAi.primaryProvider === 'lmstudio';
 
     if (!hasAnyKey && !isLocalProvider) {
-      alert("Por favor, configura al menos una API Key (Minimax, Groq, Gemini, OpenRouter, Mistral, NVIDIA) o proveedor local en la sección de Configuración.");
+      alert("Por favor, configura al menos una API Key (B.AI, Minimax, Groq, Gemini, OpenRouter, Mistral, NVIDIA) o proveedor local en la sección de Configuración.");
       return;
     }
 

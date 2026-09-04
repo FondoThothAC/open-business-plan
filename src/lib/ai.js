@@ -155,6 +155,7 @@ function findBestOllamaModel(requestedModel, installedModels) {
 }
 
 export const CLOUD_DEFAULT_MODELS = {
+  bai:        'gpt-5.2',
   minimax:    'minimax-m3:cloud',
   groq:       'llama-3.3-70b-versatile',
   gemini:     'gemini-3.6-flash',
@@ -178,12 +179,14 @@ function resolveProviderModel({ primaryProvider, model, installedModels = [] }) 
   }
 
   // Detectar proveedor por el nombre del modelo si es explícitamente cloud
-  if (resolved.endsWith(':cloud')) prov = 'ollama';
+  if (primaryProvider === 'bai' || primaryProvider === 'b.ai') prov = 'bai';
+  else if (resolved.endsWith(':cloud')) prov = 'ollama';
   else if (resolved.includes('minimax') && !resolved.includes(':cloud')) prov = 'minimax';
   else if (resolved.includes('gemini')) prov = 'gemini';
   else if (resolved.includes(':free') || resolved.includes('openrouter')) prov = 'openrouter';
   else if (resolved.includes('orcarouter') || resolved.includes('orca')) prov = 'orcarouter';
   else if (resolved.includes('gpt-oss') || resolved.includes('compound') || resolved.includes('groq') || resolved.includes('qwen/')) prov = 'groq';
+  else if (resolved.includes('gpt-5.2') || resolved.includes('qwen3.8') || resolved.includes('kimi-k3') || resolved.includes('glm-5.3')) prov = 'bai';
   else if (resolved.includes('gpt')) prov = 'openai';
   else if (resolved.includes('mistral-large')) prov = 'mistral';
   else if (resolved.includes('nvidia') || resolved.includes('google/gemma')) prov = 'nvidia';
@@ -196,7 +199,7 @@ function resolveProviderModel({ primaryProvider, model, installedModels = [] }) 
   }
 
   // Proveedores de nube: si el modelo configurado no es cloud, usar el default del proveedor
-  const isCloudModel = /gemini|gpt|mistral|nvidia|llama-3\.3|llama-3\.1|compound|qwen|oss|:free|:cloud/i.test(resolved);
+  const isCloudModel = /gemini|gpt|mistral|nvidia|llama-3\.3|llama-3\.1|compound|qwen|oss|:free|:cloud|kimi|glm/i.test(resolved);
   const finalModel = (isCloudModel && resolved) ? resolved : (CLOUD_DEFAULT_MODELS[prov] || resolved || 'llama-3.3-70b-versatile');
   return { provider: prov, model: finalModel };
 }
@@ -955,11 +958,12 @@ function markProviderFailed(prov) {
 export async function callAiProvider(config, prompt, expectJson = true, expectedKeys = [], onThink = null) {
   const {
     provider, apiKey, groqKey, nvidiaKey, openrouterKey, opencodeKey, tokenrouterKey, mistralKey, minimaxKey, orcaRouterKey,
-    ollamaKey,
+    ollamaKey, baiKey,
     endpoint, lmStudioEndpoint, model, disableAutoFallback = false
   } = config;
 
   const invokeSingle = async (prov, mod, key) => {
+    if (prov === 'bai' || prov === 'b.ai') return await callBAI(key || baiKey || apiKey, mod, prompt, expectJson);
     if (prov === 'minimax')     return await callMinimax(key || minimaxKey || apiKey, mod, prompt, expectJson);
     if (prov === 'gemini')      return await callGemini(key || apiKey, mod, prompt);
     if (prov === 'groq')        return await callGroq(key || groqKey || apiKey, mod, prompt, expectJson);
@@ -990,16 +994,19 @@ export async function callAiProvider(config, prompt, expectJson = true, expected
 
     // ─── Rotación Automática Multi-Proveedor Ultra Rápida ───
     // ORDEN DE MENOR A MAYOR LATENCIA:
-    // 1. Groq (1-2s con Llama 3.1 8B)
+    // 1. Groq / B.AI (1-2s con Llama 3.1 8B / Qwen 3.8 Flash)
     // 2. Gemini (1-3s con Gemini 3.6 Flash / 3.5 Flash Lite)
     // 3. OpenRouter (tier gratuito)
     // 4. Minimax / NVIDIA / Mistral
     const logger = onThink || activeTermLog;
     const fallbackProviders = [];
 
-    // 1° Prioridad: Groq — el más veloz y robusto
+    // 1° Prioridad: Groq y B.AI — ultra veloces y de alta disponibilidad
     if (provider !== 'groq' && (groqKey || config?.groqKey) && !isProviderCircuitOpen('groq')) {
       fallbackProviders.push({ provider: 'groq', key: groqKey || config?.groqKey, model: 'llama-3.1-8b-instant' });
+    }
+    if (provider !== 'bai' && provider !== 'b.ai' && (baiKey || config?.baiKey) && !isProviderCircuitOpen('bai')) {
+      fallbackProviders.push({ provider: 'bai', key: baiKey || config?.baiKey, model: 'qwen3.8-flash' });
     }
 
     // 2° Prioridad: Gemini — Google Flash
@@ -1487,6 +1494,81 @@ async function callOpenAI(apiKey, model, prompt, expectJson) {
     recordTokenTelemetry('openai', data.usage.total_tokens, resolvedModel, data.usage.prompt_tokens, data.usage.completion_tokens);
   }
   return data.choices[0].message.content;
+}
+
+async function callBAI(apiKey, model, prompt, expectJson) {
+  const keys = parseApiKeys(apiKey);
+  if (keys.length === 0) throw new Error('No se proporcionó API Key de B.AI válida');
+
+  const resolvedModel = model || 'gpt-5.2';
+  const candidateModels = [
+    resolvedModel,
+    'gpt-5.2',
+    'qwen3.8-flash',
+    'glm-5.3-flash'
+  ];
+  const uniqueModels = [...new Set(candidateModels.filter(Boolean))];
+
+  let lastError = null;
+
+  for (const currentKey of keys) {
+    for (const candidate of uniqueModels) {
+      try {
+        if (candidate !== uniqueModels[0] && activeTermLog) {
+          activeTermLog('thinking', `🔄 Rotando a modelo en B.AI: ${candidate}...`, 'bai');
+        }
+
+        const response = await fetchWithRetry('https://api.b.ai/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${currentKey}`
+          },
+          body: JSON.stringify({
+            model: candidate,
+            messages: [{ role: 'user', content: prompt }],
+            response_format: expectJson ? { type: 'json_object' } : undefined,
+            temperature: 0.7
+          })
+        }, { maxRetries: 0, fastFailOn429: true });
+
+        const data = await response.json();
+
+        if (data.error) {
+          const errMsg = data.error.message || 'Error en API de B.AI';
+          lastError = new Error(errMsg);
+          if (errMsg.includes('Deposit required') || errMsg.includes('insufficient balance') || errMsg.includes('quota') || errMsg.includes('access_denied')) {
+            continue;
+          }
+          throw lastError;
+        }
+
+        if (data.choices?.[0]?.message !== undefined) {
+          const choiceMsg = data.choices[0].message;
+          let content = choiceMsg.content || '';
+          const reasoning = choiceMsg.reasoning_content;
+
+          if (reasoning && !content.includes('<think>')) {
+            content = `<think>\n${reasoning}\n</think>\n${content}`;
+          }
+
+          if (data.usage && data.usage.total_tokens) {
+            recordTokenTelemetry('bai', data.usage.total_tokens, candidate, data.usage.prompt_tokens, data.usage.completion_tokens);
+          }
+
+          return content;
+        }
+      } catch (err) {
+        lastError = err;
+        if (err.status === 429 || err.message === 'HTTP_429_RATE_LIMIT' || (err.message && (err.message.includes('Deposit required') || err.message.includes('insufficient balance') || err.message.includes('quota')))) {
+          continue;
+        }
+        throw err;
+      }
+    }
+  }
+
+  throw lastError || new Error('No se pudo obtener respuesta de ningún modelo o llave disponible en B.AI.');
 }
 
 // ─────────────────────────────────────────────────────────────────────────

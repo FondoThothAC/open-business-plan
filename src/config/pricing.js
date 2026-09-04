@@ -80,6 +80,32 @@ export const MODEL_REGISTRY = {
     isHot: false, lastVerified: null
   },
 
+  // ─── B.AI (B ia — OpenAI Compatible Multi-Model) ───
+  'gpt-5.2': {
+    input: 2.00, output: 8.00,
+    name: 'B.AI: GPT-5.2', provider: 'bai', tier: 'paid',
+    contextWindow: 131072, capabilities: ['chat', 'tools', 'json_mode'],
+    isHot: false, lastVerified: null
+  },
+  'qwen3.8-flash': {
+    input: 0, output: 0,
+    name: 'B.AI: Qwen 3.8 Flash', provider: 'bai', tier: 'free',
+    contextWindow: 131072, capabilities: ['chat', 'tools', 'json_mode'],
+    isHot: true, lastVerified: null
+  },
+  'glm-5.3-flash': {
+    input: 0, output: 0,
+    name: 'B.AI: GLM 5.3 Flash', provider: 'bai', tier: 'free',
+    contextWindow: 131072, capabilities: ['chat', 'json_mode'],
+    isHot: true, lastVerified: null
+  },
+  'kimi-k3': {
+    input: 1.50, output: 4.50,
+    name: 'B.AI: Kimi K3', provider: 'bai', tier: 'paid',
+    contextWindow: 262144, capabilities: ['chat', 'json_mode'],
+    isHot: false, lastVerified: null
+  },
+
   // ─── GROQ (FREEMIUM — capa gratuita con límites diarios) ───
   'llama-3.3-70b-versatile': {
     input: 0.59, output: 0.79,

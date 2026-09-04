@@ -31,6 +31,15 @@ const PROVIDER_PRESETS = {
     { value: 'nemotron-3-super:cloud', label: 'nemotron-3-super:cloud (Nube - Gratuito)' },
     { value: 'gemma4:31b-cloud', label: 'gemma4:31b-cloud (Nube - Gratuito)' },
   ],
+  bai: [
+    { value: 'gpt-5.2', label: 'B.AI: GPT-5.2 (Premium OpenAI Compatible)' },
+    { value: 'qwen3.8-flash', label: 'B.AI: Qwen 3.8 Flash (Ultra Rápido)' },
+    { value: 'glm-5.3-flash', label: 'B.AI: GLM 5.3 Flash (Alta Velocidad)' },
+    { value: 'kimi-k3', label: 'B.AI: Kimi K3 (Razonamiento Largo)' },
+    { value: 'gemini-3.6-flash', label: 'B.AI: Gemini 3.6 Flash' },
+    { value: 'claude-sonnet-4.5', label: 'B.AI: Claude Sonnet 4.5' },
+    { value: 'deepseek-v4-flash', label: 'B.AI: DeepSeek V4 Flash' },
+  ],
   minimax: [
     { value: 'minimax-m3:cloud', label: 'MiniMax M3 (Cloud 1M Tokens)' },
     { value: 'abab6.5-chat', label: 'MiniMax abab 6.5' },
@@ -80,6 +89,7 @@ const PROVIDER_PRESETS = {
 
 // [DDD] Modelos por defecto activos para cada proveedor de nube
 const CLOUD_PROVIDER_DEFAULTS = {
+  bai:         'gpt-5.2',
   groq:        'qwen/qwen3.6-27b',
   nvidia:      'nvidia/llama-3.1-nemotron-70b-instruct',
   mistral:     'mistral-large-latest',
@@ -90,6 +100,7 @@ const CLOUD_PROVIDER_DEFAULTS = {
 };
 
 const _getModelLabel = (p) => {
+  if (p === 'bai') return 'Modelo Cloud (B.AI)';
   if (p === 'ollama') return 'Modelo Local (Ollama)';
   if (p === 'lmstudio') return 'Modelo Local (LM Studio)';
   if (p === 'nvidia') return 'Modelo Cloud (NVIDIA NIM)';
@@ -117,6 +128,7 @@ function useApiStatus(planData) {
   const [tavilyStatus, setTavilyStatus] = useState({ state: 'idle', message: '' });
   const [inegiStatus, setInegiStatus] = useState({ state: 'idle', message: '' });
   const [banxicoStatus, setBanxicoStatus] = useState({ state: 'idle', message: '' });
+  const [baiStatus, setBaiStatus] = useState({ state: 'idle', message: '' });
   const [groqStatus, setGroqStatus] = useState({ state: 'idle', message: '' });
   const [mistralStatus, setMistralStatus] = useState({ state: 'idle', message: '' });
   const [nvidiaStatus, setNvidiaStatus] = useState({ state: 'idle', message: '' });
@@ -257,6 +269,7 @@ function useApiStatus(planData) {
     if (planData?.config?.search?.apiKey) testTavily(planData.config.search.apiKey);
     if (planData?.config?.externalApis?.inegiToken) testInegi(planData.config.externalApis.inegiToken);
     if (planData?.config?.externalApis?.banxicoToken) testBanxico(planData.config.externalApis.banxicoToken);
+    if (planData?.config?.ai?.baiKey) testLlmProvider('bai', planData.config.ai.baiKey, setBaiStatus);
     if (planData?.config?.ai?.groqKey) testLlmProvider('groq', planData.config.ai.groqKey, setGroqStatus);
     if (planData?.config?.ai?.nvidiaKey) testLlmProvider('nvidia', planData.config.ai.nvidiaKey, setNvidiaStatus);
     if (planData?.config?.ai?.mistralKey || (planData?.config?.ai?.primaryProvider === 'mistral' && planData?.config?.ai?.apiKey)) {
@@ -281,6 +294,7 @@ function useApiStatus(planData) {
     tavilyStatus, setTavilyStatus, testTavily,
     inegiStatus, setInegiStatus, testInegi,
     banxicoStatus, setBanxicoStatus, testBanxico,
+    baiStatus, setBaiStatus, testBai: (k) => testLlmProvider('bai', k || planData.config?.ai?.baiKey, setBaiStatus),
     groqStatus, setGroqStatus, testGroq: (k) => testLlmProvider('groq', k || planData.config?.ai?.groqKey, setGroqStatus),
     mistralStatus, setMistralStatus, testMistral: (k) => testLlmProvider('mistral', k || planData.config?.ai?.mistralKey || planData.config?.ai?.apiKey, setMistralStatus),
     nvidiaStatus, setNvidiaStatus, testNvidia: (k) => testLlmProvider('nvidia', k || planData.config?.ai?.nvidiaKey, setNvidiaStatus),
@@ -370,6 +384,8 @@ export default function Configuracion() {
   const { planData, updateConfig } = usePlan();
   const apiStatus = useApiStatus(planData);
   const {
+    baiStatus,
+    testBai,
     groqStatus,
     testGroq,
     nvidiaStatus,
@@ -1053,6 +1069,7 @@ export default function Configuracion() {
                     <option value="mistral">🔥 Mistral AI (Mistral Large)</option>
                   </optgroup>
                   <optgroup label="💎 Modelos Comerciales Cloud">
+                    <option value="bai">⚡ B.AI (GPT-5.2 / Qwen 3.8 / Kimi K3)</option>
                     <option value="gemini">🌐 Google Gemini (3.6 Flash)</option>
                     <option value="openai">🟢 OpenAI (GPT-4o / Mini)</option>
                   </optgroup>
@@ -1073,7 +1090,8 @@ export default function Configuracion() {
                     handleAiChange('model', newModel);
                     
                     // Auto-sync primaryProvider if we can guess it from the unified list
-                    if (newModel.includes('gpt')) handleAiChange('primaryProvider', 'openai');
+                    if (PROVIDER_PRESETS.bai?.some(o => o.value === newModel) || newModel === 'gpt-5.2' || newModel.startsWith('qwen3.8') || newModel.startsWith('glm-5.3') || newModel.startsWith('kimi-k3')) handleAiChange('primaryProvider', 'bai');
+                    else if (newModel.includes('gpt')) handleAiChange('primaryProvider', 'openai');
                     else if (newModel.includes('gemini')) handleAiChange('primaryProvider', 'gemini');
                     else if (newModel.includes('claude')) handleAiChange('primaryProvider', 'claude');
                     else if (newModel.includes('mistral') || newModel.includes('mixtral')) handleAiChange('primaryProvider', 'mistral');
@@ -1103,6 +1121,7 @@ export default function Configuracion() {
                     {PROVIDER_PRESETS.nvidia.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
                   </optgroup>
                   <optgroup label="💎 Fila 2 (Modelos Comerciales Premium)">
+                    {PROVIDER_PRESETS.bai && PROVIDER_PRESETS.bai.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
                     {PROVIDER_PRESETS.openai.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
                     {PROVIDER_PRESETS.gemini.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
                     {PROVIDER_PRESETS.claude.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
@@ -1336,6 +1355,29 @@ export default function Configuracion() {
             
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
               
+              {/* B.AI (B ia) */}
+              <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: `1.5px solid ${planData.config.ai.primaryProvider === 'bai' ? '#06b6d4' : 'var(--border-color)'}` }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                  <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#06b6d4' }}>⚡ B.AI (B ia) <span style={{ fontSize: '0.6rem', fontWeight: 400, color: 'var(--text-muted)' }}>(GPT-5.2 · Qwen 3.8 · GLM 5.3)</span></div>
+                  <a href="https://chat.b.ai/key" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: '#06b6d4', textDecoration: 'none', fontWeight: 700 }}>
+                    Obtener Key ↗
+                  </a>
+                </div>
+                <input 
+                  type="password" 
+                  className="form-control" 
+                  placeholder="sk-..."
+                  value={planData.config.ai.baiKey || (planData.config.ai.primaryProvider === 'bai' ? (planData.config.ai.apiKey || '') : '')}
+                  onChange={(e) => {
+                    handleAiChange('baiKey', e.target.value);
+                    if (planData.config.ai.primaryProvider === 'bai') handleAiChange('apiKey', e.target.value);
+                  }}
+                  style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
+                />
+                <ApiStatusBadge status={baiStatus} onTest={() => testBai(planData.config.ai.baiKey || planData.config.ai.apiKey)} disabled={!planData.config.ai.baiKey && !planData.config.ai.apiKey} />
+                <ApiQuotaMeter providerKey="bai" tokens={telemetryData.bai || 0} isConfigured={!!planData.config.ai.baiKey || (planData.config.ai.primaryProvider === 'bai' && !!planData.config.ai.apiKey)} statusState={baiStatus.state} isHot={activeHotProvider === 'bai'} />
+              </div>
+
               {/* GOOGLE GEMINI */}
               <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: `1.5px solid ${planData.config.ai.primaryProvider === 'gemini' ? '#38bdf8' : 'var(--border-color)'}` }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>

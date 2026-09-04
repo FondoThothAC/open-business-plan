@@ -110,7 +110,7 @@ export default function TokenTelemetryDashboard() {
     ollama: '#10b981', ollama_cloud: '#6366f1', groq: '#f59e0b', gemini: '#38bdf8',
     openai: '#10b981', claude: '#d97706', nvidia: '#22d3ee', mistral: '#ec4899',
     openrouter: '#f59e0b', tokenrouter: '#10b981', opencode: '#a78bfa',
-    orcarouter: '#f97316', minimax: '#fbbf24', deepseek: '#3b82f6',
+    orcarouter: '#f97316', minimax: '#fbbf24', deepseek: '#3b82f6', bai: '#06b6d4',
   };
 
   return (
@@ -167,6 +167,7 @@ export default function TokenTelemetryDashboard() {
           const color = providerColors[provider] || '#6366f1';
           
           const providerNames = {
+            'bai': 'B.AI (B ia)',
             'ollama_cloud': 'Ollama Cloud / MiniMax',
             'minimax': 'MiniMax (Direct)',
             'gemini': 'Google Gemini',

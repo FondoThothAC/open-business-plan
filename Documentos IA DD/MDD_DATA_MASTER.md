@@ -32,8 +32,9 @@
     "projectType": "business | social_bid | tech_startup",
     "theme": "light | dark",
     "ai": {
-      "primaryProvider": "groq | gemini | openrouter | nvidia | ollama | lmstudio",
+      "primaryProvider": "groq | gemini | openrouter | nvidia | ollama | lmstudio | bai",
       "apiKey": "String (Single or Comma-separated Pool)",
+      "baiKey": "String (sk-ot... B.AI Key)",
       "groqKey": "String (Pool)",
       "openrouterKey": "String (Pool)",
       "depth": 1,

@@ -44,3 +44,15 @@ Escenario: Recalibración periódica de factores macroeconómicos y costos
   Entonces el motor del Gemelo Digital genera automáticamente una versión ramificada "Gemelo Digital [Fecha]"
   Y muestra un panel Diff visual con la comparativa de viabilidad y semáforo de impacto.
 ```
+
+## Escenario 5: Formulación con B.AI (GPT-5.2 / Qwen 3.8) y Fallback de Cuota
+```gherkin
+Escenario: Generación de módulos de negocio usando B.AI con extracción de razonamiento y resiliencia
+  Dado que el usuario configura su API Key de B.AI (`sk-ot...`) en Configuración
+  Y selecciona el modelo `gpt-5.2` o `qwen3.8-flash`
+  Cuando solicita la redacción o industrialización de un módulo con la Mesa de Expertos
+  Entonces el motor envía la solicitud a `https://api.b.ai/v1/chat/completions` con streaming activo
+  Y extrae los tokens de razonamiento (`reasoning_content`) mostrándolos en un acordeón interactivo de pensamiento
+  Pero si B.AI reporta falta de balance o rate limit (HTTP 429/402)
+  Entonces el orquestador conmuta automáticamente al siguiente proveedor en cascada (Groq, Gemini, Ollama Cloud) sin perder el progreso del usuario.
+```

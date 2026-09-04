@@ -1,6 +1,15 @@
 import { Gauge, Clock, Flame } from 'lucide-react';
 
 const PROVIDER_METADATA = {
+  bai: {
+    name: 'B.AI (B ia)',
+    dailyQuota: 100000,
+    rateLimit: 'OpenAI Compatible · Multi-Model',
+    renewalText: 'Saldo / Capa Activa',
+    contextMax: '131k - 1M ctx',
+    freeTier: true,
+    accentColor: '#06b6d4',
+  },
   groq: {
     name: 'Groq Cloud',
     dailyQuota: 100000,

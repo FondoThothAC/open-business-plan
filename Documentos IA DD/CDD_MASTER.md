@@ -27,4 +27,4 @@
 ### Vistas / Páginas
 * `DynamicModule` / `ModuleWrapper`: Vista modular con botón de trazabilidad agéntica y controles de edición.
 * `VistaPrevia`: Renderizador de documento completo con paginación modular y continua, protegido por `ErrorBoundary` y guard de hidratación asíncrona de `planData`.
-* `Configuracion`: Panel de administración con presets de Minimax-M3 Cloud, Groq, Gemini y pools de API Keys.
+* `Configuracion`: Panel de administración con presets de B.AI (GPT-5.2 / Qwen 3.8 / GLM 5.3), Minimax-M3 Cloud, Groq, Gemini, OpenRouter y pools de API Keys con indicadores de estado en tiempo real (`ApiQuotaMeter` y `ApiStatusBadge`).

@@ -257,6 +257,7 @@ export async function sendBobMessage({
     openrouterKey: rawAi.openrouterKey,
     ollamaKey: rawAi.ollamaKey || bobKey,
     minimaxKey: rawAi.minimaxKey,
+    baiKey: rawAi.baiKey,
     endpoint: rawAi.endpoint,
     disableAutoFallback: false
   };
