@@ -82,16 +82,25 @@ Escenario: Investigación web sin fabricación de datos y con priorización de F
   Y el bucle ReAct autónomo evalúa hasta 3 rondas y se detiene automáticamente al cumplir la meta o agotar las rondas.
 ```
 
-## Escenario 8: Control Reactivo de Cuotas y Visualización de Procedencia en TerminalDrawer
+## Escenario 9: Anclaje Financiero Obligatorio a la Semilla y Validación de Cordura
 ```gherkin
-Escenario: Pausa por cuota en Fila 1 y autorización inmediata desde la interfaz
-  Dado que una investigación en ejecución alcanza el límite mensual gratuito de Brave Search (2,000 req) o Tavily (1,000 req)
-  Y el usuario no ha autorizado la Fila 2 de pago (allowPaidTier = false)
-  Cuando el servidor detecta el agotamiento de la cuota
-  Entonces la tarea se transfiere a estado "paused_waiting_quota" sin fallar
-  Y la consola TerminalDrawer despliega una tarjeta de alerta con dos opciones de resolución
-  Y si el usuario presiona "💎 Autorizar Fila 2 (Pago)", el sistema activa allowPaidTier y reanuda la tarea en Exa/Perplexity
-  Y si el usuario presiona "🦆 Usar DuckDuckGo (Gratis)", el sistema conmuta a DuckDuckGo y reanuda la tarea sin costo
-  Y todas las fuentes recopiladas se muestran con su ProvenanceBadge (Factual Verificado / Hardware Local / Estimación / Sin Datos).
+Escenario: Generación de módulos financieros sin fallback silencioso y con consistencia interna
+  Dado un proyecto con semilla que declara inversion_esperada de 20,000,000 MXN
+  Cuando el motor agéntico o el usuario genera los módulos de inversión, rentabilidad o balance
+  Entonces resolveCanonicalCapex extrae 20,000,000 MXN como CAPEX canónico de referencia
+  Y los prompts de field_guides inyectan la directiva de anclaje obligatorio sin inventar cifras
+  Y la herramienta tool_financial_engine calcula TIR, VPN y Payback anclados a dicho CAPEX
+  Y financialSanityCheck valida que el balance general coincida con la inversión declarada dentro del +-5%
+  Y si alguna métrica resulta implausible (ej. Payback 'Nunca' o TIR > 100%), se emite una advertencia de revisión requerida sin colapsar el documento.
 ```
 
+## Escenario 10: Versionado Inmutable y Bloqueo Concurrente Anti-Corrupción
+```gherkin
+Escenario: Prevención de sobreescritura accidental y pérdida de módulos completados
+  Dado un proyecto activo que cuenta con 28 módulos canónicos poblados
+  Cuando una sesión paralela o un guardado desactualizado envía un payload con solo 14 módulos
+  Entonces el servidor Express detecta la reducción abrupta en el recuento de módulos
+  Y rechaza la petición con HTTP 409 Conflict impidiendo la corrupción de datos
+  Y cuando se aprueba un guardado válido, el servidor crea una instantánea inmutable en .versions/ con hash SHA-1
+  Y actualiza el manifiesto respetando el límite FIFO de 20 versiones históricas.
+```

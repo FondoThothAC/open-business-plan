@@ -32,8 +32,13 @@
 | **TDD-21** | `Brave Search Freemium & Monthly Quota Tracking` | Unitaria / Integración | Soporte formal para Brave Search API (`GET /res/v1/web/search`), persistencia mensual de consumo en `search_quota.json`, pausa automática al agotar cuota y failover seguro a DuckDuckGo. |
 | **TDD-22** | `Real Machinery & Supplier Endpoints (Anti-Fake)` | Unitaria / Integración | Implementación de `/api/market/search` y `/api/market/suppliers` con datos reales; erradicación completa de tablas de benchmark ficticias y proveedores ficticios en `tool_machinery_search` y `tool_supplier_search`. |
 | **TDD-23** | `ProvenanceBadge & Reactive Quota Drawer (UI/UX)` | Unitaria / Componente | Exportación de `getProvenanceBadgeConfig` y `ProvenanceBadge` en `TerminalDrawer`, alertas reactivas de autorización de cuota Fila 1/2 y visualización de fuentes 100% factuales. |
+| **TDD-24** | `CanonicalCapex & Resolution Hierarchy` | Unitaria / Finanzas | Valida resolución canónica priorizando semilla, suma de desgloses y manejo de OBP_STRICT_FINANCIALS. |
+| **TDD-25** | `FinancialSanityCheck & Consistency Rules` | Unitaria / Finanzas | Detecta inconsistencias A!=B (+-5%), TIR/ROI implausibles, Payback 'Nunca' y PE con infinito. |
+| **TDD-26** | `ServerSaveVersioning & Manifest FIFO` | Integración / Backend | Valida creación de hashes SHA-1 en .versions/, índice manifest y política FIFO de 20 versiones. |
+| **TDD-27** | `ServerSaveAntiRegression (HTTP 409)` | Integración / Backend | Rechaza con HTTP 409 cualquier guardado que intente truncar o reducir el número de módulos poblados. |
+| **TDD-28** | `ServerGenLock & Project Mutex` | Integración / Backend | Impide generación concurrente sobre el mismo projectId respondiendo busy con sessionId activo. |
 
-**Estado de Ejecución:** 180 tests pasando al 100% (26 suites, 0 fallos).
+**Estado de Ejecución:** Suites actualizadas para v3.2.0 (Objetivo: 100% pasando).
 
 ---
 

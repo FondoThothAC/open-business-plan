@@ -10,6 +10,7 @@ import { swarmOrchestrator } from './swarm/SwarmOrchestrator.js';
 import { agentStore } from './swarm/AgentStore.js';
 import { generateLogoVariants } from '../src/lib/logoGenerator.js';
 import { checkSearchQuota, incrementSearchQuota, getSearchQuotaStats } from './quotaTracker.js';
+import { saveWithVersioning } from '../src/lib/serverUtils/saveVersioning.js';
 
 // ─────────────────────────────────────────────────────────
 //  Helper Seguro para Búsqueda DuckDuckGo (Control de Tasa y Backoff)
@@ -184,15 +185,35 @@ app.post('/api/save', (req, res) => {
       fs.mkdirSync(docsPath, { recursive: true });
     }
 
-    const jsonPath = path.join(dirPath, `${safeName}.json`);
-    fs.writeFileSync(jsonPath, JSON.stringify(planData, null, 2));
+    const allowRegression = req.query.allowRegression === 'true' || req.body.allowRegression === true;
+
+    // Guardado versionado inmutable con control anti-regresión
+    const versionResult = saveWithVersioning({
+      dirPath,
+      safeName,
+      planData,
+      allowRegression
+    });
 
     const mdPath = path.join(dirPath, `${safeName}.md`);
     const mdContent = jsonToMarkdown(planData);
     fs.writeFileSync(mdPath, mdContent);
 
-    res.json({ success: true, message: 'Proyecto guardado en disco duro local (.json y .md)', file: safeName });
+    res.json({
+      success: true,
+      message: 'Proyecto guardado en disco duro local con versionado inmutable (.json y .md)',
+      file: safeName,
+      versionHash: versionResult.versionHash,
+      modulesCount: versionResult.modulesCount
+    });
   } catch (error) {
+    if (error.message && error.message.includes('MODULE_COUNT_REGRESSION_DETECTED')) {
+      return res.status(409).json({
+        success: false,
+        error: error.message,
+        code: 'REGRESSION_CONFLICT'
+      });
+    }
     console.error('Error guardando el proyecto:', error);
     res.status(500).json({ success: false, error: error.message });
   }
@@ -617,16 +638,93 @@ app.post('/api/search', async (req, res) => {
       }
 
     } else if (normProvider === 'duckduckgo') {
-      const searchResults = await safeDdgSearch(query);
+      let searchResults = await safeDdgSearch(query);
+      let effectiveProvider = 'duckduckgo';
+
+      // Cascada Fila 1: Si DuckDuckGo no arroja resultados o está saturado, consultar Tavily y luego Brave Search
+      if ((!searchResults || searchResults.length === 0) && failover) {
+        const resolvedTavily = apiKey || process.env.TAVILY_API_KEY || '';
+        if (resolvedTavily && checkSearchQuota('tavily', Boolean(allowPaidTier)).allowed) {
+          try {
+            console.info(`[API Search Cascada] DuckDuckGo sin resultados para "${query}". Intentando Tavily (1,000 req/mes)...`);
+            const tavilyResp = await fetch('https://api.tavily.com/search', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                api_key: resolvedTavily,
+                query,
+                search_depth: 'basic',
+                include_answer: false,
+                max_results: limit
+              }),
+              signal: AbortSignal.timeout(9000)
+            });
+            if (tavilyResp.ok) {
+              const tavilyData = await tavilyResp.json();
+              if (tavilyData?.results && tavilyData.results.length > 0) {
+                searchResults = tavilyData.results.map(r => ({
+                  title: r.title,
+                  url: r.url,
+                  snippet: r.content || '',
+                  provider: 'tavily',
+                  provenance: 'real'
+                }));
+                effectiveProvider = 'tavily';
+                incrementSearchQuota('tavily');
+              }
+            }
+          } catch (tavErr) {
+            console.warn(`[API Search Cascada] Tavily no pudo completar: ${tavErr.message}`);
+          }
+        }
+
+        // Si aún no hay resultados tras Tavily, intentar Brave Search
+        if ((!searchResults || searchResults.length === 0)) {
+          const resolvedBrave = braveApiKey || process.env.BRAVE_SEARCH_KEY || process.env.BRAVE_API_KEY || '';
+          if (resolvedBrave && checkSearchQuota('brave', Boolean(allowPaidTier)).allowed) {
+            try {
+              console.info(`[API Search Cascada] Tavily sin resultados. Intentando Brave Search ($5 crédito)...`);
+              const braveResp = await fetch(`https://api.search.brave.com/res/v1/web/search?q=${encodeURIComponent(query)}&count=${limit}`, {
+                method: 'GET',
+                headers: {
+                  'Accept': 'application/json',
+                  'X-Subscription-Token': resolvedBrave
+                },
+                signal: AbortSignal.timeout(9000)
+              });
+              if (braveResp.ok) {
+                const braveData = await braveResp.json();
+                const items = braveData?.web?.results || [];
+                if (items.length > 0) {
+                  searchResults = items.map(r => ({
+                    title: r.title,
+                    url: r.url,
+                    snippet: r.description || '',
+                    provider: 'brave',
+                    provenance: 'real'
+                  }));
+                  effectiveProvider = 'brave';
+                  incrementSearchQuota('brave');
+                }
+              }
+            } catch (braveErr) {
+              console.warn(`[API Search Cascada] Brave Search no pudo completar: ${braveErr.message}`);
+            }
+          }
+        }
+      }
+
       const results = (searchResults || []).slice(0, limit).map(r => ({
         title: r.title,
         url: r.url,
         snippet: r.description || r.snippet || '',
-        provider: 'duckduckgo',
+        provider: r.provider || effectiveProvider,
         provenance: 'real'
       }));
-      incrementSearchQuota('duckduckgo');
-      return res.json({ success: true, provider: 'duckduckgo', results });
+      if (effectiveProvider === 'duckduckgo') {
+        incrementSearchQuota('duckduckgo');
+      }
+      return res.json({ success: true, provider: effectiveProvider, cascaded: effectiveProvider !== 'duckduckgo', results });
     } else {
       return res.status(400).json({ success: false, error: `Proveedor desconocido: ${provider}` });
     }
@@ -2628,17 +2726,56 @@ app.post('/api/telemetry/tokens', (req, res) => {
     }
     
     const tokenFilePath = path.join(telemetryDir, 'tokens_usage.json');
-    let data = {};
+    let raw = {};
     if (fs.existsSync(tokenFilePath)) {
       try {
-        data = JSON.parse(fs.readFileSync(tokenFilePath, 'utf8'));
+        raw = JSON.parse(fs.readFileSync(tokenFilePath, 'utf8'));
       } catch {}
     }
 
-    data[provider] = (data[provider] || 0) + tokens;
-    fs.writeFileSync(tokenFilePath, JSON.stringify(data, null, 2), 'utf8');
+    const todayDate = new Date().toISOString().split('T')[0];
+    
+    // Si el archivo tenía formato antiguo plano { groq: 123 }, migrarlo fluidamente
+    let store = {
+      accumulated: {},
+      daily: {},
+      lastUpdated: new Date().toISOString()
+    };
 
-    res.json({ success: true, data });
+    if (raw.accumulated && typeof raw.accumulated === 'object') {
+      store.accumulated = raw.accumulated;
+      store.daily = raw.daily || {};
+    } else {
+      // Estructura heredada
+      store.accumulated = { ...raw };
+    }
+
+    // Inicializar día actual si cambió
+    if (!store.daily[todayDate]) {
+      store.daily[todayDate] = {};
+    }
+
+    store.accumulated[provider] = (store.accumulated[provider] || 0) + tokens;
+    store.daily[todayDate][provider] = (store.daily[todayDate][provider] || 0) + tokens;
+    store.lastUpdated = new Date().toISOString();
+
+    // Mantener solo los últimos 7 días en store.daily para evitar crecimiento desmedido
+    const days = Object.keys(store.daily).sort();
+    if (days.length > 7) {
+      days.slice(0, days.length - 7).forEach(d => delete store.daily[d]);
+    }
+
+    fs.writeFileSync(tokenFilePath, JSON.stringify(store, null, 2), 'utf8');
+
+    // Estructurar respuesta compatible tanto con formato plano como enriquecido
+    const todayUsage = store.daily[todayDate] || {};
+    res.json({
+      success: true,
+      ...store.accumulated, // compatibilidad hacia atrás
+      _accumulated: store.accumulated,
+      _today: todayUsage,
+      _todayDate: todayDate
+    });
   } catch (error) {
     console.error('[Telemetry] Error guardando tokens:', error);
     res.status(500).json({ success: false, error: error.message });
@@ -2654,8 +2791,31 @@ app.get('/api/telemetry/tokens', (req, res) => {
       return res.json({});
     }
 
-    const data = JSON.parse(fs.readFileSync(tokenFilePath, 'utf8'));
-    res.json(data);
+    const raw = JSON.parse(fs.readFileSync(tokenFilePath, 'utf8'));
+    const todayDate = new Date().toISOString().split('T')[0];
+
+    let store = {
+      accumulated: {},
+      daily: {}
+    };
+
+    if (raw.accumulated && typeof raw.accumulated === 'object') {
+      store.accumulated = raw.accumulated;
+      store.daily = raw.daily || {};
+    } else {
+      store.accumulated = { ...raw };
+    }
+
+    const todayUsage = store.daily[todayDate] || {};
+
+    // Devolvemos compatibilidad directa: claves en la raíz para no romper código existente,
+    // y metadatos _accumulated y _today para clientes modernos
+    res.json({
+      ...store.accumulated,
+      _accumulated: store.accumulated,
+      _today: todayUsage,
+      _todayDate: todayDate
+    });
   } catch (error) {
     console.error('[Telemetry] Error leyendo tokens:', error);
     res.status(500).json({ success: false, error: error.message });

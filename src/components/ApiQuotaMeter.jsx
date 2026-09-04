@@ -150,6 +150,8 @@ const PROVIDER_METADATA = {
 export default function ApiQuotaMeter({ 
   providerKey, 
   tokens = 0, 
+  todayTokens = null,
+  accumulatedTokens = null,
   isConfigured = false, 
   statusState = 'idle',
   isHot = false,
@@ -167,8 +169,17 @@ export default function ApiQuotaMeter({
 
   const isLocal = providerKey === 'ollama';
   const quota = meta.dailyQuota;
-  const percentage = isLocal ? 0 : Math.min(100, Math.round((tokens / (quota || 100000)) * 100));
-  const remainingTokens = Math.max(0, quota - tokens);
+
+  // Si el proveedor se resetea periódicamente (24 hrs / 5 hrs), el consumo contra la cuota
+  // debe evaluarse principalmente sobre todayTokens (la ventana que se refresca).
+  const isPeriodic = meta.renewalText.includes('24 hrs') || meta.renewalText.includes('5 horas') || meta.renewalText.includes('diario') || meta.renewalText.includes('mes');
+  
+  // Tokens a evaluar contra el límite activo (hoy si existe, sino fallback a tokens)
+  const activeUsage = (todayTokens !== null && isPeriodic) ? todayTokens : tokens;
+  const totalHistoric = accumulatedTokens !== null ? accumulatedTokens : tokens;
+
+  const percentage = isLocal ? 0 : Math.min(100, Math.round((activeUsage / (quota || 100000)) * 100));
+  const remainingTokens = Math.max(0, quota - activeUsage);
 
   let saturationLevel = 'Óptimo';
   let saturationColor = '#10b981';
@@ -237,7 +248,7 @@ export default function ApiQuotaMeter({
         </div>
       </div>
 
-      {/* Barra de Progreso / Saturación */}
+      {/* Barra de Progreso / Saturación de la Ventana Activa */}
       <div style={{
         width: '100%',
         height: '6px',
@@ -256,18 +267,18 @@ export default function ApiQuotaMeter({
         }} />
       </div>
 
-      {/* Footer con Métricas de Tokens y Ventana de Renovación */}
+      {/* Fila 1: Cuota Activa que se refresca en la ventana (Hoy / 24h) */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.65rem', color: 'var(--text-secondary)', flexWrap: 'wrap', gap: '0.25rem' }}>
         <div>
-          <span>Uso: </span>
+          <span>Ventana Activa (Hoy): </span>
           <strong style={{ color: 'var(--text-primary)', fontFamily: 'monospace' }}>
-            {tokens.toLocaleString()}
+            {activeUsage.toLocaleString()}
           </strong>
           {!isLocal && quota > 0 && (
             <>
               <span style={{ color: 'var(--text-muted)' }}> / {(quota / 1000).toFixed(0)}k</span>
               <span style={{ marginLeft: '4px', color: '#10b981', fontWeight: 600 }}>
-                (Quedan: {(remainingTokens / 1000).toFixed(0)}k)
+                (Disp: {(remainingTokens / 1000).toFixed(0)}k)
               </span>
             </>
           )}
@@ -287,6 +298,16 @@ export default function ApiQuotaMeter({
           }} title={statusState === 'online' ? 'Servicio Activo y Verificado' : 'Pendiente de verificación'} />
         </div>
       </div>
+
+      {/* Fila 2: Acumulado Histórico Total */}
+      {totalHistoric > activeUsage && (
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.62rem', color: 'var(--text-muted)', marginTop: '0.25rem', paddingTop: '0.25rem', borderTop: '1px dashed rgba(255, 255, 255, 0.06)' }}>
+          <span>Acumulado Histórico Global:</span>
+          <span style={{ fontFamily: 'monospace', color: 'var(--text-secondary)' }}>
+            {totalHistoric.toLocaleString()} tokens procesados
+          </span>
+        </div>
+      )}
     </div>
   );
 }

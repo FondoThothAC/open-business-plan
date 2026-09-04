@@ -124,7 +124,7 @@ describe('CELIS Agentic Engine & DeepSeek Harness Trajectories - TDD Test Suite'
 
     const harness = recorder.finish({ demanda_historica: 'Crecimiento del 15% anual' }, 'completed');
 
-    assert.strictEqual(harness.harnessVersion, 'dsh-session-v0.1');
+    assert.strictEqual(harness.harnessVersion, 'harness-v0.1');
     assert.strictEqual(harness.status, 'completed');
     assert.strictEqual(harness.modelUsed, 'minimax-m3:cloud');
     assert.strictEqual(harness.stepsCount, 4);

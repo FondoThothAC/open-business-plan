@@ -41,27 +41,7 @@ const deepMerge = (target, source) => {
   return result;
 };
 
-// [SDD] Las API keys se leen desde variables de entorno VITE_* (definidas en .env.local)
-// .env.local NO se sube a git (ver .gitignore). Para el VPS se configura en el shell del servidor.
-const KEYS = {
-  gemini:       import.meta.env.VITE_GEMINI_KEY       || '',
-  groq:         import.meta.env.VITE_GROQ_KEY         || '',
-  mistral:      import.meta.env.VITE_MISTRAL_KEY      || '',
-  nvidia:       import.meta.env.VITE_NVIDIA_KEY       || '',
-  openrouter:   import.meta.env.VITE_OPENROUTER_KEY   || '',
-  opencode:     import.meta.env.VITE_OPENCODE_KEY     || '',
-  tokenrouter:  import.meta.env.VITE_TOKENROUTER_KEY  || '',
-  ollama:       import.meta.env.VITE_OLLAMA_KEY       || '',
-  bobOllama:    import.meta.env.VITE_BOB_OLLAMA_KEY   || '1846f31536ce449d952c415332369d0e.lJy1pkJcXD23IBn-WWrdVhTg',
-  pollinations: import.meta.env.VITE_POLLINATIONS_KEY || '',
-  bai:          import.meta.env.VITE_BAI_KEY          || 'sk-ot9784lxbkdpedgsxlnf55400obu54ie',
-  denue:        import.meta.env.VITE_DENUE_KEY        || '1b9e230f-2ae0-48db-bd20-8810b1db575e',
-  banxico:      import.meta.env.VITE_BANXICO_KEY      || '',
-  alphaVantage: import.meta.env.VITE_ALPHAVANTAGE_KEY || '38CEHMYW5CGOHUX1',
-  tavily:       import.meta.env.VITE_TAVILY_KEY       || '',
-  brave:        import.meta.env.VITE_BRAVE_SEARCH_KEY || '',
-  serper:       import.meta.env.VITE_SERPER_KEY       || '',
-};
+import { KEYS } from '../config/keys.js';
 
 const createEmptyPlan = (projectType = 'business') => {
   const framework = FRAMEWORKS[projectType];

@@ -11,7 +11,7 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-01T08:35:33.500Z"
+      "lastVerified": "2026-09-04T08:24:26.783Z"
     },
     "liquid/lfm-2.5-2.6b:free": {
       "input": 0,
@@ -24,7 +24,7 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-01T08:35:33.500Z"
+      "lastVerified": "2026-09-04T08:24:26.784Z"
     },
     "nvidia/nemotron-3.5-lightning:free": {
       "input": 0,
@@ -37,7 +37,7 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-01T08:35:33.500Z"
+      "lastVerified": "2026-09-04T08:24:26.784Z"
     },
     "thinkingmachines/inkling-small:free": {
       "input": 0,
@@ -50,7 +50,7 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-01T08:35:33.500Z"
+      "lastVerified": "2026-09-04T08:24:26.784Z"
     },
     "poolside/laguna-s-2.1:free": {
       "input": 0,
@@ -63,7 +63,7 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-01T08:35:33.500Z"
+      "lastVerified": "2026-09-04T08:24:26.784Z"
     },
     "thinkingmachines/inkling:free": {
       "input": 0,
@@ -76,7 +76,7 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-01T08:35:33.500Z"
+      "lastVerified": "2026-09-04T08:24:26.784Z"
     },
     "poolside/laguna-xs-2.1:free": {
       "input": 0,
@@ -89,7 +89,7 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-01T08:35:33.500Z"
+      "lastVerified": "2026-09-04T08:24:26.784Z"
     },
     "cohere/north-mini-code:free": {
       "input": 0,
@@ -102,7 +102,7 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-01T08:35:33.500Z"
+      "lastVerified": "2026-09-04T08:24:26.784Z"
     },
     "z-ai/glm-5.2:free": {
       "input": 0,
@@ -115,7 +115,7 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-01T08:35:33.500Z"
+      "lastVerified": "2026-09-04T08:24:26.784Z"
     },
     "nvidia/nemotron-3.5-content-safety:free": {
       "input": 0,
@@ -128,7 +128,7 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-01T08:35:33.500Z"
+      "lastVerified": "2026-09-04T08:24:26.784Z"
     },
     "nvidia/nemotron-3-ultra-550b-a55b:free": {
       "input": 0,
@@ -141,7 +141,7 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-01T08:35:33.500Z"
+      "lastVerified": "2026-09-04T08:24:26.784Z"
     },
     "minimax/minimax-m3:free": {
       "input": 0,
@@ -154,7 +154,7 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-01T08:35:33.500Z"
+      "lastVerified": "2026-09-04T08:24:26.784Z"
     },
     "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free": {
       "input": 0,
@@ -167,7 +167,7 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-01T08:35:33.500Z"
+      "lastVerified": "2026-09-04T08:24:26.784Z"
     },
     "google/gemma-4-26b-a4b-it:free": {
       "input": 0,
@@ -180,7 +180,7 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-01T08:35:33.501Z"
+      "lastVerified": "2026-09-04T08:24:26.784Z"
     },
     "google/gemma-4-31b-it:free": {
       "input": 0,
@@ -193,7 +193,7 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-01T08:35:33.501Z"
+      "lastVerified": "2026-09-04T08:24:26.784Z"
     },
     "google/lyria-3-pro-preview": {
       "input": 0,
@@ -206,7 +206,7 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-01T08:35:33.501Z"
+      "lastVerified": "2026-09-04T08:24:26.784Z"
     },
     "google/lyria-3-clip-preview": {
       "input": 0,
@@ -219,7 +219,7 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-01T08:35:33.501Z"
+      "lastVerified": "2026-09-04T08:24:26.784Z"
     },
     "minimax/minimax-m2.7:free": {
       "input": 0,
@@ -232,7 +232,7 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-01T08:35:33.501Z"
+      "lastVerified": "2026-09-04T08:24:26.784Z"
     },
     "nvidia/nemotron-3-super-120b-a12b:free": {
       "input": 0,
@@ -245,7 +245,7 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-01T08:35:33.501Z"
+      "lastVerified": "2026-09-04T08:24:26.784Z"
     },
     "openrouter/free": {
       "input": 0,
@@ -258,7 +258,7 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-01T08:35:33.501Z"
+      "lastVerified": "2026-09-04T08:24:26.784Z"
     },
     "inclusionai/ling-3.0-flash-fin:free": {
       "input": 0,
@@ -271,9 +271,9 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-01T08:35:33.501Z"
+      "lastVerified": "2026-09-04T08:24:26.784Z"
     }
   },
-  "lastCronRun": "2026-09-01T08:35:33.303Z",
+  "lastCronRun": "2026-09-04T08:24:26.522Z",
   "cronStatus": "completed"
 }

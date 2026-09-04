@@ -237,9 +237,36 @@ Se cuenta con la especificación visual completa y formal en formato **GraphML e
   2. *Empresas Cuánticas (Fondo Thoth AC):* Modelo Atómico de 3 Áreas (Finanzas, Operaciones, Administrativo), Principio Nuclear, Delegación Estructurada y Saltos Cuánticos de Escala.
   3. *Mesa de Expertos IA:* 4 Niveles de profundidad, cascada inteligente de fallback (Ollama Local-First ➔ NIM ➔ Groq/Gemini/OpenAI) y streaming SSE.
   4. *Los 12 Métodos de Industrialización:* Definidos en `src/config/frameworks.js`.
-  5. *Hubs Especializados:* Mercado Territorial (DENUE/INEGI), Operaciones & Lay-out, Motor Financiero (NIF B-2/B-3/B-6, Monte Carlo 10,000 runs) y Gobernanza.
-  6. *Persistencia & Exportación:* `PlanContext.jsx`, sistema de archivos local y exportación ejecutiva a Word/PDF.
 
+---
 
+## 5. Contratos de Saneamiento, Coherencia Financiera y Endurecimiento Backend (v3.2.0)
 
+Con base en el Plan de Saneamiento y Endurecimiento formalizado en `docs/architecture/OBP_SANITATION_DECISIONS.md`:
 
+### 5.1 Contrato de Resolución de CAPEX Canónico (`src/lib/finanzas/canonicalCapex.js`)
+* **Firma:** `resolveCanonicalCapex(planData, seed)`
+* **Jerarquía de Resolución:**
+  1. `seed.inversion_esperada` (numérico o texto monetario canónico).
+  2. `seed.finanzas?.inversion_inicial`.
+  3. Sumatoria de `inversion_fija + inversion_diferida + opex_inicial` en `planData.organizacion.inversion`.
+  4. `planData.organizacion.inversion.monto_inversion`.
+* **Políticas de Ejecución:**
+  * **Modo Estricto (`OBP_STRICT_FINANCIALS=1`):** Lanza error `INVERSION_CANONICA_NO_ENCONTRADA` si no existe inversión declarada.
+  * **Modo Permisivo (Default):** Retorna `null` o advertencia formal con bandera `requiere_revision: true`.
+
+### 5.2 Validador de Cordura y Consistencia Financiera (`src/lib/finanzas/financialSanityCheck.js`)
+* **Firma:** `validateFinancialConsistency(planData)`
+* **Salida:** `{ valid: boolean, inconsistencies: Array<{ module: string, field: string, flag: string, expected: any, actual: any }>, warnings: Array<string> }`
+* **Reglas:**
+  * Discrepancia entre inversión declarada en semilla y balance general superior a $\pm 5\%$.
+  * TIR fuera del rango plausible $[0\%, 100\%]$ o ROI fuera de $[-100\%, 1000\%]$.
+  * Payback catalogado como `'Nunca'` o mayor a 10 años.
+  * Punto de Equilibrio que contenga `'∞'` o división por cero.
+
+### 5.3 Versionado Inmutable y Control de Concurrencia (`server/index.js`)
+* **Directorio de Versiones:** `proyectos/<type>/<id>/.versions/<ISO_DATE>-<hash8>.json`.
+* **Manifiesto:** `.versions/index.json` registrando metadatos `{ ts, hash, modulesCount, inversionTotal }`.
+* **Límite FIFO:** Máximo 20 versiones históricas por proyecto.
+* **Integridad Estricta:** Si una petición `POST /api/save` intenta persistir una cantidad de módulos poblados menor a la versión previa estable, el servidor emite un rechazo `HTTP 409 Conflict` requiriendo confirmación.
+* **Mutex de Generación Agéntica:** Bloqueo en memoria por `projectId` activo para impedir colisiones o escrituras cruzadas por agentes paralelos.

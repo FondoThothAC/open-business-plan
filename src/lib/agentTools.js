@@ -7,46 +7,9 @@
 import { estimateBusinessMetrics, classifyEstablishmentType, calculateOptimalLocation } from './territorialEngine.js';
 import { getApiBase } from '../config/apiConfig.js';
 import { summarizeProvenance, buildSearchApiKeys, tagReal } from './tools/provenance.js';
+import { runQuantumDiagnostic } from './quantumDiagnostic.js';
 
-export function runQuantumDiagnostic({ areas = ['operativo'], _teamSize = 3 } = {}) {
-  const normalizedAreas = (areas || []).map(a => String(a).toLowerCase().trim());
-  const hasFinanzas = normalizedAreas.some(a => a.includes('finan'));
-  const hasOperativo = normalizedAreas.some(a => a.includes('operat'));
-  const hasAdministrativo = normalizedAreas.some(a => a.includes('admin'));
-
-  const count = [hasFinanzas, hasOperativo, hasAdministrativo].filter(Boolean).length;
-  const hasAtomicFusion = count >= 3;
-  const isBalanced = count >= 1 && count <= 2;
-
-  const delegationRequired = [];
-  if (hasAtomicFusion) {
-    delegationRequired.push('Delegación obligatoria: El fundador debe elegir al menos 1 área (Finanzas, Operativo o Administrativo) para transferir a un especialista.');
-  }
-  if (!hasFinanzas) delegationRequired.push('Director de Finanzas / Contador Estratégico');
-  if (!hasOperativo) delegationRequired.push('Jefe de Operaciones / Producción');
-  if (!hasAdministrativo) delegationRequired.push('Administrador General / Gerente de Ventas');
-
-  const recommendations = [];
-  if (hasAtomicFusion) {
-    recommendations.push('⚠️ ALERTA CUÁNTICA: Fusión Atómica detectada. El fundador concentra Finanzas, Operaciones y Administración. Debe delegar de inmediato al menos 1 área.');
-  } else {
-    recommendations.push('✓ Perfil cuántico saludable y enfocado. Las áreas débiles se delegan a perfiles complementarios.');
-  }
-
-  const quantumScaleThresholds = [
-    { scale: 'Etapa 1 (1-5 colaboradores)', rule: 'Fundador lidera su área core, delega soporte contable externo.' },
-    { scale: 'Etapa 2 (6-20 colaboradores)', rule: 'Salto cuántico: Mandos medios y delegación operativa estricta.' },
-    { scale: 'Etapa 3 (21+ colaboradores)', rule: 'Autonomía cuántica total: Negocio funciona de forma autónoma sin el fundador.' }
-  ];
-
-  return {
-    hasAtomicFusion,
-    isBalanced,
-    delegationRequired,
-    recommendations,
-    quantumScaleThresholds
-  };
-}
+export { runQuantumDiagnostic };
 
 export const AGENT_TOOLS_MANIFEST = [
   {
@@ -196,7 +159,8 @@ export async function executeToolWebSearch(args = {}, planContext = {}, startTim
       const apiBase = planContext?.config?.apiBase || getApiBase();
       const searchConfig = planContext?.config?.search || {};
       const provider = searchConfig.provider || 'duckduckgo';
-      const apiKey = searchConfig.apiKey || '';
+      const apiKey = searchConfig.apiKey || planContext?.config?.keys?.tavily || '';
+      const braveApiKey = searchConfig.braveApiKey || planContext?.config?.keys?.brave || '';
       const searchQuery = `${query} en ${location}`;
 
       const resp = await fetch(`${apiBase}/api/search`, {
@@ -205,7 +169,9 @@ export async function executeToolWebSearch(args = {}, planContext = {}, startTim
         body: JSON.stringify({
           query: searchQuery,
           provider,
-          apiKey
+          apiKey,
+          braveApiKey,
+          failover: true
         }),
         signal: AbortSignal.timeout(6000)
       });
@@ -483,7 +449,7 @@ async function _executeAgentToolInternal(toolName, args, planContext = {}) {
       case 'tool_quantum_diagnostic': {
         const founderAreas = args.areasFundador || seed.perfil_fundador?.areas || ['operativo'];
         const teamSize = args.tamanoEquipo || seed.tamano_equipo || 3;
-        const diagnostic = runQuantumDiagnostic({ areas: founderAreas, teamSize });
+        const diagnostic = await runQuantumDiagnostic({ areas: founderAreas, teamSize });
 
         return {
           success: true,

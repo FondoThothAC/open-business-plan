@@ -316,7 +316,7 @@ export default function TerminalDrawer({ isOpen, onToggle }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <span style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#58a6ff', fontWeight: 700 }}>
             <Terminal size={14} />
-            Terminal DeepSeek Harness (dsh v0.1)
+            Terminal Harness (dsh v0.1)
           </span>
           <span style={{ color: '#30363d' }}>|</span>
           <span style={{ display: 'flex', alignItems: 'center', gap: '4px', color: activeResearchTask?.status === 'running' ? '#3fb950' : '#8b949e' }}>

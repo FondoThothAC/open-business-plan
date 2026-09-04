@@ -15,6 +15,9 @@
 * **Procedencia de Datos (Value Object):** Clasificación ontológica estricta del origen de un registro (`real`, `local_offline`, `synthetic`, `none`), con URL de origen y nivel de confianza.
 * **Estado Honesto Vacío (Value Object):** Representación de ausencia de información factual en fuentes abiertas; prohíbe la invención de empresas o precios inexistentes.
 * **Cuota Persistida (Value Object):** Contador mensual por proveedor (`YYYY-MM`) que regula el consumo de Fila 1 (Brave/Tavily) y bloquea cargos accidentales de Fila 2 sin autorización.
+* **Inversión Canónica / CAPEX Canónico (Value Object):** Cifra monetaria raíz anclada a la semilla (`seed.inversion_esperada`) que rige como verdad matemática única para todos los estados financieros y métricas de rentabilidad.
+* **Diagnóstico Cuántico Unificado (Domain Service):** Orquestador de evaluación del perfil del fundador (`runQuantumDiagnostic`) que analiza la distribución del átomo de 3 áreas y determina saltos cuánticos de escala.
+* **Instantánea de Versión Inmutable (Aggregate Snapshot):** Captura física con hash SHA-1 y manifiesto (`.versions/`) que asegura que el progreso de redacción no sea sobreescrito ni degradado por sesiones paralelas.
 * **Átomo de 3 Áreas (Value Object - Metodología Cuántica):** Tríada fundamental compuesta por Finanzas, Operaciones y Administración.
 * **Fusión Atómica (Anti-patrón):** Anomalía donde el fundador concentra las 3 áreas simultáneamente, exigiendo plan de delegación obligatorio.
 

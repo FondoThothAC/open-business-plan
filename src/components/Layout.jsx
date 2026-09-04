@@ -1059,7 +1059,7 @@ export default function Layout() {
                   {/* Botón Consola IDE / DeepSeek Harness */}
                   <button
                     className="icon-btn-rounded"
-                    title={isTerminalOpen ? "Cerrar Consola IDE" : "Abrir Consola IDE (DeepSeek Harness / Research)"}
+                    title={isTerminalOpen ? "Cerrar Consola IDE" : "Abrir Consola IDE (Harness / Research)"}
                     onClick={() => setIsTerminalOpen(prev => !prev)}
                     style={{
                       background: isTerminalOpen ? 'rgba(88, 166, 255, 0.2)' : 'transparent',

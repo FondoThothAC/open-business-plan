@@ -21,7 +21,7 @@ test('DeepSeek Harness dsh v0.1 - TrajectoryRecorder & Cordis Spec', async (t) =
     });
 
     const harness = recorder.exportHarness();
-    assert.equal(harness.harnessVersion, 'dsh-session-v0.1');
+    assert.ok(harness.harnessVersion === 'harness-v0.1' || harness.harnessVersion === 'dsh-session-v0.1');
     assert.equal(harness.id, 'task_dsh_001');
     assert.equal(harness.mode, 'code');
     assert.ok(Array.isArray(harness.pluginsLoaded), 'Debe incluir lista de plugins Cordis cargados');

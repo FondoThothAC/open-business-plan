@@ -1185,192 +1185,262 @@ export default function Configuracion() {
               <span style={{ fontSize: '0.65rem', background: 'rgba(99, 102, 241, 0.1)', padding: '2px 8px', borderRadius: '10px', color: 'var(--accent-color)' }}>Recomendado para Industrialización</span>
             </div>
             
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
-              
-              {/* GROQ CARD */}
-              <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: `1.5px solid ${planData.config.ai.primaryProvider === 'groq' ? 'var(--accent-color)' : 'var(--border-color)'}` }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                  <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#f59e0b' }}>⚡ Groq (Llama 3.3 70B & 8B)</div>
-                  <a href="https://console.groq.com/keys" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: 'var(--accent-color)', textDecoration: 'none', fontWeight: 700 }}>
-                    Obtener Key ↗
-                  </a>
-                </div>
-                <input 
-                  type="password" 
-                  className="form-control" 
-                  placeholder="gsk_..."
-                  value={planData.config.ai.groqKey || ''}
-                  onChange={(e) => handleAiChange('groqKey', e.target.value)}
-                  style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
-                />
-                <ApiStatusBadge status={groqStatus} onTest={() => testGroq(planData.config.ai.groqKey)} disabled={!planData.config.ai.groqKey} />
-                <ApiQuotaMeter providerKey="groq" tokens={telemetryData.groq || 0} isConfigured={!!planData.config.ai.groqKey} statusState={groqStatus.state} isHot={activeHotProvider === 'groq'} />
-              </div>
-
-              {/* NVIDIA NIM CARD */}
-              <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: `1.5px solid ${planData.config.ai.primaryProvider === 'nvidia' ? 'var(--accent-color)' : 'var(--border-color)'}` }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                  <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#10b981' }}>🟢 NVIDIA NIM (Nemotron 70B)</div>
-                  <a href="https://build.nvidia.com" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: 'var(--accent-color)', textDecoration: 'none', fontWeight: 700 }}>
-                    Obtener Key ↗
-                  </a>
-                </div>
-                <input 
-                  type="password" 
-                  className="form-control" 
-                  placeholder="nvapi-..."
-                  value={planData.config.ai.nvidiaKey || ''}
-                  onChange={(e) => handleAiChange('nvidiaKey', e.target.value)}
-                  style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
-                />
-                <ApiStatusBadge status={nvidiaStatus} onTest={() => testNvidia(planData.config.ai.nvidiaKey)} disabled={!planData.config.ai.nvidiaKey} />
-                <ApiQuotaMeter providerKey="nvidia" tokens={telemetryData.nvidia || 0} isConfigured={!!planData.config.ai.nvidiaKey} statusState={nvidiaStatus.state} isHot={activeHotProvider === 'nvidia'} />
-              </div>
-
-              {/* MISTRAL CARD */}
-              <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: `1.5px solid ${planData.config.ai.primaryProvider === 'mistral' ? 'var(--accent-color)' : 'var(--border-color)'}` }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                  <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#ec4899' }}>🔥 Mistral AI (Large)</div>
-                  <a href="https://console.mistral.ai/api-keys" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: 'var(--accent-color)', textDecoration: 'none', fontWeight: 700 }}>
-                    Obtener Key ↗
-                  </a>
-                </div>
-                <input 
-                  type="password" 
-                  className="form-control" 
-                  placeholder="Mistral API Key..."
-                  value={planData.config.ai.mistralKey || planData.config.ai.apiKey || ''}
-                  onChange={(e) => {
-                    handleAiChange('mistralKey', e.target.value);
-                    if (planData.config.ai.primaryProvider === 'mistral') handleAiChange('apiKey', e.target.value);
-                  }}
-                  style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
-                />
-                <ApiStatusBadge status={mistralStatus} onTest={() => testMistral(planData.config.ai.mistralKey || planData.config.ai.apiKey)} disabled={!planData.config.ai.mistralKey && !planData.config.ai.apiKey} />
-                <ApiQuotaMeter providerKey="mistral" tokens={telemetryData.mistral || 0} isConfigured={!!planData.config.ai.mistralKey || (planData.config.ai.primaryProvider === 'mistral' && !!planData.config.ai.apiKey)} statusState={mistralStatus.state} isHot={activeHotProvider === 'mistral'} />
-              </div>
-
-              {/* OLLAMA CLOUD FREE (Kimi k2.6, MiniMax, Nemotron, Qwen) */}
-              <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: '1.5px solid rgba(99,102,241,0.4)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
-                  <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#6366f1' }}>☁️ Ollama Cloud <span style={{ fontSize: '0.65rem', background: 'rgba(16,185,129,0.15)', color: '#10b981', padding: '1px 6px', borderRadius: '8px', marginLeft: '4px' }}>GRATIS</span></div>
-                  <a href="https://ollama.com/settings/keys" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: '#6366f1', textDecoration: 'none', fontWeight: 700 }}>Obtener Key ↗</a>
-                </div>
-                <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>Kimi k2.6 · MiniMax M3 · Nemotron Super · Gemma4 · Qwen3.5</div>
-                
-                {/* Key principal — Generación de Planes (Mesa de Expertos) */}
-                <div style={{ fontSize: '0.62rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: '0.2rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>🏭 Key Principal (Generación de Planes)</div>
-                <input 
-                  type="password" 
-                  className="form-control" 
-                  placeholder="65b426... (Ollama Cloud Key)"
-                  value={planData.config.ai.ollamaKey || ''}
-                  onChange={(e) => handleAiChange('ollamaKey', e.target.value)}
-                  style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
-                />
-                <ApiStatusBadge status={ollamaCloudStatus} onTest={() => testOllamaCloud(planData.config.ai.ollamaKey)} disabled={!planData.config.ai.ollamaKey} />
-                <ApiQuotaMeter providerKey="ollama_cloud" tokens={telemetryData.ollama_cloud || 0} isConfigured={!!planData.config.ai.ollamaKey} statusState={ollamaCloudStatus.state} />
-
-                {/* Key dedicada para BOB Chat — Cuenta separada */}
-                <div style={{ marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: '1px dashed rgba(99,102,241,0.2)' }}>
-                  <div style={{ fontSize: '0.62rem', fontWeight: 700, color: '#8b5cf6', marginBottom: '0.2rem', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    🤖 Key de BOB Chat (Exclusiva)
-                    <span style={{ fontSize: '0.55rem', fontWeight: 400, color: 'var(--text-muted)', textTransform: 'none', letterSpacing: 0 }}>— Separa la cuota del copiloto de la generación de planes</span>
+            {/* Cálculo de ventana activa de 24h y acumulado histórico de telemetría */}
+            {(() => {
+              const telToday = telemetryData._today || {};
+              const telAcc = telemetryData._accumulated || telemetryData || {};
+              return (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
+                  
+                  {/* GROQ CARD */}
+                  <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: `1.5px solid ${planData.config.ai.primaryProvider === 'groq' ? 'var(--accent-color)' : 'var(--border-color)'}` }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                      <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#f59e0b' }}>⚡ Groq (Llama 3.3 70B & 8B)</div>
+                      <a href="https://console.groq.com/keys" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: 'var(--accent-color)', textDecoration: 'none', fontWeight: 700 }}>
+                        Obtener Key ↗
+                      </a>
+                    </div>
+                    <input 
+                      type="password" 
+                      className="form-control" 
+                      placeholder="gsk_..."
+                      value={planData.config.ai.groqKey || ''}
+                      onChange={(e) => handleAiChange('groqKey', e.target.value)}
+                      style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
+                    />
+                    <ApiStatusBadge status={groqStatus} onTest={() => testGroq(planData.config.ai.groqKey)} disabled={!planData.config.ai.groqKey} />
+                    <ApiQuotaMeter 
+                      providerKey="groq" 
+                      tokens={telToday.groq ?? telemetryData.groq ?? 0} 
+                      todayTokens={telToday.groq ?? 0}
+                      accumulatedTokens={telAcc.groq ?? telemetryData.groq ?? 0}
+                      isConfigured={!!planData.config.ai.groqKey} 
+                      statusState={groqStatus.state} 
+                      isHot={activeHotProvider === 'groq'} 
+                    />
                   </div>
-                  <input 
-                    type="password" 
-                    className="form-control" 
-                    placeholder="Segunda key de Ollama Cloud para BOB..."
-                    value={planData.config.ai.bobOllamaKey || ''}
-                    onChange={(e) => handleAiChange('bobOllamaKey', e.target.value)}
-                    style={{ fontSize: '0.8rem', marginBottom: '0.3rem' }}
-                  />
-                  <div style={{ fontSize: '0.6rem', color: 'var(--text-muted)', marginBottom: '0.25rem' }}>
-                    {planData.config.ai.bobOllamaKey 
-                      ? '✅ BOB usará esta key exclusiva para conversaciones (minimax-m3:cloud)'
-                      : '💡 Sin key dedicada, BOB usará la key principal compartida. Recomendamos crear una segunda cuenta.'
-                    }
+
+                  {/* NVIDIA NIM CARD */}
+                  <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: `1.5px solid ${planData.config.ai.primaryProvider === 'nvidia' ? 'var(--accent-color)' : 'var(--border-color)'}` }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                      <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#10b981' }}>🟢 NVIDIA NIM (Nemotron 70B)</div>
+                      <a href="https://build.nvidia.com" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: 'var(--accent-color)', textDecoration: 'none', fontWeight: 700 }}>
+                        Obtener Key ↗
+                      </a>
+                    </div>
+                    <input 
+                      type="password" 
+                      className="form-control" 
+                      placeholder="nvapi-..."
+                      value={planData.config.ai.nvidiaKey || ''}
+                      onChange={(e) => handleAiChange('nvidiaKey', e.target.value)}
+                      style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
+                    />
+                    <ApiStatusBadge status={nvidiaStatus} onTest={() => testNvidia(planData.config.ai.nvidiaKey)} disabled={!planData.config.ai.nvidiaKey} />
+                    <ApiQuotaMeter 
+                      providerKey="nvidia" 
+                      tokens={telToday.nvidia ?? telemetryData.nvidia ?? 0} 
+                      todayTokens={telToday.nvidia ?? 0}
+                      accumulatedTokens={telAcc.nvidia ?? telemetryData.nvidia ?? 0}
+                      isConfigured={!!planData.config.ai.nvidiaKey} 
+                      statusState={nvidiaStatus.state} 
+                      isHot={activeHotProvider === 'nvidia'} 
+                    />
                   </div>
-                </div>
-              </div>
 
-              {/* OPENROUTER CARD — Nemotron 1M ctx, GPT-OSS, GLM 5.2 (capa gratuita) */}
-              <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: `1.5px solid ${planData.config.ai.primaryProvider === 'openrouter' ? '#f59e0b' : 'rgba(245,158,11,0.3)'}` }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
-                  <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#f59e0b' }}>🌐 OpenRouter <span style={{ fontSize: '0.65rem', background: 'rgba(16,185,129,0.15)', color: '#10b981', padding: '1px 6px', borderRadius: '8px', marginLeft: '4px' }}>GRATIS</span></div>
-                  <a href="https://openrouter.ai/keys" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: '#f59e0b', textDecoration: 'none', fontWeight: 700 }}>Obtener Key ↗</a>
-                </div>
-                <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>Nemotron 3.5 (1M ctx) · GPT-OSS 20B · GLM 5.2 · Nano 30B — Regenera sin límite diario</div>
-                <input
-                  type="password"
-                  className="form-control"
-                  placeholder="sk-or-v1-..."
-                  value={planData.config.ai.openrouterKey || ''}
-                  onChange={(e) => handleAiChange('openrouterKey', e.target.value)}
-                  style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
-                />
-                <ApiStatusBadge status={openrouterStatus} onTest={() => testOpenRouter(planData.config.ai.openrouterKey)} disabled={!planData.config.ai.openrouterKey} />
-                <ApiQuotaMeter providerKey="openrouter" tokens={telemetryData.openrouter || 0} isConfigured={!!planData.config.ai.openrouterKey} statusState={openrouterStatus.state} isHot={activeHotProvider === 'openrouter'} />
-              </div>
+                  {/* MISTRAL CARD */}
+                  <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: `1.5px solid ${planData.config.ai.primaryProvider === 'mistral' ? 'var(--accent-color)' : 'var(--border-color)'}` }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                      <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#ec4899' }}>🔥 Mistral AI (Large)</div>
+                      <a href="https://console.mistral.ai/api-keys" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: 'var(--accent-color)', textDecoration: 'none', fontWeight: 700 }}>
+                        Obtener Key ↗
+                      </a>
+                    </div>
+                    <input 
+                      type="password" 
+                      className="form-control" 
+                      placeholder="Mistral API Key..."
+                      value={planData.config.ai.mistralKey || planData.config.ai.apiKey || ''}
+                      onChange={(e) => {
+                        handleAiChange('mistralKey', e.target.value);
+                        if (planData.config.ai.primaryProvider === 'mistral') handleAiChange('apiKey', e.target.value);
+                      }}
+                      style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
+                    />
+                    <ApiStatusBadge status={mistralStatus} onTest={() => testMistral(planData.config.ai.mistralKey || planData.config.ai.apiKey)} disabled={!planData.config.ai.mistralKey && !planData.config.ai.apiKey} />
+                    <ApiQuotaMeter 
+                      providerKey="mistral" 
+                      tokens={telToday.mistral ?? telemetryData.mistral ?? 0} 
+                      todayTokens={telToday.mistral ?? 0}
+                      accumulatedTokens={telAcc.mistral ?? telemetryData.mistral ?? 0}
+                      isConfigured={!!planData.config.ai.mistralKey || (planData.config.ai.primaryProvider === 'mistral' && !!planData.config.ai.apiKey)} 
+                      statusState={mistralStatus.state} 
+                      isHot={activeHotProvider === 'mistral'} 
+                    />
+                  </div>
 
-              {/* OPENCODE CARD — Modelos de código grandes, regenera cada 5h */}
-              <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: `1.5px solid ${planData.config.ai.primaryProvider === 'opencode' ? '#a78bfa' : 'rgba(167,139,250,0.3)'}` }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
-                  <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#a78bfa' }}>🖥️ OpenCode <span style={{ fontSize: '0.65rem', background: 'rgba(16,185,129,0.15)', color: '#10b981', padding: '1px 6px', borderRadius: '8px', marginLeft: '4px' }}>GRATIS c/5h</span></div>
-                  <a href="https://opencode.ai" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: '#a78bfa', textDecoration: 'none', fontWeight: 700 }}>Obtener Key ↗</a>
-                </div>
-                <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>GPT-4.1 · Claude Sonnet · Gemini Pro · Modelos grandes de código — Tokens se regeneran cada 5 horas</div>
-                <input
-                  type="password"
-                  className="form-control"
-                  placeholder="sk-..."
-                  value={planData.config.ai.opencodeKey || ''}
-                  onChange={(e) => handleAiChange('opencodeKey', e.target.value)}
-                  style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
-                />
-                <ApiStatusBadge status={opencodeStatus} onTest={() => testOpenCode(planData.config.ai.opencodeKey)} disabled={!planData.config.ai.opencodeKey} />
-                <ApiQuotaMeter providerKey="opencode" tokens={telemetryData.opencode || 0} isConfigured={!!planData.config.ai.opencodeKey} statusState={opencodeStatus.state} isHot={activeHotProvider === 'opencode'} />
-              </div>
+                  {/* OLLAMA CLOUD FREE (Kimi k2.6, MiniMax, Nemotron, Qwen) */}
+                  <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: '1.5px solid rgba(99,102,241,0.4)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
+                      <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#6366f1' }}>☁️ Ollama Cloud <span style={{ fontSize: '0.65rem', background: 'rgba(16,185,129,0.15)', color: '#10b981', padding: '1px 6px', borderRadius: '8px', marginLeft: '4px' }}>GRATIS</span></div>
+                      <a href="https://ollama.com/settings/keys" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: '#6366f1', textDecoration: 'none', fontWeight: 700 }}>Obtener Key ↗</a>
+                    </div>
+                    <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>Kimi k2.6 · MiniMax M3 · Nemotron Super · Gemma4 · Qwen3.5</div>
+                    
+                    {/* Key principal — Generación de Planes (Mesa de Expertos) */}
+                    <div style={{ fontSize: '0.62rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: '0.2rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>🏭 Key Principal (Generación de Planes)</div>
+                    <input 
+                      type="password" 
+                      className="form-control" 
+                      placeholder="65b426... (Ollama Cloud Key)"
+                      value={planData.config.ai.ollamaKey || ''}
+                      onChange={(e) => handleAiChange('ollamaKey', e.target.value)}
+                      style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
+                    />
+                    <ApiStatusBadge status={ollamaCloudStatus} onTest={() => testOllamaCloud(planData.config.ai.ollamaKey)} disabled={!planData.config.ai.ollamaKey} />
+                    <ApiQuotaMeter 
+                      providerKey="ollama_cloud" 
+                      tokens={telToday.ollama_cloud ?? telemetryData.ollama_cloud ?? 0} 
+                      todayTokens={telToday.ollama_cloud ?? 0}
+                      accumulatedTokens={telAcc.ollama_cloud ?? telemetryData.ollama_cloud ?? 0}
+                      isConfigured={!!planData.config.ai.ollamaKey} 
+                      statusState={ollamaCloudStatus.state} 
+                    />
 
-              {/* ORCA ROUTER CARD */}
-              <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: `1.5px solid ${planData.config.ai.primaryProvider === 'orcarouter' ? '#38bdf8' : 'rgba(56,189,248,0.3)'}` }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
-                  <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#38bdf8' }}>🐬 Orca Router <span style={{ fontSize: '0.65rem', background: 'rgba(56,189,248,0.15)', color: '#38bdf8', padding: '1px 6px', borderRadius: '8px', marginLeft: '4px' }}>ROUTER</span></div>
-                  <a href="https://orcarouter.ai" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: '#38bdf8', textDecoration: 'none', fontWeight: 700 }}>Obtener Key ↗</a>
-                </div>
-                <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>Enrutador inteligente multi-modelo · Requiere recarga inicial para activar saldo</div>
-                <input
-                  type="password"
-                  className="form-control"
-                  placeholder="sk-orca-..."
-                  value={planData.config.ai.orcarouterKey || ''}
-                  onChange={(e) => handleAiChange('orcarouterKey', e.target.value)}
-                  style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
-                />
-                <ApiStatusBadge status={{ state: planData.config.ai.orcarouterKey ? 'online' : 'idle', message: planData.config.ai.orcarouterKey ? 'Configurado' : 'Sin verificar' }} onTest={() => {}} disabled={!planData.config.ai.orcarouterKey} />
-                <ApiQuotaMeter providerKey="orcarouter" tokens={telemetryData.orcarouter || 0} isConfigured={!!planData.config.ai.orcarouterKey} statusState={planData.config.ai.orcarouterKey ? 'online' : 'idle'} isHot={activeHotProvider === 'orcarouter'} />
-              </div>
+                    {/* Key dedicada para BOB Chat — Cuenta separada */}
+                    <div style={{ marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: '1px dashed rgba(99,102,241,0.2)' }}>
+                      <div style={{ fontSize: '0.62rem', fontWeight: 700, color: '#8b5cf6', marginBottom: '0.2rem', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        🤖 Key de BOB Chat (Exclusiva)
+                        <span style={{ fontSize: '0.55rem', fontWeight: 400, color: 'var(--text-muted)', textTransform: 'none', letterSpacing: 0 }}>— Separa la cuota del copiloto de la generación de planes</span>
+                      </div>
+                      <input 
+                        type="password" 
+                        className="form-control" 
+                        placeholder="Segunda key de Ollama Cloud para BOB..."
+                        value={planData.config.ai.bobOllamaKey || ''}
+                        onChange={(e) => handleAiChange('bobOllamaKey', e.target.value)}
+                        style={{ fontSize: '0.8rem', marginBottom: '0.3rem' }}
+                      />
+                      <div style={{ fontSize: '0.6rem', color: 'var(--text-muted)', marginBottom: '0.25rem' }}>
+                        {planData.config.ai.bobOllamaKey 
+                          ? '✅ BOB usará esta key exclusiva para conversaciones (minimax-m3:cloud)'
+                          : '💡 Sin key dedicada, BOB usará la key principal compartida. Recomendamos crear una segunda cuenta.'
+                        }
+                      </div>
+                    </div>
+                  </div>
 
-              {/* TOKENROUTER CARD */}
-              <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: `1.5px solid ${planData.config.ai.primaryProvider === 'tokenrouter' ? '#10b981' : 'rgba(16,185,129,0.3)'}` }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
-                  <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#10b981' }}>⚡ TokenRouter <span style={{ fontSize: '0.65rem', background: 'rgba(16,185,129,0.15)', color: '#10b981', padding: '1px 6px', borderRadius: '8px', marginLeft: '4px' }}>GRATIS / OFERTAS</span></div>
-                  <a href="https://tokenrouter.net" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: '#10b981', textDecoration: 'none', fontWeight: 700 }}>Obtener Key ↗</a>
-                </div>
-                <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>DeepSeek R1/V3 · Qwen 2.5 72B — Acceso gratis y rotación inteligente de modelos</div>
-                <input
-                  type="password"
-                  className="form-control"
-                  placeholder="sk-..."
-                  value={planData.config.ai.tokenrouterKey || ''}
-                  onChange={(e) => handleAiChange('tokenrouterKey', e.target.value)}
-                  style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
-                />
-                <ApiStatusBadge status={tokenrouterStatus} onTest={() => testTokenRouter(planData.config.ai.tokenrouterKey)} disabled={!planData.config.ai.tokenrouterKey} />
-                <ApiQuotaMeter providerKey="tokenrouter" tokens={telemetryData.tokenrouter || 0} isConfigured={!!planData.config.ai.tokenrouterKey} statusState={tokenrouterStatus.state} isHot={activeHotProvider === 'tokenrouter'} />
-              </div>
+                  {/* OPENROUTER CARD — Nemotron 1M ctx, GPT-OSS, GLM 5.2 (capa gratuita) */}
+                  <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: `1.5px solid ${planData.config.ai.primaryProvider === 'openrouter' ? '#f59e0b' : 'rgba(245,158,11,0.3)'}` }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
+                      <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#f59e0b' }}>🌐 OpenRouter <span style={{ fontSize: '0.65rem', background: 'rgba(16,185,129,0.15)', color: '#10b981', padding: '1px 6px', borderRadius: '8px', marginLeft: '4px' }}>GRATIS</span></div>
+                      <a href="https://openrouter.ai/keys" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: '#f59e0b', textDecoration: 'none', fontWeight: 700 }}>Obtener Key ↗</a>
+                    </div>
+                    <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>Nemotron 3.5 (1M ctx) · GPT-OSS 20B · GLM 5.2 · Nano 30B — Regenera sin límite diario</div>
+                    <input
+                      type="password"
+                      className="form-control"
+                      placeholder="sk-or-v1-..."
+                      value={planData.config.ai.openrouterKey || ''}
+                      onChange={(e) => handleAiChange('openrouterKey', e.target.value)}
+                      style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
+                    />
+                    <ApiStatusBadge status={openrouterStatus} onTest={() => testOpenRouter(planData.config.ai.openrouterKey)} disabled={!planData.config.ai.openrouterKey} />
+                    <ApiQuotaMeter 
+                      providerKey="openrouter" 
+                      tokens={telToday.openrouter ?? telemetryData.openrouter ?? 0} 
+                      todayTokens={telToday.openrouter ?? 0}
+                      accumulatedTokens={telAcc.openrouter ?? telemetryData.openrouter ?? 0}
+                      isConfigured={!!planData.config.ai.openrouterKey} 
+                      statusState={openrouterStatus.state} 
+                      isHot={activeHotProvider === 'openrouter'} 
+                    />
+                  </div>
 
-            </div>
+                  {/* OPENCODE CARD — Modelos de código grandes, regenera cada 5h */}
+                  <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: `1.5px solid ${planData.config.ai.primaryProvider === 'opencode' ? '#a78bfa' : 'rgba(167,139,250,0.3)'}` }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
+                      <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#a78bfa' }}>🖥️ OpenCode <span style={{ fontSize: '0.65rem', background: 'rgba(16,185,129,0.15)', color: '#10b981', padding: '1px 6px', borderRadius: '8px', marginLeft: '4px' }}>GRATIS c/5h</span></div>
+                      <a href="https://opencode.ai" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: '#a78bfa', textDecoration: 'none', fontWeight: 700 }}>Obtener Key ↗</a>
+                    </div>
+                    <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>GPT-4.1 · Claude Sonnet · Gemini Pro · Modelos grandes de código — Tokens se regeneran cada 5 horas</div>
+                    <input
+                      type="password"
+                      className="form-control"
+                      placeholder="sk-..."
+                      value={planData.config.ai.opencodeKey || ''}
+                      onChange={(e) => handleAiChange('opencodeKey', e.target.value)}
+                      style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
+                    />
+                    <ApiStatusBadge status={opencodeStatus} onTest={() => testOpenCode(planData.config.ai.opencodeKey)} disabled={!planData.config.ai.opencodeKey} />
+                    <ApiQuotaMeter 
+                      providerKey="opencode" 
+                      tokens={telToday.opencode ?? telemetryData.opencode ?? 0} 
+                      todayTokens={telToday.opencode ?? 0}
+                      accumulatedTokens={telAcc.opencode ?? telemetryData.opencode ?? 0}
+                      isConfigured={!!planData.config.ai.opencodeKey} 
+                      statusState={opencodeStatus.state} 
+                      isHot={activeHotProvider === 'opencode'} 
+                    />
+                  </div>
+
+                  {/* ORCA ROUTER CARD */}
+                  <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: `1.5px solid ${planData.config.ai.primaryProvider === 'orcarouter' ? '#38bdf8' : 'rgba(56,189,248,0.3)'}` }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
+                      <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#38bdf8' }}>🐬 Orca Router <span style={{ fontSize: '0.65rem', background: 'rgba(56,189,248,0.15)', color: '#38bdf8', padding: '1px 6px', borderRadius: '8px', marginLeft: '4px' }}>ROUTER</span></div>
+                      <a href="https://orcarouter.ai" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: '#38bdf8', textDecoration: 'none', fontWeight: 700 }}>Obtener Key ↗</a>
+                    </div>
+                    <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>Enrutador inteligente multi-modelo · Requiere recarga inicial para activar saldo</div>
+                    <input
+                      type="password"
+                      className="form-control"
+                      placeholder="sk-orca-..."
+                      value={planData.config.ai.orcarouterKey || ''}
+                      onChange={(e) => handleAiChange('orcarouterKey', e.target.value)}
+                      style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
+                    />
+                    <ApiStatusBadge status={{ state: planData.config.ai.orcarouterKey ? 'online' : 'idle', message: planData.config.ai.orcarouterKey ? 'Configurado' : 'Sin verificar' }} onTest={() => {}} disabled={!planData.config.ai.orcarouterKey} />
+                    <ApiQuotaMeter 
+                      providerKey="orcarouter" 
+                      tokens={telToday.orcarouter ?? telemetryData.orcarouter ?? 0} 
+                      todayTokens={telToday.orcarouter ?? 0}
+                      accumulatedTokens={telAcc.orcarouter ?? telemetryData.orcarouter ?? 0}
+                      isConfigured={!!planData.config.ai.orcarouterKey} 
+                      statusState={planData.config.ai.orcarouterKey ? 'online' : 'idle'} 
+                      isHot={activeHotProvider === 'orcarouter'} 
+                    />
+                  </div>
+
+                  {/* TOKENROUTER CARD */}
+                  <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: `1.5px solid ${planData.config.ai.primaryProvider === 'tokenrouter' ? '#10b981' : 'rgba(16,185,129,0.3)'}` }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
+                      <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#10b981' }}>⚡ TokenRouter <span style={{ fontSize: '0.65rem', background: 'rgba(16,185,129,0.15)', color: '#10b981', padding: '1px 6px', borderRadius: '8px', marginLeft: '4px' }}>GRATIS / OFERTAS</span></div>
+                      <a href="https://tokenrouter.net" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: '#10b981', textDecoration: 'none', fontWeight: 700 }}>Obtener Key ↗</a>
+                    </div>
+                    <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>DeepSeek R1/V3 · Qwen 2.5 72B — Acceso gratis y rotación inteligente de modelos</div>
+                    <input
+                      type="password"
+                      className="form-control"
+                      placeholder="sk-..."
+                      value={planData.config.ai.tokenrouterKey || ''}
+                      onChange={(e) => handleAiChange('tokenrouterKey', e.target.value)}
+                      style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
+                    />
+                    <ApiStatusBadge status={tokenrouterStatus} onTest={() => testTokenRouter(planData.config.ai.tokenrouterKey)} disabled={!planData.config.ai.tokenrouterKey} />
+                    <ApiQuotaMeter 
+                      providerKey="tokenrouter" 
+                      tokens={telToday.tokenrouter ?? telemetryData.tokenrouter ?? 0} 
+                      todayTokens={telToday.tokenrouter ?? 0}
+                      accumulatedTokens={telAcc.tokenrouter ?? telemetryData.tokenrouter ?? 0}
+                      isConfigured={!!planData.config.ai.tokenrouterKey} 
+                      statusState={tokenrouterStatus.state} 
+                      isHot={activeHotProvider === 'tokenrouter'} 
+                    />
+                  </div>
+
+                </div>
+              );
+            })()}
           </div>
 
           {/* FILA 2: Modelos Comerciales, Cloud Global & Local Offline */}
@@ -1382,216 +1452,270 @@ export default function Configuracion() {
               </span>
             </div>
             
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
-              
-              {/* B.AI (B ia) */}
-              <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: `1.5px solid ${planData.config.ai.primaryProvider === 'bai' ? '#06b6d4' : 'var(--border-color)'}` }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                  <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#06b6d4' }}>⚡ B.AI (B ia) <span style={{ fontSize: '0.6rem', fontWeight: 400, color: 'var(--text-muted)' }}>(GPT-5.2 · Qwen 3.8 · GLM 5.3)</span></div>
-                  <a href="https://chat.b.ai/key" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: '#06b6d4', textDecoration: 'none', fontWeight: 700 }}>
-                    Obtener Key ↗
-                  </a>
-                </div>
-                <input 
-                  type="password" 
-                  className="form-control" 
-                  placeholder="sk-..."
-                  value={planData.config.ai.baiKey || (planData.config.ai.primaryProvider === 'bai' ? (planData.config.ai.apiKey || '') : '')}
-                  onChange={(e) => {
-                    handleAiChange('baiKey', e.target.value);
-                    if (planData.config.ai.primaryProvider === 'bai') handleAiChange('apiKey', e.target.value);
-                  }}
-                  style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
-                />
-                <ApiStatusBadge status={baiStatus} onTest={() => testBai(planData.config.ai.baiKey || planData.config.ai.apiKey)} disabled={!planData.config.ai.baiKey && !planData.config.ai.apiKey} />
-                <ApiQuotaMeter providerKey="bai" tokens={telemetryData.bai || 0} isConfigured={!!planData.config.ai.baiKey || (planData.config.ai.primaryProvider === 'bai' && !!planData.config.ai.apiKey)} statusState={baiStatus.state} isHot={activeHotProvider === 'bai'} />
-              </div>
+            {(() => {
+              const telToday = telemetryData._today || {};
+              const telAcc = telemetryData._accumulated || telemetryData || {};
+              return (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
+                  
+                  {/* B.AI (B ia) */}
+                  <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: `1.5px solid ${planData.config.ai.primaryProvider === 'bai' ? '#06b6d4' : 'var(--border-color)'}` }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                      <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#06b6d4' }}>⚡ B.AI (B ia) <span style={{ fontSize: '0.6rem', fontWeight: 400, color: 'var(--text-muted)' }}>(GPT-5.2 · Qwen 3.8 · GLM 5.3)</span></div>
+                      <a href="https://chat.b.ai/key" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: '#06b6d4', textDecoration: 'none', fontWeight: 700 }}>
+                        Obtener Key ↗
+                      </a>
+                    </div>
+                    <input 
+                      type="password" 
+                      className="form-control" 
+                      placeholder="sk-..."
+                      value={planData.config.ai.baiKey || (planData.config.ai.primaryProvider === 'bai' ? (planData.config.ai.apiKey || '') : '')}
+                      onChange={(e) => {
+                        handleAiChange('baiKey', e.target.value);
+                        if (planData.config.ai.primaryProvider === 'bai') handleAiChange('apiKey', e.target.value);
+                      }}
+                      style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
+                    />
+                    <ApiStatusBadge status={baiStatus} onTest={() => testBai(planData.config.ai.baiKey || planData.config.ai.apiKey)} disabled={!planData.config.ai.baiKey && !planData.config.ai.apiKey} />
+                    <ApiQuotaMeter 
+                      providerKey="bai" 
+                      tokens={telToday.bai ?? telemetryData.bai ?? 0} 
+                      todayTokens={telToday.bai ?? 0}
+                      accumulatedTokens={telAcc.bai ?? telemetryData.bai ?? 0}
+                      isConfigured={!!planData.config.ai.baiKey || (planData.config.ai.primaryProvider === 'bai' && !!planData.config.ai.apiKey)} 
+                      statusState={baiStatus.state} 
+                      isHot={activeHotProvider === 'bai'} 
+                    />
+                  </div>
 
-              {/* GOOGLE GEMINI */}
-              <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: `1.5px solid ${planData.config.ai.primaryProvider === 'gemini' ? '#38bdf8' : 'var(--border-color)'}` }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                  <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#38bdf8' }}>🌐 Google Gemini <span style={{ fontSize: '0.6rem', fontWeight: 400, color: 'var(--text-muted)' }}>(Flash 3.6 · 3.5 Lite · 3.7 · 1.5 Pro)</span></div>
-                  <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: '#38bdf8', textDecoration: 'none', fontWeight: 700 }}>
-                    Obtener Key ↗
-                  </a>
-                </div>
-                <input 
-                  type="password" 
-                  className="form-control" 
-                  placeholder="AIzaSy..."
-                  value={planData.config.ai.primaryProvider === 'gemini' ? (planData.config.ai.apiKey || '') : (planData.config.ai.geminiKey || '')}
-                  onChange={(e) => {
-                    handleAiChange('geminiKey', e.target.value);
-                    if (planData.config.ai.primaryProvider === 'gemini') handleAiChange('apiKey', e.target.value);
-                  }}
-                  style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
-                />
-                <ApiStatusBadge status={geminiStatus} onTest={() => testGemini(planData.config.ai.geminiKey || planData.config.ai.apiKey)} disabled={!planData.config.ai.geminiKey && !planData.config.ai.apiKey} />
-                <ApiQuotaMeter providerKey="gemini" tokens={telemetryData.gemini || 0} isConfigured={!!planData.config.ai.geminiKey || !!planData.config.ai.apiKey} statusState={geminiStatus.state} isHot={activeHotProvider === 'gemini'} />
-              </div>
+                  {/* GOOGLE GEMINI */}
+                  <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: `1.5px solid ${planData.config.ai.primaryProvider === 'gemini' ? '#38bdf8' : 'var(--border-color)'}` }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                      <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#38bdf8' }}>🌐 Google Gemini <span style={{ fontSize: '0.6rem', fontWeight: 400, color: 'var(--text-muted)' }}>(Flash 3.6 · 3.5 Lite · 3.7 · 1.5 Pro)</span></div>
+                      <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: '#38bdf8', textDecoration: 'none', fontWeight: 700 }}>
+                        Obtener Key ↗
+                      </a>
+                    </div>
+                    <input 
+                      type="password" 
+                      className="form-control" 
+                      placeholder="AIzaSy..."
+                      value={planData.config.ai.primaryProvider === 'gemini' ? (planData.config.ai.apiKey || '') : (planData.config.ai.geminiKey || '')}
+                      onChange={(e) => {
+                        handleAiChange('geminiKey', e.target.value);
+                        if (planData.config.ai.primaryProvider === 'gemini') handleAiChange('apiKey', e.target.value);
+                      }}
+                      style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
+                    />
+                    <ApiStatusBadge status={geminiStatus} onTest={() => testGemini(planData.config.ai.geminiKey || planData.config.ai.apiKey)} disabled={!planData.config.ai.geminiKey && !planData.config.ai.apiKey} />
+                    <ApiQuotaMeter 
+                      providerKey="gemini" 
+                      tokens={telToday.gemini ?? telemetryData.gemini ?? 0} 
+                      todayTokens={telToday.gemini ?? 0}
+                      accumulatedTokens={telAcc.gemini ?? telemetryData.gemini ?? 0}
+                      isConfigured={!!planData.config.ai.geminiKey || !!planData.config.ai.apiKey} 
+                      statusState={geminiStatus.state} 
+                      isHot={activeHotProvider === 'gemini'} 
+                    />
+                  </div>
 
-              {/* ANTHROPIC CLAUDE */}
-              <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: `1.5px solid ${planData.config.ai.primaryProvider === 'claude' ? '#d97706' : 'var(--border-color)'}` }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                  <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#d97706' }}>🧠 Anthropic Claude <span style={{ fontSize: '0.6rem', fontWeight: 400, color: 'var(--text-muted)' }}>(Fable 5 · Sonnet 5 · Opus 5)</span></div>
-                  <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: '#d97706', textDecoration: 'none', fontWeight: 700 }}>
-                    Obtener Key ↗
-                  </a>
-                </div>
-                <input 
-                  type="password" 
-                  className="form-control" 
-                  placeholder="sk-ant-..."
-                  value={planData.config.ai.claudeKey || ''}
-                  onChange={(e) => handleAiChange('claudeKey', e.target.value)}
-                  style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
-                />
-                <ApiStatusBadge status={claudeStatus} onTest={() => testClaude(planData.config.ai.claudeKey)} disabled={!planData.config.ai.claudeKey} />
-                <ApiQuotaMeter providerKey="claude" tokens={telemetryData.claude || 0} isConfigured={!!planData.config.ai.claudeKey} statusState={claudeStatus.state} isHot={activeHotProvider === 'claude'} />
-              </div>
+                  {/* ANTHROPIC CLAUDE */}
+                  <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: `1.5px solid ${planData.config.ai.primaryProvider === 'claude' ? '#d97706' : 'var(--border-color)'}` }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                      <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#d97706' }}>🧠 Anthropic Claude <span style={{ fontSize: '0.6rem', fontWeight: 400, color: 'var(--text-muted)' }}>(Fable 5 · Sonnet 5 · Opus 5)</span></div>
+                      <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: '#d97706', textDecoration: 'none', fontWeight: 700 }}>
+                        Obtener Key ↗
+                      </a>
+                    </div>
+                    <input 
+                      type="password" 
+                      className="form-control" 
+                      placeholder="sk-ant-..."
+                      value={planData.config.ai.claudeKey || ''}
+                      onChange={(e) => handleAiChange('claudeKey', e.target.value)}
+                      style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
+                    />
+                    <ApiStatusBadge status={claudeStatus} onTest={() => testClaude(planData.config.ai.claudeKey)} disabled={!planData.config.ai.claudeKey} />
+                    <ApiQuotaMeter 
+                      providerKey="claude" 
+                      tokens={telToday.claude ?? telemetryData.claude ?? 0} 
+                      todayTokens={telToday.claude ?? 0}
+                      accumulatedTokens={telAcc.claude ?? telemetryData.claude ?? 0}
+                      isConfigured={!!planData.config.ai.claudeKey} 
+                      statusState={claudeStatus.state} 
+                      isHot={activeHotProvider === 'claude'} 
+                    />
+                  </div>
 
-              {/* OPENAI GPT */}
-              <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: `1.5px solid ${planData.config.ai.primaryProvider === 'openai' ? '#10b981' : 'var(--border-color)'}` }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                  <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#10b981' }}>🟢 OpenAI <span style={{ fontSize: '0.6rem', fontWeight: 400, color: 'var(--text-muted)' }}>(GPT-5.6 Sol/Terra/Luna · 5 · 4.5 · 4o)</span></div>
-                  <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: '#10b981', textDecoration: 'none', fontWeight: 700 }}>
-                    Obtener Key ↗
-                  </a>
-                </div>
-                <input 
-                  type="password" 
-                  className="form-control" 
-                  placeholder="sk-proj-..."
-                  value={planData.config.ai.openaiKey || (planData.config.ai.primaryProvider === 'openai' ? planData.config.ai.apiKey : '')}
-                  onChange={(e) => {
-                    handleAiChange('openaiKey', e.target.value);
-                    if (planData.config.ai.primaryProvider === 'openai') handleAiChange('apiKey', e.target.value);
-                  }}
-                  style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
-                />
-                <ApiStatusBadge status={openaiStatus} onTest={() => testOpenai(planData.config.ai.openaiKey || planData.config.ai.apiKey)} disabled={!planData.config.ai.openaiKey && !planData.config.ai.apiKey} />
-                <ApiQuotaMeter providerKey="openai" tokens={telemetryData.openai || 0} isConfigured={!!planData.config.ai.openaiKey || !!planData.config.ai.apiKey} statusState={openaiStatus.state} isHot={activeHotProvider === 'openai'} />
-              </div>
+                  {/* OPENAI GPT */}
+                  <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: `1.5px solid ${planData.config.ai.primaryProvider === 'openai' ? '#10b981' : 'var(--border-color)'}` }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                      <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#10b981' }}>🟢 OpenAI <span style={{ fontSize: '0.6rem', fontWeight: 400, color: 'var(--text-muted)' }}>(GPT-5.6 Sol/Terra/Luna · 5 · 4.5 · 4o)</span></div>
+                      <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: '#10b981', textDecoration: 'none', fontWeight: 700 }}>
+                        Obtener Key ↗
+                      </a>
+                    </div>
+                    <input 
+                      type="password" 
+                      className="form-control" 
+                      placeholder="sk-proj-..."
+                      value={planData.config.ai.openaiKey || (planData.config.ai.primaryProvider === 'openai' ? planData.config.ai.apiKey : '')}
+                      onChange={(e) => {
+                        handleAiChange('openaiKey', e.target.value);
+                        if (planData.config.ai.primaryProvider === 'openai') handleAiChange('apiKey', e.target.value);
+                      }}
+                      style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
+                    />
+                    <ApiStatusBadge status={openaiStatus} onTest={() => testOpenai(planData.config.ai.openaiKey || planData.config.ai.apiKey)} disabled={!planData.config.ai.openaiKey && !planData.config.ai.apiKey} />
+                    <ApiQuotaMeter 
+                      providerKey="openai" 
+                      tokens={telToday.openai ?? telemetryData.openai ?? 0} 
+                      todayTokens={telToday.openai ?? 0}
+                      accumulatedTokens={telAcc.openai ?? telemetryData.openai ?? 0}
+                      isConfigured={!!planData.config.ai.openaiKey || !!planData.config.ai.apiKey} 
+                      statusState={openaiStatus.state} 
+                      isHot={activeHotProvider === 'openai'} 
+                    />
+                  </div>
 
-              {/* OLLAMA LOCAL CARD */}
-              <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: `1.5px solid ${planData.config.ai.primaryProvider === 'ollama' ? 'var(--accent-color)' : 'var(--border-color)'}` }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                  <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#818cf8' }}>💻 Ollama Local (Offline)</div>
-                  <a href="https://ollama.com/download" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: 'var(--accent-color)', textDecoration: 'none', fontWeight: 700 }}>
-                    Descargar ↗
-                  </a>
-                </div>
-                <input 
-                  type="text" 
-                  className="form-control" 
-                  placeholder="http://localhost:11434"
-                  value={planData.config.ai.endpoint || 'http://localhost:11434'}
-                  onChange={(e) => handleAiChange('endpoint', e.target.value)}
-                  style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
-                />
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.4rem' }}>
-                  <span style={{ fontSize: '0.75rem', fontWeight: 700, color: ollamaOnline ? '#10b981' : '#9ca3af' }}>
-                    {ollamaOnline ? `En línea (${ollamaModels.length} modelos) ✓` : 'Sin servidor local (Opcional)'}
-                  </span>
-                  <button type="button" onClick={fetchOllamaModels} className="btn btn-secondary" style={{ padding: '2px 8px', fontSize: '0.7rem' }}>
-                    Refrescar
-                  </button>
-                </div>
-                <ApiQuotaMeter providerKey="ollama" tokens={telemetryData.ollama || 0} isConfigured={ollamaOnline} statusState={ollamaOnline ? 'online' : 'offline'} isHot={activeHotProvider === 'ollama'} />
-              </div>
+                  {/* OLLAMA LOCAL CARD */}
+                  <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: `1.5px solid ${planData.config.ai.primaryProvider === 'ollama' ? 'var(--accent-color)' : 'var(--border-color)'}` }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                      <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#818cf8' }}>💻 Ollama Local (Offline)</div>
+                      <a href="https://ollama.com/download" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: 'var(--accent-color)', textDecoration: 'none', fontWeight: 700 }}>
+                        Descargar ↗
+                      </a>
+                    </div>
+                    <input 
+                      type="text" 
+                      className="form-control" 
+                      placeholder="http://localhost:11434"
+                      value={planData.config.ai.endpoint || 'http://localhost:11434'}
+                      onChange={(e) => handleAiChange('endpoint', e.target.value)}
+                      style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
+                    />
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.4rem' }}>
+                      <span style={{ fontSize: '0.75rem', fontWeight: 700, color: ollamaOnline ? '#10b981' : '#9ca3af' }}>
+                        {ollamaOnline ? `En línea (${ollamaModels.length} modelos) ✓` : 'Sin servidor local (Opcional)'}
+                      </span>
+                      <button type="button" onClick={fetchOllamaModels} className="btn btn-secondary" style={{ padding: '2px 8px', fontSize: '0.7rem' }}>
+                        Refrescar
+                      </button>
+                    </div>
+                    <ApiQuotaMeter 
+                      providerKey="ollama" 
+                      tokens={telToday.ollama ?? telemetryData.ollama ?? 0} 
+                      todayTokens={telToday.ollama ?? 0}
+                      accumulatedTokens={telAcc.ollama ?? telemetryData.ollama ?? 0}
+                      isConfigured={ollamaOnline} 
+                      statusState={ollamaOnline ? 'online' : 'offline'} 
+                      isHot={activeHotProvider === 'ollama'} 
+                    />
+                  </div>
 
-              {/* OLLAMA CLOUD PREMIUM (GLM 5.1, Qwen3.5 72B) */}
-              <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: '1.5px solid rgba(168,85,247,0.4)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
-                  <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#a855f7' }}>💎 Ollama Cloud <span style={{ fontSize: '0.65rem', background: 'rgba(168,85,247,0.15)', color: '#a855f7', padding: '1px 6px', borderRadius: '8px', marginLeft: '4px' }}>PREMIUM</span></div>
-                  <a href="https://ollama.com/settings/keys" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: '#a855f7', textDecoration: 'none', fontWeight: 700 }}>Obtener Key ↗</a>
-                </div>
-                <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>GLM 5.1 · Qwen3.5 72B · DeepSeek R2 Pro (misma key Ollama)</div>
-                <input 
-                  type="password" 
-                  className="form-control" 
-                  placeholder="Misma key de Ollama Cloud"
-                  value={planData.config.ai.ollamaKey || ''}
-                  onChange={(e) => handleAiChange('ollamaKey', e.target.value)}
-                  style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
-                />
-                <ApiStatusBadge status={ollamaCloudStatus} onTest={() => testOllamaCloud(planData.config.ai.ollamaKey)} disabled={!planData.config.ai.ollamaKey} />
-                <ApiQuotaMeter providerKey="ollama_cloud" tokens={telemetryData.ollama_cloud || 0} isConfigured={!!planData.config.ai.ollamaKey} statusState={ollamaCloudStatus.state} isHot={activeHotProvider === 'ollama_cloud'} />
-              </div>
+                  {/* OLLAMA CLOUD PREMIUM (GLM 5.1, Qwen3.5 72B) */}
+                  <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: '1.5px solid rgba(168,85,247,0.4)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
+                      <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#a855f7' }}>💎 Ollama Cloud <span style={{ fontSize: '0.65rem', background: 'rgba(168,85,247,0.15)', color: '#a855f7', padding: '1px 6px', borderRadius: '8px', marginLeft: '4px' }}>PREMIUM</span></div>
+                      <a href="https://ollama.com/settings/keys" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: '#a855f7', textDecoration: 'none', fontWeight: 700 }}>Obtener Key ↗</a>
+                    </div>
+                    <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>GLM 5.1 · Qwen3.5 72B · DeepSeek R2 Pro (misma key Ollama)</div>
+                    <input 
+                      type="password" 
+                      className="form-control" 
+                      placeholder="Misma key de Ollama Cloud"
+                      value={planData.config.ai.ollamaKey || ''}
+                      onChange={(e) => handleAiChange('ollamaKey', e.target.value)}
+                      style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
+                    />
+                    <ApiStatusBadge status={ollamaCloudStatus} onTest={() => testOllamaCloud(planData.config.ai.ollamaKey)} disabled={!planData.config.ai.ollamaKey} />
+                    <ApiQuotaMeter 
+                      providerKey="ollama_cloud" 
+                      tokens={telToday.ollama_cloud ?? telemetryData.ollama_cloud ?? 0} 
+                      todayTokens={telToday.ollama_cloud ?? 0}
+                      accumulatedTokens={telAcc.ollama_cloud ?? telemetryData.ollama_cloud ?? 0}
+                      isConfigured={!!planData.config.ai.ollamaKey} 
+                      statusState={ollamaCloudStatus.state} 
+                      isHot={activeHotProvider === 'ollama_cloud'} 
+                    />
+                  </div>
 
-              {/* GLM / ZhipuAI Directo */}
-              <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: '1.5px solid var(--border-color)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                  <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#06b6d4' }}>🔷 GLM / ZhipuAI (GLM-4-Plus)</div>
-                  <a href="https://open.bigmodel.cn/usercenter/apikeys" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: '#06b6d4', textDecoration: 'none', fontWeight: 700 }}>Obtener Key ↗</a>
-                </div>
-                <input 
-                  type="password" 
-                  className="form-control" 
-                  placeholder="GLM API Key..."
-                  value={planData.config.ai.glmKey || ''}
-                  onChange={(e) => handleAiChange('glmKey', e.target.value)}
-                  style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
-                />
-                <ApiStatusBadge status={{ state: planData.config.ai.glmKey ? 'idle' : 'idle', message: planData.config.ai.glmKey ? 'Configurado' : 'No configurado' }} onTest={() => {}} disabled={!planData.config.ai.glmKey} />
-              </div>
+                  {/* GLM / ZhipuAI Directo */}
+                  <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: '1.5px solid var(--border-color)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                      <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#06b6d4' }}>🔷 GLM / ZhipuAI (GLM-4-Plus)</div>
+                      <a href="https://open.bigmodel.cn/usercenter/apikeys" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: '#06b6d4', textDecoration: 'none', fontWeight: 700 }}>Obtener Key ↗</a>
+                    </div>
+                    <input 
+                      type="password" 
+                      className="form-control" 
+                      placeholder="GLM API Key..."
+                      value={planData.config.ai.glmKey || ''}
+                      onChange={(e) => handleAiChange('glmKey', e.target.value)}
+                      style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
+                    />
+                    <ApiStatusBadge status={{ state: planData.config.ai.glmKey ? 'idle' : 'idle', message: planData.config.ai.glmKey ? 'Configurado' : 'No configurado' }} onTest={() => {}} disabled={!planData.config.ai.glmKey} />
+                  </div>
 
-              {/* MINIMAX Directo */}
-              <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: '1.5px solid var(--border-color)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                  <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#f59e0b' }}>🟡 MiniMax (abab 6.5)</div>
-                  <a href="https://www.minimaxi.com/user-center/basic-information/interface-key" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: '#f59e0b', textDecoration: 'none', fontWeight: 700 }}>Obtener Key ↗</a>
-                </div>
-                <input 
-                  type="password" 
-                  className="form-control" 
-                  placeholder="MiniMax API Key..."
-                  value={planData.config.ai.minimaxKey || ''}
-                  onChange={(e) => handleAiChange('minimaxKey', e.target.value)}
-                  style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
-                />
-                <ApiStatusBadge status={{ state: planData.config.ai.minimaxKey ? 'idle' : 'idle', message: planData.config.ai.minimaxKey ? 'Configurado' : 'No configurado' }} onTest={() => {}} disabled={!planData.config.ai.minimaxKey} />
-              </div>
+                  {/* MINIMAX Directo */}
+                  <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: '1.5px solid var(--border-color)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                      <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#f59e0b' }}>🟡 MiniMax (abab 6.5)</div>
+                      <a href="https://www.minimaxi.com/user-center/basic-information/interface-key" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: '#f59e0b', textDecoration: 'none', fontWeight: 700 }}>Obtener Key ↗</a>
+                    </div>
+                    <input 
+                      type="password" 
+                      className="form-control" 
+                      placeholder="MiniMax API Key..."
+                      value={planData.config.ai.minimaxKey || ''}
+                      onChange={(e) => handleAiChange('minimaxKey', e.target.value)}
+                      style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
+                    />
+                    <ApiStatusBadge status={{ state: planData.config.ai.minimaxKey ? 'idle' : 'idle', message: planData.config.ai.minimaxKey ? 'Configurado' : 'No configurado' }} onTest={() => {}} disabled={!planData.config.ai.minimaxKey} />
+                  </div>
 
-              {/* DEEPSEEK V3 */}
-              <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: '1.5px solid var(--border-color)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                  <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#3b82f6' }}>🐋 DeepSeek V3 / R1</div>
-                  <a href="https://platform.deepseek.com" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: '#3b82f6', textDecoration: 'none', fontWeight: 700 }}>
-                    Obtener Key ↗
-                  </a>
-                </div>
-                <input 
-                  type="password" 
-                  className="form-control" 
-                  placeholder="sk-..."
-                  value={planData.config.ai.deepseekKey || ''}
-                  onChange={(e) => handleAiChange('deepseekKey', e.target.value)}
-                  style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
-                />
-                <ApiStatusBadge status={deepseekStatus} onTest={() => testDeepseek(planData.config.ai.deepseekKey)} disabled={!planData.config.ai.deepseekKey} />
-              </div>
+                  {/* DEEPSEEK V3 */}
+                  <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: '1.5px solid var(--border-color)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                      <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#3b82f6' }}>🐋 DeepSeek V3 / R1</div>
+                      <a href="https://platform.deepseek.com" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: '#3b82f6', textDecoration: 'none', fontWeight: 700 }}>
+                        Obtener Key ↗
+                      </a>
+                    </div>
+                    <input 
+                      type="password" 
+                      className="form-control" 
+                      placeholder="sk-..."
+                      value={planData.config.ai.deepseekKey || ''}
+                      onChange={(e) => handleAiChange('deepseekKey', e.target.value)}
+                      style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
+                    />
+                    <ApiStatusBadge status={deepseekStatus} onTest={() => testDeepseek(planData.config.ai.deepseekKey)} disabled={!planData.config.ai.deepseekKey} />
+                  </div>
 
-              {/* xAI GROK */}
-              <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: '1.5px solid var(--border-color)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                  <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#a855f7' }}>⚡ xAI Grok</div>
-                  <a href="https://console.x.ai" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: '#a855f7', textDecoration: 'none', fontWeight: 700 }}>
-                    Obtener Key ↗
-                  </a>
-                </div>
-                <input 
-                  type="password" 
-                  className="form-control" 
-                  placeholder="xai-..."
-                  value={planData.config.ai.grokKey || ''}
-                  onChange={(e) => handleAiChange('grokKey', e.target.value)}
-                  style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
-                />
-                <ApiStatusBadge status={grokStatus} onTest={() => testGrok(planData.config.ai.grokKey)} disabled={!planData.config.ai.grokKey} />
-              </div>
+                  {/* xAI GROK */}
+                  <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: '1.5px solid var(--border-color)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                      <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#a855f7' }}>⚡ xAI Grok</div>
+                      <a href="https://console.x.ai" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: '#a855f7', textDecoration: 'none', fontWeight: 700 }}>
+                        Obtener Key ↗
+                      </a>
+                    </div>
+                    <input 
+                      type="password" 
+                      className="form-control" 
+                      placeholder="xai-..."
+                      value={planData.config.ai.grokKey || ''}
+                      onChange={(e) => handleAiChange('grokKey', e.target.value)}
+                      style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
+                    />
+                    <ApiStatusBadge status={grokStatus} onTest={() => testGrok(planData.config.ai.grokKey)} disabled={!planData.config.ai.grokKey} />
+                  </div>
 
-            </div>
+                </div>
+              );
+            })()}
           </div>
 
           <div className="form-group" style={{ marginTop: '1.25rem', paddingTop: '1rem', borderTop: '1px dashed var(--border-color)' }}>

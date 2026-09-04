@@ -461,78 +461,78 @@ export const BUSINESS_GUIDES = {
     "placeholder": "Nómina presupuestada mensual, sueldos base, bonos y cargas patronales..."
   },
   "capex": {
-    "instruccion": "Inversión total en activos fijos: equipo, mobiliario, remodelación, tecnología.",
-    "ejemplo": "Ej: \"Equipo de cómputo: $120K. Mobiliario: $77K. Remodelación: $45K. Software: $30K. Total CAPEX: $272K.\"",
+    "instruccion": "[ANCLAJE OBLIGATORIO A SEMILLA] La inversión total en activos fijos y CAPEX debe estar estrictamente anclada a la cifra declarada en `semilla.inversion_esperada` (o inversión inicial). NO inventes cifras. Si el proyecto declara 20M MXN, desglosa los activos para cuadrar dicho monto.",
+    "ejemplo": "Ej: \"semilla.inversion_esperada = $20,000,000 MXN → Equipo especializado y bancos de prueba: $10.5M. Instrumental y telemetría IoT: $4.5M. Mobiliario e infraestructura: $5.0M. Total CAPEX: $20.0M MXN.\"",
     "benchmark": "Objetivo de cumplimiento > 90% respecto al benchmark de industria.",
     "cita": "Linda Pinson — Anatomy of a Business Plan (Ch. 2-7)",
     "placeholder": "Ingresa los detalles metodológicos de (capex)..."
   },
   "opex_inicial": {
-    "instruccion": "Capital necesario para cubrir gastos operativos mientras el negocio no genera ingresos suficientes.",
-    "ejemplo": "Ej: \"6 meses de nómina: $300K. Renta: $72K. Marketing: $48K. Servicios: $18K. Total capital de trabajo: $438K.\"",
+    "instruccion": "[ANCLAJE OBLIGATORIO A SEMILLA] Capital de trabajo y fondo de maniobra derivado de la estructura de capital de `semilla.inversion_esperada` para cubrir los primeros 3 a 6 meses de operación.",
+    "ejemplo": "Ej: \"De la inversión inicial de $20M MXN, se asignan $2,000,000 MXN a OPEX inicial: nómina preoperativa, seguros, rentas y reservas de contingencia.\"",
     "benchmark": "Fondo de maniobra / Capital de trabajo para cubrir entre 3 y 6 meses de costos fijos.",
     "cita": "Carl Schramm — Burn the Business Plan (Ch. 6, p. 125)",
     "placeholder": "Capital de trabajo necesario para operar mientras se alcanza el punto de equilibrio..."
   },
   "financiamiento": {
-    "instruccion": "De dónde viene el dinero. Proporción de capital propio, préstamos e inversión externa.",
-    "ejemplo": "Ej: \"Capital propio: 60% ($430K). Crédito PyME Bancomext: 30% ($215K) a 5 años, tasa 12%. Inversionista ángel: 10% ($72K).\"",
+    "instruccion": "[ANCLAJE OBLIGATORIO A SEMILLA] Fuentes de capital estructuradas exactamente para fondear el monto canónico de `semilla.inversion_esperada`. Detalla capital propio, aportaciones y crédito bancario.",
+    "ejemplo": "Ej: \"Financiamiento de $20M MXN totales: Serie A Fundadores 65% ($13M MXN), Serie B Inversionistas 35% ($7M MXN con dividendo preferente y recompra).\"",
     "benchmark": "Estructura de financiamiento balanceada (máximo 60% deuda / 40% capital propio).",
     "cita": "Linda Pinson — Anatomy of a Business Plan (Ch. 7, p. 172)",
     "placeholder": "Fuentes de financiamiento: aportaciones de socios, créditos bancarios o fondos públicos..."
   },
   "fijos": {
-    "instruccion": "Gastos que no cambian sin importar el volumen de ventas: renta, nómina, servicios, seguros.",
-    "ejemplo": "Ej: \"Renta: $12K. Nómina: $95K. Luz/Internet: $3K. Software: $5K. Contador: $8K. Total fijos: $123K/mes.\"",
+    "instruccion": "Gastos operativos que no varían con el volumen. Deben guardar congruencia con el tamaño de planta y capital de `semilla.inversion_esperada`.",
+    "ejemplo": "Ej: \"Renta de nave industrial: $85K/mes. Nómina base administrativa: $240K/mes. Telecomunicaciones e IoT: $25K/mes. Total fijos: $350K/mes.\"",
     "benchmark": "Costos fijos mensuales cubiertos por el margen de contribución del 50% de la capacidad.",
     "cita": "Starting a Business QuickStart Guide (Ch. 10, p. 215)",
     "placeholder": "Desglose mensual de rentas, nóminas administrativas, servicios y seguros..."
   },
   "variables": {
-    "instruccion": "Gastos que cambian según el número de clientes o unidades producidas.",
-    "ejemplo": "Ej: \"Comisión por cliente: $200. Impresión de reportes: $50/cliente. Café y amenidades: $30/cita. Costo variable: $280/cliente.\"",
+    "instruccion": "Gastos que cambian según el número de clientes, reparaciones o servicios ejecutados.",
+    "ejemplo": "Ej: \"Refacciones y mangueras por servicio: $4,500 MXN. Consumibles y fluidos: $1,200 MXN. Comisión técnica: $1,500 MXN.\"",
     "benchmark": "Costos variables unitarios perfectamente trazables a cada unidad vendida o servicio.",
     "cita": "Creating a Business Plan For Dummies (Ch. 10, p. 210)",
     "placeholder": "Costo por unidad de materia prima, comisiones, empaque y logística directa..."
   },
   "unitario": {
-    "instruccion": "Cálculo del costo total de atender a un solo cliente o producir una unidad.",
-    "ejemplo": "Ej: \"Costo fijo unitario: $123K ÷ 200 clientes = $615. Costo variable: $280. Costo total unitario: $895/cliente.\"",
+    "instruccion": "Cálculo del costo total de prestar una orden de servicio o unidad de producto comercializada.",
+    "ejemplo": "Ej: \"Costo fijo unitario prorrateado: $8,750 MXN. Costo variable directo: $7,200 MXN. Costo total unitario: $15,950 MXN por servicio industrial.\"",
     "benchmark": "Objetivo de cumplimiento > 90% respecto al benchmark de industria.",
     "cita": "Linda Pinson — Anatomy of a Business Plan (Ch. 2-7)",
     "placeholder": "Ingresa los detalles metodológicos de (unitario)..."
   },
   "resultados": {
-    "instruccion": "Proyección de ingresos menos gastos por mes/año. Muestra cuándo serás rentable.",
-    "ejemplo": "Ej: \"Año 1: Ingresos $1.2M - Gastos $1.8M = Pérdida ($600K). Año 2: Ingresos $3.6M - Gastos $2.1M = Utilidad $1.5M.\"",
+    "instruccion": "[ANCLAJE OBLIGATORIO A SEMILLA] Proyección a 5 años sustentada en la capacidad instalada fondeada con `semilla.inversion_esperada`. Detalla ingresos, EBITDA y utilidades netas.",
+    "ejemplo": "Ej: \"Año 1: Ingresos $18.5M - Costos/Gastos $14.2M = EBITDA $4.3M (Utilidad Neta $2.8M). Año 5: Ingresos $46.0M - EBITDA $14.8M.\"",
     "benchmark": "Objetivo de cumplimiento > 90% respecto al benchmark de industria.",
     "cita": "Linda Pinson — Anatomy of a Business Plan (Ch. 2-7)",
     "placeholder": "Ingresa los detalles metodológicos de (resultados)..."
   },
   "balance": {
-    "instruccion": "Foto financiera: Activos = Pasivos + Capital. Proyectado a 3-5 años.",
-    "ejemplo": "Ej: \"Año 1: Activos $710K | Pasivos $430K | Capital $280K. Año 3: Activos $2.8M | Pasivos $180K | Capital $2.62M.\"",
+    "instruccion": "[ANCLAJE OBLIGATORIO A SEMILLA] Estado de Situación Financiera. El Activo Total en el Año 1 debe reflejar la aplicación íntegra del capital de `semilla.inversion_esperada` (Activos = Pasivos + Capital).",
+    "ejemplo": "Ej: \"Año 1: Activos Totales $20,000,000 MXN (Fijo $15M + Circulante $5M) = Pasivos $6,000,000 MXN + Capital Social $14,000,000 MXN.\"",
     "benchmark": "Objetivo de cumplimiento > 90% respecto al benchmark de industria.",
     "cita": "Linda Pinson — Anatomy of a Business Plan (Ch. 2-7)",
     "placeholder": "Ingresa los detalles metodológicos de (balance)..."
   },
   "flujo_caja": {
-    "instruccion": "Entradas y salidas de efectivo reales por mes. Crucial para no quedarte sin liquidez.",
-    "ejemplo": "Ej: \"Mes 1: Entrada $30K, Salida $150K, Saldo -$120K. Mes 6: Entrada $180K, Salida $135K, Saldo +$45K.\"",
+    "instruccion": "[ANCLAJE OBLIGATORIO A SEMILLA] Flujo de caja libre. El periodo 0 debe registrar el desembolso exacto del CAPEX canónico de `semilla.inversion_esperada`.",
+    "ejemplo": "Ej: \"Año 0 (Inversión inicial): -$20,000,000 MXN. Año 1: +$3,850,000 MXN. Año 2: +$6,420,000 MXN. Flujo acumulado positivo a partir del mes 48.\"",
     "benchmark": "Flujo de efectivo operativo positivo de forma sostenida a partir del mes 9-12.",
     "cita": "Linda Pinson — Anatomy of a Business Plan (Ch. 7, p. 202)",
     "placeholder": "Proyección de entradas y salidas de efectivo mensuales para evitar iliquidez..."
   },
   "punto_equilibrio": {
-    "instruccion": "Número de clientes o ventas necesarias para cubrir todos los costos. Fórmula: CF ÷ (PVU - CVU).",
-    "ejemplo": "Ej: \"$123K ÷ ($1,500 - $280) = 101 clientes/mes para cubrir costos. Meta: alcanzarlo en el mes 8.\"",
+    "instruccion": "Volumen crítico en unidades monetarias y servicios para absorber costos fijos. Evita fórmulas con división por cero o símbolos infinitos (∞).",
+    "ejemplo": "Ej: \"Punto de equilibrio mensual: $350K CF ÷ (1 - 0.42 CV) = $603,448 MXN mensuales en facturación (aprox. 18 servicios mayores al mes).\"",
     "benchmark": "Punto de Equilibrio alcanzable antes del mes 12 de operación.",
     "cita": "Linda Pinson — Anatomy of a Business Plan (Ch. 7, p. 188)",
     "placeholder": "Volumen mínimo de ventas en unidades y dinero para no ganar ni perder..."
   },
   "indicadores": {
-    "instruccion": "VAN (Valor Actual Neto) y TIR (Tasa Interna de Retorno) del proyecto a 5 años.",
-    "ejemplo": "Ej: \"VAN a 5 años (tasa 12%): $1.8M MXN (positivo = viable). TIR: 34% (superior al costo de capital). Payback: 22 meses.\"",
+    "instruccion": "[ANCLAJE OBLIGATORIO A SEMILLA] Indicadores financieros maestros calculados a partir del desembolso de `semilla.inversion_esperada`. La TIR debe situarse en un rango plausible (15% a 40%) y el Payback corresponder al plazo de retorno.",
+    "ejemplo": "Ej: \"Inversión Base: $20,000,000 MXN. TIR: 24.5%, VAN (tasa 12%): $3.42M MXN, Payback: 4.1 años (49 meses), ROI proyectado: 68% a 5 años.\"",
     "benchmark": "Objetivo de cumplimiento > 90% respecto al benchmark de industria.",
     "cita": "Linda Pinson — Anatomy of a Business Plan (Ch. 2-7)",
     "placeholder": "Ingresa los detalles metodológicos de (indicadores)..."
@@ -580,50 +580,50 @@ export const BUSINESS_GUIDES = {
     "placeholder": "Tiempo total que tarda un peso invertido en producción en regresar como cobro efectivo..."
   },
   "puestos_lista": {
-    "instruccion": "Matriz consolidada de capital humano, niveles salariales, prestaciones de ley (IMSS/ISN) y organigrama.",
-    "ejemplo": "Ej: \"14 puestos distribuidos en 4 Gerencias: Operaciones, Calidad/IoT, Finanzas y B2B, con costo patronal total de $5.6M MXN/año.\"",
+    "instruccion": "Matriz consolidada de capital humano y costo patronal acorde al tamaño de la organización presupuestada en la semilla.",
+    "ejemplo": "Ej: \"Estructura de 14 especialistas: 1 Gerente General ($65K), 2 Líderes Técnicos ($45K c/u), 6 Técnicos Hidráulicos ($22K c/u), 3 Operadores IoT ($20K c/u), 2 Administrativos ($18K c/u). Costo patronal total: $480K/mes.\"",
     "benchmark": "Objetivo de cumplimiento > 90% respecto al benchmark de industria.",
     "cita": "Linda Pinson — Anatomy of a Business Plan (Ch. 2-7)",
     "placeholder": "Ingresa los detalles metodológicos de (puestos_lista)..."
   },
   "inversion_fija": {
-    "instruccion": "Activos tangibles no corrientes indispensables para la operación (bancos de prueba, vehículos, maquinaria).",
-    "ejemplo": "Ej: \"Taller central en Hermosillo ($4.5M), banco de pruebas hidráulicas ($2.5M), instrumental de telemetría IoT ($1.8M).\"",
+    "instruccion": "[ANCLAJE OBLIGATORIO A SEMILLA] Activos fijos tangibles. Su monto debe sumar armónicamente con la inversión diferida y el OPEX inicial para totalizar la cifra de `semilla.inversion_esperada`.",
+    "ejemplo": "Ej: \"De $20,000,000 MXN totales de semilla: Banco de pruebas hidráulicas ($5.5M), instrumental de telemetría ($3.5M), nave y adecuaciones ($4.0M), flotilla de servicio móvil ($2.0M). Total fija: $15.0M MXN.\"",
     "benchmark": "Presupuesto CAPEX de activos fijos con cotizaciones formales por escrito.",
     "cita": "Linda Pinson — Anatomy of a Business Plan (Ch. 7, p. 165)",
     "placeholder": "Inversión en terrenos, edificios, maquinaria y mobiliario duradero..."
   },
   "inversion_diferida": {
-    "instruccion": "Activos intangibles y gastos pre-operativos (constitución legal, certificaciones ISO, software ERP).",
-    "ejemplo": "Ej: \"Certificación ISO 9001/4406 ($350K), constitución legal y patentes ($150K), licencias de software ($250K).\"",
+    "instruccion": "[ANCLAJE OBLIGATORIO A SEMILLA] Gastos preoperativos y patentes. Parte integral del desglose canónico de `semilla.inversion_esperada`.",
+    "ejemplo": "Ej: \"De los $20M de semilla: Certificación ISO 4406 ($450K), constitución SAPI y registros IP ($350K), software y ERP ($1.2M). Total diferida: $2.0M MXN.\"",
     "benchmark": "Gastos preoperativos amortizables en un periodo máximo de 3 a 5 años.",
     "cita": "Plan de Negocios VF (p. 118)",
     "placeholder": "Gastos de constitución, licencias, patentes, capacitación inicial y proyectos..."
   },
   "amortizacion_creditos": {
-    "instruccion": "Tabla y estrategia de servicio de deuda: capital, tasa de interés, amortización y saldo insoluto.",
-    "ejemplo": "Ej: \"Crédito bancario de $5M MXN a 48 meses con tasa TIIE+3.5% fija, amortizaciones mensuales de $135K MXN.\"",
+    "instruccion": "Servicio de deuda para la porción apalancada declarada en el financiamiento de la inversión.",
+    "ejemplo": "Ej: \"Crédito institucional por $7M MXN a 60 meses, tasa anual 13.5%, cuota mensual de $161,000 MXN con amortización creciente.\"",
     "benchmark": "Objetivo de cumplimiento > 90% respecto al benchmark de industria.",
     "cita": "Linda Pinson — Anatomy of a Business Plan (Ch. 2-7)",
     "placeholder": "Ingresa los detalles metodológicos de (amortizacion_creditos)..."
   },
   "memorias_calculo": {
-    "instruccion": "Bases cuantitativas, supuestos de costos unitarios, tarifas por servicio y fórmulas de proyección.",
-    "ejemplo": "Ej: \"Tarifa MaaS: $68,000 MXN/mes por camión minero monitoreado. Costo marginal de reparación: $18,500 MXN.\"",
+    "instruccion": "[ANCLAJE OBLIGATORIO A SEMILLA] Supuestos cuantitativos, precios de contratos y costos unitarios que soportan los ingresos proyectados a partir del despliegue de `semilla.inversion_esperada`.",
+    "ejemplo": "Ej: \"Base de cálculo: 35 unidades mineras monitoreadas @ $48,000 MXN/mes + 12 mantenimientos mayores mensuales @ $95,000 MXN.\"",
     "benchmark": "Objetivo de cumplimiento > 90% respecto al benchmark de industria.",
     "cita": "Linda Pinson — Anatomy of a Business Plan (Ch. 2-7)",
     "placeholder": "Ingresa los detalles metodológicos de (memorias_calculo)..."
   },
   "relacion_bc": {
-    "instruccion": "Relación Beneficio-Costo (B/C): Valor presente de beneficios dividido entre valor presente de costos.",
-    "ejemplo": "Ej: \"Relación B/C de 1.38 a tasa de descuento del 12%, lo que indica que por cada peso invertido se generan $1.38 MXN en valor presente.\"",
+    "instruccion": "Relación Beneficio-Costo (B/C). Valor presente de beneficios descontados entre la inversión inicial canónica.",
+    "ejemplo": "Ej: \"Relación B/C de 1.42 (VPN positivo con inversión inicial de $20M MXN a tasa del 12%), ratificando viabilidad financiera sólida.\"",
     "benchmark": "Objetivo de cumplimiento > 90% respecto al benchmark de industria.",
     "cita": "Linda Pinson — Anatomy of a Business Plan (Ch. 2-7)",
     "placeholder": "Ingresa los detalles metodológicos de (relacion_bc)..."
   },
   "corrida_automatica": {
-    "instruccion": "Proyección financiera completa automatizada (flujo de caja libre, estado de resultados y balances a 5 años).",
-    "ejemplo": "Ej: \"Modelo maestro con WACC de 12%, TIR de 15.11%, VAN de $1.83M MXN y periodo de recuperación de 4.1 años.\"",
+    "instruccion": "[ANCLAJE OBLIGATORIO A SEMILLA] Síntesis ejecutiva de la corrida financiera a 5 años sustentada en `semilla.inversion_esperada`.",
+    "ejemplo": "Ej: \"Inversión: $20,000,000 MXN | WACC: 12% | TIR: 24.5% | VAN: $3,420,000 MXN | Payback: 4.1 años | Rentabilidad neta en año 3: 21%.\"",
     "benchmark": "Modelo financiero dinámico conectado a fórmulas maestras auditadas sin errores circulares.",
     "cita": "Plan de Negocios VF (p. 130)",
     "placeholder": "Parámetros y premisas de la corrida financiera automatizada..."

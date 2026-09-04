@@ -1,157 +1,169 @@
 import { callAiProvider } from './ai.js';
 
 /**
- * Módulo de Evaluación de Empresas Cuánticas (Fondo Thoth AC)
- * 
- * Evalúa el perfil del emprendedor en las 3 áreas atómicas:
+ * Módulo Unificado de Diagnóstico de Empresas Cuánticas (Fondo Thoth AC)
+ * Evalúa el perfil del emprendedor en el Modelo Atómico de 3 Áreas:
  * - ⚡ Finanzas
  * - ⚙️ Operativo
  * - 📋 Administrativo
  * 
- * Regla de Oro: El fundador solo puede dominar 1-2 áreas. Fusionar las 3 áreas
- * en el fundador genera disfunción y cuellos de botella. Las áreas débiles DEBEN delegarse.
+ * Regla de Oro (Regla 13 AGENTS.md):
+ * El fundador solo puede liderar 1 o máximo 2 áreas.
+ * Si concentra las 3, ocurre "Fusión Atómica", provocando disfunción y cuellos de botella.
+ * Las áreas débiles DEBEN delegarse obligatoriamente a perfiles profesionales.
  */
 
-export async function evaluateQuantumProfile(aiConfig, semillaData, rawText = '') {
-  const context = {
-    emprendedor: semillaData?.emprendedor || {},
-    negocio: semillaData?.negocio || {},
-    finanzas: semillaData?.finanzas || {},
-    rawText
+/**
+ * Función central unificada para el diagnóstico cuántico.
+ * Soporta invocación directa con IA y fallback heurístico determinista.
+ *
+ * @param {Object} options
+ * @param {Object} [options.aiConfig] - Configuración de IA opcional para análisis semántico profundo.
+ * @param {Object} [options.semillaData] - Datos estructurados de la semilla.
+ * @param {string} [options.rawText] - Texto libre o experiencia del fundador.
+ * @param {Array<string>} [options.areas] - Áreas declaradas por el fundador (['operativo', 'finanzas', etc.]).
+ * @param {number} [options.teamSize=3] - Tamaño inicial o proyectado del equipo.
+ * @returns {Promise<Object>|Object}
+ */
+export async function runQuantumDiagnostic({
+  aiConfig = null,
+  semillaData = {},
+  rawText = '',
+  areas = null,
+  teamSize = 3
+} = {}) {
+  // 1. Detección normalizada de áreas
+  const rawAreas = areas || semillaData?.perfil_fundador?.areas || [];
+  const normalizedAreas = rawAreas.map(a => String(a).toLowerCase().trim());
+
+  let hasFinanzas = normalizedAreas.some(a => a.includes('finan') || a.includes('conta'));
+  let hasOperativo = normalizedAreas.some(a => a.includes('operat') || a.includes('prod') || a.includes('tec'));
+  let hasAdministrativo = normalizedAreas.some(a => a.includes('admin') || a.includes('vent') || a.includes('lider'));
+
+  // Si no se pasaron áreas explícitas, deducir de texto libre o experiencia
+  const combinedText = ((semillaData?.emprendedor?.experiencia || '') + ' ' + rawText).toLowerCase();
+  if (normalizedAreas.length === 0 && combinedText.trim()) {
+    hasFinanzas = combinedText.includes('financ') || combinedText.includes('conta') || combinedText.includes('banca') || combinedText.includes('mba');
+    hasOperativo = combinedText.includes('técnic') || combinedText.includes('tecnic') || combinedText.includes('ingenier') || combinedText.includes('producc') || combinedText.includes('taller');
+    hasAdministrativo = combinedText.includes('ventas') || combinedText.includes('lider') || combinedText.includes('geren') || combinedText.includes('equipo') || combinedText.includes('rrhh');
+  }
+
+  // Si aún no hay ninguna área asignada, por defecto operativo
+  if (!hasFinanzas && !hasOperativo && !hasAdministrativo) {
+    hasOperativo = true;
+  }
+
+  const activeCount = [hasFinanzas, hasOperativo, hasAdministrativo].filter(Boolean).length;
+  const hasAtomicFusion = activeCount >= 3;
+  const isBalanced = activeCount >= 1 && activeCount <= 2;
+
+  const delegationRequired = [];
+  if (hasAtomicFusion) {
+    delegationRequired.push('Delegación obligatoria: El fundador debe elegir al menos 1 área (Finanzas, Operativo o Administrativo) para transferir a un especialista.');
+  }
+  if (!hasFinanzas) delegationRequired.push('Director de Finanzas / Contador Estratégico');
+  if (!hasOperativo) delegationRequired.push('Jefe de Operaciones / Producción');
+  if (!hasAdministrativo) delegationRequired.push('Administrador General / Gerente de Ventas');
+
+  const recommendations = [];
+  if (hasAtomicFusion) {
+    recommendations.push('⚠️ ALERTA CUÁNTICA: Fusión Atómica detectada. El fundador concentra Finanzas, Operaciones y Administración. Debe delegar de inmediato al menos 1 área.');
+  } else {
+    recommendations.push('✓ Perfil cuántico saludable y enfocado. Las áreas débiles se delegan a perfiles complementarios.');
+  }
+
+  const quantumScaleThresholds = [
+    { scale: 'Etapa 1 (1-5 colaboradores)', rule: 'Fundador lidera su área core, delega soporte contable externo.' },
+    { scale: 'Etapa 2 (6-20 colaboradores)', rule: 'Salto cuántico: Mandos medios y delegación operativa estricta.' },
+    { scale: 'Etapa 3 (21+ colaboradores)', rule: 'Autonomía cuántica total: Negocio funciona de forma autónoma sin el fundador.' }
+  ];
+
+  // Estructura base heurística garantizada
+  const baseResult = {
+    hasAtomicFusion,
+    isBalanced,
+    delegationRequired,
+    recommendations,
+    quantumScaleThresholds,
+    scores: {
+      finanzas: {
+        score: hasFinanzas ? 0.8 : 0.3,
+        nivel: hasFinanzas ? 'fuerte' : 'débil',
+        evidencia: hasFinanzas ? 'Experiencia o dominio declarado en finanzas/costos.' : 'Requiere apoyo financiero externo.'
+      },
+      operativo: {
+        score: hasOperativo ? 0.85 : 0.4,
+        nivel: hasOperativo ? 'fuerte' : 'moderado',
+        evidencia: hasOperativo ? 'Dominio operativo y técnico directo.' : 'Experiencia operativa básica o en delegación.'
+      },
+      administrativo: {
+        score: hasAdministrativo ? 0.75 : 0.45,
+        nivel: hasAdministrativo ? 'fuerte' : 'moderado',
+        evidencia: hasAdministrativo ? 'Habilidades de liderazgo y gestión comercial.' : 'Gestión administrativa en desarrollo.'
+      }
+    },
+    plan_delegacion: [
+      {
+        area: !hasFinanzas ? 'finanzas' : (!hasOperativo ? 'operativo' : 'administrativo'),
+        puesto: !hasFinanzas ? 'Contador / CFO Externo' : (!hasOperativo ? 'Jefe de Taller / Operaciones' : 'Gerente Comercial / Operativo'),
+        salario_estimado: '$15,000 - $25,000 MXN/mes',
+        habilidades_clave: ['Control de procesos', 'Reportes gerenciales'],
+        descripcion_vacante: 'Puesto estratégico para resolver cuellos de botella de delegación.'
+      }
+    ],
+    nivel_cuantico_actual: teamSize > 20 ? 2 : (teamSize > 5 ? 1 : 0),
+    independencia_fundador: hasAtomicFusion ? 0.1 : 0.4,
+    resumen_ejecutivo_cuantico: hasAtomicFusion
+      ? 'Alerta: Fusión Atómica detectada. El fundador concentra todas las responsabilidades directivas.'
+      : 'Diagnóstico balanceado: Estructura atómica con áreas core identificadas y plan de delegación.'
   };
 
-  const prompt = `
+  // Si se provee configuración de IA activa, intentar enriquecimiento semántico con IA
+  if (aiConfig && aiConfig.primaryProvider) {
+    try {
+      const context = {
+        emprendedor: semillaData?.emprendedor || {},
+        negocio: semillaData?.negocio || {},
+        finanzas: semillaData?.finanzas || {},
+        rawText,
+        heuristicBase: baseResult
+      };
+
+      const prompt = `
 Eres un Consultor Máster de la Metodología "Empresas Cuánticas" de Fondo Thoth AC.
-Tu función es evaluar el perfil del fundador a través del Modelo Atómico de 3 Áreas:
-1. Finanzas (capital, costos, contabilidad, evaluaciones)
-2. Operativo (producción, entrega, tecnología, calidad, insumos)
-3. Administrativo (ventas, RRHH, legal, liderazgo, gestión)
-
-Información del proyecto y fundador:
-"""
+Evalúa el perfil del fundador a través del Modelo Atómico de 3 Áreas (Finanzas, Operativo, Administrativo).
+Contexto:
 ${JSON.stringify(context, null, 2)}
-"""
 
-Analiza objetivamente y devuelve ÚNICAMENTE un objeto JSON válido con esta estructura (sin formato Markdown):
-
-{
-  "scores": {
-    "finanzas": {
-      "score": 0.35,
-      "nivel": "débil",
-      "evidencia": "Breve explicación de por qué es débil o fuerte en finanzas."
-    },
-    "operativo": {
-      "score": 0.85,
-      "nivel": "fuerte",
-      "evidencia": "Breve explicación de su fortaleza u operatividad."
-    },
-    "administrativo": {
-      "score": 0.60,
-      "nivel": "moderado",
-      "evidencia": "Breve explicación de sus habilidades de liderazgo o admin."
-    }
-  },
-  "antipatrones": [
-    {
-      "codigo": "hace_todo_el_mismo",
-      "nombre": "Fusión Atómica (Hace todo él mismo)",
-      "detectado": true,
-      "riesgo": "Riesgo de colapso operativo y quemado por micromanagement.",
-      "recomendacion": "Delegar inmediatamente el área financiera a un externo."
-    }
-  ],
-  "plan_delegacion": [
-    {
-      "area": "finanzas",
-      "puesto": "CFO Externo / Asesor Financiero",
-      "salario_estimado": "$12,000 - $18,000 MXN/mes (o por honorarios)",
-      "habilidades_clave": ["Contabilidad fiscal", "Proyección de flujo de caja", "Gestión de créditos"],
-      "descripcion_vacante": "Se busca asesor financiero para supervisar tesorería, impuestos y presupuesto mensual de..."
-    }
-  ],
-  "nivel_cuantico_actual": 0,
-  "salto_cuantico_siguiente": {
-    "nivel_meta": 1,
-    "nombre_salto": "Primer Salto Cuántico (1 a 5 empleados)",
-    "requisitos": [
-      "Contratar responsable para el área débil detectada",
-      "Documentar el proceso operativo diario en manual de 1 página"
-    ]
-  },
-  "independencia_fundador": 0.20,
-  "resumen_ejecutivo_cuantico": "Resumen sintético de 2 oraciones del diagnóstico del fundador."
-}
+Devuelve ÚNICAMENTE un objeto JSON válido con los scores, antipatrones detectados y plan_delegacion específico.
 `;
 
-  try {
-    const { primaryProvider, apiKey, groqKey, nvidiaKey, lmStudioEndpoint, endpoint, model } = aiConfig || {};
-    const prov = primaryProvider || 'groq';
-    const responseText = await callAiProvider(
-      { provider: prov, apiKey, groqKey, nvidiaKey, endpoint: prov === 'lmstudio' ? lmStudioEndpoint : endpoint, model: model || 'groq/compound-mini' },
-      prompt,
-      false
-    );
+      const { primaryProvider, apiKey, groqKey, nvidiaKey, lmStudioEndpoint, endpoint, model } = aiConfig;
+      const prov = primaryProvider || 'groq';
+      const responseText = await callAiProvider(
+        { provider: prov, apiKey, groqKey, nvidiaKey, endpoint: prov === 'lmstudio' ? lmStudioEndpoint : endpoint, model: model || 'groq/compound-mini' },
+        prompt,
+        false
+      );
 
-    const cleanedText = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
-    return JSON.parse(cleanedText);
-  } catch (error) {
-    console.warn("Error evaluando perfil cuántico con IA, usando fallback heurístico:", error);
+      const cleaned = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
+      const aiData = JSON.parse(cleaned);
 
-    // Fallback heurístico inteligente
-    const expText = ((semillaData?.emprendedor?.experiencia || '') + ' ' + rawText).toLowerCase();
-    
-    const hasFin = expText.includes('financ') || expText.includes('conta') || expText.includes('banca') || expText.includes('mba');
-    const hasOp = expText.includes('técnic') || expText.includes('tecnic') || expText.includes('ingenier') || expText.includes('producc') || expText.includes('cocin') || expText.includes('corte');
-    const hasAdmin = expText.includes('ventas') || expText.includes('lider') || expText.includes('geren') || expText.includes('equipo') || expText.includes('rrhh');
-
-    return {
-      scores: {
-        finanzas: {
-          score: hasFin ? 0.8 : 0.3,
-          nivel: hasFin ? 'fuerte' : 'débil',
-          evidencia: hasFin ? 'Experiencia previa en finanzas o contabilidad.' : 'No se detecta background financiero sólido. Requiere apoyo externo.'
-        },
-        operativo: {
-          score: hasOp ? 0.85 : 0.4,
-          nivel: hasOp ? 'fuerte' : 'moderado',
-          evidencia: hasOp ? 'Conocimiento técnico y operativo directo del producto/servicio.' : 'Experiencia operativa básica o en desarrollo.'
-        },
-        administrativo: {
-          score: hasAdmin ? 0.75 : 0.45,
-          nivel: hasAdmin ? 'fuerte' : 'moderado',
-          evidencia: hasAdmin ? 'Experiencia en gestión de ventas y liderazgo.' : 'Habilidades administrativas en desarrollo.'
-        }
-      },
-      antipatrones: [
-        {
-          codigo: 'hace_todo_el_mismo',
-          nombre: 'Fusión Atómica (Hace todo él mismo)',
-          detectado: (!hasFin && !hasOp && !hasAdmin) || (hasFin && hasOp && hasAdmin),
-          riesgo: 'Querer abarcar las 3 áreas atómicas genera cuellos de botella y estancamiento.',
-          recomendacion: 'Establecer plan de delegación prioritario en el área de menor dominio.'
-        }
-      ],
-      plan_delegacion: [
-        {
-          area: hasFin ? 'operativo' : 'finanzas',
-          puesto: hasFin ? 'Encargado de Operaciones / Jefe de Planta' : 'Contador / CFO Externo',
-          salario_estimado: '$12,000 - $18,000 MXN/mes',
-          habilidades_clave: hasFin ? ['Control de calidad', 'Procesos'] : ['Flujo de caja', 'Impuestos'],
-          descripcion_vacante: `Se busca profesional responsable para fortalecer el área de ${hasFin ? 'Operaciones' : 'Finanzas'}...`
-        }
-      ],
-      nivel_cuantico_actual: 0,
-      salto_cuantico_siguiente: {
-        nivel_meta: 1,
-        nombre_salto: 'Primer Salto Cuántico (1 a 5 empleados)',
-        requisitos: [
-          'Delegar la gestión del área débil',
-          'Asegurar autonomía operativa inicial'
-        ]
-      },
-      independencia_fundador: 0.25,
-      resumen_ejecutivo_cuantico: 'Diagnóstico preliminar: El fundador muestra un perfil operativo enfocado. Se recomienda delegar el control financiero y administrativo para asegurar escalabilidad.'
-    };
+      return {
+        ...baseResult,
+        ...aiData,
+        hasAtomicFusion: aiData.antipatrones?.some(ap => ap.codigo === 'hace_todo_el_mismo') ?? baseResult.hasAtomicFusion,
+        isBalanced: !aiData.antipatrones?.some(ap => ap.codigo === 'hace_todo_el_mismo')
+      };
+    } catch (err) {
+      console.warn('Fallback a diagnóstico heurístico cuántico:', err.message);
+    }
   }
+
+  return baseResult;
 }
+
+// Alias de retrocompatibilidad para Anteproyecto.jsx y vistas anteriores
+export const evaluateQuantumProfile = async (aiConfig, semillaData, rawText = '') => {
+  return runQuantumDiagnostic({ aiConfig, semillaData, rawText });
+};

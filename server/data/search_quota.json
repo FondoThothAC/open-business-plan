@@ -8,6 +8,10 @@
       "count": 0,
       "limit": 1000
     },
+    "serper": {
+      "count": 0,
+      "limit": 2500
+    },
     "duckduckgo": {
       "count": 0,
       "limit": 10000

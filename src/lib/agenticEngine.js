@@ -192,7 +192,7 @@ export class TrajectoryRecorder {
 
   exportHarness() {
     return {
-      harnessVersion: 'dsh-session-v0.1',
+      harnessVersion: 'harness-v0.1',
       id: this.id,
       timestamp: this.timestamp,
       pillar: this.pillar,
@@ -391,15 +391,17 @@ export async function runAgenticModuleGeneration({
 
         if (pillar === 'organizacion' || pillar === 'finanzas' || moduleKey === 'inversion' || moduleKey === 'costos' || moduleKey === 'rentabilidad') {
           const toolFinStart = Date.now();
-          const capex = planData?.organizacion?.inversion?.monto_inversion || seed.finanzas?.inversion_inicial || 150000;
+          const { resolveCanonicalCapex } = await import('./finanzas/canonicalCapex.js');
+          const canonicalInfo = resolveCanonicalCapex(planData, seed);
+          const capex = canonicalInfo.capex;
           const opex = planData?.organizacion?.costos?.total_costos_fijos || 30000;
           const sales = planData?.mercado?.ventas?.proyeccion_mensual || 75000;
 
           notifyStep('tool_call', {
             title: 'Ronda 1: Motor Financiero Exacto',
             toolName: 'tool_financial_engine',
-            toolArgs: { inversionInicial: capex, costosFijosMensuales: opex, ventasMensualesEstimadas: sales },
-            content: `Calculando métricas matemáticas de viabilidad para CAPEX de $${capex}.`,
+            toolArgs: { inversionInicial: capex, costosFijosMensuales: opex, ventasMensualesEstimadas: sales, source: canonicalInfo.source },
+            content: `Calculando métricas matemáticas de viabilidad para CAPEX canónico de $${capex.toLocaleString()} (fuente: ${canonicalInfo.source}).`,
             durationMs: 0
           });
 
