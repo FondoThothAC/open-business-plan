@@ -59,6 +59,7 @@ const KEYS = {
   banxico:      import.meta.env.VITE_BANXICO_KEY      || '',
   alphaVantage: import.meta.env.VITE_ALPHAVANTAGE_KEY || '38CEHMYW5CGOHUX1',
   tavily:       import.meta.env.VITE_TAVILY_KEY       || '',
+  brave:        import.meta.env.VITE_BRAVE_SEARCH_KEY || '',
 };
 
 const createEmptyPlan = (projectType = 'business') => {
@@ -125,7 +126,7 @@ const createEmptyPlan = (projectType = 'business') => {
       search: {
         provider: 'duckduckgo',
         apiKey: KEYS.tavily || '',
-        braveApiKey: '',
+        braveApiKey: KEYS.brave || '',
         enableDdg: true,
         scraperEngine: 'local',
         allowPaidTier: false,
