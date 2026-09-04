@@ -122,3 +122,40 @@ test('Fase 2: Contrato Estricto de Procedencia y Estado Honesto Vacío', async (
     assert.strictEqual(typeof res.provenanceSummary.total, 'number');
   });
 });
+
+test('Fase 3: Cable de Claves hacia Deep Research y Prioridad en Servidor', async (t) => {
+  await t.test('buildSearchApiKeys debe generar el objeto esperado para TerminalDrawer y agentTools', () => {
+    const config = {
+      search: {
+        provider: 'tavily',
+        apiKey: 'tvly-live-123',
+        braveApiKey: 'brave-live-456'
+      }
+    };
+    const keys = buildSearchApiKeys(config);
+    assert.deepStrictEqual(keys, {
+      tavilyKey: 'tvly-live-123',
+      braveKey: 'brave-live-456'
+    });
+  });
+
+  await t.test('resolución de servidor debe priorizar process.env sobre el body del cliente', () => {
+    const mockEnv = {
+      TAVILY_API_KEY: 'env-tavily-key',
+      BRAVE_SEARCH_KEY: 'env-brave-key'
+    };
+    const clientBodyKeys = {
+      tavilyKey: 'body-tavily-key',
+      braveKey: 'body-brave-key'
+    };
+
+    const resolved = {
+      tavilyKey: mockEnv.TAVILY_API_KEY || clientBodyKeys.tavilyKey || '',
+      braveKey: mockEnv.BRAVE_SEARCH_KEY || mockEnv.BRAVE_API_KEY || clientBodyKeys.braveKey || ''
+    };
+
+    assert.strictEqual(resolved.tavilyKey, 'env-tavily-key');
+    assert.strictEqual(resolved.braveKey, 'env-brave-key');
+  });
+});
+

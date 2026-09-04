@@ -2301,6 +2301,14 @@ app.post('/api/research/start', async (req, res) => {
     const { query, domain = 'mercado', depth = 'rapido', forcePaidTier = false, apiKeys = {} } = req.body;
     if (!query) return res.status(400).json({ success: false, error: 'Query requerida' });
 
+    // Prioridad: process.env del servidor > apiKeys pasadas en el payload del cliente
+    const resolvedApiKeys = {
+      tavilyKey: process.env.TAVILY_API_KEY || apiKeys.tavilyKey || apiKeys.apiKey || '',
+      braveKey: process.env.BRAVE_SEARCH_KEY || process.env.BRAVE_API_KEY || apiKeys.braveKey || apiKeys.braveApiKey || '',
+      exaKey: process.env.EXA_API_KEY || apiKeys.exaKey || '',
+      perplexityKey: process.env.PERPLEXITY_API_KEY || apiKeys.perplexityKey || ''
+    };
+
     const taskId = `research_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
     const taskRecord = {
       id: taskId,
@@ -2338,7 +2346,7 @@ app.post('/api/research/start', async (req, res) => {
           domain,
           depth,
           forcePaidTier,
-          apiKeys,
+          apiKeys: resolvedApiKeys,
           onLog: (msg) => {
             taskRecord.logs.push(msg);
             broadcastLog({ type: 'research_log', taskId, message: msg });

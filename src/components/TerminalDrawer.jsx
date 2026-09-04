@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { getApiBase } from '../config/apiConfig.js';
 import { usePlan } from '../context/PlanContext.jsx';
+import { buildSearchApiKeys } from '../lib/tools/provenance.js';
 
 export default function TerminalDrawer({ isOpen, onToggle }) {
   const { planData } = usePlan();
@@ -94,7 +95,7 @@ export default function TerminalDrawer({ isOpen, onToggle }) {
           domain: researchDomain,
           depth: researchDepth,
           forcePaidTier,
-          apiKeys: planData?.config?.ai || {}
+          apiKeys: buildSearchApiKeys(planData?.config)
         })
       });
 

@@ -6,7 +6,7 @@
 
 import { estimateBusinessMetrics, classifyEstablishmentType, calculateOptimalLocation } from './territorialEngine.js';
 import { getApiBase } from '../config/apiConfig.js';
-import { summarizeProvenance } from './tools/provenance.js';
+import { summarizeProvenance, buildSearchApiKeys } from './tools/provenance.js';
 
 export function runQuantumDiagnostic({ areas = ['operativo'], _teamSize = 3 } = {}) {
   const normalizedAreas = (areas || []).map(a => String(a).toLowerCase().trim());
@@ -198,9 +198,9 @@ async function _executeAgentToolInternal(toolName, args, planContext = {}) {
           query: args.query || seedGiro || 'Investigación de Mercado',
           domain: args.domain || 'mercado',
           depth: args.depth || 'rapido',
-          forcePaidTier: Boolean(args.forcePaidTier),
+          forcePaidTier: Boolean(args.forcePaidTier || planContext?.config?.search?.allowPaidTier),
           simulateQuotaExhausted: Boolean(args.simulateQuotaExhausted),
-          apiKeys: planContext?.config?.ai || {},
+          apiKeys: buildSearchApiKeys(planContext?.config),
           onLog: args.onLog || (() => {})
         });
         return {
