@@ -5,6 +5,7 @@ import { getApiBase } from '../config/apiConfig';
 import { slugify, KNOWN_PROJECT_SLUGS } from '../config/urlRouting';
 import { saveProjectToIDB, loadProjectFromIDB, migrateFromLocalStorage } from '../lib/storage/indexedDbStorage';
 import { runAgenticModuleGeneration } from '../lib/agenticEngine';
+import { normalizeSearchConfig } from '../lib/tools/provenance';
 
 const EXAMPLE_FRAMEWORK_MAP = {
   brujula: 'business',
@@ -121,11 +122,13 @@ const createEmptyPlan = (projectType = 'business') => {
       moduleOrder: [],
       dataSources: [], // [{ id, type: 'auto'|'manual', title, url, description }]
       search: {
-        provider: 'tavily',
-        tavilyApiKey: '',
-        enableDdg: true,          // DuckDuckGo activo por defecto (gratis)
-        duckDuckGoEnabled: true,  // Alias usado en Configuracion.jsx
-        scraperEngine: 'local'    // Puppeteer Stealth activo por defecto (gratis)
+        provider: 'duckduckgo',
+        apiKey: '',
+        braveApiKey: '',
+        enableDdg: true,
+        scraperEngine: 'local',
+        allowPaidTier: false,
+        failover: true
       },
       regionalSettings: {
         country: 'Mexico',
@@ -200,6 +203,9 @@ export const PlanProvider = ({ children }) => {
       if (!merged.config.activeMethodologies) {
         merged.config.activeMethodologies = [merged.config.projectType || 'business'];
       }
+      if (merged.config) {
+        merged.config.search = normalizeSearchConfig(merged.config.search);
+      }
       return merged;
     }
     try {
@@ -232,6 +238,9 @@ export const PlanProvider = ({ children }) => {
 
       if (!merged.config.activeMethodologies) {
         merged.config.activeMethodologies = [merged.config.projectType || 'business'];
+      }
+      if (merged.config) {
+        merged.config.search = normalizeSearchConfig(merged.config.search);
       }
       return merged;
     } catch {
@@ -556,6 +565,9 @@ export const PlanProvider = ({ children }) => {
     if (!merged.config.activeMethodologies) {
       merged.config.activeMethodologies = [merged.config.projectType || 'business'];
     }
+    if (merged.config) {
+      merged.config.search = normalizeSearchConfig(merged.config.search);
+    }
     setPlanData(merged);
   };
 
@@ -572,6 +584,9 @@ export const PlanProvider = ({ children }) => {
       const merged = deepMerge(fresh, data);
       if (!merged.config.activeMethodologies) {
         merged.config.activeMethodologies = [merged.config.projectType || 'business'];
+      }
+      if (merged.config) {
+        merged.config.search = normalizeSearchConfig(merged.config.search);
       }
       setPlanData(merged);
       

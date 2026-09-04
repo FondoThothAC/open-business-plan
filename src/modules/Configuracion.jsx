@@ -9,6 +9,7 @@ import ApiQuotaMeter from '../components/ApiQuotaMeter';
 import { FRAMEWORKS } from '../config/frameworks';
 import { getApiBase, safeFetchJson } from '../config/apiConfig';
 import { API_COSTS } from '../config/pricing';
+import { normalizeSearchConfig } from '../lib/tools/provenance';
 const CTX_PRESETS = [
   { label: '8k',   value: 8192   },
   { label: '16k',  value: 16384  },
@@ -552,7 +553,7 @@ export default function Configuracion() {
   };
 
   // [DDD] DuckDuckGo y Puppeteer habilitados por defecto (alternativa gratuita)
-  const searchConfig = planData.config?.search || { provider: 'tavily', duckDuckGoEnabled: true, apiKey: '' };
+  const searchConfig = normalizeSearchConfig(planData.config?.search);
 
   const handleLogoUpload = (e) => {
     const file = e.target.files[0];
@@ -2222,14 +2223,14 @@ export default function Configuracion() {
         </div>
         
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          {/* Opciones de Hardware Local y Modo Desconectado */}
+          {/* Opciones de Hardware Local, DuckDuckGo y Failover */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
             <div style={{ background: 'var(--bg-panel-hover)', padding: '1rem', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
               <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
                 <input 
                   type="checkbox" 
-                  checked={searchConfig.duckDuckGoEnabled !== false}
-                  onChange={(e) => handleSearchConfigChange('duckDuckGoEnabled', e.target.checked)}
+                  checked={searchConfig.enableDdg !== false}
+                  onChange={(e) => handleSearchConfigChange('enableDdg', e.target.checked)}
                   style={{ width: '1.1rem', height: '1.1rem' }}
                 />
                 <span style={{ fontSize: '0.85rem' }}>✅ <strong>DuckDuckGo Scraper</strong> (Gratis, sin API key)</span>
@@ -2239,8 +2240,8 @@ export default function Configuracion() {
               <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
                 <input 
                   type="checkbox" 
-                  checked={searchConfig.useLocalHardware !== false}
-                  onChange={(e) => handleSearchConfigChange('useLocalHardware', e.target.checked)}
+                  checked={searchConfig.scraperEngine !== 'none'}
+                  onChange={(e) => handleSearchConfigChange('scraperEngine', e.target.checked ? 'local' : 'none')}
                   style={{ width: '1.1rem', height: '1.1rem' }}
                 />
                 <span style={{ fontSize: '0.85rem' }}>💻 <strong>Aprovechar Hardware Local</strong> (Puppeteer/Chromium local)</span>
@@ -2248,21 +2249,61 @@ export default function Configuracion() {
             </div>
           </div>
 
-          {/* Selector de Cascada / Prioridad */}
-          <div className="form-group">
-            <label className="form-label">Estrategia de Búsqueda y Cascada de Costos</label>
-            <select 
-              className="form-control"
-              value={searchConfig.tierPreference || 'tier1_first'}
-              onChange={(e) => handleSearchConfigChange('tierPreference', e.target.value)}
-            >
-              <option value="tier1_first">⚡ Fila 1 Primero (Freemium/Local: Tavily/Brave Free + INEGI + DuckDuckGo) [Recomendado - Ahorro de Tokens]</option>
-              <option value="tier2_premium">💎 Fila 2 Premium Directa (Exa.ai Neural B2B + Perplexity Sonar Pro)</option>
-              <option value="local_only">🔒 Modo 100% Local / Desconectado (DuckDuckGo + Hardware Local)</option>
-            </select>
-            <small style={{ color: 'var(--text-secondary)', marginTop: '0.4rem', display: 'block', fontSize: '0.75rem' }}>
-              La cascada agota primero las cuotas gratuitas mensuales (Tavily 1,000 + Brave 2,000 req/mes) antes de recurrir a servicios de pago.
-            </small>
+          {/* Selector de Proveedor Primario Canónico y Cascada */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div className="form-group">
+              <label className="form-label">Motor de Búsqueda Primario</label>
+              <select
+                className="form-control"
+                value={searchConfig.provider || 'duckduckgo'}
+                onChange={(e) => handleSearchConfigChange('provider', e.target.value)}
+              >
+                <option value="duckduckgo">🦆 DuckDuckGo (Gratis / Sin API key / Sin tarjeta)</option>
+                <option value="tavily">📡 Tavily Search (1,000 búsquedas gratis/mes)</option>
+                <option value="brave">🦁 Brave Search API (2,000 queries gratis/mes)</option>
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Estrategia de Búsqueda y Cascada de Costos</label>
+              <select 
+                className="form-control"
+                value={searchConfig.allowPaidTier ? 'tier2_allowed' : 'tier1_first'}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  handleSearchConfigChange('allowPaidTier', val === 'tier2_allowed');
+                }}
+              >
+                <option value="tier1_first">⚡ Fila 1 Primero (Freemium/Local: Tavily/Brave Free + INEGI + DuckDuckGo) [Recomendado - Sin Tarjeta]</option>
+                <option value="tier2_allowed">💎 Permitir Fila 2 Premium (Exa.ai / Perplexity Sonar Pro autorizados)</option>
+              </select>
+            </div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div style={{ background: 'var(--bg-panel-hover)', padding: '0.85rem', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
+                <input 
+                  type="checkbox" 
+                  checked={searchConfig.failover !== false}
+                  onChange={(e) => handleSearchConfigChange('failover', e.target.checked)}
+                  style={{ width: '1.1rem', height: '1.1rem' }}
+                />
+                <span style={{ fontSize: '0.8rem' }}>🔄 <strong>Failover Automático:</strong> Si un proveedor falla, salta al siguiente.</span>
+              </label>
+            </div>
+
+            <div style={{ background: 'var(--bg-panel-hover)', padding: '0.85rem', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
+                <input 
+                  type="checkbox" 
+                  checked={Boolean(searchConfig.allowPaidTier)}
+                  onChange={(e) => handleSearchConfigChange('allowPaidTier', e.target.checked)}
+                  style={{ width: '1.1rem', height: '1.1rem' }}
+                />
+                <span style={{ fontSize: '0.8rem' }}>💳 <strong>Autorizar Capa Paga:</strong> Permite consumo de saldo en APIs de pago.</span>
+              </label>
+            </div>
           </div>
 
           {/* FILA 1: FREEMIUM (Tavily Free & Brave Search) */}
@@ -2296,8 +2337,8 @@ export default function Configuracion() {
                   type="password" 
                   className="form-control" 
                   placeholder="BSA..."
-                  value={searchConfig.braveKey || ''}
-                  onChange={(e) => handleSearchConfigChange('braveKey', e.target.value)}
+                  value={searchConfig.braveApiKey || ''}
+                  onChange={(e) => handleSearchConfigChange('braveApiKey', e.target.value)}
                 />
                 <small style={{ color: 'var(--text-secondary)', fontSize: '0.7rem' }}>
                   Índice web independiente sin censura ni tracking comercial.
