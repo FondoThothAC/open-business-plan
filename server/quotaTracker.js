@@ -14,7 +14,8 @@ const QUOTA_FILE = path.join(__dirname, 'data', 'search_quota.json');
 // Límites por defecto de cortesía antes de pausar y solicitar autorización
 export const DEFAULT_QUOTA_LIMITS = {
   tavily: 950,     // Nivel gratuito permite 1,000/mes; alertar en 950
-  brave: 2000,     // Nivel gratuito permite 2,000/mes
+  brave: 1000,     // Con los $5 de crédito gratuito (~1,000 req)
+  serper: 2500,    // 2,500 búsquedas gratuitas de Google
   duckduckgo: 10000 // Sin límite factual de pago, solo salvaguarda local
 };
 

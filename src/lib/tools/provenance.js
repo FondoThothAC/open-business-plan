@@ -11,6 +11,7 @@
 export function normalizeSearchConfig(rawSearch = {}) {
   const apiKey = rawSearch.apiKey || rawSearch.tavilyApiKey || '';
   const braveApiKey = rawSearch.braveApiKey || rawSearch.braveKey || '';
+  const serperApiKey = rawSearch.serperApiKey || rawSearch.serperKey || '';
   const enableDdg = rawSearch.enableDdg !== undefined
     ? Boolean(rawSearch.enableDdg)
     : (rawSearch.duckDuckGoEnabled !== undefined ? Boolean(rawSearch.duckDuckGoEnabled) : true);
@@ -24,6 +25,7 @@ export function normalizeSearchConfig(rawSearch = {}) {
     provider,
     apiKey,
     braveApiKey,
+    serperApiKey,
     enableDdg,
     scraperEngine,
     allowPaidTier,
@@ -41,7 +43,8 @@ export function buildSearchApiKeys(config = {}) {
   const search = config?.search ? normalizeSearchConfig(config.search) : normalizeSearchConfig(config);
   return {
     tavilyKey: search.apiKey || '',
-    braveKey: search.braveApiKey || ''
+    braveKey: search.braveApiKey || '',
+    serperKey: search.serperApiKey || ''
   };
 }
 

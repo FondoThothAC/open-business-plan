@@ -60,6 +60,7 @@ const KEYS = {
   alphaVantage: import.meta.env.VITE_ALPHAVANTAGE_KEY || '38CEHMYW5CGOHUX1',
   tavily:       import.meta.env.VITE_TAVILY_KEY       || '',
   brave:        import.meta.env.VITE_BRAVE_SEARCH_KEY || '',
+  serper:       import.meta.env.VITE_SERPER_KEY       || '',
 };
 
 const createEmptyPlan = (projectType = 'business') => {
@@ -127,6 +128,7 @@ const createEmptyPlan = (projectType = 'business') => {
         provider: 'duckduckgo',
         apiKey: KEYS.tavily || '',
         braveApiKey: KEYS.brave || '',
+        serperApiKey: KEYS.serper || '',
         enableDdg: true,
         scraperEngine: 'local',
         allowPaidTier: false,

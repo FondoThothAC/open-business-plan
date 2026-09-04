@@ -21,8 +21,8 @@
 import { executeAgentTool } from '../agentTools.js';
 
 export const SEARCH_TIERS = {
-  tier1_free: ['inegi_denue', 'banxico_sie', 'duckduckgo', 'tavily_free', 'brave', 'local_puppeteer'],
-  tier2_premium: ['exa', 'perplexity', 'tavily_pro', 'serper']
+  tier1_free: ['inegi_denue', 'banxico_sie', 'duckduckgo', 'tavily_free', 'brave', 'serper_free', 'local_puppeteer'],
+  tier2_premium: ['exa', 'perplexity', 'tavily_pro']
 };
 
 export const PRICING_ESTIMATES = {
@@ -30,7 +30,7 @@ export const PRICING_ESTIMATES = {
   perplexity: 0.010,  // ~$10 USD por 1,000 queries Sonar
   exa: 0.008,         // ~$8 USD por 1,000 queries semánticas de empresas
   brave: 0.000,       // 2,000 consultas gratis al mes
-  serper: 0.001,      // 2,500 queries de prueba gratis
+  serper: 0.000,      // 2,500 queries gratis iniciales
   free_tier: 0.000    // Capa base sin costo de API
 };
 
@@ -165,6 +165,77 @@ async function fetchTavilySearch(query, apiKey, depth = 'rapido') {
 }
 
 /**
+ * Conector para Google Serper API (Fila 1 — 2,500 búsquedas gratuitas de Google)
+ */
+async function fetchSerperSearch(query, apiKey, depth = 'rapido') {
+  if (!apiKey) return null;
+  const num = depth === 'profundo' ? 8 : 4;
+  const res = await fetch('https://google.serper.dev/search', {
+    method: 'POST',
+    headers: {
+      'X-API-KEY': apiKey,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      q: query,
+      gl: 'mx',
+      hl: 'es',
+      num
+    })
+  });
+  if (!res.ok) throw new Error(`Google Serper HTTP ${res.status}`);
+  const data = await res.json();
+  const items = data?.organic || [];
+  return items.map(it => ({
+    title: it.title,
+    url: it.link,
+    snippet: it.snippet || '',
+    score: 0.92,
+    provider: 'Google Serper Search',
+    provenance: 'verified_real',
+    retrievedAt: new Date().toISOString(),
+    confidenceScore: 0.94
+  }));
+}
+
+/**
+ * Conector para Google Serper Places API (Extracción especializada de Competidores Físicos y Locales)
+ */
+export async function fetchSerperPlaces(query, apiKey) {
+  if (!apiKey) return [];
+  const res = await fetch('https://google.serper.dev/places', {
+    method: 'POST',
+    headers: {
+      'X-API-KEY': apiKey,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      q: query,
+      gl: 'mx',
+      hl: 'es',
+      num: 10
+    })
+  });
+  if (!res.ok) throw new Error(`Google Serper Places HTTP ${res.status}`);
+  const data = await res.json();
+  const places = data?.places || [];
+  return places.map(p => ({
+    name: p.title,
+    address: p.address || '',
+    latitude: p.latitude || null,
+    longitude: p.longitude || null,
+    rating: p.rating || null,
+    ratingCount: p.ratingCount || 0,
+    category: p.category || 'Competidor Local',
+    phoneNumber: p.phoneNumber || '',
+    website: p.website || null,
+    provider: 'Google Maps (Serper Places)',
+    provenance: 'verified_real',
+    retrievedAt: new Date().toISOString()
+  }));
+}
+
+/**
  * Ejecuta una investigación profunda en el ecosistema híbrido
  * Prioriza agotar Fila 1 (Gratis/Freemium/Local) antes de activar Fila 2 (Premium).
  */
@@ -216,9 +287,11 @@ export async function runDeepResearch({
   // 1. DuckDuckGo: Respaldo gratuito ilimitado.
   // 2. Tavily: 1,000 búsquedas/mes con tu cuenta Researcher.
   // 3. Brave Search: 1,000 búsquedas/mes con tus $5 de crédito gratuito.
+  // 4. Google Serper: 2,500 búsquedas gratuitas de Google Search / Google Places.
   // ─────────────────────────────────────────────────────────────────────────
   const braveKey = apiKeys.braveKey || (typeof process !== 'undefined' ? process.env.BRAVE_SEARCH_KEY : null);
   const tavilyKey = apiKeys.tavilyKey || (typeof process !== 'undefined' ? process.env.TAVILY_API_KEY : null);
+  const serperKey = apiKeys.serperKey || (typeof process !== 'undefined' ? process.env.SERPER_API_KEY : null);
   const exaKey = apiKeys.exaKey || (typeof process !== 'undefined' ? process.env.EXA_API_KEY : null);
   const perplexityKey = apiKeys.perplexityKey || (typeof process !== 'undefined' ? process.env.PERPLEXITY_API_KEY : null);
 
@@ -280,7 +353,23 @@ export async function runDeepResearch({
           onLog(`✅ Brave Search devolvió ${braveSources.length} fuentes reales.`);
         }
       } catch (err) {
-        onLog(`⚠️ Brave Search no disponible (${err.message})...`);
+        onLog(`⚠️ Brave Search no disponible (${err.message}). Pasando a Google Serper...`);
+      }
+    }
+
+    // 1.4 Google Serper API (2,500 búsquedas gratuitas de Google)
+    if (serperKey && sources.length === 0) {
+      try {
+        onLog('🔍 Consultando Google Serper API (2,500 búsquedas gratuitas)...');
+        const serperSources = await fetchSerperSearch(query, serperKey, depth);
+        if (serperSources && serperSources.length > 0) {
+          sources.push(...serperSources);
+          costAccumulated += PRICING_ESTIMATES.serper;
+          gatheredTier1 = true;
+          onLog(`✅ Google Serper devolvió ${serperSources.length} resultados orgánicos de Google.`);
+        }
+      } catch (err) {
+        onLog(`⚠️ Google Serper no disponible (${err.message})...`);
       }
     }
   }
@@ -325,9 +414,10 @@ export async function runDeepResearch({
   }
 
   // ─────────────────────────────────────────────────────────────────────────
-  // FASE 3: ENRIQUECIMIENTO CON DATOS OFICIALES INEGI DENUE
+  // FASE 3: ENRIQUECIMIENTO CON DATOS OFICIALES (INEGI DENUE + GOOGLE PLACES)
   // ─────────────────────────────────────────────────────────────────────────
   if (domain === 'competencia' || domain === 'mercado' || domain === 'maquinaria') {
+    // 3.1 Cruzar con INEGI DENUE
     try {
       onLog('🗺️ Cruzando con base de datos geoespacial de establecimientos (INEGI DENUE)...');
       const inegiResult = await executeAgentTool('tool_inegi_denue', {
@@ -353,6 +443,31 @@ export async function runDeepResearch({
       }
     } catch {
       // Continuar con lo recopilado
+    }
+
+    // 3.2 Cruzar con Google Maps Places vía Serper si está disponible
+    if (serperKey) {
+      try {
+        onLog('📍 Verificando fichas de negocios y competidores en Google Maps (Serper Places)...');
+        const places = await fetchSerperPlaces(query, serperKey);
+        if (places && places.length > 0) {
+          places.slice(0, 3).forEach(pl => {
+            sources.push({
+              title: `${pl.name} (${pl.category})`,
+              url: pl.website || 'https://maps.google.com',
+              snippet: `${pl.address} — Calificación Google: ${pl.rating || 'N/A'}★ (${pl.ratingCount} reseñas). Tel: ${pl.phoneNumber || 'N/A'}`,
+              score: 0.93,
+              provider: 'Google Maps Places',
+              provenance: 'verified_real',
+              retrievedAt: pl.retrievedAt,
+              confidenceScore: 0.95
+            });
+          });
+          onLog(`✅ Google Maps aportó ${places.length} competidores físicos verificados.`);
+        }
+      } catch (err) {
+        // Continuar silenciosamente
+      }
     }
   }
 

@@ -377,6 +377,7 @@ app.post('/api/search', async (req, res) => {
     provider = 'duckduckgo',
     apiKey = '',
     braveApiKey = '',
+    serperApiKey = '',
     failover = true,
     allowPaidTier = false,
     limit = 5
@@ -549,6 +550,70 @@ app.post('/api/search', async (req, res) => {
           return res.json({ success: true, provider: 'duckduckgo', cascadedFrom: 'brave', results });
         }
         throw braveErr;
+      }
+
+    } else if (normProvider === 'serper' || normProvider === 'google_serper') {
+      const resolvedKey = serperApiKey || apiKey || process.env.SERPER_API_KEY || '';
+      if (!resolvedKey) {
+        if (failover) {
+          console.warn('[API Search] Sin API key para Google Serper. Derivando a DuckDuckGo...');
+          const searchResults = await safeDdgSearch(query);
+          const results = (searchResults || []).slice(0, limit).map(r => ({
+            title: r.title,
+            url: r.url,
+            snippet: r.description || r.snippet || '',
+            provider: 'duckduckgo',
+            provenance: 'real'
+          }));
+          incrementSearchQuota('duckduckgo');
+          return res.json({ success: true, provider: 'duckduckgo', cascadedFrom: 'serper', results });
+        }
+        return res.status(400).json({ success: false, error: 'Se requiere API key de Google Serper' });
+      }
+
+      try {
+        const response = await fetch('https://google.serper.dev/search', {
+          method: 'POST',
+          headers: {
+            'X-API-KEY': resolvedKey,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            q: query,
+            gl: 'mx',
+            hl: 'es',
+            num: limit
+          }),
+          signal: AbortSignal.timeout(9000)
+        });
+        if (!response.ok) {
+          throw new Error(`Google Serper HTTP ${response.status}`);
+        }
+        const data = await response.json();
+        const results = (data.organic || []).map(r => ({
+          title: r.title,
+          url: r.link,
+          snippet: r.snippet || '',
+          provider: 'serper',
+          provenance: 'real'
+        }));
+        incrementSearchQuota('serper');
+        return res.json({ success: true, provider: 'serper', results });
+      } catch (serperErr) {
+        if (failover) {
+          console.warn('[API Search] Fallo en Serper:', serperErr.message, 'Ejecutando failover a DuckDuckGo...');
+          const searchResults = await safeDdgSearch(query);
+          const results = (searchResults || []).slice(0, limit).map(r => ({
+            title: r.title,
+            url: r.url,
+            snippet: r.description || r.snippet || '',
+            provider: 'duckduckgo',
+            provenance: 'real'
+          }));
+          incrementSearchQuota('duckduckgo');
+          return res.json({ success: true, provider: 'duckduckgo', cascadedFrom: 'serper', results });
+        }
+        throw serperErr;
       }
 
     } else if (normProvider === 'duckduckgo') {

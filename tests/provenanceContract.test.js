@@ -135,13 +135,15 @@ test('Fase 3: Cable de Claves hacia Deep Research y Prioridad en Servidor', asyn
       search: {
         provider: 'tavily',
         apiKey: 'tvly-live-123',
-        braveApiKey: 'brave-live-456'
+        braveApiKey: 'brave-live-456',
+        serperApiKey: 'serper-live-789'
       }
     };
     const keys = buildSearchApiKeys(config);
     assert.deepStrictEqual(keys, {
       tavilyKey: 'tvly-live-123',
-      braveKey: 'brave-live-456'
+      braveKey: 'brave-live-456',
+      serperKey: 'serper-live-789'
     });
   });
 
