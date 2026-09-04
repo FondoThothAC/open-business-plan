@@ -576,6 +576,150 @@ app.get('/api/search/quota', (req, res) => {
 });
 
 // ─────────────────────────────────────────────────────────
+//  Búsqueda de Mercado y Cotizaciones de Maquinaria
+// ─────────────────────────────────────────────────────────
+app.all('/api/market/search', async (req, res) => {
+  const query = req.query.q || req.body?.q || req.body?.query || '';
+  const item = req.query.item || req.body?.item || query;
+  const location = req.query.location || req.body?.location || 'México';
+
+  if (!query && !item) {
+    return res.status(400).json({ success: false, error: 'Parámetro q o item requerido' });
+  }
+
+  const searchQuery = `${item || query} precio cotizacion distribuidor industrial ${location}`;
+
+  try {
+    const rawResults = await safeDdgSearch(searchQuery);
+    const results = (rawResults || []).slice(0, 5).map(r => ({
+      title: r.title,
+      url: r.url,
+      snippet: r.description || r.snippet || '',
+      supplier: r.title ? r.title.split('-')[0].split('|')[0].trim() : 'Distribuidor Industrial',
+      provenance: 'real',
+      provider: 'duckduckgo'
+    }));
+
+    if (results.length === 0) {
+      return res.json({
+        success: true,
+        item,
+        location,
+        results: [],
+        totalFound: 0,
+        provenance: 'none',
+        warning: `Sin cotizaciones verificadas para "${item}" en ${location}. No se fabricaron precios sintéticos.`
+      });
+    }
+
+    return res.json({
+      success: true,
+      item,
+      location,
+      results,
+      totalFound: results.length,
+      provenance: 'real',
+      source: 'DuckDuckGo Industrial Market Search'
+    });
+  } catch (err) {
+    console.warn('[MarketSearch] Error consultando DuckDuckGo:', err.message);
+    return res.json({
+      success: true,
+      item,
+      location,
+      results: [],
+      totalFound: 0,
+      provenance: 'none',
+      warning: `Sin cotizaciones verificadas para "${item}": ${err.message}. No se fabricaron precios sintéticos.`
+    });
+  }
+});
+
+// ─────────────────────────────────────────────────────────
+//  Búsqueda de Proveedores Industriales Reales (DENUE / OSM / DDG)
+// ─────────────────────────────────────────────────────────
+app.all('/api/market/suppliers', async (req, res) => {
+  const category = req.query.category || req.body?.category || req.query.q || req.body?.q || '';
+  const location = req.query.location || req.body?.location || 'Hermosillo, Sonora';
+
+  if (!category) {
+    return res.status(400).json({ success: false, error: 'Parámetro category o q requerido' });
+  }
+
+  try {
+    // 1. Resolver coordenadas geográficas de location
+    let coords = { lat: 29.072967, lng: -110.955919 }; // Hermosillo fallback
+    try {
+      const geoUrl = `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&countrycodes=mx&q=${encodeURIComponent(location)}`;
+      const geoRes = await fetch(geoUrl, {
+        headers: { 'User-Agent': 'OpenPlan/2.5 (local-dev)' },
+        signal: AbortSignal.timeout(4000)
+      });
+      const geoData = await geoRes.json();
+      if (Array.isArray(geoData) && geoData.length > 0) {
+        coords = { lat: Number(geoData[0].lat), lng: Number(geoData[0].lon) };
+      }
+    } catch {
+      // Usar coordenadas por defecto
+    }
+
+    // 2. Consultar busquedaMultiFuente con allowSynthetic = false (solo fuentes factuales)
+    const busqueda = await busquedaMultiFuente({
+      lat: coords.lat,
+      lng: coords.lng,
+      query: `proveedor ${category}`,
+      radius: 5000,
+      allowSynthetic: false
+    });
+
+    const rawCompetidores = busqueda.competidores || [];
+    const suppliers = rawCompetidores.map(b => ({
+      nombre: b.nombre || b.razonSocial,
+      direccion: b.direccion || `${location}`,
+      telefono: b.telefono || 'No disponible',
+      categoria: b.actividad || category,
+      rating: b.rating || 4.5,
+      lat: b.lat,
+      lng: b.lng,
+      fuente: b.fuente,
+      provenance: 'real'
+    }));
+
+    if (suppliers.length === 0) {
+      return res.json({
+        success: true,
+        location,
+        category,
+        suppliers: [],
+        totalFound: 0,
+        provenance: 'none',
+        warning: `Sin proveedores verificados para "${category}" en ${location}. No se fabricaron proveedores sintéticos.`
+      });
+    }
+
+    return res.json({
+      success: true,
+      location,
+      category,
+      suppliers,
+      totalFound: suppliers.length,
+      provenance: 'real'
+    });
+  } catch (err) {
+    console.warn('[MarketSuppliers] Error consultando proveedores:', err.message);
+    return res.json({
+      success: true,
+      location,
+      category,
+      suppliers: [],
+      totalFound: 0,
+      provenance: 'none',
+      warning: `Sin proveedores verificados para "${category}": ${err.message}. No se fabricaron proveedores sintéticos.`
+    });
+  }
+});
+
+// ─────────────────────────────────────────────────────────
 //  Scraping Avanzado (Local Headless)
 // ─────────────────────────────────────────────────────────
 app.post('/api/scrape/social', async (req, res) => {

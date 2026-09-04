@@ -14,6 +14,8 @@ import { executeAgentTool } from '../src/lib/agentTools.js';
 import { busquedaMultiFuente } from '../server/competitorEngine.js';
 import { runDeepResearch } from '../src/lib/tools/deepResearchEngine.js';
 import { checkSearchQuota, incrementSearchQuota, resetSearchQuota } from '../server/quotaTracker.js';
+import { searchMachineryQuotes } from '../src/lib/tools/tool_machinery_search.js';
+import { searchRealSuppliers } from '../src/lib/tools/tool_supplier_search.js';
 
 test('Fase 1: Unificación de Esquema config.search y Migración de Aliases Legacy', async (t) => {
   await t.test('debe normalizar el esquema canónico por defecto', () => {
@@ -380,6 +382,93 @@ test('Fase 6: Soporte para Brave Search, Cuotas Persistidas y Cascada con Autori
     } finally {
       globalThis.fetch = originalFetch;
       resetSearchQuota();
+    }
+  });
+});
+
+test('Fase 7: Endpoints Reales de Maquinaria y Proveedores con Erradicación de Precios Fake', async (t) => {
+  await t.test('searchMachineryQuotes sin resultados debe devolver estado honesto sin fabricar torno CNC de 1.2M', async () => {
+    const originalFetch = globalThis.fetch;
+    try {
+      globalThis.fetch = async () => ({
+        ok: true,
+        json: async () => ({ results: [] })
+      });
+
+      const res = await searchMachineryQuotes('Maquinaria No Existente 99999');
+      assert.strictEqual(res.success, true);
+      assert.strictEqual(res.provenance, 'none');
+      assert.strictEqual(res.totalFound, 0);
+      assert.deepStrictEqual(res.quotes, []);
+      // No debe contener el benchmark hardcodeado
+      assert.strictEqual(res.estimatedRange, undefined);
+      assert.strictEqual(res.verifiedSupplier, undefined);
+      assert.ok(res.warning.includes('Sin cotizaciones verificadas'));
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+
+  await t.test('searchMachineryQuotes con cotizaciones reales debe marcar provenance real', async () => {
+    const originalFetch = globalThis.fetch;
+    try {
+      globalThis.fetch = async () => ({
+        ok: true,
+        json: async () => ({
+          results: [
+            { title: 'Torno CNC Haas ST-10', url: 'https://haas.com', snippet: 'Distribuidor Haas México' }
+          ]
+        })
+      });
+
+      const res = await searchMachineryQuotes('Torno CNC ST-10');
+      assert.strictEqual(res.success, true);
+      assert.strictEqual(res.provenance, 'real');
+      assert.strictEqual(res.totalFound, 1);
+      assert.strictEqual(res.quotes[0].title, 'Torno CNC Haas ST-10');
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+
+  await t.test('searchRealSuppliers sin resultados debe devolver lista vacía sin fabricar Parker Hannifin ni Mobil', async () => {
+    const originalFetch = globalThis.fetch;
+    try {
+      globalThis.fetch = async () => ({
+        ok: true,
+        json: async () => ({ suppliers: [] })
+      });
+
+      const res = await searchRealSuppliers('Insumo Inexistente 99999', 'Polo Norte');
+      assert.strictEqual(res.success, true);
+      assert.strictEqual(res.provenance, 'none');
+      assert.strictEqual(res.totalFound, 0);
+      assert.deepStrictEqual(res.suppliers, []);
+      assert.ok(res.warning.includes('Sin proveedores verificados'));
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+
+  await t.test('searchRealSuppliers con proveedores reales debe reportar provenance real', async () => {
+    const originalFetch = globalThis.fetch;
+    try {
+      globalThis.fetch = async () => ({
+        ok: true,
+        json: async () => ({
+          suppliers: [
+            { nombre: 'Aceros Industriales del Bajío', direccion: 'León, GTO', telefono: '477-100-2000' }
+          ]
+        })
+      });
+
+      const res = await searchRealSuppliers('Aceros', 'León, GTO');
+      assert.strictEqual(res.success, true);
+      assert.strictEqual(res.provenance, 'real');
+      assert.strictEqual(res.totalFound, 1);
+      assert.strictEqual(res.suppliers[0].nombre, 'Aceros Industriales del Bajío');
+    } finally {
+      globalThis.fetch = originalFetch;
     }
   });
 });
