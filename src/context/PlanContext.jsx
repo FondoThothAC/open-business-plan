@@ -58,6 +58,7 @@ const KEYS = {
   denue:        import.meta.env.VITE_DENUE_KEY        || '1b9e230f-2ae0-48db-bd20-8810b1db575e',
   banxico:      import.meta.env.VITE_BANXICO_KEY      || '',
   alphaVantage: import.meta.env.VITE_ALPHAVANTAGE_KEY || '38CEHMYW5CGOHUX1',
+  tavily:       import.meta.env.VITE_TAVILY_KEY       || '',
 };
 
 const createEmptyPlan = (projectType = 'business') => {
@@ -123,7 +124,7 @@ const createEmptyPlan = (projectType = 'business') => {
       dataSources: [], // [{ id, type: 'auto'|'manual', title, url, description }]
       search: {
         provider: 'duckduckgo',
-        apiKey: '',
+        apiKey: KEYS.tavily || '',
         braveApiKey: '',
         enableDdg: true,
         scraperEngine: 'local',
