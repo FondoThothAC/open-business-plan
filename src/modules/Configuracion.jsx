@@ -128,6 +128,7 @@ function estimateMesaCost(contextTokens, model) {
 function useApiStatus(planData) {
   const [tavilyStatus, setTavilyStatus] = useState({ state: 'idle', message: '' });
   const [braveStatus, setBraveStatus] = useState({ state: 'idle', message: '' });
+  const [serperStatus, setSerperStatus] = useState({ state: 'idle', message: '' });
   const [inegiStatus, setInegiStatus] = useState({ state: 'idle', message: '' });
   const [banxicoStatus, setBanxicoStatus] = useState({ state: 'idle', message: '' });
   const [baiStatus, setBaiStatus] = useState({ state: 'idle', message: '' });
@@ -242,6 +243,31 @@ function useApiStatus(planData) {
     }
   };
 
+  const testSerper = async (forcedKey = null) => {
+    const key = forcedKey !== null ? forcedKey : (planData.config?.search?.serperApiKey || '');
+    if (!key) {
+      setSerperStatus({ state: 'idle', message: 'No configurado' });
+      return;
+    }
+    setSerperStatus({ state: 'checking', message: 'Probando...' });
+    try {
+      const backendBase = getApiBase();
+      const res = await fetch(`${backendBase}/api/test/serper`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ apiKey: key })
+      });
+      const data = await safeJsonParse(res);
+      if (data.success) {
+        setSerperStatus({ state: 'online', message: 'En línea ✓' });
+      } else {
+        setSerperStatus({ state: 'offline', message: data.error || 'API Key inválida' });
+      }
+    } catch (err) {
+      setSerperStatus({ state: 'offline', message: err.message });
+    }
+  };
+
   const testInegi = async (forcedToken = null) => {
     const token = forcedToken !== null ? forcedToken : (planData.config?.externalApis?.inegiToken || '');
     if (!token) {
@@ -295,6 +321,7 @@ function useApiStatus(planData) {
   useEffect(() => {
     if (planData?.config?.search?.apiKey) testTavily(planData.config.search.apiKey);
     if (planData?.config?.search?.braveApiKey) testBrave(planData.config.search.braveApiKey);
+    if (planData?.config?.search?.serperApiKey) testSerper(planData.config.search.serperApiKey);
     if (planData?.config?.externalApis?.inegiToken) testInegi(planData.config.externalApis.inegiToken);
     if (planData?.config?.externalApis?.banxicoToken) testBanxico(planData.config.externalApis.banxicoToken);
     if (planData?.config?.ai?.baiKey) testLlmProvider('bai', planData.config.ai.baiKey, setBaiStatus);
@@ -321,6 +348,7 @@ function useApiStatus(planData) {
   return {
     tavilyStatus, setTavilyStatus, testTavily,
     braveStatus, setBraveStatus, testBrave,
+    serperStatus, setSerperStatus, testSerper,
     inegiStatus, setInegiStatus, testInegi,
     banxicoStatus, setBanxicoStatus, testBanxico,
     baiStatus, setBaiStatus, testBai: (k) => testLlmProvider('bai', k || planData.config?.ai?.baiKey, setBaiStatus),
@@ -2412,6 +2440,7 @@ export default function Configuracion() {
               >
                 <optgroup label="⚡ Fila 1 — Sin tarjeta (Gratis / Heurístico)">
                   <option value="duckduckgo">🦆 DuckDuckGo (Gratis / Sin API key / Sin tarjeta)</option>
+                  <option value="serper">🔍 Google Serper API (2,500 búsquedas gratis / Google orgánico)</option>
                   <option value="tavily">📡 Tavily Search (1,000 búsquedas gratis/mes)</option>
                   <option value="brave">🦁 Brave Search API (2,000 queries gratis/mes)</option>
                 </optgroup>
@@ -2432,10 +2461,151 @@ export default function Configuracion() {
                   handleSearchConfigChange('allowPaidTier', val === 'tier2_allowed');
                 }}
               >
-                <option value="tier1_first">⚡ Fila 1 Primero (Freemium/Local: Tavily/Brave Free + INEGI + DuckDuckGo) [Recomendado - Sin Tarjeta]</option>
+                <option value="tier1_first">⚡ Fila 1 Primero (Freemium/Local: DuckDuckGo + Serper + Tavily + Brave) [Recomendado]</option>
                 <option value="tier2_allowed">💎 Permitir Fila 2 Premium (Exa.ai / Perplexity Sonar Pro autorizados)</option>
               </select>
             </div>
+          </div>
+
+          {/* Panel Interactivo de Cascada y Prioridad Fila 1 (DuckDuckGo, Serper, Tavily, Brave) */}
+          <div style={{ background: 'var(--bg-panel-hover)', padding: '1rem', borderRadius: '10px', border: '1px solid var(--border-color)', marginBottom: '0.5rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.6rem' }}>
+              <div style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--accent-color)', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                <span>🎯 Orden de Prioridad en Cascada Fila 1</span>
+                <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontWeight: 400 }}>— Define qué motor se consulta en 1º, 2º, 3º y 4º lugar</span>
+              </div>
+              <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  style={{ fontSize: '0.65rem', padding: '2px 6px' }}
+                  onClick={() => handleSearchConfigChange('tier1Priority', ['duckduckgo', 'serper', 'tavily', 'brave'])}
+                  title="DuckDuckGo primero: 100% libre sin credenciales"
+                >
+                  🦆 DDG 1º
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  style={{ fontSize: '0.65rem', padding: '2px 6px' }}
+                  onClick={() => handleSearchConfigChange('tier1Priority', ['serper', 'duckduckgo', 'tavily', 'brave'])}
+                  title="Google Serper primero: Búsquedas orgánicas oficiales"
+                >
+                  🔍 Serper 1º
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  style={{ fontSize: '0.65rem', padding: '2px 6px' }}
+                  onClick={() => handleSearchConfigChange('tier1Priority', ['tavily', 'serper', 'brave', 'duckduckgo'])}
+                  title="Tavily primero: Sintetizado para IA"
+                >
+                  📡 Tavily 1º
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  style={{ fontSize: '0.65rem', padding: '2px 6px' }}
+                  onClick={() => handleSearchConfigChange('tier1Priority', ['brave', 'serper', 'duckduckgo', 'tavily'])}
+                  title="Brave primero: Privacidad e índice independiente"
+                >
+                  🦁 Brave 1º
+                </button>
+              </div>
+            </div>
+
+            {/* Fichas ordenables de Fila 1 */}
+            {(() => {
+              const currentPriority = Array.isArray(searchConfig.tier1Priority) && searchConfig.tier1Priority.length > 0
+                ? searchConfig.tier1Priority
+                : ['duckduckgo', 'tavily', 'brave', 'serper'];
+
+              const providerLabels = {
+                duckduckgo: { icon: '🦆', name: 'DuckDuckGo', desc: 'Gratis · Sin cuenta ni tarjeta', tag: 'Sin límite' },
+                serper: { icon: '🔍', name: 'Google Serper API', desc: 'Google Search Orgánico + Maps', tag: '2,500 gratis' },
+                tavily: { icon: '📡', name: 'Tavily AI Search', desc: 'Extracción semántica para LLMs', tag: '1,000 gratis' },
+                brave: { icon: '🦁', name: 'Brave Search API', desc: 'Índice global independiente', tag: '2,000 gratis' },
+              };
+
+              const moveItem = (index, direction) => {
+                const newArr = [...currentPriority];
+                const targetIndex = index + direction;
+                if (targetIndex < 0 || targetIndex >= newArr.length) return;
+                const temp = newArr[index];
+                newArr[index] = newArr[targetIndex];
+                newArr[targetIndex] = temp;
+                handleSearchConfigChange('tier1Priority', newArr);
+              };
+
+              return (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.6rem' }}>
+                  {currentPriority.map((pKey, idx) => {
+                    const info = providerLabels[pKey] || { icon: '🌐', name: pKey, desc: '', tag: 'Fila 1' };
+                    return (
+                      <div
+                        key={pKey}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          padding: '0.55rem 0.75rem',
+                          borderRadius: '8px',
+                          background: idx === 0 ? 'rgba(99, 102, 241, 0.12)' : 'rgba(255, 255, 255, 0.03)',
+                          border: idx === 0 ? '1.5px solid var(--accent-color)' : '1px solid rgba(255, 255, 255, 0.08)',
+                        }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', overflow: 'hidden' }}>
+                          <span style={{
+                            width: '20px',
+                            height: '20px',
+                            borderRadius: '50%',
+                            background: idx === 0 ? 'var(--accent-color)' : 'rgba(255, 255, 255, 0.1)',
+                            color: '#fff',
+                            fontSize: '0.7rem',
+                            fontWeight: 800,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            flexShrink: 0
+                          }}>
+                            {idx + 1}
+                          </span>
+                          <div style={{ lineHeight: 1.2, minWidth: 0 }}>
+                            <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                              {info.icon} {info.name}
+                            </div>
+                            <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)' }}>{info.tag}</div>
+                          </div>
+                        </div>
+
+                        <div style={{ display: 'flex', gap: '2px' }}>
+                          <button
+                            type="button"
+                            className="btn btn-secondary btn-sm"
+                            disabled={idx === 0}
+                            onClick={() => moveItem(idx, -1)}
+                            style={{ padding: '2px 5px', fontSize: '0.65rem' }}
+                            title="Mover hacia arriba en la prioridad"
+                          >
+                            ▲
+                          </button>
+                          <button
+                            type="button"
+                            className="btn btn-secondary btn-sm"
+                            disabled={idx === currentPriority.length - 1}
+                            onClick={() => moveItem(idx, 1)}
+                            style={{ padding: '2px 5px', fontSize: '0.65rem' }}
+                            title="Mover hacia abajo en la prioridad"
+                          >
+                            ▼
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              );
+            })()}
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
@@ -2447,7 +2617,7 @@ export default function Configuracion() {
                   onChange={(e) => handleSearchConfigChange('failover', e.target.checked)}
                   style={{ width: '1.1rem', height: '1.1rem' }}
                 />
-                <span style={{ fontSize: '0.8rem' }}>🔄 <strong>Failover Automático:</strong> Si un proveedor falla, salta al siguiente.</span>
+                <span style={{ fontSize: '0.8rem' }}>🔄 <strong>Failover Automático:</strong> Si un proveedor falla, salta al siguiente según la prioridad.</span>
               </label>
             </div>
 
@@ -2459,19 +2629,51 @@ export default function Configuracion() {
                   onChange={(e) => handleSearchConfigChange('allowPaidTier', e.target.checked)}
                   style={{ width: '1.1rem', height: '1.1rem' }}
                 />
-                <span style={{ fontSize: '0.8rem' }}>💳 <strong>Autorizar Capa Paga:</strong> Permite consumo de saldo en APIs de pago.</span>
+                <span style={{ fontSize: '0.8rem' }}>💳 <strong>Autorizar Capa Paga:</strong> Permite consumo de saldo en APIs de pago (Fila 2).</span>
               </label>
             </div>
           </div>
 
-          {/* FILA 1: FREEMIUM (Tavily Free & Brave Search) */}
+          {/* FILA 1: FREEMIUM (Tavily Free, Brave Search & Google Serper) */}
           <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '1rem' }}>
             <h3 style={{ fontSize: '0.95rem', color: 'var(--accent-color)', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <span>⚡ Fila 1: Proveedores Freemium (Con Créditos Gratuitos Mensuales)</span>
             </h3>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
               <div className="form-group">
-                <label className="form-label">API Key de Tavily AI (1,000 búsquedas gratis/mes)</label>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <label className="form-label">API Key de Google Serper (2,500 búsquedas gratis)</label>
+                  <a href="https://serper.dev" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: 'var(--accent-color)', textDecoration: 'none', fontWeight: 700 }}>
+                    Obtener Key ↗
+                  </a>
+                </div>
+                <input 
+                  type="password" 
+                  className="form-control" 
+                  placeholder="serper-..."
+                  value={searchConfig.serperApiKey || ''}
+                  onChange={(e) => {
+                    handleSearchConfigChange('serperApiKey', e.target.value);
+                    apiStatus.setSerperStatus({ state: 'idle', message: '' });
+                  }}
+                />
+                <ApiStatusBadge 
+                  status={apiStatus.serperStatus} 
+                  onTest={() => apiStatus.testSerper(searchConfig.serperApiKey)} 
+                  disabled={!searchConfig.serperApiKey} 
+                />
+                <small style={{ color: 'var(--text-secondary)', fontSize: '0.7rem', display: 'block', marginTop: '4px' }}>
+                  Resultados orgánicos directos de Google y fichas de Google Maps / Places.
+                </small>
+              </div>
+
+              <div className="form-group">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <label className="form-label">API Key de Tavily AI (1,000 búsquedas gratis/mes)</label>
+                  <a href="https://tavily.com" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: 'var(--accent-color)', textDecoration: 'none', fontWeight: 700 }}>
+                    Obtener Key ↗
+                  </a>
+                </div>
                 <input 
                   type="password" 
                   className="form-control" 
@@ -2487,10 +2689,18 @@ export default function Configuracion() {
                   onTest={() => apiStatus.testTavily(searchConfig.apiKey)} 
                   disabled={!searchConfig.apiKey} 
                 />
+                <small style={{ color: 'var(--text-secondary)', fontSize: '0.7rem', display: 'block', marginTop: '4px' }}>
+                  Extracción web sintetizada para razonamiento agéntico y LLMs.
+                </small>
               </div>
 
               <div className="form-group">
-                <label className="form-label">Brave Search API Key (2,000 queries gratis/mes)</label>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <label className="form-label">Brave Search API Key (2,000 queries gratis/mes)</label>
+                  <a href="https://brave.com/search/api/" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: 'var(--accent-color)', textDecoration: 'none', fontWeight: 700 }}>
+                    Obtener Key ↗
+                  </a>
+                </div>
                 <input 
                   type="password" 
                   className="form-control" 

@@ -264,9 +264,26 @@ Con base en el Plan de Saneamiento y Endurecimiento formalizado en `docs/archite
   * Payback catalogado como `'Nunca'` o mayor a 10 años.
   * Punto de Equilibrio que contenga `'∞'` o división por cero.
 
-### 5.3 Versionado Inmutable y Control de Concurrencia (`server/index.js`)
+### 5.3 Versionado Inmutable y Control de Concurrencia (`server/index.js`, `src/lib/serverUtils/`)
 * **Directorio de Versiones:** `proyectos/<type>/<id>/.versions/<ISO_DATE>-<hash8>.json`.
 * **Manifiesto:** `.versions/index.json` registrando metadatos `{ ts, hash, modulesCount, inversionTotal }`.
 * **Límite FIFO:** Máximo 20 versiones históricas por proyecto.
 * **Integridad Estricta:** Si una petición `POST /api/save` intenta persistir una cantidad de módulos poblados menor a la versión previa estable, el servidor emite un rechazo `HTTP 409 Conflict` requiriendo confirmación.
-* **Mutex de Generación Agéntica:** Bloqueo en memoria por `projectId` activo para impedir colisiones o escrituras cruzadas por agentes paralelos.
+* **Mutex de Generación Agéntica (`generationLock.js`):**
+  * `POST /api/projects/:type/:id/lock`: Bloqueo por sesión en memoria con expiración automática de 30 min. Rechaza llamadas concurrentes con `HTTP 423 Locked`.
+  * `POST /api/projects/:type/:id/unlock`: Liberación por sesión o forzada.
+  * `GET /api/projects/:type/:id/lock`: Consulta de estado activo del lock.
+* **Endpoint de Renombrado Seguro (`projectRename.js`):**
+  * `POST /api/projects/:type/:id/rename`: Valida origen y destino, consolida metadata, guarda con versionado inmutable, genera Markdown canónico y archiva el directorio previo en `proyectos/<type>/.archive/`.
+
+### 5.4 Gobernanza de Costos y Human-in-the-Loop (`src/lib/paidModelGovernance.js`)
+* **Firma de Verificación:** `isPaidProviderOrModel(provider, model)`
+* **Estimación de Consumo:** `estimateCallCostUSD(provider, model, promptTokens, completionTokens)` basada en `src/config/pricing.js`.
+* **Guardián de Fallback:** `shouldAllowPaidFallback(provider, model, config)`. Si la rotación de emergencia intenta conmutar a OpenAI, Claude, Grok o modelos no gratuitos de OpenRouter, pausa la conmutación y emite el evento reactivo `openplan_paid_model_warning` si `allowPaidTier` no está habilitado por el usuario.
+* **Trazabilidad Dual:** Registro independiente de `requestedProvider` (solicitado) y `actualProvider` (real) en telemetría y en `AiTraceabilityPanel.jsx`.
+
+### 5.5 Cascada Configurable de Búsqueda Fila 1 y Conector Serper (`deepResearchEngine.js`, `Configuracion.jsx`)
+* **Prioridad Configurable:** `searchConfig.tier1Priority` permite ordenar dinámicamente entre DuckDuckGo, Google Serper, Tavily y Brave Search.
+* **Conector Google Serper API:** 2,500 búsquedas gratuitas de resultados orgánicos de Google y Places/Maps para extracción de competidores reales.
+* **Endpoint de Verificación:** `POST /api/test/serper` y soporte en `POST /api/test/search`.
+

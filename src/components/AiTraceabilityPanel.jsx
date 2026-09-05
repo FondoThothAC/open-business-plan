@@ -243,7 +243,9 @@ export default function AiTraceabilityPanel() {
               <tr style={{ background: 'var(--bg-panel-hover)', borderBottom: '1px solid var(--border-color)', color: 'var(--text-secondary)', fontSize: '0.7rem', textTransform: 'uppercase' }}>
                 <th style={{ padding: '8px 12px', width: '30px' }}></th>
                 <th style={{ padding: '8px 12px' }}>Hora</th>
-                <th style={{ padding: '8px 12px' }}>Proveedor</th>
+                <th style={{ padding: '8px 12px' }}>Proyecto</th>
+                <th style={{ padding: '8px 12px' }}>Módulo</th>
+                <th style={{ padding: '8px 12px' }}>Proveedor (Real / Solicitado)</th>
                 <th style={{ padding: '8px 12px' }}>Modelo</th>
                 <th style={{ padding: '8px 12px', textAlign: 'right' }}>Tokens Prompt</th>
                 <th style={{ padding: '8px 12px', textAlign: 'right' }}>Tokens Salida</th>
@@ -258,6 +260,7 @@ export default function AiTraceabilityPanel() {
                 const cost = calculateCost(entry.model, entry.promptTokens || 0, entry.completionTokens || 0);
                 const timeStr = entry.timestamp ? new Date(entry.timestamp).toLocaleTimeString() : '—';
                 const isErr = entry.status === 'error';
+                const hasRotated = entry.requestedProvider && entry.requestedProvider !== entry.provider;
 
                 return (
                   <Fragment key={idx}>
@@ -276,8 +279,19 @@ export default function AiTraceabilityPanel() {
                       <td style={{ padding: '8px 12px', color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>
                         {timeStr}
                       </td>
+                      <td style={{ padding: '8px 12px', fontWeight: 600, color: 'var(--text-primary)', maxWidth: '140px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {entry.projectId || 'general'}
+                      </td>
+                      <td style={{ padding: '8px 12px', color: 'var(--text-secondary)', maxWidth: '130px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {entry.module || 'general'}
+                      </td>
                       <td style={{ padding: '8px 12px', fontWeight: 600, color: 'var(--accent-color)' }}>
-                        {entry.provider}
+                        <div>{entry.provider}</div>
+                        {hasRotated && (
+                          <div style={{ fontSize: '0.62rem', color: '#f59e0b', fontWeight: 400 }}>
+                            ↩ rotado de {entry.requestedProvider}
+                          </div>
+                        )}
                       </td>
                       <td style={{ padding: '8px 12px', fontFamily: 'monospace', fontSize: '0.72rem' }}>
                         {entry.model}

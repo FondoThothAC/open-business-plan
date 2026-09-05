@@ -119,16 +119,25 @@ export default function TerminalDrawer({ isOpen, onToggle }) {
       }
     };
 
+    const handlePaidModelWarning = (e) => {
+      const detail = e.detail;
+      if (detail && detail.message) {
+        addLog(detail.message, 'warn');
+      }
+    };
+
     window.addEventListener('openplan_trajectory_updated', handleTrajectoryEvent);
     window.addEventListener('openplan_log', handleGlobalLog);
     window.addEventListener('openplan_research_completed', handleResearchCompleted);
     window.addEventListener('openplan_research_paused', handleResearchPaused);
+    window.addEventListener('openplan_paid_model_warning', handlePaidModelWarning);
 
     return () => {
       window.removeEventListener('openplan_trajectory_updated', handleTrajectoryEvent);
       window.removeEventListener('openplan_log', handleGlobalLog);
       window.removeEventListener('openplan_research_completed', handleResearchCompleted);
       window.removeEventListener('openplan_research_paused', handleResearchPaused);
+      window.removeEventListener('openplan_paid_model_warning', handlePaidModelWarning);
     };
   }, []);
 

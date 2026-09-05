@@ -37,8 +37,14 @@
 | **TDD-26** | `ServerSaveVersioning & Manifest FIFO` | Integración / Backend | Valida creación de hashes SHA-1 en .versions/, índice manifest y política FIFO de 20 versiones. |
 | **TDD-27** | `ServerSaveAntiRegression (HTTP 409)` | Integración / Backend | Rechaza con HTTP 409 cualquier guardado que intente truncar o reducir el número de módulos poblados. |
 | **TDD-28** | `ServerGenLock & Project Mutex` | Integración / Backend | Impide generación concurrente sobre el mismo projectId respondiendo busy con sessionId activo. |
+| **TDD-29** | `Telemetry Attribution & Token Storage Structure` | Integración / Telemetría | Valida estructura inmutable `{ accumulated, daily, byProject }` y registro con projectId y module. |
+| **TDD-30** | `Verbosity Manager & Adaptive Length Constraints` | Unitaria / Agéntica | Directivas de concisión por nivel (50-80 vs 120-180 palabras) y regla ultra-concisa de Canvas. |
+| **TDD-31** | `Search Cascade Priority & DuckDuckGo Dynamic Order` | Unitaria / Búsqueda | Cascada configurable de Fila 1 respetando orden prioritario entre DDG, Serper, Tavily y Brave. |
+| **TDD-32** | `Paid Model Governance & Cost Guardrails` | Unitaria / Seguridad | Guardián preventivo que impide rotaciones a APIs de pago sin consentimiento y emite alertas reactivas. |
+| **TDD-33** | `Project Rename & Atomic Consolidation` | Integración / Backend | Renombrado atómico de proyectos, actualización de metadatos y archivo seguro en .archive/. |
+| **TDD-34** | `Financial Consistency & SAPI De CV Saneamiento Inmutable` | Integración / Negocio | Valida anclaje a $20M MXN, TIR 15.11%, VPN $1.83M y erradicación de secciones Pro-Forma fantasma. |
 
-**Estado de Ejecución:** Suites actualizadas para v3.2.0 (Objetivo: 100% pasando).
+**Estado de Ejecución:** 233/233 tests pasando (100% de la suite completa aprobada en verde).
 
 ---
 

@@ -39,7 +39,7 @@ const PROVIDER_METADATA = {
   },
   ollama_cloud: {
     name: 'Ollama Cloud',
-    dailyQuota: 200000,
+    dailyQuota: 0,
     rateLimit: 'Ilimitado · Comunitario',
     renewalText: 'Sin límite de cuota fija',
     contextMax: '256k ctx',
@@ -168,18 +168,17 @@ export default function ApiQuotaMeter({
   };
 
   const isLocal = providerKey === 'ollama';
-  const quota = meta.dailyQuota;
+  const isNoFixedQuota = providerKey === 'ollama_cloud' || meta.dailyQuota === 0;
+  const quota = meta.dailyQuota || 0;
 
-  // Si el proveedor se resetea periódicamente (24 hrs / 5 hrs), el consumo contra la cuota
-  // debe evaluarse principalmente sobre todayTokens (la ventana que se refresca).
-  const isPeriodic = meta.renewalText.includes('24 hrs') || meta.renewalText.includes('5 horas') || meta.renewalText.includes('diario') || meta.renewalText.includes('mes');
-  
   // Tokens a evaluar contra el límite activo (hoy si existe, sino fallback a tokens)
-  const activeUsage = (todayTokens !== null && isPeriodic) ? todayTokens : tokens;
+  const activeUsage = todayTokens !== null ? todayTokens : tokens;
   const totalHistoric = accumulatedTokens !== null ? accumulatedTokens : tokens;
 
-  const percentage = isLocal ? 0 : Math.min(100, Math.round((activeUsage / (quota || 100000)) * 100));
-  const remainingTokens = Math.max(0, quota - activeUsage);
+  const percentage = (isLocal || isNoFixedQuota || quota === 0) 
+    ? 0 
+    : Math.min(100, Math.round((activeUsage / quota) * 100));
+  const remainingTokens = quota > 0 ? Math.max(0, quota - activeUsage) : 0;
 
   let saturationLevel = 'Óptimo';
   let saturationColor = '#10b981';
@@ -194,6 +193,16 @@ export default function ApiQuotaMeter({
     saturationColor = '#f59e0b';
     barGradient = 'linear-gradient(90deg, #10b981, #f59e0b)';
   }
+
+  const badgeText = isLocal 
+    ? '⚡ Ilimitado Local' 
+    : isNoFixedQuota 
+      ? '☁️ Sin Cuota Fija' 
+      : `${saturationLevel} (${percentage}%)`;
+
+  const badgeBg = isLocal || isNoFixedQuota ? 'rgba(16, 185, 129, 0.15)' : `${saturationColor}22`;
+  const badgeColor = isLocal || isNoFixedQuota ? '#10b981' : saturationColor;
+  const badgeBorder = `1px solid ${isLocal || isNoFixedQuota ? '#10b981' : saturationColor}44`;
 
   return (
     <div style={{
@@ -239,11 +248,11 @@ export default function ApiQuotaMeter({
             fontWeight: 800,
             padding: '1px 6px',
             borderRadius: '6px',
-            background: isLocal ? 'rgba(16, 185, 129, 0.15)' : `${saturationColor}22`,
-            color: isLocal ? '#10b981' : saturationColor,
-            border: `1px solid ${isLocal ? '#10b981' : saturationColor}44`,
+            background: badgeBg,
+            color: badgeColor,
+            border: badgeBorder,
           }}>
-            {isLocal ? '⚡ Ilimitado Local' : `${saturationLevel} (${percentage}%)`}
+            {badgeText}
           </span>
         </div>
       </div>
@@ -259,9 +268,9 @@ export default function ApiQuotaMeter({
         marginBottom: '0.4rem',
       }}>
         <div style={{
-          width: isLocal ? '100%' : `${Math.max(percentage, isConfigured ? 4 : 0)}%`,
+          width: isLocal ? '100%' : isNoFixedQuota ? (isConfigured ? '100%' : '0%') : `${Math.max(percentage, isConfigured ? 4 : 0)}%`,
           height: '100%',
-          background: isLocal ? 'linear-gradient(90deg, #6366f1, #10b981)' : barGradient,
+          background: isLocal || isNoFixedQuota ? 'linear-gradient(90deg, #6366f1, #10b981)' : barGradient,
           borderRadius: '3px',
           transition: 'width 0.4s ease-in-out',
         }} />
@@ -272,15 +281,20 @@ export default function ApiQuotaMeter({
         <div>
           <span>Ventana Activa (Hoy): </span>
           <strong style={{ color: 'var(--text-primary)', fontFamily: 'monospace' }}>
-            {activeUsage.toLocaleString()}
+            {activeUsage.toLocaleString()} tokens
           </strong>
-          {!isLocal && quota > 0 && (
+          {!isLocal && !isNoFixedQuota && quota > 0 && (
             <>
               <span style={{ color: 'var(--text-muted)' }}> / {(quota / 1000).toFixed(0)}k</span>
               <span style={{ marginLeft: '4px', color: '#10b981', fontWeight: 600 }}>
                 (Disp: {(remainingTokens / 1000).toFixed(0)}k)
               </span>
             </>
+          )}
+          {isNoFixedQuota && (
+            <span style={{ marginLeft: '6px', color: 'var(--text-muted)' }}>
+              (Consumo activo · Sin límite fijo)
+            </span>
           )}
         </div>
 

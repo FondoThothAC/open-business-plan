@@ -235,9 +235,58 @@ export async function fetchSerperPlaces(query, apiKey) {
   }));
 }
 
+const CANONICAL_TIER1_PROVIDERS = ['duckduckgo', 'tavily', 'brave', 'serper'];
+
+/**
+ * Normaliza nombres de proveedores de búsqueda a identificadores canónicos.
+ * @param {string} name - Nombre o alias del proveedor.
+ * @returns {string} Identificador canónico.
+ */
+function normalizeProviderName(name = '') {
+  if (!name || typeof name !== 'string') return '';
+  const n = name.toLowerCase().trim();
+  if (n === 'duckduckgo' || n === 'ddg' || n === 'duckduck') return 'duckduckgo';
+  if (n === 'serper' || n === 'serper_free' || n === 'google_serper' || n === 'serper_api') return 'serper';
+  if (n === 'tavily' || n === 'tavily_free' || n === 'tavily_search') return 'tavily';
+  if (n === 'brave' || n === 'brave_search' || n === 'brave_free') return 'brave';
+  return n;
+}
+
+/**
+ * Resuelve el orden de prioridad de búsqueda para Fila 1 según la configuración.
+ * Permite posicionar DuckDuckGo en cualquier prioridad (1º, 2º, 3º, etc.).
+ * @param {object} searchConfig - Objeto de configuración de búsqueda.
+ * @returns {string[]} Lista ordenada de proveedores para Fila 1.
+ */
+export function resolveTier1PriorityOrder(searchConfig = {}) {
+  // 1. Prioridad explícita en array tier1Priority
+  if (Array.isArray(searchConfig.tier1Priority) && searchConfig.tier1Priority.length > 0) {
+    const normalized = searchConfig.tier1Priority
+      .map(normalizeProviderName)
+      .filter(p => CANONICAL_TIER1_PROVIDERS.includes(p));
+    // Completar con los que falten asegurando DuckDuckGo
+    for (const p of CANONICAL_TIER1_PROVIDERS) {
+      if (!normalized.includes(p)) normalized.push(p);
+    }
+    return normalized;
+  }
+
+  // 2. Si se especificó un provider primario único
+  if (searchConfig.provider) {
+    const primary = normalizeProviderName(searchConfig.provider);
+    if (CANONICAL_TIER1_PROVIDERS.includes(primary)) {
+      const remaining = CANONICAL_TIER1_PROVIDERS.filter(p => p !== primary);
+      return [primary, ...remaining];
+    }
+  }
+
+  // 3. Orden por defecto
+  return [...CANONICAL_TIER1_PROVIDERS];
+}
+
 /**
  * Ejecuta una investigación profunda en el ecosistema híbrido
- * Prioriza agotar Fila 1 (Gratis/Freemium/Local) antes de activar Fila 2 (Premium).
+ * Prioriza agotar Fila 1 (Gratis/Freemium/Local) según el orden de prioridad configurado antes de activar Fila 2 (Premium).
  */
 export async function runDeepResearch({
   query,
@@ -248,6 +297,7 @@ export async function runDeepResearch({
   simulateQuotaExhausted = false,
   allowSyntheticEstimate = false,
   apiKeys = {},
+  searchConfig = {},
   onLog = () => {}
 }) {
   const startTime = Date.now();
@@ -283,11 +333,7 @@ export async function runDeepResearch({
 
   // ─────────────────────────────────────────────────────────────────────────
   // FASE 1: AGOTAR PRIMERO FILA 1 (GRATIS / FREEMIUM / HARDWARE LOCAL)
-  // ORDEN ESTABLECIDO:
-  // 1. DuckDuckGo: Respaldo gratuito ilimitado.
-  // 2. Tavily: 1,000 búsquedas/mes con tu cuenta Researcher.
-  // 3. Brave Search: 1,000 búsquedas/mes con tus $5 de crédito gratuito.
-  // 4. Google Serper: 2,500 búsquedas gratuitas de Google Search / Google Places.
+  // Cascada dinámica y configurable: respeta la prioridad de DuckDuckGo, Serper, Tavily y Brave
   // ─────────────────────────────────────────────────────────────────────────
   const braveKey = apiKeys.braveKey || (typeof process !== 'undefined' ? process.env.BRAVE_SEARCH_KEY : null);
   const tavilyKey = apiKeys.tavilyKey || (typeof process !== 'undefined' ? process.env.TAVILY_API_KEY : null);
@@ -295,81 +341,76 @@ export async function runDeepResearch({
   const exaKey = apiKeys.exaKey || (typeof process !== 'undefined' ? process.env.EXA_API_KEY : null);
   const perplexityKey = apiKeys.perplexityKey || (typeof process !== 'undefined' ? process.env.PERPLEXITY_API_KEY : null);
 
+  const tier1Order = resolveTier1PriorityOrder(searchConfig);
   let gatheredTier1 = false;
 
   if (tierPreference !== 'tier2_premium' && !forcePaidTier) {
-    onLog('⚡ Consultando Fila 1 (Gratis / Freemium / Oficiales)...');
+    onLog(`⚡ Consultando Fila 1 en orden de prioridad: [${tier1Order.join(' ➔ ')}]...`);
 
-    // 1.1 DuckDuckGo & Scraping de Hardware Local (Respaldo gratuito ilimitado)
-    if (sources.length === 0) {
-      try {
-        onLog('🦆 Consultando DuckDuckGo + Scraping de Hardware Local (Respaldo gratuito ilimitado)...');
-        const ddgResult = await executeAgentTool('tool_web_search', { query, limit: 5, allowSyntheticEstimate: false });
-        if (ddgResult?.data?.results && ddgResult.data.results.length > 0) {
-          const ddgSources = ddgResult.data.results.map(r => ({
-            title: r.title || 'Referencia Web Verificada',
-            url: r.link || r.url || 'https://duckduckgo.com',
-            snippet: r.snippet || r.body || r.pricingAvg || '',
-            score: 0.80,
-            provider: r.provider || 'DuckDuckGo Web',
-            provenance: r.provenance || 'real',
-            retrievedAt: r.retrievedAt || new Date().toISOString(),
-            confidenceScore: r.confidenceScore || 0.82
-          }));
-          sources.push(...ddgSources);
-          gatheredTier1 = true;
-          onLog(`✅ Capa DuckDuckGo recopiló ${ddgSources.length} resultados web reales.`);
-        }
-      } catch (err) {
-        onLog(`⚠️ DuckDuckGo no completó resultados (${err.message}). Pasando a Tavily...`);
-      }
-    }
+    for (const prov of tier1Order) {
+      if (sources.length > 0) break;
 
-    // 1.2 Tavily (1,000 búsquedas/mes con cuenta Researcher)
-    if (tavilyKey && sources.length === 0) {
-      try {
-        onLog('📡 Consultando Tavily Researcher / Free Tier (1,000 búsquedas/mes)...');
-        const tavilySources = await fetchTavilySearch(query, tavilyKey, depth);
-        if (tavilySources && tavilySources.length > 0) {
-          sources.push(...tavilySources);
-          costAccumulated += PRICING_ESTIMATES.tavily;
-          gatheredTier1 = true;
-          onLog(`✅ Tavily devolvió ${tavilySources.length} fuentes reales.`);
+      if (prov === 'duckduckgo') {
+        try {
+          onLog('🦆 Consultando DuckDuckGo + Scraping de Hardware Local (Respaldo gratuito ilimitado)...');
+          const ddgResult = await executeAgentTool('tool_web_search', { query, limit: 5, allowSyntheticEstimate: false });
+          if (ddgResult?.data?.results && ddgResult.data.results.length > 0) {
+            const ddgSources = ddgResult.data.results.map(r => ({
+              title: r.title || 'Referencia Web Verificada',
+              url: r.link || r.url || 'https://duckduckgo.com',
+              snippet: r.snippet || r.body || r.pricingAvg || '',
+              score: 0.80,
+              provider: r.provider || 'DuckDuckGo Web',
+              provenance: r.provenance || 'real',
+              retrievedAt: r.retrievedAt || new Date().toISOString(),
+              confidenceScore: r.confidenceScore || 0.82
+            }));
+            sources.push(...ddgSources);
+            gatheredTier1 = true;
+            onLog(`✅ Capa DuckDuckGo recopiló ${ddgSources.length} resultados web reales.`);
+          }
+        } catch (err) {
+          onLog(`⚠️ DuckDuckGo no completó resultados (${err.message}). Continuando cascada...`);
         }
-      } catch (err) {
-        onLog(`⚠️ Tavily no disponible (${err.message}). Pasando a Brave Search...`);
-      }
-    }
-
-    // 1.3 Brave Search (1,000 búsquedas/mes con $5 crédito gratuito)
-    if (braveKey && sources.length === 0) {
-      try {
-        onLog('🦁 Consultando Brave Search API (1,000 búsquedas/mes con crédito de $5)...');
-        const braveSources = await fetchBraveSearch(query, braveKey, depth);
-        if (braveSources && braveSources.length > 0) {
-          sources.push(...braveSources);
-          costAccumulated += PRICING_ESTIMATES.brave;
-          gatheredTier1 = true;
-          onLog(`✅ Brave Search devolvió ${braveSources.length} fuentes reales.`);
+      } else if (prov === 'tavily' && tavilyKey) {
+        try {
+          onLog('📡 Consultando Tavily Researcher / Free Tier (1,000 búsquedas/mes)...');
+          const tavilySources = await fetchTavilySearch(query, tavilyKey, depth);
+          if (tavilySources && tavilySources.length > 0) {
+            sources.push(...tavilySources);
+            costAccumulated += PRICING_ESTIMATES.tavily;
+            gatheredTier1 = true;
+            onLog(`✅ Tavily devolvió ${tavilySources.length} fuentes reales.`);
+          }
+        } catch (err) {
+          onLog(`⚠️ Tavily no disponible (${err.message}). Continuando cascada...`);
         }
-      } catch (err) {
-        onLog(`⚠️ Brave Search no disponible (${err.message}). Pasando a Google Serper...`);
-      }
-    }
-
-    // 1.4 Google Serper API (2,500 búsquedas gratuitas de Google)
-    if (serperKey && sources.length === 0) {
-      try {
-        onLog('🔍 Consultando Google Serper API (2,500 búsquedas gratuitas)...');
-        const serperSources = await fetchSerperSearch(query, serperKey, depth);
-        if (serperSources && serperSources.length > 0) {
-          sources.push(...serperSources);
-          costAccumulated += PRICING_ESTIMATES.serper;
-          gatheredTier1 = true;
-          onLog(`✅ Google Serper devolvió ${serperSources.length} resultados orgánicos de Google.`);
+      } else if (prov === 'brave' && braveKey) {
+        try {
+          onLog('🦁 Consultando Brave Search API (1,000 búsquedas/mes con crédito de $5)...');
+          const braveSources = await fetchBraveSearch(query, braveKey, depth);
+          if (braveSources && braveSources.length > 0) {
+            sources.push(...braveSources);
+            costAccumulated += PRICING_ESTIMATES.brave;
+            gatheredTier1 = true;
+            onLog(`✅ Brave Search devolvió ${braveSources.length} fuentes reales.`);
+          }
+        } catch (err) {
+          onLog(`⚠️ Brave Search no disponible (${err.message}). Continuando cascada...`);
         }
-      } catch (err) {
-        onLog(`⚠️ Google Serper no disponible (${err.message})...`);
+      } else if (prov === 'serper' && serperKey) {
+        try {
+          onLog('🔍 Consultando Google Serper API (2,500 búsquedas gratuitas)...');
+          const serperSources = await fetchSerperSearch(query, serperKey, depth);
+          if (serperSources && serperSources.length > 0) {
+            sources.push(...serperSources);
+            costAccumulated += PRICING_ESTIMATES.serper;
+            gatheredTier1 = true;
+            onLog(`✅ Google Serper devolvió ${serperSources.length} resultados orgánicos de Google.`);
+          }
+        } catch (err) {
+          onLog(`⚠️ Google Serper no disponible (${err.message}). Continuando cascada...`);
+        }
       }
     }
   }

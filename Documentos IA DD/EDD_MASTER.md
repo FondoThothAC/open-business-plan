@@ -17,6 +17,7 @@
 | `openplan_research_started` | `TerminalDrawer` / `deepResearchEngine` | `{ taskId, query, budgetLimitUsd }` | `Layout.jsx` (Campana de Notificaciones) |
 | `openplan_research_completed` | `TerminalDrawer` / `deepResearchEngine` | `{ taskId, query, sourcesCount, status, sources }` | `TerminalDrawer.jsx`, `Layout.jsx` (Notificaciones) |
 | `openplan_research_paused` | `TerminalDrawer` / `quotaTracker` | `{ taskId, query, warning, status: 'paused_waiting_quota' }` | `TerminalDrawer.jsx`, `Layout.jsx` (Alerta reactiva) |
+| `openplan_paid_model_warning` | `callAiProvider` / `paidModelGovernance` | `{ provider, model, estimatedCostUSD, message, timestamp }` | `TerminalDrawer.jsx`, Monitor de IA (Gobernanza de costos) |
 | `success` | Orquestador de Fase | `{ type: 'success', message: '✓ Completado', provider }` | Barra de Progreso Global |
 | `error` | Fallback Handler | `{ type: 'error', message: 'Fallo...', provider }` | Toast Alerts / Error Boundary |
 

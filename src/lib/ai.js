@@ -30,6 +30,13 @@
 import { FIELD_GUIDES_MAP } from './field_guides.js';
 import { getApiBase } from '../config/apiConfig.js';
 import { calculateCost } from '../config/pricing.js';
+import { buildVerbosityConstraint } from './verbosityManager.js';
+import { 
+  isPaidProviderOrModel, 
+  estimateCallCostUSD, 
+  shouldAllowPaidFallback, 
+  notifyPaidFallbackAttempt 
+} from './paidModelGovernance.js';
 
 // Variable a nivel de módulo para capturar el feed de progreso activo
 let activeTermLog = null;
@@ -360,7 +367,21 @@ export async function generateModuleContent(config, currentModule, allPlanData) 
   } = config;
 
   const t0 = Date.now();
-  const _trace = { tokens: 0, promptTokens: 0, completionTokens: 0, cost: 0, logs: [] };
+  const rawName = allPlanData.semilla?.negocio?.nombre_marca || allPlanData.config?.brandKit?.companyName || '';
+  const projectId = allPlanData.config?.projectId || (rawName ? rawName.replace(/[^a-z0-9]/gi, '_').toLowerCase() : 'general');
+  const projectType = allPlanData.config?.projectType === 'social_bid' ? 'social' : 'negocios';
+
+  const _trace = { 
+    tokens: 0, 
+    promptTokens: 0, 
+    completionTokens: 0, 
+    cost: 0, 
+    logs: [],
+    projectId,
+    projectType,
+    moduleKey: currentModule.moduleKey || currentModule.key || '',
+    moduleTitle: currentModule.title || ''
+  };
   if (typeof window !== 'undefined') {
     window.__activeModuleTrace = _trace;
   }
@@ -370,9 +391,6 @@ export async function generateModuleContent(config, currentModule, allPlanData) 
   // Compatibilidad: termLog('type','msg','provider') y termLog({type,message,provider,...})
   const termLog = async (...args) => {
     try {
-      const rawName = allPlanData.semilla?.negocio?.nombre_marca || allPlanData.config?.brandKit?.companyName || '';
-      const projectId = allPlanData.config?.projectId || (rawName ? rawName.replace(/[^a-z0-9]/gi, '_').toLowerCase() : '');
-      const projectType = allPlanData.config?.projectType === 'social_bid' ? 'social' : 'negocios';
       const apiBase = getApiBase();
 
       let payload;
@@ -428,8 +446,8 @@ ${allPlanData.config.documents.map(d => `--- INICIO DOCUMENTO: ${d.name || 'Arch
   const isLocalProvider = primaryProvider === 'ollama' || primaryProvider === 'lmstudio';
   const planContext = cleanPlanDataForAi(allPlanData, isLocalProvider);
 
-  const projectType = allPlanData.config?.projectType || 'business';
-  const guides = FIELD_GUIDES_MAP[projectType] || FIELD_GUIDES_MAP.business || {};
+  const projectTypeConfig = allPlanData.config?.projectType || 'business';
+  const guides = FIELD_GUIDES_MAP[projectTypeConfig] || FIELD_GUIDES_MAP.business || {};
 
   const fieldsPromptContext = (currentModule.fields || []).map(f => {
     const customGuide = allPlanData.config?.customPrompts?.[f.key];
@@ -446,15 +464,7 @@ ${allPlanData.config.documents.map(d => `--- INICIO DOCUMENTO: ${d.name || 'Arch
     '\n\nREGLA CRÍTICA FINANCIERA: NO generes tablas numéricas, hojas de cálculo ni proyecciones matemáticas estructuradas. El sistema ya calcula los números automáticamente. Tu tarea es redactar ÚNICAMENTE el ANÁLISIS CUALITATIVO, ESTRATÉGICO Y NARRATIVO de estas perspectivas (qué significa para el negocio, estrategias de liquidez, justificación de gastos, etc.).' : '';
 
   const verbosityLevel = allPlanData.config?.ai?.verbosity || 'normal';
-  let verbosityConstraint = '';
-  
-  if (currentModule.key === 'canvas') {
-    verbosityConstraint = '\n\nREGLA DE EXTENSIÓN PARA CANVAS: Obligatoriamente debes redactar en un formato ultra-conciso. Usa de 3 a 5 viñetas cortas (bullet points) por campo. Sin introducciones ni conclusiones largas.';
-  } else if (verbosityLevel === 'conciso') {
-    verbosityConstraint = '\n\nREGLA DE EXTENSIÓN: Se te ha configurado en modo "Conciso". Tus respuestas deben ser directas, usando viñetas (bullet points) cuando sea posible, oraciones cortas y yendo directo al grano. Sin relleno innecesario.';
-  } else if (verbosityLevel === 'detallado') {
-    verbosityConstraint = '\n\nREGLA DE EXTENSIÓN: Se te ha configurado en modo "Extenso". Elabora un análisis muy profundo, justificado, académico y con alto nivel de detalle descriptivo para cada campo.';
-  }
+  const verbosityConstraint = buildVerbosityConstraint(verbosityLevel, currentModule.moduleKey || currentModule.key);
 
   const systemContext = `
 Eres un miembro de una "Mesa de Expertos" en estrategia empresarial de alto nivel de Open Business Plan (Fondo Thoth AC).
@@ -981,6 +991,8 @@ export async function callAiProvider(config, prompt, expectJson = true, expected
 
   let text;
   let primaryError;
+  let actualProvider = provider;
+  let actualModel = model;
 
   try {
     text = await invokeSingle(provider, model, null);
@@ -1042,11 +1054,24 @@ export async function callAiProvider(config, prompt, expectJson = true, expected
     let failingProv = provider;
 
     for (const fb of fallbackProviders) {
+      // Gobernanza de Costos: Evitar rotación no consentida hacia APIs de pago
+      if (!shouldAllowPaidFallback(fb.provider, fb.model, config)) {
+        notifyPaidFallbackAttempt({
+          provider: fb.provider,
+          model: fb.model,
+          estimatedCostUSD: estimateCallCostUSD(fb.provider, fb.model),
+          onLog: logger
+        });
+        continue;
+      }
+
       try {
         if (logger) {
           logger('warning', `⚠️ [Rotación IA] ${failingProv} falló. Rotando automáticamente a ${fb.provider} (${fb.model})...`, fb.provider);
         }
         text = await invokeSingle(fb.provider, fb.model, fb.key);
+        actualProvider = fb.provider;
+        actualModel = fb.model;
         fallbackSuccess = true;
         break;
       } catch (fbErr) {
@@ -1068,15 +1093,17 @@ export async function callAiProvider(config, prompt, expectJson = true, expected
       reasoning = thinkMatch[1].trim();
       const logger = onThink || activeTermLog;
       if (logger) {
-        logger('thinking', `🧠 [Razonamiento]: ${reasoning}`, provider || 'ollama');
+        logger('thinking', `🧠 [Razonamiento]: ${reasoning}`, actualProvider || 'ollama');
       }
       text = text.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
     }
     if (typeof window !== 'undefined') {
       if (window.__activeModuleTrace) {
         window.__activeModuleTrace.logs.push({
-          provider: config.provider || provider,
-          model: config.model || model,
+          requestedProvider: provider,
+          actualProvider: actualProvider,
+          provider: actualProvider,
+          model: actualModel || model,
           prompt,
           response: text,
           reasoning
@@ -1084,8 +1111,10 @@ export async function callAiProvider(config, prompt, expectJson = true, expected
       }
       window.dispatchEvent(new CustomEvent('openplan_trajectory_updated', {
         detail: {
-          provider: config.provider || provider,
-          model: config.model || model,
+          requestedProvider: provider,
+          actualProvider: actualProvider,
+          provider: actualProvider,
+          model: actualModel || model,
           timestamp: new Date().toISOString()
         }
       }));
@@ -1577,6 +1606,7 @@ async function callBAI(apiKey, model, prompt, expectJson) {
 function recordTokenTelemetry(provider, totalTokens, model = null, promptTokens = 0, completionTokens = 0, latencyMs = 0, promptPreview = '') {
   if (!totalTokens || totalTokens <= 0) return;
   try {
+    const activeTrace = (typeof window !== 'undefined' && window.__activeModuleTrace) ? window.__activeModuleTrace : {};
     if (typeof window !== 'undefined' && window.__activeModuleTrace) {
       window.__activeModuleTrace.tokens += totalTokens;
       window.__activeModuleTrace.promptTokens += promptTokens;
@@ -1587,11 +1617,15 @@ function recordTokenTelemetry(provider, totalTokens, model = null, promptTokens 
     }
 
     const apiBase = getApiBase();
+    const projectId = activeTrace.projectId || 'general';
+    const projectType = activeTrace.projectType || 'negocios';
+    const moduleName = activeTrace.moduleTitle || activeTrace.moduleKey || 'general';
+
     // 1. Contador agregado de tokens por proveedor
     fetch(`${apiBase}/api/telemetry/tokens`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ provider, tokens: totalTokens })
+      body: JSON.stringify({ provider, tokens: totalTokens, projectId, projectType, module: moduleName })
     }).catch(() => {});
 
     // 2. Log detallado de llamadas para la sección de Trazabilidad
@@ -1605,7 +1639,10 @@ function recordTokenTelemetry(provider, totalTokens, model = null, promptTokens 
         completionTokens,
         latencyMs,
         promptPreview: typeof promptPreview === 'string' ? promptPreview.slice(0, 200) : '',
-        status: 'success'
+        status: 'success',
+        projectId,
+        projectType,
+        module: moduleName
       })
     }).catch(() => {});
   } catch {

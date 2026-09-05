@@ -395,6 +395,7 @@ async function _executeAgentToolInternal(toolName, args, planContext = {}) {
           forcePaidTier: Boolean(args.forcePaidTier || planContext?.config?.search?.allowPaidTier),
           simulateQuotaExhausted: Boolean(args.simulateQuotaExhausted),
           apiKeys: buildSearchApiKeys(planContext?.config),
+          searchConfig: planContext?.config?.search || {},
           onLog: args.onLog || (() => {})
         });
         return {
@@ -542,7 +543,7 @@ async function _executeAgentToolInternal(toolName, args, planContext = {}) {
         };
       }
 
-            case 'tool_machinery_search': {
+      case 'tool_machinery_search': {
         const { searchMachineryQuotes } = await import('./tools/tool_machinery_search.js');
         const quoteRes = await searchMachineryQuotes(args.item, args.location || 'Hermosillo, Sonora');
         return {

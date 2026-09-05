@@ -10,6 +10,7 @@
 import { executeAgentTool } from './agentTools.js';
 import { callAiProvider } from './ai.js';
 import { getApiBase } from '../config/apiConfig.js';
+import { buildVerbosityConstraint, getFieldFormatGuidance } from './verbosityManager.js';
 
 const TRAJECTORY_STORAGE_KEY = 'openplan_agent_trajectories';
 
@@ -507,6 +508,9 @@ export async function runAgenticModuleGeneration({
 - Si las fuentes provienen de internet verificada o DENUE, cita los datos, nombres y rangos observados fielmente.
 - Si no hay fuentes reales verificadas (provenance === 'none' o 'not_found'), NO inventes nombres de competidores ficticios como si fueran reales; declara la limitación informativa explícitamente.`;
 
+    const configuredVerbosity = planData?.config?.ai?.verbosity || 'normal';
+    const verbosityDirective = buildVerbosityConstraint(configuredVerbosity, moduleKey);
+
     const documentsContext = (planData.config?.documents || []).length > 0
       ? `\nDOCUMENTOS DE REFERENCIA RAG:\n${planData.config.documents.map(d => d.text).join('\n---\n').substring(0, 4000)}\n`
       : '';
@@ -517,7 +521,7 @@ export async function runAgenticModuleGeneration({
       : '(sin datos verificados — NO inventes cifras de mercado, precios ni cuota; declara la limitación)';
 
     const systemPrompt = `Eres el Agente Autónomo Especialista en "${title}" de Open Business Plan (Fondo Thoth AC).
-Debes redactar contenido ejecutivo de nivel profesional con datos duros para un plan de negocios de alta inversión.${locationInstruction}${provenanceDirective}
+Debes redactar contenido ejecutivo de nivel profesional con datos duros para un plan de negocios de alta inversión.${locationInstruction}${provenanceDirective}${verbosityDirective}
 
 CONTEXTO DETALLADO DEL PROYECTO (SEMILLA):
 - Nombre del Proyecto: ${queryGiro}
@@ -536,14 +540,14 @@ ${financialData ? `- Métricas Financieras Validadas: ${JSON.stringify(financial
 ${quantumData ? `- Diagnóstico Cuántico Atómico: ${JSON.stringify(quantumData)}` : ''}
 
 CAMPOS REQUERIDOS (Devuelve ÚNICAMENTE un JSON válido con estas claves exactas):
-${fields.map(f => `"${f.key}": "${f.label || f.key} - ${f.type === 'mermaid' ? 'Código Mermaid.js válido' : 'Texto detallado y ejecutivo directamente vinculado a la propuesta de valor y ubicación del proyecto'}"`).join('\n')}
+${fields.map(f => `"${f.key}": "${f.label || f.key} - ${getFieldFormatGuidance(f, configuredVerbosity, moduleKey)}"`).join('\n')}
 `;
 
     const synthStart = Date.now();
     notifyStep('thought', {
       title: 'Síntesis Ejecutiva con IA Multimodal',
-      content: `Consolidando observaciones en el prompt estructurado para los campos: ${fields.map(f => f.key).join(', ')}.`,
-      toolArgs: { prompt: systemPrompt },
+      content: `Consolidando observaciones en el prompt estructurado para los campos: ${fields.map(f => f.key).join(', ')} (${configuredVerbosity}).`,
+      toolArgs: { prompt: systemPrompt, verbosity: configuredVerbosity },
       durationMs: Date.now() - synthStart
     });
 
@@ -553,7 +557,16 @@ ${fields.map(f => `"${f.key}": "${f.label || f.key} - ${f.type === 'mermaid' ? '
       model: preferredModel,
       disableAutoFallback: false 
     };
-    const generatedResult = await callAiProvider(strictConfig, systemPrompt, true, expectedKeys);
+
+    const handleAiThink = (type, message, prov) => {
+      notifyStep('thought', {
+        title: type === 'warning' ? '⚠️ Rotación Automática de Proveedor IA' : 'Procesamiento de IA',
+        content: message,
+        toolArgs: { provider: prov }
+      });
+    };
+
+    const generatedResult = await callAiProvider(strictConfig, systemPrompt, true, expectedKeys, handleAiThink);
 
     const criticStart = Date.now();
     const firstFieldKey = expectedKeys[0] || 'contenido';
@@ -576,7 +589,7 @@ ${fields.map(f => `"${f.key}": "${f.label || f.key} - ${f.type === 'mermaid' ? '
     const finalHarness = recorder.finish(generatedResult, 'completed');
     notifyStep('synthesis', {
       title: 'Módulo Consolidado y Trayectoria Registrada',
-      content: `Generación completada en ${(recorder.totalDurationMs / 1000).toFixed(2)}s con ${recorder.steps.length} pasos cognitivos trazados en DeepSeek Harness dsh v0.1.`,
+      content: `Generación completada en ${(recorder.totalDurationMs / 1000).toFixed(2)}s con ${recorder.steps.length} pasos cognitivos trazados en Harness v0.1.`,
       durationMs: 0
     });
 

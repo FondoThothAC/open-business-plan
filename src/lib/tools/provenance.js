@@ -20,6 +20,9 @@ export function normalizeSearchConfig(rawSearch = {}) {
   const scraperEngine = rawSearch.scraperEngine || 'local';
   const allowPaidTier = Boolean(rawSearch.allowPaidTier);
   const failover = rawSearch.failover !== undefined ? Boolean(rawSearch.failover) : true;
+  const tier1Priority = Array.isArray(rawSearch.tier1Priority) && rawSearch.tier1Priority.length > 0
+    ? rawSearch.tier1Priority
+    : ['duckduckgo', 'tavily', 'brave', 'serper'];
 
   return {
     provider,
@@ -29,7 +32,8 @@ export function normalizeSearchConfig(rawSearch = {}) {
     enableDdg,
     scraperEngine,
     allowPaidTier,
-    failover
+    failover,
+    tier1Priority
   };
 }
 

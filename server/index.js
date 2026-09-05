@@ -11,6 +11,8 @@ import { agentStore } from './swarm/AgentStore.js';
 import { generateLogoVariants } from '../src/lib/logoGenerator.js';
 import { checkSearchQuota, incrementSearchQuota, getSearchQuotaStats } from './quotaTracker.js';
 import { saveWithVersioning } from '../src/lib/serverUtils/saveVersioning.js';
+import { acquireGenerationLock, releaseGenerationLock, getGenerationLockStatus } from '../src/lib/serverUtils/generationLock.js';
+import { renameProject } from '../src/lib/serverUtils/projectRename.js';
 
 // ─────────────────────────────────────────────────────────
 //  Helper Seguro para Búsqueda DuckDuckGo (Control de Tasa y Backoff)
@@ -386,6 +388,74 @@ app.get('/api/projects/:type/:id', (req, res) => {
     }
   } else {
     res.status(404).json({ error: 'Proyecto no encontrado' });
+  }
+});
+
+// Mutex de Generación Concurrente por ProjectId
+app.post('/api/projects/:type/:id/lock', (req, res) => {
+  const { id } = req.params;
+  const { sessionId, meta } = req.body || {};
+  if (!sessionId) {
+    return res.status(400).json({ success: false, error: 'sessionId requerido para adquirir lock' });
+  }
+  const result = acquireGenerationLock(id, sessionId, meta);
+  if (!result.success && result.reason === 'busy') {
+    return res.status(423).json({
+      success: false,
+      reason: 'busy',
+      message: 'El proyecto ya se encuentra en proceso de generación por otra sesión activa',
+      currentSessionId: result.currentSessionId,
+      startedAt: result.startedAt,
+      elapsedMs: result.elapsedMs
+    });
+  }
+  res.json(result);
+});
+
+app.post('/api/projects/:type/:id/unlock', (req, res) => {
+  const { id } = req.params;
+  const { sessionId, force = false } = req.body || {};
+  const result = releaseGenerationLock(id, sessionId, force);
+  res.json(result);
+});
+
+app.get('/api/projects/:type/:id/lock', (req, res) => {
+  const { id } = req.params;
+  const status = getGenerationLockStatus(id);
+  res.json(status);
+});
+
+// Renombrado Seguro y Consolidación de Proyectos
+app.post('/api/projects/:type/:id/rename', (req, res) => {
+  try {
+    const { type, id } = req.params;
+    const { newId, newCompanyName, allowOverwrite = false } = req.body || {};
+    const reqUserId = req.headers['x-user-id'] || req.query.userId || '';
+    const userFolder = reqUserId && reqUserId !== 'admin' ? `user_${reqUserId.replace(/[^a-z0-9]/gi, '_').toLowerCase()}` : '';
+
+    const result = renameProject({
+      baseDir: path.resolve('proyectos'),
+      type,
+      currentId: id,
+      newId,
+      newCompanyName,
+      userFolder,
+      allowOverwrite
+    });
+
+    res.json({
+      success: true,
+      message: 'Proyecto renombrado y consolidado exitosamente',
+      ...result
+    });
+  } catch (error) {
+    if (error.message && error.message.includes('PROJECT_NOT_FOUND')) {
+      return res.status(404).json({ success: false, error: error.message });
+    }
+    if (error.message && error.message.includes('PROJECT_ALREADY_EXISTS')) {
+      return res.status(409).json({ success: false, error: error.message });
+    }
+    res.status(500).json({ success: false, error: error.message });
   }
 });
 
@@ -2000,12 +2070,50 @@ app.post('/api/test/brave', async (req, res) => {
   }
 });
 
+app.post('/api/test/serper', async (req, res) => {
+  const { apiKey } = req.body;
+  const key = apiKey || process.env.SERPER_API_KEY || '';
+  if (!key) {
+    return res.status(400).json({ success: false, error: 'API Key de Google Serper no proporcionada' });
+  }
+  try {
+    const resp = await fetch('https://google.serper.dev/search', {
+      method: 'POST',
+      headers: {
+        'X-API-KEY': key,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ q: 'test ping', num: 1 }),
+      signal: AbortSignal.timeout(8000)
+    });
+    if (resp.ok) {
+      return res.json({ success: true, message: 'Google Serper API está en línea y la API Key es válida.' });
+    }
+    return res.json({ success: false, error: `Error HTTP: ${resp.status}` });
+  } catch (err) {
+    return res.json({ success: false, error: err.message });
+  }
+});
+
 app.post('/api/test/search', async (req, res) => {
-  const { provider = 'duckduckgo', apiKey = '', braveApiKey = '' } = req.body;
+  const { provider = 'duckduckgo', apiKey = '', braveApiKey = '', serperApiKey = '' } = req.body;
   const normProvider = String(provider).toLowerCase();
 
   try {
-    if (normProvider === 'tavily') {
+    if (normProvider === 'serper' || normProvider === 'google_serper') {
+      const key = serperApiKey || apiKey || process.env.SERPER_API_KEY || '';
+      if (!key) return res.status(400).json({ success: false, error: 'API Key de Google Serper no proporcionada' });
+      const resp = await fetch('https://google.serper.dev/search', {
+        method: 'POST',
+        headers: { 'X-API-KEY': key, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ q: 'test ping', num: 1 }),
+        signal: AbortSignal.timeout(8000)
+      });
+      if (resp.ok) {
+        return res.json({ success: true, provider: 'serper', message: 'Google Serper conectado exitosamente.' });
+      }
+      return res.json({ success: false, provider: 'serper', error: `HTTP ${resp.status}` });
+    } else if (normProvider === 'tavily') {
       const key = apiKey || process.env.TAVILY_API_KEY || '';
       if (!key) return res.status(400).json({ success: false, error: 'API Key de Tavily no proporcionada' });
       const resp = await fetch('https://api.tavily.com/search', {
@@ -2715,7 +2823,7 @@ app.post('/api/telemetry/log', (req, res) => {
 // Telemetry para tokens
 app.post('/api/telemetry/tokens', (req, res) => {
   try {
-    const { provider, tokens } = req.body;
+    const { provider, tokens, projectId = 'general', projectType = 'negocios', module: planModule = 'general' } = req.body;
     if (!provider || typeof tokens !== 'number') {
       return res.status(400).json({ success: false, error: 'Datos inválidos' });
     }
@@ -2739,12 +2847,14 @@ app.post('/api/telemetry/tokens', (req, res) => {
     let store = {
       accumulated: {},
       daily: {},
+      byProject: {},
       lastUpdated: new Date().toISOString()
     };
 
     if (raw.accumulated && typeof raw.accumulated === 'object') {
       store.accumulated = raw.accumulated;
       store.daily = raw.daily || {};
+      store.byProject = raw.byProject || {};
     } else {
       // Estructura heredada
       store.accumulated = { ...raw };
@@ -2755,8 +2865,16 @@ app.post('/api/telemetry/tokens', (req, res) => {
       store.daily[todayDate] = {};
     }
 
+    // Inicializar desglose por proyecto
+    if (!store.byProject) store.byProject = {};
+    if (!store.byProject[projectId]) {
+      store.byProject[projectId] = { totalTokens: 0, byProvider: {}, projectType };
+    }
+
     store.accumulated[provider] = (store.accumulated[provider] || 0) + tokens;
     store.daily[todayDate][provider] = (store.daily[todayDate][provider] || 0) + tokens;
+    store.byProject[projectId].totalTokens = (store.byProject[projectId].totalTokens || 0) + tokens;
+    store.byProject[projectId].byProvider[provider] = (store.byProject[projectId].byProvider[provider] || 0) + tokens;
     store.lastUpdated = new Date().toISOString();
 
     // Mantener solo los últimos 7 días en store.daily para evitar crecimiento desmedido
@@ -2773,8 +2891,10 @@ app.post('/api/telemetry/tokens', (req, res) => {
       success: true,
       ...store.accumulated, // compatibilidad hacia atrás
       _accumulated: store.accumulated,
+      _daily: store.daily,
       _today: todayUsage,
-      _todayDate: todayDate
+      _todayDate: todayDate,
+      _byProject: store.byProject
     });
   } catch (error) {
     console.error('[Telemetry] Error guardando tokens:', error);
@@ -3265,7 +3385,19 @@ app.post('/api/models/verify', async (req, res) => {
 
 app.post('/api/telemetry/call-log', (req, res) => {
   try {
-    const { provider, model, promptTokens, completionTokens, latencyMs, promptPreview, status, module: planModule, error: callError } = req.body;
+    const { 
+      provider, 
+      model, 
+      promptTokens, 
+      completionTokens, 
+      latencyMs, 
+      promptPreview, 
+      status, 
+      module: planModule, 
+      projectId = 'general',
+      projectType = 'negocios',
+      error: callError 
+    } = req.body;
     
     if (!provider) {
       return res.status(400).json({ success: false, error: 'Proveedor requerido' });
@@ -3276,17 +3408,20 @@ app.post('/api/telemetry/call-log', (req, res) => {
       fs.mkdirSync(telemetryDir, { recursive: true });
     }
 
+    const totalTokens = (Number(promptTokens) || 0) + (Number(completionTokens) || 0);
     const logEntry = {
       timestamp: new Date().toISOString(),
       provider,
       model: model || 'unknown',
-      promptTokens: promptTokens || 0,
-      completionTokens: completionTokens || 0,
-      totalTokens: (promptTokens || 0) + (completionTokens || 0),
-      latencyMs: latencyMs || 0,
+      promptTokens: Number(promptTokens) || 0,
+      completionTokens: Number(completionTokens) || 0,
+      totalTokens,
+      latencyMs: Number(latencyMs) || 0,
       promptPreview: (promptPreview || '').slice(0, 200),
       status: status || 'success',
       module: planModule || 'general',
+      projectId,
+      projectType,
       error: callError || null,
       costUsd: 0, // Calculado por el frontend usando pricing.js
     };
@@ -3295,14 +3430,42 @@ app.post('/api/telemetry/call-log', (req, res) => {
     const callLogPath = path.join(telemetryDir, 'call_log.jsonl');
     fs.appendFileSync(callLogPath, JSON.stringify(logEntry) + '\n');
 
-    // También actualizar el acumulador de tokens
+    // También actualizar el acumulador de tokens preservando la estructura canónica
     const tokenFilePath = path.join(telemetryDir, 'tokens_usage.json');
-    let tokenData = {};
+    let raw = {};
     if (fs.existsSync(tokenFilePath)) {
-      try { tokenData = JSON.parse(fs.readFileSync(tokenFilePath, 'utf8')); } catch {}
+      try { raw = JSON.parse(fs.readFileSync(tokenFilePath, 'utf8')); } catch {}
     }
-    tokenData[provider] = (tokenData[provider] || 0) + logEntry.totalTokens;
-    fs.writeFileSync(tokenFilePath, JSON.stringify(tokenData, null, 2), 'utf8');
+
+    const todayDate = new Date().toISOString().split('T')[0];
+    let store = {
+      accumulated: {},
+      daily: {},
+      byProject: {},
+      lastUpdated: new Date().toISOString()
+    };
+
+    if (raw.accumulated && typeof raw.accumulated === 'object') {
+      store.accumulated = raw.accumulated;
+      store.daily = raw.daily || {};
+      store.byProject = raw.byProject || {};
+    } else {
+      store.accumulated = { ...raw };
+    }
+
+    if (!store.daily[todayDate]) store.daily[todayDate] = {};
+    if (!store.byProject) store.byProject = {};
+    if (!store.byProject[projectId]) {
+      store.byProject[projectId] = { totalTokens: 0, byProvider: {}, projectType };
+    }
+
+    store.accumulated[provider] = (store.accumulated[provider] || 0) + totalTokens;
+    store.daily[todayDate][provider] = (store.daily[todayDate][provider] || 0) + totalTokens;
+    store.byProject[projectId].totalTokens = (store.byProject[projectId].totalTokens || 0) + totalTokens;
+    store.byProject[projectId].byProvider[provider] = (store.byProject[projectId].byProvider[provider] || 0) + totalTokens;
+    store.lastUpdated = new Date().toISOString();
+
+    fs.writeFileSync(tokenFilePath, JSON.stringify(store, null, 2), 'utf8');
 
     res.json({ success: true, entry: logEntry });
   } catch (error) {
