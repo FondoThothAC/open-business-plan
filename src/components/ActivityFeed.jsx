@@ -294,6 +294,15 @@ const [isConnected, setIsConnected] = useState(false);
           try {
             const entry = JSON.parse(e.data);
             
+            // Disparar eventos globales para componentes desacoplados (ej. TerminalDrawer)
+            if (entry.type === 'research_completed') {
+              window.dispatchEvent(new CustomEvent('openplan_research_completed', { detail: entry }));
+            } else if (entry.type === 'research_paused') {
+              window.dispatchEvent(new CustomEvent('openplan_research_paused', { detail: entry }));
+            } else if (entry.type === 'research_failed') {
+              window.dispatchEvent(new CustomEvent('openplan_research_failed', { detail: entry }));
+            }
+
             // Agregar solo si no tiene ID de proyecto o si pertenece al activo
             if (!entry.projectId || entry.projectId === activeProjectIdRef.current) {
               setLogs(prev => {

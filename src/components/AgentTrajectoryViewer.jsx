@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Bot, Wrench, Eye, Scale, CheckCircle, Clock, Cpu, X, Copy, Download, ChevronDown, ChevronRight, Sparkles, Activity } from 'lucide-react';
 
 const STEP_TYPE_CONFIG = {

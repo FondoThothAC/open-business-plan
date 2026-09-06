@@ -112,7 +112,7 @@ export function renameProject({
   try {
     planData = JSON.parse(rawData);
   } catch (err) {
-    throw new Error(`PROJECT_CORRUPTED: El archivo ${oldJsonPath} no contiene JSON válido (${err.message})`);
+    throw new Error(`PROJECT_CORRUPTED: El archivo ${oldJsonPath} no contiene JSON válido (${err.message})`, { cause: err });
   }
 
   // Actualizar metadatos de identidad

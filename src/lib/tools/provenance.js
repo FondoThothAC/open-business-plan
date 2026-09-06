@@ -154,10 +154,10 @@ export function summarizeProvenance(items = []) {
  * @returns {{ bg: string, color: string, icon: string, label: string, title: string }}
  */
 export function getProvenanceBadgeConfig({ provenance, provider, warning } = {}) {
-  let bg = '#21262d';
-  let color = '#8b949e';
-  let icon = '⚪';
-  let label = 'Sin Datos';
+  let bg;
+  let color;
+  let icon;
+  let label;
 
   if (provenance === 'real' || provenance === 'verified_real') {
     bg = 'rgba(63, 185, 80, 0.15)';

@@ -424,15 +424,24 @@ export async function runAgenticModuleGeneration({
 
         if (moduleKey === 'estructura' || moduleKey === 'recursos_humanos' || moduleKey === 'introduccion') {
           const toolQuantumStart = Date.now();
+          const perfil = seed.perfil_fundador || {};
+          const areasFundador = Array.isArray(perfil.areas) && perfil.areas.length > 0
+            ? perfil.areas
+            : (Array.isArray(perfil.areasFundador) && perfil.areasFundador.length > 0
+              ? perfil.areasFundador
+              : [seed.area_fundador || 'operativo']);
+          const tamanoEquipo = Number(perfil.tamanoEquipo || seed.tamano_equipo || 3);
+          const quantumArgs = { areasFundador, tamanoEquipo };
+
           notifyStep('tool_call', {
             title: 'Ronda 1: Diagnóstico Cuántico (Fondo Thoth AC)',
             toolName: 'tool_quantum_diagnostic',
-            toolArgs: { areasFundador: ['operativo'], tamanoEquipo: 3 },
+            toolArgs: quantumArgs,
             content: 'Evaluando Modelo Atómico de 3 Áreas y Regla 13 de Empresas Cuánticas.',
             durationMs: 0
           });
 
-          const quantumResult = await executeAgentTool('tool_quantum_diagnostic', { areasFundador: ['operativo'], tamanoEquipo: 3 }, planData);
+          const quantumResult = await executeAgentTool('tool_quantum_diagnostic', quantumArgs, planData);
           quantumData = quantumResult.data;
 
           notifyStep('observation', {
@@ -586,25 +595,25 @@ ${fields.map(f => `"${f.key}": "${f.label || f.key} - ${getFieldFormatGuidance(f
     });
 
     // ─── PASO 5: CONSOLIDACIÓN FINAL Y EXPORTACIÓN DE TRAYECTORIA ───
-    const finalHarness = recorder.finish(generatedResult, 'completed');
     notifyStep('synthesis', {
       title: 'Módulo Consolidado y Trayectoria Registrada',
-      content: `Generación completada en ${(recorder.totalDurationMs / 1000).toFixed(2)}s con ${recorder.steps.length} pasos cognitivos trazados en Harness v0.1.`,
+      content: `Generación completada en ${(recorder.totalDurationMs / 1000).toFixed(2)}s con ${recorder.steps.length + 1} pasos cognitivos trazados en Harness v0.1.`,
       durationMs: 0
     });
+    const finalHarness = recorder.finish(generatedResult, 'completed');
 
     return {
       result: generatedResult,
       trajectory: finalHarness
     };
   } catch (error) {
-    recorder.finish(null, 'failed');
     notifyStep('reflection', {
       title: 'Excepción en el Ciclo Agéntico',
       content: `Error: ${error.message}`,
       status: 'error',
       durationMs: 0
     });
+    recorder.finish(null, 'failed');
     throw error;
   }
 }

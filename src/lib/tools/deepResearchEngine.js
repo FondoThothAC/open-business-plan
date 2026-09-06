@@ -303,7 +303,6 @@ export async function runDeepResearch({
   const startTime = Date.now();
   let costAccumulated = 0;
   let sources = [];
-  let rawSnippets = [];
   let tierUsed = 'free';
   let tierCategory = 'tier1_free';
 
@@ -535,7 +534,7 @@ export async function runDeepResearch({
     }
   }
 
-  rawSnippets = sources.length > 0
+  const rawSnippets = sources.length > 0
     ? sources.map(s => `[${s.provider}] (${(s.provenance === 'real' || s.provenance === 'verified_real') ? 'Verificado' : 'Estimación'}): ${s.title} — ${s.snippet}`)
     : [`Sin fuentes verificadas en internet para "${query}". Se declara limitación informativa en la formulación.`];
 

@@ -2998,6 +2998,9 @@ if (!fs.existsSync(researchDir)) {
   fs.mkdirSync(researchDir, { recursive: true });
 }
 
+// Alias de broadcast para emisión de logs y telemetría de research
+const broadcastLog = (data) => broadcast(data);
+
 // Iniciar investigación en background
 app.post('/api/research/start', async (req, res) => {
   try {

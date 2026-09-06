@@ -28,6 +28,7 @@ import MultiScenarioFinancialSection from '../components/MultiScenarioFinancialS
 import { BOX_REGISTRY } from '../config/boxRegistry';
 import { getBoxIdsForModule } from '../config/moduleBoxMap';
 import { RenderBox } from '../components/boxes';
+import { BoxBenchmark } from '../components/boxes/BoxBenchmark';
 import { CroquisPreviewWidget } from '../components/MicroCroquisEditor';
 
 function readJson(raw, fallback) {
@@ -1739,9 +1740,10 @@ export default function VistaPrevia() {
   }, [allFrameworkModules, planData.config?.moduleOrder]);
 
   // Calcular números de página estimados para el índice y los pies de página
-  const { modulePageNumbers, financialReportsPage, anexosPage, sourcesPage } = useMemo(() => {
+  const { executiveDashboardPage, modulePageNumbers, financialReportsPage, anexosPage, sourcesPage } = useMemo(() => {
     const pageNumbers = {};
-    let currentPage = 3; // Portada es 1, Índice es 2. Primer módulo inicia en 3.
+    const execDashPage = 3; // Portada es 1, Índice es 2, Tablero Ejecutivo de Dirección es 3.
+    let currentPage = 4; // Primer módulo temático inicia en 4.
 
     if (paginationMode === 'continuous') {
       let accumPages = 0;
@@ -1790,6 +1792,7 @@ export default function VistaPrevia() {
 
     const sPage = currentPage; // Fuentes de Información siempre al final
     return {
+      executiveDashboardPage: execDashPage,
       modulePageNumbers: pageNumbers,
       financialReportsPage: reportsPage,
       anexosPage: aPage,
@@ -2728,6 +2731,12 @@ export default function VistaPrevia() {
                 <span className="toc-dot-leader" />
                 <span className="toc-page-badge">2</span>
               </div>
+
+              <a href="#seccion-tablero-ejecutivo" className="toc-item-link" style={{ background: 'rgba(99, 102, 241, 0.04)', borderRadius: '6px' }}>
+                <span style={{ fontWeight: 700, color: 'var(--accent-color, #6366f1)' }}>Tablero Ejecutivo de Dirección & KPIs Clave</span>
+                <span className="toc-dot-leader" />
+                <span className="toc-page-badge" style={{ background: 'var(--accent-color, #6366f1)', color: '#ffffff' }}>{executiveDashboardPage || 3}</span>
+              </a>
               
               {orderedModules.map((mod, idx) => {
                 const pageNum = modulePageNumbers[mod.key];
@@ -2769,6 +2778,64 @@ export default function VistaPrevia() {
           </div>
 
           <CorporatePrintFooter pageNum={2} sectionName="Índice" />
+        </div>
+
+        {/* PÁGINA 3: TABLERO EJECUTIVO DE DIRECCIÓN, BENCHMARKS Y KPIS DE INDUSTRIA */}
+        <div 
+          id="seccion-tablero-ejecutivo" 
+          className={`print-page ${globalOrientation === 'landscape' ? 'landscape-print-page' : 'portrait-print-page'}`} 
+          style={{ 
+            marginTop: paginationMode === 'continuous' ? '1rem' : '2.5rem',
+            width: '100%',
+            maxWidth: globalOrientation === 'landscape' ? '1080px' : '760px',
+            margin: '0 auto 2.5rem auto',
+            minHeight: '1000px',
+            display: 'flex',
+            flexDirection: 'column',
+            position: 'relative',
+            pageBreakInside: 'avoid'
+          }}
+        >
+          <CorporatePrintHeader sectionTitle="Tablero Ejecutivo de Dirección & Benchmarks" pillarTitle="Resumen de Dirección" />
+          
+          <div style={{ flex: 1, paddingTop: '1rem', paddingBottom: '2rem' }}>
+            <div style={{ marginBottom: '1.5rem', borderBottom: '2px solid #e2e8f0', paddingBottom: '0.75rem' }}>
+              <span style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--accent-color, #6366f1)' }}>
+                Dirección Estratégica & Rendimiento
+              </span>
+              <h2 style={{ fontSize: '1.5rem', fontWeight: 900, color: '#0f172a', margin: '4px 0 0 0', fontFamily: 'var(--font-display)' }}>
+                Tablero Ejecutivo de Dirección, Benchmarks y KPIs de Industria
+              </h2>
+              <p style={{ fontSize: '0.85rem', color: '#64748b', marginTop: '4px', margin: 0 }}>
+                Consolidado maestro de viabilidad financiera, métricas de eficiencia operativa (SCM) y unit economics del negocio.
+              </p>
+            </div>
+
+            {/* Dashboard Financiero Ejecutivo */}
+            <ExecutiveFinancialDashboard planData={planData} />
+
+            {/* Benchmarks Operativos y Comerciales Consolidados */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.25rem', marginTop: '1.5rem' }}>
+              <BoxBenchmark 
+                definition={{
+                  id: 'box_unit_economics',
+                  title: 'Unit Economics y Eficiencia Comercial',
+                  source: { book: 'The Lean Startup', page: 'Ch. 6' }
+                }}
+                values={{ financialData: previewFinancialData }}
+              />
+              <BoxBenchmark 
+                definition={{
+                  id: 'box_kpi_otd_dso_dio_ccc',
+                  title: 'Cuadro de Mando SCM: Eficiencia Operativa',
+                  source: { book: 'Operations Management', page: 'p. 142' }
+                }}
+                values={{ financialData: previewFinancialData }}
+              />
+            </div>
+          </div>
+
+          <CorporatePrintFooter pageNum={executiveDashboardPage || 3} sectionName="Tablero Ejecutivo" />
         </div>
 
         {/* Renderizar cada pilar/módulo en su orden seleccionado */}
@@ -3041,7 +3108,6 @@ export default function VistaPrevia() {
                     <h3 style={{ fontSize: '1.25rem', color: '#0f172a', marginBottom: '1rem', fontWeight: 800 }}>
                       {sectionNumber} {mod.title}
                     </h3>
-                    <ExecutiveFinancialDashboard planData={planData} />
                     <PresupuestoEmpresa projections={previewFinancialData} staff={planData.organizacion?.staff} planData={planData} />
                     <BalanceGeneralEstandar projections={previewFinancialData} planData={planData} />
                     <Section 
@@ -3227,7 +3293,11 @@ export default function VistaPrevia() {
                     </h4>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                       {boxes.map((boxDef) => {
-                        const boxValues = moduleBoxData[boxDef.id] || {};
+                        const boxValues = {
+                          ...(moduleBoxData[boxDef.id] || {}),
+                          planData,
+                          financialData: previewFinancialData
+                        };
                         return (
                           <RenderBox
                             key={boxDef.id}

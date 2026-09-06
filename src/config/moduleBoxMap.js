@@ -14,7 +14,7 @@ export const MODULE_BOX_MAP = {
   'business:introduccion': ['box_resumen_ejecutivo_1p'],
   'business:identidad': ['box_resumen_ejecutivo_1p'],
   'business:objetivos': [],
-  'business:foda': ['box_swot_foda'],
+  'business:foda': [], // Se gestiona con la Matriz FODA nativa sincronizada
   'business:pestel': [],
   'business:legal': [],
   'business:canvas': [],
@@ -23,7 +23,7 @@ export const MODULE_BOX_MAP = {
   'business:analisis': ['box_tam_sam_som'],
   'business:segmentacion': [],
   'business:mapa': [],
-  'business:competencia': ['box_swot_foda'],
+  'business:competencia': [], // Removido FODA duplicado en competencia
   'business:benchmarking': [],
   'business:comercializacion': [],
   'business:ventas': ['box_unit_economics', 'box_benchmark_cac_ltv'],
@@ -33,18 +33,18 @@ export const MODULE_BOX_MAP = {
   'business:operacion': ['box_kpi_otd_dso_dio_ccc'],
   'business:recursos': [],
   'business:insumos': [],
-  'business:capacidad': ['box_kpi_otd_dso_dio_ccc'],
-  'business:operativa': ['box_kpi_otd_dso_dio_ccc'],
+  'business:capacidad': [], // Removida repetición de indicadores operativos
+  'business:operativa': [], // Removida repetición de indicadores operativos
   'business:ambiental': [],
   
   // Organización y Finanzas
-  'business:estructura': ['box_unit_economics', 'box_benchmark_cac_ltv'],
-  'business:recursos_humanos': ['box_unit_economics', 'box_benchmark_cac_ltv'],
+  'business:estructura': [], // Removidas métricas comerciales de organización
+  'business:recursos_humanos': [], // Removidas métricas comerciales de RRHH
   'business:inversion': ['box_wacc_van_tir', 'box_tornado_sensibilidad'],
-  'business:costos': ['box_unit_economics'],
-  'business:estados_financieros': ['box_wacc_van_tir', 'box_tornado_sensibilidad', 'box_montecarlo_sim'],
-  'business:rentabilidad': ['box_wacc_van_tir', 'box_unit_economics', 'box_benchmark_cac_ltv'],
-  'business:simulador': ['box_wacc_van_tir', 'box_montecarlo_sim'],
+  'business:costos': [], // Métricas unitarias pertenecen a ventas
+  'business:estados_financieros': ['box_montecarlo_sim'],
+  'business:rentabilidad': ['box_wacc_van_tir'],
+  'business:simulador': ['box_montecarlo_sim'],
   
   // ============ AGILE STARTUP ============
   // Validación
@@ -61,7 +61,7 @@ export const MODULE_BOX_MAP = {
   
   // Finanzas Ágiles
   'agile_startup:unit_economics': ['box_unit_economics', 'box_benchmark_cac_ltv'],
-  'agile_startup:burn_rate': ['box_burn_runway', 'box_benchmark_cac_ltv'],
+  'agile_startup:burn_rate': ['box_burn_runway'],
   'agile_startup:simulador': ['box_burn_runway'],
   
   // ============ INVESTMENT PROJECT ============

@@ -1,16 +1,60 @@
 import { Layout, ShieldAlert } from 'lucide-react';
 
 /**
+ * Parsea texto de FODA (viñetas, saltos de línea o comas) en un array de cadenas limpias.
+ * @param {string|Array} text 
+ * @returns {string[]}
+ */
+function parseFodaTextToItems(text) {
+  if (!text) return [];
+  if (Array.isArray(text)) return text.map(t => String(t).trim()).filter(Boolean);
+  if (typeof text !== 'string') return [String(text)];
+  
+  const parsed = text
+    .split(/\r?\n|•|- |\* |;/)
+    .map(s => s.trim().replace(/^[-*•\d.)\s]+/, ''))
+    .filter(s => s.length > 2);
+
+  return parsed.length > 0 ? parsed : [text.trim()];
+}
+
+/**
  * Componente BoxMatrix - Renderiza matrices bidimensionales (FODA, Porter 5F, ZOPP 4x4, Matriz X)
- * Totalmente adaptado al tema claro/oscuro del sistema
+ * Totalmente sincronizado con datos reales del plan para evitar texto simulado ("lore")
  */
 export function BoxMatrix({ definition = {}, values = {} }) {
-  const quadrants = values.quadrants || [
-    { title: 'Fortalezas (Internas)', items: ['Banco de pruebas propio 40k PSI', 'Personal certificado en hidráulica', 'Convenio directo con proveedores OEM'] },
-    { title: 'Oportunidades (Externas)', items: ['Boom minero en Sonora 2026', 'Demanda de modelos MaaS predictivos', 'Crecimiento de contratos Tier 1'] },
-    { title: 'Debilidades (Internas)', items: ['Marca nueva en el sector minero', 'Capacidad inicial limitada a 25 equipos', 'Curva de adopción del sensor IoT'] },
-    { title: 'Amenazas (Externas)', items: ['Volatilidad en tipo de cambio USD/MXN', 'Competidores de mostrador con precios bajos', 'Retraso en autorizaciones de clientes'] }
-  ];
+  const fodaSource = values.foda || values.planData?.naturaleza?.foda;
+
+  let quadrants = values.quadrants;
+  if (!quadrants && fodaSource && (fodaSource.fortalezas || fodaSource.oportunidades || fodaSource.debilidades || fodaSource.amenazas)) {
+    quadrants = [
+      {
+        title: 'Fortalezas (Internas)',
+        items: parseFodaTextToItems(fodaSource.fortalezas)
+      },
+      {
+        title: 'Oportunidades (Externas)',
+        items: parseFodaTextToItems(fodaSource.oportunidades)
+      },
+      {
+        title: 'Debilidades (Internas)',
+        items: parseFodaTextToItems(fodaSource.debilidades)
+      },
+      {
+        title: 'Amenazas (Externas)',
+        items: parseFodaTextToItems(fodaSource.amenazas)
+      }
+    ];
+  }
+
+  if (!quadrants) {
+    quadrants = [
+      { title: 'Fortalezas (Internas)', items: ['Capacidades clave del equipo y propuesta de valor única.'] },
+      { title: 'Oportunidades (Externas)', items: ['Tendencias favorables y nichos de mercado desatendidos.'] },
+      { title: 'Debilidades (Internas)', items: ['Áreas operativas iniciales a fortalecer con delegación.'] },
+      { title: 'Amenazas (Externas)', items: ['Factores macroeconómicos o competencia a mitigar.'] }
+    ];
+  }
 
   return (
     <div style={{

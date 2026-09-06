@@ -636,7 +636,10 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
                 </h4>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                   {boxes.map((boxDef) => {
-                    const boxValues = moduleBoxData[boxDef.id] || {};
+                    const boxValues = {
+                      ...(moduleBoxData[boxDef.id] || {}),
+                      planData
+                    };
                     return (
                       <RenderBox
                         key={boxDef.id}
