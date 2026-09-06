@@ -274,6 +274,9 @@ app.get('/api/projects', (req, res) => {
         const entries = fs.readdirSync(targetDir, { withFileTypes: true });
         for (const entry of entries) {
            if (entry.isDirectory()) {
+              if (entry.name === '.archive' || entry.name === 'node_modules') {
+                continue;
+              }
               if (entry.name.startsWith('user_')) {
                 if (isTargetAdmin) {
                   scanDir(path.join(targetDir, entry.name), entry.name);
@@ -307,31 +310,6 @@ app.get('/api/projects', (req, res) => {
                    userOwner: targetUserFolder ? targetUserFolder.replace(/^user_/, '') : 'local'
                  });
               }
-           } else if (entry.name.endsWith('.json') && !entry.name.includes('_logs') && !targetUserFolder) {
-             // Legacy root files support
-             const fullPath = path.join(targetDir, entry.name);
-             const stats = fs.statSync(fullPath);
-             let completion = 0;
-             let projectType = type === 'social' ? 'social_bid' : 'business';
-             let projectName = entry.name.replace('.json', '').replace(/_/g, ' ');
-             try {
-               const data = JSON.parse(fs.readFileSync(fullPath, 'utf8'));
-               completion = calculateCompletion(data);
-               projectType = data.config?.projectType || projectType;
-               projectName = data.config?.brandKit?.companyName || data.semilla?.nombre_proyecto || data.semilla?.negocio?.nombre_marca || projectName;
-              } catch {}
-
-
-             projects.push({
-                  id: entry.name.replace('.json', ''),
-                  name: projectName,
-                  file: entry.name,
-                  mtime: stats.mtime,
-                  size: stats.size,
-                  completion,
-                  projectType,
-                  userOwner: 'local'
-             });
            }
         }
       };
@@ -456,6 +434,53 @@ app.post('/api/projects/:type/:id/rename', (req, res) => {
       return res.status(409).json({ success: false, error: error.message });
     }
     res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// Eliminación Segura y Archivado de Proyectos
+app.delete('/api/projects/:type/:id', (req, res) => {
+  try {
+    const { type, id } = req.params;
+    const reqUserId = req.headers['x-user-id'] || req.query.userId || '';
+    const userFolder = reqUserId && reqUserId !== 'admin' ? `user_${reqUserId.replace(/[^a-z0-9]/gi, '_').toLowerCase()}` : '';
+
+    const baseDir = path.resolve('proyectos');
+    const typeDir = userFolder ? path.join(baseDir, type, userFolder) : path.join(baseDir, type);
+    const projectDir = path.join(typeDir, id);
+    const singleJson = path.join(typeDir, `${id}.json`);
+
+    const archiveDir = path.join(baseDir, type, '.archive', 'deleted_projects');
+    if (!fs.existsSync(archiveDir)) {
+      fs.mkdirSync(archiveDir, { recursive: true });
+    }
+
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+
+    if (fs.existsSync(projectDir) && fs.statSync(projectDir).isDirectory()) {
+      const targetArchive = path.join(archiveDir, `${id}_deleted_${timestamp}`);
+      fs.renameSync(projectDir, targetArchive);
+      return res.json({
+        success: true,
+        message: `Proyecto '${id}' archivado y eliminado exitosamente`,
+        archivedPath: targetArchive
+      });
+    } else if (fs.existsSync(singleJson)) {
+      const targetArchive = path.join(archiveDir, `${id}_deleted_${timestamp}.json`);
+      fs.renameSync(singleJson, targetArchive);
+      const singleMd = path.join(typeDir, `${id}.md`);
+      if (fs.existsSync(singleMd)) {
+        fs.renameSync(singleMd, path.join(archiveDir, `${id}_deleted_${timestamp}.md`));
+      }
+      return res.json({
+        success: true,
+        message: `Archivo de proyecto '${id}' archivado exitosamente`,
+        archivedPath: targetArchive
+      });
+    } else {
+      return res.status(404).json({ success: false, error: 'Proyecto no encontrado para eliminar' });
+    }
+  } catch (error) {
+    res.status(500).json({ success: false, error: `Error al eliminar proyecto: ${error.message}` });
   }
 });
 

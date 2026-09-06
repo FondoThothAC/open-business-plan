@@ -16,14 +16,29 @@ import { parseCurrencyNumber } from '../finanzas/canonicalCapex.js';
  */
 export function countPopulatedModules(planData = {}) {
   let count = 0;
-  const pillars = ['naturaleza', 'mercado', 'tecnico', 'organizacion', 'simulador_financiero', 'identificacion', 'diseno'];
+  // Conjunto exhaustivo de pilares de las 12 metodologías canónicas
+  const knownPillars = [
+    'naturaleza', 'mercado', 'tecnico', 'organizacion', 'simulador_financiero',
+    'identificacion', 'diseno', 'ejecucion', 'presupuesto', 'validacion',
+    'experimento', 'aprendizaje', 'finanzas_agiles', 'innovacion', 'viabilidad_tecnica',
+    'mercado_tecnologico', 'responsabilidad_social', 'mercado_cuantitativo',
+    'ingenieria_tecnica', 'presupuesto_obra', 'estructura_capital', 'riesgo_matematico',
+    'analisis_situacion', 'planificacion_mpp', 'excelencia_cientifica',
+    'impacto_sostenibilidad', 'vision_largo_plazo', 'alineacion_ejecucion',
+    'estructuracion_celulas', 'economia_interna', 'redes_estado', 'manejo_conflictos',
+    'ingenieria_industrial', 'financiamiento_global'
+  ];
 
-  pillars.forEach(pKey => {
+  // Identificar todas las claves candidatas que no sean metadatos del sistema
+  const nonPillarKeys = new Set(['config', 'semilla', 'anexos', 'brandKit', 'canvas', 'history', 'telemetry', 'multiBranch', 'aiMemory']);
+  const allCandidateKeys = new Set([...knownPillars, ...Object.keys(planData).filter(k => !nonPillarKeys.has(k))]);
+
+  allCandidateKeys.forEach(pKey => {
     const pillarObj = planData[pKey];
-    if (pillarObj && typeof pillarObj === 'object') {
+    if (pillarObj && typeof pillarObj === 'object' && !Array.isArray(pillarObj)) {
       Object.keys(pillarObj).forEach(modKey => {
         const modContent = pillarObj[modKey];
-        if (modContent && typeof modContent === 'object') {
+        if (modContent && typeof modContent === 'object' && !Array.isArray(modContent)) {
           const hasContent = Object.values(modContent).some(val => {
             if (val === null || val === undefined) return false;
             if (typeof val === 'number') return true;

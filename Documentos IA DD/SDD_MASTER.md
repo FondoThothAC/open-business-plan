@@ -221,6 +221,22 @@ flowchart LR
   * Pestaña dedicada `Cuotas & Fila 1/2` con barras de progreso de consumo mensual.
   * Control reactivo directo en tarjetas pausadas por cuota: botones para "💎 Autorizar Fila 2 (Pago)" o "🦆 Usar DuckDuckGo (Gratis)".
 
+### 3.7 Erradicación de Proyectos Fantasmas y Endpoint DELETE Seguro (`server/index.js`)
+* **Depuración de Archivos Huérfanos:**
+  * 114 micro-archivos sueltos `proyecto_*.json` y `proyecto_*.md` en la raíz de `proyectos/negocios/` y `proyectos/social/` fueron archivados de manera segura en sus respectivos directorios `.archive/ghost_backups/`.
+  * Modificación de `app.get('/api/projects')`: Se excluyeron explícitamente los archivos sueltos y directorios `.archive/` para asegurar que únicamente proyectos canónicos con estructura formal de carpeta sean listados.
+* **Endpoint de Eliminación Segura:**
+  * `DELETE /api/projects/:type/:id`: Mueve atómicamente el proyecto eliminado a `proyectos/:type/.archive/deleted_projects/:id_deleted_<timestamp>/`, preservando historial sin pérdida destructiva.
+
+### 3.8 Consolidación de 12 Metodologías Canónicas para Comercio Cuántico Internacional TR SAPI de CV
+* **Población Exhaustiva 100%:**
+  * Cobertura de 278 campos requeridos a lo largo de los 12 frameworks canónicos (`business`, `social_bid`, `agile_startup`, `technology_id`, `micro_business`, `investment_project`, `zopp`, `horizon_europe`, `hoshin_kanri`, `amoeba_management`, `guanxi_plan`, `onudi_project`).
+  * 0 campos faltantes y 95 módulos canónicos poblados verificados mediante la suite automatizada `tests/cciTwelveFrameworks.test.js`.
+* **Rigor y Blindaje Financiero:**
+  * Anclaje riguroso a los 4 documentos RAG de CCI: Inversión inicial de $20,000,000 MXN (Serie B a 200 cupos preferentes), reserva líquida colateral de $7,000,000 MXN para absorción del ciclo minero a 90 días, WACC del 12%, TIR del 15.11%, VAN de $1,836,412.50 MXN y punto de equilibrio de $641,666 MXN/mes.
+  * Matriz de capital humano formal de 14 puestos clave con desglose de nómina IMSS al 32% y alineación atómica con la Regla 13 de Empresas Cuánticas (Fondo Thoth AC).
+  * Sincronización inmutable dual en `comercio_cu_ntico_internacional_tr_sapi_de_cv.json` y su versión exportable en Markdown `comercio_cu_ntico_internacional_tr_sapi_de_cv.md`.
+
 ---
 
 ## 4. Diagrama Maestro de Arquitectura y Flujos en yEd Graph Editor

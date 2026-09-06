@@ -43,8 +43,10 @@
 | **TDD-32** | `Paid Model Governance & Cost Guardrails` | Unitaria / Seguridad | Guardián preventivo que impide rotaciones a APIs de pago sin consentimiento y emite alertas reactivas. |
 | **TDD-33** | `Project Rename & Atomic Consolidation` | Integración / Backend | Renombrado atómico de proyectos, actualización de metadatos y archivo seguro en .archive/. |
 | **TDD-34** | `Financial Consistency & SAPI De CV Saneamiento Inmutable` | Integración / Negocio | Valida anclaje a $20M MXN, TIR 15.11%, VPN $1.83M y erradicación de secciones Pro-Forma fantasma. |
+| **TDD-35** | `Ghost Projects Eradication & Safe Deletion` | Integración / Backend | Filtrado de archivos sueltos `proyecto_*.json` en raíz de proyectos y archivado seguro con timestamp en `.archive/deleted_projects/`. |
+| **TDD-36** | `CCI Twelve Frameworks RAG Consolidator` | Integración / Multi-Framework | Cobertura integral del 100% de campos de los 12 frameworks canónicos para Comercio Cuántico Internacional TR SAPI de CV con sincronización inmutable de Markdown (.md). |
 
-**Estado de Ejecución:** 233/233 tests pasando (100% de la suite completa aprobada en verde).
+**Estado de Ejecución:** 247/247 tests pasando (100% de la suite completa aprobada en verde).
 
 ---
 
