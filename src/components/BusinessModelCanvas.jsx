@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { usePlan } from '../context/PlanContext';
-import { Users, CheckSquare, Layers, Gift, Heart, Truck, UserCheck, DollarSign, Percent, Edit3, X, Save, LayoutGrid, Eye } from 'lucide-react';
+import { Users, CheckSquare, Layers, Gift, Heart, Truck, UserCheck, DollarSign, Percent, Edit3, X, Save } from 'lucide-react';
 import { safeStr } from '../utils/formatters';
 
 const CANVAS_BLOCKS = {
@@ -64,7 +64,6 @@ export default function BusinessModelCanvas({ readOnly = false }) {
   const { planData, updateSection } = usePlan();
   const [editingBlock, setEditingBlock] = useState(null);
   const [editValue, setEditValue] = useState('');
-  const [viewMode, setViewMode] = useState('cards'); // 'cards' (desaturado legible) o 'classic' (lienzo 9 bloques)
 
   const handleBlockClick = (key) => {
     if (readOnly) return;
@@ -80,12 +79,13 @@ export default function BusinessModelCanvas({ readOnly = false }) {
     }
   };
 
-  const renderClassicBlock = (key, gridArea) => {
+  const renderBlock = (key, gridArea) => {
     const block = CANVAS_BLOCKS[key];
     const rawValue = planData.naturaleza?.canvas?.[key];
     const value = !rawValue ? '' : safeStr(rawValue);
     const Icon = block.icon;
 
+    // Descomponer gridArea en filas y columnas explícitas
     const parts = gridArea.split('/').map(s => s.trim());
     const gridRow = `${parts[0]} / ${parts[2]}`;
     const gridColumn = `${parts[1]} / ${parts[3]}`;
@@ -98,69 +98,35 @@ export default function BusinessModelCanvas({ readOnly = false }) {
           gridRow,
           gridColumn,
           cursor: readOnly ? 'default' : 'pointer',
-          position: 'relative'
-        }}
-        className={`canvas-block ${key}`}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.65rem', color: 'var(--text-primary)' }} className="canvas-block-header">
-          <div style={{ padding: '0.35rem', borderRadius: '8px', background: `${block.border}15`, display: 'flex', alignItems: 'center', justifyContent: 'center' }} className="canvas-icon-wrapper">
-            <Icon size={15} style={{ color: block.border }} className="canvas-icon" />
-          </div>
-          <span style={{ fontWeight: '800', fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.04em' }} className="canvas-block-title">{block.title}</span>
-          {!readOnly && (
-            <Edit3 size={13} style={{ marginLeft: 'auto', opacity: 0.4, color: 'var(--text-secondary)' }} className="edit-indicator" />
-          )}
-        </div>
-        
-        <div style={{ fontSize: '0.82rem', lineHeight: '1.5', overflowY: 'auto', flex: 1, whiteSpace: 'pre-wrap' }} className="canvas-block-content">
-          {value ? value : (
-            <span style={{ color: 'var(--text-secondary)', opacity: 0.6, fontStyle: 'italic', fontSize: '0.76rem' }}>
-              {readOnly ? 'Sin redactar' : `Haz click para agregar ${block.title.toLowerCase()}...`}
-            </span>
-          )}
-        </div>
-      </div>
-    );
-  };
-
-  const renderCardBlock = (key) => {
-    const block = CANVAS_BLOCKS[key];
-    const rawValue = planData.naturaleza?.canvas?.[key];
-    const value = !rawValue ? '' : safeStr(rawValue);
-    const Icon = block.icon;
-
-    return (
-      <div
-        key={key}
-        onClick={() => handleBlockClick(key)}
-        className="canvas-card-item glass-panel"
-        style={{
-          padding: '1.25rem 1.4rem',
-          borderRadius: '14px',
+          position: 'relative',
+          padding: '0.85rem 1rem',
+          borderRadius: '12px',
           border: `1.5px solid ${block.border}35`,
           background: `${block.border}08`,
           display: 'flex',
           flexDirection: 'column',
-          gap: '0.75rem',
-          cursor: readOnly ? 'default' : 'pointer',
-          transition: 'all 0.2s ease',
-          boxShadow: '0 4px 18px rgba(0,0,0,0.02)'
+          gap: '0.5rem',
+          minHeight: '140px',
+          boxShadow: '0 4px 15px rgba(0,0,0,0.02)',
+          transition: 'all 0.2s ease'
         }}
+        className={`canvas-block ${key}`}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', borderBottom: `1px solid ${block.border}25`, paddingBottom: '0.5rem' }}>
-          <div style={{ padding: '0.4rem', borderRadius: '8px', background: `${block.border}20`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Icon size={16} style={{ color: block.border }} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', borderBottom: `1px solid ${block.border}20`, paddingBottom: '0.4rem', color: 'var(--text-primary)' }} className="canvas-block-header">
+          <div style={{ padding: '0.3rem', borderRadius: '6px', background: `${block.border}20`, display: 'flex', alignItems: 'center', justifyContent: 'center' }} className="canvas-icon-wrapper">
+            <Icon size={14} style={{ color: block.border }} className="canvas-icon" />
           </div>
-          <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800, color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+          <span style={{ fontWeight: '800', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.03em', color: block.border }} className="canvas-block-title">
             {block.title}
-          </h4>
+          </span>
           {!readOnly && (
-            <Edit3 size={13} style={{ marginLeft: 'auto', opacity: 0.4, color: 'var(--text-secondary)' }} />
+            <Edit3 size={12} style={{ marginLeft: 'auto', opacity: 0.4, color: 'var(--text-secondary)' }} className="edit-indicator" />
           )}
         </div>
-        <div style={{ fontSize: '0.88rem', lineHeight: '1.6', color: 'var(--text-secondary)', whiteSpace: 'pre-wrap' }}>
+        
+        <div style={{ fontSize: '0.78rem', lineHeight: '1.45', color: 'var(--text-secondary)', overflowY: 'auto', flex: 1, whiteSpace: 'pre-wrap' }} className="canvas-block-content">
           {value ? value : (
-            <span style={{ color: 'var(--text-secondary)', opacity: 0.6, fontStyle: 'italic', fontSize: '0.8rem' }}>
+            <span style={{ color: 'var(--text-secondary)', opacity: 0.6, fontStyle: 'italic', fontSize: '0.74rem' }}>
               {readOnly ? 'Sin redactar' : `Haz click para agregar ${block.title.toLowerCase()}...`}
             </span>
           )}
@@ -171,55 +137,35 @@ export default function BusinessModelCanvas({ readOnly = false }) {
 
   return (
     <div style={{ width: '100%', margin: '0 auto' }} className="business-model-canvas-container">
-      {/* Selector de modo de vista para evitar saturación visual */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }} className="no-print">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Visualización:</span>
-          <div style={{ display: 'flex', background: 'rgba(0,0,0,0.06)', borderRadius: '8px', padding: '3px' }}>
-            <button
-              onClick={() => setViewMode('cards')}
-              style={{
-                border: 'none',
-                background: viewMode === 'cards' ? 'var(--accent-color, #3b82f6)' : 'transparent',
-                color: viewMode === 'cards' ? '#fff' : 'var(--text-secondary)',
-                padding: '0.35rem 0.75rem',
-                borderRadius: '6px',
-                fontSize: '0.78rem',
-                fontWeight: 700,
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.35rem'
-              }}
-            >
-              <LayoutGrid size={13} />
-              <span>Tarjetas Desglosadas</span>
-            </button>
-            <button
-              onClick={() => setViewMode('classic')}
-              style={{
-                border: 'none',
-                background: viewMode === 'classic' ? 'var(--accent-color, #3b82f6)' : 'transparent',
-                color: viewMode === 'classic' ? '#fff' : 'var(--text-secondary)',
-                padding: '0.35rem 0.75rem',
-                borderRadius: '6px',
-                fontSize: '0.78rem',
-                fontWeight: 700,
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.35rem'
-              }}
-            >
-              <Eye size={13} />
-              <span>Lienzo Osterwalder</span>
-            </button>
-          </div>
-        </div>
-      </div>
-
       <style>{`
+        .business-model-canvas-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+          grid-template-rows: minmax(160px, auto) minmax(160px, auto) minmax(115px, auto);
+          gap: 0.75rem;
+          width: 100%;
+          align-items: stretch;
+        }
+        @media (max-width: 1024px) {
+          .business-model-canvas-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto;
+          }
+          .canvas-block {
+            grid-row: auto !important;
+            grid-column: auto !important;
+          }
+        }
+        @media (max-width: 640px) {
+          .business-model-canvas-grid {
+            grid-template-columns: 1fr;
+          }
+        }
         @media print {
+          @page {
+            size: landscape;
+          }
           .business-model-canvas-container {
             margin: 0 auto !important;
             padding: 0 !important;
@@ -228,74 +174,58 @@ export default function BusinessModelCanvas({ readOnly = false }) {
             page-break-inside: avoid !important;
             break-inside: avoid !important;
           }
-          .canvas-cards-grid {
-            display: grid !important;
-            grid-template-columns: repeat(2, 1fr) !important;
-            gap: 0.5cm !important;
+          .business-model-canvas-grid {
+            grid-template-columns: 1fr 1fr 1fr 1fr 1fr !important;
+            grid-template-rows: minmax(95px, auto) minmax(95px, auto) minmax(65px, auto) !important;
+            gap: 4px !important;
+            width: 100% !important;
           }
-          .canvas-card-item {
-            background: #ffffff !important;
-            color: #1e293b !important;
+          .canvas-block {
+            padding: 0.4rem 0.5rem !important;
+            border-radius: 6px !important;
             border: 1.5px solid #cbd5e1 !important;
+            background: #ffffff !important;
             box-shadow: none !important;
             page-break-inside: avoid !important;
             break-inside: avoid !important;
-            border-radius: 8px !important;
-            padding: 0.8rem 1rem !important;
           }
-          .canvas-card-item h4 {
+          .canvas-block-header {
+            margin-bottom: 0.2rem !important;
+            padding-bottom: 0.2rem !important;
+          }
+          .canvas-icon-wrapper {
+            padding: 0.15rem !important;
+          }
+          .canvas-icon {
+            width: 10px !important;
+            height: 10px !important;
+          }
+          .canvas-block-title {
+            font-size: 0.65rem !important;
             color: #0f172a !important;
-            font-size: 0.88rem !important;
           }
-          .canvas-card-item div {
-            font-size: 0.8rem !important;
-            line-height: 1.45 !important;
+          .canvas-block-content {
+            font-size: 0.64rem !important;
+            line-height: 1.25 !important;
             color: #334155 !important;
           }
         }
       `}</style>
 
-      {/* Renderizado en Tarjetas Espaciadas y Legibles (Por Defecto) */}
-      {viewMode === 'cards' && (
-        <div 
-          className="canvas-cards-grid"
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(2, 1fr)',
-            gap: '1.25rem',
-            width: '100%'
-          }}
-        >
-          {Object.keys(CANVAS_BLOCKS).map((key) => renderCardBlock(key))}
-        </div>
-      )}
+      {/* Lienzo Osterwalder Horizontal 9 Bloques */}
+      <div className="business-model-canvas-grid">
+        {renderBlock('socios_clave', '1 / 1 / 3 / 2')}
+        {renderBlock('actividades_clave', '1 / 2 / 2 / 3')}
+        {renderBlock('recursos_clave', '2 / 2 / 3 / 3')}
+        {renderBlock('propuestas_valor', '1 / 3 / 3 / 4')}
+        {renderBlock('relaciones_clientes', '1 / 4 / 2 / 5')}
+        {renderBlock('canales', '2 / 4 / 3 / 5')}
+        {renderBlock('segmentos_clientes', '1 / 5 / 3 / 6')}
+        {renderBlock('estructura_costos', '3 / 1 / 4 / 3')}
+        {renderBlock('fuentes_ingresos', '3 / 3 / 4 / 6')}
+      </div>
 
-      {/* Renderizado en Lienzo Clásico 9 Bloques */}
-      {viewMode === 'classic' && (
-        <div 
-          className="business-model-canvas-grid"
-          style={{
-            display: 'grid',
-            gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr',
-            gridTemplateRows: 'minmax(200px, auto) minmax(200px, auto) minmax(140px, auto)',
-            gap: '1rem',
-            width: '100%',
-            overflowX: 'auto'
-          }}
-        >
-          {renderClassicBlock('socios_clave', '1 / 1 / 3 / 2')}
-          {renderClassicBlock('actividades_clave', '1 / 2 / 2 / 3')}
-          {renderClassicBlock('recursos_clave', '2 / 2 / 3 / 3')}
-          {renderClassicBlock('propuestas_valor', '1 / 3 / 3 / 4')}
-          {renderClassicBlock('relaciones_clientes', '1 / 4 / 2 / 5')}
-          {renderClassicBlock('canales', '2 / 4 / 3 / 5')}
-          {renderClassicBlock('segmentos_clientes', '1 / 5 / 3 / 6')}
-          {renderClassicBlock('estructura_costos', '3 / 1 / 4 / 3')}
-          {renderClassicBlock('fuentes_ingresos', '3 / 3 / 4 / 6')}
-        </div>
-      )}
-
-      {/* Modal de edición */}
+      {/* Modal de edición al hacer clic en un bloque */}
       {editingBlock && (
         <div 
           style={{
