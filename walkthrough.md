@@ -59,6 +59,24 @@ Se ejecutó la suite completa de pruebas locales:
      - `https://fondothoth.com/obp/` $\rightarrow$ **HTTP 200**
      - `https://fondothoth.com/obp/api/health` $\rightarrow$ **HTTP 200** (`status: "ok"`)
      - `https://fondothoth.com/obp/api/projects` $\rightarrow$ **HTTP 200**
+     - **API en Vivo de Cascada:** El endpoint `https://fondothoth.com/obp/api/mercado/cache/status` responde HTTP 200 con el estado activo de caché en `/var/www/open-business-plan/server/data/market_cache`.
+
+---
+
+## 6. Verificación de Arreglos de Impresión y Exportación PDF
+
+Se verificaron los 4 puntos del plan de impresión directamente en producción:
+
+1. **Ocultamiento de Barra Terminal:**
+   - La barra terminal `TerminalDrawer.jsx` posee la clase `no-print` en estado abierto y cerrado. No interfiere ni se imprime en `@media print`.
+2. **Continuidad de Página:**
+   - Modo de paginación por defecto configurado en `continuous` (`Flujo Continuo 📜`), eliminando saltos forzados de página entre módulos y permitiendo un flujo de lectura continuo y sin huecos en blanco.
+3. **Orientación Horizontal vs Vertical:**
+   - Selector expuesto con el hint dinámico: `Vertical 📄 (recomendado)` / `Horizontal 📑 (canvas/financiero)` con la leyenda *"Cambiá a Horizontal si FODA/canvas se cortan"*.
+4. **Desaturación Visual:**
+   - `print-color-adjust: economy !important;` activo en `index.css` eliminando fondos densos y sombras, aplicando fondos blancos `#ffffff` y bordes sutiles `#e2e8f0` a todas las tarjetas, matrices FODA, PESTEL, BMC y tablas financieras.
+5. **Evidencia Visual en Producción:**
+   - ![Toolbar de Vista Previa con Selectores de Impresión](/Users/robertoeduardocelisrobles/.gemini/antigravity-ide/brain/34ddcca8-b655-4843-969d-48489ffc9521/preview_toolbar_docx_1788766464149.png)
 
 3. **Verificación Visual con Navegador (Browser Subagent):**
    - La aplicación web carga en modo oscuro premium sin bloqueos ni parpadeos.
