@@ -341,6 +341,13 @@ export const PROJECT_EXAMPLES = {
           lista_gastos_mensuales: 'Gastos fijos mensuales de $14,800 MXN: Electricidad adicional de taller ($1,100), gas ($500), publicidad en redes sociales ($800), teléfono/WhatsApp Business ($400), mantenimiento menor de equipo ($400) y sueldo/retiro de autoempleo para la fundadora ($11,600 MXN).',
           costos_por_producto: 'Costo unitario por vaso de postre: $13.80 MXN (ingredientes $10.20 + envase y etiqueta $3.60). Precio promedio de venta por vaso: $38.00 MXN. Margen de contribución unitario: $24.20 MXN (63.7%). Punto de equilibrio mensual: 612 vasos (equivalente a 8 a 9 eventos medianos al mes).'
         },
+        punto_equilibrio_micro: {
+          costos_fijos_mensuales: '$14,800 MXN mensuales incluyendo energía eléctrica comercial, publicidad en redes y salario de autoempleo de la fundadora.',
+          costo_variable_unitario: '$13.80 MXN por postre individual en vaso PET (materias primas e insumos de empaque con etiqueta de marca).',
+          precio_venta_unitario: '$38.00 MXN precio de venta unitario promedio al público para eventos y consumo individual.',
+          punto_equilibrio_unidades: '612 vasos mensuales (aproximadamente 24 vasos diarios durante 26 días de operación al mes).',
+          margen_contribucion_ganancia: 'Margen bruto del 63.7% ($24.20 MXN por unidad) y ganancia neta proyectada de $9,200 MXN mensuales sobre el salario base.'
+        },
         staff: [
           { id: '1', role: 'Directora Creativa / Repostera', salary: 12000, reportsTo: null },
           { id: '2', role: 'Asistente de Producción', salary: 8000, reportsTo: '1' }
@@ -438,6 +445,13 @@ export const PROJECT_EXAMPLES = {
         costos: {
           lista_gastos_mensuales: 'Gastos fijos de $16,200 MXN: Electricidad adicional ($1,400), internet fibra óptica ($800), suscripciones de software ($900), publicidad digital ($600), fondo de reposición de equipo ($500) y sueldo de autoempleo del productor ($12,000 MXN).',
           costos_por_producto: 'Costo marginal por hora de grabación: $55 MXN (energía y desgaste). Precio por hora: $450 MXN. Margen de contribución: $395 MXN/hr (87.7%). Punto de equilibrio mensual: 41 horas de servicio al mes.'
+        },
+        punto_equilibrio_micro: {
+          costos_fijos_mensuales: '$16,200 MXN mensuales incluyendo renta de espacio acondicionado, servicios de luz e internet y sueldo de autoempleo del productor.',
+          costo_variable_unitario: '$55.00 MXN por hora de sesión (energía directa en cabina, respaldos en la nube y bebidas de cortesía).',
+          precio_venta_unitario: '$450.00 MXN por hora de grabación, edición o mezcla en sala profesional.',
+          punto_equilibrio_unidades: '41 horas mensuales de producción y grabación facturadas.',
+          margen_contribucion_ganancia: 'Margen de contribución del 87.7% ($395.00 MXN por hora) y utilidad neta proyectada de $9,400 MXN adicionales mensuales.'
         },
         staff: [
           { id: '1', role: 'Ingeniero en Jefe / Dueño', salary: 15000, reportsTo: null },

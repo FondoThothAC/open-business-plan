@@ -22,6 +22,7 @@ export const FRAMEWORKS = {
         modules: [
           { key: 'analisis', title: 'Análisis de Producto y Valor', description: 'Descripción detallada del producto y beneficios.', fields: ['producto', 'valor', 'demanda', 'ventaja_diferencial'] },
           { key: 'segmentacion', title: 'Segmentación y Tamaño', description: 'TAM, SAM, SOM y perfil del buyer persona.', fields: ['tam', 'sam', 'som', 'perfil', 'sensibilidad_demanda'] },
+          { key: 'metricas_aarrr', title: 'Métricas Pirata AARRR', description: 'Embudo cuantitativo: Adquisición, Activación, Retención, Referidos e Ingresos.', fields: ['adquisicion_aarrr', 'activacion_aarrr', 'retencion_aarrr', 'referidos_aarrr', 'ingresos_aarrr'] },
           { key: 'mapa', title: 'Mapa de Calor y Densidad', description: 'Visualización geográfica de la demanda y densidad de mercado.', fields: ['analisis_espacial'] },
           { key: 'competencia', title: 'Análisis de Competencia', description: 'Competidores directos, indirectos y ventaja competitiva.', fields: ['competidores', 'ventajas'] },
           { key: 'benchmarking', title: 'Benchmarking', description: 'Comparativa estructurada contra líderes del mercado.', fields: ['comparativa', 'matriz'] },
@@ -103,6 +104,7 @@ export const FRAMEWORKS = {
         modules: [
           { key: 'presupuesto_detallado', title: 'Presupuesto por Componentes', description: 'Costo total desglosado por actividad y componente.', fields: ['costos_directos', 'costos_indirectos', 'fuentes_financiamiento'] },
           { key: 'evaluacion_exante', title: 'Evaluación Ex-ante', description: 'Costo-Beneficio Social y análisis de costo-eficiencia.', fields: ['beneficios_sociales', 'tir_social', 'vpn_social'] },
+          { key: 'evaluacion_social_cuantitativa', title: 'Evaluación Cuantitativa BID', description: 'Tasa social de descuento (8-12%), costos sombra y rentabilidad socioeconómica.', fields: ['tasa_descuento_social', 'beneficios_socioeconomicos', 'costos_sociales_sombra', 'tir_social_pct', 'vpn_social_monto'] },
           { key: 'sostenibilidad', title: 'Estrategia de Sostenibilidad', description: 'Cómo sobrevivirá el proyecto al terminar el financiamiento del BID.', fields: ['sostenibilidad_financiera', 'sostenibilidad_institucional', 'apropiacion_comunitaria'] }
         ]
       }
@@ -125,7 +127,8 @@ export const FRAMEWORKS = {
         title: 'Diseño de Experimentos y MVP',
         modules: [
           { key: 'mvp_design', title: 'Diseño del MVP', description: 'Especificación técnica y operativa del Producto Mínimo Viable a construir.', fields: ['especificacion_mvp', 'recursos_construccion', 'tiempo_estimado_desarrollo'] },
-          { key: 'critical_hypotheses', title: 'Hipótesis y Métricas', description: 'Identificación de las dos hipótesis más críticas de valor y crecimiento, y sus métricas.', fields: ['hipotesis_valor', 'hipotesis_crecimiento', 'metrica_exito', 'canal_validacion'] }
+          { key: 'critical_hypotheses', title: 'Hipótesis y Métricas', description: 'Identificación de las dos hipótesis más críticas de valor y crecimiento, y sus métricas.', fields: ['hipotesis_valor', 'hipotesis_crecimiento', 'metrica_exito', 'canal_validacion'] },
+          { key: 'experimentos_tdd', title: 'Experimentos Lean TDD', description: 'Diseño riguroso de pruebas con criterios de falsificación, muestra y duración.', fields: ['hipotesis_h1_nula', 'criterio_falsificacion', 'tamano_muestra_minima', 'duracion_experimento_dias'] }
         ]
       },
       {
@@ -133,6 +136,7 @@ export const FRAMEWORKS = {
         title: 'Tracción y Aprendizaje',
         modules: [
           { key: 'pilot_results', title: 'Resultados del Piloto', description: 'Resultados cuantitativos y cualitativos obtenidos durante las pruebas con clientes reales.', fields: ['datos_traccion', 'comentarios_early_adopters', 'aprendizajes_clave'] },
+          { key: 'innovation_accounting', title: 'Contabilidad de Innovación', description: 'Evaluación cuantitativa de hitos: Línea base, optimizaciones y análisis de cohortes.', fields: ['metrica_linea_base', 'experimento_minimo_viable', 'analisis_cohortes', 'umbral_decision_pivote'] },
           { key: 'pivot_persevere', title: 'Pivotar o Perseverar', description: 'Decisión estratégica de negocio basada en datos reales de tracción para pivotar o seguir escalando.', fields: ['decision_estrategica', 'justificacion_datos', 'siguientes_pasos'] }
         ]
       },
@@ -162,6 +166,7 @@ export const FRAMEWORKS = {
         title: 'Innovación y Propiedad Intelectual',
         modules: [
           { key: 'tech_invention', title: 'Tecnología e Invención', description: 'Descripción detallada de la tecnología, su novedad científica y nivel de maduración TRL (Technology Readiness Level).', fields: ['descripcion_tecnologia', 'novedad_cientifica', 'nivel_trl', 'ventaja_tecnologica'] },
+          { key: 'jobs_to_be_done', title: 'Jobs-to-be-Done (Christensen)', description: 'Declaración JTBD del cliente, circunstancia disparadora y dimensión funcional-emocional.', fields: ['job_statement_christensen', 'circunstancia_disparo', 'motivacion_funcional_emocional', 'resultado_deseado_criterio', 'alternativas_compensatorias'] },
           { key: 'property_intellectual', title: 'Propiedad Intelectual', description: 'Estrategia legal de registro de marcas, secretos industriales y patentes nacionales o internacionales.', fields: ['estado_del_arte', 'estrategia_patentes', 'clasificacion_patentes_ipc', 'secretos_industriales'] }
         ]
       },
@@ -178,6 +183,7 @@ export const FRAMEWORKS = {
         title: 'Mercado Científico y Transferencia',
         modules: [
           { key: 'tech_market', title: 'Mercado Tecnológico', description: 'Identificación de licenciatarios, análisis B2B o B2G, y alianzas estratégicas de co-desarrollo.', fields: ['clientes_industriales', 'tamaño_mercado_tecnologico', 'alianzas_codesarrollo'] },
+          { key: 'disrupcion_sustaining', title: 'Disrupción vs Sostenimiento', description: 'Evaluación de trayectoria disruptiva (gama baja / nuevo mercado) y marco RPV organizacional.', fields: ['tipo_disrupcion_gama_baja_nuevo_mercado', 'evaluacion_rpv_recursos_procesos_valores', 'traccion_nichos_desatendidos', 'defensa_competitiva_incumbentes'] },
           { key: 'transfer_model', title: 'Modelo de Transferencia', description: 'Esquema de monetización: cobro de royalties, cesión de patentes o constitución de spin-off.', fields: ['esquema_royalties', 'constitucion_spinoff', 'estrategia_comercializacion_id'] }
         ]
       },
@@ -233,7 +239,8 @@ export const FRAMEWORKS = {
         title: 'Plan Financiero Básico',
         modules: [
           { key: 'inversion', title: '¿Cuánto ocupamos para iniciar?', description: 'Dinero necesario para arrancar el negocio.', fields: ['total_inversion', 'de_donde_sale'] },
-          { key: 'costos', title: 'Gastos de cada mes', description: 'Lista de pagos fijos como luz, agua, renta y sueldos.', fields: ['lista_gastos_mensuales', 'costos_por_producto'] }
+          { key: 'costos', title: 'Gastos de cada mes', description: 'Lista de pagos fijos como luz, agua, renta y sueldos.', fields: ['lista_gastos_mensuales', 'costos_por_producto'] },
+          { key: 'punto_equilibrio_micro', title: 'Punto de Equilibrio Micro', description: 'Cálculo exacto de unidades mínimas de venta para cubrir costos fijos y variables.', fields: ['costos_fijos_mensuales', 'costo_variable_unitario', 'precio_venta_unitario', 'punto_equilibrio_unidades', 'margen_contribucion_ganancia'] }
         ]
       }
     ]
@@ -263,6 +270,7 @@ export const FRAMEWORKS = {
         title: 'Presupuesto Base de Obra (CAPEX)',
         modules: [
           { key: 'presupuesto', title: 'Catálogo y Costos', description: 'Catálogo de conceptos y explosión de insumos físicos.', fields: ['catalogo_conceptos', 'explosion_insumos'] },
+          { key: 'capex_csi_16', title: 'Desglose CAPEX CSI-16', description: 'Estructuración según las 16 divisiones estándar CSI de construcción y maquinaria.', fields: ['division_csi_codigo', 'concepto_obra_maquinaria', 'unidad_medida_cantidad', 'costo_unitario_importe', 'total_inversion_csi'] },
           { key: 'cronograma', title: 'Cronograma Físico-Financiero', description: 'Avance de obra vs. desembolso de capital mensual.', fields: ['cronograma_fisico_financiero'] }
         ]
       },
@@ -279,6 +287,7 @@ export const FRAMEWORKS = {
         title: 'Riesgo Matemático y Sensibilidad',
         modules: [
           { key: 'sensibilidad', title: 'Análisis de Sensibilidad', description: 'Sensibilidad unidimensional y multivariable.', fields: ['sensibilidad_unidimensional', 'escenarios'] },
+          { key: 'tornado_sensibilidad', title: 'Diagrama Tornado de Riesgo', description: 'Variación de variables críticas (precio, volumen, CAPEX) sobre el VAN.', fields: ['variable_critica_analizada', 'rango_variacion_porcentual', 'van_escenario_pesimista', 'van_escenario_optimista', 'umbral_tolerancia_riesgo'] },
           { key: 'probabilidad', title: 'Simulación de Riesgo', description: 'Simulación probabilística tipo Monte Carlo.', fields: ['simulacion_montecarlo'] }
         ]
       },
@@ -299,16 +308,32 @@ export const FRAMEWORKS = {
         key: 'analisis_situacion',
         title: 'Análisis de la Situación',
         modules: [
-          { key: 'participacion', title: 'Matriz de Participación', description: 'Identificación de involucrados.', fields: ['matriz_participacion'] },
-          { key: 'problemas', title: 'Árbol de Problemas', description: 'Análisis de causas y efectos.', fields: ['analisis_problemas'] }
+          { key: 'participacion', title: 'Matriz de Participación', description: 'Identificación, intereses y expectativas de involucrados.', fields: ['matriz_participacion'] },
+          { key: 'problemas', title: 'Árbol de Problemas', description: 'Análisis causal de causas directas, indirectas y efectos.', fields: ['analisis_problemas'] }
         ]
       },
       {
         key: 'planificacion_mpp',
-        title: 'Matriz de Planificación (MPP)',
+        title: 'Planificación Estratégica (MPP)',
         modules: [
-          { key: 'objetivos', title: 'Árbol de Objetivos', description: 'De problemas a soluciones.', fields: ['analisis_objetivos'] },
-          { key: 'matriz_logica', title: 'Matriz Lógica', description: 'Resumen narrativo y supuestos.', fields: ['mpp'] }
+          { key: 'objetivos', title: 'Árbol de Objetivos', description: 'Conversión de problemas a soluciones, medios y fines.', fields: ['analisis_objetivos'] },
+          { key: 'analisis_alternativas_zopp', title: 'Análisis de Alternativas', description: 'Evaluación comparativa de estrategias según viabilidad técnica y financiera.', fields: ['alternativas_identificadas', 'criterios_evaluacion', 'alternativa_seleccionada'] },
+          { key: 'matriz_logica', title: 'Matriz Lógica (MPP 4x4)', description: 'Resumen narrativo, indicadores verificables, fuentes y supuestos.', fields: ['mpp'] }
+        ]
+      },
+      {
+        key: 'cronograma_presupuesto',
+        title: 'Operación y Recursos',
+        modules: [
+          { key: 'planificacion_actividades_cronograma', title: 'Plan de Actividades (Gantt)', description: 'Desglose de paquetes de trabajo, hitos y ruta crítica.', fields: ['paquetes_actividades', 'ruta_critica_gantt', 'responsables_hitos'] },
+          { key: 'presupuesto_componentes', title: 'Presupuesto por Componentes', description: 'Asignación de costos de inversión y operación por resultado.', fields: ['costos_inversion_zopp', 'costos_operacion_zopp', 'fuentes_financiamiento_zopp'] }
+        ]
+      },
+      {
+        key: 'evaluacion_sostenibilidad',
+        title: 'Evaluación y Sostenibilidad',
+        modules: [
+          { key: 'evaluacion_expost', title: 'Evaluación Ex-Post y Factores', description: 'Criterios de pertinencia, eficacia, impacto y continuidad operativa.', fields: ['pertinencia_evaluacion', 'eficacia_impacto', 'sostenibilidad_futura'] }
         ]
       }
     ]
@@ -321,16 +346,26 @@ export const FRAMEWORKS = {
         key: 'excelencia_cientifica',
         title: 'Excelencia y Ciencia Abierta',
         modules: [
-          { key: 'consorcio', title: 'Consorcio', description: 'Estructura de partners.', fields: ['consorcio_multinacional'] },
-          { key: 'ciencia_abierta', title: 'Open Science', description: 'Plan de gestión de datos.', fields: ['open_science'] }
+          { key: 'consorcio', title: 'Consorcio Transnacional', description: 'Estructura internacional de socios, capacidades y gobernanza.', fields: ['consorcio_multinacional'] },
+          { key: 'ciencia_abierta', title: 'Open Science', description: 'Políticas de ciencia abierta y acceso libre a publicaciones.', fields: ['open_science'] },
+          { key: 'gestion_datos_fair_dmp', title: 'Gestión de Datos FAIR (DMP)', description: 'Plan de gestión de datos: Localizables, Accesibles, Interoperables y Reutilizables.', fields: ['repositorios_fair', 'politica_acceso_abierto', 'plan_gestion_datos_dmp'] }
         ]
       },
       {
         key: 'impacto_sostenibilidad',
         title: 'Impacto y Sostenibilidad',
         modules: [
-          { key: 'dnsh_principle', title: 'Principio DNSH', description: 'No causar daño significativo.', fields: ['dnsh'] },
-          { key: 'impacto', title: 'Impacto Global', description: 'Impacto más allá del estado del arte.', fields: ['excelencia'] }
+          { key: 'dnsh_principle', title: 'Principio DNSH (UE)', description: 'Garantía de no causar daño significativo a los 6 objetivos ambientales de la UE.', fields: ['dnsh'] },
+          { key: 'impacto', title: 'Impacto Más Allá del SOTA', description: 'Avance científico sobre el estado del arte y beneficios para la UE.', fields: ['excelencia'] },
+          { key: 'impacto_pathway_trl', title: 'Pathway de Impacto (TRL 6-9)', description: 'Ruta de maduración tecnológica desde prototipo hasta despliegue de mercado.', fields: ['pathway_hacia_mercado', 'trl_inicial_final', 'kpis_impacto_socioeconomico'] }
+        ]
+      },
+      {
+        key: 'implementacion_trabajo',
+        title: 'Implementación y Presupuesto EU',
+        modules: [
+          { key: 'diseminacion_explotacion', title: 'Diseminación y Explotación', description: 'Estrategia de comunicación científica, patentes conjuntas y adopción comercial.', fields: ['medidas_diseminacion', 'propiedad_intelectual_consorcio', 'hoja_ruta_explotacion'] },
+          { key: 'presupuesto_eu_microsoft', title: 'Presupuesto UE por Categorías', description: 'Costes de personal, equipamiento, subcontratación y 25% flat indirecto.', fields: ['costes_personal_wp', 'subcontratacion_equipo', 'gastos_indirectos_flat25'] }
         ]
       }
     ]
@@ -343,16 +378,26 @@ export const FRAMEWORKS = {
         key: 'vision_largo_plazo',
         title: 'Visión y Breakthroughs',
         modules: [
-          { key: 'norte_verdadero', title: 'True North', description: 'Visión a largo plazo.', fields: ['true_north'] },
-          { key: 'disrupcion', title: 'Breakthroughs', description: 'Objetivos disruptivos.', fields: ['breakthroughs'] }
+          { key: 'norte_verdadero', title: 'True North (Norte Verdadero)', description: 'Visión de propósito inmutable a 5-10 años.', fields: ['true_north'] },
+          { key: 'disrupcion', title: 'Objetivos Breakthrough', description: 'Metas de ruptura que transforman la competitividad del negocio.', fields: ['breakthroughs'] }
         ]
       },
       {
         key: 'alineacion_ejecucion',
-        title: 'Alineación y Ejecución',
+        title: 'Alineación Estratégica',
         modules: [
-          { key: 'matriz_x', title: 'Matriz X', description: 'Despliegue de objetivos.', fields: ['matriz_x'] },
-          { key: 'seguimiento', title: 'Bowler Charts', description: 'Revisión visual.', fields: ['bowler'] }
+          { key: 'matriz_x', title: 'Matriz X (4 Cuadrantes)', description: 'Correlación entre visión, objetivos anuales, prioridades y métricas.', fields: ['matriz_x'] },
+          { key: 'catchball_nemawashi', title: 'Catchball & Nemawashi', description: 'Proceso bidireccional de consenso y negociación de recursos entre niveles.', fields: ['proceso_catchball', 'acuerdos_nemawashi', 'retroalimentacion_vertical'] },
+          { key: 'a3_deployment', title: 'Despliegue de Informes A3', description: 'Estructuración concisa del problema, causa raíz, contramedidas y plan.', fields: ['antecedentes_a3', 'condicion_actual_a3', 'contramedidas_plan_accion'] }
+        ]
+      },
+      {
+        key: 'seguimiento_mejora',
+        title: 'Seguimiento y Control Continuo',
+        modules: [
+          { key: 'seguimiento', title: 'Bowler Charts', description: 'Revisión mensual visual con semaforización de desviaciones.', fields: ['bowler'] },
+          { key: 'pdca_hoshin', title: 'Ciclo PDCA de Mejora', description: 'Planear, Hacer, Verificar y Actuar para institucionalizar aprendizajes.', fields: ['ciclo_planear_hacer', 'auditoria_verificar', 'estandarizacion_actuar'] },
+          { key: 'okrs_alineados', title: 'OKRs Alineados a la Matriz X', description: 'Objetivos trimestrales y resultados clave de equipos operativos.', fields: ['objetivos_trimestrales_okr', 'resultados_clave_medibles', 'scorecard_cumplimiento'] }
         ]
       }
     ]
@@ -363,18 +408,27 @@ export const FRAMEWORKS = {
     pillars: [
       {
         key: 'estructuracion_celulas',
-        title: 'Estructuración',
+        title: 'Estructuración y Filosofía',
         modules: [
-          { key: 'celulas', title: 'Mapeo de Células', description: 'Centros de ganancia independientes.', fields: ['mapeo_celulas'] },
-          { key: 'filosofia_corp', title: 'Filosofía', description: 'Alineación de valores.', fields: ['filosofia'] }
+          { key: 'celulas', title: 'Mapeo de Células Amoeba', description: 'División de la organización en micro-unidades de ganancia autónomas.', fields: ['mapeo_celulas'] },
+          { key: 'filosofia_corp', title: 'Filosofía Inamori', description: 'Principios de gestión basados en hacer lo correcto como ser humano.', fields: ['filosofia'] },
+          { key: 'principios_inamori_12', title: '12 Principios de Gestión Inamori', description: 'Reglas fundamentales: fijar metas elevadas, precio óptimo y transparencia total.', fields: ['doce_principios_gestion', 'motivacion_empleados', 'gestion_transparente'] }
         ]
       },
       {
         key: 'economia_interna',
-        title: 'Economía Interna',
+        title: 'Economía Interna y Productividad',
         modules: [
-          { key: 'precios', title: 'Precios de Transferencia', description: 'Ventas entre células.', fields: ['precios_transferencia'] },
-          { key: 'rentabilidad', title: 'Rentabilidad por Hora', description: 'Cálculo de utilidad.', fields: ['rentabilidad_hora'] }
+          { key: 'precios', title: 'Precios de Transferencia', description: 'Tarifas de compra-venta justa entre células internas sin márgenes ficticios.', fields: ['precios_transferencia'] },
+          { key: 'rentabilidad', title: 'Rentabilidad por Hora', description: 'Cálculo de valor generado por hora: (Ventas Netas - Gastos) / Horas Totales.', fields: ['rentabilidad_hora'] },
+          { key: 'time_based_management', title: 'Gestión Basada en el Tiempo', description: 'Eliminación sistemática de tiempos improductivos y maximización de valor/hora.', fields: ['control_horas_celula', 'minimizacion_desperdicio_tiempo', 'indicador_valor_agregado_hora'] }
+        ]
+      },
+      {
+        key: 'operaciones_comunicacion',
+        title: 'Comunicación Operativa',
+        modules: [
+          { key: 'horenso_reportar_contactar_consultar', title: 'Protocolo Ho-Ren-So', description: 'Reglas de comunicación: Hokoku (Reportar), Renraku (Informar), Sodan (Consultar).', fields: ['protocolo_hokoku_informe', 'protocolo_renraku_comunicacion', 'protocolo_sodan_consulta'] }
         ]
       },
       {
@@ -392,18 +446,28 @@ export const FRAMEWORKS = {
     pillars: [
       {
         key: 'redes_estado',
-        title: 'Conexiones y Estado',
+        title: 'Conexiones y Alineación Estratégica',
         modules: [
-          { key: 'mapa_relacional', title: 'Mapa de Relaciones', description: 'Conexiones estratégicas.', fields: ['mapa_relaciones'] },
-          { key: 'alineacion_estado', title: 'Plan Quinquenal', description: 'Alineación con el Estado.', fields: ['alineacion_quinquenal'] }
+          { key: 'mapa_relacional', title: 'Mapa Relacional Guanxi', description: 'Clasificación de círculos de confianza: familia, amigos, intermediarios y autoridades.', fields: ['mapa_relaciones'] },
+          { key: 'alineacion_estado', title: 'Alineación al 14º Plan Quinquenal', description: 'Sintonía del proyecto con los objetivos prioritarios del gobierno central y local chino.', fields: ['alineacion_quinquenal'] }
         ]
       },
       {
         key: 'manejo_conflictos',
-        title: 'Reciprocidad y Armonía',
+        title: 'Reciprocidad y Capital Social',
         modules: [
-          { key: 'favores', title: 'Reciprocidad', description: 'Beneficios mutuos.', fields: ['reciprocidad'] },
-          { key: 'mianzi', title: 'Armonía (Mianzi)', description: 'Resolución de conflictos.', fields: ['armonia'] }
+          { key: 'favores', title: 'Reciprocidad (Renqing)', description: 'Dinámica de intercambio ético de favores y equilibrio relacional.', fields: ['reciprocidad'] },
+          { key: 'mianzi', title: 'Preservación de la Cara (Mianzi)', description: 'Estrategias para otorgar, mantener y nunca hacer perder la reputación pública.', fields: ['armonia'] },
+          { key: 'gift_giving_renqing', title: 'Protocolo de Obsequios', description: 'Normas culturales sobre regalos adecuados, momentos idóneos y valor simbólico.', fields: ['protocolo_obsequios_renqing', 'registro_favores_intercambio', 'temporalidad_reciprocidad'] }
+        ]
+      },
+      {
+        key: 'protocolo_negociacion',
+        title: 'Protocolo y Tácticas de Negociación',
+        modules: [
+          { key: 'banquet_protocol_ritual', title: 'Protocolo de Banquetes Chinos', description: 'Orden de asignación de asientos, rituales de brindis (Ganbei) y creación de confianza.', fields: ['protocolo_banquetes_orden', 'etiqueta_brindis_asientos', 'reglas_cortesia_empresarial'] },
+          { key: 'mianzi_ladder_8niveles', title: 'Escala Mianzi de 8 Niveles', description: 'Jerarquía de preservación del estatus y gestión de desacuerdos indirectos.', fields: ['niveles_preservacion_mianzi', 'tacticas_dar_cara', 'prevencion_perdida_cara'] },
+          { key: 'tacticas_negociacion_estrategica', title: 'Tácticas de Negociación China', description: 'Manejo de tiempos prolongados, concesiones graduales y pactos basados en la relación.', fields: ['estrategia_36_estratagemas', 'gestion_concesiones_paciencia', 'cierre_contratos_relacionales'] }
         ]
       }
     ]
@@ -414,18 +478,21 @@ export const FRAMEWORKS = {
     pillars: [
       {
         key: 'ingenieria_industrial',
-        title: 'Ingeniería',
+        title: 'Ingeniería y Emplazamiento',
         modules: [
-          { key: 'tecnologia', title: 'Ingeniería Base', description: 'Origen y viabilidad.', fields: ['ingenieria_base'] }
+          { key: 'tecnologia', title: 'Ingeniería Básica y Selección Tecnológica', description: 'Evaluación de patentes, licencias, rendimientos y capacidad instalada óptima.', fields: ['ingenieria_base'] },
+          { key: 'localizacion_industrial', title: 'Matriz de Localización ONUDI', description: 'Evaluación multicriterio ponderada: materias primas, energía, agua y logística.', fields: ['matriz_localizacion_ponderada', 'disponibilidad_energia_agua', 'logistica_corredores_transporte'] },
+          { key: 'impacto_ambiental_onudi', title: 'Evaluación de Impacto Ambiental (EIA)', description: 'Matriz de mitigación de emisiones, efluentes y residuos industriales.', fields: ['estudio_impacto_eia', 'gestion_efluentes_emisiones', 'plan_cumplimiento_ambiental'] }
         ]
       },
       {
         key: 'financiamiento_global',
-        title: 'Evaluación Financiera Global',
+        title: 'Evaluación Financiera Global (COMFAR)',
         modules: [
-          { key: 'costo_capital', title: 'WACC ONUDI', description: 'Costo de capital internacional.', fields: ['wacc_onudi'] },
-          { key: 'flujo_firma', title: 'FCFF', description: 'Flujo de caja para la firma.', fields: ['fcff'] },
-          { key: 'riesgo', title: 'Sensibilidad', description: 'Análisis de riesgo global.', fields: ['sensibilidad_riesgo'] }
+          { key: 'costo_capital', title: 'WACC ONUDI y Spread País', description: 'Costo de capital ponderado incorporando prima de riesgo soberano EMBI+.', fields: ['wacc_onudi'] },
+          { key: 'flujo_firma', title: 'Flujo de Caja Libre (FCFF)', description: 'Flujo de caja para la firma antes de financiamiento y valor terminal.', fields: ['fcff'] },
+          { key: 'riesgo_pais_cambiario', title: 'Riesgo País y Riesgo Cambiario', description: 'Evaluación de volatilidad cambiaria, convertibilidad y estrategias de cobertura.', fields: ['prima_riesgo_pais_embi', 'exposicion_tipo_cambio', 'cobertura_financiera_hedging'] },
+          { key: 'riesgo', title: 'Análisis de Sensibilidad Tornado', description: 'Sensibilidad combinada precio-volumen y punto de quiebre industrial.', fields: ['sensibilidad_riesgo'] }
         ]
       },
       {
@@ -438,3 +505,4 @@ export const FRAMEWORKS = {
     ]
   }
 };
+

@@ -9,18 +9,18 @@ import { CanvasBuilder } from '../src/lib/tools/canvas/CanvasBuilder.js';
 describe('Microempresa y Autoempleo (micro_business) - TDD Test Suite', () => {
   const fw = FRAMEWORKS.micro_business;
 
-  it('Debe tener configurados los 4 pilares y 10 módulos del modelo de microempresa', () => {
+  it('Debe tener configurados los 4 pilares y al menos 10 módulos del modelo de microempresa', () => {
     assert.ok(fw, 'El framework micro_business debe existir en FRAMEWORKS');
     assert.strictEqual(fw.id, 'micro_business');
     assert.strictEqual(fw.pillars.length, 4, 'Debe contar con exactamente 4 pilares');
 
     const totalModules = fw.pillars.reduce((acc, p) => acc + p.modules.length, 0);
-    assert.strictEqual(totalModules, 10, 'Debe contar con exactamente 10 módulos');
+    assert.strictEqual(totalModules, 11, 'Debe contar con exactamente 11 módulos con el nuevo módulo técnico de punto de equilibrio');
   });
 
   it('Debe contener las guías de campo completas para todos los campos de micro_business', () => {
     const allFields = fw.pillars.flatMap(p => p.modules.flatMap(m => m.fields));
-    assert.strictEqual(allFields.length, 20, 'Debe sumar exactamente 20 campos');
+    assert.strictEqual(allFields.length, 25, 'Debe sumar exactamente 25 campos enriquecidos');
 
     for (const field of allFields) {
       const guide = MICRO_BUSINESS_GUIDES[field];

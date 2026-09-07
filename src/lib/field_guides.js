@@ -802,6 +802,41 @@ export const BUSINESS_GUIDES = {
     "benchmark": "Barrera de entrada medible (patente, costo de cambio > 30%, o efecto de red).",
     "cita": "Michael Porter — Competitive Advantage (Ch. 1, p. 15)",
     "placeholder": "Describe el factor que protege tus márgenes y te diferencia radicalmente..."
+  },
+  "adquisicion_aarrr": {
+    "instruccion": "Métrica y canales para atraer prospectos calificados al embudo.",
+    "ejemplo": "Ej: Costo por lead de $45 MXN vía campañas de LinkedIn y búsqueda orgánica.",
+    "benchmark": "CAC proyectado inferior a un tercio del LTV (CAC/LTV <= 1:3).",
+    "cita": "Eric Ries — El Método Lean Startup (Ch. 6, p. 114) & Dave McClure AARRR",
+    "placeholder": "Canal de captación, volumen de visitas y costo por adquisición inicial..."
+  },
+  "activacion_aarrr": {
+    "instruccion": "Momento 'Aha!' donde el usuario experimenta el valor del producto por primera vez.",
+    "ejemplo": "Ej: Registro completo y primera cotización generada en menos de 3 minutos.",
+    "benchmark": "Tasa de activación inicial > 35% de visitantes registrados.",
+    "cita": "Ken Colwell — Starting a Business QuickStart Guide (Ch. 9, p. 205)",
+    "placeholder": "Acción clave que define a un usuario activado y porcentaje de éxito..."
+  },
+  "retencion_aarrr": {
+    "instruccion": "Frecuencia con la que los clientes regresan a usar o comprar el producto.",
+    "ejemplo": "Ej: Recompra mensual del 78% en cuentas restauranteras HORECA.",
+    "benchmark": "Churn mensual < 5% en modelos B2B recurrentes.",
+    "cita": "Eric Ries — El Método Lean Startup (Ch. 8, p. 174)",
+    "placeholder": "Tasa de retención de cohortes a 30, 60 y 90 días y control de churn..."
+  },
+  "referidos_aarrr": {
+    "instruccion": "Coeficiente viral y tasa con la que los clientes recomiendan a nuevos usuarios.",
+    "ejemplo": "Ej: Coeficiente viral K = 0.35 impulsado por programa de descuento cruzado.",
+    "benchmark": "Net Promoter Score (NPS) > 50 y coeficiente viral K > 0.2.",
+    "cita": "Carl Schramm — Burn the Business Plan (Ch. 5, p. 82)",
+    "placeholder": "Mecanismo de recomendación 'boca a boca' y métrica de referidos..."
+  },
+  "ingresos_aarrr": {
+    "instruccion": "Monetización y valor promedio de compra (Ticket promedio y Lifetime Value).",
+    "ejemplo": "Ej: Ingreso promedio mensual por cuenta de $18,500 MXN con LTV a 24 meses de $380,000 MXN.",
+    "benchmark": "Margen de contribución positivo desde la primera transacción.",
+    "cita": "Linda Pinson — Anatomy of a Business Plan (Ch. 7, p. 142)",
+    "placeholder": "Ticket promedio, margen bruto unitario y LTV proyectado..."
   }
 };
 
@@ -1134,6 +1169,41 @@ export const SOCIAL_BID_GUIDES = {
     "benchmark": "Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.",
     "cita": "Metodología del Marco Lógico (BID / CEPAL / PM4R)",
     "placeholder": "Define el componente del proyecto social (apropiacion_comunitaria)..."
+  },
+  "tasa_descuento_social": {
+    "instruccion": "Tasa social de descuento recomendada por organismos multilaterales (BID / CEPAL / Banco Mundial).",
+    "ejemplo": "Ej: Tasa social de descuento del 10.0% anual según parámetros del BID para proyectos comunitarios.",
+    "benchmark": "Rango normativo de 8.0% a 12.0% para evaluación social de proyectos.",
+    "cita": "The Nature of Value (Ch. 5, p. 92) & Guías de Evaluación Social BID",
+    "placeholder": "Porcentaje de tasa social de descuento y fuente oficial..."
+  },
+  "beneficios_socioeconomicos": {
+    "instruccion": "Monetización de externalidades positivas: ahorro de tiempo, mejoras en salud, reducción de emisiones o incremento de ingresos.",
+    "ejemplo": "Ej: Ahorro de 45 horas/mes por familia valoradas a salario mínimo sombra ($3.2M MXN anuales acumulados).",
+    "benchmark": "Beneficios directos e indirectos cuantificados con precios sombra oficiales.",
+    "cita": "Manual de Proyectos Panamá (p. 18) & Metodología CEPAL",
+    "placeholder": "Detalle y valuación monetaria de los beneficios sociales generados..."
+  },
+  "costos_sociales_sombra": {
+    "instruccion": "Costos de inversión y operación ajustados por factores de conversión a precios sociales.",
+    "ejemplo": "Ej: Factor de conversión de mano de obra no calificada = 0.75 sobre el salario nominal.",
+    "benchmark": "Aplicación rigurosa de precios sombra para eliminar distorsiones impositivas.",
+    "cita": "The Nature of Value (Ch. 5, p. 94)",
+    "placeholder": "Factores de corrección social y costos sombra aplicados..."
+  },
+  "tir_social_pct": {
+    "instruccion": "Tasa Interna de Retorno Social del proyecto considerando el flujo de beneficios socioeconómicos netos.",
+    "ejemplo": "Ej: TIR Social proyectada de 16.4% anual, superando ampliamente la tasa de corte del 10.0%.",
+    "benchmark": "TIR Social > Tasa Social de Descuento para declarar viabilidad comunitaria.",
+    "cita": "Metodología de Evaluación de Proyectos Sociales BID (PM4R)",
+    "placeholder": "Porcentaje de TIR Social calculada y margen sobre la tasa de corte..."
+  },
+  "vpn_social_monto": {
+    "instruccion": "Valor Presente Neto Social que representa la ganancia de bienestar colectivo aportada por el proyecto.",
+    "ejemplo": "Ej: VPN Social de +$4,850,000 MXN descontado al 10.0% en un horizonte de 10 años.",
+    "benchmark": "VPN Social estrictamente positivo (VAN Social > 0).",
+    "cita": "The Nature of Value (Ch. 5, p. 96)",
+    "placeholder": "Monto en moneda local del Valor Presente Neto Social generado..."
   }
 };
 
@@ -1396,6 +1466,62 @@ export const AGILE_STARTUP_GUIDES = {
     "benchmark": "Intervalo de confianza al 95%.",
     "cita": "The Nature of Value (Ch. 5)",
     "placeholder": "Parámetros del simulador y corridas..."
+  },
+  "hipotesis_h1_nula": {
+    "instruccion": "Formulación de la hipótesis de valor/crecimiento (H1) frente a la hipótesis nula (H0) de no impacto.",
+    "ejemplo": "Ej: H1: 'Al menos 15 de 50 restaurantes adoptarán el pedido recurrente si ofrecemos 0% merma'. H0: 'Adopción < 5%'.",
+    "benchmark": "Hipótesis refutable con variable independiente y dependiente claramente aisladas.",
+    "cita": "Eric Ries — El Método Lean Startup (Ch. 6, p. 114) & Carl Schramm Burn the Business Plan",
+    "placeholder": "Define H1 (efecto esperado) vs H0 (hipótesis nula a refutar)..."
+  },
+  "criterio_falsificacion": {
+    "instruccion": "Umbral cuantitativo que demuestra de forma inequívoca que la hipótesis es falsa.",
+    "ejemplo": "Ej: Si menos del 20% de los usuarios de prueba completan la orden en 7 días, la hipótesis queda descartada.",
+    "benchmark": "Regla de falsificación binaria sin ambigüedades antes de lanzar el experimento.",
+    "cita": "Eric Ries — El Método Lean Startup (Ch. 4, p. 77)",
+    "placeholder": "Porcentaje o métrica exacta que invalida la hipótesis..."
+  },
+  "tamano_muestra_minima": {
+    "instruccion": "Número mínimo de sujetos o clientes necesarios para alcanzar significancia estadística en la prueba.",
+    "ejemplo": "Ej: Muestra mínima de 40 clientes B2B HORECA con poder de decisión de compra.",
+    "benchmark": "Muestra suficiente para descartar sesgos aleatorios (n >= 30 para pruebas cuantitativas).",
+    "cita": "Diferenças entre Plano de Negócio e MVP (Marino, p. 7)",
+    "placeholder": "Número de prospectos, usuarios o transacciones requeridas..."
+  },
+  "duracion_experimento_dias": {
+    "instruccion": "Tiempo límite (timebox) en días asignado para ejecutar la prueba y recopilar datos.",
+    "ejemplo": "Ej: Ciclo estricto de 14 días naturales para medir conversión y activación.",
+    "benchmark": "Experimentos ágiles timeboxed entre 7 y 21 días para evitar el análisis-parálisis.",
+    "cita": "Ash Maurya — Running Lean & Lean Startup Ch. 6",
+    "placeholder": "Número de días de ejecución del experimento..."
+  },
+  "metrica_linea_base": {
+    "instruccion": "Valor actual inicial del indicador antes de aplicar cualquier optimización (Innovation Accounting).",
+    "ejemplo": "Ej: Conversión actual de visitante a lead del 2.8% con tasa de rebote del 64%.",
+    "benchmark": "Medición empírica objetiva como punto de partida sin maquillar datos.",
+    "cita": "Eric Ries — El Método Lean Startup (Ch. 8, p. 174)",
+    "placeholder": "Métrica base de inicio del motor de crecimiento..."
+  },
+  "experimento_minimo_viable": {
+    "instruccion": "Intervención o cambio más pequeño posible implementado para intentar mover la aguja de la métrica.",
+    "ejemplo": "Ej: Lanzamiento de landing page concierge con video explicativo de 45 segundos y checkout en 1 clic.",
+    "benchmark": "Costo de construcción < $5,000 MXN o < 40 horas de desarrollo.",
+    "cita": "Eric Ries — El Método Lean Startup (Ch. 6, p. 120)",
+    "placeholder": "Descripción del experimento mínimo diseñado para mover la línea base..."
+  },
+  "analisis_cohortes": {
+    "instruccion": "Comportamiento del indicador segmentado por grupos de clientes adquiridos en diferentes semanas/meses.",
+    "ejemplo": "Ej: Cohorte semana 1: 18% retención; Cohorte semana 2 (con nuevo onboarding): 31% retención.",
+    "benchmark": "Análisis de cohortes longitudinal para neutralizar métricas vanidosas.",
+    "cita": "Eric Ries — El Método Lean Startup (Ch. 8, p. 182)",
+    "placeholder": "Comparativa de rendimiento entre cohortes sucesivas..."
+  },
+  "umbral_decision_pivote": {
+    "instruccion": "Criterio estructurado de la junta de decisión para determinar si se pivota el modelo o se escala.",
+    "ejemplo": "Ej: Si tras 3 iteraciones el costo de adquisición supera el 40% del LTV, se pivota de B2C a B2B institucional.",
+    "benchmark": "Reunión de 'Pivote o Perseverar' programada cada 6 a 8 semanas con datos de cohortes.",
+    "cita": "Eric Ries — El Método Lean Startup (Ch. 8, p. 195)",
+    "placeholder": "Condición objetiva que dispara un pivote de canal, tecnología o segmento..."
   }
 };
 
@@ -1588,6 +1714,69 @@ export const TECHNOLOGY_ID_GUIDES = {
     "benchmark": "Intervalo de confianza al 95%.",
     "cita": "The Nature of Value (Ch. 5)",
     "placeholder": "Parámetros del simulador y corridas..."
+  },
+  "job_statement_christensen": {
+    "instruccion": "Declaración sintética Jobs-to-be-Done: 'Cuando [circunstancia], quiero [motivación], para poder [resultado esperado]'.",
+    "ejemplo": "Ej: 'Cuando una línea de ensamble falla, quiero diagnosticar en < 3 min la causa hidráulica, para evitar penalizaciones por paro de planta'.",
+    "benchmark": "Estructura formal de Christensen centrada en la causalidad de adopción.",
+    "cita": "Clayton Christensen — The Innovator's Dilemma (Ch. 3, p. 72)",
+    "placeholder": "Cuando [circunstancia disparadora], quiero [motivación], para [resultado]..."
+  },
+  "circunstancia_disparo": {
+    "instruccion": "Contexto temporal, ambiental o situacional específico que detona la necesidad imperiosa de contratación.",
+    "ejemplo": "Ej: Alarma de caída de presión en turno nocturno sin ingenieros senior en piso.",
+    "benchmark": "Circunstancia observable sin atribuir características intrínsecas al usuario.",
+    "cita": "Clayton Christensen — The Innovator's Dilemma (Ch. 3, p. 75)",
+    "placeholder": "Situación y momento crítico en que se activa la necesidad..."
+  },
+  "motivacion_funcional_emocional": {
+    "instruccion": "Desglose de la dimensión funcional (tarea práctica) y dimensión emocional/social (estatus, tranquilidad).",
+    "ejemplo": "Ej: Funcional: Restablecer caudal a 4,500 PSI. Emocional: Eliminar la ansiedad del gerente de mantenimiento ante la auditoría corporativa.",
+    "benchmark": "Equilibrio entre beneficio técnico medible y reducción de fricción emocional.",
+    "cita": "Clayton Christensen — The Innovator's Dilemma (Ch. 3, p. 78)",
+    "placeholder": "Dimensiones funcionales, personales y sociales del trabajo..."
+  },
+  "resultado_deseado_criterio": {
+    "instruccion": "Métrica estricta de satisfacción mediante la cual el cliente evalúa el éxito del trabajo realizado.",
+    "ejemplo": "Ej: Tiempo total de parada no programada inferior a 15 minutos por turno mensual.",
+    "benchmark": "Criterio de éxito cuantificable y auditable por el usuario final.",
+    "cita": "Clayton Christensen — The Innovator's Dilemma (Ch. 3, p. 81)",
+    "placeholder": "Métrica objetiva de desempeño y satisfacción esperada..."
+  },
+  "alternativas_compensatorias": {
+    "instruccion": "Soluciones sustitutas, 'parches' caseros o competidores indirectos actualmente contratados para el trabajo.",
+    "ejemplo": "Ej: Hojas de cálculo manuales combinadas con llamadas de emergencia por WhatsApp a técnicos externos.",
+    "benchmark": "Identificación de no-consumo o soluciones de alto costo/baja eficiencia.",
+    "cita": "Clayton Christensen — The Innovator's Dilemma (Ch. 3, p. 84)",
+    "placeholder": "Alternativas actuales y soluciones provisionales de los clientes..."
+  },
+  "tipo_disrupcion_gama_baja_nuevo_mercado": {
+    "instruccion": "Clasificación estratégica: Disrupción de Gama Baja (clientes sobre-servidos) o de Nuevo Mercado (no-consumidores).",
+    "ejemplo": "Ej: Disrupción de Gama Baja ofreciendo servicio MaaS con telemetría un 40% más accesible que los talleres tradicionales.",
+    "benchmark": "Modelo de negocio 'good enough' con estructura de costos significativamente inferior.",
+    "cita": "Clayton Christensen — The Innovator's Dilemma (Ch. 4-5, p. 98)",
+    "placeholder": "Clasifica si atacas a clientes sobre-servidos o atraes a no-consumidores..."
+  },
+  "evaluacion_rpv_recursos_procesos_valores": {
+    "instruccion": "Auditoría del marco RPV (Recursos, Procesos y Valores) de la organización frente al vector de innovación.",
+    "ejemplo": "Ej: Recursos: Algoritmos y bancos de prueba. Procesos: Soporte 24/7 en campo. Valores: Prioridad a contratos de servicio recurrente antes que venta única de fierros.",
+    "benchmark": "Alineación de incentivos y procesos con la naturaleza disruptiva del modelo.",
+    "cita": "Clayton Christensen — The Innovator's Dilemma (Ch. 8, p. 185)",
+    "placeholder": "Capacidades y restricciones en Recursos, Procesos y Valores..."
+  },
+  "traccion_nichos_desatendidos": {
+    "instruccion": "Validación empírica en segmentos iniciales pequeños ignorados por los gigantes de la industria.",
+    "ejemplo": "Ej: 12 mineras medianas en Sonora y Sinaloa operando con el sistema piloto sin competencia directa de OEM globales.",
+    "benchmark": "Crecimiento sostenido en nicho marginal antes de escalar hacia el mercado masivo.",
+    "cita": "Clayton Christensen — The Innovator's Dilemma (Ch. 5, p. 112)",
+    "placeholder": "Métricas de adopción en mercados nicho o periféricos..."
+  },
+  "defensa_competitiva_incumbentes": {
+    "instruccion": "Asimetría de motivación: por qué a los líderes tradicionales les conviene ignorar o ceder este mercado.",
+    "ejemplo": "Ej: Los grandes fabricantes prefieren vender maquinaria nueva de $500k USD y descuidan el mantenimiento preventivo descentralizado.",
+    "benchmark": "Asimetría de márgenes que protege al innovador durante la etapa de consolidación.",
+    "cita": "Clayton Christensen — The Innovator's Dilemma (Ch. 4, p. 104)",
+    "placeholder": "Razón por la cual los incumbentes no reaccionarán agresivamente a corto plazo..."
   }
 };
 
@@ -1731,6 +1920,41 @@ export const MICRO_BUSINESS_GUIDES = {
     "benchmark": "Operación simple con punto de equilibrio mensual y presupuesto < 30 días.",
     "cita": "Manual de Plan de Negocios Panamá & Plan de Negocios VF",
     "placeholder": "Información básica para arrancar el autoempleo en (costos_por_producto)..."
+  },
+  "costos_fijos_mensuales": {
+    "instruccion": "Suma total de gastos obligatorios de cada mes que debes pagar vendas o no vendas (renta, luz, gas, permisos).",
+    "ejemplo": "Ej: Total costos fijos: $8,500 MXN mensuales (Renta local $4,500 + Luz y gas $2,500 + Permiso municipal $1,500).",
+    "benchmark": "Costos fijos reducidos al mínimo viable para no asfixiar el flujo de arranque.",
+    "cita": "Ken Colwell — Starting a Business QuickStart Guide (Ch. 13, p. 270)",
+    "placeholder": "Suma total de gastos fijos mensuales indispensables..."
+  },
+  "costo_variable_unitario": {
+    "instruccion": "Costo de materia prima, insumos directos y empaque que cuesta fabricar una sola unidad o atender un cliente.",
+    "ejemplo": "Ej: $18.50 MXN por platillo (carne $12.00, verduras y salsas $4.00, desechables $2.50).",
+    "benchmark": "Costo variable <= 40% del precio final de venta para proteger el margen.",
+    "cita": "Plan de Negocios VF (p. 15) & Ken Colwell Ch. 13",
+    "placeholder": "Costo directo de insumos para producir una unidad..."
+  },
+  "precio_venta_unitario": {
+    "instruccion": "Precio al que ofreces cada unidad al cliente final en el mostrador.",
+    "ejemplo": "Ej: Precio de venta al público: $55.00 MXN por platillo.",
+    "benchmark": "Precio competitivo en la zona que garantice margen de contribución > 50%.",
+    "cita": "Manual de Plan de Negocios Panamá (p. 21)",
+    "placeholder": "Precio final de venta por unidad o servicio..."
+  },
+  "punto_equilibrio_unidades": {
+    "instruccion": "Cantidad exacta de unidades que debes vender en el mes para quedar 'a mano' (sin ganar ni perder): CF / (P - CVu).",
+    "ejemplo": "Ej: $8,500 / ($55 - $18.50) = 233 unidades al mes (promedio de 8 a 9 platillos diarios de martes a domingo).",
+    "benchmark": "Punto de equilibrio alcanzable operando a menos del 50% de la capacidad máxima instalada.",
+    "cita": "Ken Colwell — Starting a Business QuickStart Guide (Ch. 13, p. 272)",
+    "placeholder": "Fórmula y número de ventas mínimas mensuales y diarias para no perder..."
+  },
+  "margen_contribucion_ganancia": {
+    "instruccion": "Ganancia limpia por cada unidad vendida (Precio - Costo Variable) y porcentaje de contribución.",
+    "ejemplo": "Ej: Margen de contribución: $36.50 MXN por unidad (66.4% del precio de venta).",
+    "benchmark": "Margen de contribución > 60% en micronegocios de alimentos y servicios.",
+    "cita": "Manual de Plan de Negocios Panamá (p. 23)",
+    "placeholder": "Ganancia unitaria en pesos y porcentaje de margen de contribución..."
   }
 };
 
@@ -1840,6 +2064,76 @@ export const INVESTMENT_PROJECT_GUIDES = {
     "cita": "The Nature of Value (Ch. 5 WACC/CAPM) & CSI MasterFormat",
     "placeholder": "Memoria de cálculo y parámetros cuantitativos para (simulacion_montecarlo)..."
   },
+  "division_csi_codigo": {
+    "instruccion": "Código de división según el estándar CSI MasterFormat de 16 divisiones (ej. Div 02 Sitio, Div 03 Concreto, Div 11 Equipamiento).",
+    "ejemplo": "Ej: 'División 11 - Equipamiento: Hornos ASADHOR, túnel de congelación criogénica y cuartos fríos'.",
+    "benchmark": "Clasificación formal alineada con las 16 divisiones CSI MasterFormat para presupuestos de ingeniería.",
+    "cita": "CSI MasterFormat (16 Divisiones) & Linda Pinson Anatomy of a Business Plan Ch. 7 p. 142",
+    "placeholder": "Código y nombre de la división CSI (01 a 16)..."
+  },
+  "concepto_obra_maquinaria": {
+    "instruccion": "Descripción técnica detallada del concepto de obra civil, instalación industrial o maquinaria pesada.",
+    "ejemplo": "Ej: 'Suministro e instalación de túnel criogénico IQF con capacidad de 1,200 kg/hora a -40°C en acero inoxidable 304'.",
+    "benchmark": "Especificación técnica con marcas, tolerancias y capacidades nominales.",
+    "cita": "Anatomy of a Business Plan (Ch. 7, p. 144) & Plan de Negocios VF p. 86",
+    "placeholder": "Descripción técnica del concepto, especificaciones y alcance..."
+  },
+  "unidad_medida_cantidad": {
+    "instruccion": "Unidad de medida estándar (m², m³, lote, pza, kg) y volumen total cuantificado en proyecto.",
+    "ejemplo": "Ej: '5 piezas de hornos rotativos ASADHOR industriales de 12 niveles'.",
+    "benchmark": "Catálogo de conceptos con metrología de catálogo cerrada sin estimaciones genéricas.",
+    "cita": "CSI MasterFormat & Plan de Negocios VF p. 88",
+    "placeholder": "Unidad de medida (ej. pza, m², lote) y cantidad total..."
+  },
+  "costo_unitario_importe": {
+    "instruccion": "Precio unitario antes de impuestos y desglose de mano de obra, equipo e insumos.",
+    "ejemplo": "Ej: '$750,000 MXN precio unitario por horno ASADHOR puesto en planta Hermosillo'.",
+    "benchmark": "Cotizaciones formales con vigencia mínima de 60 días de proveedores industriales autorizados.",
+    "cita": "The Nature of Value (Ch. 6, p. 108)",
+    "placeholder": "Costo unitario desglosado e importe total por renglón..."
+  },
+  "total_inversion_csi": {
+    "instruccion": "Suma acumulada del CAPEX por cada división CSI y porcentaje de participación sobre la inversión total.",
+    "ejemplo": "Ej: 'División 11 Equipamiento: $8,000,000 MXN representando el 47.6% del CAPEX total'.",
+    "benchmark": "Matriz de CAPEX cerrada al centavo coincidente con el modelo financiero del balance.",
+    "cita": "Linda Pinson — Anatomy of a Business Plan (Ch. 7, p. 148)",
+    "placeholder": "Total consolidado de la división CSI y porcentaje del presupuesto..."
+  },
+  "variable_critica_analizada": {
+    "instruccion": "Nombre del parámetro operativo o financiero sometido a prueba de sensibilidad extrema en el diagrama Tornado.",
+    "ejemplo": "Ej: 'Precio promedio de venta por kg de corte ($220 MXN base) y costo de carne en canal ($82/kg base)'.",
+    "benchmark": "Identificación de las 5 variables con mayor coeficiente de elasticidad sobre el VAN.",
+    "cita": "The Nature of Value (Ch. 6, p. 110) & Plan de Negocios VF p. 91",
+    "placeholder": "Variable clave sometida a estrés estocástico..."
+  },
+  "rango_variacion_porcentual": {
+    "instruccion": "Rango de variación estocástica aplicado en el análisis (ej. +/- 10%, +/- 20% o +/- 25%).",
+    "ejemplo": "Ej: 'Variación de +/- 20% sobre el volumen de ventas y +/- 15% en costos de energía eléctrica'.",
+    "benchmark": "Estrés de mercado bidireccional estándar (+/- 20% a 25%).",
+    "cita": "Carl Schramm — Burn the Business Plan (p. 67)",
+    "placeholder": "Rango porcentual de variación evaluado..."
+  },
+  "van_escenario_pesimista": {
+    "instruccion": "Valor Presente Neto resultante cuando la variable se deteriora hasta el límite inferior del rango.",
+    "ejemplo": "Ej: 'Con caída del 20% en volumen, el VAN disminuye de +$12.5M a +$3.8M MXN (se mantiene viable)'.",
+    "benchmark": "VAN pesimista estrictamente superior a cero para garantizar solvencia del proyecto.",
+    "cita": "The Nature of Value (Ch. 6, p. 112)",
+    "placeholder": "VAN resultante en el peor escenario modelado..."
+  },
+  "van_escenario_optimista": {
+    "instruccion": "Valor Presente Neto proyectado cuando la variable alcanza el límite superior favorable.",
+    "ejemplo": "Ej: 'Con incremento del 20% en demanda y captura de nicho premium, el VAN escala a +$21.4M MXN'.",
+    "benchmark": "Proyección realista con techo de capacidad instalada máxima.",
+    "cita": "The Nature of Value (Ch. 6, p. 114)",
+    "placeholder": "VAN en escenario óptimo y captura de upside..."
+  },
+  "umbral_tolerancia_riesgo": {
+    "instruccion": "Caída máxima porcentual que resiste el proyecto antes de que el VAN se vuelva cero (punto de quiebre financiero).",
+    "ejemplo": "Ej: 'El proyecto resiste una caída de hasta 28.5% en el precio de venta antes de entrar en zona de destrucción de valor'.",
+    "benchmark": "Margen de seguridad financiero mínimo del 15% frente a variaciones de precios.",
+    "cita": "Linda Pinson — Anatomy of a Business Plan (Ch. 7, p. 152)",
+    "placeholder": "Porcentaje de amortiguamiento máximo antes de que el VAN sea cero..."
+  },
   "iframe_simulador": {
     "instruccion": "Describe las variables y memorias de cálculo utilizadas en las simulaciones estocásticas.",
     "ejemplo": "Ej: Parámetros de Monte Carlo: 10,000 iteraciones con distribución triangular sobre volumen y precio.",
@@ -1851,25 +2145,130 @@ export const INVESTMENT_PROJECT_GUIDES = {
 
 export const ZOPP_GUIDES = {
   "matriz_participacion": {
-    "instruccion": "Análisis de involucrados, sus intereses y problemas percibidos.",
-    "ejemplo": "Ej: Comunidad local (Alta influencia, Alto impacto).",
+    "instruccion": "Análisis de involucrados: grupos diana, aliados, oponentes, intereses y expectativas percibidas.",
+    "ejemplo": "Ej: Pequeños ganaderos sonorenses (Aliados clave, alto interés, necesidad de precio justo en canal).",
     "benchmark": "Matriz de Planificación de Proyectos (MPP 4x4) con lógica vertical y horizontal validada.",
     "cita": "Metodología ZOPP (GTZ Alemania) & Planificación por Objetivos",
-    "placeholder": "Estructuración analítica ZOPP para (matriz_participacion)..."
+    "placeholder": "Estructuración de grupos de interés, roles y expectativas..."
   },
   "analisis_problemas": {
-    "instruccion": "Árbol de problemas enfocándose en la causa raíz moderada.",
-    "ejemplo": "Ej: Alta incidencia de enfermedades gastrointestinales.",
-    "benchmark": "Matriz de Planificación de Proyectos (MPP 4x4) con lógica vertical y horizontal validada.",
-    "cita": "Metodología ZOPP (GTZ Alemania) & Planificación por Objetivos",
-    "placeholder": "Estructuración analítica ZOPP para (analisis_problemas)..."
+    "instruccion": "Árbol de problemas causa-efecto identificando el problema central focalizado y sus causas raíz.",
+    "ejemplo": "Ej: Problema central: Elevada merma y bajo margen de ganancia de carnicerías locales frente a monopolios.",
+    "benchmark": "Causa raíz validada empíricamente sin confundir causas con síntomas.",
+    "cita": "Metodología ZOPP GTZ (p. 42) & Manual de Proyectos Panamá",
+    "placeholder": "Problema central, causas directas/indirectas y efectos acumulados..."
   },
   "analisis_objetivos": {
-    "instruccion": "Conversión de problemas a estados positivos alcanzables.",
-    "ejemplo": "Ej: Reducción del 50% en enfermedades gastrointestinales.",
-    "benchmark": "Matriz de Planificación de Proyectos (MPP 4x4) con lógica vertical y horizontal validada.",
-    "cita": "Metodología ZOPP (GTZ Alemania) & Planificación por Objetivos",
-    "placeholder": "Estructuración analítica ZOPP para (analisis_objetivos)..."
+    "instruccion": "Árbol de objetivos convirtiendo los estados negativos del problema en estados positivos alcanzables.",
+    "ejemplo": "Ej: Objetivo central: Incrementar la rentabilidad de las carnicerías eliminando el 30% de merma de cocción.",
+    "benchmark": "Relación unívoca medio-fin congruente con el árbol de problemas.",
+    "cita": "Metodología ZOPP GTZ (p. 48)",
+    "placeholder": "Objetivo central, medios de solución y fines trascendentes..."
+  },
+  "analisis_alternativas_zopp": {
+    "instruccion": "Evaluación comparativa y selección de la alternativa estratégica óptima según criterios de costo-impacto.",
+    "ejemplo": "Ej: Alternativa elegida: Planta centralizada de cocción sous-vide y regeneración frente a subsidios directos.",
+    "benchmark": "Matriz multicriterio con ponderaciones de viabilidad técnica, social y ambiental.",
+    "cita": "Metodología ZOPP GTZ (p. 52)",
+    "placeholder": "Alternativas consideradas, criterios de ponderación y opción ganadora..."
+  },
+  "alternativas_identificadas": {
+    "instruccion": "Descripción de las diferentes ramas y opciones de solución derivadas del árbol de objetivos.",
+    "ejemplo": "Ej: Opción 1: Construcción de planta propia; Opción 2: Alianza de maquila TIF; Opción 3: Distribución directa.",
+    "benchmark": "Mínimo 2 a 3 alternativas viables contrastadas con criterios objetivos.",
+    "cita": "Metodología ZOPP GTZ (p. 42)",
+    "placeholder": "Alternativas estratégicas identificadas para el proyecto..."
+  },
+  "criterios_evaluacion": {
+    "instruccion": "Factores de ponderación cuantitativa y cualitativa para evaluar cada alternativa identificada.",
+    "ejemplo": "Ej: Costo financiero (30%), tiempo de implementación (25%), impacto social (25%) y riesgo operativo (20%).",
+    "benchmark": "Escala ponderada multicriterio del 1 al 5 por cada factor clave.",
+    "cita": "Metodología ZOPP GTZ (p. 45)",
+    "placeholder": "Criterios y pesos asignados a cada factor de decisión..."
+  },
+  "alternativa_seleccionada": {
+    "instruccion": "Fundamentación de la alternativa ganadora seleccionada y justificación de descarte de las demás opciones.",
+    "ejemplo": "Ej: Se selecciona la Opción 2 (Maquila TIF + Marca Propia) por maximizar el VAN y reducir el tiempo de salida al mercado.",
+    "benchmark": "Justificación económica, técnica y ambiental documentada ante el comité evaluador.",
+    "cita": "Metodología ZOPP GTZ (p. 52)",
+    "placeholder": "Fundamentación técnica de la alternativa elegida..."
+  },
+  "matriz_logica": {
+    "instruccion": "Matriz de Planificación del Proyecto (MPP 4x4): Fin, Propósito, Componentes y Actividades con supuestos.",
+    "ejemplo": "Ej: Propósito: 40 carnicerías asociadas adoptan el modelo de valor agregado con ventas estables.",
+    "benchmark": "Lógica horizontal (indicadores y fuentes) y vertical (supuestos externos) completa.",
+    "cita": "Metodología ZOPP (GTZ Alemania) & MPP 4x4",
+    "placeholder": "Resumen narrativo, indicadores verificables, fuentes y supuestos críticos..."
+  },
+  "mpp": {
+    "instruccion": "Matriz de Planificación del Proyecto (MPP ZOPP 4x4) con resumen narrativo, indicadores, medios de verificación y supuestos.",
+    "ejemplo": "Ej: Indicador a nivel de propósito: Reducción del 35% en merma de cocción y margen neto del 22% al año 2.",
+    "benchmark": "Matriz de 16 cuadrantes con coherencia lógica causa-efecto validada.",
+    "cita": "Metodología ZOPP GTZ (p. 28) & Manual GTZ",
+    "placeholder": "Estructura completa de la Matriz de Planificación del Proyecto..."
+  },
+  "paquetes_actividades": {
+    "instruccion": "Desglose estructurado de actividades requeridas para producir cada uno de los componentes.",
+    "ejemplo": "Ej: Actividad 1.1: Instalación y comisionamiento del horno industrial. Actividad 1.2: Calibración térmica NOM-251.",
+    "benchmark": "Estructura WBS/EDT sin traslapes con responsables claros.",
+    "cita": "Metodología ZOPP GTZ (p. 56)",
+    "placeholder": "Lista cronológica de actividades por componente..."
+  },
+  "ruta_critica_gantt": {
+    "instruccion": "Cronograma de ejecución identificando la secuencia de tareas críticas que determinan la duración total.",
+    "ejemplo": "Ej: Ruta crítica: Obtención de licencia sanitaria COFEPRIS (mes 2) -> Llegada de horno (mes 3) -> Prueba piloto.",
+    "benchmark": "Holgura cero en tareas críticas y cronograma en semanas/meses.",
+    "cita": "Metodología ZOPP GTZ (p. 60)",
+    "placeholder": "Hitos secuenciales, dependencias y duración de la ruta crítica..."
+  },
+  "responsables_hitos": {
+    "instruccion": "Asignación unívoca de responsabilidades de gestión y auditoría para cada hito clave.",
+    "ejemplo": "Ej: Hito 1 (Auditoría sanitaria): Director de Inocuidad. Hito 2 (Contratos HORECA): Gerente Comercial.",
+    "benchmark": "Matriz RACI para evitar omisiones operativas.",
+    "cita": "Metodología ZOPP GTZ (p. 64)",
+    "placeholder": "Responsable, cuenta y fecha de entrega de cada hito..."
+  },
+  "costos_inversion_zopp": {
+    "instruccion": "Presupuesto de capital asignado para la adquisición de infraestructura y equipamiento de arranque.",
+    "ejemplo": "Ej: Inversión en adecuación de taller piloto y 1 horno ASADHOR: $4,000,000 MXN.",
+    "benchmark": "Costeo con base cero soportado por cotizaciones de proveedores.",
+    "cita": "Metodología ZOPP GTZ (p. 68)",
+    "placeholder": "Monto de inversión fija y diferida por componente..."
+  },
+  "costos_operacion_zopp": {
+    "instruccion": "Presupuesto de gasto recurrente necesario para mantener las actividades en funcionamiento continuo.",
+    "ejemplo": "Ej: $320,000 MXN mensuales en nómina de operarios, gas natural, empaque al vacío y logística local.",
+    "benchmark": "Cálculo de flujo operativo mensual con fondo de maniobra.",
+    "cita": "Metodología ZOPP GTZ (p. 72)",
+    "placeholder": "Costos recurrentes de personal, insumos y mantenimiento..."
+  },
+  "fuentes_financiamiento_zopp": {
+    "instruccion": "Origen de los fondos asignados: aportes de socios, créditos de desarrollo o fondos multilaterales.",
+    "ejemplo": "Ej: 60% aporte de socios fundadores ($2.4M) + 40% crédito blando estatal FIDESON ($1.6M).",
+    "benchmark": "Estructura de fondos balanceada con calendario de desembolsos.",
+    "cita": "Metodología ZOPP GTZ (p. 76)",
+    "placeholder": "Desglose de aportes institucionales y calendario de recursos..."
+  },
+  "pertinencia_evaluacion": {
+    "instruccion": "Evaluación ex-post de congruencia: si los objetivos del proyecto respondieron adecuadamente a la necesidad real.",
+    "ejemplo": "Ej: 100% de pertinencia al resolver la escasez de mano de obra calificada en cocinas restauranteras.",
+    "benchmark": "Criterios del Comité de Asistencia al Desarrollo (CAD/OCDE).",
+    "cita": "Metodología ZOPP GTZ (p. 84) & Criterios de Evaluación CAD",
+    "placeholder": "Grado de alineación entre la intervención y las prioridades de los beneficiarios..."
+  },
+  "eficacia_impacto": {
+    "instruccion": "Grado de consecución del propósito y medición del impacto socioeconómico generado a mediano plazo.",
+    "ejemplo": "Ej: Se alcanzó el 104% de la meta de producción y los restaurantes redujeron costos en 22% promedio.",
+    "benchmark": "Comparación cuantitativa entre línea base y resultados ex-post.",
+    "cita": "Metodología ZOPP GTZ (p. 88)",
+    "placeholder": "Metas alcanzadas e impacto duradero sobre los beneficiarios..."
+  },
+  "sostenibilidad_futura": {
+    "instruccion": "Capacidad institucional, tecnológica y financiera del proyecto para continuar operando sin apoyos externos.",
+    "ejemplo": "Ej: Flujo de caja libre positivo mensual de $1.5M MXN garantiza autofinanciamiento y reinversión continua.",
+    "benchmark": "Autonomía financiera validada con cobertura de gastos operativos al 100%.",
+    "cita": "Metodología ZOPP GTZ (p. 92)",
+    "placeholder": "Factores que garantizan la continuidad a largo plazo..."
   },
   "mpp": {
     "instruccion": "Matriz de Planificación del Proyecto (equivalente a Marco Lógico).",
@@ -1908,6 +2307,90 @@ export const HORIZON_EUROPE_GUIDES = {
     "benchmark": "Cumplimiento estricto de Do No Significant Harm (DNSH) en los 6 objetivos ambientales y FAIR Data.",
     "cita": "Horizon Europe Programme Guide (Comisión Europea) & Principio DNSH",
     "placeholder": "Criterios de excelencia e impacto europeo para (excelencia)..."
+  },
+  "repositorios_fair": {
+    "instruccion": "Plataformas y repositorios certificados donde se depositarán los conjuntos de datos científicos (Zenodo, Dryad).",
+    "ejemplo": "Ej: Datasets genómicos y espectroscópicos depositados en Zenodo con DOI asignado de acceso abierto.",
+    "benchmark": "Datos Localizables, Accesibles, Interoperables y Reutilizables (FAIR Principles).",
+    "cita": "Horizon Europe Open Science Manual & Sustain Asia p. 102",
+    "placeholder": "Repositorios con identificador persistente (DOI) y esquemas de metadatos..."
+  },
+  "politica_acceso_abierto": {
+    "instruccion": "Régimen de publicación científica de acceso abierto inmediato bajo licencia Creative Commons (CC-BY).",
+    "ejemplo": "Ej: Todas las publicaciones científicas revisadas por pares serán publicadas en revistas Q1 Open Access sin embargo temporal.",
+    "benchmark": "100% de publicaciones de investigación financiadas en acceso abierto inmediato.",
+    "cita": "Comisión Europea — Horizon Europe Programme Guide",
+    "placeholder": "Licenciamiento abierto (CC-BY) y política de derechos de autor..."
+  },
+  "plan_gestion_datos_dmp": {
+    "instruccion": "Data Management Plan (DMP): tipos de datos generados, preservación a largo plazo y curaduría ética.",
+    "ejemplo": "Ej: DMP vivo actualizado en M6 y M18 con protocolos de cifrado y anonimización de datos sensibles.",
+    "benchmark": "Entrega obligatoria del DMP formal en el mes 6 de ejecución del consorcio.",
+    "cita": "Horizon Europe Guidelines on Data Management",
+    "placeholder": "Protocolo de respaldo, formatos abiertos y preservación a 10 años..."
+  },
+  "pathway_hacia_mercado": {
+    "instruccion": "Ruta de adopción y escalamiento: pasos concretos para transferir el resultado de investigación a la industria y sociedad.",
+    "ejemplo": "Ej: Validación en entorno industrial simulado (M12) -> Licenciamiento piloto a socio del consorcio (M24) -> Comercialización global (M36).",
+    "benchmark": "Pathway auditable con hitos de validación con usuarios finales.",
+    "cita": "The Role of Corporate Sustainability in Asian Development (p. 76)",
+    "placeholder": "Fases de transición de laboratorio a mercado y socios receptores..."
+  },
+  "trl_inicial_final": {
+    "instruccion": "Nivel de madurez tecnológica inicial al arranque de la propuesta y nivel TRL objetivo garantizado al cierre.",
+    "ejemplo": "Ej: TRL inicial = 5 (validación en entorno relevante) -> TRL final = 8 (sistema completo y cualificado).",
+    "benchmark": "Incremento de al menos 2 a 3 niveles TRL durante la vida del proyecto europeo.",
+    "cita": "European Innovation Council (EIC) TRL Definitions",
+    "placeholder": "TRL de arranque (ej. TRL 4) y TRL comprometido a la entrega (ej. TRL 7)..."
+  },
+  "kpis_impacto_socioeconomico": {
+    "instruccion": "Indicadores cuantitativos de impacto en empleo, competitividad europea, reducción de huella de carbono y salud.",
+    "ejemplo": "Ej: Reducción de 12,000 tCO2e anuales, creación de 85 empleos de alta cualificación y ahorro de $15M EUR en costes hospitalarios.",
+    "benchmark": "KPIs alineados con las misiones estratégicas del Green Deal europeo.",
+    "cita": "Horizon Europe Impact Assessment Manual",
+    "placeholder": "Métricas cuantitativas de impacto social, ecológico y económico en la UE..."
+  },
+  "medidas_diseminacion": {
+    "instruccion": "Plan de comunicación para audiencias no científicas: web pública, notas de prensa, redes, webinars y talleres.",
+    "ejemplo": "Ej: Portal web multilingüe, 6 notas de prensa europeas, 4 workshops para PyMEs y campaña en LinkedIn con alcance > 50,000 profesionales.",
+    "benchmark": "Estrategia diferenciada entre 'diseminación a pares' y 'comunicación a la sociedad'.",
+    "cita": "The Role of Corporate Sustainability in Asian Development (p. 115)",
+    "placeholder": "Canales, público objetivo, mensajes clave y calendario de difusión..."
+  },
+  "propiedad_intelectual_consorcio": {
+    "instruccion": "Consortium Agreement (CA): régimen de propiedad del 'Background' previo y titularidad del 'Foreground' conjunto.",
+    "ejemplo": "Ej: Acuerdo DESCA: Cada socio retiene la propiedad de sus patentes previas; las patentes conjuntas se licencian con regalías proporcionales.",
+    "benchmark": "Firma del acuerdo de consorcio basada en el modelo estándar DESCA antes del Grant Agreement.",
+    "cita": "DESCA Consortium Agreement Model for Horizon Europe",
+    "placeholder": "Protección de IP previa, reparto de inventiva conjunta y acuerdos de explotación..."
+  },
+  "hoja_ruta_explotacion": {
+    "instruccion": "Modelo de negocio y plan de explotación comercial o institucional post-proyecto por los socios industriales.",
+    "ejemplo": "Ej: Socio industrial A adquiere la opción exclusiva de explotación comercial en Europa pagando 3% royalties a las universidades asociadas.",
+    "benchmark": "Plan de explotación con cartas de compromiso de los socios industriales.",
+    "cita": "Horizon Europe Exploitation Strategy Manual",
+    "placeholder": "Estrategia de comercialización de los resultados por cada socio..."
+  },
+  "costes_personal_wp": {
+    "instruccion": "Presupuesto de meses-persona (Person-Months) valorados según tarifas horarias institucionales auditadas.",
+    "ejemplo": "Ej: 140 Person-Months totales distribuidos entre 6 socios: €980,000 EUR en personal investigador y técnico.",
+    "benchmark": "Tarifas conformes a la contabilidad usual del beneficiario auditadas por la CE.",
+    "cita": "Horizon Europe Annotated Grant Agreement (AGA)",
+    "placeholder": "Meses-persona totales, coste por WP y tarifas horarias justificadas..."
+  },
+  "subcontratacion_equipo": {
+    "instruccion": "Costes de adquisición y depreciación de equipamiento científico especializado y tareas menores subcontratadas.",
+    "ejemplo": "Ej: Depreciación de cromatógrafo de gases (€45,000 EUR) + Subcontratación de secuenciación genética (€30,000 EUR).",
+    "benchmark": "Subcontratación < 15% del presupuesto total para preservar la capacidad del consorcio.",
+    "cita": "Horizon Europe Annotated Grant Agreement (AGA)",
+    "placeholder": "Depreciación de equipos, consumibles de laboratorio y tareas externas..."
+  },
+  "gastos_indirectos_flat25": {
+    "instruccion": "Cálculo automático de costes indirectos (overhead) como tasa fija del 25% sobre los costes directos elegibles.",
+    "ejemplo": "Ej: Costes directos elegibles: €1,200,000 EUR -> 25% Flat Indirect Costs: €300,000 EUR. Total: €1,500,000 EUR.",
+    "benchmark": "Tasa plana obligatoria del 25% aplicable en todas las subvenciones de Horizon Europe.",
+    "cita": "Horizon Europe Financial Guidelines (Flat Rate 25%)",
+    "placeholder": "Cálculo del 25% flat overhead sobre costes directos elegibles..."
   }
 };
 
@@ -1939,6 +2422,90 @@ export const HOSHIN_KANRI_GUIDES = {
     "benchmark": "Alineación de objetivos de ruptura (Breakthroughs) en Matriz X con revisiones Catchball periódicas.",
     "cita": "Yoji Akao — Hoshin Kanri: Policy Deployment & Toyota Production System",
     "placeholder": "Despliegue estratégico Hoshin para (bowler)..."
+  },
+  "proceso_catchball": {
+    "instruccion": "Mecanismo bidireccional 'lanzar y atrapar la pelota' entre alta dirección y mandos medios para acordar metas y recursos.",
+    "ejemplo": "Ej: Dirección propone reducir mermas 50%; operaciones responde que requiere $400k en mantenimiento para comprometer la meta.",
+    "benchmark": "Negociación participativa de metas antes de congelar el plan anual Hoshin.",
+    "cita": "Yoji Akao — Hoshin Kanri (Ch. 3, p. 55)",
+    "placeholder": "Flujo de propuestas de la dirección, retroalimentación de piso y consenso final..."
+  },
+  "acuerdos_nemawashi": {
+    "instruccion": "Proceso informal de consulta previa (Nemawashi: 'preparar las raíces') para crear consenso antes de reuniones formales.",
+    "ejemplo": "Ej: Sesiones uno a uno con líderes sindicales y jefes de turno para alinear la implementación de turnos rotativos.",
+    "benchmark": "Cero sorpresas o bloqueos políticos durante la junta general de aprobación.",
+    "cita": "Jeffrey Liker — Las Claves del Éxito de Toyota (TPS)",
+    "placeholder": "Consultas informales previas, inquietudes disipadas y acuerdos preliminares..."
+  },
+  "retroalimentacion_vertical": {
+    "instruccion": "Canal formal para que los colaboradores de primera línea reporten impedimentos del sistema a la dirección.",
+    "ejemplo": "Ej: Sistema diario de paradas Andon y buzón de kaizen donde el 80% de sugerencias se resuelven en < 48 horas.",
+    "benchmark": "Tiempo medio de respuesta de la dirección a reportes de piso < 7 días.",
+    "cita": "Yoji Akao — Hoshin Kanri: Policy Deployment",
+    "placeholder": "Canales de retroalimentación de la base operativa hacia la cúpula directiva..."
+  },
+  "antecedentes_a3": {
+    "instruccion": "Sección 1 del informe A3: Contexto estratégico y justificación de por qué este problema debe resolverse ahora.",
+    "ejemplo": "Ej: 'Las devoluciones por cocción irregular aumentaron 8% en el último trimestre, arriesgando contratos con 3 cadenas'.",
+    "benchmark": "Resumen ejecutivo en 1 párrafo con datos históricos irrefutables.",
+    "cita": "John Shook — Managing to Learn (Toyota A3 Thinking)",
+    "placeholder": "Contexto histórico, impacto en el negocio y justificación estratégica..."
+  },
+  "condicion_actual_a3": {
+    "instruccion": "Sección 2 del informe A3: Mapeo visual del estado actual del proceso (Value Stream Map) y cuantificación del dolor.",
+    "ejemplo": "Ej: 'Tiempo de ciclo actual de 180 min con desviación estándar de 45 min debido a fallas en quemadores'.",
+    "benchmark": "Diagrama de flujo con métricas reales observadas en el lugar de trabajo (Gemba).",
+    "cita": "John Shook — Managing to Learn (Toyota A3 Thinking)",
+    "placeholder": "Estado actual cuantitativo observado directamente en piso (Gemba)..."
+  },
+  "contramedidas_plan_accion": {
+    "instruccion": "Secciones 3 y 4 del A3: Acciones correctivas a la causa raíz (5 Porqués), responsables, fechas y verificación.",
+    "ejemplo": "Ej: 'Instalación de pirómetros digitales (responsable: Mantenimiento, fecha: 15 Oct, meta: dispersión < 2°C)'.",
+    "benchmark": "Contramedidas atacando causas raíz, no síntomas superficiales.",
+    "cita": "John Shook — Managing to Learn (Toyota A3 Thinking)",
+    "placeholder": "Acciones específicas, responsables, fechas límite y métrica de éxito..."
+  },
+  "ciclo_planear_hacer": {
+    "instruccion": "Etapas Plan y Do del ciclo Deming: formulación de hipótesis operativas y ejecución piloto controlada.",
+    "ejemplo": "Ej: Plan: Estandarizar receta térmica en horno 1. Do: Procesar 50 lotes piloto registrando tiempos y temperaturas.",
+    "benchmark": "Ejecución piloto en ambiente controlado antes de despliegue general.",
+    "cita": "W. Edwards Deming — Out of the Crisis & Akao Hoshin Kanri",
+    "placeholder": "Plan de intervención operativa y ejecución piloto en piso..."
+  },
+  "auditoria_verificar": {
+    "instruccion": "Etapa Check: Comparación cuantitativa rigurosa entre el resultado obtenido y el objetivo planeado.",
+    "ejemplo": "Ej: De los 50 lotes, 48 cumplieron la textura deseada (96% de eficacia frente a la meta del 95%).",
+    "benchmark": "Auditorías de proceso periódicas documentadas con gráficos de control.",
+    "cita": "W. Edwards Deming — Out of the Crisis",
+    "placeholder": "Auditoría de resultados vs metas y detección de variaciones..."
+  },
+  "estandarizacion_actuar": {
+    "instruccion": "Etapa Act: Actualización de procedimientos operativos estándar (SOP), manuales de trabajo y capacitación.",
+    "ejemplo": "Ej: Registro del procedimiento SOP-COC-04 y capacitación del 100% de los operadores en el nuevo protocolo térmico.",
+    "benchmark": "Institucionalización del aprendizaje para evitar la reaparición del problema.",
+    "cita": "W. Edwards Deming — Out of the Crisis & Masaaki Imai Kaizen",
+    "placeholder": "Actualización de estándares operativos (SOP) y cierre del ciclo..."
+  },
+  "objetivos_trimestrales_okr": {
+    "instruccion": "Objetivos cualitativos ambiciosos y motivadores (Objectives) fijados para un horizonte de 90 días.",
+    "ejemplo": "Ej: 'Convertir la planta en el referente de inocuidad del noroeste de México durante el Q4'.",
+    "benchmark": "3 a 5 objetivos cualitativos de alto impacto trimestrales por célula o departamento.",
+    "cita": "John Doerr — Measure What Matters & Colwell QuickStart Ch. 7 p. 142",
+    "placeholder": "Objetivo inspirador y ambicioso para el trimestre..."
+  },
+  "resultados_clave_medibles": {
+    "instruccion": "Resultados clave cuantitativos (Key Results) que miden si el objetivo fue alcanzado de forma inequívoca.",
+    "ejemplo": "Ej: 'KR1: 0 hallazgos en auditoría COFEPRIS. KR2: 100% lotes con trazabilidad QR. KR3: OTD >= 98%'.",
+    "benchmark": "3 a 4 KRs estrictamente numéricos con fecha límite por cada objetivo.",
+    "cita": "John Doerr — Measure What Matters",
+    "placeholder": "KRs numéricos con línea base y meta final de trimestre..."
+  },
+  "scorecard_cumplimiento": {
+    "instruccion": "Tablero de evaluación final del trimestre con calificación del 0.0 al 1.0 por resultado clave.",
+    "ejemplo": "Ej: 'Calificación promedio Q4: 0.82 (Verde / Éxito sobresaliente según escala OKR de Google)'.",
+    "benchmark": "Zona de éxito óptimo entre 0.6 y 0.7 (siempre 1.0 indica que los objetivos fueron poco ambiciosos).",
+    "cita": "John Doerr — Measure What Matters",
+    "placeholder": "Puntaje alcanzado por KR y balance general del trimestre..."
   }
 };
 
@@ -1970,6 +2537,69 @@ export const AMOEBA_MANAGEMENT_GUIDES = {
     "benchmark": "Valor agregado por hora > benchmark interno con micro-ganancias transparentes por célula.",
     "cita": "Kazuo Inamori — Amoeba Management (Filosofía Kyocera)",
     "placeholder": "Estructuración de micro-ganancias amoeba para (filosofia)..."
+  },
+  "doce_principios_gestion": {
+    "instruccion": "Implementación de los 12 principios de gestión de Kazuo Inamori (propósito altruista, fijar metas elevadas, ventas máximas con gastos mínimos).",
+    "ejemplo": "Ej: 'Principio 6: La fijación del precio es la gestión directiva (hallar el punto máximo que el cliente pagará gustosamente)'.",
+    "benchmark": "Evaluación mensual del cumplimiento ético y operativo de los principios Inamori.",
+    "cita": "Kazuo Inamori — Amoeba Management (Filosofía Kyocera) & A Passion for Success",
+    "placeholder": "Adopción de los 12 principios de gestión Inamori en la cultura de células..."
+  },
+  "motivacion_empleados": {
+    "instruccion": "Estrategias para que cada líder de célula y operador actúe y tome decisiones con mentalidad de dueño y socio.",
+    "ejemplo": "Ej: Reuniones diarias de arranque donde el líder de célula expone los ingresos y costos del día previo a todo el equipo.",
+    "benchmark": "Participación del 100% de los colaboradores en la comprensión de sus números operativos.",
+    "cita": "Kazuo Inamori — Amoeba Management",
+    "placeholder": "Mecanismos de involucramiento y empoderamiento de los miembros de la célula..."
+  },
+  "gestion_transparente": {
+    "instruccion": "Política de 'vidrio transparente': cuentas contables abiertas y visibles para todos los integrantes de la célula sin secretos.",
+    "ejemplo": "Ej: Pantalla en taller donde se actualizan en tiempo real las horas trabajadas, los insumos consumidos y el margen del día.",
+    "benchmark": "Cero asimetría de información contable entre la dirección y los miembros de las células.",
+    "cita": "Kazuo Inamori — Amoeba Management",
+    "placeholder": "Mecanismos de transparencia contable y tableros abiertos de la célula..."
+  },
+  "control_horas_celula": {
+    "instruccion": "Registro estricto y auditoría del total de horas hombre dedicadas a la producción para el denominador de rentabilidad.",
+    "ejemplo": "Ej: 4 operadores x 40 horas/semana = 160 horas semanales registradas por biometría digital sin horas muertas no imputadas.",
+    "benchmark": "Eficiencia de imputación de horas laborales productivas > 90%.",
+    "cita": "Kazuo Inamori — Amoeba Management",
+    "placeholder": "Sistema de registro, control de asistencia y cómputo de horas hombre..."
+  },
+  "minimizacion_desperdicio_tiempo": {
+    "instruccion": "Detección y erradicación de las 7 mudas de tiempo: esperas, traslados innecesarios y retrabajos en la célula.",
+    "ejemplo": "Ej: Reorganización del herramental en células de trabajo en 'U' redujo traslados en 25 minutos por turno.",
+    "benchmark": "Eliminación continua de tiempos muertos para maximizar el denominador del valor/hora.",
+    "cita": "Kazuo Inamori — Amoeba Management & Toyota TPS",
+    "placeholder": "Acciones concretas para eliminar tiempos improductivos y cuellos de botella..."
+  },
+  "indicador_valor_agregado_hora": {
+    "instruccion": "Métrica maestra de Inamori: Valor Agregado por Hora = (Ventas Netas - Gastos Directos sin nómina) / Total Horas.",
+    "ejemplo": "Ej: ($180,000 MXN ingresos - $60,000 gastos) / 480 horas = $250 MXN de valor neto generado por hora hombre.",
+    "benchmark": "Valor agregado por hora > 3x el costo laboral nominal por hora del equipo.",
+    "cita": "Kazuo Inamori — Amoeba Management (Fórmula Maestra de Productividad)",
+    "placeholder": "Cálculo y tendencia del valor agregado generado por cada hora de trabajo..."
+  },
+  "protocolo_hokoku_informe": {
+    "instruccion": "Hokoku (Informar): Deber inmediato de reportar hechos objetivos, incidentes y avances al superior jerárquico sin demora.",
+    "ejemplo": "Ej: Si un corte sale de temperatura, el operador informa en < 5 minutos al líder de célula antes de continuar la tanda.",
+    "benchmark": "Tiempo de reporte de incidentes críticos < 15 minutos con hechos contrastados.",
+    "cita": "Protocolo Empresarial Japonés Ho-Ren-So & Inamori Kyocera",
+    "placeholder": "Reglas y tiempos para reportar incidentes, anomalías y resultados..."
+  },
+  "protocolo_renraku_comunicacion": {
+    "instruccion": "Renraku (Contactar/Comunicar): Compartir información relevante y cambios de estatus con los compañeros de célula y áreas adyacentes.",
+    "ejemplo": "Ej: Notificación anticipada a la célula de logística sobre el despacho de 120 cajas para coordinar el camión frigorífico.",
+    "benchmark": "Comunicación horizontal fluida sin islas de información departamentales.",
+    "cita": "Protocolo Empresarial Japonés Ho-Ren-So",
+    "placeholder": "Canales de coordinación horizontal entre células interconectadas..."
+  },
+  "protocolo_sodan_consulta": {
+    "instruccion": "Sodan (Consultar): Solicitar asesoría o consejo antes de tomar decisiones dudosas que comprometan recursos o calidad.",
+    "ejemplo": "Ej: Si el proveedor entrega carne con 2°C de variación, se consulta al Director de Calidad antes de rechazar el embarque.",
+    "benchmark": "Cultura de consulta activa que previene errores costosos sin fomentar la indecisión.",
+    "cita": "Protocolo Empresarial Japonés Ho-Ren-So",
+    "placeholder": "Protocolo de consulta anticipada para situaciones ambiguas o de riesgo..."
   },
   "iframe_simulador": {
     "instruccion": "Describe las variables y memorias de cálculo utilizadas en las simulaciones estocásticas.",
@@ -2008,6 +2638,90 @@ export const GUANXI_PLAN_GUIDES = {
     "benchmark": "Matriz relacional de reciprocidad (Bao) y preservación de reputación (Mianzi) con alineación institucional.",
     "cita": "Negotiating South-South Regional Trade Agreements (UNCTAD) & Ética Comercial China",
     "placeholder": "Estrategia de confianza y redes relacionales para (armonia)..."
+  },
+  "protocolo_obsequios_renqing": {
+    "instruccion": "Reglas de cortesía sobre obsequios empresariales: selección de objetos representativos, presentación formal con dos manos y evitar tabúes culturales.",
+    "ejemplo": "Ej: Obsequio de artesanía regional mexicana de plata de alta gama entregada al líder de la delegación en privado al término del viaje.",
+    "benchmark": "Estricto respeto a la legalidad y normas de hospitalidad empresarial sin cruzar líneas de soborno.",
+    "cita": "Negotiating South-South Regional Trade Agreements (UNCTAD Ch. 3 p. 48)",
+    "placeholder": "Tipo de obsequio protocolario, momento de entrega y simbolismo cultural..."
+  },
+  "registro_favores_intercambio": {
+    "instruccion": "Renqing (Deuda de afecto y favor): Libro de reciprocidad relacional para registrar gestiones, contactos facilitados y compromisos éticos mutuos.",
+    "ejemplo": "Ej: Gestión facilitada para homologación aduanal en Manzanillo correspondida con introducción directa a compradores en Shanghái.",
+    "benchmark": "Equilibrio a largo plazo en la balanza de consideraciones y favores profesionales.",
+    "cita": "Negotiating South-South Regional Trade Agreements (Ch. 3 p. 50)",
+    "placeholder": "Favores facilitados, apoyos recibidos y compromisos morales de reciprocidad..."
+  },
+  "temporalidad_reciprocidad": {
+    "instruccion": "Comprensión del tiempo en el Guanxi: la devolución inmediata de un favor se percibe como frialdad; debe cultivarse con paciencia a lo largo de los años.",
+    "ejemplo": "Ej: Acompañamiento a la contraparte china durante 18 meses de intercambio técnico antes de formalizar la primera orden de compra.",
+    "benchmark": "Horizonte temporal multianual en negociaciones de cooperación económica internacional.",
+    "cita": "Negotiating South-South Regional Trade Agreements (Ch. 3 p. 51)",
+    "placeholder": "Plan de cultivo relacional continuo y visión a largo plazo..."
+  },
+  "protocolo_banquetes_orden": {
+    "instruccion": "Protocolo de mesa redonda en banquetes de negocios: el anfitrión principal frente a la puerta de entrada y el invitado de honor a su derecha.",
+    "ejemplo": "Ej: Ubicación del CEO invitado a la derecha del anfitrión corporativo chino con menú de 12 tiempos simbolizando prosperidad.",
+    "benchmark": "Disposición protocolaria impecable para transmitir máximo respeto y cortesía.",
+    "cita": "Negotiating South-South Regional Trade Agreements (UNCTAD Ch. 3 p. 45)",
+    "placeholder": "Asignación de asientos de honor, orden de mesas y menú protocolario..."
+  },
+  "etiqueta_brindis_asientos": {
+    "instruccion": "Ritual del brindis (Ganbei): sostener la copa con ambas manos y situar el borde ligeramente por debajo de la copa del interlocutor en señal de respeto.",
+    "ejemplo": "Ej: Brindis formal por la amistad binacional con copa sostenida por debajo del presidente de la empresa estatal anfitriona.",
+    "benchmark": "Dominio de la etiqueta corporal para generar empatía y cercanía emocional genuina.",
+    "cita": "Negotiating South-South Regional Trade Agreements (Ch. 3 p. 46)",
+    "placeholder": "Reglas de brindis, lenguaje corporal de deferencia y creación de confianza..."
+  },
+  "reglas_cortesia_empresarial": {
+    "instruccion": "Entrega de tarjetas de presentación (Biaozhi) con ambas manos y reverencia leve, lectura atenta antes de guardarla y uso de títulos profesionales.",
+    "ejemplo": "Ej: Tarjetas bilingües español-mandarín impresas en oro entregadas formalmente con ambas manos a cada miembro de la comitiva.",
+    "benchmark": "100% de apego a la etiqueta corporativa oriental en misiones comerciales.",
+    "cita": "Negotiating South-South Regional Trade Agreements (Ch. 3 p. 47)",
+    "placeholder": "Intercambio de credenciales, tratamiento formal y etiqueta de reuniones..."
+  },
+  "niveles_preservacion_mianzi": {
+    "instruccion": "Escala de 8 niveles de la reputación social (Mianzi): desde 'tener cara' (you mianzi) hasta 'luchar por la cara' (zheng mianzi).",
+    "ejemplo": "Ej: Reconocimiento público explícito al liderazgo de la contraparte china durante el anuncio oficial conjunto a la prensa.",
+    "benchmark": "Gestión activa de la reputación y estatus del socio para fortalecer el vínculo comercial.",
+    "cita": "Negotiating South-South Regional Trade Agreements (UNCTAD Ch. 3 p. 52)",
+    "placeholder": "Nivel de reputación involucrado y tácticas para otorgar estatus al interlocutor..."
+  },
+  "tacticas_dar_cara": {
+    "instruccion": "Mecanismos para otorgar prestigio y honor público (gei mianzi) a los líderes del proyecto mediante reconocimientos y ceremonias.",
+    "ejemplo": "Ej: Invitación como orador magistral en congreso industrial internacional con entrega de placa conmemorativa.",
+    "benchmark": "Generación de capital relacional duradero mediante el engrandecimiento público del socio.",
+    "cita": "Negotiating South-South Regional Trade Agreements (Ch. 3 p. 54)",
+    "placeholder": "Ceremonias, homenajes y plataformas de prestigio otorgadas a los socios..."
+  },
+  "prevencion_perdida_cara": {
+    "instruccion": "Protocolo para evitar hacer perder la cara (diu mianzi): nunca corregir, contradecir o rechazar una propuesta en público.",
+    "ejemplo": "Ej: Ante una discrepancia contractual, se convocó a una reunión técnica privada y se utilizó lenguaje condicional indirecto.",
+    "benchmark": "Cero confrontación abierta en presencia de terceros para preservar la armonía relacional.",
+    "cita": "Negotiating South-South Regional Trade Agreements (Ch. 3 p. 56)",
+    "placeholder": "Canales privados y lenguaje diplomático indirecto para resolver discrepancias..."
+  },
+  "estrategia_36_estratagemas": {
+    "instruccion": "Comprensión y aplicación defensiva de los 36 estratagemas clásicos chinos en la mesa de negociación internacional.",
+    "ejemplo": "Ej: Identificación de la estratagema 'hacer ruido en el este para atacar en el oeste' cuando presionaron por plazos para ocultar concesiones de precio.",
+    "benchmark": "Capacidad de lectura estratégica del comportamiento negociador oriental sin caer en manipulaciones.",
+    "cita": "Negotiating South-South Regional Trade Agreements (Ch. 4 p. 78)",
+    "placeholder": "Estratagema identificada y contramedida diplomática adoptada..."
+  },
+  "gestion_concesiones_paciencia": {
+    "instruccion": "Manejo de la paciencia estratégica: las negociaciones chinas son circulares y las concesiones solo deben otorgarse al final.",
+    "ejemplo": "Ej: Reserva de un 5% de descuento por pronto pago para la ronda final tras semanas de discusión sobre condiciones técnicas.",
+    "benchmark": "Resistencia a la presión de tiempos límite artificiales en el cierre contractual.",
+    "cita": "Negotiating South-South Regional Trade Agreements (Ch. 4 p. 82)",
+    "placeholder": "Estrategia de administración de concesiones y resistencia temporal..."
+  },
+  "cierre_contratos_relacionales": {
+    "instruccion": "Naturaleza del contrato en China: no es el final de la negociación sino el acta de nacimiento de una relación viva y adaptable.",
+    "ejemplo": "Ej: Inclusión de cláusulas de renegociación de buena fe ante contingencias arancelarias basadas en el espíritu del acuerdo.",
+    "benchmark": "Equilibrio entre blindaje jurídico formal occidental y flexibilidad relacional oriental.",
+    "cita": "Negotiating South-South Regional Trade Agreements (Ch. 4 p. 86)",
+    "placeholder": "Enfoque relacional del contrato, mecanismos de adaptación y mediación..."
   }
 };
 
@@ -2019,6 +2733,48 @@ export const ONUDI_PROJECT_GUIDES = {
     "cita": "Manual de Estudios de Viabilidad Industrial ONUDI (Behrens & Hawranek)",
     "placeholder": "Parámetros industriales ONUDI para (ingenieria_base)..."
   },
+  "matriz_localizacion_ponderada": {
+    "instruccion": "Evaluación multicriterio formal de localización industrial ONUDI: ponderación de materia prima, energía, agua, mano de obra y logística.",
+    "ejemplo": "Ej: Opción Parque Industrial Hermosillo Norte (Puntaje 88.5/100) seleccionada frente a Guaymas (74.2/100) por cercanía a gasoducto y agua tratada.",
+    "benchmark": "Matriz de localización cuantitativa con factores críticos ponderados de 1 a 10.",
+    "cita": "Manual de Estudios de Viabilidad Industrial ONUDI (Behrens & Hawranek) & Anatomy Ch. 7",
+    "placeholder": "Criterios de localización, ponderación de factores y emplazamiento óptimo..."
+  },
+  "disponibilidad_energia_agua": {
+    "instruccion": "Factibilidad de suministro de servicios industriales: demanda máxima en KVA, presión de gas natural y caudal de agua en litros/segundo.",
+    "ejemplo": "Ej: Factibilidad CFE de 750 KVA en media tensión y contrato con Organismo Operador de Agua por 2.5 lps de agua industrial.",
+    "benchmark": "Cartas oficiales de factibilidad de las empresas suministradoras de servicios públicos.",
+    "cita": "Manual de Viabilidad Industrial ONUDI (COMFAR Módulo 2)",
+    "placeholder": "Capacidades aseguradas de suministro eléctrico, agua, gas y drenaje..."
+  },
+  "logistica_corredores_transporte": {
+    "instruccion": "Conectividad con corredores multimodales de transporte: carreteras federales, espuelas de ferrocarril, puertos y aduanas fronterizas.",
+    "ejemplo": "Ej: Acceso inmediato a Carretera Federal 15 México-Nogales (a 260 km de la frontera con EE.UU.) y a 135 km del Puerto de Guaymas.",
+    "benchmark": "Costo logístico integral < 8% del valor total de la mercancía terminada.",
+    "cita": "Manual de Viabilidad Industrial ONUDI & Anatomy Ch. 7",
+    "placeholder": "Rutas logísticas, tiempos de tránsito y costes de flete a los mercados destino..."
+  },
+  "estudio_impacto_eia": {
+    "instruccion": "Manifestación de Impacto Ambiental (MIA / EIA): identificación de impactos físicos, biológicos y socioeconómicos de la planta industrial.",
+    "ejemplo": "Ej: MIA modalidad particular aprobada por SEMARNAT con 14 condicionantes de mitigación ambiental y monitoreo de ruido.",
+    "benchmark": "Aprobación formal de la autoridad ambiental competente previa al desembolso de CAPEX.",
+    "cita": "Manual de Viabilidad Industrial ONUDI & The Role of Corporate Sustainability in Asian Development p. 130",
+    "placeholder": "Resumen de la Manifestación de Impacto Ambiental y estatus de autorización..."
+  },
+  "gestion_efluentes_emisiones": {
+    "instruccion": "Tecnología de tratamiento de aguas residuales industriales, trampas de grasa, filtros de mangas y control de emisiones a la atmósfera.",
+    "ejemplo": "Ej: Planta de tratamiento de efluentes cárnicos mediante flotación DAF y reactor biológico con descarga en norma NOM-002-SEMARNAT.",
+    "benchmark": "100% de efluentes tratados cumpliendo normas oficiales de descarga y reuso.",
+    "cita": "Manual de Viabilidad Industrial ONUDI & Principios de Producción Limpia",
+    "placeholder": "Tren de tratamiento de residuos líquidos, emisiones gaseosas y lodos..."
+  },
+  "plan_cumplimiento_ambiental": {
+    "instruccion": "Plan de gestión y monitoreo ambiental continuo (PMA) con calendario de muestreos de laboratorio acreditado y auditorías.",
+    "ejemplo": "Ej: Muestreo trimestral de descargas por laboratorio acreditado EMA y auditoría ambiental para certificación de Industria Limpia PROFEPA.",
+    "benchmark": "Certificación de cumplimiento ambiental auditable con presupuesto anual de mitigación.",
+    "cita": "The Role of Corporate Sustainability in Asian Development (p. 135)",
+    "placeholder": "Calendario de muestreos, presupuesto ambiental y auditorías de verificación..."
+  },
   "wacc_onudi": {
     "instruccion": "Costo Promedio Ponderado de Capital detallado con tasas internacionales.",
     "ejemplo": "Ej: RFR 4%, Beta 1.2, ERP 6%. WACC = 11.2%.",
@@ -2026,19 +2782,54 @@ export const ONUDI_PROJECT_GUIDES = {
     "cita": "Manual de Estudios de Viabilidad Industrial ONUDI (Behrens & Hawranek)",
     "placeholder": "Parámetros industriales ONUDI para (wacc_onudi)..."
   },
-  "fcff": {
+  "prima_riesgo_pais_embi": {
+    "instruccion": "Incorporación del spread soberano (Emerging Markets Bond Index - EMBI+) en la tasa de descuento de capital internacional.",
+    "ejemplo": "Ej: Tasa libre de riesgo EE.UU. (4.2%) + Spread EMBI México (2.6%) + Beta desapalancada ajustada = Ke de 14.8%.",
+    "benchmark": "Ajuste metodológico obligatorio de la ONUDI para proyectos en economías en desarrollo.",
+    "cita": "The Nature of Value (Ch. 5 p. 98) & Manual COMFAR ONUDI",
+    "placeholder": "Diferencial de riesgo país (spread en puntos base) y tasa libre de riesgo base..."
+  },
+  "exposicion_tipo_cambio": {
+    "instruccion": "Análisis de descalce cambiario entre ingresos (moneda local o dólares de exportación) y deuda/CAPEX (maquinaria importada).",
+    "ejemplo": "Ej: 100% de la maquinaria cotizada en USD mientras el 80% de las ventas del taller piloto son en MXN (riesgo de devaluación).",
+    "benchmark": "Prueba de estrés cambiario con depreciación de la moneda local de hasta +20%.",
+    "cita": "Negotiating South-South Regional Trade Agreements (UNCTAD Ch. 5 p. 92)",
+    "placeholder": "Estructura de divisas de ingresos, compras de insumos y servicio de deuda..."
+  },
+  "cobertura_financiera_hedging": {
+    "instruccion": "Instrumentos financieros de mitigación de riesgo cambiario y de tasa de interés: forwards, opciones o swaps de cobertura.",
+    "ejemplo": "Ej: Contrato forward tipo de cambio USD/MXN a 12 meses fijando el 70% del valor de la maquinaria importada.",
+    "benchmark": "Cobertura financiera activa para proteger el CAPEX de adquisiciones extranjeras.",
+    "cita": "The Nature of Value (Ch. 5 p. 102)",
+    "placeholder": "Instrumentos de cobertura cambiaria contratados o proyectados..."
+  },
+  "flujo_firma": {
     "instruccion": "Flujo de Caja Libre para la Firma (Free Cash Flow to the Firm).",
     "ejemplo": "Ej: FCFF proyectado al año 5: $2.5M USD.",
     "benchmark": "Flujo de Caja Libre para la Firma (FCFF) descontado a tasa internacional con viabilidad técnica garantizada.",
     "cita": "Manual de Estudios de Viabilidad Industrial ONUDI (Behrens & Hawranek)",
-    "placeholder": "Parámetros industriales ONUDI para (fcff)..."
+    "placeholder": "Parámetros industriales ONUDI para (flujo_firma)..."
   },
-  "sensibilidad_riesgo": {
+  "fcff": {
+    "instruccion": "Proyección del Flujo de Caja Libre para la Firma (FCFF = EBIT*(1-t) + D&A - CAPEX - Delta NWC) conforme al estándar COMFAR de ONUDI.",
+    "ejemplo": "Ej: FCFF Año 1: $1,420,000 MXN; Año 2: $2,850,000 MXN; Año 3: $3,600,000 MXN a capacidad estabilizada.",
+    "benchmark": "Proyección a 5-10 años con cálculo explícito de valor terminal a perpetuidad.",
+    "cita": "Manual de Estudios de Viabilidad Industrial ONUDI (Behrens & Hawranek, Cap. 6)",
+    "placeholder": "Memoria de cálculo del Flujo de Caja Libre para la Firma..."
+  },
+  "riesgo": {
     "instruccion": "Simulación de riesgo (Monte Carlo) sobre variables críticas.",
     "ejemplo": "Ej: Variación de precios de acero de +/- 20% no destruye el VPN.",
     "benchmark": "Flujo de Caja Libre para la Firma (FCFF) descontado a tasa internacional con viabilidad técnica garantizada.",
     "cita": "Manual de Estudios de Viabilidad Industrial ONUDI (Behrens & Hawranek)",
-    "placeholder": "Parámetros industriales ONUDI para (sensibilidad_riesgo)..."
+    "placeholder": "Parámetros industriales ONUDI para (riesgo)..."
+  },
+  "sensibilidad_riesgo": {
+    "instruccion": "Análisis de sensibilidad multivariable Tornado sobre variables críticas industriales (precio, volumen, CAPEX, costo de insumos).",
+    "ejemplo": "Ej: El VAN resiste caídas de hasta -18% en el precio de venta mayorista y alzas del +22% en el costo de materia prima cárnica.",
+    "benchmark": "Rango de variación de ±15% a ±25% evaluando el punto de quiebre (break-even) del proyecto.",
+    "cita": "Manual de Viabilidad Industrial ONUDI & The Nature of Value Ch. 6",
+    "placeholder": "Variables críticas, porcentajes de oscilación y elasticidad del VAN..."
   },
   "iframe_simulador": {
     "instruccion": "Describe las variables y memorias de cálculo utilizadas en las simulaciones estocásticas.",

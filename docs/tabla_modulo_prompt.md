@@ -1,6 +1,6 @@
 # Tabla Módulo → Textbox → Prompt — 12 Modelos
 
-> **Generado:** 2026-09-02T23:16:53.650Z — **Fuente:** `src/config/frameworks.js` + `src/lib/field_guides.js` + `src/config/moduleBoxMap.js`
+> **Generado:** 2026-09-07T05:26:35.063Z — **Fuente:** `src/config/frameworks.js` + `src/lib/field_guides.js` + `src/config/moduleBoxMap.js`
 > **Textboxes totales:** se calculan abajo · Cada campo ya está **dividido en 5 textboxes** en `PromptEditor.jsx` (Instrucción / Ejemplo / Benchmark / Cita / Placeholder) — no es un solo textbox.
 
 
@@ -8,20 +8,20 @@
 
 | # | Modelo (`projectType`) | Nombre | Pilares | Módulos | Textboxes |
 |---|-------------------------|--------|---------|---------|------------|
-| 1 | `business` | Plan de Negocios Comercial | 5 | 28 | 104 |
-| 2 | `social_bid` | Proyecto Social (Metodología BID) | 4 | 15 | 48 |
-| 3 | `agile_startup` | Agile Startup (Lean MVP) | 5 | 9 | 37 |
-| 4 | `technology_id` | Plan de Negocios de Base Tecnológica e Innovación (I+D) | 5 | 9 | 27 |
-| 5 | `micro_business` | Plan para Microempresa y Autoempleo (Simplificado) | 4 | 10 | 20 |
-| 6 | `investment_project` | Proyecto de Inversión (Ingeniería y Finanzas) | 6 | 11 | 16 |
-| 7 | `zopp` | ZOPP / Marco Lógico (Enfoque Alemán-BID) | 2 | 4 | 4 |
-| 8 | `horizon_europe` | Horizon Europe (Unión Europea) | 2 | 4 | 4 |
-| 9 | `hoshin_kanri` | Hoshin Kanri (Japón - Planificación Estratégica) | 2 | 4 | 4 |
-| 10 | `amoeba_management` | Amoeba Management (Kyocera - Micro-Ganancias) | 3 | 5 | 5 |
-| 11 | `guanxi_plan` | Metodología Guanxi (China - Redes de Relaciones) | 2 | 4 | 4 |
-| 12 | `onudi_project` | Estudio de Factibilidad ONUDI (Industrial Global) | 3 | 5 | 5 |
+| 1 | `business` | Plan de Negocios Comercial | 5 | 29 | 109 |
+| 2 | `social_bid` | Proyecto Social (Metodología BID) | 4 | 16 | 53 |
+| 3 | `agile_startup` | Agile Startup (Lean MVP) | 5 | 11 | 45 |
+| 4 | `technology_id` | Plan de Negocios de Base Tecnológica e Innovación (I+D) | 5 | 11 | 36 |
+| 5 | `micro_business` | Plan para Microempresa y Autoempleo (Simplificado) | 4 | 11 | 25 |
+| 6 | `investment_project` | Proyecto de Inversión (Ingeniería y Finanzas) | 6 | 13 | 26 |
+| 7 | `zopp` | ZOPP / Marco Lógico (Enfoque Alemán-BID) | 4 | 8 | 16 |
+| 8 | `horizon_europe` | Horizon Europe (Unión Europea) | 3 | 8 | 16 |
+| 9 | `hoshin_kanri` | Hoshin Kanri (Japón - Planificación Estratégica) | 3 | 8 | 16 |
+| 10 | `amoeba_management` | Amoeba Management (Kyocera - Micro-Ganancias) | 4 | 8 | 14 |
+| 11 | `guanxi_plan` | Metodología Guanxi (China - Redes de Relaciones) | 3 | 8 | 16 |
+| 12 | `onudi_project` | Estudio de Factibilidad ONUDI (Industrial Global) | 3 | 8 | 14 |
 
-**TOTAL TEXTBOXES:** **278**
+**TOTAL TEXTBOXES:** **386**
 
 ---
 
@@ -72,7 +72,7 @@
 
 #### Módulo: Análisis FODA — `foda` · _Fortalezas, Oportunidades, Debilidades y Amenazas._
 
-**Boxes asociados:** `box_swot_foda`
+**Boxes asociados:** —
 
 | Textbox (`field key`) | Tipo Box | Prompt — Instrucción | Ejemplo / Placeholder |
 |---|---|---|---|
@@ -145,6 +145,18 @@
 | `perfil` | texto | Características psicográficas: estilo de vida, valores, motivaciones y hábitos de compra. | Ej: "Valora la seguridad sobre el riesgo. Investiga en YouTube antes de comprar. Prefiere apps sobre llamadas telefónicas." |
 | `sensibilidad_demanda` | texto | Evalúa la elasticidad precio de la demanda y el impacto de cambios económicos. | Ej: Demanda inelástica (Ep = -0.4) debido a que el servicio es crítico para evitar paros. |
 
+#### Módulo: Métricas Pirata AARRR — `metricas_aarrr` · _Embudo cuantitativo: Adquisición, Activación, Retención, Referidos e Ingresos._
+
+**Boxes asociados:** `box_aarrr_pirata_5metricas`
+
+| Textbox (`field key`) | Tipo Box | Prompt — Instrucción | Ejemplo / Placeholder |
+|---|---|---|---|
+| `adquisicion_aarrr` | texto | Métrica y canales para atraer prospectos calificados al embudo. | Ej: Costo por lead de $45 MXN vía campañas de LinkedIn y búsqueda orgánica. |
+| `activacion_aarrr` | texto | Momento 'Aha!' donde el usuario experimenta el valor del producto por primera vez. | Ej: Registro completo y primera cotización generada en menos de 3 minutos. |
+| `retencion_aarrr` | texto | Frecuencia con la que los clientes regresan a usar o comprar el producto. | Ej: Recompra mensual del 78% en cuentas restauranteras HORECA. |
+| `referidos_aarrr` | texto | Coeficiente viral y tasa con la que los clientes recomiendan a nuevos usuarios. | Ej: Coeficiente viral K = 0.35 impulsado por programa de descuento cruzado. |
+| `ingresos_aarrr` | texto | Monetización y valor promedio de compra (Ticket promedio y Lifetime Value). | Ej: Ingreso promedio mensual por cuenta de $18,500 MXN con LTV a 24 meses de $380,000 MXN. |
+
 #### Módulo: Mapa de Calor y Densidad — `mapa` · _Visualización geográfica de la demanda y densidad de mercado._
 
 **Boxes asociados:** —
@@ -155,7 +167,7 @@
 
 #### Módulo: Análisis de Competencia — `competencia` · _Competidores directos, indirectos y ventaja competitiva._
 
-**Boxes asociados:** `box_swot_foda`
+**Boxes asociados:** —
 
 | Textbox (`field key`) | Tipo Box | Prompt — Instrucción | Ejemplo / Placeholder |
 |---|---|---|---|
@@ -239,7 +251,7 @@
 
 #### Módulo: Capacidad e Inventarios — `capacidad` · _Capacidad instalada, manejo de stock y turnos._
 
-**Boxes asociados:** `box_kpi_otd_dso_dio_ccc`
+**Boxes asociados:** —
 
 | Textbox (`field key`) | Tipo Box | Prompt — Instrucción | Ejemplo / Placeholder |
 |---|---|---|---|
@@ -250,7 +262,7 @@
 
 #### Módulo: Eficiencia Operativa — `operativa` · _Métricas de desempeño: OTD, Rotación, DSO, DPO y Ciclo de Efectivo._
 
-**Boxes asociados:** `box_kpi_otd_dso_dio_ccc`
+**Boxes asociados:** —
 
 | Textbox (`field key`) | Tipo Box | Prompt — Instrucción | Ejemplo / Placeholder |
 |---|---|---|---|
@@ -274,18 +286,18 @@
 
 #### Módulo: Estructura Organizativa — `estructura` · _Organigrama y descripción de puestos clave._
 
-**Boxes asociados:** `box_unit_economics`, `box_benchmark_cac_ltv`
+**Boxes asociados:** —
 
 | Textbox (`field key`) | Tipo Box | Prompt — Instrucción | Ejemplo / Placeholder |
 |---|---|---|---|
 | `organigrama_visual` | mermaid | Código Mermaid.js que genera el organigrama del equipo jerárquicamente. | Ej: "graph TD → CEO → Dir. Financiero + Dir. Comercial → cada uno con sus subordinados" |
 | `puestos` | texto | Describe los perfiles, responsabilidades críticas, requisitos de experiencia y jerarquía de los puestos clave de la organización. | Ej: Gerente Técnico (Ing. Mecatrónico, 8+ años en minería), Técnico Hidráulico Senior (Certificación IFPS), Ejecutivo de Cuenta B2B. |
 | `funciones` | texto | Tabla de responsabilidades de cada puesto clave. Qué hace, a quién reporta, KPIs. | Ej: "Director Comercial: Captación de clientes, gestión de embudo, reporta a CEO. KPI: 50 clientes nuevos/mes." |
-| `puestos_lista` | texto | Matriz consolidada de capital humano, niveles salariales, prestaciones de ley (IMSS/ISN) y organigrama. | Ej: "14 puestos distribuidos en 4 Gerencias: Operaciones, Calidad/IoT, Finanzas y B2B, con costo patronal total de $5.6M MXN/año." |
+| `puestos_lista` | texto | Matriz consolidada de capital humano y costo patronal acorde al tamaño de la organización presupuestada en la semilla. | Ej: "Estructura de 14 especialistas: 1 Gerente General ($65K), 2 Líderes Técnicos ($45K c/u), 6 Técnicos Hidráulicos ($22K c/u), 3 Operadores IoT ($20K c/u), 2 Administrativos ($18K c/u). Costo patronal total: $480K/mes." |
 
 #### Módulo: Gestión de Recursos Humanos — `recursos_humanos` · _Políticas de contratación, capacitación y sueldos._
 
-**Boxes asociados:** `box_unit_economics`, `box_benchmark_cac_ltv`
+**Boxes asociados:** —
 
 | Textbox (`field key`) | Tipo Box | Prompt — Instrucción | Ejemplo / Placeholder |
 |---|---|---|---|
@@ -299,48 +311,48 @@
 
 | Textbox (`field key`) | Tipo Box | Prompt — Instrucción | Ejemplo / Placeholder |
 |---|---|---|---|
-| `inversion_fija` | texto | Activos tangibles no corrientes indispensables para la operación (bancos de prueba, vehículos, maquinaria). | Ej: "Taller central en Hermosillo ($4.5M), banco de pruebas hidráulicas ($2.5M), instrumental de telemetría IoT ($1.8M)." |
-| `inversion_diferida` | texto | Activos intangibles y gastos pre-operativos (constitución legal, certificaciones ISO, software ERP). | Ej: "Certificación ISO 9001/4406 ($350K), constitución legal y patentes ($150K), licencias de software ($250K)." |
-| `opex_inicial` | texto | Capital necesario para cubrir gastos operativos mientras el negocio no genera ingresos suficientes. | Ej: "6 meses de nómina: $300K. Renta: $72K. Marketing: $48K. Servicios: $18K. Total capital de trabajo: $438K." |
-| `financiamiento` | texto | De dónde viene el dinero. Proporción de capital propio, préstamos e inversión externa. | Ej: "Capital propio: 60% ($430K). Crédito PyME Bancomext: 30% ($215K) a 5 años, tasa 12%. Inversionista ángel: 10% ($72K)." |
+| `inversion_fija` | texto | [ANCLAJE OBLIGATORIO A SEMILLA] Activos fijos tangibles. Su monto debe sumar armónicamente con la inversión diferida y el OPEX inicial para totalizar la cifra de `semilla.inversion_esperada`. | Ej: "De $20,000,000 MXN totales de semilla: Banco de pruebas hidráulicas ($5.5M), instrumental de telemetría ($3.5M), nave y adecuaciones ($4.0M), flotilla de servicio móvil ($2.0M). Total fija: $15.0M MXN." |
+| `inversion_diferida` | texto | [ANCLAJE OBLIGATORIO A SEMILLA] Gastos preoperativos y patentes. Parte integral del desglose canónico de `semilla.inversion_esperada`. | Ej: "De los $20M de semilla: Certificación ISO 4406 ($450K), constitución SAPI y registros IP ($350K), software y ERP ($1.2M). Total diferida: $2.0M MXN." |
+| `opex_inicial` | texto | [ANCLAJE OBLIGATORIO A SEMILLA] Capital de trabajo y fondo de maniobra derivado de la estructura de capital de `semilla.inversion_esperada` para cubrir los primeros 3 a 6 meses de operación. | Ej: "De la inversión inicial de $20M MXN, se asignan $2,000,000 MXN a OPEX inicial: nómina preoperativa, seguros, rentas y reservas de contingencia." |
+| `financiamiento` | texto | [ANCLAJE OBLIGATORIO A SEMILLA] Fuentes de capital estructuradas exactamente para fondear el monto canónico de `semilla.inversion_esperada`. Detalla capital propio, aportaciones y crédito bancario. | Ej: "Financiamiento de $20M MXN totales: Serie A Fundadores 65% ($13M MXN), Serie B Inversionistas 35% ($7M MXN con dividendo preferente y recompra)." |
 
 #### Módulo: Costos y Gastos (OPEX) — `costos` · _Estructura de costos fijos y variables mensuales._
 
-**Boxes asociados:** `box_unit_economics`
+**Boxes asociados:** —
 
 | Textbox (`field key`) | Tipo Box | Prompt — Instrucción | Ejemplo / Placeholder |
 |---|---|---|---|
-| `fijos` | texto | Gastos que no cambian sin importar el volumen de ventas: renta, nómina, servicios, seguros. | Ej: "Renta: $12K. Nómina: $95K. Luz/Internet: $3K. Software: $5K. Contador: $8K. Total fijos: $123K/mes." |
-| `variables` | texto | Gastos que cambian según el número de clientes o unidades producidas. | Ej: "Comisión por cliente: $200. Impresión de reportes: $50/cliente. Café y amenidades: $30/cita. Costo variable: $280/cliente." |
-| `unitario` | texto | Cálculo del costo total de atender a un solo cliente o producir una unidad. | Ej: "Costo fijo unitario: $123K ÷ 200 clientes = $615. Costo variable: $280. Costo total unitario: $895/cliente." |
+| `fijos` | texto | Gastos operativos que no varían con el volumen. Deben guardar congruencia con el tamaño de planta y capital de `semilla.inversion_esperada`. | Ej: "Renta de nave industrial: $85K/mes. Nómina base administrativa: $240K/mes. Telecomunicaciones e IoT: $25K/mes. Total fijos: $350K/mes." |
+| `variables` | texto | Gastos que cambian según el número de clientes, reparaciones o servicios ejecutados. | Ej: "Refacciones y mangueras por servicio: $4,500 MXN. Consumibles y fluidos: $1,200 MXN. Comisión técnica: $1,500 MXN." |
+| `unitario` | texto | Cálculo del costo total de prestar una orden de servicio o unidad de producto comercializada. | Ej: "Costo fijo unitario prorrateado: $8,750 MXN. Costo variable directo: $7,200 MXN. Costo total unitario: $15,950 MXN por servicio industrial." |
 
 #### Módulo: Estados Financieros — `estados_financieros` · _Proyecciones de resultados, balance y flujo._
 
-**Boxes asociados:** `box_wacc_van_tir`, `box_tornado_sensibilidad`, `box_montecarlo_sim`
+**Boxes asociados:** `box_montecarlo_sim`
 
 | Textbox (`field key`) | Tipo Box | Prompt — Instrucción | Ejemplo / Placeholder |
 |---|---|---|---|
-| `resultados` | texto | Proyección de ingresos menos gastos por mes/año. Muestra cuándo serás rentable. | Ej: "Año 1: Ingresos $1.2M - Gastos $1.8M = Pérdida ($600K). Año 2: Ingresos $3.6M - Gastos $2.1M = Utilidad $1.5M." |
-| `balance` | texto | Foto financiera: Activos = Pasivos + Capital. Proyectado a 3-5 años. | Ej: "Año 1: Activos $710K \| Pasivos $430K \| Capital $280K. Año 3: Activos $2.8M \| Pasivos $180K \| Capital $2.62M." |
-| `flujo_caja` | texto | Entradas y salidas de efectivo reales por mes. Crucial para no quedarte sin liquidez. | Ej: "Mes 1: Entrada $30K, Salida $150K, Saldo -$120K. Mes 6: Entrada $180K, Salida $135K, Saldo +$45K." |
-| `amortizacion_creditos` | texto | Tabla y estrategia de servicio de deuda: capital, tasa de interés, amortización y saldo insoluto. | Ej: "Crédito bancario de $5M MXN a 48 meses con tasa TIIE+3.5% fija, amortizaciones mensuales de $135K MXN." |
-| `memorias_calculo` | texto | Bases cuantitativas, supuestos de costos unitarios, tarifas por servicio y fórmulas de proyección. | Ej: "Tarifa MaaS: $68,000 MXN/mes por camión minero monitoreado. Costo marginal de reparación: $18,500 MXN." |
+| `resultados` | texto | [ANCLAJE OBLIGATORIO A SEMILLA] Proyección a 5 años sustentada en la capacidad instalada fondeada con `semilla.inversion_esperada`. Detalla ingresos, EBITDA y utilidades netas. | Ej: "Año 1: Ingresos $18.5M - Costos/Gastos $14.2M = EBITDA $4.3M (Utilidad Neta $2.8M). Año 5: Ingresos $46.0M - EBITDA $14.8M." |
+| `balance` | texto | [ANCLAJE OBLIGATORIO A SEMILLA] Estado de Situación Financiera. El Activo Total en el Año 1 debe reflejar la aplicación íntegra del capital de `semilla.inversion_esperada` (Activos = Pasivos + Capital). | Ej: "Año 1: Activos Totales $20,000,000 MXN (Fijo $15M + Circulante $5M) = Pasivos $6,000,000 MXN + Capital Social $14,000,000 MXN." |
+| `flujo_caja` | texto | [ANCLAJE OBLIGATORIO A SEMILLA] Flujo de caja libre. El periodo 0 debe registrar el desembolso exacto del CAPEX canónico de `semilla.inversion_esperada`. | Ej: "Año 0 (Inversión inicial): -$20,000,000 MXN. Año 1: +$3,850,000 MXN. Año 2: +$6,420,000 MXN. Flujo acumulado positivo a partir del mes 48." |
+| `amortizacion_creditos` | texto | Servicio de deuda para la porción apalancada declarada en el financiamiento de la inversión. | Ej: "Crédito institucional por $7M MXN a 60 meses, tasa anual 13.5%, cuota mensual de $161,000 MXN con amortización creciente." |
+| `memorias_calculo` | texto | [ANCLAJE OBLIGATORIO A SEMILLA] Supuestos cuantitativos, precios de contratos y costos unitarios que soportan los ingresos proyectados a partir del despliegue de `semilla.inversion_esperada`. | Ej: "Base de cálculo: 35 unidades mineras monitoreadas @ $48,000 MXN/mes + 12 mantenimientos mayores mensuales @ $95,000 MXN." |
 
 #### Módulo: Rentabilidad y Análisis — `rentabilidad` · _TIR, VPN, Punto de Equilibrio y ROI._
 
-**Boxes asociados:** `box_wacc_van_tir`, `box_unit_economics`, `box_benchmark_cac_ltv`
+**Boxes asociados:** `box_wacc_van_tir`
 
 | Textbox (`field key`) | Tipo Box | Prompt — Instrucción | Ejemplo / Placeholder |
 |---|---|---|---|
-| `punto_equilibrio` | texto | Número de clientes o ventas necesarias para cubrir todos los costos. Fórmula: CF ÷ (PVU - CVU). | Ej: "$123K ÷ ($1,500 - $280) = 101 clientes/mes para cubrir costos. Meta: alcanzarlo en el mes 8." |
-| `indicadores` | texto | VAN (Valor Actual Neto) y TIR (Tasa Interna de Retorno) del proyecto a 5 años. | Ej: "VAN a 5 años (tasa 12%): $1.8M MXN (positivo = viable). TIR: 34% (superior al costo de capital). Payback: 22 meses." |
-| `relacion_bc` | texto | Relación Beneficio-Costo (B/C): Valor presente de beneficios dividido entre valor presente de costos. | Ej: "Relación B/C de 1.38 a tasa de descuento del 12%, lo que indica que por cada peso invertido se generan $1.38 MXN en valor presente." |
+| `punto_equilibrio` | texto | Volumen crítico en unidades monetarias y servicios para absorber costos fijos. Evita fórmulas con división por cero o símbolos infinitos (∞). | Ej: "Punto de equilibrio mensual: $350K CF ÷ (1 - 0.42 CV) = $603,448 MXN mensuales en facturación (aprox. 18 servicios mayores al mes)." |
+| `indicadores` | texto | [ANCLAJE OBLIGATORIO A SEMILLA] Indicadores financieros maestros calculados a partir del desembolso de `semilla.inversion_esperada`. La TIR debe situarse en un rango plausible (15% a 40%) y el Payback corresponder al plazo de retorno. | Ej: "Inversión Base: $20,000,000 MXN. TIR: 24.5%, VAN (tasa 12%): $3.42M MXN, Payback: 4.1 años (49 meses), ROI proyectado: 68% a 5 años." |
+| `relacion_bc` | texto | Relación Beneficio-Costo (B/C). Valor presente de beneficios descontados entre la inversión inicial canónica. | Ej: "Relación B/C de 1.42 (VPN positivo con inversión inicial de $20M MXN a tasa del 12%), ratificando viabilidad financiera sólida." |
 
 ### Pilar: Simulador y Corridas — `simulador_financiero`
 
 #### Módulo: Simulador Financiero — `simulador` · _Simulador interactivo avanzado con corridas dinámicas a 5 años._
 
-**Boxes asociados:** `box_wacc_van_tir`, `box_montecarlo_sim`
+**Boxes asociados:** `box_montecarlo_sim`
 
 | Textbox (`field key`) | Tipo Box | Prompt — Instrucción | Ejemplo / Placeholder |
 |---|---|---|---|
@@ -502,6 +514,18 @@
 | `tir_social` | texto | Tasa Interna de Retorno pero midiendo beneficios a la sociedad, no ganancias. | Ej: TIR Social estimada: 25% (muy superior a la tasa de descuento social del 10%). |
 | `vpn_social` | texto | Valor Presente Neto de los beneficios sociales menos el costo del proyecto. | Ej: Valor Presente Neto Social: +$4.5 Millones a 5 años. |
 
+#### Módulo: Evaluación Cuantitativa BID — `evaluacion_social_cuantitativa` · _Tasa social de descuento (8-12%), costos sombra y rentabilidad socioeconómica._
+
+**Boxes asociados:** `box_tir_vpn_social_bid`
+
+| Textbox (`field key`) | Tipo Box | Prompt — Instrucción | Ejemplo / Placeholder |
+|---|---|---|---|
+| `tasa_descuento_social` | texto | Tasa social de descuento recomendada por organismos multilaterales (BID / CEPAL / Banco Mundial). | Ej: Tasa social de descuento del 10.0% anual según parámetros del BID para proyectos comunitarios. |
+| `beneficios_socioeconomicos` | texto | Monetización de externalidades positivas: ahorro de tiempo, mejoras en salud, reducción de emisiones o incremento de ingresos. | Ej: Ahorro de 45 horas/mes por familia valoradas a salario mínimo sombra ($3.2M MXN anuales acumulados). |
+| `costos_sociales_sombra` | texto | Costos de inversión y operación ajustados por factores de conversión a precios sociales. | Ej: Factor de conversión de mano de obra no calificada = 0.75 sobre el salario nominal. |
+| `tir_social_pct` | texto | Tasa Interna de Retorno Social del proyecto considerando el flujo de beneficios socioeconómicos netos. | Ej: TIR Social proyectada de 16.4% anual, superando ampliamente la tasa de corte del 10.0%. |
+| `vpn_social_monto` | texto | Valor Presente Neto Social que representa la ganancia de bienestar colectivo aportada por el proyecto. | Ej: VPN Social de +$4,850,000 MXN descontado al 10.0% en un horizonte de 10 años. |
+
 #### Módulo: Estrategia de Sostenibilidad — `sostenibilidad` · _Cómo sobrevivirá el proyecto al terminar el financiamiento del BID._
 
 **Boxes asociados:** —
@@ -572,6 +596,17 @@
 | `metrica_exito` | texto | Números específicos que validarán las hipótesis del experimento. | Ej: Conseguir 20 suscriptores de pago en las primeras 2 semanas de la preventa. |
 | `canal_validacion` | texto | Dónde o cómo pondrás a prueba el experimento de tracción. | Ej: Publicaciones orgánicas en grupos locales de LinkedIn y distribución de flyers físicos en 3 torres corporativas. |
 
+#### Módulo: Experimentos Lean TDD — `experimentos_tdd` · _Diseño riguroso de pruebas con criterios de falsificación, muestra y duración._
+
+**Boxes asociados:** `box_experimento_lean_tdd`
+
+| Textbox (`field key`) | Tipo Box | Prompt — Instrucción | Ejemplo / Placeholder |
+|---|---|---|---|
+| `hipotesis_h1_nula` | texto | Formulación de la hipótesis de valor/crecimiento (H1) frente a la hipótesis nula (H0) de no impacto. | Ej: H1: 'Al menos 15 de 50 restaurantes adoptarán el pedido recurrente si ofrecemos 0% merma'. H0: 'Adopción < 5%'. |
+| `criterio_falsificacion` | texto | Umbral cuantitativo que demuestra de forma inequívoca que la hipótesis es falsa. | Ej: Si menos del 20% de los usuarios de prueba completan la orden en 7 días, la hipótesis queda descartada. |
+| `tamano_muestra_minima` | texto | Número mínimo de sujetos o clientes necesarios para alcanzar significancia estadística en la prueba. | Ej: Muestra mínima de 40 clientes B2B HORECA con poder de decisión de compra. |
+| `duracion_experimento_dias` | texto | Tiempo límite (timebox) en días asignado para ejecutar la prueba y recopilar datos. | Ej: Ciclo estricto de 14 días naturales para medir conversión y activación. |
+
 ### Pilar: Tracción y Aprendizaje — `aprendizaje`
 
 #### Módulo: Resultados del Piloto — `pilot_results` · _Resultados cuantitativos y cualitativos obtenidos durante las pruebas con clientes reales._
@@ -583,6 +618,17 @@
 | `datos_traccion` | texto | Resumen de métricas reales de clientes, ventas o registros obtenidos. | Ej: 24 clientes pagaron la suscripción en la preventa, logrando $28,800 MXN en ventas brutas en 14 días. |
 | `comentarios_early_adopters` | texto | Retroalimentación directa de los primeros usuarios de tu MVP. | Ej: "La comida es deliciosa y el empaque térmico es excelente, pero me gustaría poder elegir opciones sin gluten". |
 | `aprendizajes_clave` | texto | Conclusiones principales que obtuviste del piloto práctico. | Ej: Validamos que hay intención de pago inmediata. Sin embargo, la logística de reparto requiere optimizar zonas. |
+
+#### Módulo: Contabilidad de Innovación — `innovation_accounting` · _Evaluación cuantitativa de hitos: Línea base, optimizaciones y análisis de cohortes._
+
+**Boxes asociados:** `box_innovation_accounting_3metrics`
+
+| Textbox (`field key`) | Tipo Box | Prompt — Instrucción | Ejemplo / Placeholder |
+|---|---|---|---|
+| `metrica_linea_base` | texto | Valor actual inicial del indicador antes de aplicar cualquier optimización (Innovation Accounting). | Ej: Conversión actual de visitante a lead del 2.8% con tasa de rebote del 64%. |
+| `experimento_minimo_viable` | texto | Intervención o cambio más pequeño posible implementado para intentar mover la aguja de la métrica. | Ej: Lanzamiento de landing page concierge con video explicativo de 45 segundos y checkout en 1 clic. |
+| `analisis_cohortes` | texto | Comportamiento del indicador segmentado por grupos de clientes adquiridos en diferentes semanas/meses. | Ej: Cohorte semana 1: 18% retención; Cohorte semana 2 (con nuevo onboarding): 31% retención. |
+| `umbral_decision_pivote` | texto | Criterio estructurado de la junta de decisión para determinar si se pivota el modelo o se escala. | Ej: Si tras 3 iteraciones el costo de adquisición supera el 40% del LTV, se pivota de B2C a B2B institucional. |
 
 #### Módulo: Pivotar o Perseverar — `pivot_persevere` · _Decisión estratégica de negocio basada en datos reales de tracción para pivotar o seguir escalando._
 
@@ -609,7 +655,7 @@
 
 #### Módulo: Runway y Burn Rate — `burn_rate` · _Monitoreo de flujo mensual y supervivencia de caja._
 
-**Boxes asociados:** `box_burn_runway`, `box_benchmark_cac_ltv`
+**Boxes asociados:** `box_burn_runway`
 
 | Textbox (`field key`) | Tipo Box | Prompt — Instrucción | Ejemplo / Placeholder |
 |---|---|---|---|
@@ -644,6 +690,18 @@
 | `novedad_cientifica` | texto | ¿Qué descubrimientos científicos, fórmulas o patentes previas sustentan tu desarrollo? | Ej: Patrón de optimización matemática patentado que reduce el procesamiento de imágenes en un 35%. |
 | `nivel_trl` | texto | Nivel de Maduración Tecnológica (TRL 1 al 9). Clasifica el estado actual de tu desarrollo. | Ej: TRL 4: Validación de componentes tecnológicos en entorno de laboratorio. |
 | `ventaja_tecnologica` | texto | ¿Por qué tu tecnología es sustancialmente mejor que las soluciones comerciales existentes? | Ej (Estilo Apple Silicon): Opera sin requerir conexión a internet y requiere 70% menos poder de cómputo que el competidor líder. |
+
+#### Módulo: Jobs-to-be-Done (Christensen) — `jobs_to_be_done` · _Declaración JTBD del cliente, circunstancia disparadora y dimensión funcional-emocional._
+
+**Boxes asociados:** `box_jtbd_job_statement`
+
+| Textbox (`field key`) | Tipo Box | Prompt — Instrucción | Ejemplo / Placeholder |
+|---|---|---|---|
+| `job_statement_christensen` | texto | Declaración sintética Jobs-to-be-Done: 'Cuando [circunstancia], quiero [motivación], para poder [resultado esperado]'. | Ej: 'Cuando una línea de ensamble falla, quiero diagnosticar en < 3 min la causa hidráulica, para evitar penalizaciones por paro de planta'. |
+| `circunstancia_disparo` | texto | Contexto temporal, ambiental o situacional específico que detona la necesidad imperiosa de contratación. | Ej: Alarma de caída de presión en turno nocturno sin ingenieros senior en piso. |
+| `motivacion_funcional_emocional` | texto | Desglose de la dimensión funcional (tarea práctica) y dimensión emocional/social (estatus, tranquilidad). | Ej: Funcional: Restablecer caudal a 4,500 PSI. Emocional: Eliminar la ansiedad del gerente de mantenimiento ante la auditoría corporativa. |
+| `resultado_deseado_criterio` | texto | Métrica estricta de satisfacción mediante la cual el cliente evalúa el éxito del trabajo realizado. | Ej: Tiempo total de parada no programada inferior a 15 minutos por turno mensual. |
+| `alternativas_compensatorias` | texto | Soluciones sustitutas, 'parches' caseros o competidores indirectos actualmente contratados para el trabajo. | Ej: Hojas de cálculo manuales combinadas con llamadas de emergencia por WhatsApp a técnicos externos. |
 
 #### Módulo: Propiedad Intelectual — `property_intellectual` · _Estrategia legal de registro de marcas, secretos industriales y patentes nacionales o internacionales._
 
@@ -689,6 +747,17 @@
 | `clientes_industriales` | texto | Perfil del comprador B2B, integrador tecnológico o dependencias de gobierno que adquirirán la tecnología. | Ej (Estilo TSMC/Intel B2B): Plantas ensambladoras automotrices Tier 1 que buscan automatizar sus líneas de ensamble. |
 | `tamaño_mercado_tecnologico` | texto | TAM, SAM, SOM enfocados en licenciamiento o ventas corporativas. | Ej: SAM: 420 plantas maquiladoras en el norte de México con un valor estimado de mercado de $15M USD anuales. |
 | `alianzas_codesarrollo` | texto | Alianzas con centros de investigación, universidades o corporaciones para co-desarrollar o validar la tecnología. | Ej (Estilo MIT Media Lab): Convenio de co-desarrollo con el Instituto de Inteligencia Artificial de la Universidad de Sonora. |
+
+#### Módulo: Disrupción vs Sostenimiento — `disrupcion_sustaining` · _Evaluación de trayectoria disruptiva (gama baja / nuevo mercado) y marco RPV organizacional._
+
+**Boxes asociados:** `box_sustaining_vs_disruptive`
+
+| Textbox (`field key`) | Tipo Box | Prompt — Instrucción | Ejemplo / Placeholder |
+|---|---|---|---|
+| `tipo_disrupcion_gama_baja_nuevo_mercado` | texto | Clasificación estratégica: Disrupción de Gama Baja (clientes sobre-servidos) o de Nuevo Mercado (no-consumidores). | Ej: Disrupción de Gama Baja ofreciendo servicio MaaS con telemetría un 40% más accesible que los talleres tradicionales. |
+| `evaluacion_rpv_recursos_procesos_valores` | texto | Auditoría del marco RPV (Recursos, Procesos y Valores) de la organización frente al vector de innovación. | Ej: Recursos: Algoritmos y bancos de prueba. Procesos: Soporte 24/7 en campo. Valores: Prioridad a contratos de servicio recurrente antes que venta única de fierros. |
+| `traccion_nichos_desatendidos` | texto | Validación empírica en segmentos iniciales pequeños ignorados por los gigantes de la industria. | Ej: 12 mineras medianas en Sonora y Sinaloa operando con el sistema piloto sin competencia directa de OEM globales. |
+| `defensa_competitiva_incumbentes` | texto | Asimetría de motivación: por qué a los líderes tradicionales les conviene ignorar o ceder este mercado. | Ej: Los grandes fabricantes prefieren vender maquinaria nueva de $500k USD y descuidan el mantenimiento preventivo descentralizado. |
 
 #### Módulo: Modelo de Transferencia — `transfer_model` · _Esquema de monetización: cobro de royalties, cesión de patentes o constitución de spin-off._
 
@@ -808,7 +877,7 @@
 
 #### Módulo: Croquis del Local — `croquis` · _Distribución física del espacio de trabajo._
 
-**Boxes asociados:** `box_micro_canvas_3b`
+**Boxes asociados:** `box_micro_croquis_2d`
 
 | Textbox (`field key`) | Tipo Box | Prompt — Instrucción | Ejemplo / Placeholder |
 |---|---|---|---|
@@ -834,6 +903,18 @@
 |---|---|---|---|
 | `lista_gastos_mensuales` | texto | Pagos fijos mes a mes (renta, luz, ayudante). | Ej: "Pago de luz $500, permiso de piso $1,000, sueldo del ayudante $4,000 al mes." |
 | `costos_por_producto` | texto | ¿Cuánto te cuesta hacer un producto y en cuánto lo vendes? | Ej: "Hacer un taco me cuesta $15 (carne+tortilla+salsa) y lo vendo a $35. Ganancia: $20." |
+
+#### Módulo: Punto de Equilibrio Micro — `punto_equilibrio_micro` · _Cálculo exacto de unidades mínimas de venta para cubrir costos fijos y variables._
+
+**Boxes asociados:** `box_punto_equilibrio_micro`
+
+| Textbox (`field key`) | Tipo Box | Prompt — Instrucción | Ejemplo / Placeholder |
+|---|---|---|---|
+| `costos_fijos_mensuales` | texto | Suma total de gastos obligatorios de cada mes que debes pagar vendas o no vendas (renta, luz, gas, permisos). | Ej: Total costos fijos: $8,500 MXN mensuales (Renta local $4,500 + Luz y gas $2,500 + Permiso municipal $1,500). |
+| `costo_variable_unitario` | texto | Costo de materia prima, insumos directos y empaque que cuesta fabricar una sola unidad o atender un cliente. | Ej: $18.50 MXN por platillo (carne $12.00, verduras y salsas $4.00, desechables $2.50). |
+| `precio_venta_unitario` | texto | Precio al que ofreces cada unidad al cliente final en el mostrador. | Ej: Precio de venta al público: $55.00 MXN por platillo. |
+| `punto_equilibrio_unidades` | texto | Cantidad exacta de unidades que debes vender en el mes para quedar 'a mano' (sin ganar ni perder): CF / (P - CVu). | Ej: $8,500 / ($55 - $18.50) = 233 unidades al mes (promedio de 8 a 9 platillos diarios de martes a domingo). |
+| `margen_contribucion_ganancia` | texto | Ganancia limpia por cada unidad vendida (Precio - Costo Variable) y porcentaje de contribución. | Ej: Margen de contribución: $36.50 MXN por unidad (66.4% del precio de venta). |
 
 
 ---
@@ -889,6 +970,18 @@
 | `catalogo_conceptos` | texto | Listado exhaustivo de todas las partidas de obra y equipamiento. | Ej: "Partida 1: Terracerías. Partida 2: Cimentación. Partida 3: Montaje electromecánico." |
 | `explosion_insumos` | texto | Resumen cuantitativo de los insumos físicos más relevantes a adquirir. | Ej: "120,000 paneles solares de 600W, 400 toneladas de acero estructural, 25 inversores centrales." |
 
+#### Módulo: Desglose CAPEX CSI-16 — `capex_csi_16` · _Estructuración según las 16 divisiones estándar CSI de construcción y maquinaria._
+
+**Boxes asociados:** `box_capex_csi_table_16div`
+
+| Textbox (`field key`) | Tipo Box | Prompt — Instrucción | Ejemplo / Placeholder |
+|---|---|---|---|
+| `division_csi_codigo` | texto | Código de división según el estándar CSI MasterFormat de 16 divisiones (ej. Div 02 Sitio, Div 03 Concreto, Div 11 Equipamiento). | Ej: 'División 11 - Equipamiento: Hornos ASADHOR, túnel de congelación criogénica y cuartos fríos'. |
+| `concepto_obra_maquinaria` | texto | Descripción técnica detallada del concepto de obra civil, instalación industrial o maquinaria pesada. | Ej: 'Suministro e instalación de túnel criogénico IQF con capacidad de 1,200 kg/hora a -40°C en acero inoxidable 304'. |
+| `unidad_medida_cantidad` | texto | Unidad de medida estándar (m², m³, lote, pza, kg) y volumen total cuantificado en proyecto. | Ej: '5 piezas de hornos rotativos ASADHOR industriales de 12 niveles'. |
+| `costo_unitario_importe` | texto | Precio unitario antes de impuestos y desglose de mano de obra, equipo e insumos. | Ej: '$750,000 MXN precio unitario por horno ASADHOR puesto en planta Hermosillo'. |
+| `total_inversion_csi` | texto | Suma acumulada del CAPEX por cada división CSI y porcentaje de participación sobre la inversión total. | Ej: 'División 11 Equipamiento: $8,000,000 MXN representando el 47.6% del CAPEX total'. |
+
 #### Módulo: Cronograma Físico-Financiero — `cronograma` · _Avance de obra vs. desembolso de capital mensual._
 
 **Boxes asociados:** —
@@ -927,6 +1020,18 @@
 | `sensibilidad_unidimensional` | texto | Tornado de sensibilidad: cómo cambia la TIR si se altera una sola variable crítica (ej. CAPEX o Precio). | Ej: "Si el costo del acero sube 20%, la TIR del proyecto baja de 14.5% a 12.1%." |
 | `escenarios` | texto | Análisis de escenarios consolidados: Caso Base, Caso Pesimista y Caso Optimista. | Ej: "Caso Pesimista (Retraso de obra de 6 meses + inflación 8%): El proyecto mantiene VAN positivo." |
 
+#### Módulo: Diagrama Tornado de Riesgo — `tornado_sensibilidad` · _Variación de variables críticas (precio, volumen, CAPEX) sobre el VAN._
+
+**Boxes asociados:** `box_tornado_chart`, `box_tornado_sensibilidad`
+
+| Textbox (`field key`) | Tipo Box | Prompt — Instrucción | Ejemplo / Placeholder |
+|---|---|---|---|
+| `variable_critica_analizada` | texto | Nombre del parámetro operativo o financiero sometido a prueba de sensibilidad extrema en el diagrama Tornado. | Ej: 'Precio promedio de venta por kg de corte ($220 MXN base) y costo de carne en canal ($82/kg base)'. |
+| `rango_variacion_porcentual` | texto | Rango de variación estocástica aplicado en el análisis (ej. +/- 10%, +/- 20% o +/- 25%). | Ej: 'Variación de +/- 20% sobre el volumen de ventas y +/- 15% en costos de energía eléctrica'. |
+| `van_escenario_pesimista` | texto | Valor Presente Neto resultante cuando la variable se deteriora hasta el límite inferior del rango. | Ej: 'Con caída del 20% en volumen, el VAN disminuye de +$12.5M a +$3.8M MXN (se mantiene viable)'. |
+| `van_escenario_optimista` | texto | Valor Presente Neto proyectado cuando la variable alcanza el límite superior favorable. | Ej: 'Con incremento del 20% en demanda y captura de nicho premium, el VAN escala a +$21.4M MXN'. |
+| `umbral_tolerancia_riesgo` | texto | Caída máxima porcentual que resiste el proyecto antes de que el VAN se vuelva cero (punto de quiebre financiero). | Ej: 'El proyecto resiste una caída de hasta 28.5% en el precio de venta antes de entrar en zona de destrucción de valor'. |
+
 #### Módulo: Simulación de Riesgo — `probabilidad` · _Simulación probabilística tipo Monte Carlo._
 
 **Boxes asociados:** `box_montecarlo_sim`
@@ -952,39 +1057,83 @@
 
 ### Pilar: Análisis de la Situación — `analisis_situacion`
 
-#### Módulo: Matriz de Participación — `participacion` · _Identificación de involucrados._
+#### Módulo: Matriz de Participación — `participacion` · _Identificación, intereses y expectativas de involucrados._
 
 **Boxes asociados:** `box_zopp_mpp_4x4`
 
 | Textbox (`field key`) | Tipo Box | Prompt — Instrucción | Ejemplo / Placeholder |
 |---|---|---|---|
-| `matriz_participacion` | texto | Análisis de involucrados, sus intereses y problemas percibidos. | Ej: Comunidad local (Alta influencia, Alto impacto). |
+| `matriz_participacion` | texto | Análisis de involucrados: grupos diana, aliados, oponentes, intereses y expectativas percibidas. | Ej: Pequeños ganaderos sonorenses (Aliados clave, alto interés, necesidad de precio justo en canal). |
 
-#### Módulo: Árbol de Problemas — `problemas` · _Análisis de causas y efectos._
-
-**Boxes asociados:** `box_zopp_mpp_4x4`
-
-| Textbox (`field key`) | Tipo Box | Prompt — Instrucción | Ejemplo / Placeholder |
-|---|---|---|---|
-| `analisis_problemas` | texto | Árbol de problemas enfocándose en la causa raíz moderada. | Ej: Alta incidencia de enfermedades gastrointestinales. |
-
-### Pilar: Matriz de Planificación (MPP) — `planificacion_mpp`
-
-#### Módulo: Árbol de Objetivos — `objetivos` · _De problemas a soluciones._
+#### Módulo: Árbol de Problemas — `problemas` · _Análisis causal de causas directas, indirectas y efectos._
 
 **Boxes asociados:** `box_zopp_mpp_4x4`
 
 | Textbox (`field key`) | Tipo Box | Prompt — Instrucción | Ejemplo / Placeholder |
 |---|---|---|---|
-| `analisis_objetivos` | texto | Conversión de problemas a estados positivos alcanzables. | Ej: Reducción del 50% en enfermedades gastrointestinales. |
+| `analisis_problemas` | texto | Árbol de problemas causa-efecto identificando el problema central focalizado y sus causas raíz. | Ej: Problema central: Elevada merma y bajo margen de ganancia de carnicerías locales frente a monopolios. |
 
-#### Módulo: Matriz Lógica — `matriz_logica` · _Resumen narrativo y supuestos._
+### Pilar: Planificación Estratégica (MPP) — `planificacion_mpp`
+
+#### Módulo: Árbol de Objetivos — `objetivos` · _Conversión de problemas a soluciones, medios y fines._
+
+**Boxes asociados:** `box_zopp_mpp_4x4`
+
+| Textbox (`field key`) | Tipo Box | Prompt — Instrucción | Ejemplo / Placeholder |
+|---|---|---|---|
+| `analisis_objetivos` | texto | Árbol de objetivos convirtiendo los estados negativos del problema en estados positivos alcanzables. | Ej: Objetivo central: Incrementar la rentabilidad de las carnicerías eliminando el 30% de merma de cocción. |
+
+#### Módulo: Análisis de Alternativas — `analisis_alternativas_zopp` · _Evaluación comparativa de estrategias según viabilidad técnica y financiera._
+
+**Boxes asociados:** `box_matriz_alternativas_zopp`
+
+| Textbox (`field key`) | Tipo Box | Prompt — Instrucción | Ejemplo / Placeholder |
+|---|---|---|---|
+| `alternativas_identificadas` | texto | Describir detalladamente. | — |
+| `criterios_evaluacion` | texto | Describir detalladamente. | — |
+| `alternativa_seleccionada` | texto | Describir detalladamente. | — |
+
+#### Módulo: Matriz Lógica (MPP 4x4) — `matriz_logica` · _Resumen narrativo, indicadores verificables, fuentes y supuestos._
 
 **Boxes asociados:** `box_zopp_mpp_4x4`
 
 | Textbox (`field key`) | Tipo Box | Prompt — Instrucción | Ejemplo / Placeholder |
 |---|---|---|---|
 | `mpp` | texto | Matriz de Planificación del Proyecto (equivalente a Marco Lógico). | Ej: Objetivo general, propósito, resultados, actividades. |
+
+### Pilar: Operación y Recursos — `cronograma_presupuesto`
+
+#### Módulo: Plan de Actividades (Gantt) — `planificacion_actividades_cronograma` · _Desglose de paquetes de trabajo, hitos y ruta crítica._
+
+**Boxes asociados:** `box_gantt_actividades_zopp`
+
+| Textbox (`field key`) | Tipo Box | Prompt — Instrucción | Ejemplo / Placeholder |
+|---|---|---|---|
+| `paquetes_actividades` | texto | Desglose estructurado de actividades requeridas para producir cada uno de los componentes. | Ej: Actividad 1.1: Instalación y comisionamiento del horno industrial. Actividad 1.2: Calibración térmica NOM-251. |
+| `ruta_critica_gantt` | texto | Cronograma de ejecución identificando la secuencia de tareas críticas que determinan la duración total. | Ej: Ruta crítica: Obtención de licencia sanitaria COFEPRIS (mes 2) -> Llegada de horno (mes 3) -> Prueba piloto. |
+| `responsables_hitos` | texto | Asignación unívoca de responsabilidades de gestión y auditoría para cada hito clave. | Ej: Hito 1 (Auditoría sanitaria): Director de Inocuidad. Hito 2 (Contratos HORECA): Gerente Comercial. |
+
+#### Módulo: Presupuesto por Componentes — `presupuesto_componentes` · _Asignación de costos de inversión y operación por resultado._
+
+**Boxes asociados:** `box_presupuesto_componentes`
+
+| Textbox (`field key`) | Tipo Box | Prompt — Instrucción | Ejemplo / Placeholder |
+|---|---|---|---|
+| `costos_inversion_zopp` | texto | Presupuesto de capital asignado para la adquisición de infraestructura y equipamiento de arranque. | Ej: Inversión en adecuación de taller piloto y 1 horno ASADHOR: $4,000,000 MXN. |
+| `costos_operacion_zopp` | texto | Presupuesto de gasto recurrente necesario para mantener las actividades en funcionamiento continuo. | Ej: $320,000 MXN mensuales en nómina de operarios, gas natural, empaque al vacío y logística local. |
+| `fuentes_financiamiento_zopp` | texto | Origen de los fondos asignados: aportes de socios, créditos de desarrollo o fondos multilaterales. | Ej: 60% aporte de socios fundadores ($2.4M) + 40% crédito blando estatal FIDESON ($1.6M). |
+
+### Pilar: Evaluación y Sostenibilidad — `evaluacion_sostenibilidad`
+
+#### Módulo: Evaluación Ex-Post y Factores — `evaluacion_expost` · _Criterios de pertinencia, eficacia, impacto y continuidad operativa._
+
+**Boxes asociados:** `box_evaluacion_expost_lista`
+
+| Textbox (`field key`) | Tipo Box | Prompt — Instrucción | Ejemplo / Placeholder |
+|---|---|---|---|
+| `pertinencia_evaluacion` | texto | Evaluación ex-post de congruencia: si los objetivos del proyecto respondieron adecuadamente a la necesidad real. | Ej: 100% de pertinencia al resolver la escasez de mano de obra calificada en cocinas restauranteras. |
+| `eficacia_impacto` | texto | Grado de consecución del propósito y medición del impacto socioeconómico generado a mediano plazo. | Ej: Se alcanzó el 104% de la meta de producción y los restaurantes redujeron costos en 22% promedio. |
+| `sostenibilidad_futura` | texto | Capacidad institucional, tecnológica y financiera del proyecto para continuar operando sin apoyos externos. | Ej: Flujo de caja libre positivo mensual de $1.5M MXN garantiza autofinanciamiento y reinversión continua. |
 
 
 ---
@@ -993,7 +1142,7 @@
 
 ### Pilar: Excelencia y Ciencia Abierta — `excelencia_cientifica`
 
-#### Módulo: Consorcio — `consorcio` · _Estructura de partners._
+#### Módulo: Consorcio Transnacional — `consorcio` · _Estructura internacional de socios, capacidades y gobernanza._
 
 **Boxes asociados:** `box_dnsh_ue_6`
 
@@ -1001,7 +1150,7 @@
 |---|---|---|---|
 | `consorcio_multinacional` | texto | Estructura de partners internacionales y división de roles científicos. | Ej (Estilo Airbus/BioNTech): Instituto Fraunhofer (Líder WP1-I+D), SAP (WP2-Software). |
 
-#### Módulo: Open Science — `ciencia_abierta` · _Plan de gestión de datos._
+#### Módulo: Open Science — `ciencia_abierta` · _Políticas de ciencia abierta y acceso libre a publicaciones._
 
 **Boxes asociados:** `box_dnsh_ue_6`
 
@@ -1009,9 +1158,19 @@
 |---|---|---|---|
 | `open_science` | texto | Plan de gestión de datos FAIR y diseminación en repositorios abiertos. | Ej (Estilo CERN): Publicación de datasets de simulación en Zenodo con licencia CC-BY. |
 
+#### Módulo: Gestión de Datos FAIR (DMP) — `gestion_datos_fair_dmp` · _Plan de gestión de datos: Localizables, Accesibles, Interoperables y Reutilizables._
+
+**Boxes asociados:** `box_dmp_fair_checklist`
+
+| Textbox (`field key`) | Tipo Box | Prompt — Instrucción | Ejemplo / Placeholder |
+|---|---|---|---|
+| `repositorios_fair` | texto | Plataformas y repositorios certificados donde se depositarán los conjuntos de datos científicos (Zenodo, Dryad). | Ej: Datasets genómicos y espectroscópicos depositados en Zenodo con DOI asignado de acceso abierto. |
+| `politica_acceso_abierto` | texto | Régimen de publicación científica de acceso abierto inmediato bajo licencia Creative Commons (CC-BY). | Ej: Todas las publicaciones científicas revisadas por pares serán publicadas en revistas Q1 Open Access sin embargo temporal. |
+| `plan_gestion_datos_dmp` | texto | Data Management Plan (DMP): tipos de datos generados, preservación a largo plazo y curaduría ética. | Ej: DMP vivo actualizado en M6 y M18 con protocolos de cifrado y anonimización de datos sensibles. |
+
 ### Pilar: Impacto y Sostenibilidad — `impacto_sostenibilidad`
 
-#### Módulo: Principio DNSH — `dnsh_principle` · _No causar daño significativo._
+#### Módulo: Principio DNSH (UE) — `dnsh_principle` · _Garantía de no causar daño significativo a los 6 objetivos ambientales de la UE._
 
 **Boxes asociados:** `box_dnsh_ue_6`
 
@@ -1019,13 +1178,45 @@
 |---|---|---|---|
 | `dnsh` | texto | Principio Do No Significant Harm. Demostrar que el proyecto no daña ninguno de los 6 objetivos medioambientales. | Ej (Estilo Northvolt): El proceso de reciclaje reduce 80% emisiones de CO2 sin generar efluentes tóxicos. |
 
-#### Módulo: Impacto Global — `impacto` · _Impacto más allá del estado del arte._
+#### Módulo: Impacto Más Allá del SOTA — `impacto` · _Avance científico sobre el estado del arte y beneficios para la UE._
 
 **Boxes asociados:** `box_dnsh_ue_6`
 
 | Textbox (`field key`) | Tipo Box | Prompt — Instrucción | Ejemplo / Placeholder |
 |---|---|---|---|
 | `excelencia` | texto | Impacto más allá del estado del arte. | Ej: Eficiencia cuántica 20% superior al referente actual comercializado por IBM. |
+
+#### Módulo: Pathway de Impacto (TRL 6-9) — `impacto_pathway_trl` · _Ruta de maduración tecnológica desde prototipo hasta despliegue de mercado._
+
+**Boxes asociados:** `box_impacto_pathway_trl6_9`
+
+| Textbox (`field key`) | Tipo Box | Prompt — Instrucción | Ejemplo / Placeholder |
+|---|---|---|---|
+| `pathway_hacia_mercado` | texto | Ruta de adopción y escalamiento: pasos concretos para transferir el resultado de investigación a la industria y sociedad. | Ej: Validación en entorno industrial simulado (M12) -> Licenciamiento piloto a socio del consorcio (M24) -> Comercialización global (M36). |
+| `trl_inicial_final` | texto | Nivel de madurez tecnológica inicial al arranque de la propuesta y nivel TRL objetivo garantizado al cierre. | Ej: TRL inicial = 5 (validación en entorno relevante) -> TRL final = 8 (sistema completo y cualificado). |
+| `kpis_impacto_socioeconomico` | texto | Indicadores cuantitativos de impacto en empleo, competitividad europea, reducción de huella de carbono y salud. | Ej: Reducción de 12,000 tCO2e anuales, creación de 85 empleos de alta cualificación y ahorro de $15M EUR en costes hospitalarios. |
+
+### Pilar: Implementación y Presupuesto EU — `implementacion_trabajo`
+
+#### Módulo: Diseminación y Explotación — `diseminacion_explotacion` · _Estrategia de comunicación científica, patentes conjuntas y adopción comercial._
+
+**Boxes asociados:** `box_plan_diseminacion_eu`
+
+| Textbox (`field key`) | Tipo Box | Prompt — Instrucción | Ejemplo / Placeholder |
+|---|---|---|---|
+| `medidas_diseminacion` | texto | Plan de comunicación para audiencias no científicas: web pública, notas de prensa, redes, webinars y talleres. | Ej: Portal web multilingüe, 6 notas de prensa europeas, 4 workshops para PyMEs y campaña en LinkedIn con alcance > 50,000 profesionales. |
+| `propiedad_intelectual_consorcio` | texto | Consortium Agreement (CA): régimen de propiedad del 'Background' previo y titularidad del 'Foreground' conjunto. | Ej: Acuerdo DESCA: Cada socio retiene la propiedad de sus patentes previas; las patentes conjuntas se licencian con regalías proporcionales. |
+| `hoja_ruta_explotacion` | texto | Modelo de negocio y plan de explotación comercial o institucional post-proyecto por los socios industriales. | Ej: Socio industrial A adquiere la opción exclusiva de explotación comercial en Europa pagando 3% royalties a las universidades asociadas. |
+
+#### Módulo: Presupuesto UE por Categorías — `presupuesto_eu_microsoft` · _Costes de personal, equipamiento, subcontratación y 25% flat indirecto._
+
+**Boxes asociados:** `box_presupuesto_eu_categorias`
+
+| Textbox (`field key`) | Tipo Box | Prompt — Instrucción | Ejemplo / Placeholder |
+|---|---|---|---|
+| `costes_personal_wp` | texto | Presupuesto de meses-persona (Person-Months) valorados según tarifas horarias institucionales auditadas. | Ej: 140 Person-Months totales distribuidos entre 6 socios: €980,000 EUR en personal investigador y técnico. |
+| `subcontratacion_equipo` | texto | Costes de adquisición y depreciación de equipamiento científico especializado y tareas menores subcontratadas. | Ej: Depreciación de cromatógrafo de gases (€45,000 EUR) + Subcontratación de secuenciación genética (€30,000 EUR). |
+| `gastos_indirectos_flat25` | texto | Cálculo automático de costes indirectos (overhead) como tasa fija del 25% sobre los costes directos elegibles. | Ej: Costes directos elegibles: €1,200,000 EUR -> 25% Flat Indirect Costs: €300,000 EUR. Total: €1,500,000 EUR. |
 
 
 ---
@@ -1034,7 +1225,7 @@
 
 ### Pilar: Visión y Breakthroughs — `vision_largo_plazo`
 
-#### Módulo: True North — `norte_verdadero` · _Visión a largo plazo._
+#### Módulo: True North (Norte Verdadero) — `norte_verdadero` · _Visión de propósito inmutable a 5-10 años._
 
 **Boxes asociados:** `box_matriz_x_hoshin`
 
@@ -1042,7 +1233,7 @@
 |---|---|---|---|
 | `true_north` | texto | Visión a 10 años. El propósito inalterable de la organización. | Ej (Estilo Toyota/Honda): "Cero emisiones y cero colisiones para 2040". |
 
-#### Módulo: Breakthroughs — `disrupcion` · _Objetivos disruptivos._
+#### Módulo: Objetivos Breakthrough — `disrupcion` · _Metas de ruptura que transforman la competitividad del negocio._
 
 **Boxes asociados:** `box_matriz_x_hoshin`
 
@@ -1050,9 +1241,9 @@
 |---|---|---|---|
 | `breakthroughs` | texto | Objetivos disruptivos anuales que cambian el status quo. | Ej (Estilo Nissan): Reducir el tiempo de ensamble de baterías de 4 horas a 45 minutos. |
 
-### Pilar: Alineación y Ejecución — `alineacion_ejecucion`
+### Pilar: Alineación Estratégica — `alineacion_ejecucion`
 
-#### Módulo: Matriz X — `matriz_x` · _Despliegue de objetivos._
+#### Módulo: Matriz X (4 Cuadrantes) — `matriz_x` · _Correlación entre visión, objetivos anuales, prioridades y métricas._
 
 **Boxes asociados:** `box_matriz_x_hoshin`
 
@@ -1060,7 +1251,29 @@
 |---|---|---|---|
 | `matriz_x` | texto | Herramienta que alinea visión a largo plazo, objetivos anuales, iniciativas y métricas. | Ej (Estilo Sony): Eje Sur (Iniciativa: Lente 8K) conectado con Eje Este (KPI: Reducir costo 15%). |
 
-#### Módulo: Bowler Charts — `seguimiento` · _Revisión visual._
+#### Módulo: Catchball & Nemawashi — `catchball_nemawashi` · _Proceso bidireccional de consenso y negociación de recursos entre niveles._
+
+**Boxes asociados:** `box_catchball_nemawashi`
+
+| Textbox (`field key`) | Tipo Box | Prompt — Instrucción | Ejemplo / Placeholder |
+|---|---|---|---|
+| `proceso_catchball` | texto | Mecanismo bidireccional 'lanzar y atrapar la pelota' entre alta dirección y mandos medios para acordar metas y recursos. | Ej: Dirección propone reducir mermas 50%; operaciones responde que requiere $400k en mantenimiento para comprometer la meta. |
+| `acuerdos_nemawashi` | texto | Proceso informal de consulta previa (Nemawashi: 'preparar las raíces') para crear consenso antes de reuniones formales. | Ej: Sesiones uno a uno con líderes sindicales y jefes de turno para alinear la implementación de turnos rotativos. |
+| `retroalimentacion_vertical` | texto | Canal formal para que los colaboradores de primera línea reporten impedimentos del sistema a la dirección. | Ej: Sistema diario de paradas Andon y buzón de kaizen donde el 80% de sugerencias se resuelven en < 48 horas. |
+
+#### Módulo: Despliegue de Informes A3 — `a3_deployment` · _Estructuración concisa del problema, causa raíz, contramedidas y plan._
+
+**Boxes asociados:** `box_a3_template_lean`
+
+| Textbox (`field key`) | Tipo Box | Prompt — Instrucción | Ejemplo / Placeholder |
+|---|---|---|---|
+| `antecedentes_a3` | texto | Sección 1 del informe A3: Contexto estratégico y justificación de por qué este problema debe resolverse ahora. | Ej: 'Las devoluciones por cocción irregular aumentaron 8% en el último trimestre, arriesgando contratos con 3 cadenas'. |
+| `condicion_actual_a3` | texto | Sección 2 del informe A3: Mapeo visual del estado actual del proceso (Value Stream Map) y cuantificación del dolor. | Ej: 'Tiempo de ciclo actual de 180 min con desviación estándar de 45 min debido a fallas en quemadores'. |
+| `contramedidas_plan_accion` | texto | Secciones 3 y 4 del A3: Acciones correctivas a la causa raíz (5 Porqués), responsables, fechas y verificación. | Ej: 'Instalación de pirómetros digitales (responsable: Mantenimiento, fecha: 15 Oct, meta: dispersión < 2°C)'. |
+
+### Pilar: Seguimiento y Control Continuo — `seguimiento_mejora`
+
+#### Módulo: Bowler Charts — `seguimiento` · _Revisión mensual visual con semaforización de desviaciones._
 
 **Boxes asociados:** `box_matriz_x_hoshin`
 
@@ -1068,14 +1281,34 @@
 |---|---|---|---|
 | `bowler` | texto | Indicadores de revisión visual mensual. | Ej: Gráfico de semáforo Andon para la línea de producción de motores. |
 
+#### Módulo: Ciclo PDCA de Mejora — `pdca_hoshin` · _Planear, Hacer, Verificar y Actuar para institucionalizar aprendizajes._
+
+**Boxes asociados:** `box_pdca_ciclo_hoshin`
+
+| Textbox (`field key`) | Tipo Box | Prompt — Instrucción | Ejemplo / Placeholder |
+|---|---|---|---|
+| `ciclo_planear_hacer` | texto | Etapas Plan y Do del ciclo Deming: formulación de hipótesis operativas y ejecución piloto controlada. | Ej: Plan: Estandarizar receta térmica en horno 1. Do: Procesar 50 lotes piloto registrando tiempos y temperaturas. |
+| `auditoria_verificar` | texto | Etapa Check: Comparación cuantitativa rigurosa entre el resultado obtenido y el objetivo planeado. | Ej: De los 50 lotes, 48 cumplieron la textura deseada (96% de eficacia frente a la meta del 95%). |
+| `estandarizacion_actuar` | texto | Etapa Act: Actualización de procedimientos operativos estándar (SOP), manuales de trabajo y capacitación. | Ej: Registro del procedimiento SOP-COC-04 y capacitación del 100% de los operadores en el nuevo protocolo térmico. |
+
+#### Módulo: OKRs Alineados a la Matriz X — `okrs_alineados` · _Objetivos trimestrales y resultados clave de equipos operativos._
+
+**Boxes asociados:** `box_okr_scorecard`
+
+| Textbox (`field key`) | Tipo Box | Prompt — Instrucción | Ejemplo / Placeholder |
+|---|---|---|---|
+| `objetivos_trimestrales_okr` | texto | Objetivos cualitativos ambiciosos y motivadores (Objectives) fijados para un horizonte de 90 días. | Ej: 'Convertir la planta en el referente de inocuidad del noroeste de México durante el Q4'. |
+| `resultados_clave_medibles` | texto | Resultados clave cuantitativos (Key Results) que miden si el objetivo fue alcanzado de forma inequívoca. | Ej: 'KR1: 0 hallazgos en auditoría COFEPRIS. KR2: 100% lotes con trazabilidad QR. KR3: OTD >= 98%'. |
+| `scorecard_cumplimiento` | texto | Tablero de evaluación final del trimestre con calificación del 0.0 al 1.0 por resultado clave. | Ej: 'Calificación promedio Q4: 0.82 (Verde / Éxito sobresaliente según escala OKR de Google)'. |
+
 
 ---
 
 ## Amoeba Management (Kyocera - Micro-Ganancias) — `amoeba_management`
 
-### Pilar: Estructuración — `estructuracion_celulas`
+### Pilar: Estructuración y Filosofía — `estructuracion_celulas`
 
-#### Módulo: Mapeo de Células — `celulas` · _Centros de ganancia independientes._
+#### Módulo: Mapeo de Células Amoeba — `celulas` · _División de la organización en micro-unidades de ganancia autónomas._
 
 **Boxes asociados:** `box_rentabilidad_hora_amoeba`
 
@@ -1083,7 +1316,7 @@
 |---|---|---|---|
 | `mapeo_celulas` | texto | División de la empresa en micro-centros de ganancia independientes. | Ej (Estilo Kyocera/Alibaba): Dividir operaciones en 50 células (Ej. Amoeba de Servidores, Amoeba de Logística). |
 
-#### Módulo: Filosofía — `filosofia_corp` · _Alineación de valores._
+#### Módulo: Filosofía Inamori — `filosofia_corp` · _Principios de gestión basados en hacer lo correcto como ser humano._
 
 **Boxes asociados:** `box_rentabilidad_hora_amoeba`
 
@@ -1091,9 +1324,19 @@
 |---|---|---|---|
 | `filosofia` | texto | Alineación de los miembros de la célula con los valores nucleares. | Ej (Estilo Inamori/Jack Ma): "Hacer lo correcto como ser humano" y priorizar al cliente antes que al accionista. |
 
-### Pilar: Economía Interna — `economia_interna`
+#### Módulo: 12 Principios de Gestión Inamori — `principios_inamori_12` · _Reglas fundamentales: fijar metas elevadas, precio óptimo y transparencia total._
 
-#### Módulo: Precios de Transferencia — `precios` · _Ventas entre células._
+**Boxes asociados:** `box_12_principios_inamori`
+
+| Textbox (`field key`) | Tipo Box | Prompt — Instrucción | Ejemplo / Placeholder |
+|---|---|---|---|
+| `doce_principios_gestion` | texto | Implementación de los 12 principios de gestión de Kazuo Inamori (propósito altruista, fijar metas elevadas, ventas máximas con gastos mínimos). | Ej: 'Principio 6: La fijación del precio es la gestión directiva (hallar el punto máximo que el cliente pagará gustosamente)'. |
+| `motivacion_empleados` | texto | Estrategias para que cada líder de célula y operador actúe y tome decisiones con mentalidad de dueño y socio. | Ej: Reuniones diarias de arranque donde el líder de célula expone los ingresos y costos del día previo a todo el equipo. |
+| `gestion_transparente` | texto | Política de 'vidrio transparente': cuentas contables abiertas y visibles para todos los integrantes de la célula sin secretos. | Ej: Pantalla en taller donde se actualizan en tiempo real las horas trabajadas, los insumos consumidos y el margen del día. |
+
+### Pilar: Economía Interna y Productividad — `economia_interna`
+
+#### Módulo: Precios de Transferencia — `precios` · _Tarifas de compra-venta justa entre células internas sin márgenes ficticios._
 
 **Boxes asociados:** `box_rentabilidad_hora_amoeba`
 
@@ -1101,13 +1344,35 @@
 |---|---|---|---|
 | `precios_transferencia` | texto | Cómo una célula le "vende" internamente a otra. | Ej: Amoeba de Diseño le cobra $50 USD la hora a Amoeba de Manufactura por el plano CAD. |
 
-#### Módulo: Rentabilidad por Hora — `rentabilidad` · _Cálculo de utilidad._
+#### Módulo: Rentabilidad por Hora — `rentabilidad` · _Cálculo de valor generado por hora: (Ventas Netas - Gastos) / Horas Totales._
 
 **Boxes asociados:** `box_rentabilidad_hora_amoeba`
 
 | Textbox (`field key`) | Tipo Box | Prompt — Instrucción | Ejemplo / Placeholder |
 |---|---|---|---|
 | `rentabilidad_hora` | texto | Cálculo de la utilidad generada dividida por las horas trabajadas. | Ej: Rentabilidad por hora = (Ingreso Amoeba - Costos no laborales) / Total Horas del equipo. |
+
+#### Módulo: Gestión Basada en el Tiempo — `time_based_management` · _Eliminación sistemática de tiempos improductivos y maximización de valor/hora._
+
+**Boxes asociados:** `box_time_based_amoeba`
+
+| Textbox (`field key`) | Tipo Box | Prompt — Instrucción | Ejemplo / Placeholder |
+|---|---|---|---|
+| `control_horas_celula` | texto | Registro estricto y auditoría del total de horas hombre dedicadas a la producción para el denominador de rentabilidad. | Ej: 4 operadores x 40 horas/semana = 160 horas semanales registradas por biometría digital sin horas muertas no imputadas. |
+| `minimizacion_desperdicio_tiempo` | texto | Detección y erradicación de las 7 mudas de tiempo: esperas, traslados innecesarios y retrabajos en la célula. | Ej: Reorganización del herramental en células de trabajo en 'U' redujo traslados en 25 minutos por turno. |
+| `indicador_valor_agregado_hora` | texto | Métrica maestra de Inamori: Valor Agregado por Hora = (Ventas Netas - Gastos Directos sin nómina) / Total Horas. | Ej: ($180,000 MXN ingresos - $60,000 gastos) / 480 horas = $250 MXN de valor neto generado por hora hombre. |
+
+### Pilar: Comunicación Operativa — `operaciones_comunicacion`
+
+#### Módulo: Protocolo Ho-Ren-So — `horenso_reportar_contactar_consultar` · _Reglas de comunicación: Hokoku (Reportar), Renraku (Informar), Sodan (Consultar)._
+
+**Boxes asociados:** `box_horenso_protocolo_3pasos`
+
+| Textbox (`field key`) | Tipo Box | Prompt — Instrucción | Ejemplo / Placeholder |
+|---|---|---|---|
+| `protocolo_hokoku_informe` | texto | Hokoku (Informar): Deber inmediato de reportar hechos objetivos, incidentes y avances al superior jerárquico sin demora. | Ej: Si un corte sale de temperatura, el operador informa en < 5 minutos al líder de célula antes de continuar la tanda. |
+| `protocolo_renraku_comunicacion` | texto | Renraku (Contactar/Comunicar): Compartir información relevante y cambios de estatus con los compañeros de célula y áreas adyacentes. | Ej: Notificación anticipada a la célula de logística sobre el despacho de 120 cajas para coordinar el camión frigorífico. |
+| `protocolo_sodan_consulta` | texto | Sodan (Consultar): Solicitar asesoría o consejo antes de tomar decisiones dudosas que comprometan recursos o calidad. | Ej: Si el proveedor entrega carne con 2°C de variación, se consulta al Director de Calidad antes de rechazar el embarque. |
 
 ### Pilar: Simulador de Células — `simulador_financiero`
 
@@ -1124,9 +1389,9 @@
 
 ## Metodología Guanxi (China - Redes de Relaciones) — `guanxi_plan`
 
-### Pilar: Conexiones y Estado — `redes_estado`
+### Pilar: Conexiones y Alineación Estratégica — `redes_estado`
 
-#### Módulo: Mapa de Relaciones — `mapa_relacional` · _Conexiones estratégicas._
+#### Módulo: Mapa Relacional Guanxi — `mapa_relacional` · _Clasificación de círculos de confianza: familia, amigos, intermediarios y autoridades._
 
 **Boxes asociados:** `box_mapa_guanxi_mianzi`
 
@@ -1134,7 +1399,7 @@
 |---|---|---|---|
 | `mapa_relaciones` | texto | Mapeo de conexiones estratégicas con el Estado y otros partners clave. | Ej (Estilo Tencent/Baidu): Alianza estratégica con el Ministerio de Tecnología Provincial y Universidades Estatales. |
 
-#### Módulo: Plan Quinquenal — `alineacion_estado` · _Alineación con el Estado._
+#### Módulo: Alineación al 14º Plan Quinquenal — `alineacion_estado` · _Sintonía del proyecto con los objetivos prioritarios del gobierno central y local chino._
 
 **Boxes asociados:** `box_mapa_guanxi_mianzi`
 
@@ -1142,9 +1407,9 @@
 |---|---|---|---|
 | `alineacion_quinquenal` | texto | Cómo el proyecto apoya los objetivos del Plan Quinquenal del Estado. | Ej: Apoya directamente el plan "Made in China 2025" en el sector de Semiconductores. |
 
-### Pilar: Reciprocidad y Armonía — `manejo_conflictos`
+### Pilar: Reciprocidad y Capital Social — `manejo_conflictos`
 
-#### Módulo: Reciprocidad — `favores` · _Beneficios mutuos._
+#### Módulo: Reciprocidad (Renqing) — `favores` · _Dinámica de intercambio ético de favores y equilibrio relacional._
 
 **Boxes asociados:** `box_mapa_guanxi_mianzi`
 
@@ -1152,7 +1417,7 @@
 |---|---|---|---|
 | `reciprocidad` | texto | Estrategia de favores y beneficios mutuos a largo plazo. | Ej (Estilo Huawei): Transferencia de tecnología 5G a cambio de acceso preferencial a redes municipales. |
 
-#### Módulo: Armonía (Mianzi) — `mianzi` · _Resolución de conflictos._
+#### Módulo: Preservación de la Cara (Mianzi) — `mianzi` · _Estrategias para otorgar, mantener y nunca hacer perder la reputación pública._
 
 **Boxes asociados:** `box_mapa_guanxi_mianzi`
 
@@ -1160,14 +1425,56 @@
 |---|---|---|---|
 | `armonia` | texto | Manejo de conflictos para mantener el respeto y "salvar la cara" (Mianzi). | Ej: Resolución privada de disputas (Joint Ventures) sin litigios públicos. |
 
+#### Módulo: Protocolo de Obsequios — `gift_giving_renqing` · _Normas culturales sobre regalos adecuados, momentos idóneos y valor simbólico._
+
+**Boxes asociados:** `box_gift_giving_mat`
+
+| Textbox (`field key`) | Tipo Box | Prompt — Instrucción | Ejemplo / Placeholder |
+|---|---|---|---|
+| `protocolo_obsequios_renqing` | texto | Reglas de cortesía sobre obsequios empresariales: selección de objetos representativos, presentación formal con dos manos y evitar tabúes culturales. | Ej: Obsequio de artesanía regional mexicana de plata de alta gama entregada al líder de la delegación en privado al término del viaje. |
+| `registro_favores_intercambio` | texto | Renqing (Deuda de afecto y favor): Libro de reciprocidad relacional para registrar gestiones, contactos facilitados y compromisos éticos mutuos. | Ej: Gestión facilitada para homologación aduanal en Manzanillo correspondida con introducción directa a compradores en Shanghái. |
+| `temporalidad_reciprocidad` | texto | Comprensión del tiempo en el Guanxi: la devolución inmediata de un favor se percibe como frialdad; debe cultivarse con paciencia a lo largo de los años. | Ej: Acompañamiento a la contraparte china durante 18 meses de intercambio técnico antes de formalizar la primera orden de compra. |
+
+### Pilar: Protocolo y Tácticas de Negociación — `protocolo_negociacion`
+
+#### Módulo: Protocolo de Banquetes Chinos — `banquet_protocol_ritual` · _Orden de asignación de asientos, rituales de brindis (Ganbei) y creación de confianza._
+
+**Boxes asociados:** `box_banquet_protocol_8pasos`
+
+| Textbox (`field key`) | Tipo Box | Prompt — Instrucción | Ejemplo / Placeholder |
+|---|---|---|---|
+| `protocolo_banquetes_orden` | texto | Protocolo de mesa redonda en banquetes de negocios: el anfitrión principal frente a la puerta de entrada y el invitado de honor a su derecha. | Ej: Ubicación del CEO invitado a la derecha del anfitrión corporativo chino con menú de 12 tiempos simbolizando prosperidad. |
+| `etiqueta_brindis_asientos` | texto | Ritual del brindis (Ganbei): sostener la copa con ambas manos y situar el borde ligeramente por debajo de la copa del interlocutor en señal de respeto. | Ej: Brindis formal por la amistad binacional con copa sostenida por debajo del presidente de la empresa estatal anfitriona. |
+| `reglas_cortesia_empresarial` | texto | Entrega de tarjetas de presentación (Biaozhi) con ambas manos y reverencia leve, lectura atenta antes de guardarla y uso de títulos profesionales. | Ej: Tarjetas bilingües español-mandarín impresas en oro entregadas formalmente con ambas manos a cada miembro de la comitiva. |
+
+#### Módulo: Escala Mianzi de 8 Niveles — `mianzi_ladder_8niveles` · _Jerarquía de preservación del estatus y gestión de desacuerdos indirectos._
+
+**Boxes asociados:** `box_mianzi_ladder_8niveles`
+
+| Textbox (`field key`) | Tipo Box | Prompt — Instrucción | Ejemplo / Placeholder |
+|---|---|---|---|
+| `niveles_preservacion_mianzi` | texto | Escala de 8 niveles de la reputación social (Mianzi): desde 'tener cara' (you mianzi) hasta 'luchar por la cara' (zheng mianzi). | Ej: Reconocimiento público explícito al liderazgo de la contraparte china durante el anuncio oficial conjunto a la prensa. |
+| `tacticas_dar_cara` | texto | Mecanismos para otorgar prestigio y honor público (gei mianzi) a los líderes del proyecto mediante reconocimientos y ceremonias. | Ej: Invitación como orador magistral en congreso industrial internacional con entrega de placa conmemorativa. |
+| `prevencion_perdida_cara` | texto | Protocolo para evitar hacer perder la cara (diu mianzi): nunca corregir, contradecir o rechazar una propuesta en público. | Ej: Ante una discrepancia contractual, se convocó a una reunión técnica privada y se utilizó lenguaje condicional indirecto. |
+
+#### Módulo: Tácticas de Negociación China — `tacticas_negociacion_estrategica` · _Manejo de tiempos prolongados, concesiones graduales y pactos basados en la relación._
+
+**Boxes asociados:** `box_tacticas_negociacion_china`
+
+| Textbox (`field key`) | Tipo Box | Prompt — Instrucción | Ejemplo / Placeholder |
+|---|---|---|---|
+| `estrategia_36_estratagemas` | texto | Comprensión y aplicación defensiva de los 36 estratagemas clásicos chinos en la mesa de negociación internacional. | Ej: Identificación de la estratagema 'hacer ruido en el este para atacar en el oeste' cuando presionaron por plazos para ocultar concesiones de precio. |
+| `gestion_concesiones_paciencia` | texto | Manejo de la paciencia estratégica: las negociaciones chinas son circulares y las concesiones solo deben otorgarse al final. | Ej: Reserva de un 5% de descuento por pronto pago para la ronda final tras semanas de discusión sobre condiciones técnicas. |
+| `cierre_contratos_relacionales` | texto | Naturaleza del contrato en China: no es el final de la negociación sino el acta de nacimiento de una relación viva y adaptable. | Ej: Inclusión de cláusulas de renegociación de buena fe ante contingencias arancelarias basadas en el espíritu del acuerdo. |
+
 
 ---
 
 ## Estudio de Factibilidad ONUDI (Industrial Global) — `onudi_project`
 
-### Pilar: Ingeniería — `ingenieria_industrial`
+### Pilar: Ingeniería y Emplazamiento — `ingenieria_industrial`
 
-#### Módulo: Ingeniería Base — `tecnologia` · _Origen y viabilidad._
+#### Módulo: Ingeniería Básica y Selección Tecnológica — `tecnologia` · _Evaluación de patentes, licencias, rendimientos y capacidad instalada óptima._
 
 **Boxes asociados:** —
 
@@ -1175,9 +1482,29 @@
 |---|---|---|---|
 | `ingenieria_base` | texto | Tecnología elegida, origen y pruebas de viabilidad técnica industrial. | Ej: Línea de extrusión continua con tecnología alemana, TRL 9. |
 
-### Pilar: Evaluación Financiera Global — `financiamiento_global`
+#### Módulo: Matriz de Localización ONUDI — `localizacion_industrial` · _Evaluación multicriterio ponderada: materias primas, energía, agua y logística._
 
-#### Módulo: WACC ONUDI — `costo_capital` · _Costo de capital internacional._
+**Boxes asociados:** `box_matriz_localizacion_onudi`
+
+| Textbox (`field key`) | Tipo Box | Prompt — Instrucción | Ejemplo / Placeholder |
+|---|---|---|---|
+| `matriz_localizacion_ponderada` | texto | Evaluación multicriterio formal de localización industrial ONUDI: ponderación de materia prima, energía, agua, mano de obra y logística. | Ej: Opción Parque Industrial Hermosillo Norte (Puntaje 88.5/100) seleccionada frente a Guaymas (74.2/100) por cercanía a gasoducto y agua tratada. |
+| `disponibilidad_energia_agua` | texto | Factibilidad de suministro de servicios industriales: demanda máxima en KVA, presión de gas natural y caudal de agua en litros/segundo. | Ej: Factibilidad CFE de 750 KVA en media tensión y contrato con Organismo Operador de Agua por 2.5 lps de agua industrial. |
+| `logistica_corredores_transporte` | texto | Conectividad con corredores multimodales de transporte: carreteras federales, espuelas de ferrocarril, puertos y aduanas fronterizas. | Ej: Acceso inmediato a Carretera Federal 15 México-Nogales (a 260 km de la frontera con EE.UU.) y a 135 km del Puerto de Guaymas. |
+
+#### Módulo: Evaluación de Impacto Ambiental (EIA) — `impacto_ambiental_onudi` · _Matriz de mitigación de emisiones, efluentes y residuos industriales._
+
+**Boxes asociados:** `box_impacto_ambiental_onudi`
+
+| Textbox (`field key`) | Tipo Box | Prompt — Instrucción | Ejemplo / Placeholder |
+|---|---|---|---|
+| `estudio_impacto_eia` | texto | Manifestación de Impacto Ambiental (MIA / EIA): identificación de impactos físicos, biológicos y socioeconómicos de la planta industrial. | Ej: MIA modalidad particular aprobada por SEMARNAT con 14 condicionantes de mitigación ambiental y monitoreo de ruido. |
+| `gestion_efluentes_emisiones` | texto | Tecnología de tratamiento de aguas residuales industriales, trampas de grasa, filtros de mangas y control de emisiones a la atmósfera. | Ej: Planta de tratamiento de efluentes cárnicos mediante flotación DAF y reactor biológico con descarga en norma NOM-002-SEMARNAT. |
+| `plan_cumplimiento_ambiental` | texto | Plan de gestión y monitoreo ambiental continuo (PMA) con calendario de muestreos de laboratorio acreditado y auditorías. | Ej: Muestreo trimestral de descargas por laboratorio acreditado EMA y auditoría ambiental para certificación de Industria Limpia PROFEPA. |
+
+### Pilar: Evaluación Financiera Global (COMFAR) — `financiamiento_global`
+
+#### Módulo: WACC ONUDI y Spread País — `costo_capital` · _Costo de capital ponderado incorporando prima de riesgo soberano EMBI+._
 
 **Boxes asociados:** `box_fcff_onudi_model`
 
@@ -1185,21 +1512,31 @@
 |---|---|---|---|
 | `wacc_onudi` | texto | Costo Promedio Ponderado de Capital detallado con tasas internacionales. | Ej: RFR 4%, Beta 1.2, ERP 6%. WACC = 11.2%. |
 
-#### Módulo: FCFF — `flujo_firma` · _Flujo de caja para la firma._
+#### Módulo: Flujo de Caja Libre (FCFF) — `flujo_firma` · _Flujo de caja para la firma antes de financiamiento y valor terminal._
 
 **Boxes asociados:** `box_fcff_onudi_model`
 
 | Textbox (`field key`) | Tipo Box | Prompt — Instrucción | Ejemplo / Placeholder |
 |---|---|---|---|
-| `fcff` | texto | Flujo de Caja Libre para la Firma (Free Cash Flow to the Firm). | Ej: FCFF proyectado al año 5: $2.5M USD. |
+| `fcff` | texto | Describir detalladamente. | — |
 
-#### Módulo: Sensibilidad — `riesgo` · _Análisis de riesgo global._
+#### Módulo: Riesgo País y Riesgo Cambiario — `riesgo_pais_cambiario` · _Evaluación de volatilidad cambiaria, convertibilidad y estrategias de cobertura._
+
+**Boxes asociados:** `box_riesgo_pais_mat`
+
+| Textbox (`field key`) | Tipo Box | Prompt — Instrucción | Ejemplo / Placeholder |
+|---|---|---|---|
+| `prima_riesgo_pais_embi` | texto | Incorporación del spread soberano (Emerging Markets Bond Index - EMBI+) en la tasa de descuento de capital internacional. | Ej: Tasa libre de riesgo EE.UU. (4.2%) + Spread EMBI México (2.6%) + Beta desapalancada ajustada = Ke de 14.8%. |
+| `exposicion_tipo_cambio` | texto | Análisis de descalce cambiario entre ingresos (moneda local o dólares de exportación) y deuda/CAPEX (maquinaria importada). | Ej: 100% de la maquinaria cotizada en USD mientras el 80% de las ventas del taller piloto son en MXN (riesgo de devaluación). |
+| `cobertura_financiera_hedging` | texto | Instrumentos financieros de mitigación de riesgo cambiario y de tasa de interés: forwards, opciones o swaps de cobertura. | Ej: Contrato forward tipo de cambio USD/MXN a 12 meses fijando el 70% del valor de la maquinaria importada. |
+
+#### Módulo: Análisis de Sensibilidad Tornado — `riesgo` · _Sensibilidad combinada precio-volumen y punto de quiebre industrial._
 
 **Boxes asociados:** `box_fcff_onudi_model`
 
 | Textbox (`field key`) | Tipo Box | Prompt — Instrucción | Ejemplo / Placeholder |
 |---|---|---|---|
-| `sensibilidad_riesgo` | texto | Simulación de riesgo (Monte Carlo) sobre variables críticas. | Ej: Variación de precios de acero de +/- 20% no destruye el VPN. |
+| `sensibilidad_riesgo` | texto | Describir detalladamente. | — |
 
 ### Pilar: Simulador y Factibilidad — `simulador_financiero`
 
@@ -1218,18 +1555,18 @@
 
 Cada tipo usa su guía: `FIELD_GUIDES_MAP[projectType]`. Si un campo no tiene guía propia, cae a `BUSINESS_GUIDES` (fallback en `src/lib/ai.js:431`).
 
-- `business`: **114** campos con guía (` justificacion, origen, nombre, descripcion, mision, vision, valores, general, …`)
-- `social_bid`: **47** campos con guía (` diagrama_visual, organigrama_visual, beneficiarios, aliados, oponentes, matriz_interes, problema_central, causas_directas, …`)
-- `agile_startup`: **37** campos con guía (` problema, segmentos_clientes, propuesta_valor, solucion, canales, flujos_ingresos, estructura_costos, metricas_clave, …`)
-- `technology_id`: **27** campos con guía (` descripcion_tecnologia, novedad_cientifica, nivel_trl, ventaja_tecnologica, estado_del_arte, estrategia_patentes, clasificacion_patentes_ipc, secretos_industriales, …`)
-- `micro_business`: **20** campos con guía (` idea_negocio, objetivo_basico, nombre, quienes_somos, que_ofrecemos, perfil_cliente, ubicacion_clientes, competidores_locales, …`)
-- `investment_project`: **16** campos con guía (` demanda_historica, elasticidad, proyeccion_oferta, ingenieria_basica, layout_industrial, memoria_calculo, catalogo_conceptos, explosion_insumos, …`)
-- `zopp`: **4** campos con guía (` matriz_participacion, analisis_problemas, analisis_objetivos, mpp`)
-- `horizon_europe`: **4** campos con guía (` consorcio_multinacional, dnsh, open_science, excelencia`)
-- `hoshin_kanri`: **4** campos con guía (` true_north, matriz_x, breakthroughs, bowler`)
-- `amoeba_management`: **5** campos con guía (` mapeo_celulas, precios_transferencia, rentabilidad_hora, filosofia, iframe_simulador`)
-- `guanxi_plan`: **4** campos con guía (` mapa_relaciones, alineacion_quinquenal, reciprocidad, armonia`)
-- `onudi_project`: **5** campos con guía (` ingenieria_base, wacc_onudi, fcff, sensibilidad_riesgo, iframe_simulador`)
+- `business`: **119** campos con guía (` justificacion, origen, nombre, descripcion, mision, vision, valores, general, …`)
+- `social_bid`: **52** campos con guía (` diagrama_visual, organigrama_visual, beneficiarios, aliados, oponentes, matriz_interes, problema_central, causas_directas, …`)
+- `agile_startup`: **45** campos con guía (` problema, segmentos_clientes, propuesta_valor, solucion, canales, flujos_ingresos, estructura_costos, metricas_clave, …`)
+- `technology_id`: **36** campos con guía (` descripcion_tecnologia, novedad_cientifica, nivel_trl, ventaja_tecnologica, estado_del_arte, estrategia_patentes, clasificacion_patentes_ipc, secretos_industriales, …`)
+- `micro_business`: **25** campos con guía (` idea_negocio, objetivo_basico, nombre, quienes_somos, que_ofrecemos, perfil_cliente, ubicacion_clientes, competidores_locales, …`)
+- `investment_project`: **26** campos con guía (` demanda_historica, elasticidad, proyeccion_oferta, ingenieria_basica, layout_industrial, memoria_calculo, catalogo_conceptos, explosion_insumos, …`)
+- `zopp`: **15** campos con guía (` matriz_participacion, analisis_problemas, analisis_objetivos, analisis_alternativas_zopp, matriz_logica, paquetes_actividades, ruta_critica_gantt, responsables_hitos, …`)
+- `horizon_europe`: **16** campos con guía (` consorcio_multinacional, dnsh, open_science, excelencia, repositorios_fair, politica_acceso_abierto, plan_gestion_datos_dmp, pathway_hacia_mercado, …`)
+- `hoshin_kanri`: **16** campos con guía (` true_north, matriz_x, breakthroughs, bowler, proceso_catchball, acuerdos_nemawashi, retroalimentacion_vertical, antecedentes_a3, …`)
+- `amoeba_management`: **14** campos con guía (` mapeo_celulas, precios_transferencia, rentabilidad_hora, filosofia, doce_principios_gestion, motivacion_empleados, gestion_transparente, control_horas_celula, …`)
+- `guanxi_plan`: **16** campos con guía (` mapa_relaciones, alineacion_quinquenal, reciprocidad, armonia, protocolo_obsequios_renqing, registro_favores_intercambio, temporalidad_reciprocidad, protocolo_banquetes_orden, …`)
+- `onudi_project`: **14** campos con guía (` ingenieria_base, matriz_localizacion_ponderada, disponibilidad_energia_agua, logistica_corredores_transporte, estudio_impacto_eia, gestion_efluentes_emisiones, plan_cumplimiento_ambiental, wacc_onudi, …`)
 
 ---
 
