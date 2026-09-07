@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { usePlan } from '../context/PlanContext';
-import { Printer, MessageSquare, Sparkles, Wand2, Bot, BrainCircuit, RefreshCw, ZoomIn, ZoomOut, Maximize2, RotateCcw, Layout } from 'lucide-react';
+import { Printer, MessageSquare, Sparkles, Wand2, Bot, BrainCircuit, RefreshCw, ZoomIn, ZoomOut, Maximize2, RotateCcw, Layout, FileDown } from 'lucide-react';
+import { downloadProjectAsDocx } from '../lib/docxExportEngine';
 import { refactorFieldWithComments } from '../lib/ai';
 import FinancialCharts, { PrintableFinancialReports } from '../components/FinancialCharts';
 import MermaidViewer from '../components/MermaidViewer';
@@ -1321,6 +1322,50 @@ const ModuleRefinementPanel = ({ pillarKey, moduleKey, fields, planData, updateS
     </div>
   );
 };
+
+export function DocxExportButton({ planData }) {
+  const [isExporting, setIsExporting] = useState(false);
+
+  const handleExport = async () => {
+    if (!planData) return;
+    try {
+      setIsExporting(true);
+      const filename = `${(planData.companyName || planData.nombre || 'plan-negocios').toLowerCase().replace(/[^a-z0-9]+/g, '-')}-ejecutivo.docx`;
+      await downloadProjectAsDocx(planData, filename);
+    } catch (err) {
+      console.error('[DocxExportButton] Error al exportar Word:', err);
+      alert('Ocurrió un error al generar el documento Word editable. Verifique la consola.');
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  return (
+    <button
+      className="btn"
+      onClick={handleExport}
+      disabled={isExporting || !planData}
+      style={{
+        height: '42px',
+        background: 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)',
+        color: '#ffffff',
+        border: 'none',
+        borderRadius: '8px',
+        padding: '0 1rem',
+        boxShadow: '0 4px 12px rgba(2, 132, 199, 0.3)',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '0.5rem',
+        fontWeight: 600,
+        cursor: isExporting ? 'wait' : 'pointer'
+      }}
+      title="Descargar versión completa en Microsoft Word (.docx) 100% editable"
+    >
+      <FileDown className="w-4 h-4" />
+      <span>{isExporting ? 'Generando Word...' : 'Exportar Word (.docx)'}</span>
+    </button>
+  );
+}
 
 export default function VistaPrevia() {
   const { planData, updateConfig, manualSaveProject, updateSection, addComment, deleteComment } = usePlan();
@@ -2669,6 +2714,8 @@ export default function VistaPrevia() {
               <span>Corregir con IA ({commentedFieldsCount})</span>
             </button>
           )}
+
+          <DocxExportButton planData={planData} />
 
           <button className="btn btn-primary" onClick={() => window.print()} style={{ height: '42px' }}>
             <Printer className="w-4 h-4" />

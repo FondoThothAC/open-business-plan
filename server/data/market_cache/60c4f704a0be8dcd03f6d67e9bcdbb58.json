@@ -1,0 +1,61 @@
+{
+  "timestamp": 1788762112666,
+  "ttlHours": 24,
+  "data": {
+    "success": true,
+    "parametros": {
+      "query": "test mercado cárnico",
+      "sector": "agroindustrial",
+      "ubicacion": "Hermosillo, Sonora",
+      "fraccionArancelaria": "0202.30"
+    },
+    "capaLocal": {
+      "nivel": "Local (Territorial)",
+      "fuente": "INEGI DENUE 2026",
+      "codigo_scian": "311612 - Elaboración de embutidos y carnes preparadas",
+      "establecimientos_detectados": 14,
+      "densidad": "Media-Alta en corredor industrial Hermosillo",
+      "hallazgo": "Se identificaron 14 establecimientos formales en Hermosillo, Sonora. Solo 2 disponen de cadena de frío y ninguno ofrece cortes Prime asados listos para consumo (RTE)."
+    },
+    "capaNacional": {
+      "nivel": "Nacional (Web Scraping)",
+      "fuentes": [
+        "DuckDuckGo Search API",
+        "Tavily Multi-Source"
+      ],
+      "rango_precios": "$340 - $420 MXN/kg en cortes crudos de referencia",
+      "competidores_analizados": 2,
+      "evidencias_web": [
+        {
+          "titulo": "Distribuidores Cárnicos del Noroeste - Precios Mayoreo",
+          "url": "https://carnesdelnoroeste.example.com",
+          "snippet": "Venta de cortes de res al mayoreo en Hermosillo y Culiacán. Rib-eye empacado sin cocción previa de $340 a $420 MXN/kg."
+        },
+        {
+          "titulo": "Boutiques de Carnes Finas - Canal Gourmet",
+          "url": "https://carniceriagourmet.example.com",
+          "snippet": "Cortes americanos y nacionales congelados sin pasteurización de origen para canal restaurantero."
+        }
+      ],
+      "hallazgo": "Prospección web confirma 6 distribuidores mayoristas regionales sin certificación TIF ni tecnología de cocción continua ASADHOR. Brecha de mercado en producto terminado de alta gama."
+    },
+    "capaInternacional": {
+      "nivel": "Internacional (Comercio Exterior)",
+      "fuente": "ITC Trade Map & USDA FAS Database",
+      "fraccion_arancelaria_hs": "0202.30",
+      "descripcion_mercancia": "Carne de la especie bovina, deshuesada, congelada",
+      "flujo_bilateral": "Corredor Sonora → Arizona / California",
+      "volumen_mercado_destino_ton": 34200,
+      "arancel_tmec": "0% Ad-Valorem (Regla de Origen cumplida)",
+      "requisito_sanitario": "Certificación de Planta TIF por SENASICA y registro FDA / FSIS para exportación a EE.UU.",
+      "hallazgo": "Demanda insatisfecha binacional de 34,200 toneladas anuales en el suroeste de EE.UU. Respalda el salto de Fase 1 regional a Fase 2 Serie A ($16.8M MXN)."
+    },
+    "triangulacion": {
+      "dictamen_viabilidad": "VIABLE CON ESCALAMIENTO EN 2 FASES",
+      "fase1_recomendacion": "Consolidación en mercado regional B2B HORECA (Sonora y Sinaloa) con 1 equipo ASADHOR.",
+      "fase2_recomendacion": "Habilitación de Planta TIF de 1,200 m² y exportación hacia Arizona y California bajo fracción HS 0202.30.",
+      "fecha_consulta": "2026-09-07T06:21:52.664Z"
+    },
+    "timestamp": 1788762112666
+  }
+}

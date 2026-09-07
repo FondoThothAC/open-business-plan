@@ -17,7 +17,7 @@ export const BUSINESS_GUIDES = {
     "ejemplo": "Ej: \"La idea nació cuando el fundador detectó que sus colegas perdían dinero por falta de educación financiera básica.\"",
     "benchmark": "Narrativa creíble de experiencia fundadora o descubrimiento empírico.",
     "cita": "Ken Colwell — Starting a Business QuickStart Guide (Ch. 1, p. 18)",
-    "placeholder": "Narra el momento eureka o la necesidad personal/laboral que originó el proyecto..."
+    "placeholder": "Narra el momento eureka o la necesidad personal/laboral del proyecto..."
   },
   "nombre": {
     "instruccion": "Nombre comercial y razón detrás de la elección. Debe ser memorable y reflejar la identidad del negocio.",
@@ -143,7 +143,7 @@ export const BUSINESS_GUIDES = {
     "ejemplo": "Ej: \"Requiere registro ante CNBV y cumplimiento de la Ley del Mercado de Valores. NDA obligatorio con cada cliente.\"",
     "benchmark": "Dictamen legal previo y cumplimiento regulatorio del 100% de licencias primarias.",
     "cita": "Creating a Business Plan For Dummies (Ch. 12, p. 240)",
-    "placeholder": "Marco legal regulatorio, licencias municipales, propiedad intelectual y contratos..."
+    "placeholder": "Marco legal regulatorio, licencias, propiedad intelectual y contratos..."
   },
   "constitucion": {
     "instruccion": "Tipo de persona moral o física. Régimen fiscal elegido y justificación.",
@@ -297,28 +297,28 @@ export const BUSINESS_GUIDES = {
     "ejemplo": "Ej: \"Zona Río: Densidad alta (35%). Centro: Media (20%). Sur Hermosillo: Baja (10%). Redes: LinkedIn 40%, IG 35%.\"",
     "benchmark": "Concentración geográfica validada con datos de censos económicos DENUE/INEGI.",
     "cita": "Plan de Negocios VF (p. 75)",
-    "placeholder": "Polígonos territoriales de alta densidad de demanda y flujo peatonal/vehicular..."
+    "placeholder": "Polígonos de alta densidad de demanda y flujo peatonal/vehicular..."
   },
   "macro": {
     "instruccion": "Análisis de la región, estado o ciudad elegida. Justifica con datos económicos y logísticos.",
     "ejemplo": "Ej: \"Hermosillo, Sonora: PIB estatal de $430B MXN. Hub de servicios financieros del noroeste. Aeropuerto internacional.\"",
     "benchmark": "Selección de entidad/ciudad con PIB per cápita superior a la media y estabilidad logística.",
     "cita": "Linda Pinson — Anatomy of a Business Plan (Ch. 5, p. 115)",
-    "placeholder": "Justificación de la ciudad o estado sede: infraestructura, conectividad y mercado..."
+    "placeholder": "Justificación de ciudad o estado: infraestructura, conectividad y mercado..."
   },
   "micro": {
     "instruccion": "Ubicación exacta dentro de la ciudad. Colonia, calle, accesibilidad, competencia cercana.",
     "ejemplo": "Ej: \"Col. Villa de Seris, Blvd. Rosales #245. A 5 min del centro financiero. Renta: $12K/mes. Estacionamiento para 8 autos.\"",
     "benchmark": "Ubicación con vías de acceso principales, transporte público y servicios garantizados.",
     "cita": "Starting a Business QuickStart Guide (Ch. 6, p. 132)",
-    "placeholder": "Dirección física, colonia, tipo de zona (industrial/comercial) y accesibilidad..."
+    "placeholder": "Dirección física, colonia, tipo de zona (industrial/comercial) y acceso..."
   },
   "local": {
     "instruccion": "Distribución física del espacio de trabajo. Metros cuadrados, zonas y mobiliario.",
     "ejemplo": "Ej: \"Oficina de 80m²: Recepción (15m²), 2 oficinas privadas (12m² c/u), sala de juntas (20m²), coworking (21m²).\"",
     "benchmark": "Distribución de planta calculada según metros cuadrados requeridos por estación de trabajo.",
     "cita": "Creating a Business Plan For Dummies (Ch. 8, p. 165)",
-    "placeholder": "Superficie total (m²), áreas de producción, oficinas, almacén y atención al público..."
+    "placeholder": "Superficie total (m²), áreas de producción, oficinas, almacén y acceso..."
   },
   "diagrama": {
     "instruccion": "Flujograma del proceso principal en formato Mermaid.js. Debe mostrar inicio, etapas y fin.",
@@ -332,7 +332,7 @@ export const BUSINESS_GUIDES = {
     "ejemplo": "Ej: \"1. Cliente agenda cita (app). 2. Diagnóstico financiero (1hr). 3. Diseño de portafolio (48hrs). 4. Presentación y firma. 5. Monitoreo mensual.\"",
     "benchmark": "Tiempo de ciclo operativo (Takt Time) optimizado bajo metodología Lean Manufacturing.",
     "cita": "Plan de Negocios VF (p. 82)",
-    "placeholder": "Flujo secuencial detallado desde la recepción de insumos hasta la entrega final..."
+    "placeholder": "Flujo secuencial desde la recepción de insumos hasta la entrega final..."
   },
   "maquinaria": {
     "instruccion": "Listado de equipo especializado con marca, modelo, costo y vida útil estimada.",
@@ -346,7 +346,7 @@ export const BUSINESS_GUIDES = {
     "ejemplo": "Ej: \"4 escritorios ejecutivos ($8K c/u). 6 sillas ergonómicas ($5K c/u). Proyector Epson ($15K). Total: $77K.\"",
     "benchmark": "Mobiliario y equipo auxiliar con vida útil estimada > 5 años.",
     "cita": "Plan de Negocios VF (p. 88)",
-    "placeholder": "Listado de equipo de cómputo, transporte, herramientas auxiliares y mobiliario..."
+    "placeholder": "Listado de equipo de cómputo, transporte, herramientas y mobiliario..."
   },
   "herramientas": {
     "instruccion": "Software, licencias, suscripciones y herramientas digitales necesarias.",
@@ -367,7 +367,7 @@ export const BUSINESS_GUIDES = {
     "ejemplo": "Ej: \"Proveedor 1: AWS (hosting, crédito de $1K). Proveedor 2: Imprenta GraficSon (30 días crédito). Alternativa: DigitalOcean.\"",
     "benchmark": "Mínimo 2 proveedores calificados por insumo crítico para evitar riesgo de suministro.",
     "cita": "Creating a Business Plan For Dummies (Ch. 8, p. 180)",
-    "placeholder": "Proveedores clave, plazos de crédito (30-60 días), ubicación y tiempos de entrega..."
+    "placeholder": "Proveedores clave, plazos de crédito (30-60 días) y tiempos de entrega..."
   },
   "compras": {
     "instruccion": "Política de adquisiciones: frecuencia, volumen mínimo, control de calidad, inventario de seguridad.",
@@ -388,7 +388,7 @@ export const BUSINESS_GUIDES = {
     "ejemplo": "Ej: \"Para servicios: Control de citas vía Calendly. Para productos: Método PEPS en Excel con alerta de stock mínimo.\"",
     "benchmark": "Método de costeo de inventarios PEPS/Promedio y rotación de inventarios > 6 veces al año.",
     "cita": "Starting a Business QuickStart Guide (Ch. 8, p. 175)",
-    "placeholder": "Sistema de gestión de inventarios, stock mínimo de seguridad y puntos de reorden..."
+    "placeholder": "Sistema de gestión de inventarios, stock de seguridad y punto de reorden..."
   },
   "mano_obra": {
     "instruccion": "Personal necesario por área con perfil, cantidad, turno y tipo de contratación.",
@@ -472,14 +472,14 @@ export const BUSINESS_GUIDES = {
     "ejemplo": "Ej: \"De la inversión inicial de $20M MXN, se asignan $2,000,000 MXN a OPEX inicial: nómina preoperativa, seguros, rentas y reservas de contingencia.\"",
     "benchmark": "Fondo de maniobra / Capital de trabajo para cubrir entre 3 y 6 meses de costos fijos.",
     "cita": "Carl Schramm — Burn the Business Plan (Ch. 6, p. 125)",
-    "placeholder": "Capital de trabajo necesario para operar mientras se alcanza el punto de equilibrio..."
+    "placeholder": "Capital de trabajo operativo para alcanzar el punto de equilibrio..."
   },
   "financiamiento": {
     "instruccion": "[ANCLAJE OBLIGATORIO A SEMILLA] Fuentes de capital estructuradas exactamente para fondear el monto canónico de `semilla.inversion_esperada`. Detalla capital propio, aportaciones y crédito bancario.",
     "ejemplo": "Ej: \"Financiamiento de $20M MXN totales: Serie A Fundadores 65% ($13M MXN), Serie B Inversionistas 35% ($7M MXN con dividendo preferente y recompra).\"",
     "benchmark": "Estructura de financiamiento balanceada (máximo 60% deuda / 40% capital propio).",
     "cita": "Linda Pinson — Anatomy of a Business Plan (Ch. 7, p. 172)",
-    "placeholder": "Fuentes de financiamiento: aportaciones de socios, créditos bancarios o fondos públicos..."
+    "placeholder": "Fuentes de financiamiento: aportaciones de socios o créditos bancarios..."
   },
   "fijos": {
     "instruccion": "Gastos operativos que no varían con el volumen. Deben guardar congruencia con el tamaño de planta y capital de `semilla.inversion_esperada`.",
@@ -577,7 +577,7 @@ export const BUSINESS_GUIDES = {
     "ejemplo": "Ej: \"CCC = Días Inventario (60) + DSO (45) - DPO (60) = 45 días de requerimiento de capital de trabajo.\"",
     "benchmark": "Ciclo de Conversión de Efectivo (CCC = Días Inventario + DSO - DPO) < 30 días o negativo.",
     "cita": "The Nature of Value (Ch. 4, p. 90)",
-    "placeholder": "Tiempo total que tarda un peso invertido en producción en regresar como cobro efectivo..."
+    "placeholder": "Tiempo que tarda un peso invertido en producción en regresar como cobro..."
   },
   "puestos_lista": {
     "instruccion": "Matriz consolidada de capital humano y costo patronal acorde al tamaño de la organización presupuestada en la semilla.",
@@ -834,7 +834,7 @@ export const BUSINESS_GUIDES = {
   "ingresos_aarrr": {
     "instruccion": "Monetización y valor promedio de compra (Ticket promedio y Lifetime Value).",
     "ejemplo": "Ej: Ingreso promedio mensual por cuenta de $18,500 MXN con LTV a 24 meses de $380,000 MXN.",
-    "benchmark": "Margen de contribución positivo desde la primera transacción.",
+    "benchmark": "Margen de contribución positivo > 40% desde la 1ª transacción.",
     "cita": "Linda Pinson — Anatomy of a Business Plan (Ch. 7, p. 142)",
     "placeholder": "Ticket promedio, margen bruto unitario y LTV proyectado..."
   },
@@ -850,21 +850,21 @@ export const BUSINESS_GUIDES = {
     "ejemplo": "Ej: 'Scraping en Sonora y Sinaloa identificó 6 distribuidores cárnicos mayoristas con precios de Rib-Eye envasado entre $340 y $420 MXN/kg sin certificación TIF'.",
     "benchmark": "Tasa de coincidencia web > 85% con validación de URL y presencia digital comprobable.",
     "cita": "Carl Schramm — Burn the Business Plan & South-South Cooperation (Ch. 4, p. 78)",
-    "placeholder": "Resultados de scraping web, competidores nacionales, precios de mercado y presencia online..."
+    "placeholder": "Resultados de scraping web, competidores nacionales y precios de mercado..."
   },
   "consulta_internacional_api": {
     "instruccion": "Detalla los flujos arancelarios, cuotas y demanda internacional consultados en APIs y bases de comercio exterior (ITC Trade Map, UN Comtrade, USDA/FAS, World Bank). Registra fracción arancelaria y volumen transfronterizo.",
     "ejemplo": "Ej: 'Bajo la fracción arancelaria HS 0202.30 (Carne deshuesada congelada), el mercado de Arizona importó 34,200 ton en 2025 con arancel preferencial T-MEC del 0%'.",
     "benchmark": "Serie histórica de 3 años de importaciones/exportaciones con fracción arancelaria HS de 6 a 8 dígitos.",
     "cita": "ITC Trade Map & UN Comtrade (Manual de Comercio Exterior UNCTAD/OMC)",
-    "placeholder": "Fracción arancelaria HS, volumen de importación en país destino, barreras arancelarias y cuotas..."
+    "placeholder": "Fracción arancelaria HS, volumen de importación y barreras arancelarias..."
   },
   "validacion_cruzada": {
     "instruccion": "Sintetiza la triangulación entre la capa local (INEGI), nacional (Web Scraping) e internacional (APIs comerciales). Formula el dictamen de viabilidad comercial y la estrategia de posicionamiento escalable.",
     "ejemplo": "Ej: 'La triangulación valida viabilidad comercial regional inmediata (Fase 1) por déficit de oferta con valor agregado en Hermosillo, y respalda el salto a exportación (Fase 2) hacia Phoenix/Tucson'.",
     "benchmark": "Matriz de triangulación con consistencia de precios, volumen de demanda y análisis de brecha competitiva.",
     "cita": "The Nature of Value (Ch. 4, p. 78) & Anatomy of a Business Plan (Ch. 5)",
-    "placeholder": "Veredicto de triangulación de mercado, brecha oferta-demanda y plan de penetración..."
+    "placeholder": "Veredicto de triangulación de mercado y plan de penetración comercial..."
   }
 };
 
@@ -1208,21 +1208,21 @@ export const SOCIAL_BID_GUIDES = {
   "beneficios_socioeconomicos": {
     "instruccion": "Monetización de externalidades positivas: ahorro de tiempo, mejoras en salud, reducción de emisiones o incremento de ingresos.",
     "ejemplo": "Ej: Ahorro de 45 horas/mes por familia valoradas a salario mínimo sombra ($3.2M MXN anuales acumulados).",
-    "benchmark": "Beneficios directos e indirectos cuantificados con precios sombra oficiales.",
+    "benchmark": "Beneficios directos e indirectos con ratio B/C >= 1.25 con precios sombra.",
     "cita": "Manual de Proyectos Panamá (p. 18) & Metodología CEPAL",
     "placeholder": "Detalle y valuación monetaria de los beneficios sociales generados..."
   },
   "costos_sociales_sombra": {
     "instruccion": "Costos de inversión y operación ajustados por factores de conversión a precios sociales.",
     "ejemplo": "Ej: Factor de conversión de mano de obra no calificada = 0.75 sobre el salario nominal.",
-    "benchmark": "Aplicación rigurosa de precios sombra para eliminar distorsiones impositivas.",
+    "benchmark": "Ajuste sombra del 15% al 25% para eliminar distorsiones fiscales.",
     "cita": "The Nature of Value (Ch. 5, p. 94)",
     "placeholder": "Factores de corrección social y costos sombra aplicados..."
   },
   "tir_social_pct": {
     "instruccion": "Tasa Interna de Retorno Social del proyecto considerando el flujo de beneficios socioeconómicos netos.",
     "ejemplo": "Ej: TIR Social proyectada de 16.4% anual, superando ampliamente la tasa de corte del 10.0%.",
-    "benchmark": "TIR Social > Tasa Social de Descuento para declarar viabilidad comunitaria.",
+    "benchmark": "TIR Social > Tasa Social de Descuento (mínimo 8% - 12%) para viabilidad.",
     "cita": "Metodología de Evaluación de Proyectos Sociales BID (PM4R)",
     "placeholder": "Porcentaje de TIR Social calculada y margen sobre la tasa de corte..."
   },
@@ -1526,7 +1526,7 @@ export const AGILE_STARTUP_GUIDES = {
   "metrica_linea_base": {
     "instruccion": "Valor actual inicial del indicador antes de aplicar cualquier optimización (Innovation Accounting).",
     "ejemplo": "Ej: Conversión actual de visitante a lead del 2.8% con tasa de rebote del 64%.",
-    "benchmark": "Medición empírica objetiva como punto de partida sin maquillar datos.",
+    "benchmark": "Medición empírica objetiva con muestra mínima n >= 100 usuarios.",
     "cita": "Eric Ries — El Método Lean Startup (Ch. 8, p. 174)",
     "placeholder": "Métrica base de inicio del motor de crecimiento..."
   },
@@ -1540,7 +1540,7 @@ export const AGILE_STARTUP_GUIDES = {
   "analisis_cohortes": {
     "instruccion": "Comportamiento del indicador segmentado por grupos de clientes adquiridos en diferentes semanas/meses.",
     "ejemplo": "Ej: Cohorte semana 1: 18% retención; Cohorte semana 2 (con nuevo onboarding): 31% retención.",
-    "benchmark": "Análisis de cohortes longitudinal para neutralizar métricas vanidosas.",
+    "benchmark": "Análisis longitudinal con retención de cohortes a 30 días >= 25%.",
     "cita": "Eric Ries — El Método Lean Startup (Ch. 8, p. 182)",
     "placeholder": "Comparativa de rendimiento entre cohortes sucesivas..."
   },
@@ -1952,7 +1952,7 @@ export const MICRO_BUSINESS_GUIDES = {
   "costos_fijos_mensuales": {
     "instruccion": "Suma total de gastos obligatorios de cada mes que debes pagar vendas o no vendas (renta, luz, gas, permisos).",
     "ejemplo": "Ej: Total costos fijos: $8,500 MXN mensuales (Renta local $4,500 + Luz y gas $2,500 + Permiso municipal $1,500).",
-    "benchmark": "Costos fijos reducidos al mínimo viable para no asfixiar el flujo de arranque.",
+    "benchmark": "Costos fijos < 30% de ingresos proyectados para no asfixiar flujo de arranque.",
     "cita": "Ken Colwell — Starting a Business QuickStart Guide (Ch. 13, p. 270)",
     "placeholder": "Suma total de gastos fijos mensuales indispensables..."
   },
@@ -2048,14 +2048,14 @@ export const INVESTMENT_PROJECT_GUIDES = {
     "ejemplo": "Ej: \"Mes 1-3: Ingeniería 10% del CAPEX. Mes 4-8: Procura 60%. Mes 9-12: Construcción 30%.\"",
     "benchmark": "TIR > WACC + 4% con análisis probabilístico Monte Carlo al 95% de confianza.",
     "cita": "The Nature of Value (Ch. 5 WACC/CAPM) & CSI MasterFormat",
-    "placeholder": "Memoria de cálculo y parámetros cuantitativos para (cronograma_fisico_financiero)..."
+    "placeholder": "Memoria de cálculo y parámetros para cronograma físico-financiero..."
   },
   "wacc": {
     "instruccion": "Cálculo del Costo Promedio Ponderado de Capital (WACC / CPPC).",
     "ejemplo": "Ej (Estilo BlackRock): \"WACC del 11.5% asumiendo 40% Equity (costo 15%) y 60% Deuda (costo 9.1%).\"",
     "benchmark": "Costo Promedio Ponderado de Capital (WACC) estimado entre 10% y 16% anual en México.",
     "cita": "The Nature of Value (Ch. 5, p. 105)",
-    "placeholder": "Tasa de descuento ponderando el costo de la deuda (Kd) y el costo del capital (Ke)..."
+    "placeholder": "Tasa de descuento ponderando costo de la deuda (Kd) y del capital (Ke)..."
   },
   "apalancamiento": {
     "instruccion": "Estructura de la deuda: bancos involucrados, plazos, tasas y garantías.",
@@ -2076,7 +2076,7 @@ export const INVESTMENT_PROJECT_GUIDES = {
     "ejemplo": "Ej: \"Si el costo del acero sube 20%, la TIR del proyecto baja de 14.5% a 12.1%.\"",
     "benchmark": "TIR > WACC + 4% con análisis probabilístico Monte Carlo al 95% de confianza.",
     "cita": "The Nature of Value (Ch. 5 WACC/CAPM) & CSI MasterFormat",
-    "placeholder": "Memoria de cálculo y parámetros cuantitativos para (sensibilidad_unidimensional)..."
+    "placeholder": "Memoria de cálculo y parámetros para sensibilidad unidimensional..."
   },
   "escenarios": {
     "instruccion": "Análisis de escenarios consolidados: Caso Base, Caso Pesimista y Caso Optimista.",
@@ -2102,14 +2102,14 @@ export const INVESTMENT_PROJECT_GUIDES = {
   "concepto_obra_maquinaria": {
     "instruccion": "Descripción técnica detallada del concepto de obra civil, instalación industrial o maquinaria pesada.",
     "ejemplo": "Ej: 'Suministro e instalación de túnel criogénico IQF con capacidad de 1,200 kg/hora a -40°C en acero inoxidable 304'.",
-    "benchmark": "Especificación técnica con marcas, tolerancias y capacidades nominales.",
+    "benchmark": "Especificación técnica con tolerancias ISO 9001 y capacidades nominales.",
     "cita": "Anatomy of a Business Plan (Ch. 7, p. 144) & Plan de Negocios VF p. 86",
     "placeholder": "Descripción técnica del concepto, especificaciones y alcance..."
   },
   "unidad_medida_cantidad": {
     "instruccion": "Unidad de medida estándar (m², m³, lote, pza, kg) y volumen total cuantificado en proyecto.",
     "ejemplo": "Ej: '5 piezas de hornos rotativos ASADHOR industriales de 12 niveles'.",
-    "benchmark": "Catálogo de conceptos con metrología de catálogo cerrada sin estimaciones genéricas.",
+    "benchmark": "Metrología cerrada en m², kg o unidades con tolerancia <= 2%.",
     "cita": "CSI MasterFormat & Plan de Negocios VF p. 88",
     "placeholder": "Unidad de medida (ej. pza, m², lote) y cantidad total..."
   },
@@ -2123,7 +2123,7 @@ export const INVESTMENT_PROJECT_GUIDES = {
   "total_inversion_csi": {
     "instruccion": "Suma acumulada del CAPEX por cada división CSI y porcentaje de participación sobre la inversión total.",
     "ejemplo": "Ej: 'División 11 Equipamiento: $8,000,000 MXN representando el 47.6% del CAPEX total'.",
-    "benchmark": "Matriz de CAPEX cerrada al centavo coincidente con el modelo financiero del balance.",
+    "benchmark": "Matriz de CAPEX CSI 16 cerrada al 100% coincidente con el balance.",
     "cita": "Linda Pinson — Anatomy of a Business Plan (Ch. 7, p. 148)",
     "placeholder": "Total consolidado de la división CSI y porcentaje del presupuesto..."
   },
@@ -2144,14 +2144,14 @@ export const INVESTMENT_PROJECT_GUIDES = {
   "van_escenario_pesimista": {
     "instruccion": "Valor Presente Neto resultante cuando la variable se deteriora hasta el límite inferior del rango.",
     "ejemplo": "Ej: 'Con caída del 20% en volumen, el VAN disminuye de +$12.5M a +$3.8M MXN (se mantiene viable)'.",
-    "benchmark": "VAN pesimista estrictamente superior a cero para garantizar solvencia del proyecto.",
+    "benchmark": "VAN pesimista > 0 con estrés de ingresos -20% o costos +20%.",
     "cita": "The Nature of Value (Ch. 6, p. 112)",
     "placeholder": "VAN resultante en el peor escenario modelado..."
   },
   "van_escenario_optimista": {
     "instruccion": "Valor Presente Neto proyectado cuando la variable alcanza el límite superior favorable.",
     "ejemplo": "Ej: 'Con incremento del 20% en demanda y captura de nicho premium, el VAN escala a +$21.4M MXN'.",
-    "benchmark": "Proyección realista con techo de capacidad instalada máxima.",
+    "benchmark": "Proyección con techo al 100% de capacidad instalada máxima.",
     "cita": "The Nature of Value (Ch. 6, p. 114)",
     "placeholder": "VAN en escenario óptimo y captura de upside..."
   },
@@ -2181,21 +2181,21 @@ export const INVESTMENT_PROJECT_GUIDES = {
     "ejemplo": "Ej: 'Scraping en Sonora y Sinaloa identificó 6 distribuidores cárnicos mayoristas con precios de Rib-Eye envasado entre $340 y $420 MXN/kg sin certificación TIF'.",
     "benchmark": "Tasa de coincidencia web > 85% con validación de URL y presencia digital comprobable.",
     "cita": "Carl Schramm — Burn the Business Plan & South-South Cooperation (Ch. 4, p. 78)",
-    "placeholder": "Resultados de scraping web, competidores nacionales, precios de mercado y presencia online..."
+    "placeholder": "Resultados de scraping web, competidores nacionales y precios de mercado..."
   },
   "consulta_internacional_api": {
     "instruccion": "Detalla los flujos arancelarios, cuotas y demanda internacional consultados en APIs y bases de comercio exterior (ITC Trade Map, UN Comtrade, USDA/FAS, World Bank). Registra fracción arancelaria y volumen transfronterizo.",
     "ejemplo": "Ej: 'Bajo la fracción arancelaria HS 0202.30 (Carne deshuesada congelada), el mercado de Arizona importó 34,200 ton en 2025 con arancel preferencial T-MEC del 0%'.",
     "benchmark": "Serie histórica de 3 años de importaciones/exportaciones con fracción arancelaria HS de 6 a 8 dígitos.",
     "cita": "ITC Trade Map & UN Comtrade (Manual de Comercio Exterior UNCTAD/OMC)",
-    "placeholder": "Fracción arancelaria HS, volumen de importación en país destino, barreras arancelarias y cuotas..."
+    "placeholder": "Fracción arancelaria HS, volumen de importación y barreras arancelarias..."
   },
   "validacion_cruzada": {
     "instruccion": "Sintetiza la triangulación entre la capa local (INEGI), nacional (Web Scraping) e internacional (APIs comerciales). Formula el dictamen de viabilidad comercial y la estrategia de posicionamiento escalable.",
     "ejemplo": "Ej: 'La triangulación valida viabilidad comercial regional inmediata (Fase 1) por déficit de oferta con valor agregado en Hermosillo, y respalda el salto a exportación (Fase 2) hacia Phoenix/Tucson'.",
     "benchmark": "Matriz de triangulación con consistencia de precios, volumen de demanda y análisis de brecha competitiva.",
     "cita": "The Nature of Value (Ch. 4, p. 78) & Anatomy of a Business Plan (Ch. 5)",
-    "placeholder": "Veredicto de triangulación de mercado, brecha oferta-demanda y plan de penetración..."
+    "placeholder": "Veredicto de triangulación de mercado y plan de penetración comercial..."
   }
 };
 
@@ -2287,21 +2287,21 @@ export const ZOPP_GUIDES = {
   "costos_inversion_zopp": {
     "instruccion": "Presupuesto de capital asignado para la adquisición de infraestructura y equipamiento de arranque.",
     "ejemplo": "Ej: Inversión en adecuación de taller piloto y 1 horno ASADHOR: $4,000,000 MXN.",
-    "benchmark": "Costeo con base cero soportado por cotizaciones de proveedores.",
+    "benchmark": "Costeo base cero con al menos 3 cotizaciones formales de proveedores.",
     "cita": "Metodología ZOPP GTZ (p. 68)",
     "placeholder": "Monto de inversión fija y diferida por componente..."
   },
   "costos_operacion_zopp": {
     "instruccion": "Presupuesto de gasto recurrente necesario para mantener las actividades en funcionamiento continuo.",
     "ejemplo": "Ej: $320,000 MXN mensuales en nómina de operarios, gas natural, empaque al vacío y logística local.",
-    "benchmark": "Cálculo de flujo operativo mensual con fondo de maniobra.",
+    "benchmark": "Flujo operativo mensual con fondo de maniobra para 3 a 6 meses.",
     "cita": "Metodología ZOPP GTZ (p. 72)",
     "placeholder": "Costos recurrentes de personal, insumos y mantenimiento..."
   },
   "fuentes_financiamiento_zopp": {
     "instruccion": "Origen de los fondos asignados: aportes de socios, créditos de desarrollo o fondos multilaterales.",
     "ejemplo": "Ej: 60% aporte de socios fundadores ($2.4M) + 40% crédito blando estatal FIDESON ($1.6M).",
-    "benchmark": "Estructura de fondos balanceada con calendario de desembolsos.",
+    "benchmark": "Estructura de fondos con desembolsos vinculados a hitos (3 a 5 fases).",
     "cita": "Metodología ZOPP GTZ (p. 76)",
     "placeholder": "Desglose de aportes institucionales y calendario de recursos..."
   },
@@ -2310,7 +2310,7 @@ export const ZOPP_GUIDES = {
     "ejemplo": "Ej: 100% de pertinencia al resolver la escasez de mano de obra calificada en cocinas restauranteras.",
     "benchmark": "Criterios del Comité de Asistencia al Desarrollo (CAD/OCDE).",
     "cita": "Metodología ZOPP GTZ (p. 84) & Criterios de Evaluación CAD",
-    "placeholder": "Grado de alineación entre la intervención y las prioridades de los beneficiarios..."
+    "placeholder": "Alineación entre la intervención y las prioridades de los beneficiarios..."
   },
   "eficacia_impacto": {
     "instruccion": "Grado de consecución del propósito y medición del impacto socioeconómico generado a mediano plazo.",
@@ -2418,7 +2418,7 @@ export const HORIZON_EUROPE_GUIDES = {
     "ejemplo": "Ej: Acuerdo DESCA: Cada socio retiene la propiedad de sus patentes previas; las patentes conjuntas se licencian con regalías proporcionales.",
     "benchmark": "Firma del acuerdo de consorcio basada en el modelo estándar DESCA antes del Grant Agreement.",
     "cita": "DESCA Consortium Agreement Model for Horizon Europe",
-    "placeholder": "Protección de IP previa, reparto de inventiva conjunta y acuerdos de explotación..."
+    "placeholder": "Protección de IP previa, reparto de inventiva y acuerdos de explotación..."
   },
   "hoja_ruta_explotacion": {
     "instruccion": "Modelo de negocio y plan de explotación comercial o institucional post-proyecto por los socios industriales.",
@@ -2430,7 +2430,7 @@ export const HORIZON_EUROPE_GUIDES = {
   "costes_personal_wp": {
     "instruccion": "Presupuesto de meses-persona (Person-Months) valorados según tarifas horarias institucionales auditadas.",
     "ejemplo": "Ej: 140 Person-Months totales distribuidos entre 6 socios: €980,000 EUR en personal investigador y técnico.",
-    "benchmark": "Tarifas conformes a la contabilidad usual del beneficiario auditadas por la CE.",
+    "benchmark": "Tarifas por día-persona conformes a baremos de la UE (150 a 450 EUR/día).",
     "cita": "Horizon Europe Annotated Grant Agreement (AGA)",
     "placeholder": "Meses-persona totales, coste por WP y tarifas horarias justificadas..."
   },
@@ -2484,7 +2484,7 @@ export const HOSHIN_KANRI_GUIDES = {
     "ejemplo": "Ej: Dirección propone reducir mermas 50%; operaciones responde que requiere $400k en mantenimiento para comprometer la meta.",
     "benchmark": "Negociación participativa de metas antes de congelar el plan anual Hoshin.",
     "cita": "Yoji Akao — Hoshin Kanri (Ch. 3, p. 55)",
-    "placeholder": "Flujo de propuestas de la dirección, retroalimentación de piso y consenso final..."
+    "placeholder": "Flujo de propuestas de dirección, retroalimentación de piso y consenso..."
   },
   "acuerdos_nemawashi": {
     "instruccion": "Proceso informal de consulta previa (Nemawashi: 'preparar las raíces') para crear consenso antes de reuniones formales.",
@@ -2569,28 +2569,28 @@ export const AMOEBA_MANAGEMENT_GUIDES = {
   "mapeo_celulas": {
     "instruccion": "División de la empresa en micro-centros de ganancia independientes.",
     "ejemplo": "Ej (Estilo Kyocera/Alibaba): Dividir operaciones en 50 células (Ej. Amoeba de Servidores, Amoeba de Logística).",
-    "benchmark": "Valor agregado por hora > benchmark interno con micro-ganancias transparentes por célula.",
+    "benchmark": "Valor agregado por hora > benchmark sectorial (ej. > $250 MXN/hora).",
     "cita": "Kazuo Inamori — Amoeba Management (Filosofía Kyocera)",
     "placeholder": "Estructuración de micro-ganancias amoeba para (mapeo_celulas)..."
   },
   "precios_transferencia": {
     "instruccion": "Cómo una célula le \"vende\" internamente a otra.",
     "ejemplo": "Ej: Amoeba de Diseño le cobra $50 USD la hora a Amoeba de Manufactura por el plano CAD.",
-    "benchmark": "Valor agregado por hora > benchmark interno con micro-ganancias transparentes por célula.",
+    "benchmark": "Valor agregado por hora > benchmark sectorial (ej. > $250 MXN/hora).",
     "cita": "Kazuo Inamori — Amoeba Management (Filosofía Kyocera)",
     "placeholder": "Estructuración de micro-ganancias amoeba para (precios_transferencia)..."
   },
   "rentabilidad_hora": {
     "instruccion": "Cálculo de la utilidad generada dividida por las horas trabajadas.",
     "ejemplo": "Ej: Rentabilidad por hora = (Ingreso Amoeba - Costos no laborales) / Total Horas del equipo.",
-    "benchmark": "Valor agregado por hora > benchmark interno con micro-ganancias transparentes por célula.",
+    "benchmark": "Valor agregado por hora > benchmark sectorial (ej. > $250 MXN/hora).",
     "cita": "Kazuo Inamori — Amoeba Management (Filosofía Kyocera)",
     "placeholder": "Estructuración de micro-ganancias amoeba para (rentabilidad_hora)..."
   },
   "filosofia": {
     "instruccion": "Alineación de los miembros de la célula con los valores nucleares.",
     "ejemplo": "Ej (Estilo Inamori/Jack Ma): \"Hacer lo correcto como ser humano\" y priorizar al cliente antes que al accionista.",
-    "benchmark": "Valor agregado por hora > benchmark interno con micro-ganancias transparentes por célula.",
+    "benchmark": "Valor agregado por hora > benchmark sectorial (ej. > $250 MXN/hora).",
     "cita": "Kazuo Inamori — Amoeba Management (Filosofía Kyocera)",
     "placeholder": "Estructuración de micro-ganancias amoeba para (filosofia)..."
   },
@@ -2625,7 +2625,7 @@ export const AMOEBA_MANAGEMENT_GUIDES = {
   "minimizacion_desperdicio_tiempo": {
     "instruccion": "Detección y erradicación de las 7 mudas de tiempo: esperas, traslados innecesarios y retrabajos en la célula.",
     "ejemplo": "Ej: Reorganización del herramental en células de trabajo en 'U' redujo traslados en 25 minutos por turno.",
-    "benchmark": "Eliminación continua de tiempos muertos para maximizar el denominador del valor/hora.",
+    "benchmark": "Reducción de tiempos muertos en >= 20% para elevar el valor/hora.",
     "cita": "Kazuo Inamori — Amoeba Management & Toyota TPS",
     "placeholder": "Acciones concretas para eliminar tiempos improductivos y cuellos de botella..."
   },
@@ -2742,7 +2742,7 @@ export const GUANXI_PLAN_GUIDES = {
     "ejemplo": "Ej: Reconocimiento público explícito al liderazgo de la contraparte china durante el anuncio oficial conjunto a la prensa.",
     "benchmark": "Gestión activa de la reputación y estatus del socio para fortalecer el vínculo comercial.",
     "cita": "Negotiating South-South Regional Trade Agreements (UNCTAD Ch. 3 p. 52)",
-    "placeholder": "Nivel de reputación involucrado y tácticas para otorgar estatus al interlocutor..."
+    "placeholder": "Nivel de reputación y tácticas para otorgar estatus al interlocutor..."
   },
   "tacticas_dar_cara": {
     "instruccion": "Mecanismos para otorgar prestigio y honor público (gei mianzi) a los líderes del proyecto mediante reconocimientos y ceremonias.",
@@ -2808,7 +2808,7 @@ export const ONUDI_PROJECT_GUIDES = {
     "ejemplo": "Ej: Acceso inmediato a Carretera Federal 15 México-Nogales (a 260 km de la frontera con EE.UU.) y a 135 km del Puerto de Guaymas.",
     "benchmark": "Costo logístico integral < 8% del valor total de la mercancía terminada.",
     "cita": "Manual de Viabilidad Industrial ONUDI & Anatomy Ch. 7",
-    "placeholder": "Rutas logísticas, tiempos de tránsito y costes de flete a los mercados destino..."
+    "placeholder": "Rutas logísticas, tiempos de tránsito y costes de flete a destino..."
   },
   "estudio_impacto_eia": {
     "instruccion": "Manifestación de Impacto Ambiental (MIA / EIA): identificación de impactos físicos, biológicos y socioeconómicos de la planta industrial.",
@@ -2841,9 +2841,9 @@ export const ONUDI_PROJECT_GUIDES = {
   "prima_riesgo_pais_embi": {
     "instruccion": "Incorporación del spread soberano (Emerging Markets Bond Index - EMBI+) en la tasa de descuento de capital internacional.",
     "ejemplo": "Ej: Tasa libre de riesgo EE.UU. (4.2%) + Spread EMBI México (2.6%) + Beta desapalancada ajustada = Ke de 14.8%.",
-    "benchmark": "Ajuste metodológico obligatorio de la ONUDI para proyectos en economías en desarrollo.",
+    "benchmark": "Spread EMBI+ de 200 a 400 bps según el mercado emergente destino.",
     "cita": "The Nature of Value (Ch. 5 p. 98) & Manual COMFAR ONUDI",
-    "placeholder": "Diferencial de riesgo país (spread en puntos base) y tasa libre de riesgo base..."
+    "placeholder": "Diferencial de riesgo país (spread EMBI+) y tasa libre de riesgo..."
   },
   "exposicion_tipo_cambio": {
     "instruccion": "Análisis de descalce cambiario entre ingresos (moneda local o dólares de exportación) y deuda/CAPEX (maquinaria importada).",
@@ -2855,7 +2855,7 @@ export const ONUDI_PROJECT_GUIDES = {
   "cobertura_financiera_hedging": {
     "instruccion": "Instrumentos financieros de mitigación de riesgo cambiario y de tasa de interés: forwards, opciones o swaps de cobertura.",
     "ejemplo": "Ej: Contrato forward tipo de cambio USD/MXN a 12 meses fijando el 70% del valor de la maquinaria importada.",
-    "benchmark": "Cobertura financiera activa para proteger el CAPEX de adquisiciones extranjeras.",
+    "benchmark": "Cobertura cambiaria del 50% al 80% para proteger el CAPEX importado.",
     "cita": "The Nature of Value (Ch. 5 p. 102)",
     "placeholder": "Instrumentos de cobertura cambiaria contratados o proyectados..."
   },

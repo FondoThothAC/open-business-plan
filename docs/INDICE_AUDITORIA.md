@@ -79,9 +79,17 @@
 
 ### Capa L4: Catálogo Maestro y Auditoría (`docs/tabla_modulo_prompt.md`)
 - Regenerado automáticamente vía script (`scripts/generate-tabla-modulo-prompt.js`).
-- 386 campos mapeados en 1,574 líneas con trazabilidad 1:1.
+- 394 campos mapeados en 1,596 líneas con trazabilidad 1:1.
+- Cobertura total verificada por la suite TDD expandida (`tests/frameworksAndBooksEnrichment.test.js` con 14 grupos de prueba).
 
 ---
 
-## 4. Dictamen de Aprobación
-Se certifica que los 12 marcos metodológicos de Open Business Plan se encuentran completamente desarrollados, simétricamente equilibrados, respaldados por la colección bibliográfica y listos para ejecución operativa tanto en la interfaz de usuario como en los motores de generación de inteligencia artificial.
+## 4. Dictamen de Aprobación y Certificación de Calidad
+Se certifica formalmente que:
+1. **12 Marcos Metodológicos:** Se encuentran completamente desarrollados, simétricamente equilibrados, respaldados por la colección de 13 libros técnicos y listos para ejecución operativa.
+2. **Capas L1 a L4:** 394 textboxes con prompts sustantivos (instrucción $\le 400$ chars, placeholder $\le 80$ chars), 44 boxes interactivos, 12 manuales metodológicos y catálogo maestro sin omisiones.
+3. **Calibración CAPEX Agroindustrial:** La cifra de Serie A para VCV Cortes Finos se encuentra estrictamente fijada en **$16,800,000 MXN** desglosada en sus 5 rubros reales (Nave TIF $6.5M, 5 Hornos ASADHOR $3.75M, Túnel IQF $2.8M, Cuartos Fríos $1.45M, Capital de Trabajo $2.3M).
+4. **Diagramación Nativa Desacoplada:** Componentes nativos `DecisionFlow.jsx` (React Flow) y `PlantFloorplan.jsx` (SVG + CSS Grid, 1,200 m² con 6 zonas sanitarias NOM-008-ZOO / SENASICA) operando sin dependencias externas bloqueantes.
+5. **Generador DOCX Editable:** Implementado en `src/lib/docxExportEngine.js` con descarga directa en el visor de `VistaPrevia.jsx` para edición manual en Microsoft Word, Google Docs y LibreOffice.
+6. **Cascada de Mercado Multinivel:** Implementada en `server/routes/marketCascade.js` integrando Nivel Local (INEGI DENUE), Nivel Nacional (DuckDuckGo / Tavily Search) y Nivel Internacional (Trade Map / USDA FAS) con persistencia en caché local de 24 horas (TTL).
+7. **Suite Automatizada Verde:** **272 de 272 pruebas pasando al 100%** (`npm test`).

@@ -30,7 +30,7 @@ export class AutonomousResearchEngine {
   static generarFlowchartEscalamiento({
     companyName = 'VCV Cortes Finos, S.A. de C.V.',
     fase1Presupuesto = '$4,000,000 MXN',
-    fase2Presupuesto = '$20,000,000 MXN',
+    fase2Presupuesto = '$16,800,000 MXN',
     mercadoFase1 = 'Mercado Regional B2B HORECA (Sonora y Sinaloa)',
     mercadoFase2 = 'Exportación Binacional (Arizona y California)'
   } = {}) {
@@ -58,7 +58,7 @@ export class AutonomousResearchEngine {
   subgraph SUB_FASE2 ["FASE 2: ESCALAMIENTO CUÁNTICO A EXPORTACIÓN"]
     F2_Levantamiento --> F2_Construccion["Nave Industrial Certificada TIF<br/>SENASICA (NOM-008-ZOO / NOM-009-ZOO)"]:::fase2
     F2_Construccion --> F2_USDA["Auditoría Bilateral USDA / FSIS<br/>& Registro FDA de Alimentos"]:::fase2
-    F2_USDA --> F2_Maquinaria["Línea Continua 5 Hornos ASADHOR<br/>+ Túnel Criogénico IQF (-40°C)"]:::fase2
+    F2_Construccion --> F2_Maquinaria["Línea Continua 5 Hornos ASADHOR<br/>+ Túnel Criogénico IQF (-40°C)"]:::fase2
     F2_Maquinaria --> F2_Export["Despacho Binacional vía VUCEM<br/>${mercadoFase2}"]:::fase2
   end
 
@@ -68,7 +68,7 @@ export class AutonomousResearchEngine {
   /**
    * Genera los KPIs de compuerta cuantitativos para validar el paso de Fase 1 a Fase 2.
    */
-  static generarKpisGateTransicion({ inversionFase1 = 4000000, inversionFase2 = 20000000 } = {}) {
+  static generarKpisGateTransicion({ inversionFase1 = 4000000, inversionFase2 = 16800000 } = {}) {
     return [
       {
         id: 'gate_ebitda',
@@ -107,7 +107,7 @@ export class AutonomousResearchEngine {
         metrica: 'Cartas de Intención de Compra en EE.UU. (LOI)',
         umbral_minimo: 'Volumen comprometido &ge; 15 toneladas/mes en Arizona/California',
         periodo_evaluacion: 'Firmadas con distribuidores o cadenas de restaurantes',
-        justificacion: 'Mitiga el riesgo de mercado antes de desembolsar el CAPEX de $20M MXN en la nave TIF.',
+        justificacion: 'Mitiga el riesgo de mercado antes de desembolsar el CAPEX de $16.8M MXN en la nave TIF.',
         estado_simulado: 'Requerido para Serie A'
       }
     ];

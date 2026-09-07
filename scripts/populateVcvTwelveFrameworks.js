@@ -111,7 +111,7 @@ function generateFieldContent(pillarKey, moduleKey, fieldKey, frameworkId) {
   // Nombres y conceptos corporativos
   if (f.includes('nombre') || f.includes('empresa') || f.includes('razon')) return VCV_DATA.nombre;
   if (f.includes('mision')) return 'Contribuir a un planeta más sano y a una óptima nutrición en las grandes urbes, ofreciendo cortes finos de carne asada sonorense, nutritivos, inocuos y de alta calidad, que ahorran tiempo de preparación sin sacrificar jugosidad, aroma ni textura artesanal.';
-  if (f.includes('vision')) return 'Ser la empresa referente nacional e internacional en proteína bovina premium lista para el consumo (RTE), industrializando la tradición sonorense mediante tecnología eco-eficiente ASADHOR y expandiendo la presencia a más de 50 centros urbanos y mercados de exportación hacia 2030.';
+  if (f === 'vision' || (f.includes('vision') && !f.includes('division'))) return 'Ser la empresa referente nacional e internacional en proteína bovina premium lista para el consumo (RTE), industrializando la tradición sonorense mediante tecnología eco-eficiente ASADHOR y expandiendo la presencia a más de 50 centros urbanos y mercados de exportación hacia 2030.';
   if (f.includes('valores')) return '1. Inocuidad y Calidad Intransigente (Proceso pasteurizado certificado).\n2. Eficiencia y Sustentabilidad (Cero desperdicio térmico en ASADHOR).\n3. Autenticidad Sonorense (Respeto al sabor y asado tradicional).\n4. Honestidad Comercial y Puntualidad en la Cadena de Frío.';
   if (f.includes('origen') || f.includes('justificacion') || f.includes('necesidad')) return VCV_DATA.problema;
   if (f.includes('propuesta') || f.includes('propuestas_valor')) return VCV_DATA.propuestaValor;
@@ -125,6 +125,8 @@ function generateFieldContent(pillarKey, moduleKey, fieldKey, frameworkId) {
   if (f.includes('competidor') || f.includes('competencia')) return '1. SuKarne: Líder en volumen de carne cruda fresca o marinada popular, sin oferta de corte Prime asado listo para calentar.\n2. Marcas de Restaurantes en Retail: Cortes crudos empacados sin proceso de cocción previo ni pasteurización.\n3. Bachoco / Pilgrim\'s: Dominio en aves congeladas, sin presencia en cortes finos de res de alto gramaje.\nVentaja VCV: Primer Rib-Eye Prime asado sonorense con pasteurización a -20°C listo en 4 minutos.';
   if (f.includes('comparativa') || f.includes('matriz') || f.includes('benchmarking')) return 'Benchmarking Sectorial:\n- Tiempo de preparación: VCV 4 min vs Tradicional 60-90 min.\n- Merma para el cliente: VCV 0% (producto ya asado de 360g netos) vs Tradicional 10-15% al asar.\n- Margen Bruto: VCV 45.24% vs Promedio cárnico tradicional 18-22%.\n- Cadena de frío: Transporte a -18°C con monitoreo de datalogger.';
   if (f.includes('distribucion') || f.includes('canales')) return 'Canal B2B refrigerado directo a distribuidores y centros de consumo en 5 ciudades clave: 12 puntos en CDMX (1,944 kg/mes), 8 en Guadalajara (1,296 kg/mes), 4 en Puebla (648 kg/mes), 4 en Monterrey (648 kg/mes) y 4 en Tijuana (648 kg/mes). Total: 32 puntos de distribución.';
+
+  // Cascada de mercado (3 niveles)
   if (m === 'inteligencia_mercado_cascada') {
     if (f.includes('fuente_datos_local')) {
       return 'Censo local INEGI DENUE (SCIAN 311612 - Elaboración de embutidos y carnes preparadas): Se identificaron 14 establecimientos en Hermosillo, Sonora. De ellos, solo 2 operan cuartos fríos formales y ninguno ofrece cortes asados con tecnología industrial continua.';
@@ -137,6 +139,25 @@ function generateFieldContent(pillarKey, moduleKey, fieldKey, frameworkId) {
     }
     if (f.includes('validacion_cruzada')) {
       return 'Triangulación de mercado: La demanda insatisfecha regional valida la Fase 1 ($4M MXN con EBITDA de $1.55M/mes), mientras que la escala de $16.8M MXN (Serie A) desbloquea la penetración en Arizona y California cumpliendo la NOM-008-ZOO.';
+    }
+  }
+
+  // Desglose CAPEX CSI-16 Calibrado para VCV ($16,800,000 MXN)
+  if (m === 'capex_csi_16') {
+    if (f.includes('division_csi_codigo')) {
+      return 'Catálogo de Divisiones CSI 16 para Planta TIF VCV:\n- División 13 (Construcción Especial TIF): $6,500,000 MXN (Nave 1,200 m² con paneles grado alimenticio y áreas sanitarias).\n- División 11 (Equipamiento Comercial de Cocción): $3,750,000 MXN (5 hornos industriales continuos ASADHOR).\n- División 11 (Equipamiento Criogénico): $2,800,000 MXN (Túnel IQF abatidor rápido a -40°C).\n- División 11 y 15 (Refrigeración y Empaque): $1,450,000 MXN (Cuartos fríos a -18°C y empacadora de doble campana).\n- Capital de Trabajo Operativo Inicial: $2,300,000 MXN (Insumos cárnicos y nómina).\nTotal CAPEX Requerido Serie A: $16,800,000 MXN.';
+    }
+    if (f.includes('concepto_obra_maquinaria')) {
+      return 'Habilitación de Nave Industrial TIF de 1,200 m² (40m x 30m) y dotación de maquinaria grado alimenticio en Hermosillo, Sonora. Comprende: Obra civil y drenajes sanitarios ($6.5M), Batería de 5 hornos ASADHOR ($3.75M), Túnel IQF ($2.8M), Cuartos de conservación y empaque ($1.45M), y Capital de trabajo inicial ($2.3M), sumando $16,800,000 MXN.';
+    }
+    if (f.includes('unidad_medida_cantidad')) {
+      return '1 Nave TIF (1,200 m²); 5 Hornos ASADHOR (5 unidades continuas de 720 cortes/día c/u); 1 Túnel Criogénico IQF (500 kg/h); 2 Cámaras de Refrigeración (-18°C / 10 ton); Capital operativo para 3 meses de operación continua (15.5 toneladas de carne Prime).';
+    }
+    if (f.includes('costo_unitario_importe')) {
+      return 'Presupuesto Base de Inversión Serie A:\n- Nave TIF: $6,500,000 MXN\n- 5 Hornos ASADHOR: $750,000 MXN c/u = $3,750,000 MXN\n- Túnel IQF: $2,800,000 MXN\n- Cuartos Fríos y Empaque: $1,450,000 MXN\n- Capital de Trabajo: $2,300,000 MXN\nTotal Serie A: $16,800,000 MXN.';
+    }
+    if (f.includes('total_inversion_csi')) {
+      return '$16,800,000 MXN (Dieciséis Millones Ochocientos Mil Pesos 00/100 M.N.) distribuido en $14,500,000 MXN de Activos Fijos Industriales (86.3%) y $2,300,000 MXN de Capital de Trabajo Operativo (13.7%).';
     }
   }
 

@@ -16,7 +16,7 @@ describe('AutonomousResearchEngine - Motor Autónomo de Investigación y Escalam
     const flowchart = AutonomousResearchEngine.generarFlowchartEscalamiento({
       companyName: 'VCV Cortes Finos, S.A. de C.V.',
       fase1Presupuesto: '$4,000,000 MXN',
-      fase2Presupuesto: '$20,000,000 MXN',
+      fase2Presupuesto: '$16,800,000 MXN',
       mercadoFase1: 'Mercado Regional B2B HORECA (Sonora y Sinaloa)',
       mercadoFase2: 'Exportación Binacional (Arizona y California)'
     });
@@ -31,7 +31,7 @@ describe('AutonomousResearchEngine - Motor Autónomo de Investigación y Escalam
   it('debe generar la matriz cuantitativa de KPIs Gate de transición entre fases', () => {
     const kpis = AutonomousResearchEngine.generarKpisGateTransicion({
       inversionFase1: 4000000,
-      inversionFase2: 20000000
+      inversionFase2: 16800000
     });
 
     assert.ok(Array.isArray(kpis), 'Los KPIs Gate deben ser un arreglo');

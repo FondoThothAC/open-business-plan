@@ -131,4 +131,144 @@ test('Enriquecimiento Integral de las 12 Metodologías con los 13 Libros Técnic
     assert.ok(tablaContent.includes('TOTAL TEXTBOXES:'), 'Debe incluir el total de textboxes');
     assert.ok(tablaContent.length > 50000, 'docs/tabla_modulo_prompt.md debe ser exhaustivo (> 50KB)');
   });
+
+  await t.test('6. Caps de longitud en prompts (instruccion <= 400, placeholder <= 80)', () => {
+    for (const [fwKey, guides] of Object.entries(FIELD_GUIDES_MAP)) {
+      for (const [fieldKey, guide] of Object.entries(guides)) {
+        assert.ok(
+          guide.instruccion.length <= 400,
+          `La instrucción en ${fwKey}:${fieldKey} excede los 400 caracteres (${guide.instruccion.length})`
+        );
+        if (guide.placeholder) {
+          assert.ok(
+            guide.placeholder.length <= 80,
+            `El placeholder en ${fwKey}:${fieldKey} excede los 80 caracteres (${guide.placeholder.length})`
+          );
+        }
+      }
+    }
+  });
+
+  await t.test('7. Cada campo nuevo tiene ejemplo resuelto con datos concretos', () => {
+    for (const [fwKey, guides] of Object.entries(FIELD_GUIDES_MAP)) {
+      for (const [fieldKey, guide] of Object.entries(guides)) {
+        assert.ok(
+          guide.ejemplo && guide.ejemplo.length >= 10,
+          `El campo ${fwKey}:${fieldKey} debe incluir un ejemplo resuelto concreto`
+        );
+      }
+    }
+  });
+
+  await t.test('8. Cada campo cuantitativo tiene benchmark numérico (>= 1 dígito)', () => {
+    const quantitativeModules = [
+      'metricas_aarrr', 'evaluacion_social_cuantitativa', 'innovation_accounting',
+      'punto_equilibrio_micro', 'capex_csi_16', 'tornado_sensibilidad',
+      'presupuesto_componentes', 'presupuesto_eu_microsoft', 'time_based_management',
+      'riesgo_pais_cambiario', 'rentabilidad', 'estados_financieros'
+    ];
+    for (const [fwKey, fw] of Object.entries(FRAMEWORKS)) {
+      const guides = FIELD_GUIDES_MAP[fwKey] || {};
+      for (const pillar of fw.pillars) {
+        for (const mod of pillar.modules) {
+          if (quantitativeModules.includes(mod.key)) {
+            for (const f of mod.fields) {
+              const guide = guides[f] || FIELD_GUIDES_MAP.business[f];
+              if (guide && guide.benchmark) {
+                assert.ok(
+                  /\d/.test(guide.benchmark),
+                  `El benchmark cuantitativo ${fwKey}:${mod.key}:${f} debe incluir al menos un dígito numérico`
+                );
+              }
+            }
+          }
+        }
+      }
+    }
+  });
+
+  await t.test('9. Cita apunta a libro existente en /libros/ o fuente canónica autorizada', () => {
+    const validSources = [
+      'Anatomy', 'Dummies', 'Lean Startup', 'Burn', 'Nature of Value',
+      'QuickStart', 'Innovator', 'Panamá', 'Panama', 'Corporate Sustainability',
+      'Entrenched', 'South-South', 'Diferenças', 'ZOPP', 'Hoshin',
+      'Amoeba', 'ONUDI', 'INEGI', 'Trade Map', 'UN Comtrade', 'Christensen',
+      'Inamori', 'Akao', 'Pinson', 'Osterwalder', 'Porter', 'Plan de Negocios VF',
+      'Ries', 'Colwell', 'Schramm', 'Gogerty', 'Marino', 'GTZ', 'COMFAR',
+      'Behrens', 'NOM', 'SENASICA', 'USDA', 'Horizon', 'UE', 'Guanxi',
+      'Keller', 'Business Model Generation', 'Slack', 'Marco Lógico', 'BID',
+      'CEPAL', 'PM4R', 'EIC', 'Toyota', 'Liker', 'Shook', 'Deming', 'Doerr',
+      'Imai', 'Ho-Ren-So'
+    ];
+    for (const [fwKey, guides] of Object.entries(FIELD_GUIDES_MAP)) {
+      for (const [fieldKey, guide] of Object.entries(guides)) {
+        const hasValidSource = validSources.some(src => guide.cita.toLowerCase().includes(src.toLowerCase()));
+        assert.ok(
+          hasValidSource,
+          `La cita "${guide.cita}" en ${fwKey}:${fieldKey} debe referenciar una obra del catálogo de libros técnicos`
+        );
+      }
+    }
+  });
+
+  await t.test('10. CAPEX VCV agroindustrial = $16,800,000 MXN desglosado en sus 5 conceptos', () => {
+    const vcvJsonPath = path.resolve('proyectos/negocios/vcv_cortes_finos_sa_de_cv/vcv_cortes_finos_sa_de_cv.json');
+    assert.ok(fs.existsSync(vcvJsonPath), 'El JSON canónico de VCV debe existir');
+    const vcv = JSON.parse(fs.readFileSync(vcvJsonPath, 'utf8'));
+
+    const capex = vcv.presupuesto_obra?.capex_csi_16;
+    assert.ok(capex, 'El módulo capex_csi_16 debe estar poblado en presupuesto_obra');
+    assert.ok(capex.total_inversion_csi.includes('16,800,000'), 'El total de inversión debe ser $16,800,000 MXN');
+    assert.ok(capex.division_csi_codigo.includes('6,500,000'), 'Debe incluir Nave TIF por $6,500,000 MXN');
+    assert.ok(capex.division_csi_codigo.includes('3,750,000'), 'Debe incluir 5 Hornos ASADHOR por $3,750,000 MXN');
+    assert.ok(capex.division_csi_codigo.includes('2,800,000'), 'Debe incluir Túnel IQF por $2,800,000 MXN');
+    assert.ok(capex.division_csi_codigo.includes('1,450,000'), 'Debe incluir Cuartos Fríos por $1,450,000 MXN');
+    assert.ok(capex.division_csi_codigo.includes('2,300,000'), 'Debe incluir Capital de Trabajo por $2,300,000 MXN');
+  });
+
+  await t.test('11. PlantFloorplan.jsx renderiza con viewBox calibrado a m² reales sin dependencias externas pesadas', () => {
+    const floorplanPath = path.resolve('src/components/PlantFloorplan.jsx');
+    assert.ok(fs.existsSync(floorplanPath), 'PlantFloorplan.jsx debe existir');
+    const code = fs.readFileSync(floorplanPath, 'utf8');
+
+    assert.ok(code.includes('viewBox'), 'Debe contener viewBox SVG');
+    assert.ok(code.includes('1,200') || code.includes('1200'), 'Debe referenciar superficie de 1,200 m²');
+    assert.ok(code.includes('40') && code.includes('30'), 'Debe calibrar dimensiones de 40m x 30m');
+    assert.ok(!code.includes("from 'mermaid'") && !code.includes("from 'three'"), 'No debe importar mermaid ni three.js');
+  });
+
+  await t.test('12. DecisionFlow.jsx usa React Flow nativo sin dependencias externas extra', () => {
+    const flowPath = path.resolve('src/components/DecisionFlow.jsx');
+    assert.ok(fs.existsSync(flowPath), 'DecisionFlow.jsx debe existir');
+    const code = fs.readFileSync(flowPath, 'utf8');
+
+    assert.ok(code.includes("from 'reactflow'"), 'Debe importar reactflow');
+    assert.ok(code.includes('RoadmapNode'), 'Debe implementar nodos personalizados');
+    assert.ok(!code.includes("from 'mermaid'") && !code.includes("from 'three'"), 'No debe depender de mermaid ni three');
+  });
+
+  await t.test('13. Cascada de mercado: INEGI → Web Scraping → Comercio Exterior con TTL 24h', async () => {
+    assert.ok(FRAMEWORKS.business.pillars.some(p => p.modules.some(m => m.key === 'inteligencia_mercado_cascada')), 'business debe tener inteligencia_mercado_cascada');
+    assert.ok(FRAMEWORKS.investment_project.pillars.some(p => p.modules.some(m => m.key === 'inteligencia_mercado_cascada')), 'investment_project debe tener inteligencia_mercado_cascada');
+    assert.ok(BOX_REGISTRY.business.some(b => b.id === 'box_cascada_mercado_3niveles'), 'box_cascada_mercado_3niveles debe estar registrado');
+
+    const cascadeModule = await import('../server/routes/marketCascade.js');
+    assert.ok(cascadeModule.ejecutarCascadaMercado, 'Debe exportar la función ejecutarCascadaMercado');
+    const res = await cascadeModule.ejecutarCascadaMercado({ query: 'test mercado cárnico' });
+    assert.ok(res.success, 'La cascada debe ejecutarse exitosamente');
+    assert.ok(res.capaLocal, 'Debe contener Capa Local');
+    assert.ok(res.capaNacional, 'Debe contener Capa Nacional');
+    assert.ok(res.capaInternacional, 'Debe contener Capa Internacional');
+  });
+
+  await t.test('14. Motor de Exportación a Word (.docx) genera documento ejecutable y estructurado', async () => {
+    const docxModule = await import('../src/lib/docxExportEngine.js');
+    assert.ok(docxModule.buildDocxDocument, 'Debe exportar buildDocxDocument');
+    assert.ok(docxModule.downloadProjectAsDocx, 'Debe exportar downloadProjectAsDocx');
+
+    const vcvJsonPath = path.resolve('proyectos/negocios/vcv_cortes_finos_sa_de_cv/vcv_cortes_finos_sa_de_cv.json');
+    const vcv = JSON.parse(fs.readFileSync(vcvJsonPath, 'utf8'));
+    const doc = docxModule.buildDocxDocument(vcv);
+    assert.ok(doc, 'Debe generar la instancia del documento docx');
+  });
 });

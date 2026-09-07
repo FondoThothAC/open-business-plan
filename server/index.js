@@ -14,6 +14,7 @@ import { checkSearchQuota, incrementSearchQuota, getSearchQuotaStats } from './q
 import { saveWithVersioning } from '../src/lib/serverUtils/saveVersioning.js';
 import { acquireGenerationLock, releaseGenerationLock, getGenerationLockStatus } from '../src/lib/serverUtils/generationLock.js';
 import { renameProject } from '../src/lib/serverUtils/projectRename.js';
+import marketCascadeRouter from './routes/marketCascade.js';
 
 // ─────────────────────────────────────────────────────────
 //  Helper Seguro para Búsqueda DuckDuckGo (Control de Tasa y Backoff)
@@ -61,6 +62,7 @@ function broadcast(eventData) {
 
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
+app.use('/api/mercado', marketCascadeRouter);
 
 // GET /api/log/stream — Suscripción SSE
 app.get('/api/log/stream', (req, res) => {
