@@ -14,6 +14,7 @@ import InegiMap from '../components/InegiMap';
 import FloorPlanDiagram from '../components/FloorPlanDiagram';
 import RACIMatrix from '../components/RACIMatrix';
 import ExecutiveFinancialDashboard from '../components/ExecutiveFinancialDashboard';
+import ExecutiveSummarySection from '../components/ExecutiveSummarySection';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { safeStr } from '../utils/formatters';
@@ -1740,10 +1741,11 @@ export default function VistaPrevia() {
   }, [allFrameworkModules, planData.config?.moduleOrder]);
 
   // Calcular números de página estimados para el índice y los pies de página
-  const { executiveDashboardPage, modulePageNumbers, financialReportsPage, anexosPage, sourcesPage } = useMemo(() => {
+  const { executiveSummaryPage, executiveDashboardPage, modulePageNumbers, financialReportsPage, anexosPage, sourcesPage } = useMemo(() => {
     const pageNumbers = {};
-    const execDashPage = 3; // Portada es 1, Índice es 2, Tablero Ejecutivo de Dirección es 3.
-    let currentPage = 4; // Primer módulo temático inicia en 4.
+    const execSummaryPage = 3; // Portada es 1, Índice es 2, Resumen Ejecutivo & Viabilidad es 3.
+    const execDashPage = 4; // Tablero Ejecutivo de Dirección es 4.
+    let currentPage = 5; // Primer módulo temático inicia en 5.
 
     if (paginationMode === 'continuous') {
       let accumPages = 0;
@@ -1792,6 +1794,7 @@ export default function VistaPrevia() {
 
     const sPage = currentPage; // Fuentes de Información siempre al final
     return {
+      executiveSummaryPage: execSummaryPage,
       executiveDashboardPage: execDashPage,
       modulePageNumbers: pageNumbers,
       financialReportsPage: reportsPage,
@@ -2732,10 +2735,16 @@ export default function VistaPrevia() {
                 <span className="toc-page-badge">2</span>
               </div>
 
-              <a href="#seccion-tablero-ejecutivo" className="toc-item-link" style={{ background: 'rgba(99, 102, 241, 0.04)', borderRadius: '6px' }}>
-                <span style={{ fontWeight: 700, color: 'var(--accent-color, #6366f1)' }}>Tablero Ejecutivo de Dirección & KPIs Clave</span>
+              <a href="#seccion-resumen-ejecutivo" className="toc-item-link" style={{ background: 'rgba(99, 102, 241, 0.04)', borderRadius: '6px' }}>
+                <span style={{ fontWeight: 700, color: 'var(--accent-color, #6366f1)' }}>Resumen Ejecutivo & Dictamen de Viabilidad</span>
                 <span className="toc-dot-leader" />
-                <span className="toc-page-badge" style={{ background: 'var(--accent-color, #6366f1)', color: '#ffffff' }}>{executiveDashboardPage || 3}</span>
+                <span className="toc-page-badge" style={{ background: 'var(--accent-color, #6366f1)', color: '#ffffff' }}>{executiveSummaryPage || 3}</span>
+              </a>
+
+              <a href="#seccion-tablero-ejecutivo" className="toc-item-link">
+                <span style={{ fontWeight: 600, color: '#1e293b' }}>Tablero Ejecutivo de Dirección & KPIs Clave</span>
+                <span className="toc-dot-leader" />
+                <span className="toc-page-badge">{executiveDashboardPage || 4}</span>
               </a>
               
               {orderedModules.map((mod, idx) => {
@@ -2780,7 +2789,32 @@ export default function VistaPrevia() {
           <CorporatePrintFooter pageNum={2} sectionName="Índice" />
         </div>
 
-        {/* PÁGINA 3: TABLERO EJECUTIVO DE DIRECCIÓN, BENCHMARKS Y KPIS DE INDUSTRIA */}
+        {/* PÁGINA 3: RESUMEN EJECUTIVO & DICTAMEN DE VIABILIDAD REAL */}
+        <div 
+          id="seccion-resumen-ejecutivo" 
+          className={`print-page ${globalOrientation === 'landscape' ? 'landscape-print-page' : 'portrait-print-page'}`} 
+          style={{ 
+            marginTop: paginationMode === 'continuous' ? '1rem' : '2.5rem',
+            width: '100%',
+            maxWidth: globalOrientation === 'landscape' ? '1080px' : '760px',
+            margin: '0 auto 2.5rem auto',
+            minHeight: '1000px',
+            display: 'flex',
+            flexDirection: 'column',
+            position: 'relative',
+            pageBreakInside: 'avoid'
+          }}
+        >
+          <CorporatePrintHeader sectionTitle="Resumen Ejecutivo & Viabilidad" pillarTitle="Alta Dirección" />
+          
+          <div style={{ flex: 1, paddingTop: '1rem', paddingBottom: '2rem' }}>
+            <ExecutiveSummarySection planData={planData} />
+          </div>
+
+          <CorporatePrintFooter pageNum={executiveSummaryPage || 3} sectionName="Resumen Ejecutivo" />
+        </div>
+
+        {/* PÁGINA 4: TABLERO EJECUTIVO DE DIRECCIÓN, BENCHMARKS Y KPIS DE INDUSTRIA */}
         <div 
           id="seccion-tablero-ejecutivo" 
           className={`print-page ${globalOrientation === 'landscape' ? 'landscape-print-page' : 'portrait-print-page'}`} 
@@ -2835,7 +2869,7 @@ export default function VistaPrevia() {
             </div>
           </div>
 
-          <CorporatePrintFooter pageNum={executiveDashboardPage || 3} sectionName="Tablero Ejecutivo" />
+          <CorporatePrintFooter pageNum={executiveDashboardPage || 4} sectionName="Tablero Ejecutivo" />
         </div>
 
         {/* Renderizar cada pilar/módulo en su orden seleccionado */}

@@ -303,3 +303,14 @@ Con base en el Plan de Saneamiento y Endurecimiento formalizado en `docs/archite
 * **Conector Google Serper API:** 2,500 búsquedas gratuitas de resultados orgánicos de Google y Places/Maps para extracción de competidores reales.
 * **Endpoint de Verificación:** `POST /api/test/serper` y soporte en `POST /api/test/search`.
 
+### 5.6 Resumen Ejecutivo Formal, Dictamen de Viabilidad Real (2 Fases) e Integración INEGI DENUE (`src/components/ExecutiveSummarySection.jsx`, `src/modules/VistaPrevia.jsx`)
+* **Ubicación en Documento Maestro:** Página 3 de la Vista Previa y PDF corporativo (entre el Índice General en P.2 y el Tablero Ejecutivo en P.4).
+* **Estándar Metodológico:** Formulación según Linda Pinson (*Anatomy of a Business Plan*) y Modelo Atómico Cuántico de Fondo Thoth AC.
+* **Elevator Pitch:** Formato de 30 segundos (Problema, Solución Tecnológica, Propuesta de Valor y Requerimiento de Capital).
+* **Dictamen de Viabilidad para Comités de Inversión (Honestidad Técnica Radical):**
+  * **Veredicto:** `VIABLE CONDICIONADO A ESTRATEGIA EN DOS FASES`.
+  * **Fase 1 (Mercado Regional B2B):** $4,000,000 MXN. 100% Viable con capital solicitado para 5.1 ton/mes en 1 horno ASADHOR bajo aviso COFEPRIS y NOM-251-SSA1-2009.
+  * **Fase 2 (Exportación Binacional EE.UU.):** Inviable con solo $4M MXN; requiere Ronda Serie A de $20,000,000 MXN para planta con certificación Tipo Inspección Federal (TIF / NOM-008-ZOO-1994), auditoría bilateral USDA/FSIS, túnel criogénico IQF y registro FDA.
+* **Matriz de Permisos Sanitarios:** Desglose con costos oficiales en MXN, tiempos de trámite y autoridad regulatoria (COFEPRIS vs SENASICA vs USDA/FSIS vs FDA).
+* **Integración Censal INEGI DENUE:** Consulta directa a la API oficial de INEGI DENUE (`/api/inegi/denue`) mapeando competidores reales en radio municipal con folio, razón social, estrato de personal y ventaja diferencial frente al producto termo-listo de VCV.
+

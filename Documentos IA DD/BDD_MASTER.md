@@ -104,3 +104,17 @@ Escenario: Prevención de sobreescritura accidental y pérdida de módulos compl
   Y cuando se aprueba un guardado válido, el servidor crea una instantánea inmutable en .versions/ con hash SHA-1
   Y actualiza el manifiesto respetando el límite FIFO de 20 versiones históricas.
 ```
+
+## Escenario 11: Resumen Ejecutivo Corporativo, Dictamen de Viabilidad en Dos Fases y Competencia INEGI
+```gherkin
+Escenario: Presentación honesta para comités de inversión y validación censal de competidores
+  Dado un proyecto cárnico de escala regional que solicita 4,000,000 MXN de capital de trabajo
+  Cuando el usuario visualiza el plan de negocios en Vista Previa
+  Entonces la Página 3 renderiza el Resumen Ejecutivo de Alta Dirección según la metodología de Linda Pinson
+  Y presenta un Dictamen de Viabilidad con veredicto "VIABLE CONDICIONADO A ESTRATEGIA EN DOS FASES"
+  Y dictamina la Fase 1 como 100% viable para el mercado B2B regional bajo normas COFEPRIS y NOM-251
+  Y dictamina la Fase 2 de exportación a EE.UU. como inviable con solo 4M MXN, detallando la necesidad de Serie A de 20M MXN para planta TIF y permisos USDA/FSIS
+  Y despliega la tabla de competidores reales extraídos directamente de la API oficial de INEGI DENUE
+  Y el Índice General incluye el enlace interactivo "Resumen Ejecutivo & Dictamen de Viabilidad" en Página 3.
+```
+
