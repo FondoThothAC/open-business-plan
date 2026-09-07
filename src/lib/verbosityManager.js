@@ -5,7 +5,7 @@
  *
  * Calibra de forma adaptativa la extensión de las respuestas de los agentes
  * según la configuración seleccionada ('conciso', 'normal', 'detallado') y
- * la naturaleza del módulo (por ejemplo, reglas ultra-concisas para Canvas).
+ * la naturaleza del módulo (por ejemplo, reglas ultra-concisas para Canvas y PESTEL).
  */
 
 /**
@@ -33,7 +33,12 @@ export function buildVerbosityConstraint(verbosity = 'normal', moduleKey = '') {
 
   // Regla especial prioritaria para Business Model Canvas (9 bloques concisos)
   if (mod === 'canvas') {
-    return `\n\nREGLA ESTRICTA DE EXTENSIÓN PARA CANVAS: Formato ultra-conciso obligatorio. Redacta de 3 a 5 viñetas cortas (bullet points) de máxima síntesis por campo. Sin introducciones, conclusiones ni párrafos largos.`;
+    return `\n\nREGLA ESTRICTA DE EXTENSIÓN PARA CANVAS: Formato ultra-conciso obligatorio. Redacta únicamente de 3 a 5 oraciones cortas y directas en viñetas (bullet points) de máxima síntesis. PROHIBIDO escribir párrafos extensos, introducciones o explicaciones teóricas redundantes. Máximo 30 a 50 palabras por bloque.`;
+  }
+
+  // Regla especial para PESTEL (factores claros en viñetas sin lore excesivo)
+  if (mod === 'pestel') {
+    return `\n\nREGLA ESTRICTA DE EXTENSIÓN PARA PESTEL: Redacta de 3 a 4 viñetas (bullet points) concretas, claras y directas por dimensión. Cada viñeta debe ser una oración puntual sin rodeos ni relleno narrativo.`;
   }
 
   if (normVerbosity === 'conciso') {
@@ -62,7 +67,11 @@ export function getFieldFormatGuidance(field = {}, verbosity = 'normal', moduleK
 
   const mod = (moduleKey || '').toLowerCase();
   if (mod === 'canvas') {
-    return '3 a 5 viñetas concisas y directas (ultra-conciso)';
+    return '3 a 5 viñetas cortas, concisas y directas (máximo 40 palabras)';
+  }
+
+  if (mod === 'pestel') {
+    return '3 a 4 viñetas directas y concretas de alto impacto';
   }
 
   const normVerbosity = normalizeVerbosity(verbosity);

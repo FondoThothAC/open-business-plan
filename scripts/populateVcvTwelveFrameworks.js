@@ -53,6 +53,60 @@ const VCV_DATA = {
 
 function generateFieldContent(pillarKey, moduleKey, fieldKey, frameworkId) {
   const f = fieldKey.toLowerCase();
+  const m = moduleKey.toLowerCase();
+
+  // 1. REGLA ESTRICTA PARA CANVAS: ORACIONES CORTAS Y CONCISAS EN VIÑETAS
+  if (m === 'canvas') {
+    if (f.includes('socios_clave')) {
+      return '• Empacadoras con certificación TIF de Sonora (abastecimiento de Rib-Eye Prime).\n• Fabricantes de bolsas termoencogibles de alta barrera para alto vacío.\n• Operadores logísticos de transporte con termo a -18°C.\n• Distribuidores especializados gourmet (Meatme, boutiques de carnes).';
+    }
+    if (f.includes('actividades_clave')) {
+      return '• Porcionado de cortes de 400g (1¼" de espesor).\n• Asado uniforme a 75°C en máquina ASADHOR (9 min).\n• Termosellado al alto vacío y congelación rápida a -20°C.\n• Control bacteriológico y trazabilidad de frío a 5 metrópolis.';
+    }
+    if (f.includes('recursos_clave')) {
+      return '• 1 Asador industrial automatizado ASADHOR.\n• 1 Empacadora de doble campana de alto vacío.\n• 1 Túnel de congelación rápida y cámara fría de 10 toneladas.\n• Planta de 1,200 m² en Parque Industrial de Hermosillo.';
+    }
+    if (f.includes('propuestas_valor')) {
+      return '• Corte fino Prime asado listo para comer en solo 4 minutos en microondas.\n• Inocuidad total por pasteurización a -20°C con larga vida de anaquel.\n• Cero mermas de cocción y ahorro de tiempo sin requerir parrillero ni carbón.';
+    }
+    if (f.includes('relaciones_clientes')) {
+      return '• Venta consultiva técnica B2B con restaurantes y hoteles.\n• Convenios de suministro programado con distribuidores mayoristas.\n• Capacitación breve en regeneración del producto en horno.';
+    }
+    if (f.includes('canales')) {
+      return '• Distribución refrigerada a 32 puntos clave en CDMX, GDL, MTY, Puebla y Tijuana.\n• Venta directa mayorista a cadenas de alimentos y banquetes.\n• Canal retail en tiendas de carnes finas especializadas.';
+    }
+    if (f.includes('segmentos_clientes')) {
+      return '• Cadenas de restaurantes de alto flujo sin cocina de parrilla.\n• Tiendas gourmet y clubes de compras (Meatme, City Market).\n• Consumidores urbanos ejecutivos que buscan proteína premium rápida.';
+    }
+    if (f.includes('estructura_costos')) {
+      return '• Compra de carne Prime con merma del 10% ($2.85M MXN/mes).\n• Congelación y empaque al vacío ($311k MXN/mes a $60/kg).\n• Costos fijos de planta, renta y energía ($120k MXN/mes).\n• Nómina de 9 colaboradores operativos y administrativos ($156k MXN/mes).';
+    }
+    if (f.includes('fuentes_ingresos')) {
+      return '• Venta mayorista de cajas de cortes Rib-Eye Prime a $963 MXN/kg.\n• Facturación proyectada: $4,992,192 MXN mensuales (5,184 kg/mes).\n• Margen bruto proyectado: 45.24% ($1,553,952 MXN/mes).';
+    }
+  }
+
+  // 2. REGLA ESTRICTA PARA PESTEL: VIÑETAS DIRECTAS Y PUNTUALES
+  if (m === 'pestel') {
+    if (f.includes('politico')) {
+      return '• Fomento gubernamental a la industria agroalimentaria y cárnica en Sonora.\n• Políticas de facilitación aduanera y sanitaria para tránsito interestatal de alimentos.\n• Estabilidad política y apoyo estatal a plantas del Parque Industrial de Hermosillo.';
+    }
+    if (f.includes('economico')) {
+      return '• Inflación y volatilidad del precio del ganado bovino en pie.\n• Mercado de alimentos preparados (Ready to Eat) en crecimiento anual del 8.5%.\n• Costo de energía eléctrica industrial para cámaras de ultracongelación.';
+    }
+    if (f.includes('social')) {
+      return '• Jornadas urbanas prolongadas que exigen comidas rápidas pero nutritivas.\n• Mayor conciencia por inocuidad y rechazo a conservadores artificiales.\n• Arraigo cultural del consumo de carne asada sonorense en todo México.';
+    }
+    if (f.includes('tecnologico')) {
+      return '• Tecnología ASADHOR: Asado uniforme automatizado con reducción del 80% de emisiones.\n• Sellado al vacío termoencogible resistente a choque térmico (75°C a -20°C).\n• Dataloggers IoT para trazabilidad en tiempo real de la temperatura de la cadena de frío.';
+    }
+    if (f.includes('ecologico')) {
+      return '• Reducción de huella de carbono al evitar el consumo masivo de carbón vegetal y leña.\n• Reciclaje y entrega certificada de grasas residuales para producción de biodiésel.\n• Cumplimiento integral de normativas ambientales SEMARNAT y municipales.';
+    }
+    if (f.includes('legal')) {
+      return '• Constitución formal como S.A. de C.V. en Hermosillo, Sonora.\n• Cumplimiento de NOM-251-SSA1-2009 (Higiene y alimentos) y NOM-008-ZOO-1994.\n• Registro de marca VCV Cortes Finos y patente de ASADHOR ante el IMPI.';
+    }
+  }
 
   // Nombres y conceptos corporativos
   if (f.includes('nombre') || f.includes('empresa') || f.includes('razon')) return VCV_DATA.nombre;
@@ -97,13 +151,6 @@ function generateFieldContent(pillarKey, moduleKey, fieldKey, frameworkId) {
   // Legal, Ambiental e Impacto
   if (f.includes('constitucion') || f.includes('socios') || f.includes('permisos') || f.includes('legal')) return 'Sociedad Anónima de Capital Variable (S.A. de C.V.) constituida en Hermosillo, Sonora. Socios: Rodolfo Carrillo López, Manuel Valenzuela Games, Fabián Silverio Vásquez Mendoza. Permisos sanitarios ante COFEPRIS, aviso de funcionamiento NOM-251-SSA1-2009 y registro de marca VCV Cortes Finos ante el IMPI.';
   if (f.includes('impacto') || f.includes('mitigacion') || f.includes('normatividad') || f.includes('ambiental') || f.includes('ecologico')) return 'Sustentabilidad y Medio Ambiente: El equipo ASADHOR reduce en más de un 80% las emisiones de CO2 y partículas suspendidas comparado con el asado tradicional con leña o carbón vegetal. Manejo responsable de grasas y residuos orgánicos con empresas recicladoras de sebo para biodiesel. Cumplimiento de normativas ecológicas municipales y NOM-001-SEMARNAT.';
-
-  // Canvas 9 bloques
-  if (f.includes('socios_clave')) return 'Empacadoras TIF sonorenses (proveedores de carne Prime), distribuidores de empaques termoencogibles de alto vacío, cadenas de distribución congelada (transporte refrigerado) y distribuidores retail especializados (Meatme).';
-  if (f.includes('actividades_clave')) return 'Corte y porcionado a 400g, asado en equipo ASADHOR, empaque termoencogible al alto vacío, congelación rápida a -20°C (pasteurización), control de calidad bromatológico y logística de frío a 5 metrópolis.';
-  if (f.includes('relaciones_clientes')) return 'Relación B2B directa con gerentes de alimentos y bebidas, acuerdos de consignación controlada con distribuidores gourmet y soporte técnico para regeneración del producto en hornos industriales o de microondas.';
-  if (f.includes('estructura_costos')) return 'Compra de carne Prime con merma (82.9%), empaque y congelación (9.0%), costos fijos de planta y servicios (3.5%), nómina operativa y administrativa (4.6%).';
-  if (f.includes('fuentes_ingresos')) return 'Venta al mayoreo de cajas de cortes finos Rib-Eye Prime ($963/kg antes de impuestos), con proyecciones de $4,992,192 MXN mensuales con 1 equipo ASADHOR a plena capacidad.';
 
   // Fallback exhaustivo de alta calidad técnica
   return `VCV Cortes Finos S.A. de C.V. integra en su dimensión de ${fieldKey.replace(/_/g, ' ')} (${moduleKey}) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.`;
