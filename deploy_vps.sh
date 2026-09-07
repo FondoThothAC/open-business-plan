@@ -42,15 +42,19 @@ rsync -avz --delete \
 echo "   ✓ Frontend sincronizado"
 
 # ──────────────────────────────────────────────────────────────────────────────
-# 3. Subir el backend server
+# 3. Subir el backend server y librerías compartidas (src/)
 # ──────────────────────────────────────────────────────────────────────────────
 echo ""
-echo "📤 Actualizando server/ en VPS ..."
+echo "📤 Actualizando server/ y src/ en VPS ..."
 rsync -avz --delete \
   -e "ssh -i '$SSH_KEY' -o StrictHostKeyChecking=no" \
   server/ \
   "$VPS:$VPS_APP_DIR/server/"
-echo "   ✓ Backend sincronizado"
+rsync -avz --delete \
+  -e "ssh -i '$SSH_KEY' -o StrictHostKeyChecking=no" \
+  src/ \
+  "$VPS:$VPS_APP_DIR/src/"
+echo "   ✓ Backend y librerías src/ sincronizados"
 
 # ──────────────────────────────────────────────────────────────────────────────
 # 4. Subir package.json (para npm ci en el VPS)
@@ -71,7 +75,7 @@ echo "⚙️  Validando y recargando Nginx ..."
 
 ssh -i "$SSH_KEY" -o StrictHostKeyChecking=no "$VPS" 'bash -s' << 'SSHEOF'
 set -e
-sudo cp /etc/nginx/sites-available/fondothoth-landing /etc/nginx/sites-enabled/fondothoth-landing
+sudo ln -sf /etc/nginx/sites-available/fondothoth-landing /etc/nginx/sites-enabled/fondothoth-landing
 sudo nginx -t && sudo systemctl reload nginx
 echo "✓ Nginx validado y recargado exitosamente"
 SSHEOF
