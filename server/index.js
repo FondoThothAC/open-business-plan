@@ -5,6 +5,7 @@ import cors from 'cors';
 import { search as ddgSearch } from 'duck-duck-scrape';
 import { scrapeSocialFollowers, scrapeEcommercePrices, scrapeUberEatsRappi, scrapeAirbnbTripAdvisor, scrapeMercadoLibre } from './scraper.js';
 import { busquedaMultiFuente, analizarViabilidad } from './competitorEngine.js';
+import { AutonomousResearchEngine } from './autonomousResearchEngine.js';
 import { FRAMEWORKS } from '../src/config/frameworks.js';
 import { swarmOrchestrator } from './swarm/SwarmOrchestrator.js';
 import { agentStore } from './swarm/AgentStore.js';
@@ -1736,6 +1737,39 @@ app.post('/api/market/enrich', async (req, res) => {
     });
   } catch (error) {
     console.error('[Market Enrich] Error:', error.message);
+    return res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// ─────────────────────────────────────────────────────────
+//  Endpoint de Investigación Autónoma Multinivel & Escalamiento
+// ─────────────────────────────────────────────────────────
+app.post('/api/research/autonomous-competitors', async (req, res) => {
+  try {
+    const {
+      companyName = '',
+      giro = '',
+      location = '',
+      targetMarket = '',
+      inversionInicial = 4000000,
+      keywords = ''
+    } = req.body || {};
+
+    const denueToken = process.env.VITE_DENUE_KEY || process.env.DENUE_KEY || '1b9e230f-2ae0-48db-bd20-8810b1db575e';
+
+    const resultado = await AutonomousResearchEngine.ejecutarInvestigacionAutonoma({
+      companyName,
+      giro,
+      location,
+      targetMarket,
+      inversionInicial: Number(inversionInicial) || 4000000,
+      keywords,
+      tokenDenue: denueToken
+    });
+
+    return res.json(resultado);
+  } catch (error) {
+    console.error('[Autonomous Research Endpoint] Error:', error.message);
     return res.status(500).json({ success: false, error: error.message });
   }
 });

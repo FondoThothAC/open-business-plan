@@ -118,3 +118,15 @@ Escenario: Presentación honesta para comités de inversión y validación censa
   Y el Índice General incluye el enlace interactivo "Resumen Ejecutivo & Dictamen de Viabilidad" en Página 3.
 ```
 
+## Escenario 12: Pipeline Agéntico Autónomo de Investigación Internacional y Compuertas de Decisión (Gate KPIs)
+```gherkin
+Escenario: Ejecución estándar secuencial de investigación multinivel y generación de Roadmap Mermaid
+  Dado cualquier proyecto comercial o industrial evaluado por el motor agéntico
+  Cuando el sistema ejecuta el pipeline autónomo de investigación
+  Entonces consulta secuencialmente el censo de INEGI DENUE, la web nacional (DuckDuckGo) y operadores en EE.UU. (Tavily/Serper)
+  Y clasifica a cada competidor en "Amenaza Directa", "Oportunidad de Alianza/Maquila" o "Sustituto Indirecto"
+  Y genera un Flowchart Mermaid con compuertas de decisión condicionales (KPIs Gate)
+  Y muestra el diagrama resumido en la Página 3 y el diagrama extendido completo en el módulo de Operaciones.
+```
+
+

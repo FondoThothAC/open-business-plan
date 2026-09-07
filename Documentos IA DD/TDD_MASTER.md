@@ -46,8 +46,9 @@
 | **TDD-35** | `Ghost Projects Eradication & Safe Deletion` | Integración / Backend | Filtrado de archivos sueltos `proyecto_*.json` en raíz de proyectos y archivado seguro con timestamp en `.archive/deleted_projects/`. |
 | **TDD-36** | `CCI Twelve Frameworks RAG Consolidator` | Integración / Multi-Framework | Cobertura integral del 100% de campos de los 12 frameworks canónicos para Comercio Cuántico Internacional TR SAPI de CV con sincronización inmutable de Markdown (.md). |
 | **TDD-37** | `ExecutiveSummary & Viability Two-Phases & INEGI DENUE` | Unitaria / Regulación & Datos | Valida estructura Linda Pinson (7 elementos), dictamen honesto en 2 fases ($4M regional viable vs $20M exportación Serie A) y muestra de competidores censados por INEGI DENUE. |
+| **TDD-38** | `AutonomousResearchEngine & Multinivel Competitors & Gate KPIs` | Integración / Backend & Agéntica | Cascada geográfica obligatoria (INEGI + DuckDuckGo + Serper/Tavily), categorización de competidores (Amenaza/Oportunidad/Sustituto) y generación sintáctica de Flowchart Mermaid con compuertas de decisión. |
 
-**Estado de Ejecución:** 253/253 tests pasando (100% de la suite completa aprobada en verde).
+**Estado de Ejecución:** 257/257 tests pasando (100% de la suite completa aprobada en verde).
 
 ---
 

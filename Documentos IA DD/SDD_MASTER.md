@@ -314,3 +314,13 @@ Con base en el Plan de Saneamiento y Endurecimiento formalizado en `docs/archite
 * **Matriz de Permisos Sanitarios:** Desglose con costos oficiales en MXN, tiempos de trámite y autoridad regulatoria (COFEPRIS vs SENASICA vs USDA/FSIS vs FDA).
 * **Integración Censal INEGI DENUE:** Consulta directa a la API oficial de INEGI DENUE (`/api/inegi/denue`) mapeando competidores reales en radio municipal con folio, razón social, estrato de personal y ventaja diferencial frente al producto termo-listo de VCV.
 
+### 5.7 Motor Autónomo de Investigación Internacional & Escalamiento Cuántico (`server/autonomousResearchEngine.js`, `POST /api/research/autonomous-competitors`)
+* **Cascada Geográfica Obligatoria:** Censo local/estatal (INEGI DENUE) $\rightarrow$ Búsqueda web nacional (DuckDuckGo) $\rightarrow$ Búsqueda de operadores internacionales (Google Serper / Tavily / Brave en EE.UU.).
+* **Categorización Estratégica de Competidores:**
+  * `AMENAZA_DIRECTA` (Rojo): Oferentes de producto terminado termo-listo o cocinado.
+  * `OPORTUNIDAD_ALIANZA` (Verde): Plantas TIF, frigoríficos o distribuidores mayoristas con potencial de maquila o distribución.
+  * `SUSTITUTO_INDIRECTO` (Ámbar): Carnicerías tradicionales de mostrador con producto crudo.
+* **Flowchart Mermaid de Escalamiento Cuántico:** Representación gráfica visual de las fases con compuerta de decisión condicional (`GateDecision`).
+* **Matriz de Compuertas de Decisión (KPIs Gate):** Criterios cuantitativos de tracción (EBITDA mensual $\ge$ $1.5M MXN, OTD $\ge$ 98%, retención $\ge$ 85%, validación HACCP y LOI firmada) requeridos para desbloquear la solicitud de fondos Serie A de $20M MXN.
+
+
