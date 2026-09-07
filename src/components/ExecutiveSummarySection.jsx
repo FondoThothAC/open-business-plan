@@ -106,11 +106,11 @@ export default function ExecutiveSummarySection({ planData }) {
 
       {/* ELEVATOR PITCH EJECUTIVO */}
       {resumen?.elevator_pitch && (
-        <div style={{ 
-          background: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 100%)', 
-          color: '#ffffff', 
-          borderRadius: '12px', 
-          padding: '1.25rem 1.5rem', 
+        <div style={{
+          background: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 100%)',
+          color: '#ffffff',
+          borderRadius: '12px',
+          padding: '1.25rem 1.5rem',
           marginBottom: '1.75rem',
           boxShadow: '0 10px 25px -5px rgba(49, 46, 129, 0.2)'
         }}>
@@ -120,9 +120,23 @@ export default function ExecutiveSummarySection({ planData }) {
               Elevator Pitch (30 Segundos — Carl Schramm)
             </span>
           </div>
-          <p style={{ fontSize: '1.02rem', fontStyle: 'italic', lineHeight: 1.6, margin: 0, color: '#f8fafc' }}>
-            &ldquo;{resumen.elevator_pitch}&rdquo;
-          </p>
+          {typeof resumen.elevator_pitch === 'string' ? (
+            <p style={{ fontSize: '1.02rem', fontStyle: 'italic', lineHeight: 1.6, margin: 0, color: '#f8fafc' }}>
+              &ldquo;{resumen.elevator_pitch}&rdquo;
+            </p>
+          ) : (
+            <ul style={{ margin: 0, paddingLeft: '1.1rem', fontSize: '0.95rem', lineHeight: 1.55, color: '#f8fafc' }}>
+              {Object.entries(resumen.elevator_pitch).map(([key, val]) => {
+                if (val === null || val === undefined || val === '') return null;
+                const label = key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+                return (
+                  <li key={key} style={{ marginBottom: '0.35rem' }}>
+                    <strong style={{ color: '#c7d2fe' }}>{label}:</strong> {String(val)}
+                  </li>
+                );
+              })}
+            </ul>
+          )}
         </div>
       )}
 
