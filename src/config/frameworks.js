@@ -27,7 +27,8 @@ export const FRAMEWORKS = {
           { key: 'competencia', title: 'Análisis de Competencia', description: 'Competidores directos, indirectos y ventaja competitiva.', fields: ['competidores', 'ventajas'] },
           { key: 'benchmarking', title: 'Benchmarking', description: 'Comparativa estructurada contra líderes del mercado.', fields: ['comparativa', 'matriz'] },
           { key: 'comercializacion', title: 'Estrategia de Comercialización', description: 'Canales de distribución, marketing e identidad de ventas.', fields: ['distribucion', 'promocion', 'identidad', 'canales_intermediarios'] },
-          { key: 'ventas', title: 'Plan de Ventas y Precios', description: 'Estrategia de pricing y proyecciones de volumen.', fields: ['precios', 'estrategia', 'proyeccion_volumen', 'tacticas_precio'] }
+          { key: 'ventas', title: 'Plan de Ventas y Precios', description: 'Estrategia de pricing y proyecciones de volumen.', fields: ['precios', 'estrategia', 'proyeccion_volumen', 'tacticas_precio'] },
+          { key: 'inteligencia_mercado_cascada', title: 'Inteligencia de Mercado en Cascada', description: 'Investigación multinivel: Local INEGI DENUE, Scraping Nacional y APIs de Comercio Internacional.', fields: ['fuente_datos_local', 'consulta_web_scraping', 'consulta_internacional_api', 'validacion_cruzada'] }
         ]
       },
       {
@@ -254,7 +255,8 @@ export const FRAMEWORKS = {
         title: 'Estudio de Mercado Cuantitativo',
         modules: [
           { key: 'demanda', title: 'Análisis de Demanda', description: 'Datos duros, elasticidad y comportamiento histórico.', fields: ['demanda_historica', 'elasticidad'] },
-          { key: 'oferta', title: 'Proyección de Oferta', description: 'Modelos de proyección para oferta, déficit y demanda futura.', fields: ['proyeccion_oferta'] }
+          { key: 'oferta', title: 'Proyección de Oferta', description: 'Modelos de proyección para oferta, déficit y demanda futura.', fields: ['proyeccion_oferta'] },
+          { key: 'inteligencia_mercado_cascada', title: 'Inteligencia de Mercado en Cascada', description: 'Investigación multinivel: Local INEGI DENUE, Scraping Nacional y APIs de Comercio Internacional.', fields: ['fuente_datos_local', 'consulta_web_scraping', 'consulta_internacional_api', 'validacion_cruzada'] }
         ]
       },
       {

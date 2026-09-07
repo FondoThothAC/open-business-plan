@@ -90,6 +90,13 @@ cci.mercado.ventas = {
   tacticas_precio: "Descuento por volumen del 8% en flotas mayores a 20 equipos pesados condicionado al pago puntual dentro de la ventana de crédito de 90 días."
 };
 
+cci.mercado.inteligencia_mercado_cascada = {
+  fuente_datos_local: "Censo INEGI DENUE (SCIAN 333130 - Fabricación de maquinaria para minería y construcción): 8 talleres de maquinado en Hermosillo con capacidades limitadas a cilindros menores a 2 metros sin banco hidrostático certificado.",
+  consulta_web_scraping: "Scraping digital en Sonora, Chihuahua y Zacatecas: Talleres tradicionales cobran entre $65,000 y $95,000 MXN por reparación sin garantía de estanqueidad ni telemetría IoT incorporada.",
+  consulta_internacional_api: "Datos ITC Trade Map y US Census Bureau (Fracción HS 8412.21 - Cilindros hidráulicos): Importaciones mineras hacia México por $184M USD anuales, con tiempos de entrega de 6 a 12 semanas desde EE.UU.",
+  validacion_cruzada: "Triangulación competitiva: Existe un déficit regional de talleres con torno de 6m y clean room ISO 4406 en Hermosillo, justificando el modelo MaaS con disponibilidad récord de 48 horas y absorción de crédito a 90 días."
+};
+
 cci.tecnico = cci.tecnico || {};
 cci.tecnico.operacion = cci.tecnico.operacion || {};
 cci.tecnico.operacion.economias_escala = "Adquisición directa por volumen de barras cromadas por tonelada y kits de sellos Parker por lotes de 100 juegos, reduciendo el costo unitario de refacciones en un 28% a partir del segundo semestre.";
@@ -380,6 +387,12 @@ cci.mercado_cuantitativo = {
   },
   oferta: {
     proyeccion_oferta: "Oferta local fragmentada e informal en un 70%, incapaz de atender cilindros de más de 4 metros o exigencias de limpieza ISO 4406."
+  },
+  inteligencia_mercado_cascada: {
+    fuente_datos_local: "Censo INEGI DENUE (SCIAN 333130 - Fabricación de maquinaria para minería y construcción): 8 talleres de maquinado en Hermosillo con capacidades limitadas a cilindros menores a 2 metros sin banco hidrostático certificado.",
+    consulta_web_scraping: "Scraping digital en Sonora, Chihuahua y Zacatecas: Talleres tradicionales cobran entre $65,000 y $95,000 MXN por reparación sin garantía de estanqueidad ni telemetría IoT incorporada.",
+    consulta_internacional_api: "Datos ITC Trade Map y US Census Bureau (Fracción HS 8412.21 - Cilindros hidráulicos): Importaciones mineras hacia México por $184M USD anuales, con tiempos de entrega de 6 a 12 semanas desde EE.UU.",
+    validacion_cruzada: "Triangulación competitiva: Existe un déficit regional de talleres con torno de 6m y clean room ISO 4406 en Hermosillo, justificando el modelo MaaS con disponibilidad récord de 48 horas y absorción de crédito a 90 días."
   }
 };
 

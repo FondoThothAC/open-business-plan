@@ -1,6 +1,6 @@
 # Tabla Módulo → Textbox → Prompt — 12 Modelos
 
-> **Generado:** 2026-09-07T05:26:35.063Z — **Fuente:** `src/config/frameworks.js` + `src/lib/field_guides.js` + `src/config/moduleBoxMap.js`
+> **Generado:** 2026-09-07T06:01:11.750Z — **Fuente:** `src/config/frameworks.js` + `src/lib/field_guides.js` + `src/config/moduleBoxMap.js`
 > **Textboxes totales:** se calculan abajo · Cada campo ya está **dividido en 5 textboxes** en `PromptEditor.jsx` (Instrucción / Ejemplo / Benchmark / Cita / Placeholder) — no es un solo textbox.
 
 
@@ -8,12 +8,12 @@
 
 | # | Modelo (`projectType`) | Nombre | Pilares | Módulos | Textboxes |
 |---|-------------------------|--------|---------|---------|------------|
-| 1 | `business` | Plan de Negocios Comercial | 5 | 29 | 109 |
+| 1 | `business` | Plan de Negocios Comercial | 5 | 30 | 113 |
 | 2 | `social_bid` | Proyecto Social (Metodología BID) | 4 | 16 | 53 |
 | 3 | `agile_startup` | Agile Startup (Lean MVP) | 5 | 11 | 45 |
 | 4 | `technology_id` | Plan de Negocios de Base Tecnológica e Innovación (I+D) | 5 | 11 | 36 |
 | 5 | `micro_business` | Plan para Microempresa y Autoempleo (Simplificado) | 4 | 11 | 25 |
-| 6 | `investment_project` | Proyecto de Inversión (Ingeniería y Finanzas) | 6 | 13 | 26 |
+| 6 | `investment_project` | Proyecto de Inversión (Ingeniería y Finanzas) | 6 | 14 | 30 |
 | 7 | `zopp` | ZOPP / Marco Lógico (Enfoque Alemán-BID) | 4 | 8 | 16 |
 | 8 | `horizon_europe` | Horizon Europe (Unión Europea) | 3 | 8 | 16 |
 | 9 | `hoshin_kanri` | Hoshin Kanri (Japón - Planificación Estratégica) | 3 | 8 | 16 |
@@ -21,7 +21,7 @@
 | 11 | `guanxi_plan` | Metodología Guanxi (China - Redes de Relaciones) | 3 | 8 | 16 |
 | 12 | `onudi_project` | Estudio de Factibilidad ONUDI (Industrial Global) | 3 | 8 | 14 |
 
-**TOTAL TEXTBOXES:** **386**
+**TOTAL TEXTBOXES:** **394**
 
 ---
 
@@ -204,6 +204,17 @@
 | `estrategia` | texto | Tácticas de venta: embudo, ciclo de venta, guiones, CRM, seguimiento post-venta. | Ej: "Embudo: Contenido orgánico → Webinar gratuito → Consulta 1:1 → Cierre. Ciclo promedio: 14 días. CRM: HubSpot Free." |
 | `proyeccion_volumen` | texto | Estimación de unidades vendidas por mes/trimestre/año. Base el cálculo en datos reales. | Ej: "Mes 1-3: 15 clientes/mes. Mes 4-6: 30/mes. Mes 7-12: 50/mes. Año 2: 80/mes. Total año 1: 350 clientes." |
 | `tacticas_precio` | texto | Estrategias de pricing dinámico, descuentos por pronto pago o paquetes escalonados. | Ej: 5% descuento por pago anual anticipado en contratos de mantenimiento. |
+
+#### Módulo: Inteligencia de Mercado en Cascada — `inteligencia_mercado_cascada` · _Investigación multinivel: Local INEGI DENUE, Scraping Nacional y APIs de Comercio Internacional._
+
+**Boxes asociados:** `box_cascada_mercado_3niveles`
+
+| Textbox (`field key`) | Tipo Box | Prompt — Instrucción | Ejemplo / Placeholder |
+|---|---|---|---|
+| `fuente_datos_local` | texto | Registra los datos censales locales obtenidos de INEGI DENUE. Especifica municipio, código SCIAN de actividad, estrato de personal y densidad competitiva territorial. | Ej: 'En Hermosillo, Sonora (SCIAN 311612 - Elaboración de embutidos y carnes preparadas), se censaron 14 establecimientos con estrato de 11 a 50 empleados'. |
+| `consulta_web_scraping` | texto | Documenta los hallazgos de prospección y web scraping multi-fuente a nivel estatal y nacional (DuckDuckGo, Tavily Search, Google Maps/Knowledge Graph). Incluye precios públicos, presencia digital y reseñas. | Ej: 'Scraping en Sonora y Sinaloa identificó 6 distribuidores cárnicos mayoristas con precios de Rib-Eye envasado entre $340 y $420 MXN/kg sin certificación TIF'. |
+| `consulta_internacional_api` | texto | Detalla los flujos arancelarios, cuotas y demanda internacional consultados en APIs y bases de comercio exterior (ITC Trade Map, UN Comtrade, USDA/FAS, World Bank). Registra fracción arancelaria y volumen transfronterizo. | Ej: 'Bajo la fracción arancelaria HS 0202.30 (Carne deshuesada congelada), el mercado de Arizona importó 34,200 ton en 2025 con arancel preferencial T-MEC del 0%'. |
+| `validacion_cruzada` | texto | Sintetiza la triangulación entre la capa local (INEGI), nacional (Web Scraping) e internacional (APIs comerciales). Formula el dictamen de viabilidad comercial y la estrategia de posicionamiento escalable. | Ej: 'La triangulación valida viabilidad comercial regional inmediata (Fase 1) por déficit de oferta con valor agregado en Hermosillo, y respalda el salto a exportación (Fase 2) hacia Phoenix/Tucson'. |
 
 ### Pilar: Estudio Técnico de Producción — `tecnico`
 
@@ -940,6 +951,17 @@
 |---|---|---|---|
 | `proyeccion_oferta` | texto | Modelo econométrico de cómo se comportará la oferta y demanda en los próximos 10-20 años. | Ej: "Se proyecta un déficit de 1,200 MW para 2030 debido al retiro de plantas de carbón." |
 
+#### Módulo: Inteligencia de Mercado en Cascada — `inteligencia_mercado_cascada` · _Investigación multinivel: Local INEGI DENUE, Scraping Nacional y APIs de Comercio Internacional._
+
+**Boxes asociados:** `box_cascada_mercado_3niveles`
+
+| Textbox (`field key`) | Tipo Box | Prompt — Instrucción | Ejemplo / Placeholder |
+|---|---|---|---|
+| `fuente_datos_local` | texto | Registra los datos censales locales obtenidos de INEGI DENUE. Especifica municipio, código SCIAN de actividad, estrato de personal y densidad competitiva territorial. | Ej: 'En Hermosillo, Sonora (SCIAN 311612 - Elaboración de embutidos y carnes preparadas), se censaron 14 establecimientos con estrato de 11 a 50 empleados'. |
+| `consulta_web_scraping` | texto | Documenta los hallazgos de prospección y web scraping multi-fuente a nivel estatal y nacional (DuckDuckGo, Tavily Search, Google Maps/Knowledge Graph). Incluye precios públicos, presencia digital y reseñas. | Ej: 'Scraping en Sonora y Sinaloa identificó 6 distribuidores cárnicos mayoristas con precios de Rib-Eye envasado entre $340 y $420 MXN/kg sin certificación TIF'. |
+| `consulta_internacional_api` | texto | Detalla los flujos arancelarios, cuotas y demanda internacional consultados en APIs y bases de comercio exterior (ITC Trade Map, UN Comtrade, USDA/FAS, World Bank). Registra fracción arancelaria y volumen transfronterizo. | Ej: 'Bajo la fracción arancelaria HS 0202.30 (Carne deshuesada congelada), el mercado de Arizona importó 34,200 ton en 2025 con arancel preferencial T-MEC del 0%'. |
+| `validacion_cruzada` | texto | Sintetiza la triangulación entre la capa local (INEGI), nacional (Web Scraping) e internacional (APIs comerciales). Formula el dictamen de viabilidad comercial y la estrategia de posicionamiento escalable. | Ej: 'La triangulación valida viabilidad comercial regional inmediata (Fase 1) por déficit de oferta con valor agregado en Hermosillo, y respalda el salto a exportación (Fase 2) hacia Phoenix/Tucson'. |
+
 ### Pilar: Ingeniería del Proyecto — `ingenieria_tecnica`
 
 #### Módulo: Ingeniería Básica — `ingenieria` · _Diseño macro, tecnología y memorias de cálculo._
@@ -1089,9 +1111,9 @@
 
 | Textbox (`field key`) | Tipo Box | Prompt — Instrucción | Ejemplo / Placeholder |
 |---|---|---|---|
-| `alternativas_identificadas` | texto | Describir detalladamente. | — |
-| `criterios_evaluacion` | texto | Describir detalladamente. | — |
-| `alternativa_seleccionada` | texto | Describir detalladamente. | — |
+| `alternativas_identificadas` | texto | Descripción de las diferentes ramas y opciones de solución derivadas del árbol de objetivos. | Ej: Opción 1: Construcción de planta propia; Opción 2: Alianza de maquila TIF; Opción 3: Distribución directa. |
+| `criterios_evaluacion` | texto | Factores de ponderación cuantitativa y cualitativa para evaluar cada alternativa identificada. | Ej: Costo financiero (30%), tiempo de implementación (25%), impacto social (25%) y riesgo operativo (20%). |
+| `alternativa_seleccionada` | texto | Fundamentación de la alternativa ganadora seleccionada y justificación de descarte de las demás opciones. | Ej: Se selecciona la Opción 2 (Maquila TIF + Marca Propia) por maximizar el VAN y reducir el tiempo de salida al mercado. |
 
 #### Módulo: Matriz Lógica (MPP 4x4) — `matriz_logica` · _Resumen narrativo, indicadores verificables, fuentes y supuestos._
 
@@ -1518,7 +1540,7 @@
 
 | Textbox (`field key`) | Tipo Box | Prompt — Instrucción | Ejemplo / Placeholder |
 |---|---|---|---|
-| `fcff` | texto | Describir detalladamente. | — |
+| `fcff` | texto | Proyección del Flujo de Caja Libre para la Firma (FCFF = EBIT*(1-t) + D&A - CAPEX - Delta NWC) conforme al estándar COMFAR de ONUDI. | Ej: FCFF Año 1: $1,420,000 MXN; Año 2: $2,850,000 MXN; Año 3: $3,600,000 MXN a capacidad estabilizada. |
 
 #### Módulo: Riesgo País y Riesgo Cambiario — `riesgo_pais_cambiario` · _Evaluación de volatilidad cambiaria, convertibilidad y estrategias de cobertura._
 
@@ -1536,7 +1558,7 @@
 
 | Textbox (`field key`) | Tipo Box | Prompt — Instrucción | Ejemplo / Placeholder |
 |---|---|---|---|
-| `sensibilidad_riesgo` | texto | Describir detalladamente. | — |
+| `sensibilidad_riesgo` | texto | Análisis de sensibilidad multivariable Tornado sobre variables críticas industriales (precio, volumen, CAPEX, costo de insumos). | Ej: El VAN resiste caídas de hasta -18% en el precio de venta mayorista y alzas del +22% en el costo de materia prima cárnica. |
 
 ### Pilar: Simulador y Factibilidad — `simulador_financiero`
 
@@ -1555,18 +1577,18 @@
 
 Cada tipo usa su guía: `FIELD_GUIDES_MAP[projectType]`. Si un campo no tiene guía propia, cae a `BUSINESS_GUIDES` (fallback en `src/lib/ai.js:431`).
 
-- `business`: **119** campos con guía (` justificacion, origen, nombre, descripcion, mision, vision, valores, general, …`)
+- `business`: **123** campos con guía (` justificacion, origen, nombre, descripcion, mision, vision, valores, general, …`)
 - `social_bid`: **52** campos con guía (` diagrama_visual, organigrama_visual, beneficiarios, aliados, oponentes, matriz_interes, problema_central, causas_directas, …`)
 - `agile_startup`: **45** campos con guía (` problema, segmentos_clientes, propuesta_valor, solucion, canales, flujos_ingresos, estructura_costos, metricas_clave, …`)
 - `technology_id`: **36** campos con guía (` descripcion_tecnologia, novedad_cientifica, nivel_trl, ventaja_tecnologica, estado_del_arte, estrategia_patentes, clasificacion_patentes_ipc, secretos_industriales, …`)
 - `micro_business`: **25** campos con guía (` idea_negocio, objetivo_basico, nombre, quienes_somos, que_ofrecemos, perfil_cliente, ubicacion_clientes, competidores_locales, …`)
-- `investment_project`: **26** campos con guía (` demanda_historica, elasticidad, proyeccion_oferta, ingenieria_basica, layout_industrial, memoria_calculo, catalogo_conceptos, explosion_insumos, …`)
-- `zopp`: **15** campos con guía (` matriz_participacion, analisis_problemas, analisis_objetivos, analisis_alternativas_zopp, matriz_logica, paquetes_actividades, ruta_critica_gantt, responsables_hitos, …`)
+- `investment_project`: **30** campos con guía (` demanda_historica, elasticidad, proyeccion_oferta, ingenieria_basica, layout_industrial, memoria_calculo, catalogo_conceptos, explosion_insumos, …`)
+- `zopp`: **18** campos con guía (` matriz_participacion, analisis_problemas, analisis_objetivos, analisis_alternativas_zopp, alternativas_identificadas, criterios_evaluacion, alternativa_seleccionada, matriz_logica, …`)
 - `horizon_europe`: **16** campos con guía (` consorcio_multinacional, dnsh, open_science, excelencia, repositorios_fair, politica_acceso_abierto, plan_gestion_datos_dmp, pathway_hacia_mercado, …`)
 - `hoshin_kanri`: **16** campos con guía (` true_north, matriz_x, breakthroughs, bowler, proceso_catchball, acuerdos_nemawashi, retroalimentacion_vertical, antecedentes_a3, …`)
 - `amoeba_management`: **14** campos con guía (` mapeo_celulas, precios_transferencia, rentabilidad_hora, filosofia, doce_principios_gestion, motivacion_empleados, gestion_transparente, control_horas_celula, …`)
 - `guanxi_plan`: **16** campos con guía (` mapa_relaciones, alineacion_quinquenal, reciprocidad, armonia, protocolo_obsequios_renqing, registro_favores_intercambio, temporalidad_reciprocidad, protocolo_banquetes_orden, …`)
-- `onudi_project`: **14** campos con guía (` ingenieria_base, matriz_localizacion_ponderada, disponibilidad_energia_agua, logistica_corredores_transporte, estudio_impacto_eia, gestion_efluentes_emisiones, plan_cumplimiento_ambiental, wacc_onudi, …`)
+- `onudi_project`: **16** campos con guía (` ingenieria_base, matriz_localizacion_ponderada, disponibilidad_energia_agua, logistica_corredores_transporte, estudio_impacto_eia, gestion_efluentes_emisiones, plan_cumplimiento_ambiental, wacc_onudi, …`)
 
 ---
 

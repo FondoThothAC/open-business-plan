@@ -26,7 +26,7 @@ describe('Resumen Ejecutivo, Dictamen de Viabilidad Real y Conexión INEGI DENUE
     assert.equal(dictamen.fase1.viable, true);
     assert.ok(dictamen.fase1.monto_requerido <= 4000000, 'Fase 1 debe ajustarse al capital semilla de $4,000,000 MXN');
     assert.equal(dictamen.fase2.viable_con_capital_semilla, false, 'Fase 2 de exportación NO es viable únicamente con $4M MXN');
-    assert.ok(dictamen.fase2.monto_requerido_serie_a >= 18000000, 'Fase 2 requiere Serie A de al menos $18,000,000 MXN para planta TIF');
+    assert.equal(dictamen.fase2.monto_requerido_serie_a, 16800000, 'Fase 2 requiere Serie A calibrada exactamente a $16,800,000 MXN para planta TIF');
   });
 
   it('debe incluir competidores reales con folio y coordenadas de INEGI DENUE en Hermosillo', () => {

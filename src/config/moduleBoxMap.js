@@ -28,6 +28,7 @@ export const MODULE_BOX_MAP = {
   'business:comercializacion': [],
   'business:ventas': ['box_unit_economics', 'box_benchmark_cac_ltv'],
   'business:metricas_aarrr': ['box_aarrr_pirata_5metricas'],
+  'business:inteligencia_mercado_cascada': ['box_cascada_mercado_3niveles'],
   
   // Técnico
   'business:ubicacion': [],
@@ -70,6 +71,7 @@ export const MODULE_BOX_MAP = {
   // ============ INVESTMENT PROJECT ============
   'investment_project:demanda': ['box_tam_sam_som'],
   'investment_project:oferta': [],
+  'investment_project:inteligencia_mercado_cascada': ['box_cascada_mercado_3niveles'],
   'investment_project:ingenieria': [],
   'investment_project:layout': ['box_layout_industrial'],
   'investment_project:presupuesto': ['box_capex_csi_table'],

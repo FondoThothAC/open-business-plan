@@ -1,10 +1,20 @@
-import { useMemo } from "react";
+import React, { useMemo } from "react";
 import MermaidViewer from "./MermaidViewer";
+import PlantFloorplan from "./PlantFloorplan";
 import { LayoutGrid, ShieldCheck } from "lucide-react";
 
 export default function FloorPlanDiagram({ data, planData }) {
   const localText = typeof data === "string" ? data : (data?.local || planData?.tecnico?.ubicacion?.local || "");
   
+  const isTifOrMeat = Boolean(
+    localText.toLowerCase().includes("tif") || 
+    localText.toLowerCase().includes("asadhor") || 
+    localText.toLowerCase().includes("carne") ||
+    localText.toLowerCase().includes("cárnic") ||
+    planData?.companyName?.toLowerCase().includes("vcv") ||
+    planData?.semilla?.proyecto?.toLowerCase().includes("cortes")
+  );
+
   const isIndustrial = Boolean(
     localText.toLowerCase().includes("taller") || 
     localText.toLowerCase().includes("bahía") || 
@@ -43,6 +53,18 @@ export default function FloorPlanDiagram({ data, planData }) {
       "  A[\"🚪 Recepción (15 m²)\"] --> B[\"💼 Consultoría (24 m²)\"]\n" +
       "  B --> C[\"📊 Sala de Juntas (20 m²)\"]\n";
   }, [localText, isIndustrial]);
+
+  if (isTifOrMeat) {
+    return (
+      <div style={{ marginTop: "1.25rem", marginBottom: "1.5rem" }}>
+        <PlantFloorplan 
+          plantName={`Distribución de Planta TIF — ${planData?.companyName || 'VCV Cortes Finos'} (1,200 m²)`}
+          totalAreaM2={1200}
+          dimensions="40.0 m × 30.0 m"
+        />
+      </div>
+    );
+  }
 
   return (
     <div style={{
@@ -96,3 +118,4 @@ export default function FloorPlanDiagram({ data, planData }) {
     </div>
   );
 }
+

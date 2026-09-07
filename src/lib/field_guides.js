@@ -837,6 +837,34 @@ export const BUSINESS_GUIDES = {
     "benchmark": "Margen de contribución positivo desde la primera transacción.",
     "cita": "Linda Pinson — Anatomy of a Business Plan (Ch. 7, p. 142)",
     "placeholder": "Ticket promedio, margen bruto unitario y LTV proyectado..."
+  },
+  "fuente_datos_local": {
+    "instruccion": "Registra los datos censales locales obtenidos de INEGI DENUE. Especifica municipio, código SCIAN de actividad, estrato de personal y densidad competitiva territorial.",
+    "ejemplo": "Ej: 'En Hermosillo, Sonora (SCIAN 311612 - Elaboración de embutidos y carnes preparadas), se censaron 14 establecimientos con estrato de 11 a 50 empleados'.",
+    "benchmark": "Mínimo 5 establecimientos censados con ID DENUE oficial y georreferenciación lat/long.",
+    "cita": "INEGI DENUE 2026 & Starting a Business QuickStart Guide (Ch. 5, p. 98)",
+    "placeholder": "Datos censales locales INEGI DENUE, código SCIAN y densidad de competidores..."
+  },
+  "consulta_web_scraping": {
+    "instruccion": "Documenta los hallazgos de prospección y web scraping multi-fuente a nivel estatal y nacional (DuckDuckGo, Tavily Search, Google Maps/Knowledge Graph). Incluye precios públicos, presencia digital y reseñas.",
+    "ejemplo": "Ej: 'Scraping en Sonora y Sinaloa identificó 6 distribuidores cárnicos mayoristas con precios de Rib-Eye envasado entre $340 y $420 MXN/kg sin certificación TIF'.",
+    "benchmark": "Tasa de coincidencia web > 85% con validación de URL y presencia digital comprobable.",
+    "cita": "Carl Schramm — Burn the Business Plan & South-South Cooperation (Ch. 4, p. 78)",
+    "placeholder": "Resultados de scraping web, competidores nacionales, precios de mercado y presencia online..."
+  },
+  "consulta_internacional_api": {
+    "instruccion": "Detalla los flujos arancelarios, cuotas y demanda internacional consultados en APIs y bases de comercio exterior (ITC Trade Map, UN Comtrade, USDA/FAS, World Bank). Registra fracción arancelaria y volumen transfronterizo.",
+    "ejemplo": "Ej: 'Bajo la fracción arancelaria HS 0202.30 (Carne deshuesada congelada), el mercado de Arizona importó 34,200 ton en 2025 con arancel preferencial T-MEC del 0%'.",
+    "benchmark": "Serie histórica de 3 años de importaciones/exportaciones con fracción arancelaria HS de 6 a 8 dígitos.",
+    "cita": "ITC Trade Map & UN Comtrade (Manual de Comercio Exterior UNCTAD/OMC)",
+    "placeholder": "Fracción arancelaria HS, volumen de importación en país destino, barreras arancelarias y cuotas..."
+  },
+  "validacion_cruzada": {
+    "instruccion": "Sintetiza la triangulación entre la capa local (INEGI), nacional (Web Scraping) e internacional (APIs comerciales). Formula el dictamen de viabilidad comercial y la estrategia de posicionamiento escalable.",
+    "ejemplo": "Ej: 'La triangulación valida viabilidad comercial regional inmediata (Fase 1) por déficit de oferta con valor agregado en Hermosillo, y respalda el salto a exportación (Fase 2) hacia Phoenix/Tucson'.",
+    "benchmark": "Matriz de triangulación con consistencia de precios, volumen de demanda y análisis de brecha competitiva.",
+    "cita": "The Nature of Value (Ch. 4, p. 78) & Anatomy of a Business Plan (Ch. 5)",
+    "placeholder": "Veredicto de triangulación de mercado, brecha oferta-demanda y plan de penetración..."
   }
 };
 
@@ -2140,6 +2168,34 @@ export const INVESTMENT_PROJECT_GUIDES = {
     "benchmark": "Intervalo de confianza al 95%.",
     "cita": "The Nature of Value (Ch. 5)",
     "placeholder": "Parámetros del simulador y corridas..."
+  },
+  "fuente_datos_local": {
+    "instruccion": "Registra los datos censales locales obtenidos de INEGI DENUE. Especifica municipio, código SCIAN de actividad, estrato de personal y densidad competitiva territorial.",
+    "ejemplo": "Ej: 'En Hermosillo, Sonora (SCIAN 311612 - Elaboración de embutidos y carnes preparadas), se censaron 14 establecimientos con estrato de 11 a 50 empleados'.",
+    "benchmark": "Mínimo 5 establecimientos censados con ID DENUE oficial y georreferenciación lat/long.",
+    "cita": "INEGI DENUE 2026 & Starting a Business QuickStart Guide (Ch. 5, p. 98)",
+    "placeholder": "Datos censales locales INEGI DENUE, código SCIAN y densidad de competidores..."
+  },
+  "consulta_web_scraping": {
+    "instruccion": "Documenta los hallazgos de prospección y web scraping multi-fuente a nivel estatal y nacional (DuckDuckGo, Tavily Search, Google Maps/Knowledge Graph). Incluye precios públicos, presencia digital y reseñas.",
+    "ejemplo": "Ej: 'Scraping en Sonora y Sinaloa identificó 6 distribuidores cárnicos mayoristas con precios de Rib-Eye envasado entre $340 y $420 MXN/kg sin certificación TIF'.",
+    "benchmark": "Tasa de coincidencia web > 85% con validación de URL y presencia digital comprobable.",
+    "cita": "Carl Schramm — Burn the Business Plan & South-South Cooperation (Ch. 4, p. 78)",
+    "placeholder": "Resultados de scraping web, competidores nacionales, precios de mercado y presencia online..."
+  },
+  "consulta_internacional_api": {
+    "instruccion": "Detalla los flujos arancelarios, cuotas y demanda internacional consultados en APIs y bases de comercio exterior (ITC Trade Map, UN Comtrade, USDA/FAS, World Bank). Registra fracción arancelaria y volumen transfronterizo.",
+    "ejemplo": "Ej: 'Bajo la fracción arancelaria HS 0202.30 (Carne deshuesada congelada), el mercado de Arizona importó 34,200 ton en 2025 con arancel preferencial T-MEC del 0%'.",
+    "benchmark": "Serie histórica de 3 años de importaciones/exportaciones con fracción arancelaria HS de 6 a 8 dígitos.",
+    "cita": "ITC Trade Map & UN Comtrade (Manual de Comercio Exterior UNCTAD/OMC)",
+    "placeholder": "Fracción arancelaria HS, volumen de importación en país destino, barreras arancelarias y cuotas..."
+  },
+  "validacion_cruzada": {
+    "instruccion": "Sintetiza la triangulación entre la capa local (INEGI), nacional (Web Scraping) e internacional (APIs comerciales). Formula el dictamen de viabilidad comercial y la estrategia de posicionamiento escalable.",
+    "ejemplo": "Ej: 'La triangulación valida viabilidad comercial regional inmediata (Fase 1) por déficit de oferta con valor agregado en Hermosillo, y respalda el salto a exportación (Fase 2) hacia Phoenix/Tucson'.",
+    "benchmark": "Matriz de triangulación con consistencia de precios, volumen de demanda y análisis de brecha competitiva.",
+    "cita": "The Nature of Value (Ch. 4, p. 78) & Anatomy of a Business Plan (Ch. 5)",
+    "placeholder": "Veredicto de triangulación de mercado, brecha oferta-demanda y plan de penetración..."
   }
 };
 

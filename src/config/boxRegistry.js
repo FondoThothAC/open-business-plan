@@ -68,6 +68,13 @@ export const BOX_REGISTRY = {
       title: 'Embudo de Crecimiento Pirata AARRR (5 Fases)',
       description: 'Métricas de Adquisición, Activación, Retención, Referencia e Ingresos con benchmarks de conversión.',
       source: { book: 'The Lean Startup & QuickStart Guide', page: 'Ch. 6 p. 114; Ch. 9 p. 205' }
+    },
+    {
+      id: 'box_cascada_mercado_3niveles',
+      type: BOX_TYPES.TABLE,
+      title: 'Cascada de Inteligencia de Mercado (3 Niveles: Local, Nacional, Global)',
+      description: 'Matriz comparativa de 3 capas: Local INEGI DENUE, Scraping Nacional y Estadísticas de Comercio Internacional.',
+      source: { book: 'Starting a Business QuickStart Guide & South-South Cooperation', page: 'Ch. 5; Ch. 4' }
     }
   ],
 
@@ -151,6 +158,13 @@ export const BOX_REGISTRY = {
       title: 'Simulación Estocástica de Monte Carlo (10,000 Iteraciones)',
       description: 'Distribución de probabilidad de VAN y TIR bajo incertidumbre.',
       source: { book: 'ONUDI Manual Industrial', page: 'p. 142' }
+    },
+    {
+      id: 'box_cascada_mercado_3niveles',
+      type: BOX_TYPES.TABLE,
+      title: 'Cascada de Inteligencia de Mercado (3 Niveles: Local, Nacional, Global)',
+      description: 'Matriz comparativa de 3 capas: Local INEGI DENUE, Scraping Nacional y Estadísticas de Comercio Internacional.',
+      source: { book: 'Starting a Business QuickStart Guide & South-South Cooperation', page: 'Ch. 5; Ch. 4' }
     }
   ],
 

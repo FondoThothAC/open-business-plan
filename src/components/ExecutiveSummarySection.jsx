@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   CheckCircle2, 
   AlertTriangle, 
@@ -14,8 +14,11 @@ import {
   Sparkles,
   GitCommit,
   ExternalLink,
-  Target
+  Target,
+  Code
 } from 'lucide-react';
+import DecisionFlow from './DecisionFlow';
+import PlantFloorplan from './PlantFloorplan';
 import MermaidViewer from './MermaidViewer';
 
 /**
@@ -24,6 +27,7 @@ import MermaidViewer from './MermaidViewer';
  * Presenta un veredicto honesto y técnico en dos fases para comités de inversión con KPIs Gate.
  */
 export default function ExecutiveSummarySection({ planData }) {
+  const [showRawMermaid, setShowRawMermaid] = useState(false);
   const resumen = planData?.resumen_ejecutivo || {};
   const dictamen = resumen?.dictamen_viabilidad || {};
   const fase1 = dictamen?.fase1 || {};
@@ -51,7 +55,7 @@ export default function ExecutiveSummarySection({ planData }) {
   GateDecision -- "❌ No alcanzado" --> F1_Optimizar["Optimización de Costos y<br/>Retención B2B en Sonora"]:::accion
   F1_Optimizar --> F1_Comercial
 
-  GateDecision -- "✅ Metas Cumplidas<br/>(EBITDA + HACCP + LOI)" --> F2_Levantamiento["Fase 2: Desbloqueo Ronda Serie A<br/><b>$20,000,000 MXN</b> (FIRA / Bancomext / VC)"]:::gate
+  GateDecision -- "✅ Metas Cumplidas<br/>(EBITDA + HACCP + LOI)" --> F2_Levantamiento["Fase 2: Desbloqueo Ronda Serie A<br/><b>$16,800,000 MXN</b> (FIRA / Bancomext / VC)"]:::gate
 
   subgraph SUB_FASE2 ["FASE 2: ESCALAMIENTO CUÁNTICO A EXPORTACIÓN"]
     F2_Levantamiento --> F2_Construccion["Nave Industrial Certificada TIF<br/>SENASICA (NOM-008-ZOO / NOM-009-ZOO)"]:::fase2
@@ -100,53 +104,55 @@ export default function ExecutiveSummarySection({ planData }) {
         </p>
       </div>
 
-      {/* ELEVATOR PITCH (30 SEGUNDOS) */}
-      <div style={{ 
-        background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(79, 70, 229, 0.02) 100%)',
-        border: '1px solid #c7d2fe',
-        borderRadius: '10px',
-        padding: '1.1rem 1.25rem',
-        marginBottom: '1.5rem'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.4rem' }}>
-          <Sparkles size={18} color="#4f46e5" />
-          <h4 style={{ margin: 0, fontSize: '0.92rem', fontWeight: 800, color: '#312e81', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-            Elevator Pitch (30 Segundos)
-          </h4>
+      {/* ELEVATOR PITCH EJECUTIVO */}
+      {resumen?.elevator_pitch && (
+        <div style={{ 
+          background: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 100%)', 
+          color: '#ffffff', 
+          borderRadius: '12px', 
+          padding: '1.25rem 1.5rem', 
+          marginBottom: '1.75rem',
+          boxShadow: '0 10px 25px -5px rgba(49, 46, 129, 0.2)'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+            <Sparkles size={18} color="#a5b4fc" />
+            <span style={{ fontSize: '0.78rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#c7d2fe' }}>
+              Elevator Pitch (30 Segundos — Carl Schramm)
+            </span>
+          </div>
+          <p style={{ fontSize: '1.02rem', fontStyle: 'italic', lineHeight: 1.6, margin: 0, color: '#f8fafc' }}>
+            &ldquo;{resumen.elevator_pitch}&rdquo;
+          </p>
         </div>
-        <p style={{ margin: 0, fontSize: '0.88rem', lineHeight: 1.6, color: '#1e293b', fontStyle: 'italic' }}>
-          "{resumen?.elevator_pitch || 'VCV Cortes Finos produce cortes de carne premium previamente cocinados al carbón con tecnología patentada en horno continuo ASADHOR y pasteurizados a -20°C. Entregamos a restaurantes (HORECA) un producto libre de mermas, que reduce el tiempo de servicio de 4 horas a 3 minutos con 90 días de vida de anaquel. Solicitamos $4,000,000 MXN para consolidar la Fase 1 regional, con un modelo de escalamiento cuántico hacia exportación.'}"
-        </p>
-      </div>
+      )}
 
-      {/* DICTAMEN DE VIABILIDAD PARA INVERSIONISTAS (TARJETA MAESTRA) */}
+      {/* DICTAMEN DE VIABILIDAD HONESTO */}
       <div style={{ 
         background: '#ffffff', 
         border: '1px solid #e2e8f0', 
         borderRadius: '12px', 
-        boxShadow: '0 4px 15px rgba(0, 0, 0, 0.03)',
         padding: '1.25rem',
         marginBottom: '1.75rem',
-        pageBreakInside: 'avoid'
+        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.75rem', marginBottom: '1rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-            <Scale size={22} color="#059669" />
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <Scale size={20} color="#b45309" />
             <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: '#0f172a' }}>
-              Dictamen Oficial de Viabilidad Técnico-Financiera
+              Dictamen de Factibilidad y Estrategia en Dos Fases
             </h3>
           </div>
           <div style={{ 
-            display: 'inline-flex', 
+            display: 'flex', 
             alignItems: 'center', 
             gap: '0.4rem', 
-            background: '#ecfdf5', 
-            border: '1px solid #a7f3d0', 
-            color: '#065f46', 
-            fontWeight: 800, 
-            fontSize: '0.78rem', 
-            padding: '0.35rem 0.75rem', 
+            padding: '0.3rem 0.75rem', 
+            background: '#fef3c7', 
+            border: '1px solid #fde68a',
             borderRadius: '9999px',
+            color: '#92400e',
+            fontWeight: 800,
+            fontSize: '0.75rem',
             letterSpacing: '0.03em'
           }}>
             <ShieldCheck size={16} />
@@ -155,7 +161,7 @@ export default function ExecutiveSummarySection({ planData }) {
         </div>
 
         <p style={{ fontSize: '0.86rem', color: '#334155', lineHeight: 1.55, margin: '0 0 1.25rem 0' }}>
-          {dictamen?.conclusion_ejecutiva || 'El proyecto es altamente viable, rentable y escalable en su mercado regional y nacional B2B bajo normativa COFEPRIS / NOM-251 con el capital solicitado de $4,000,000 MXN. Sin embargo, se dictamina INVIABLE pretender exportar directamente a EE.UU. con este monto inicial, dado que las regulaciones federales (SENASICA TIF, USDA/FSIS, FDA) exigen una infraestructura con CAPEX de $18M a $25M MXN. Se recomienda formalmente a los inversionistas autorizar la Fase 1 como prueba de tracción y financiar la Fase 2 tras alcanzar el punto de equilibrio operativo.'}
+          {dictamen?.conclusion_ejecutiva || 'El proyecto es altamente viable, rentable y escalable en su mercado regional y nacional B2B bajo normativa COFEPRIS / NOM-251 con el capital solicitado de $4,000,000 MXN. Sin embargo, se dictamina INVIABLE pretender exportar directamente a EE.UU. con este monto inicial, dado que las regulaciones federales (SENASICA TIF, USDA/FSIS, FDA) exigen una infraestructura con CAPEX de $16.8M MXN calibrado. Se recomienda formalmente a los inversionistas autorizar la Fase 1 como prueba de tracción y financiar la Fase 2 tras alcanzar el punto de equilibrio operativo.'}
         </p>
 
         {/* COMPARATIVA DE DOS FASES: LOCAL VS EXPORTACIÓN */}
@@ -187,7 +193,7 @@ export default function ExecutiveSummarySection({ planData }) {
             </ul>
           </div>
 
-          {/* FASE 2: EXPORTACIÓN */}
+          {/* FASE 2: EXPORTACIÓN CALIBRADA A $16.8M */}
           <div style={{ 
             background: '#fffbeb', 
             border: '1px solid #fde68a', 
@@ -196,27 +202,34 @@ export default function ExecutiveSummarySection({ planData }) {
           }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
               <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#92400e', textTransform: 'uppercase' }}>
-                Fase 2: Exportación EE.UU.
+                Fase 2: Exportación EE.UU. (Serie A)
               </span>
               <span style={{ fontSize: '0.72rem', background: '#fef3c7', color: '#b45309', padding: '0.2rem 0.5rem', borderRadius: '4px', fontWeight: 700 }}>
                 REQUIERE SERIE A
               </span>
             </div>
             <div style={{ fontSize: '1.25rem', fontWeight: 900, color: '#78350f', marginBottom: '0.5rem' }}>
-              $20,000,000 MXN
+              $16,800,000 MXN
             </div>
             <ul style={{ margin: 0, paddingLeft: '1.1rem', fontSize: '0.8rem', color: '#92400e', lineHeight: 1.5 }}>
               <li><strong>Capacidad:</strong> 25.5 toneladas/mes (Línea continua de 5 hornos ASADHOR).</li>
               <li><strong>Mercado:</strong> Cadenas de distribución en Arizona y California.</li>
               <li><strong>Normativa:</strong> Planta Tipo Inspección Federal (TIF), auditoría USDA/FSIS y registro FDA.</li>
-              <li><strong>Brecha detectada:</strong> Inviable exportar con solo $4M MXN; requiere levantar capital institucional tras validar tracción.</li>
-              <li><strong>Estrategia:</strong> Postular a fondos FIRA-Bancomext y Venture Capital en mes 14.</li>
+              <li><strong>Desglose de Inversión Calibrado ($16.8M):</strong></li>
+              <ul style={{ margin: '3px 0', paddingLeft: '1rem', fontSize: '0.76rem', color: '#78350f', lineHeight: 1.4 }}>
+                <li>• <strong>$6,500,000</strong> — Nave TIF (obra civil y áreas sanitarias NOM-008-ZOO / SENASICA)</li>
+                <li>• <strong>$3,750,000</strong> — 5 hornos industriales continuos ASADHOR</li>
+                <li>• <strong>$2,800,000</strong> — Túnel criogénico de congelación ultrarrápida IQF (-40°C)</li>
+                <li>• <strong>$1,450,000</strong> — Cuartos fríos (-20°C) y líneas de empaque al alto vacío</li>
+                <li>• <strong>$2,300,000</strong> — Capital de trabajo operativo inicial Serie A</li>
+              </ul>
+              <li><strong>Estrategia:</strong> Postular a fondos FIRA-Bancomext y Venture Capital en mes 14 tras validar tracción.</li>
             </ul>
           </div>
         </div>
       </div>
 
-      {/* FLOWCHART DE ESCALAMIENTO CUÁNTICO & COMPUERTAS DE DECISIÓN */}
+      {/* ROADMAP DE ESCALAMIENTO CUÁNTICO & COMPUERTAS DE DECISIÓN (REACT FLOW NATIVO) */}
       <div style={{ 
         background: '#ffffff', 
         border: '1px solid #e2e8f0', 
@@ -232,18 +245,50 @@ export default function ExecutiveSummarySection({ planData }) {
               Roadmap de Escalamiento Cuántico: Fase 1 &rarr; Gate KPIs &rarr; Fase 2
             </h4>
           </div>
-          <span style={{ fontSize: '0.74rem', background: '#eff6ff', color: '#1e40af', padding: '0.2rem 0.55rem', borderRadius: '4px', fontWeight: 700 }}>
-            Compuertas de Transición Auditables
-          </span>
+          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+            <button
+              type="button"
+              onClick={() => setShowRawMermaid(!showRawMermaid)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.3rem',
+                fontSize: '0.72rem',
+                background: showRawMermaid ? '#e2e8f0' : '#f1f5f9',
+                border: '1px solid #cbd5e1',
+                padding: '0.2rem 0.5rem',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                color: '#475569',
+                fontWeight: 600
+              }}
+            >
+              <Code size={13} />
+              {showRawMermaid ? 'Ocultar Mermaid' : 'Ver Código Mermaid'}
+            </button>
+            <span style={{ fontSize: '0.74rem', background: '#eff6ff', color: '#1e40af', padding: '0.2rem 0.55rem', borderRadius: '4px', fontWeight: 700 }}>
+              React Flow Interactivo
+            </span>
+          </div>
         </div>
         <p style={{ margin: '0 0 1rem 0', fontSize: '0.83rem', color: '#64748b' }}>
-          Ruta crítica de avance técnico y financiero. Para desbloquear la Ronda Serie A de exportación ($20M MXN), el proyecto debe superar obligatoriamente los hitos de tracción y validación sanitaria en Fase 1.
+          Ruta crítica de avance técnico y financiero con compuertas auditables. Para desbloquear la Ronda Serie A de exportación (<strong>$16,800,000 MXN</strong>), el proyecto debe superar obligatoriamente los hitos de tracción y validación sanitaria en Fase 1.
         </p>
 
-        {/* DIAGRAMA MERMAID INTERACTIVO */}
-        <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '8px', border: '1px solid #e2e8f0', marginBottom: '1.25rem', overflowX: 'auto' }}>
-          <MermaidViewer chart={flowchartMermaid} />
+        {/* MOTOR REACT FLOW NATIVO */}
+        <div style={{ marginBottom: '1.25rem' }}>
+          <DecisionFlow companyName={planData?.companyName} />
         </div>
+
+        {/* VISTA MERMAID ALTERNATIVA / ACCORDION */}
+        {showRawMermaid && (
+          <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '8px', border: '1px solid #e2e8f0', marginBottom: '1.25rem', overflowX: 'auto' }}>
+            <div style={{ fontSize: '0.75rem', color: '#64748b', marginBottom: '0.5rem', fontWeight: 600 }}>
+              Representación en sintaxis Mermaid Markdown:
+            </div>
+            <MermaidViewer chart={flowchartMermaid} />
+          </div>
+        )}
 
         {/* TABLA DE COMPUERTAS DE DECISIÓN (KPIS GATE) */}
         {kpisGate.length > 0 && (
@@ -268,20 +313,20 @@ export default function ExecutiveSummarySection({ planData }) {
                 <tbody>
                   {kpisGate.map((kg, idx) => (
                     <tr key={idx} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                      <td style={{ padding: '0.5rem 0.65rem', fontWeight: 700, color: '#0f172a' }}>{kg.metrica}</td>
-                      <td style={{ padding: '0.5rem 0.65rem', fontWeight: 700, color: 'var(--accent-color, #6366f1)' }}>{kg.umbral_minimo}</td>
-                      <td style={{ padding: '0.5rem 0.65rem', color: '#475569' }}>{kg.periodo_evaluacion}</td>
-                      <td style={{ padding: '0.5rem 0.65rem', color: '#64748b', fontSize: '0.75rem' }}>{kg.justificacion}</td>
+                      <td style={{ padding: '0.5rem 0.65rem', fontWeight: 600, color: '#0f172a' }}>{kg.kpi || kg.metrica}</td>
+                      <td style={{ padding: '0.5rem 0.65rem', color: '#166534', fontWeight: 700 }}>{kg.umbral || kg.umbral_minimo}</td>
+                      <td style={{ padding: '0.5rem 0.65rem', color: '#475569' }}>{kg.periodo || kg.periodo_evaluacion}</td>
+                      <td style={{ padding: '0.5rem 0.65rem', color: '#64748b', fontSize: '0.74rem' }}>{kg.justificacion}</td>
                       <td style={{ padding: '0.5rem 0.65rem', textAlign: 'center' }}>
                         <span style={{ 
                           fontSize: '0.68rem', 
-                          fontWeight: 700, 
-                          padding: '0.15rem 0.45rem', 
-                          borderRadius: '4px',
-                          background: '#eff6ff',
-                          color: '#1d4ed8'
+                          fontWeight: 800, 
+                          padding: '0.15rem 0.4rem', 
+                          borderRadius: '3px',
+                          background: kg.bloqueante ? '#fee2e2' : '#fef3c7',
+                          color: kg.bloqueante ? '#991b1b' : '#92400e'
                         }}>
-                          {kg.estado_simulado || 'Obligatorio'}
+                          {kg.bloqueante ? 'BLOQUEANTE' : 'AUDITABLE'}
                         </span>
                       </td>
                     </tr>
@@ -291,6 +336,15 @@ export default function ExecutiveSummarySection({ planData }) {
             </div>
           </div>
         )}
+      </div>
+
+      {/* PLANO Y METROLOGÍA DE PLANTA TIF (SVG NATIVO + CSS GRID) */}
+      <div style={{ marginBottom: '1.75rem', pageBreakInside: 'avoid' }}>
+        <PlantFloorplan 
+          plantName={`Distribución de Planta TIF — ${planData?.companyName || 'VCV Cortes Finos'} (1,200 m²)`}
+          totalAreaM2={1200}
+          dimensions="40.0 m × 30.0 m"
+        />
       </div>
 
       {/* MATRIZ DE PERMISOS REGULATORIOS Y COSTOS OFICIALES */}
