@@ -300,7 +300,8 @@ export default function TerminalDrawer({ isOpen, onToggle }) {
 
   if (!isOpen) {
     return (
-      <div 
+      <div
+        className="no-print"
         onClick={onToggle}
         style={{
           position: 'fixed',
@@ -343,7 +344,7 @@ export default function TerminalDrawer({ isOpen, onToggle }) {
   }
 
   return (
-    <div style={{
+    <div className="no-print" style={{
       position: 'fixed',
       bottom: 0,
       left: 0,

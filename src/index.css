@@ -662,15 +662,15 @@ textarea.form-control {
 
 @media print {
   * {
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
+    -webkit-print-color-adjust: economy !important;
+    print-color-adjust: economy !important;
   }
 
   @page {
     margin: 1cm;
     size: auto;
   }
-  
+
   html, body, #root, .app-container, .main-content, .view-container {
     height: auto !important;
     min-height: 0 !important;
@@ -766,7 +766,27 @@ textarea.form-control {
     break-inside: avoid !important;
     page-break-inside: avoid !important;
   }
-  
+
+  /* Card Reset: fondos blancos, sin sombras, bordes sutiles para reducir saturación */
+  .card, .foda-card, .matrix-item, .canvas-block, .financial-card,
+  .impact-widget, .buyer-persona-card, .brand-board-card,
+  .presupuesto-table-card, .inversion-card, .benchmarking-table-card,
+  .gauge-container, .mermaid-container, .recharts-wrapper {
+    background: white !important;
+    box-shadow: none !important;
+    border: 1px solid #e2e8f0 !important;
+  }
+
+  /* Quitar gradientes de headers en impresión */
+  .preview-document .cover-page,
+  .preview-document .toc-page,
+  .preview-document .financial-reports-page,
+  .preview-document .anexos-page,
+  .print-page-header,
+  .top-header {
+    background-image: none !important;
+  }
+
   /* Orphan Headings Prevention */
   h1, h2, h3, h4, h5, h6 {
     break-after: avoid !important;

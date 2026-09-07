@@ -1501,7 +1501,7 @@ export default function VistaPrevia() {
   const globalOrientation = planData.config?.globalOrientation || 'portrait';
   const setGlobalOrientation = (val) => updateConfig('globalOrientation', null, val);
 
-  const paginationMode = planData.config?.paginationMode || 'module-per-page';
+  const paginationMode = planData.config?.paginationMode || 'continuous';
   const setPaginationMode = (val) => updateConfig('paginationMode', null, val);
 
   const CorporatePrintHeader = ({ sectionTitle, pillarTitle }) => {
@@ -2428,8 +2428,6 @@ export default function VistaPrevia() {
             page: auto !important;
             break-before: auto !important;
             page-break-before: auto !important;
-            break-inside: avoid !important;
-            page-break-inside: avoid !important;
           }
           .cover-page {
             break-before: avoid !important;
@@ -2528,9 +2526,12 @@ export default function VistaPrevia() {
                 fontWeight: 600
               }}
             >
-              <option value="portrait">Vertical 📄</option>
-              <option value="landscape">Horizontal 📑</option>
+              <option value="portrait">Vertical 📄 (recomendado)</option>
+              <option value="landscape">Horizontal 📑 (canvas/financiero)</option>
             </select>
+            <span className="no-print" style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', fontStyle: 'italic', marginLeft: '0.3rem' }}>
+              Cambiá a Horizontal si FODA/canvas se cortan
+            </span>
           </div>
 
           {/* Selector de Modo de Paginación */}
