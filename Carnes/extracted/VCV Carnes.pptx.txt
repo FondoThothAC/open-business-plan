@@ -1,0 +1,347 @@
+
+--- DIAPOSITIVA ppt/slides/slide1.xml ---
+Marketing  Plan 
+ VCV Carnes 
+ Analisis de mercado
+
+--- DIAPOSITIVA ppt/slides/slide2.xml ---
+Marketing  Plan 
+ 01 
+ 03 
+ 02 
+ Competencia 
+ 01
+
+--- DIAPOSITIVA ppt/slides/slide3.xml ---
+Rancho El 17 
+ Aqui podemos ver que uno de los proovedores de carnes al vacio, por un kilo de carne vende  el mismo corte a 1399.00 el kilo y sin preparar. 
+ Aunque no es una carne preparada, al contar con conservacion al vacio, tambien se toma en consideracion como competencia. 
+ Kilo de Rib Eye 
+ 1,399.00
+
+--- DIAPOSITIVA ppt/slides/slide4.xml ---
+Sukarne 
+ La carne de SuKarne es uno de los pricipales competidores que a pesar de no ser carne asada igual ofrecen carne de manera empaquetada y preparada con una buena conservacion a un precio competitivo, ofrece una variedad de productos que permiten al consumidor escoger y tener variedad. 
+ SuKarne 
+ $70-$134
+
+--- DIAPOSITIVA ppt/slides/slide5.xml ---
+. 
+ 02 
+ 01 
+ 03 
+ Ubicaciones 
+ WPS  TEMPLATE 
+ YOUR  LOGO 
+ 02 
+ 02.
+
+--- DIAPOSITIVA ppt/slides/slide6.xml ---
+Segun la distribuidora cholula en Jalisco lo principal que se consume es carne de res. 
+ Jalisco 
+ Segun el estudio aunque se consume mas pollo que res, se escogio por su ubicacion estrategica 
+ . 
+ Puebla 
+ Tambien el estudio revela que en este estado se consume principalmente la carne de res 
+ Nuevo Leon 
+ El estudio revela que en este estado se consume principalmente la carne de res 
+ Ciudad de Mexico 
+ Demanda 
+ YOUR  LOGO 
+ Segun el ENIGH hecho por El INEGI en 2024 el hogar promedio consume 3,247 pesos en carnes (pollo, res y cerdo) siendo la res el tercer alimento carnico mas consumido y segun La 
+ Consejo Mexicano de la Carne 
+ (ComeCarne) en 2025 el consumo de carne de res fue de 
+ 2 millones 283 mil 637 toneladas consumidas, con un alza anual de 2.9 por ciento. 
+ Buscamos de manera meticulosa puntos estrategiscos para poder distribuir el producto por toda la republica mexicana, esto en base al consumo de carnes en estos sectores. 
+ El estudio revela que en este estado se consume principalmente la carne de res 
+ Baja California
+
+--- DIAPOSITIVA ppt/slides/slide7.xml ---
+YOUR  LOGO 
+ Los distribuidores fueron escogidos debido a su presencia en dichos estados 
+ Puntos de compra considerados 
+ Puntos de compra 
+ -MeatMe                 -Sonora’s Meat          -Carnes Premium san miguel 
+ -Corte y Norte        -Cortes Finos Patagonicos 
+ -Pardo Carne y la Pesca        - 
+ CORTES FINOS LOS YAQUIS 
+ CDMX 
+ - 
+ CARNES FINAS EL NORTE 
+ Ñ 
+ O 
+ - 
+ ALIMENTOS Y PRODUCTOS DEL NORTE 
+ - 
+ DISTRIBUIDORA DE CARNES MARIO 
+ - 
+ CARNES Y CORTES LA SULTANA 
+ - 
+ CARNICERIA Y CORTES FINOS SAN ANTONIO 
+ Puebla 
+ - 
+ CEDIS OBRADOR 
+ - 
+ CONCHITA 
+ - 
+ MERCADO DELICIAS BEEF 
+ - 
+ BOUTIQUE DE CORTES 
+ - 
+ SONORA 
+ ´ 
+ S MEAT 
+ - 
+ CARNES  FINAS DE SONORA 
+ Jalisco 
+ - 
+ CARNES GARZA 
+ - 
+ CARNES FINAS REGIAS 
+ - 
+ CARNES FINAS SAN JUAN 
+ - 
+ CANTU 
+ - 
+ COMERCIAL DE CARNES DE MONTERREY 
+ Nuevo Leon 
+ - 
+ CARNICERIA BUENA VISTA 
+ - 
+ CARNICERIA CANALES 
+ - 
+ MERCADO DE CARNES 
+ - 
+ GALERIA DE CARNES 
+ - 
+ MULTICARNES JUAREZ 
+ - 
+ CARNICERIA FAMOSO 
+ Baja California
+
+--- DIAPOSITIVA ppt/slides/slide8.xml ---
+Presentations are communication tools that can be used as demonstrations. 
+ Marketing  Plan 
+ 02 
+ 01 
+ 03 
+ THANKS 
+ FOR 
+ WATCHING 
+ WPS  TEMPLATE 
+ YOUR  LOGO 
+ 02
+
+--- DIAPOSITIVA ppt/slides/slide9.xml ---
+Marketing Strategy 
+ Presentations are communication tools that can be used as demonstrations. 
+ Presentations are communication tools that can be used as demonstrations, lectures, speeches, reports, and more. Most of the time, they're presented before an audience. 
+ Add a 
+ short description 
+ YOUR  LOGO
+
+--- DIAPOSITIVA ppt/slides/slide10.xml ---
+Marketing Strategy 
+ Presentations are communication tools that can be used as demonstrations. 
+ Insert title here 
+ Presentations are communication tools that can be used as demonstrations. 
+ Insert title here 
+ Presentations are communication tools that can be used as demonstrations. 
+ Insert title here 
+ 35 
+ minute 
+ Add Text 
+ 20 
+ minute 
+ Add Text 
+ YOUR  LOGO
+
+--- DIAPOSITIVA ppt/slides/slide11.xml ---
+Marketing Strategy 
+ Presentations are communication tools that can be used as demonstrations. 
+ Presentations are communication tools that can be used as demonstrations, lectures, speeches, reports, and more. Most of the time, they're presented before an audience. 
+ Add a 
+ short description 
+ YOUR  LOGO
+
+--- DIAPOSITIVA ppt/slides/slide12.xml ---
+Roadmap 
+ Presentations are communication tools that can be used as demonstrations. 
+ Marketing Strategy 
+ 01. 
+ 01 
+ Presentations are communication tools that can be used as demonstrations. 
+ Audience 
+ 02. 
+ 02 
+ CONTENTS 
+ Presentations are communication tools that can be used as demonstrations. 
+ Budget & Roadmap 
+ 03. 
+ 03 
+ Presentations are communication tools that can be used as demonstrations. 
+ Summary 
+ 04. 
+ 04
+
+--- DIAPOSITIVA ppt/slides/slide13.xml ---
+Marketing Strategy 
+ Presentations are communication tools that can be used as demonstrations. 
+ Add a 
+ short description 
+ Add Text 
+ Add Text 
+ Add Text 
+ Add Text 
+ Add Text 
+ YOUR  LOGO
+
+--- DIAPOSITIVA ppt/slides/slide14.xml ---
+Marketing Strategy 
+ Insert title here 
+ Insert title here 
+ Insert title here 
+ Insert title here 
+ Add Text 
+ Add Text 
+ Add Text 
+ Add Text 
+ YOUR  LOGO
+
+--- DIAPOSITIVA ppt/slides/slide15.xml ---
+Audience 
+ Add a short description 
+ Presentations are communication tools that can be used as demonstrations, lectures, speeches, reports, and more. Most of the time, they're presented before an audience. 
+ Presentations are communication tools that can be used as demonstrations, lectures, speeches, reports, and more. 
+ Presentations are communication tools that can be used as demonstrations, lectures, speeches, reports, and more. 
+ Add Text 
+ YOUR  LOGO 
+ 35 
+ Presentations are communication tools 
+ Add Text
+
+--- DIAPOSITIVA ppt/slides/slide16.xml ---
+Audience 
+ Add a short description 
+ Presentation are communication tools that can be used as 
+ demontrations 
+ , lectures, reports, and more. it is mostly presented before an audience. Presentation are communication tools that can be used as 
+ demontrations 
+ , lectures, reports, and more. 
+ YOUR  LOGO
+
+--- DIAPOSITIVA ppt/slides/slide17.xml ---
+Audience 
+ Presentations are communication tools that can be used as demonstrations, lectures, speeches, reports, and more. Most of the time, they're presented before an audience 
+ . 
+ Add a 
+ short description 
+ Insert title here 
+ Presentations are communication tools that can be used as demonstrations, lectures, speeches, reports, and more. 
+ $ 
+ 58/ 
+ usd 
+ Insert a motivational quote or life motto here
+
+--- DIAPOSITIVA ppt/slides/slide18.xml ---
+Presentations are communication tools that can be used as demonstrations, lectures, speeches, reports, and more. Most of the time, they're presented before an audience. 
+ Marketing  Plan 
+ 03 
+ 01 
+ Budget & 
+ Roadmap 
+ WPS  TEMPLATE 
+ YOUR  LOGO 
+ 02 
+ 03. 
+ 03
+
+--- DIAPOSITIVA ppt/slides/slide19.xml ---
+Budget & Roadmap 
+ YOUR  LOGO 
+ Add a short description 
+ May 14, 2021 
+ Insert title here 
+ Add a short description 
+ May 14, 2021 
+ Insert title here 
+ Add a short description 
+ May 14, 2021 
+ Insert title here 
+ Add a short description 
+ Presentations are communication tools that can be used as demonstrations, lectures, speeches, reports, and more. Most of the time, they're presented before an audience.
+
+--- DIAPOSITIVA ppt/slides/slide20.xml ---
+Budget & Roadmap 
+ Presentations are communication tools 
+ Insert title here 
+ $ 
+ 321 
+ usd 
+ Add Text 
+ Presentations are communication tools 
+ Insert title here 
+ $ 
+ 321 
+ usd 
+ Add Text 
+ Presentations are communication tools 
+ Insert title here 
+ $ 
+ 321 
+ usd 
+ Add Text 
+ YOUR  LOGO
+
+--- DIAPOSITIVA ppt/slides/slide21.xml ---
+Budget & Roadmap 
+ YOUR  LOGO 
+ Presentations are communication tools that can be used as demonstrations. 
+ Add a 
+ short description
+
+--- DIAPOSITIVA ppt/slides/slide22.xml ---
+Presentations are communication tools that can be used as demonstrations, lectures, speeches, reports, and more. Most of the time, they're presented before an audience. 
+ Marketing  Plan 
+ 04 
+ 01 
+ 03 
+ Summary 
+ WPS  TEMPLATE 
+ YOUR  LOGO 
+ 02 
+ 04.
+
+--- DIAPOSITIVA ppt/slides/slide23.xml ---
+Summary 
+ YOUR  LOGO 
+ Presentations are communication tools that can be used as demonstrations, lectures, speeches, reports, and more. 
+ Add a short description 
+ Presentations are communication tools 
+ Insert title here 
+ $ 
+ 321 
+ usd 
+ Add Text 
+ Presentations are communication tools 
+ Insert title here 
+ $ 
+ 321 
+ usd 
+ Add Text
+
+--- DIAPOSITIVA ppt/slides/slide24.xml ---
+Summary 
+ Presentations are communication tools that can be used as demonstrations, lectures, speeches, reports, and more. Most of the time, they're presented before an audience. 
+ Add a 
+ short description 
+ Insert title here 
+ Add Text 
+ 135+ 
+ Add Text 
+ 2449 
+ Add Text 
+ 186 
+ Add Text 
+ $20 
+ YOUR  LOGO
