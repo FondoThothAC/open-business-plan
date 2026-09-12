@@ -95,18 +95,18 @@ function parseToProjectData(planData) {
   } catch {}
 
   // Si no hay capex estruturado en JSON, intentar extraer monto del texto de inversión
+  // Nunca inventar CAPEX, costos ni ventas. El consumidor puede mostrar qué dato falta.
   if (investmentItems.length === 0) {
-    const capexFromText = parseNumericAmount(planData?.organizacion?.inversion?.capex || planData?.semilla?.finanzas?.inversion_total, 150000);
-    investmentItems.push({ id: 1, name: "Inversión Inicial en Maquinaria y Equipamiento", amount: capexFromText, type: "Activo Fijo", acquisitionSource: "Financiamiento / Aportación" });
+    const capexFromText = parseNumericAmount(planData?.organizacion?.inversion?.capex || planData?.semilla?.finanzas?.inversion_total, null);
+    if (capexFromText !== null && capexFromText > 0) investmentItems.push({ id: 1, name: 'Inversión declarada', amount: capexFromText, type: 'Activo Fijo', acquisitionSource: 'Pendiente de definir' });
   }
   if (recurringExpenses.length === 0) {
-    const fixedFromText = parseNumericAmount(planData?.organizacion?.costos?.fijos || planData?.semilla?.finanzas?.costos_fijos, 35000);
-    recurringExpenses.push({ id: 1, name: "Costos Fijos Operativos Base", type: "Fijo", initialMonthlyAmount: fixedFromText, growthType: 'annual', annualGrowthRates: [5,5,5,5,5] });
-    recurringExpenses.push({ id: 2, name: "Costos Variables Operativos", type: "Variable", initialMonthlyAmount: Math.round(fixedFromText * 0.4), growthType: 'annual', annualGrowthRates: [5,5,5,5,5] });
+    const fixedFromText = parseNumericAmount(planData?.organizacion?.costos?.fijos || planData?.semilla?.finanzas?.costos_fijos, null);
+    if (fixedFromText !== null && fixedFromText > 0) recurringExpenses.push({ id: 1, name: 'Costos operativos declarados', type: 'Fijo', initialMonthlyAmount: fixedFromText, growthType: 'annual', annualGrowthRates: [5, 5, 5, 5, 5] });
   }
   if (recurringRevenues.length === 0) {
-    const revFromText = parseNumericAmount(planData?.semilla?.finanzas?.meta_ingresos || planData?.organizacion?.estados_financieros?.resultados, 120000);
-    recurringRevenues.push({ id: 1, name: "Facturación Mensual por Servicios", initialMonthlyAmount: revFromText > 500000 ? Math.round(revFromText / 12) : revFromText, annualGrowthRates: [5,5,5,5,5] });
+    const revFromText = parseNumericAmount(planData?.semilla?.finanzas?.meta_ingresos || planData?.organizacion?.estados_financieros?.resultados, null);
+    if (revFromText !== null && revFromText > 0) recurringRevenues.push({ id: 1, name: 'Ingresos declarados', initialMonthlyAmount: revFromText, annualGrowthRates: [5, 5, 5, 5, 5] });
   }
 
   // Generar un depreciable dummy en base a los activos fijos
@@ -160,6 +160,22 @@ const mxn = (value) => new Intl.NumberFormat('es-MX', {
 }).format(Number(value || 0));
 
 export async function generateAutomatedFinancials(planData) {
+  const projectData = parseToProjectData(planData);
+  const missingInputs = [];
+  if (projectData.investmentItems.length === 0) missingInputs.push('inversión inicial');
+  if (projectData.recurringExpenses.length === 0) missingInputs.push('costos operativos');
+  if (projectData.recurringRevenues.length === 0) missingInputs.push('ingresos y su periodo');
+  if (missingInputs.length > 0) {
+    const message = `No calculable: falta ${missingInputs.join(', ')}. Captura datos verificados o aprueba un supuesto antes de generar indicadores financieros.`;
+    return {
+      inversion: { inversion_fija: message, inversion_diferida: message, opex_inicial: message, financiamiento: message },
+      costos: { fijos: message, variables: message, unitario: message },
+      estados_financieros: { resultados: message, balance: message, flujo_caja: message, amortizacion_creditos: message, memorias_calculo: message },
+      rentabilidad: { punto_equilibrio: message, indicadores: message, relacion_bc: message },
+      simulador: { iframe_simulador: message, simulacion_montecarlo: message },
+      _pendingFinancialInputs: missingInputs
+    };
+  }
   const apiManager = new ApiManager(planData?.config?.externalApis);
   const rfr = await apiManager.getRiskFreeRate();
   const beta = await apiManager.getIndustryBeta();
@@ -169,7 +185,6 @@ export async function generateAutomatedFinancials(planData) {
   const costOfEquity = rfr + (beta * (marketReturn - rfr));
   const wacc = costOfEquity; // Asumiendo 100% Equity por ahora.
 
-  const projectData = parseToProjectData(planData);
   // Reemplazar discountRate con el WACC dinámico si se definió
   projectData.discountRate = wacc;
   projectData.minimumAcceptableIRR = wacc;

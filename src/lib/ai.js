@@ -31,6 +31,8 @@ import { FIELD_GUIDES_MAP } from './field_guides.js';
 import { getApiBase } from '../config/apiConfig.js';
 import { calculateCost } from '../config/pricing.js';
 import { buildVerbosityConstraint } from './verbosityManager.js';
+import { buildReliableGenerationContract, fieldAddress } from './planContracts.js';
+import { buildEvidenceContext, sanitizePlanContext } from './evidenceContext.js';
 import { 
   isPaidProviderOrModel, 
   estimateCallCostUSD, 
@@ -438,19 +440,19 @@ Datos Crudos de la Semilla:
 ${JSON.stringify(seed, null, 2)}\n`
     : '';
 
-  const documentsContext = (allPlanData.config?.documents || []).length > 0
-    ? `\nDOCUMENTOS DE REFERENCIA (RAG COMPLETO):
-${allPlanData.config.documents.map(d => `--- INICIO DOCUMENTO: ${d.name || 'Archivo Adjunto'} ---\n${d.text || ''}\n--- FIN DOCUMENTO ---`).join('\n\n')}\n`
-    : '';
+  const projectTypeConfig = allPlanData.config?.projectType || 'business';
+  const expectedKeys = (currentModule.fields || []).map(f => f.key);
+  const evidence = buildEvidenceContext(allPlanData, `${currentModule.title || ''} ${currentModule.description || ''}`);
+  const documentsContext = evidence ? `\nEVIDENCIA RECUPERADA DEL PROYECTO:\n${evidence}\n` : '';
 
   const isLocalProvider = primaryProvider === 'ollama' || primaryProvider === 'lmstudio';
-  const planContext = cleanPlanDataForAi(allPlanData, isLocalProvider);
+  const planContext = cleanPlanDataForAi(sanitizePlanContext(allPlanData), isLocalProvider);
 
-  const projectTypeConfig = allPlanData.config?.projectType || 'business';
   const guides = FIELD_GUIDES_MAP[projectTypeConfig] || FIELD_GUIDES_MAP.business || {};
 
   const fieldsPromptContext = (currentModule.fields || []).map(f => {
-    const customGuide = allPlanData.config?.customPrompts?.[f.key];
+    const address = fieldAddress(projectTypeConfig, currentModule.pillar || '', currentModule.moduleKey || currentModule.key || '', f.key);
+    const customGuide = allPlanData.config?.customPrompts?.[address] || allPlanData.config?.customPrompts?.[f.key];
     const guide = customGuide || guides[f.key] || {};
     const citaStr = guide.cita ? `\n  Fundamento Metodológico: ${guide.cita}` : '';
     const benchStr = guide.benchmark ? `\n  Benchmark de Referencia: ${guide.benchmark}` : '';
@@ -482,10 +484,8 @@ Descripción: ${currentModule.description}
 Instrucciones específicas por campo que debes seguir y emular estrictamente:
 ${fieldsPromptContext}
 
-  Campos a generar (debes devolver un JSON con exactamente estas claves): ${(currentModule.fields || []).map(f => f.key).join(', ')}
+${buildReliableGenerationContract({ projectId, projectType: projectTypeConfig, expectedKeys, evidenceContext: evidence ? 'La evidencia recuperada arriba es la única evidencia documental autorizada.' : '' })}
 `;
-
-  const expectedKeys = (currentModule.fields || []).map(f => f.key);
 
   // Fetch installed models to resolve name matches
   const installedModels = await getInstalledOllamaModels(endpoint);
@@ -1855,7 +1855,7 @@ function parseAIResponse(text, expectedKeys = []) {
 
       if (Object.keys(recoveredData).length > 0) {
         expectedKeys.forEach(key => {
-          if (!recoveredData[key]) recoveredData[key] = "Información no generada correctamente.";
+          if (!recoveredData[key]) recoveredData[key] = '';
         });
         return recoveredData;
       }

@@ -109,13 +109,13 @@ export default function InegiMap({
   const [keywords, setKeywords] = useState(initialKeywords);
   const [scian, setScian] = useState(defaultScian || '0');
   const [radius, setRadius] = useState(2500);
-  const [center, setCenter] = useState(DEFAULT_CENTER);
-  const [selectedCluster, setSelectedCluster] = useState('hermosillo');
+  const [center, setCenter] = useState(null);
+  const [selectedCluster, setSelectedCluster] = useState(null);
   const [businesses, setBusinesses] = useState([]);
   const [isDrawing, setIsDrawing] = useState(false);
   const [polygonCoords, setPolygonCoords] = useState(null);
-  const [clientLoc, setClientLoc] = useState('Hermosillo, Sonora');
-  const [supplierLoc, setSupplierLoc] = useState('Hermosillo, Sonora');
+  const [clientLoc, setClientLoc] = useState('');
+  const [supplierLoc, setSupplierLoc] = useState('');
   const [manualCompetitors, setManualCompetitors] = useState('');
   const [effectiveness, setEffectiveness] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -752,9 +752,11 @@ Por favor, devuélvelo en formato JSON con la siguiente estructura exacta (respo
       { id: 'gym_3', nombre: 'Servicios Marítimos e Hidráulicos de Sonora', lat: 27.912, lng: -110.908, categoriaB2B: 'competidor', colorBadge: '#ef4444', weight: 0.5, estrato: '11 a 30 personas' }
     ];
 
-    setBusinesses(corridorPoints);
-    drawBusinesses(corridorPoints, 29.6, -110.6);
-    setStatus('Corredor Minero e Industrial de Sonora: 16 nodos activos cargados en 5 polos estratégicos.');
+    // Los nodos de ejemplo no deben presentarse como competencia real.
+    // El corredor se dibuja únicamente con establecimientos devueltos por una fuente verificable.
+    setBusinesses([]);
+    drawBusinesses([], center.lat, center.lng);
+    setStatus('Selecciona una ubicación y ejecuta una búsqueda para cargar datos territoriales verificables.');
   };
 
   const handleSelectCluster = (c) => {

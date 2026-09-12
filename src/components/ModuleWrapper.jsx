@@ -24,7 +24,7 @@ import { RenderBox } from '../components/boxes';
 import PromptEditor from './PromptEditor';
 
 export default function ModuleWrapper({ pillar, moduleKey, title, description, fields, extraAction }) {
-  const { planData, updateSection, updateConfig, toggleLock, toggleModuleVisibility, addComment, deleteComment } = usePlan();
+  const { planData, updateSection, updateConfig, toggleLock, toggleModuleVisibility, addComment, deleteComment, addPendingItems, resolvePending } = usePlan();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [stage, setStage] = useState('');
@@ -114,6 +114,8 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
       }
 
       const newDrafts = { ...draftValues };
+      const pending = Array.isArray(result?._pending) ? result._pending : [];
+      addPendingItems(pending);
       Object.keys(result || {}).forEach(key => {
         if (fields.find(f => f.key === key) && !isLocked(key)) {
           newDrafts[key] = result[key];
@@ -134,7 +136,7 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
       }
       
       // Efecto Typewriter para simular la escritura en tiempo real de la IA
-      setStage('Aplicando escritura en vivo...');
+      setStage(pending.length ? `${pending.length} dato(s) requieren revisión; el resto quedó en borrador.` : 'Aplicando escritura en vivo...');
       let currentLength = 0;
       const maxLength = Math.max(0, ...Object.values(newDrafts).map(v => typeof v === 'string' ? v.length : 0));
       
@@ -200,9 +202,21 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
   };
 
   const moduleData = planData[pillar]?.[moduleKey] || {};
+  const modulePendings = (planData.config?.pendingItems || []).filter((item) => item.pillar === pillar && item.module === moduleKey && item.status === 'open');
 
   return (
     <div className="module-view" style={{ animation: 'slideUp 0.4s ease-out' }}>
+      {modulePendings.length > 0 && (
+        <div className="no-print" style={{ marginBottom: '1rem', padding: '0.9rem 1rem', borderRadius: '10px', border: '1px solid #f59e0b', background: 'rgba(245, 158, 11, 0.08)' }}>
+          <strong>Datos pendientes ({modulePendings.length})</strong>
+          {modulePendings.map((item) => (
+            <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', gap: '0.75rem', marginTop: '0.5rem', fontSize: '0.82rem' }}>
+              <span><b>{item.field}:</b> {item.message}</span>
+              <button className="btn btn-secondary" onClick={() => resolvePending(item.id, 'ignored')}>Ignorar por ahora</button>
+            </div>
+          ))}
+        </div>
+      )}
       <div className="view-header" style={{ marginBottom: '2rem' }}>
         <div>
           <h1 className="view-title" style={{ fontSize: '2.25rem', fontWeight: 800 }}>{title}</h1>

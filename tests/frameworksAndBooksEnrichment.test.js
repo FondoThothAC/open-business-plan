@@ -254,7 +254,12 @@ test('Enriquecimiento Integral de las 12 Metodologías con los 13 Libros Técnic
 
     const cascadeModule = await import('../server/routes/marketCascade.js');
     assert.ok(cascadeModule.ejecutarCascadaMercado, 'Debe exportar la función ejecutarCascadaMercado');
-    const res = await cascadeModule.ejecutarCascadaMercado({ query: 'test mercado cárnico' });
+    const res = await cascadeModule.ejecutarCascadaMercado({
+      projectId: 'test_cascade',
+      query: 'test mercado',
+      sector: 'servicios',
+      ubicacion: 'Hermosillo, Sonora'
+    });
     assert.ok(res.success, 'La cascada debe ejecutarse exitosamente');
     assert.ok(res.capaLocal, 'Debe contener Capa Local');
     assert.ok(res.capaNacional, 'Debe contener Capa Nacional');

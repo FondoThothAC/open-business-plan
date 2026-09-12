@@ -1,6 +1,6 @@
 # Tabla Módulo → Textbox → Prompt — 12 Modelos
 
-> **Generado:** 2026-09-07T06:01:11.750Z — **Fuente:** `src/config/frameworks.js` + `src/lib/field_guides.js` + `src/config/moduleBoxMap.js`
+> **Generado:** 2026-09-10T05:48:10.106Z — **Fuente:** `src/config/frameworks.js` + `src/lib/field_guides.js` + `src/config/moduleBoxMap.js`
 > **Textboxes totales:** se calculan abajo · Cada campo ya está **dividido en 5 textboxes** en `PromptEditor.jsx` (Instrucción / Ejemplo / Benchmark / Cita / Placeholder) — no es un solo textbox.
 
 
@@ -1121,7 +1121,7 @@
 
 | Textbox (`field key`) | Tipo Box | Prompt — Instrucción | Ejemplo / Placeholder |
 |---|---|---|---|
-| `mpp` | texto | Matriz de Planificación del Proyecto (equivalente a Marco Lógico). | Ej: Objetivo general, propósito, resultados, actividades. |
+| `mpp` | texto | Matriz de Planificación del Proyecto (MPP ZOPP 4x4) con resumen narrativo, indicadores, medios de verificación y supuestos. | Ej: Indicador a nivel de propósito: Reducción del 35% en merma de cocción y margen neto del 22% al año 2. |
 
 ### Pilar: Operación y Recursos — `cronograma_presupuesto`
 

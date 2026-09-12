@@ -652,7 +652,7 @@ export default function Layout() {
       {/* Main Content Area */}
       <main className="main-content">
         <ServerHealthBanner />
-        <header className="top-header no-print" style={{ height: 'auto', minHeight: '70px', padding: '0.5rem 1.5rem' }}>
+        <header className="top-header no-print" style={{ minHeight: '70px', padding: '0.5rem 1.5rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', flexWrap: 'wrap', gap: '1rem' }}>
             
             {/* Left: Project Identity & Type */}

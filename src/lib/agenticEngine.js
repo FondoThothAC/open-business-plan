@@ -11,6 +11,9 @@ import { executeAgentTool } from './agentTools.js';
 import { callAiProvider } from './ai.js';
 import { getApiBase } from '../config/apiConfig.js';
 import { buildVerbosityConstraint, getFieldFormatGuidance } from './verbosityManager.js';
+import { buildReliableGenerationContract } from './planContracts.js';
+import { buildEvidenceContext, sanitizePlanContext } from './evidenceContext.js';
+import { validateGenerationResult } from './generationValidation.js';
 
 const TRAJECTORY_STORAGE_KEY = 'openplan_agent_trajectories';
 
@@ -520,9 +523,8 @@ export async function runAgenticModuleGeneration({
     const configuredVerbosity = planData?.config?.ai?.verbosity || 'normal';
     const verbosityDirective = buildVerbosityConstraint(configuredVerbosity, moduleKey);
 
-    const documentsContext = (planData.config?.documents || []).length > 0
-      ? `\nDOCUMENTOS DE REFERENCIA RAG:\n${planData.config.documents.map(d => d.text).join('\n---\n').substring(0, 4000)}\n`
-      : '';
+    const evidence = buildEvidenceContext(planData, `${title} ${queryGiro}`);
+    const documentsContext = evidence ? `\nEVIDENCIA RECUPERADA DEL PROYECTO:\n${evidence}\n` : '';
 
     const hasRealMarketData = marketObservation && (marketObservation.provenance === 'real' || marketObservation.provenance === 'verified_real') && Array.isArray(marketObservation.results) && marketObservation.results.length > 0;
     const marketObservationContent = hasRealMarketData
@@ -530,7 +532,7 @@ export async function runAgenticModuleGeneration({
       : '(sin datos verificados — NO inventes cifras de mercado, precios ni cuota; declara la limitación)';
 
     const systemPrompt = `Eres el Agente Autónomo Especialista en "${title}" de Open Business Plan (Fondo Thoth AC).
-Debes redactar contenido ejecutivo de nivel profesional con datos duros para un plan de negocios de alta inversión.${locationInstruction}${provenanceDirective}${verbosityDirective}
+Debes redactar contenido ejecutivo proporcional al tipo y escala real del proyecto.${locationInstruction}${provenanceDirective}${verbosityDirective}
 
 CONTEXTO DETALLADO DEL PROYECTO (SEMILLA):
 - Nombre del Proyecto: ${queryGiro}
@@ -550,6 +552,7 @@ ${quantumData ? `- Diagnóstico Cuántico Atómico: ${JSON.stringify(quantumData
 
 CAMPOS REQUERIDOS (Devuelve ÚNICAMENTE un JSON válido con estas claves exactas):
 ${fields.map(f => `"${f.key}": "${f.label || f.key} - ${getFieldFormatGuidance(f, configuredVerbosity, moduleKey)}"`).join('\n')}
+${buildReliableGenerationContract({ projectId: planData.config?.projectId, projectType: planData.config?.projectType, expectedKeys, evidenceContext: evidence ? 'Usa solo la evidencia recuperada de este proyecto.' : ''})}
 `;
 
     const synthStart = Date.now();
@@ -576,21 +579,21 @@ ${fields.map(f => `"${f.key}": "${f.label || f.key} - ${getFieldFormatGuidance(f
     };
 
     const generatedResult = await callAiProvider(strictConfig, systemPrompt, true, expectedKeys, handleAiThink);
+    const validated = validateGenerationResult({ result: generatedResult, projectType: planData.config?.projectType || 'business', pillar, module: moduleKey, expectedKeys, searched: marketObservation?.sources || [] });
 
     const criticStart = Date.now();
-    const firstFieldKey = expectedKeys[0] || 'contenido';
-    const firstFieldText = typeof generatedResult === 'object' ? String(generatedResult[firstFieldKey] || '') : String(generatedResult);
+    const allFieldsText = Object.entries(validated.valid).map(([key, value]) => `${key}: ${typeof value === 'string' ? value : JSON.stringify(value)}`).join('\n\n');
 
     const criticResult = await executeAgentTool('tool_critic_validator', {
       sectionKey: `${pillar}.${moduleKey}`,
-      draftContent: firstFieldText,
-      context: planData
+      draftContent: allFieldsText,
+      context: sanitizePlanContext(planData)
     });
 
     notifyStep('reflection', {
       title: 'Reflexión y Control de Calidad',
-      content: criticResult.data?.critique || 'Validación de coherencia completada con éxito.',
-      isApproved: criticResult.data?.isApproved ?? true,
+      content: criticResult.data?.critique || (validated.isComplete ? 'Validación estructural completada.' : `${validated.pendings.length} campos requieren revisión.`),
+      isApproved: (criticResult.data?.isApproved ?? true) && validated.isComplete,
       durationMs: Date.now() - criticStart
     });
 
@@ -600,10 +603,11 @@ ${fields.map(f => `"${f.key}": "${f.label || f.key} - ${getFieldFormatGuidance(f
       content: `Generación completada en ${(recorder.totalDurationMs / 1000).toFixed(2)}s con ${recorder.steps.length + 1} pasos cognitivos trazados en Harness v0.1.`,
       durationMs: 0
     });
-    const finalHarness = recorder.finish(generatedResult, 'completed');
+    const finalResult = { ...validated.valid, _pending: validated.pendings };
+    const finalHarness = recorder.finish(finalResult, validated.isComplete ? 'completed' : 'needs_review');
 
     return {
-      result: generatedResult,
+      result: finalResult,
       trajectory: finalHarness
     };
   } catch (error) {

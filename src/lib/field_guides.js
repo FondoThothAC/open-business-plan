@@ -2326,13 +2326,6 @@ export const ZOPP_GUIDES = {
     "cita": "Metodología ZOPP GTZ (p. 92)",
     "placeholder": "Factores que garantizan la continuidad a largo plazo..."
   },
-  "mpp": {
-    "instruccion": "Matriz de Planificación del Proyecto (equivalente a Marco Lógico).",
-    "ejemplo": "Ej: Objetivo general, propósito, resultados, actividades.",
-    "benchmark": "Matriz de Planificación de Proyectos (MPP 4x4) con lógica vertical y horizontal validada.",
-    "cita": "Metodología ZOPP (GTZ Alemania) & Planificación por Objetivos",
-    "placeholder": "Estructuración analítica ZOPP para (mpp)..."
-  }
 };
 
 export const HORIZON_EUROPE_GUIDES = {

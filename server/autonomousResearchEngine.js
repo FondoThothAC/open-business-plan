@@ -119,8 +119,8 @@ export class AutonomousResearchEngine {
   static clasificarCompetidores(competidores = []) {
     return competidores.map((c) => {
       const texto = `${c.nombre || ''} ${c.actividad || ''} ${c.actividad_scian || ''} ${c.posicionamiento_vcv || ''}`.toLowerCase();
-      let categoria = CATEGORIAS_ESTRATEGICAS.SUSTITUTO_INDIRECTO;
-      let estrategia = 'Monitorear precios y tendencias de insumos en el canal minorista.';
+      let categoria;
+      let estrategia;
 
       if (texto.includes('tif') || texto.includes('frigorifico') || texto.includes('al por mayor') || texto.includes('mayorista') || texto.includes('almacen')) {
         categoria = CATEGORIAS_ESTRATEGICAS.OPORTUNIDAD_ALIANZA;

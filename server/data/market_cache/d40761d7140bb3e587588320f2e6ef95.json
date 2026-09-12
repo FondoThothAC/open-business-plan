@@ -1,0 +1,37 @@
+{
+  "timestamp": 1789203473862,
+  "ttlHours": 24,
+  "data": {
+    "success": true,
+    "status": "completed",
+    "parametros": {
+      "projectId": "test_cascade",
+      "query": "test mercado",
+      "sector": "servicios",
+      "ubicacion": "Hermosillo, Sonora",
+      "fraccionArancelaria": ""
+    },
+    "capaLocal": {
+      "nivel": "Local (Territorial)",
+      "status": "no_data",
+      "message": "Sin conector territorial configurado para este proyecto.",
+      "establecimientos": [],
+      "evidencias": []
+    },
+    "capaNacional": {
+      "nivel": "Nacional (Web)",
+      "status": "no_data",
+      "message": "No se encontraron evidencias web verificables.",
+      "establecimientos": [],
+      "evidencias": []
+    },
+    "capaInternacional": {
+      "nivel": "Internacional (Comercio Exterior)",
+      "status": "no_data",
+      "message": "Agrega una fracción arancelaria para investigar comercio exterior.",
+      "establecimientos": [],
+      "evidencias": []
+    },
+    "timestamp": 1789203473862
+  }
+}

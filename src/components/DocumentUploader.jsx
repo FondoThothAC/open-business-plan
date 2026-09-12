@@ -38,7 +38,12 @@ export default function DocumentUploader({ compact = false, onClose = null }) {
             setStatusMessage(`OCR ${file.name}: ${pct}%`);
           }
         });
-        newDocs.push(parsedDoc);
+        newDocs.push({
+          ...parsedDoc,
+          classification: 'method_reference',
+          ownerProjectId: planData.config?.projectId || '',
+          retrievedAt: new Date().toISOString()
+        });
       } catch (err) {
         console.error(`Error procesando ${file.name}:`, err);
         alert(`No se pudo procesar "${file.name}": ${err.message || 'Error desconocido'}`);
@@ -58,6 +63,10 @@ export default function DocumentUploader({ compact = false, onClose = null }) {
   const removeDocument = (docId) => {
     const currentDocs = planData.config?.documents || [];
     updateConfig('documents', '', currentDocs.filter(d => d.id !== docId));
+  };
+
+  const setClassification = (docId, classification) => {
+    updateConfig('documents', '', documents.map((doc) => doc.id === docId ? { ...doc, classification } : doc));
   };
 
   const formatSize = (bytes) => {
@@ -132,7 +141,7 @@ export default function DocumentUploader({ compact = false, onClose = null }) {
       </div>
       
       <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '1.25rem', lineHeight: 1.5 }}>
-        Sube tus archivos de referencia (<strong>Word .docx, PDF, TXT, CSV, Imágenes OCR o Audios</strong>). El motor extraerá todo su contenido a <strong>Markdown</strong> y lo inyectará directamente al contexto de generación de todos los módulos.
+        Sube evidencia propia o referencias. Los archivos nuevos se clasifican como referencia hasta que indiques que son evidencia del proyecto; así no se copian datos de otros planes.
       </p>
 
       {/* Upload Zone */}
@@ -219,6 +228,16 @@ export default function DocumentUploader({ compact = false, onClose = null }) {
                   <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', marginTop: '0.15rem' }}>
                     {formatSize(doc.size)} — {doc.text?.length?.toLocaleString() || 0} caracteres extraídos a Markdown
                   </div>
+                  <select
+                    value={doc.classification || 'method_reference'}
+                    onChange={(event) => setClassification(doc.id, event.target.value)}
+                    style={{ marginTop: '0.4rem', fontSize: '0.7rem', maxWidth: '220px' }}
+                    aria-label={`Clasificación de ${doc.name}`}
+                  >
+                    <option value="project_evidence">Evidencia de este proyecto</option>
+                    <option value="method_reference">Referencia metodológica</option>
+                    <option value="other_project_example">Ejemplo de otro proyecto</option>
+                  </select>
                 </div>
               </div>
               <button 

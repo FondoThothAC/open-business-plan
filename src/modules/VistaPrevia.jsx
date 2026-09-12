@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { usePlan } from '../context/PlanContext';
-import { Printer, MessageSquare, Sparkles, Wand2, Bot, BrainCircuit, RefreshCw, ZoomIn, ZoomOut, Maximize2, RotateCcw, Layout, FileDown } from 'lucide-react';
+import { Printer, MessageSquare, Sparkles, Wand2, Bot, BrainCircuit, RefreshCw, ZoomIn, ZoomOut, Maximize2, RotateCcw, Layout, FileDown, ShieldAlert } from 'lucide-react';
 import { downloadProjectAsDocx } from '../lib/docxExportEngine';
 import { refactorFieldWithComments } from '../lib/ai';
 import FinancialCharts, { PrintableFinancialReports } from '../components/FinancialCharts';
@@ -1368,11 +1368,24 @@ export function DocxExportButton({ planData }) {
 }
 
 export default function VistaPrevia() {
-  const { planData, updateConfig, manualSaveProject, updateSection, addComment, deleteComment } = usePlan();
+  const { planData, updateConfig, manualSaveProject, updateSection, addComment, deleteComment, getProjectContamination, sanitizeCurrentProject } = usePlan();
   const [printMargin, setPrintMargin] = React.useState(0.8); // Margen en cm
   const [zoomLevel, setZoomLevel] = React.useState(100); // Nivel de Zoom en % (50% a 150%)
   const [fitToWidth, setFitToWidth] = React.useState(false); // Modo de ajuste automático al ancho de ventana
   const [refactorStatus, setRefactorStatus] = React.useState({ active: false, total: 0, completed: 0, currentField: '' });
+
+  const handleProjectCleanup = () => {
+    const findings = getProjectContamination?.() || [];
+    if (findings.length === 0) {
+      window.alert('No se detectó contenido de otro proyecto en el plan activo.');
+      return;
+    }
+    const preview = findings.slice(0, 4).map((finding) => `• ${finding.path}`).join('\n');
+    if (window.confirm(`Se detectaron ${findings.length} campos con contenido especializado de otro proyecto:\n\n${preview}\n\n¿Deseas limpiarlos? Esta acción se guardará como cambio del proyecto actual.`)) {
+      sanitizeCurrentProject?.();
+      window.alert('Contenido contaminado eliminado. Revisa la Vista Previa antes de guardar.');
+    }
+  };
 
   // Guard de seguridad DESPUÉS de todos los hooks (regla: hooks no pueden ser condicionales)
   // El useMemo y useState ya se ejecutaron — ahora sí podemos salir si planData es null
@@ -1746,10 +1759,8 @@ export default function VistaPrevia() {
     return Object.values(data).some(v => v && typeof v === 'string' && v.trim().length > 0);
   };
 
-  // Mostrar siempre en vista previa si existe el módulo
-  const shouldShow = (_pillar, _module) => {
-    return true; 
-  };
+  // Esta selección afecta únicamente vista previa y exportación, nunca borra datos.
+  const shouldShow = (pillar, module) => planData?.config?.visibility?.[`${pillar}.${module}`] !== false;
 
   // Resolver Framework y Módulos Activos
   const projectType = planData?.config?.projectType || 'business';
@@ -2499,6 +2510,14 @@ export default function VistaPrevia() {
           <p className="text-secondary mt-1">Arrastra u ordena secciones, define orientaciones individuales por página e imprime el reporte final.</p>
         </div>
         <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
+          <button
+            type="button"
+            onClick={handleProjectCleanup}
+            title="Detectar y limpiar contenido especializado de otro proyecto"
+            style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '0.5rem 0.7rem', borderRadius: '8px', border: '1px solid #fcd34d', background: '#fffbeb', color: '#92400e', cursor: 'pointer', fontSize: '0.75rem', fontWeight: 700 }}
+          >
+            <ShieldAlert size={15} /> Revisar mezcla de datos
+          </button>
           
           {/* Selector de Orientación Global */}
           <div style={{ 

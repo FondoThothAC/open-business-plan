@@ -7,7 +7,7 @@ import { Layers, ShieldCheck, Maximize2, Info, Compass, Box, Thermometer, Wind }
  * Superficie total: 1,200 m² (40m ancho × 30m fondo).
  */
 export default function PlantFloorplan({
-  plantName = "Planta Tipo Inspección Federal (TIF) — VCV Cortes Finos",
+  plantName = 'Plano de planta industrial',
   totalAreaM2 = 1200,
   dimensions = "40.0 m × 30.0 m"
 }) {

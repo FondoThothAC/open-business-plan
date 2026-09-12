@@ -58,9 +58,9 @@ export default function FloorPlanDiagram({ data, planData }) {
     return (
       <div style={{ marginTop: "1.25rem", marginBottom: "1.5rem" }}>
         <PlantFloorplan 
-          plantName={`Distribución de Planta TIF — ${planData?.companyName || 'VCV Cortes Finos'} (1,200 m²)`}
-          totalAreaM2={1200}
-          dimensions="40.0 m × 30.0 m"
+          plantName={`Distribución conceptual — ${planData?.companyName || planData?.config?.brandKit?.companyName || 'Proyecto'} (superficie pendiente de definir)`}
+          totalAreaM2={null}
+          dimensions="Dimensiones pendientes de definir"
         />
       </div>
     );
@@ -83,17 +83,17 @@ export default function FloorPlanDiagram({ data, planData }) {
           </div>
           <div>
             <h4 style={{ fontSize: "1rem", fontWeight: 800, color: "#0f172a", margin: 0, fontFamily: "var(--font-display)" }}>
-              Croquis y Layout de Distribución Física del Taller (800 m² Techados)
+              Croquis conceptual de distribución física
             </h4>
             <p style={{ fontSize: "0.75rem", color: "#64748b", margin: "2px 0 0 0" }}>
-              Flujo lineal certificado bajo norma ISO 9001:2015 con 4 bahías técnicas independientes
+              Esquema preliminar. Confirma áreas, equipos, flujo y certificaciones antes de usarlo como diseño técnico.
             </p>
           </div>
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", background: "#f0fdf4", padding: "4px 10px", borderRadius: "20px", border: "1px solid #bbf7d0" }}>
           <ShieldCheck size={14} color="#16a34a" />
-          <span style={{ fontSize: "0.72rem", fontWeight: 700, color: "#15803d" }}>Clean Room ISO 4406 Integrado</span>
+          <span style={{ fontSize: "0.72rem", fontWeight: 700, color: "#15803d" }}>Validación técnica pendiente</span>
         </div>
       </div>
 
@@ -118,4 +118,3 @@ export default function FloorPlanDiagram({ data, planData }) {
     </div>
   );
 }
-

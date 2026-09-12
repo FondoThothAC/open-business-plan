@@ -47,6 +47,7 @@ echo "   ✓ Frontend sincronizado"
 echo ""
 echo "📤 Actualizando server/ y src/ en VPS ..."
 rsync -avz --delete \
+  --exclude 'data/' \
   -e "ssh -i '$SSH_KEY' -o StrictHostKeyChecking=no" \
   server/ \
   "$VPS:$VPS_APP_DIR/server/"
@@ -133,4 +134,3 @@ echo "   🌐 App principal:    https://fondothoth.com/obp/"
 echo "   🌱 Semilla:          https://fondothoth.com/obp/semilla"
 echo "   ⚙️  Configuración:    https://fondothoth.com/obp/configuracion"
 echo "   📊 Lean Canvas:      https://fondothoth.com/obp/lean-canvas"
-

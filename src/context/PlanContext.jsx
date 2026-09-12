@@ -6,6 +6,8 @@ import { slugify, KNOWN_PROJECT_SLUGS } from '../config/urlRouting';
 import { saveProjectToIDB, loadProjectFromIDB, migrateFromLocalStorage } from '../lib/storage/indexedDbStorage';
 import { runAgenticModuleGeneration } from '../lib/agenticEngine';
 import { normalizeSearchConfig } from '../lib/tools/provenance';
+import { findProjectContamination, sanitizeProjectContamination } from '../lib/projectIsolation';
+import { FIELD_PROVENANCE, fieldAddress } from '../lib/planContracts';
 
 const EXAMPLE_FRAMEWORK_MAP = {
   brujula: 'business',
@@ -47,10 +49,17 @@ const createEmptyPlan = (projectType = 'business') => {
   const framework = FRAMEWORKS[projectType];
   const plan = {
     config: {
+      projectId: typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `project_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+      ownerId: 'local-admin',
+      revision: 0,
+      schemaVersion: 2,
       projectType,
       activeMethodologies: [projectType],
       locks: {}, theme: 'light',
       visibility: {},
+      fieldMeta: {},
+      pendingItems: [],
+      proposals: [],
       comments: {},
       ai: {
         primaryProvider: 'ollama', secondaryProvider: 'groq',
@@ -237,9 +246,20 @@ export const PlanProvider = ({ children }) => {
   const [generationStatus, setGenerationStatus] = useState(getInitialGenStatus); // 'idle' | 'running' | 'paused'
   const [generationProgress, setGenerationProgress] = useState(getInitialGenProgress);
   const [generationQueue, setGenerationQueue] = useState(getInitialGenQueue);
+  const skipNextRemoteSaveRef = React.useRef(true);
 
   // Refs for tracking synchronous state inside async loop
   const planDataRef = React.useRef(planData);
+  const projectLoadRef = React.useRef(0);
+  const generationSessionRef = React.useRef(0);
+
+  const resetProjectGeneration = () => {
+    generationSessionRef.current += 1;
+    queueRef.current = [];
+    setGenerationStatus('idle');
+    setGenerationQueue([]);
+    setGenerationProgress({ completed: 0, total: 0, currentModule: '' });
+  };
   useEffect(() => {
     planDataRef.current = planData;
   }, [planData]);
@@ -280,6 +300,7 @@ export const PlanProvider = ({ children }) => {
   // Hook de montaje para cargar el proyecto activo directamente del backend local (resuelve bugs de recarga)
   useEffect(() => {
     const syncWithBackend = async () => {
+      const requestId = projectLoadRef.current;
       // Migración transparente de proyectos legacy almacenados en localStorage
       try {
         await migrateFromLocalStorage();
@@ -307,7 +328,7 @@ export const PlanProvider = ({ children }) => {
       if (activeId) {
         try {
           const idbData = await loadProjectFromIDB(activeId);
-          if (idbData && idbData.config) {
+          if (idbData && idbData.config && requestId === projectLoadRef.current) {
             console.log('[IndexedDB] Proyecto activo cargado instantáneamente desde IndexedDB:', activeId);
             setPlanData(idbData);
           }
@@ -316,34 +337,8 @@ export const PlanProvider = ({ children }) => {
         }
       }
 
-      // Si no hay proyecto activo, intentamos auto-cargar el último modificado en el backend
-      if (!activeId) {
-        try {
-          const backendBase = getApiBase();
-          const listRes = await fetch(`${backendBase}/api/projects`);
-          if (listRes.ok) {
-            const projectsObj = await listRes.json();
-            const allProjects = [];
-            if (projectsObj.negocios) {
-              projectsObj.negocios.forEach(p => allProjects.push({ ...p, type: 'negocios' }));
-            }
-            if (projectsObj.social) {
-              projectsObj.social.forEach(p => allProjects.push({ ...p, type: 'social' }));
-            }
-            
-            if (allProjects.length > 0) {
-              // Ordenar por fecha de modificación mtime descendente (el más reciente primero)
-              allProjects.sort((a, b) => new Date(b.mtime) - new Date(a.mtime));
-              activeId = allProjects[0].id;
-              activeType = allProjects[0].type;
-              localStorage.setItem('openplan_active_project_id', activeId);
-              localStorage.setItem('openplan_active_project_type', activeType);
-            }
-          }
-        } catch (listErr) {
-          console.error('Error listing projects for auto-load on mount:', listErr);
-        }
-      }
+      // Sin proyecto elegido no se carga el último del servidor: evita exponer o mezclar planes.
+      if (!activeId) return;
 
       if (activeId) {
         // Para evitar condiciones de carrera donde el backend pise cambios locales de localStorage síncronos
@@ -353,6 +348,7 @@ export const PlanProvider = ({ children }) => {
           const response = await fetch(`${backendBase}/api/projects/${activeType}/${activeId}`);
           if (response.ok) {
             const data = await response.json();
+            if (requestId !== projectLoadRef.current) return;
             const fresh = createEmptyPlan(data.config?.projectType || 'business');
             data.config = { ...data.config, projectId: activeId };
             const merged = deepMerge(fresh, data);
@@ -408,6 +404,12 @@ export const PlanProvider = ({ children }) => {
       localStorage.setItem('openplan_active_project_type', projectType);
     }
 
+    // La carga inicial y las respuestas remotas no deben reescribirse de inmediato.
+    if (skipNextRemoteSaveRef.current) {
+      skipNextRemoteSaveRef.current = false;
+      return;
+    }
+
     // Auto-save debounced a IndexedDB y al Backend (Local o Remoto en VPS)
     setSaveStatus('saving');
     const saveTimer = setTimeout(async () => {
@@ -447,14 +449,10 @@ export const PlanProvider = ({ children }) => {
         });
         if (response.ok) {
           const resData = await response.json();
-          if (resData.file && planData.config.projectId !== resData.file) {
-            setPlanData(prev => ({
-              ...prev,
-              config: { ...prev.config, projectId: resData.file }
-            }));
-            localStorage.setItem('openplan_active_project_id', resData.file);
+          if (resData.file) {
+            localStorage.setItem('openplan_active_project_file', resData.file);
             localStorage.removeItem('openplan_is_unsaved_new');
-            saveProjectToIDB(resData.file, planData);
+            saveProjectToIDB(planData.config.projectId || resData.file, planData);
           }
           setSaveStatus('saved');
         } else {
@@ -485,13 +483,13 @@ export const PlanProvider = ({ children }) => {
             const next = {
               ...prev,
               config: { 
-                ...prev.config, 
-                projectId: resData.file,
+                ...prev.config,
                 brandKit: { ...prev.config.brandKit, companyName: customPlanData.config.brandKit.companyName }
               }
             };
             localStorage.setItem('openplan_v2_data', JSON.stringify(next));
-            localStorage.setItem('openplan_active_project_id', resData.file);
+            localStorage.setItem('openplan_active_project_id', next.config.projectId || resData.file);
+            localStorage.setItem('openplan_active_project_file', resData.file);
             const projectTypeRaw = next.config?.projectType || 'business';
             const projectType = projectTypeRaw === 'social_bid' ? 'social' : 'negocios';
             localStorage.setItem('openplan_active_project_type', projectType);
@@ -536,6 +534,8 @@ export const PlanProvider = ({ children }) => {
   };
 
   const loadProject = (id) => {
+    projectLoadRef.current += 1;
+    resetProjectGeneration();
     const example = PROJECT_EXAMPLES[id];
     if (!example) return;
     const type = example.projectType || example.data?.config?.projectType || EXAMPLE_FRAMEWORK_MAP[id] || 'business';
@@ -556,15 +556,19 @@ export const PlanProvider = ({ children }) => {
   };
 
   const loadSavedProject = async (type, id) => {
+    const requestId = projectLoadRef.current + 1;
+    projectLoadRef.current = requestId;
+    resetProjectGeneration();
     try {
       const backendBase = getApiBase();
       const response = await fetch(`${backendBase}/api/projects/${type}/${id}`);
       if (!response.ok) throw new Error('No se pudo cargar el proyecto del servidor');
       const data = await response.json();
+      if (requestId !== projectLoadRef.current) return false;
       
       const fresh = createEmptyPlan(data.config?.projectType || 'business');
       // Set the projectId so we keep saving to the same file
-      data.config = { ...data.config, projectId: id };
+      data.config = { ...data.config, projectId: data.config?.projectId || id };
       const merged = deepMerge(fresh, data);
       if (!merged.config.activeMethodologies) {
         merged.config.activeMethodologies = [merged.config.projectType || 'business'];
@@ -637,11 +641,96 @@ export const PlanProvider = ({ children }) => {
     return false;
   };
 
-  const updateSection = (pillar, module, field, value) => {
+  const updateSection = (pillar, module, field, value, metadata = null) => {
+    setPlanData(prev => {
+      const projectType = prev.config?.projectType || 'business';
+      const address = fieldAddress(projectType, pillar, module, field);
+      const previousMeta = prev.config?.fieldMeta?.[address] || {};
+      return {
+        ...prev,
+        [pillar]: { ...(prev[pillar] || {}), [module]: { ...(prev[pillar]?.[module] || {}), [field]: value } },
+        config: {
+          ...prev.config,
+          revision: (prev.config?.revision || 0) + 1,
+          fieldMeta: {
+            ...(prev.config?.fieldMeta || {}),
+            [address]: {
+              ...previousMeta,
+              provenance: metadata?.provenance || FIELD_PROVENANCE.USER,
+              status: metadata?.status || 'accepted',
+              updatedAt: new Date().toISOString(),
+              source: metadata?.source || previousMeta.source || null
+            }
+          }
+        }
+      };
+    });
+  };
+
+  const addPendingItems = (items = []) => {
+    if (!items.length) return;
     setPlanData(prev => ({
       ...prev,
-      [pillar]: { ...(prev[pillar] || {}), [module]: { ...(prev[pillar]?.[module] || {}), [field]: value } }
+      config: {
+        ...prev.config,
+        pendingItems: [...(prev.config?.pendingItems || []), ...items.filter(item => !(prev.config?.pendingItems || []).some(existing => existing.address === item.address && existing.status === 'open'))]
+      }
     }));
+  };
+
+  const resolvePending = (pendingId, action = 'ignored') => {
+    setPlanData(prev => ({
+      ...prev,
+      config: {
+        ...prev.config,
+        pendingItems: (prev.config?.pendingItems || []).map((item) => item.id === pendingId ? { ...item, status: action, resolvedAt: new Date().toISOString() } : item)
+      }
+    }));
+  };
+
+  const proposeFieldChanges = (pillar, module, changes, reason = 'Nueva evidencia disponible') => {
+    setPlanData(prev => {
+      const projectType = prev.config?.projectType || 'business';
+      const proposals = Object.entries(changes || {}).map(([field, value]) => ({
+        id: `${fieldAddress(projectType, pillar, module, field)}:${Date.now()}:${Math.random().toString(36).slice(2, 6)}`,
+        pillar, module, field, value,
+        previousValue: prev[pillar]?.[module]?.[field] ?? '',
+        baseRevision: prev.config?.revision || 0,
+        reason,
+        status: 'pending',
+        createdAt: new Date().toISOString()
+      }));
+      return { ...prev, config: { ...prev.config, proposals: [...(prev.config?.proposals || []), ...proposals] } };
+    });
+  };
+
+  const resolveProposal = (proposalId, action, editedValue) => {
+    setPlanData(prev => {
+      const proposal = (prev.config?.proposals || []).find(item => item.id === proposalId);
+      if (!proposal || proposal.status !== 'pending') return prev;
+      const value = action === 'accept' ? (editedValue ?? proposal.value) : proposal.previousValue;
+      const projectType = prev.config?.projectType || 'business';
+      const address = fieldAddress(projectType, proposal.pillar, proposal.module, proposal.field);
+      return {
+        ...prev,
+        [proposal.pillar]: { ...(prev[proposal.pillar] || {}), [proposal.module]: { ...(prev[proposal.pillar]?.[proposal.module] || {}), ...(action === 'accept' ? { [proposal.field]: value } : {}) } },
+        config: {
+          ...prev.config,
+          revision: action === 'accept' ? (prev.config?.revision || 0) + 1 : prev.config?.revision || 0,
+          proposals: prev.config.proposals.map(item => item.id === proposalId ? { ...item, status: action === 'accept' ? 'accepted' : 'rejected', resolvedAt: new Date().toISOString() } : item),
+          fieldMeta: action === 'accept' ? { ...(prev.config?.fieldMeta || {}), [address]: { provenance: FIELD_PROVENANCE.VERIFIED, status: 'accepted', updatedAt: new Date().toISOString() } } : prev.config?.fieldMeta
+        }
+      };
+    });
+  };
+
+  const getProjectContamination = () => findProjectContamination(planDataRef.current);
+
+  const sanitizeCurrentProject = () => {
+    const findings = findProjectContamination(planDataRef.current);
+    if (findings.length === 0) return findings;
+    setPlanData((previous) => sanitizeProjectContamination(previous));
+    return findings;
   };
 
   const updateConfig = (section, field, value) => {
@@ -702,6 +791,7 @@ export const PlanProvider = ({ children }) => {
   };
 
   const initNewProjectFromSeed = (frameworkId, seedData, projectName) => {
+    resetProjectGeneration();
     const type = frameworkId || 'business';
     const fresh = createEmptyPlan(type);
     
@@ -729,6 +819,7 @@ export const PlanProvider = ({ children }) => {
 
   const createNewProject = () => {
     if (window.confirm(`¿Estás seguro de crear un nuevo proyecto? Se perderán los cambios no guardados del actual.`)) {
+      resetProjectGeneration();
       localStorage.removeItem('openplan_v2_data');
       localStorage.removeItem('openplan_active_project_id');
       localStorage.removeItem('openplan_active_project_type');
@@ -936,6 +1027,7 @@ export const PlanProvider = ({ children }) => {
     let isSubscribed = true;
 
     const runLoop = async () => {
+      const generationSession = generationSessionRef.current;
       while (queueRef.current.length > 0 && statusRef.current === 'running' && isSubscribed) {
         const currentItem = queueRef.current[0];
         setGenerationProgress(prev => ({ ...prev, currentModule: currentItem.title }));
@@ -1010,7 +1102,7 @@ export const PlanProvider = ({ children }) => {
             }
           }
 
-          if (result && statusRef.current === 'running' && isSubscribed) {
+          if (result && statusRef.current === 'running' && isSubscribed && generationSession === generationSessionRef.current) {
             const currentTokens = (result._trace?.metrics?.promptTokens || 0) + (result._trace?.metrics?.completionTokens || 0);
             const resultData = { ...result };
             delete resultData._trace;
@@ -1108,7 +1200,7 @@ export const PlanProvider = ({ children }) => {
   }, [generationStatus]);
 
   return (
-    <PlanContext.Provider value={{ planData, currentProjectSlug, loadProjectBySlug, updateSection, updateConfig, toggleLock, toggleModuleVisibility, updateStaff, updateProcesses, loadProject, loadSavedProject, createNewProject, initNewProjectFromSeed, updateProjectName, addAnexo, removeAnexo, updateAnexo, addComment, deleteComment, saveStatus, manualSaveProject, saveProjectAs, generationStatus, generationProgress, startIndustrialization, pauseIndustrialization, stopIndustrialization, getProjectCompletion, autoFillProject: startIndustrialization, updateSemilla }}>
+    <PlanContext.Provider value={{ planData, currentProjectSlug, loadProjectBySlug, updateSection, updateConfig, toggleLock, toggleModuleVisibility, addPendingItems, resolvePending, proposeFieldChanges, resolveProposal, updateStaff, updateProcesses, loadProject, loadSavedProject, createNewProject, initNewProjectFromSeed, updateProjectName, addAnexo, removeAnexo, updateAnexo, addComment, deleteComment, getProjectContamination, sanitizeCurrentProject, saveStatus, manualSaveProject, saveProjectAs, generationStatus, generationProgress, startIndustrialization, pauseIndustrialization, stopIndustrialization, getProjectCompletion, autoFillProject: startIndustrialization, updateSemilla }}>
       {children}
     </PlanContext.Provider>
   );

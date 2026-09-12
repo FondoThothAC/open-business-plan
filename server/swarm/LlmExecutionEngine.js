@@ -142,12 +142,13 @@ export class LlmExecutionEngine {
       }
     } catch {}
 
-    // Fallback estructurado de alta fidelidad sin error
-    onThought('Compilando entregable final con validación de calidad y consistencia metodológica...');
+    // No presentar una plantilla como contenido generado: el llamador registra un pendiente.
+    onThought('No hay proveedor disponible; el módulo quedará pendiente de revisión.');
     return {
-      status: 'success',
-      providerUsed: 'hybrid_engine',
-      generatedText: `Análisis estratégico estructurado para: ${userPrompt.slice(0, 100)}...`,
+      status: 'failed',
+      providerUsed: null,
+      generatedText: '',
+      error: 'No hubo un proveedor de IA disponible para generar contenido verificable.',
       timestamp: new Date().toISOString()
     };
   }

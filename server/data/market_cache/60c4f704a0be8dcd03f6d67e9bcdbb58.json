@@ -1,5 +1,5 @@
 {
-  "timestamp": 1788762112666,
+  "timestamp": 1788901125964,
   "ttlHours": 24,
   "data": {
     "success": true,
@@ -54,8 +54,8 @@
       "dictamen_viabilidad": "VIABLE CON ESCALAMIENTO EN 2 FASES",
       "fase1_recomendacion": "Consolidación en mercado regional B2B HORECA (Sonora y Sinaloa) con 1 equipo ASADHOR.",
       "fase2_recomendacion": "Habilitación de Planta TIF de 1,200 m² y exportación hacia Arizona y California bajo fracción HS 0202.30.",
-      "fecha_consulta": "2026-09-07T06:21:52.664Z"
+      "fecha_consulta": "2026-09-08T20:58:45.962Z"
     },
-    "timestamp": 1788762112666
+    "timestamp": 1788901125963
   }
 }

@@ -1,6 +1,7 @@
 import express from 'express';
 import fs from 'fs';
 import path from 'path';
+import crypto from 'crypto';
 import cors from 'cors';
 import { search as ddgSearch } from 'duck-duck-scrape';
 import { scrapeSocialFollowers, scrapeEcommercePrices, scrapeUberEatsRappi, scrapeAirbnbTripAdvisor, scrapeMercadoLibre } from './scraper.js';
@@ -15,6 +16,7 @@ import { saveWithVersioning } from '../src/lib/serverUtils/saveVersioning.js';
 import { acquireGenerationLock, releaseGenerationLock, getGenerationLockStatus } from '../src/lib/serverUtils/generationLock.js';
 import { renameProject } from '../src/lib/serverUtils/projectRename.js';
 import marketCascadeRouter from './routes/marketCascade.js';
+import { GenerationJobStore } from './generationJobStore.js';
 
 // ─────────────────────────────────────────────────────────
 //  Helper Seguro para Búsqueda DuckDuckGo (Control de Tasa y Backoff)
@@ -47,6 +49,7 @@ export async function safeDdgSearch(query, reintentos = 2) {
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+const generationJobs = new GenerationJobStore();
 
 // ─────────────────────────────────────────────────────────
 //  SSE — Clientes suscritos al monitor en tiempo real
@@ -63,6 +66,26 @@ function broadcast(eventData) {
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use('/api/mercado', marketCascadeRouter);
+
+app.post('/api/generation-jobs', (req, res) => {
+  const { projectId, ownerId, items, baseRevision } = req.body || {};
+  if (!projectId || !Array.isArray(items) || items.length === 0) return res.status(400).json({ error: 'projectId e items son requeridos.' });
+  const job = generationJobs.create({ projectId, ownerId, items, baseRevision });
+  res.status(201).json(job);
+});
+
+app.get('/api/generation-jobs', (req, res) => res.json(generationJobs.list(req.query.projectId)));
+app.get('/api/generation-jobs/:id', (req, res) => {
+  const job = generationJobs.get(req.params.id);
+  if (!job) return res.status(404).json({ error: 'Trabajo no encontrado.' });
+  res.json(job);
+});
+app.post('/api/generation-jobs/:id/:action(pause|resume|cancel)', (req, res) => {
+  const status = req.params.action === 'pause' ? 'paused' : req.params.action === 'resume' ? 'queued' : 'cancelled';
+  const job = generationJobs.update(req.params.id, { status });
+  if (!job) return res.status(404).json({ error: 'Trabajo no encontrado.' });
+  res.json(job);
+});
 
 // GET /api/log/stream — Suscripción SSE
 app.get('/api/log/stream', (req, res) => {
@@ -167,8 +190,9 @@ app.post('/api/save', (req, res) => {
 
     const projectTypeRaw = planData.config?.projectType || 'business';
     const projectType = projectTypeRaw === 'social_bid' ? 'social' : 'negocios';
-    const rawName = planData.config?.brandKit?.companyName || planData.semilla?.nombre_proyecto || planData.semilla?.negocio?.nombre_marca || planData.config?.projectId || `Proyecto_${Date.now()}`;
-    const safeName = rawName.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+    const rawName = planData.config?.brandKit?.companyName || planData.semilla?.nombre_proyecto || planData.semilla?.negocio?.nombre_marca || 'Proyecto';
+    const persistentId = String(planData.config?.projectId || `project_${crypto.randomUUID()}`).replace(/[^a-z0-9]/gi, '_').toLowerCase();
+    const safeName = persistentId;
     
     // Check if X-User-Id header or query/config userId is provided to isolate
     const userId = req.headers['x-user-id'] || req.query.userId || planData.config?.userId || '';
@@ -191,6 +215,18 @@ app.post('/api/save', (req, res) => {
     }
 
     const allowRegression = req.query.allowRegression === 'true' || req.body.allowRegression === true;
+    const baseRevision = Number(req.headers['if-match-revision'] || req.body.baseRevision);
+    const existingPath = path.join(dirPath, `${safeName}.json`);
+    if (Number.isFinite(baseRevision) && fs.existsSync(existingPath)) {
+      try {
+        const existing = JSON.parse(fs.readFileSync(existingPath, 'utf8'));
+        const currentRevision = Number(existing.config?.revision || 0);
+        if (currentRevision !== baseRevision) {
+          return res.status(409).json({ success: false, code: 'REVISION_CONFLICT', currentRevision, message: 'El proyecto cambió en otra sesión. Recarga o revisa la comparación antes de guardar.' });
+        }
+      } catch {}
+    }
+    planData.config = { ...planData.config, projectId: persistentId, displayName: rawName, revision: Number(planData.config?.revision || 0) + 1 };
 
     // Guardado versionado inmutable con control anti-regresión
     const versionResult = saveWithVersioning({
@@ -208,6 +244,8 @@ app.post('/api/save', (req, res) => {
       success: true,
       message: 'Proyecto guardado en disco duro local con versionado inmutable (.json y .md)',
       file: safeName,
+      projectId: persistentId,
+      revision: planData.config.revision,
       versionHash: versionResult.versionHash,
       modulesCount: versionResult.modulesCount
     });
@@ -1794,6 +1832,15 @@ const ICONS = {
 app.post('/api/ai/proxy', async (req, res) => {
   let { url, method = 'POST', headers = {}, body } = req.body;
   try {
+    const parsedTarget = new URL(url);
+    const allowedHosts = new Set([
+      'api.b.ai', 'api.groq.com', 'generativelanguage.googleapis.com', 'api.openai.com',
+      'api.mistral.ai', 'integrate.api.nvidia.com', 'openrouter.ai', 'api.together.xyz',
+      'api.perplexity.ai', 'api.ollama.com', 'ollama.com'
+    ]);
+    if (!allowedHosts.has(parsedTarget.hostname) || !['POST', 'GET'].includes(method.toUpperCase())) {
+      return res.status(400).json({ error: 'Proveedor o método no permitido por el proxy.' });
+    }
     const finalHeaders = { 'Content-Type': 'application/json', ...headers };
 
     // ── Inyección automática de B.AI Key desde .env ─────────────────────────
@@ -1859,9 +1906,6 @@ app.get('/api/config/ollama', (req, res) => {
     hasOllamaKey: !!ollamaKey,
     hasBobKey: !!ollambBobKey,
     hasGeminiKey: !!geminiKey,
-    ollamaKeyHint: ollamaKey ? ollamaKey.slice(0, 8) + '...' : null,
-    bobKeyHint: ollambBobKey ? ollambBobKey.slice(0, 8) + '...' : null,
-    geminiKeyHint: geminiKey ? geminiKey.slice(0, 8) + '...' : null,
     defaultModel: 'minimax-m3:cloud',
     availableCloudModels: [
       'minimax-m3:cloud',
@@ -3381,6 +3425,33 @@ async function detectHotModels(registryData) {
     }
   } catch (err) {
     console.warn('[ModelRegistry] Error al sincronizar modelos de OpenRouter:', err.message);
+  }
+
+  // Ollama Cloud publica su catálogo en /api/tags. Se registra sólo lo que
+  // devuelve el proveedor; ningún modelo escrito a mano se marca disponible.
+  try {
+    const ollamaKey = process.env.OLLAMA_API_KEY || process.env.OLLAMA_KEY || '';
+    const headers = ollamaKey ? { Authorization: `Bearer ${ollamaKey}` } : {};
+    const res = await fetch('https://ollama.com/api/tags', { headers, signal: AbortSignal.timeout(10000) });
+    if (res.ok) {
+      const json = await res.json();
+      for (const model of (json.models || [])) {
+        const id = model.name || model.model;
+        if (!id) continue;
+        registryData.models[id] = {
+          ...(registryData.models[id] || {}),
+          name: id,
+          provider: 'ollama_cloud',
+          contextWindow: model.details?.context_length || registryData.models[id]?.contextWindow || 131072,
+          capabilities: ['chat'],
+          availability: 'catalog_listed',
+          authenticated: Boolean(ollamaKey),
+          lastVerified: new Date().toISOString()
+        };
+      }
+    }
+  } catch (err) {
+    console.warn('[ModelRegistry] No se pudo consultar Ollama Cloud:', err.message);
   }
 
   // Actualizar flags en el registro

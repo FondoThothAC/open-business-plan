@@ -424,6 +424,7 @@ export function buildDocxDocument(project = {}) {
     if (ignoredKeys.has(pillarKey) || typeof pillarData !== 'object' || pillarData === null) continue;
 
     for (const [modKey, modData] of Object.entries(pillarData)) {
+      if (project.config?.visibility?.[`${pillarKey}.${modKey}`] === false) continue;
       if (typeof modData !== 'object' || modData === null) continue;
 
       const modTitle = modKey.replace(/_/g, ' ').toUpperCase();

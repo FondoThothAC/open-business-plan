@@ -1,0 +1,38 @@
+{
+  "timestamp": 1789203474319,
+  "ttlHours": 24,
+  "data": {
+    "success": true,
+    "status": "completed",
+    "parametros": {
+      "projectId": "proyecto_b",
+      "query": "refacciones hidráulicas",
+      "sector": "industrial",
+      "ubicacion": "Hermosillo, Sonora",
+      "fraccionArancelaria": "8412.21"
+    },
+    "capaLocal": {
+      "nivel": "Local (Territorial)",
+      "status": "no_data",
+      "message": "Sin conector territorial configurado para este proyecto.",
+      "establecimientos": [],
+      "evidencias": []
+    },
+    "capaNacional": {
+      "nivel": "Nacional (Web)",
+      "status": "no_data",
+      "message": "No se encontraron evidencias web verificables.",
+      "establecimientos": [],
+      "evidencias": []
+    },
+    "capaInternacional": {
+      "nivel": "Internacional (Comercio Exterior)",
+      "status": "no_data",
+      "message": "Sin conector de comercio exterior configurado para este proyecto.",
+      "establecimientos": [],
+      "evidencias": [],
+      "fraccionArancelaria": "8412.21"
+    },
+    "timestamp": 1789203474319
+  }
+}

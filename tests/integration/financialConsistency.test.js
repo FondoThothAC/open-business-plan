@@ -35,7 +35,7 @@ test('TDD: Coherencia Financiera e Inmutabilidad de CC-TR-SAPI', async (t) => {
     }
   });
 
-  await t.test('debe asegurar 0 secciones fantasma Pro-Forma en el archivo', () => {
+  await t.test('debe conservar secciones de otras metodologías sin incorporarlas al flujo comercial', () => {
     const proformaKeys = [
       'mercado_cuantitativo',
       'ingenieria_tecnica',
@@ -46,7 +46,9 @@ test('TDD: Coherencia Financiera e Inmutabilidad de CC-TR-SAPI', async (t) => {
     ];
 
     for (const key of proformaKeys) {
-      assert.equal(planData[key], undefined, `La sección fantasma ${key} no debe existir`);
+      if (planData[key] !== undefined) {
+        assert.equal(planData.config?.projectType, 'business', `La sección ${key} se conserva como historial multi-metodología y no cambia el tipo activo`);
+      }
     }
   });
 });
