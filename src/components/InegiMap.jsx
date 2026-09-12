@@ -109,7 +109,7 @@ export default function InegiMap({
   const [keywords, setKeywords] = useState(initialKeywords);
   const [scian, setScian] = useState(defaultScian || '0');
   const [radius, setRadius] = useState(2500);
-  const [center, setCenter] = useState(null);
+  const [center, setCenter] = useState(DEFAULT_CENTER);
   const [selectedCluster, setSelectedCluster] = useState(null);
   const [businesses, setBusinesses] = useState([]);
   const [isDrawing, setIsDrawing] = useState(false);
@@ -755,7 +755,7 @@ Por favor, devuélvelo en formato JSON con la siguiente estructura exacta (respo
     // Los nodos de ejemplo no deben presentarse como competencia real.
     // El corredor se dibuja únicamente con establecimientos devueltos por una fuente verificable.
     setBusinesses([]);
-    drawBusinesses([], center.lat, center.lng);
+    drawBusinesses([], center?.lat ?? DEFAULT_CENTER.lat, center?.lng ?? DEFAULT_CENTER.lng);
     setStatus('Selecciona una ubicación y ejecuta una búsqueda para cargar datos territoriales verificables.');
   };
 
@@ -934,7 +934,7 @@ Por favor, devuélvelo en formato JSON con la siguiente estructura exacta (respo
       setError(e.message || 'No se pudo consultar competidores');
       setStatus('');
       setBusinesses([]);
-      drawBusinesses([], center.lat, center.lng);
+      drawBusinesses([], center?.lat ?? DEFAULT_CENTER.lat, center?.lng ?? DEFAULT_CENTER.lng);
       setEffectiveness(null);
     } finally {
       setLoading(false);
@@ -943,7 +943,7 @@ Por favor, devuélvelo en formato JSON con la siguiente estructura exacta (respo
 
   const saveToPlan = () => {
     let content = `### Análisis de Inteligencia Competitiva y Ubicación Geoespacial Multi-Fuente\n\n`;
-    content += `- **Ubicación de referencia (Centro):** ${center.label || `${center.lat.toFixed(6)}, ${center.lng.toFixed(6)}`}\n`;
+    content += `- **Ubicación de referencia (Centro):** ${(center && center.label) ? center.label : `${(center?.lat || DEFAULT_CENTER.lat).toFixed(6)}, ${(center?.lng || DEFAULT_CENTER.lng).toFixed(6)}`}\n`;
     
     if (polygonCoords) {
       content += `- **Método de delimitación comercial:** Polígono personalizado de trazado manual (${polygonCoords.length} vértices)\n`;
@@ -1042,7 +1042,7 @@ Por favor, devuélvelo en formato JSON con la siguiente estructura exacta (respo
     setTimeout(() => setSaveSuccess(false), 3000);
   };
 
-  const hasResults = mode === 'location' ? center.label !== DEFAULT_CENTER.label : (businesses.length > 0 || effectiveness);
+  const hasResults = mode === 'location' ? (center?.label || "") !== DEFAULT_CENTER.label : (businesses.length > 0 || effectiveness);
 
   const initializedRef = useRef(false);
 
@@ -1239,7 +1239,7 @@ Por favor, devuélvelo en formato JSON con la siguiente estructura exacta (respo
                   onClick={() => {
                     const next = !showOptimalPoint;
                     setShowOptimalPoint(next);
-                    drawBusinesses(businesses, center.lat, center.lng, next ? optimalLocationData : null);
+                    drawBusinesses(businesses, center?.lat ?? DEFAULT_CENTER.lat, center?.lng ?? DEFAULT_CENTER.lng, next ? optimalLocationData : null);
                   }}
                   style={{
                     padding: '2px 8px', fontSize: '0.66rem', borderRadius: '4px',
@@ -1378,7 +1378,7 @@ Por favor, devuélvelo en formato JSON con la siguiente estructura exacta (respo
 
       <div style={{ marginTop: '0.75rem', fontSize: '0.75rem', color: 'var(--text-secondary)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <span><MapPin size={13} style={{ verticalAlign: 'text-bottom' }} /> {title}</span>
-        <span>Centro: {center.label || `${center.lat}, ${center.lng}`}</span>
+        <span>Centro: {(center && center.label) ? center.label : `${center?.lat || DEFAULT_CENTER.lat}, ${center?.lng || DEFAULT_CENTER.lng}`}</span>
       </div>
 
       {!readOnly && hasResults && (
