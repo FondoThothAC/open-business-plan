@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { PlanProvider, usePlan } from './context/PlanContext';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Layout from './components/Layout';
 import SetupWizard from './components/SetupWizard';
+import LoginScreen from './components/LoginScreen';
 
 // Modules
 import VistaPrevia from './modules/VistaPrevia';
@@ -79,12 +81,60 @@ function AppContent() {
   );
 }
 
+/**
+ * Guard de autenticación.
+ * Muestra LoginScreen si no hay sesión activa.
+ * Muestra spinner mientras se verifica el token almacenado.
+ */
+function AuthGuard({ children }) {
+  const { isAuthenticated, loading } = useAuth();
+
+  // Mientras se verifica el JWT almacenado, mostrar spinner
+  if (loading) {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: 'linear-gradient(135deg, #0a0e1a 0%, #141b2d 100%)',
+        color: 'rgba(255,255,255,0.4)',
+        fontFamily: "'Inter', sans-serif",
+        fontSize: '0.9rem',
+        gap: '0.75rem'
+      }}>
+        <div style={{
+          width: '1.5rem',
+          height: '1.5rem',
+          border: '2px solid rgba(56, 189, 248, 0.3)',
+          borderTop: '2px solid #38bdf8',
+          borderRadius: '50%',
+          animation: 'spin 0.8s linear infinite'
+        }} />
+        Verificando sesión...
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      </div>
+    );
+  }
+
+  // Sin sesión → mostrar login
+  if (!isAuthenticated) {
+    return <LoginScreen />;
+  }
+
+  return children;
+}
+
 function App() {
   return (
     <ErrorBoundary>
-      <PlanProvider>
-        <AppContent />
-      </PlanProvider>
+      <AuthProvider>
+        <AuthGuard>
+          <PlanProvider>
+            <AppContent />
+          </PlanProvider>
+        </AuthGuard>
+      </AuthProvider>
     </ErrorBoundary>
   );
 }

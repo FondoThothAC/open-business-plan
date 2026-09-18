@@ -22,6 +22,8 @@ import { acquireGenerationLock, releaseGenerationLock, getGenerationLockStatus }
 import { renameProject } from '../src/lib/serverUtils/projectRename.js';
 import marketCascadeRouter from './routes/marketCascade.js';
 import { GenerationJobStore } from './generationJobStore.js';
+import { registrarUsuario, loginUsuario, listarUsuarios, activarUsuario, desactivarUsuario, eliminarUsuario, actualizarApiKeys, obtenerApiKeys, cambiarPassword } from './auth.js';
+import { authGuard, soloAdmin } from './middleware/authGuard.js';
 
 // ─────────────────────────────────────────────────────────
 //  Helper Seguro para Búsqueda DuckDuckGo (Control de Tasa y Backoff)
@@ -70,6 +72,95 @@ function broadcast(eventData) {
 
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
+
+// ─────────────────────────────────────────────────────────
+//  Headers de Seguridad Anti-Scraping / Anti-IA
+// ─────────────────────────────────────────────────────────
+app.use((req, res, next) => {
+  // Prevenir carga en iframes (anti-clickjacking, anti-scraping)
+  res.setHeader('X-Frame-Options', 'DENY');
+  // Prevenir MIME sniffing
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  // No enviar referrer a sitios externos
+  res.setHeader('Referrer-Policy', 'same-origin');
+  // XSS Protection
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  next();
+});
+
+// ─────────────────────────────────────────────────────────
+//  Rutas de Autenticación (PÚBLICAS — sin authGuard)
+// ─────────────────────────────────────────────────────────
+app.post('/api/auth/login', (req, res) => {
+  const { username, password } = req.body || {};
+  const resultado = loginUsuario({ username, password });
+  if (!resultado.success) {
+    return res.status(401).json({ error: resultado.error });
+  }
+  res.json(resultado);
+});
+
+app.post('/api/auth/register', (req, res) => {
+  const { username, email, password, displayName } = req.body || {};
+  const resultado = registrarUsuario({ username, email, password, displayName });
+  if (!resultado.success) {
+    return res.status(400).json({ error: resultado.error });
+  }
+  res.status(201).json(resultado);
+});
+
+// ─────────────────────────────────────────────────────────
+//  Middleware de Autenticación (protege TODAS las rutas siguientes)
+// ─────────────────────────────────────────────────────────
+app.use('/api', authGuard);
+
+// ─────────────────────────────────────────────────────────
+//  Rutas de Perfil y API Keys (requieren autenticación)
+// ─────────────────────────────────────────────────────────
+app.get('/api/auth/me', (req, res) => {
+  const { id, username, role, displayName, email, status } = req.user;
+  const apiKeys = obtenerApiKeys(id);
+  res.json({ id, username, role, displayName, email, status, apiKeys });
+});
+
+app.put('/api/auth/me/keys', (req, res) => {
+  const resultado = actualizarApiKeys(req.user.id, req.body || {});
+  if (!resultado.success) return res.status(400).json({ error: resultado.error });
+  res.json(resultado);
+});
+
+app.put('/api/auth/me/password', (req, res) => {
+  const { currentPassword, newPassword } = req.body || {};
+  const resultado = cambiarPassword(req.user.id, currentPassword, newPassword);
+  if (!resultado.success) return res.status(400).json({ error: resultado.error });
+  res.json(resultado);
+});
+
+// ─────────────────────────────────────────────────────────
+//  Rutas de Admin (solo superadmin)
+// ─────────────────────────────────────────────────────────
+app.get('/api/auth/users', soloAdmin, (req, res) => {
+  res.json(listarUsuarios());
+});
+
+app.post('/api/auth/users/:id/activate', soloAdmin, (req, res) => {
+  const resultado = activarUsuario(req.params.id);
+  if (!resultado.success) return res.status(400).json({ error: resultado.error });
+  res.json(resultado);
+});
+
+app.post('/api/auth/users/:id/disable', soloAdmin, (req, res) => {
+  const resultado = desactivarUsuario(req.params.id);
+  if (!resultado.success) return res.status(400).json({ error: resultado.error });
+  res.json(resultado);
+});
+
+app.delete('/api/auth/users/:id', soloAdmin, (req, res) => {
+  const resultado = eliminarUsuario(req.params.id);
+  if (!resultado.success) return res.status(400).json({ error: resultado.error });
+  res.json(resultado);
+});
+
 app.use('/api/mercado', marketCascadeRouter);
 
 app.post('/api/generation-jobs', (req, res) => {
@@ -309,7 +400,7 @@ app.get('/api/projects', (req, res) => {
   const results = { negocios: [], social: [] };
 
   const reqUserId = req.headers['x-user-id'] || req.query.userId || '';
-  const isTargetAdmin = reqUserId === 'admin' || reqUserId === 'roberto';
+  const isTargetAdmin = req.user?.role === 'superadmin';
 
   ['negocios', 'social'].forEach(type => {
     const dir = path.join(baseDir, type);
@@ -372,7 +463,7 @@ app.get('/api/projects', (req, res) => {
 app.get('/api/projects/:type/:id', (req, res) => {
   const { type, id } = req.params;
   const reqUserId = req.headers['x-user-id'] || req.query.userId || '';
-  const isTargetAdmin = reqUserId === 'admin' || reqUserId === 'roberto';
+  const isTargetAdmin = req.user?.role === 'superadmin';
 
   let filePath = path.resolve('proyectos', type, id, `${id}.json`);
   

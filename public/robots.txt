@@ -1,0 +1,90 @@
+# ─────────────────────────────────────────────────────────
+#  robots.txt — Protección Anti-IA para Open Business Plan
+#  Bloquea crawlers de IA y scrapers conocidos.
+#  Permite motores de búsqueda legítimos.
+# ─────────────────────────────────────────────────────────
+
+# Bloquear crawlers de IA generativa
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ChatGPT-User
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+User-agent: ClaudeBot
+Disallow: /
+
+User-agent: Claude-Web
+Disallow: /
+
+User-agent: Google-Extended
+Disallow: /
+
+User-agent: FacebookBot
+Disallow: /
+
+User-agent: Bytespider
+Disallow: /
+
+User-agent: cohere-ai
+Disallow: /
+
+User-agent: Diffbot
+Disallow: /
+
+User-agent: PerplexityBot
+Disallow: /
+
+User-agent: YouBot
+Disallow: /
+
+User-agent: PetalBot
+Disallow: /
+
+User-agent: DataForSeoBot
+Disallow: /
+
+User-agent: Amazonbot
+Disallow: /
+
+User-agent: Applebot-Extended
+Disallow: /
+
+User-agent: Meta-ExternalAgent
+Disallow: /
+
+# Bloquear scrapers genéricos
+User-agent: Scrapy
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+# Permitir motores de búsqueda legítimos
+User-agent: Googlebot
+Allow: /obp/
+Disallow: /api/
+
+User-agent: Bingbot
+Allow: /obp/
+Disallow: /api/
+
+# Regla general: bloquear API
+User-agent: *
+Allow: /obp/
+Disallow: /api/
