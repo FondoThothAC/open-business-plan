@@ -399,8 +399,23 @@ app.get('/api/projects', (req, res) => {
   const baseDir = path.resolve('proyectos');
   const results = { negocios: [], social: [] };
 
-  const reqUserId = req.headers['x-user-id'] || req.query.userId || '';
+  const reqUserId = req.user?.username || req.headers['x-user-id'] || req.query.userId || '';
   const isTargetAdmin = req.user?.role === 'superadmin';
+
+  // Proyectos ejemplo canónicos compartidos
+  const EXAMPLE_PROJECT_IDS = new Set([
+    'br_jula_financiera_mx',
+    'brujula',
+    'ferreter_a_y_suministros_kino',
+    'ferreteria_kino',
+    'sove',
+    'vcv_cortes_finos_sa_de_cv'
+  ]);
+
+  // Proyectos privados exclusivos del superadmin (nunca visibles a usuarios regulares)
+  const PRIVATE_ADMIN_IDS = new Set([
+    'comercio_cu_ntico_internacional_tr_sapi_de_cv'
+  ]);
 
   ['negocios', 'social'].forEach(type => {
     const dir = path.join(baseDir, type);
@@ -421,6 +436,20 @@ app.get('/api/projects', (req, res) => {
                 } else if (reqUserId && entry.name === `user_${reqUserId.replace(/[^a-z0-9]/gi, '_').toLowerCase()}`) {
                   scanDir(path.join(targetDir, entry.name), entry.name);
                 }
+                continue;
+              }
+
+              // Si es un proyecto privado del superadmin y el solicitante no es superadmin, omitir
+              if (PRIVATE_ADMIN_IDS.has(entry.name) && !isTargetAdmin) {
+                continue;
+              }
+
+              // Si está en la carpeta raíz (sin userFolder)
+              const isExample = EXAMPLE_PROJECT_IDS.has(entry.name);
+              const isPrivate = PRIVATE_ADMIN_IDS.has(entry.name);
+
+              // Si no es admin y está en la raíz, solo permitir proyectos marcados como ejemplo
+              if (!isTargetAdmin && !targetUserFolder && !isExample) {
                 continue;
               }
 
@@ -445,7 +474,9 @@ app.get('/api/projects', (req, res) => {
                    size: stats.size,
                    completion,
                    projectType,
-                   userOwner: targetUserFolder ? targetUserFolder.replace(/^user_/, '') : 'local'
+                   userOwner: targetUserFolder ? targetUserFolder.replace(/^user_/, '') : 'ejemplo',
+                   isExample: isExample || (!targetUserFolder && !isPrivate),
+                   isPrivateAdmin: isPrivate
                  });
               }
            }
@@ -619,6 +650,104 @@ app.delete('/api/projects/:type/:id', (req, res) => {
     }
   } catch (error) {
     res.status(500).json({ success: false, error: `Error al eliminar proyecto: ${error.message}` });
+  }
+});
+
+// Clonado de Proyectos (ej. Plantillas o Ejemplos al espacio personal del usuario)
+app.post('/api/projects/:type/:id/clone', (req, res) => {
+  try {
+    const { type, id } = req.params;
+    const { newName } = req.body || {};
+    const targetUserId = req.user?.username || req.headers['x-user-id'] || 'usuario';
+
+    if (id === 'comercio_cu_ntico_internacional_tr_sapi_de_cv' && req.user?.role !== 'superadmin') {
+      return res.status(403).json({ success: false, error: 'No tienes permiso para clonar este proyecto privado de administración.' });
+    }
+
+    const baseDir = path.resolve('proyectos');
+    let sourcePath = path.resolve(baseDir, type, id, `${id}.json`);
+
+    if (!fs.existsSync(sourcePath)) {
+      sourcePath = path.resolve(baseDir, type, `${id}.json`);
+    }
+
+    // Si aún no se encuentra, buscar recursivamente en subdirectorios user_
+    if (!fs.existsSync(sourcePath)) {
+      const typeDir = path.resolve(baseDir, type);
+      if (fs.existsSync(typeDir)) {
+        const entries = fs.readdirSync(typeDir, { withFileTypes: true });
+        for (const entry of entries) {
+          if (entry.isDirectory() && entry.name.startsWith('user_')) {
+            const candidate = path.join(typeDir, entry.name, id, `${id}.json`);
+            if (fs.existsSync(candidate)) {
+              sourcePath = candidate;
+              break;
+            }
+          }
+        }
+      }
+    }
+
+    if (!fs.existsSync(sourcePath)) {
+      return res.status(404).json({ success: false, error: 'Proyecto origen no encontrado para clonar.' });
+    }
+
+    const sourceData = JSON.parse(fs.readFileSync(sourcePath, 'utf8'));
+
+    // Generar nuevo ID limpio y único
+    const randomSuffix = crypto.randomBytes(3).toString('hex');
+    const baseSlug = (newName || `${id}_copia`).toLowerCase().replace(/[^a-z0-9]/gi, '_');
+    const newProjectId = `${baseSlug}_${randomSuffix}`;
+    const displayName = newName || `${sourceData.config?.brandKit?.companyName || id} (Copia)`;
+
+    // Preparar clon con identidad propia para el usuario
+    const clonedData = {
+      ...sourceData,
+      config: {
+        ...sourceData.config,
+        projectId: newProjectId,
+        brandKit: {
+          ...sourceData.config?.brandKit,
+          companyName: displayName
+        },
+        revision: 1,
+        userOwner: targetUserId,
+        clonedFrom: id,
+        clonedAt: new Date().toISOString()
+      }
+    };
+
+    const userFolder = `user_${targetUserId.replace(/[^a-z0-9]/gi, '_').toLowerCase()}`;
+    const targetDir = path.resolve(baseDir, type, userFolder, newProjectId);
+
+    if (!fs.existsSync(targetDir)) {
+      fs.mkdirSync(targetDir, { recursive: true });
+    }
+
+    const docsDir = path.join(targetDir, 'documentos');
+    if (!fs.existsSync(docsDir)) {
+      fs.mkdirSync(docsDir, { recursive: true });
+    }
+
+    const targetJsonPath = path.join(targetDir, `${newProjectId}.json`);
+    fs.writeFileSync(targetJsonPath, JSON.stringify(clonedData, null, 2), 'utf8');
+
+    const targetMdPath = path.join(targetDir, `${newProjectId}.md`);
+    fs.writeFileSync(targetMdPath, jsonToMarkdown(clonedData), 'utf8');
+
+    res.json({
+      success: true,
+      message: 'Proyecto clonado exitosamente a tu espacio de trabajo.',
+      project: {
+        id: newProjectId,
+        name: displayName,
+        projectType: clonedData.config?.projectType || (type === 'social' ? 'social_bid' : 'business'),
+        userOwner: targetUserId
+      }
+    });
+  } catch (error) {
+    console.error('[Clone Project] Error:', error);
+    res.status(500).json({ success: false, error: `Error al clonar proyecto: ${error.message}` });
   }
 });
 

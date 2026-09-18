@@ -1,7 +1,8 @@
 import { useState, useEffect, useMemo } from 'react';
 import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FileSpreadsheet, LineChart, PieChart, Settings, Eye, BrainCircuit, ChevronDown, ChevronRight, ChevronLeft, Save, FilePlus, FolderOpen, Check, Image as ImageIcon, Sprout, Copy, Star, Briefcase, Zap, Globe, Cpu, ShoppingBag, Landmark, ListChecks, Compass, Target, Layers, Share2, Factory, UploadCloud, Bell, Terminal } from 'lucide-react';
+import { LayoutDashboard, FileSpreadsheet, LineChart, PieChart, Settings, Eye, BrainCircuit, ChevronDown, ChevronRight, ChevronLeft, Save, FilePlus, FolderOpen, Check, Image as ImageIcon, Sprout, Copy, Star, Briefcase, Zap, Globe, Cpu, ShoppingBag, Landmark, ListChecks, Compass, Target, Layers, Share2, Factory, UploadCloud, Bell, Terminal, User, LogOut, Shield } from 'lucide-react';
 import { usePlan } from '../context/PlanContext';
+import { useAuth } from '../contexts/AuthContext';
 import { PROJECT_EXAMPLES } from '../lib/projects_db';
 import { FRAMEWORKS } from '../config/frameworks';
 import { getApiBase } from '../config/apiConfig';
@@ -15,6 +16,8 @@ import ServerHealthBanner from './ServerHealthBanner';
 import WordDocumentCenterModal from './WordDocumentCenterModal';
 import DocumentUploader from './DocumentUploader';
 import TerminalDrawer from './TerminalDrawer';
+import AdminUsersPanel from './AdminUsersPanel';
+import UserProfileModal from './UserProfileModal';
 
 
 const METHODOLOGY_CONFIG = {
@@ -74,6 +77,11 @@ export default function Layout() {
     generationStatus, _generationProgress, startIndustrialization, _pauseIndustrialization, _stopIndustrialization, getProjectCompletion
   } = usePlan();
   
+  const { user, logout, isAdmin } = useAuth();
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [showAdminPanel, setShowAdminPanel] = useState(false);
+  const [cloningProjectId, setCloningProjectId] = useState(null);
+
   const [forceActivityOpen, setForceActivityOpen] = useState(false);
   
   // Auto-abrir monitor durante industrialización
@@ -1139,6 +1147,75 @@ export default function Layout() {
                       </span>
                      </div>
                   </div>
+
+                  <div style={{ width: '1px', height: '24px', background: 'var(--border-color)', margin: '0 2px' }} />
+
+                  {/* Menú y Perfil de Usuario con Botón de Logout */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                    {isAdmin && (
+                      <button
+                        onClick={() => setShowAdminPanel(true)}
+                        className="btn btn-secondary"
+                        style={{
+                          padding: '0.35rem 0.65rem',
+                          fontSize: '0.72rem',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.35rem',
+                          background: 'rgba(239, 68, 68, 0.12)',
+                          color: '#ef4444',
+                          border: '1px solid rgba(239, 68, 68, 0.25)',
+                          borderRadius: '8px'
+                        }}
+                        title="Panel de Usuarios y Aprobaciones (Superadmin)"
+                      >
+                        <Shield size={14} />
+                        <span>Usuarios</span>
+                      </button>
+                    )}
+
+                    <button
+                      onClick={() => setShowProfileModal(true)}
+                      className="btn btn-secondary"
+                      style={{
+                        padding: '0.35rem 0.65rem',
+                        fontSize: '0.72rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.4rem',
+                        borderRadius: '8px',
+                        background: 'var(--bg-panel-hover)',
+                        border: '1px solid var(--border-color)',
+                        color: 'var(--text-primary)'
+                      }}
+                      title="Gestionar mis API Keys y Contraseña"
+                    >
+                      <User size={14} color="var(--accent-color)" />
+                      <span style={{ fontWeight: 600, maxWidth: '90px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {user?.displayName || user?.username || 'Usuario'}
+                      </span>
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        if (window.confirm('¿Deseas cerrar tu sesión de Open Business Plan?')) {
+                          logout();
+                        }
+                      }}
+                      className="icon-btn-rounded"
+                      style={{
+                        padding: '0.4rem',
+                        borderRadius: '8px',
+                        background: 'rgba(239, 68, 68, 0.08)',
+                        border: '1px solid rgba(239, 68, 68, 0.2)',
+                        color: '#ef4444',
+                        cursor: 'pointer'
+                      }}
+                      title="Cerrar Sesión (Logout)"
+                    >
+                      <LogOut size={15} />
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1210,8 +1287,18 @@ export default function Layout() {
                           }}
                         >
                           <div>
-                            <div style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--text-primary)' }}>
-                              {p.name}
+                            <div style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                              <span>{p.name}</span>
+                              {p.isExample && (
+                                <span style={{ fontSize: '0.62rem', padding: '1px 6px', borderRadius: '4px', background: 'rgba(59, 130, 246, 0.15)', color: '#3b82f6', fontWeight: 700 }}>
+                                  Plantilla Ejemplo
+                                </span>
+                              )}
+                              {p.userOwner && p.userOwner !== 'ejemplo' && p.userOwner !== 'local' && (
+                                <span style={{ fontSize: '0.62rem', padding: '1px 6px', borderRadius: '4px', background: 'rgba(16, 185, 129, 0.15)', color: '#10b981', fontWeight: 600 }}>
+                                  👤 {p.userOwner}
+                                </span>
+                              )}
                             </div>
                             <div style={{ display: 'flex', gap: '1rem', marginTop: '0.35rem', fontSize: '0.7rem', color: 'var(--text-secondary)' }}>
                               <span>📁 {p.file}</span>
@@ -1219,18 +1306,53 @@ export default function Layout() {
                               <span>🕒 {p.mtime ? new Date(p.mtime).toLocaleString() : 'N/A'}</span>
                             </div>
                           </div>
-                          <button 
-                            className="btn btn-secondary"
-                            style={{ padding: '0.4rem 1rem', fontSize: '0.8rem' }}
-                            onClick={async () => {
-                              const success = await loadSavedProject(type, p.id);
-                              if (success) {
-                                setShowLoadModal(false);
-                              }
-                            }}
-                          >
-                            Cargar
-                          </button>
+                          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                            <button 
+                              className="btn btn-secondary"
+                              style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}
+                              disabled={cloningProjectId === p.id}
+                              onClick={async () => {
+                                setCloningProjectId(p.id);
+                                try {
+                                  const apiBase = getApiBase();
+                                  const res = await fetch(`${apiBase}/api/projects/${type}/${p.id}/clone`, {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' }
+                                  });
+                                  const data = await res.json();
+                                  if (data.success && data.project) {
+                                    alert(`¡Proyecto clonado exitosamente!\nSe ha creado "${data.project.name}" en tu espacio.`);
+                                    // Cargar el proyecto clonado directamente
+                                    await loadSavedProject(type, data.project.id);
+                                    setShowLoadModal(false);
+                                  } else {
+                                    alert(data.error || 'No se pudo clonar el proyecto.');
+                                  }
+                                } catch (err) {
+                                  alert(`Error al clonar: ${err.message}`);
+                                } finally {
+                                  setCloningProjectId(null);
+                                }
+                              }}
+                              title="Crear una copia propia e independiente de este proyecto"
+                            >
+                              <Copy size={13} />
+                              <span>{cloningProjectId === p.id ? 'Clonando...' : 'Clonar'}</span>
+                            </button>
+
+                            <button 
+                              className="btn btn-primary"
+                              style={{ padding: '0.4rem 1rem', fontSize: '0.8rem' }}
+                              onClick={async () => {
+                                const success = await loadSavedProject(type, p.id);
+                                if (success) {
+                                  setShowLoadModal(false);
+                                }
+                              }}
+                            >
+                              Cargar
+                            </button>
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -1677,6 +1799,18 @@ export default function Layout() {
       <TerminalDrawer
         isOpen={isTerminalOpen}
         onToggle={() => setIsTerminalOpen(prev => !prev)}
+      />
+
+      {/* Modal de Administración de Usuarios (Superadmin) */}
+      <AdminUsersPanel
+        isOpen={showAdminPanel}
+        onClose={() => setShowAdminPanel(false)}
+      />
+
+      {/* Modal de Perfil de Usuario y API Keys Personales */}
+      <UserProfileModal
+        isOpen={showProfileModal}
+        onClose={() => setShowProfileModal(false)}
       />
     </div>
   );

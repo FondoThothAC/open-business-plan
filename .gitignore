@@ -25,3 +25,4 @@ medscribe_logo_*.png
 
 .env.local
 .env*.local
+server/data/
