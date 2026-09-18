@@ -3,11 +3,15 @@ import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
 import './index.css'
 
-// Intercept fetch calls to local backend and inject user-id header if set in localStorage
+// Interceptor de fetch para inyectar header de usuario en peticiones al backend.
+// Soporta desarrollo (localhost:3001) y producción (/obp/api, /api).
 const originalFetch = window.fetch;
 window.fetch = function (url, options) {
   const urlString = String(url);
-  if (urlString.startsWith('http://localhost:3001') || urlString.startsWith('/api')) {
+  const esBackend = urlString.startsWith('http://localhost:3001')
+    || urlString.startsWith('/api')
+    || urlString.startsWith('/obp/api');
+  if (esBackend) {
     const userId = localStorage.getItem('openplan_user_id');
     if (userId) {
       options = options || {};

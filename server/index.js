@@ -3688,7 +3688,10 @@ if (fs.existsSync(distPath)) {
   });
 }
 
-const HOST = process.env.HOST || '127.0.0.1';
+// En producción, PM2 pasa HOST=127.0.0.1 vía ecosystem.config.cjs
+// para que solo Nginx pueda alcanzar a Express.
+// En desarrollo, 0.0.0.0 permite acceso desde cualquier interfaz.
+const HOST = process.env.HOST || '0.0.0.0';
 
 app.listen(PORT, HOST, () => {
   console.log('');
