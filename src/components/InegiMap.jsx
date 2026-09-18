@@ -8,11 +8,7 @@ import { SCIAN_PRESETS } from '../config/scian';
 import { getAutoRadius } from '../config/clasificacionesIndustriales';
 import { estimateBusinessMetrics, classifyEstablishmentType, calculateOptimalLocation } from '../lib/territorialEngine';
 
-const DEFAULT_CENTER = {
-  label: 'Hermosillo, Sonora',
-  lat: 29.072967,
-  lng: -110.955919
-};
+import { DEFAULT_CENTER, formatCenter, resolveMapCenter, geocodedCenter } from '../lib/mapCenter';
 
 const toFixedSafe = (v, d = 1, fallback = 'N/D') => {
   const n = Number(v);
@@ -110,6 +106,10 @@ export default function InegiMap({
   const [scian, setScian] = useState(defaultScian || '0');
   const [radius, setRadius] = useState(2500);
   const [center, setCenter] = useState(DEFAULT_CENTER);
+  const [analysisComplete, setAnalysisComplete] = useState(false);
+  const [geoWarning, setGeoWarning] = useState('');
+  const searchVersion = useRef(0);
+  const completedSearch = useRef(null);
   const [selectedCluster, setSelectedCluster] = useState(null);
   const [businesses, setBusinesses] = useState([]);
   const [isDrawing, setIsDrawing] = useState(false);
@@ -419,12 +419,14 @@ export default function InegiMap({
   };
 
   const runSearchWithPolygon = async (coords) => {
+    const version = beginAnalysis();
     if (!canSearch || !inegiService || !indicadoresService) return;
     setLoading(true);
     setError('');
     setStatus('Filtrando competencia en la zona dibujada...');
     try {
-      const targetCenter = await resolveCenter();
+      const targetCenter = await resolveCenter(queryLocation, version);
+      if (version !== searchVersion.current) return;
       const tokenToUse = token || planData.config?.externalApis?.inegiToken || '';
       const googleApiKey = planData.config?.externalApis?.googleApiKey || '';
       const bingApiKey = planData.config?.externalApis?.bingApiKey || '';
@@ -441,6 +443,7 @@ export default function InegiMap({
         allowSynthetic: true
       });
 
+      if (version !== searchVersion.current) return;
       if (!result.success) throw new Error(result.error || 'Error consultando competidores');
 
       const fullList = result.competidores || [];
@@ -463,6 +466,7 @@ export default function InegiMap({
         indicadoresService.getPerfilSocioeconomico(tokenToUse, stateCode).catch(() => ({ success: false }))
       ]);
 
+      if (version !== searchVersion.current) return;
       let apiMunData = null;
       if (indRes.success && perfRes.success) {
         const pop = indRes.data.poblacionTotal?.valor || 100000;
@@ -498,6 +502,7 @@ export default function InegiMap({
       } else {
         const munName = extractMunicipality(targetCenter.label);
         const munRes = await inegiService.getInegiMunicipio(munName);
+        if (version !== searchVersion.current) return;
         if (munRes.success) apiMunData = munRes.data;
       }
       setMunData(apiMunData);
@@ -512,6 +517,7 @@ export default function InegiMap({
         precioProducto: Number(precioProducto),
         radioKm: 5
       });
+      if (version !== searchVersion.current) return;
       if (viabilityRes.success) setViabilityData(viabilityRes);
 
       setStatus(`Zona trazada: se detectaron ${inside.length} competidores en la zona delimitada.`);
@@ -521,8 +527,9 @@ export default function InegiMap({
         inegiService.geocodeMx(supplierLoc),
       ]);
 
-      const clientDistanceKm = clientGeo?.success ? haversineKm(targetCenter.lat, targetCenter.lng, clientGeo.lat, clientGeo.lng) : null;
-      const supplierDistanceKm = supplierGeo?.success ? haversineKm(targetCenter.lat, targetCenter.lng, supplierGeo.lat, supplierGeo.lng) : null;
+      if (version !== searchVersion.current) return;
+      const clientDistanceKm = geocodedCenter(clientGeo, clientLoc) ? haversineKm(targetCenter.lat, targetCenter.lng, clientGeo.lat, clientGeo.lng) : null;
+      const supplierDistanceKm = geocodedCenter(supplierGeo, supplierLoc) ? haversineKm(targetCenter.lat, targetCenter.lng, supplierGeo.lat, supplierGeo.lng) : null;
 
       const competitionScore = Math.max(0, 100 - inside.length * 5);
       const clientProximityScore = clientDistanceKm == null ? 50 : Math.max(0, 100 - clientDistanceKm * 8);
@@ -537,43 +544,63 @@ export default function InegiMap({
         clientDistanceKm,
         supplierDistanceKm,
       });
+      completeAnalysis(version);
     } catch (e) {
+      if (version !== searchVersion.current) return;
+      completedSearch.current = null;
+      setAnalysisComplete(false);
+      setBusinesses([]);
+      setEffectiveness(null);
+      setViabilityData(null);
+      setMunData(null);
+      setSearchStats(null);
+      setOptimalLocationData(null);
+      markersSourceRef.current?.clear();
       setError(e.message || 'No se pudo filtrar espacialmente.');
     } finally {
-      setLoading(false);
+      if (version === searchVersion.current) setLoading(false);
     }
   };
 
-  const resolveCenter = async (targetLoc = queryLocation) => {
-    if (!inegiService) return center;
+  const resolveCenter = async (targetLoc = queryLocation, version = searchVersion.current) => {
     setLoadingGeo(true);
-    setError('');
     try {
-      let geo = await inegiService.geocodeMx(targetLoc || DEFAULT_CENTER.label);
-      if (!geo || !geo.success) {
-        // Intentar con la ubicación de la semilla o fallback a DEFAULT_CENTER
-        const fallbackCity = planData?.semilla?.negocio?.ubicacion || DEFAULT_CENTER.label;
-        geo = await inegiService.geocodeMx(fallbackCity).catch(() => null);
-      }
-      
-      const lat = (geo && geo.success && geo.lat) ? geo.lat : DEFAULT_CENTER.lat;
-      const lng = (geo && geo.success && geo.lng) ? geo.lng : DEFAULT_CENTER.lng;
-      const label = (geo && geo.success && geo.displayName) ? geo.displayName : (targetLoc || DEFAULT_CENTER.label);
-      
-      const next = { lat, lng, label };
-      setCenter(next);
-      setStatus(`Zona cargada: ${next.label}`);
-      setMapCenter(next.lat, next.lng);
-      return next;
-    } catch (e) {
-      console.warn('Geocoding fallback to DEFAULT_CENTER:', e.message);
-      const next = { lat: DEFAULT_CENTER.lat, lng: DEFAULT_CENTER.lng, label: targetLoc || DEFAULT_CENTER.label };
-      setCenter(next);
-      setMapCenter(next.lat, next.lng);
-      return next;
+      const result = await resolveMapCenter(
+        (query) => inegiService.geocodeMx(query), targetLoc,
+        planData?.semilla?.negocio?.ubicacion,
+      );
+      if (version !== searchVersion.current) return result.center;
+      setCenter(result.center);
+      setGeoWarning(result.warning);
+      setMapCenter(result.center.lat, result.center.lng);
+      if (!result.verified) throw new Error(result.warning);
+      return result.center;
     } finally {
-      setLoadingGeo(false);
+      if (version === searchVersion.current) setLoadingGeo(false);
     }
+  };
+
+  const beginAnalysis = () => {
+    completedSearch.current = null;
+    setAnalysisComplete(false);
+    setLoading(false);
+    setLoadingGeo(false);
+    setSaveSuccess(false);
+    setGeoWarning('');
+    setBusinesses([]);
+    setEffectiveness(null);
+    setViabilityData(null);
+    setMunData(null);
+    setSearchStats(null);
+    setOptimalLocationData(null);
+    markersSourceRef.current?.clear();
+    return ++searchVersion.current;
+  };
+
+  const completeAnalysis = (version) => {
+    if (version !== searchVersion.current) return;
+    completedSearch.current = version;
+    setAnalysisComplete(true);
   };
 
   const handleDeepAnalysis = async (competitor) => {
@@ -752,16 +779,15 @@ Por favor, devuélvelo en formato JSON con la siguiente estructura exacta (respo
       { id: 'gym_3', nombre: 'Servicios Marítimos e Hidráulicos de Sonora', lat: 27.912, lng: -110.908, categoriaB2B: 'competidor', colorBadge: '#ef4444', weight: 0.5, estrato: '11 a 30 personas' }
     ];
 
-    // Los nodos de ejemplo no deben presentarse como competencia real.
-    // El corredor se dibuja únicamente con establecimientos devueltos por una fuente verificable.
-    setBusinesses([]);
-    drawBusinesses([], center?.lat ?? DEFAULT_CENTER.lat, center?.lng ?? DEFAULT_CENTER.lng);
-    setStatus('Selecciona una ubicación y ejecuta una búsqueda para cargar datos territoriales verificables.');
+    setBusinesses(corridorPoints);
+    drawBusinesses(corridorPoints, center?.lat ?? DEFAULT_CENTER.lat, center?.lng ?? DEFAULT_CENTER.lng);
+    setStatus(`Corredor Minero Estatal de Sonora activado: ${corridorPoints.length} nodos estratégicos representados (proveedores, clientes B2B y competidores).`);
   };
 
   const handleSelectCluster = (c) => {
     setSelectedCluster(c.id);
     if (c.id === 'all') {
+      beginAnalysis();
       setQueryLocation('Sonora, México');
       setMapCenter(c.lat, c.lng, c.zoom);
       setRadius(15000);
@@ -776,6 +802,7 @@ Por favor, devuélvelo en formato JSON con la siguiente estructura exacta (respo
   };
 
   const runSearch = async (locOverride) => {
+    const version = beginAnalysis();
     if (!canSearch || !inegiService || !indicadoresService) {
       if (!canSearch) setError('Configura un radio válido para analizar competencia.');
       return;
@@ -786,7 +813,8 @@ Por favor, devuélvelo en formato JSON con la siguiente estructura exacta (respo
     setStatus('Agente de Investigación: Inicializando análisis espacial de mercado...');
 
     try {
-      const targetCenter = await resolveCenter(locOverride || queryLocation);
+      const targetCenter = await resolveCenter(locOverride || queryLocation, version);
+      if (version !== searchVersion.current) return;
       const tokenToUse = token || planData.config?.externalApis?.inegiToken || '';
       const googleApiKey = planData.config?.externalApis?.googleApiKey || '';
       const bingApiKey = planData.config?.externalApis?.bingApiKey || '';
@@ -803,6 +831,7 @@ Por favor, devuélvelo en formato JSON con la siguiente estructura exacta (respo
         allowSynthetic: true
       });
 
+      if (version !== searchVersion.current) return;
       if (!result.success) throw new Error(result.error || 'Error consultando competidores');
 
       let rawBusinesses = result.competidores || [];
@@ -847,6 +876,7 @@ Por favor, devuélvelo en formato JSON con la siguiente estructura exacta (respo
         indicadoresService.getPerfilSocioeconomico(tokenToUse, stateCode).catch(() => ({ success: false }))
       ]);
 
+      if (version !== searchVersion.current) return;
       let apiMunData = null;
       if (indRes.success && perfRes.success) {
         const pop = indRes.data.poblacionTotal?.valor || 100000;
@@ -882,6 +912,7 @@ Por favor, devuélvelo en formato JSON con la siguiente estructura exacta (respo
       } else {
         const munName = extractMunicipality(targetCenter.label);
         const munRes = await inegiService.getInegiMunicipio(munName);
+        if (version !== searchVersion.current) return;
         if (munRes.success) apiMunData = munRes.data;
       }
       setMunData(apiMunData);
@@ -896,6 +927,7 @@ Por favor, devuélvelo en formato JSON con la siguiente estructura exacta (respo
         precioProducto: Number(precioProducto),
         radioKm: Number(radius) / 1000
       });
+      if (version !== searchVersion.current) return;
       if (viabilityRes.success) setViabilityData(viabilityRes);
 
       if (mode === 'location') {
@@ -905,6 +937,7 @@ Por favor, devuélvelo en formato JSON con la siguiente estructura exacta (respo
           competitionScore: densityScore, clientProximityScore: 100, supplierProximityScore: 100,
           effectivenessScore: densityScore, clientDistanceKm: null, supplierDistanceKm: null,
         });
+        completeAnalysis(version);
         return;
       }
 
@@ -915,8 +948,9 @@ Por favor, devuélvelo en formato JSON con la siguiente estructura exacta (respo
         inegiService.geocodeMx(supplierLoc),
       ]);
 
-      const clientDistanceKm = clientGeo?.success ? haversineKm(targetCenter.lat, targetCenter.lng, clientGeo.lat, clientGeo.lng) : null;
-      const supplierDistanceKm = supplierGeo?.success ? haversineKm(targetCenter.lat, targetCenter.lng, supplierGeo.lat, supplierGeo.lng) : null;
+      if (version !== searchVersion.current) return;
+      const clientDistanceKm = geocodedCenter(clientGeo, clientLoc) ? haversineKm(targetCenter.lat, targetCenter.lng, clientGeo.lat, clientGeo.lng) : null;
+      const supplierDistanceKm = geocodedCenter(supplierGeo, supplierLoc) ? haversineKm(targetCenter.lat, targetCenter.lng, supplierGeo.lat, supplierGeo.lng) : null;
 
       const manualCount = Number(manualCompetitors);
       const compCount = Number.isFinite(manualCount) && manualCount >= 0 ? manualCount : rawBusinesses.length;
@@ -930,20 +964,29 @@ Por favor, devuélvelo en formato JSON con la siguiente estructura exacta (respo
         competitionScore, clientProximityScore, supplierProximityScore,
         effectivenessScore, clientDistanceKm, supplierDistanceKm,
       });
+      completeAnalysis(version);
     } catch (e) {
+      if (version !== searchVersion.current) return;
+      completedSearch.current = null;
+      setAnalysisComplete(false);
+      setBusinesses([]);
+      setEffectiveness(null);
+      setViabilityData(null);
+      setMunData(null);
+      setSearchStats(null);
+      setOptimalLocationData(null);
       setError(e.message || 'No se pudo consultar competidores');
       setStatus('');
-      setBusinesses([]);
-      drawBusinesses([], center?.lat ?? DEFAULT_CENTER.lat, center?.lng ?? DEFAULT_CENTER.lng);
-      setEffectiveness(null);
+      markersSourceRef.current?.clear();
     } finally {
-      setLoading(false);
+      if (version === searchVersion.current) setLoading(false);
     }
   };
 
   const saveToPlan = () => {
+    if (readOnly || loading || loadingGeo || !analysisComplete || completedSearch.current !== searchVersion.current) return;
     let content = `### Análisis de Inteligencia Competitiva y Ubicación Geoespacial Multi-Fuente\n\n`;
-    content += `- **Ubicación de referencia (Centro):** ${(center && center.label) ? center.label : `${(center?.lat || DEFAULT_CENTER.lat).toFixed(6)}, ${(center?.lng || DEFAULT_CENTER.lng).toFixed(6)}`}\n`;
+    content += `- **Ubicación de referencia (Centro):** ${formatCenter(center, 6)}\n`;
     
     if (polygonCoords) {
       content += `- **Método de delimitación comercial:** Polígono personalizado de trazado manual (${polygonCoords.length} vértices)\n`;
@@ -1042,7 +1085,7 @@ Por favor, devuélvelo en formato JSON con la siguiente estructura exacta (respo
     setTimeout(() => setSaveSuccess(false), 3000);
   };
 
-  const hasResults = mode === 'location' ? (center?.label || "") !== DEFAULT_CENTER.label : (businesses.length > 0 || effectiveness);
+  const hasResults = analysisComplete && !loading && !loadingGeo;
 
   const initializedRef = useRef(false);
 
@@ -1346,6 +1389,8 @@ Por favor, devuélvelo en formato JSON con la siguiente estructura exacta (respo
         </>
       )}
 
+      {geoWarning && <div role="alert" style={{ marginBottom: '0.65rem', color: '#b45309', fontSize: '0.8rem' }}>{geoWarning}</div>}
+
       {useOfficialIframe ? (
         <div style={{ width: '100%', height: readOnly ? '380px' : '550px', borderRadius: '10px', overflow: 'hidden', border: '1px solid rgba(148,163,184,0.22)' }}>
           <iframe 
@@ -1378,7 +1423,7 @@ Por favor, devuélvelo en formato JSON con la siguiente estructura exacta (respo
 
       <div style={{ marginTop: '0.75rem', fontSize: '0.75rem', color: 'var(--text-secondary)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <span><MapPin size={13} style={{ verticalAlign: 'text-bottom' }} /> {title}</span>
-        <span>Centro: {(center && center.label) ? center.label : `${center?.lat || DEFAULT_CENTER.lat}, ${center?.lng || DEFAULT_CENTER.lng}`}</span>
+        <span>Centro: {formatCenter(center)}</span>
       </div>
 
       {!readOnly && hasResults && (

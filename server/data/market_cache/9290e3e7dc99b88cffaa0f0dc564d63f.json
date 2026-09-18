@@ -1,5 +1,5 @@
 {
-  "timestamp": 1789203474319,
+  "timestamp": 1789692072868,
   "ttlHours": 24,
   "data": {
     "success": true,
@@ -33,6 +33,6 @@
       "evidencias": [],
       "fraccionArancelaria": "8412.21"
     },
-    "timestamp": 1789203474319
+    "timestamp": 1789692072868
   }
 }

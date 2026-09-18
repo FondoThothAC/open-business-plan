@@ -138,6 +138,10 @@ flowchart LR
 * **Modelos Registrados:**
   * `gpt-5.2`: Modelo insignia insignia de alta capacidad para formulación estratégica profunda.
   * `qwen3.8-flash`: Modelo ultra-rápido con soporte de tokens de razonamiento (`reasoning_content`) transformados a etiquetas `<think>` para visualización interactiva.
+
+### 3.6 Visualización Territorial del Corredor Minero Estatal (`InegiMap.jsx`)
+* **Activación de Cluster:** Al seleccionar el cluster `all` (Todo el Corredor Minero Sonora), `seedStatewideMiningCorridor()` puebla y dibuja de forma interactiva los nodos industriales clave (`corridorPoints`).
+* **Categorización B2B:** Distinción cromática y semántica entre Proveedores Críticos (Hermosillo, Guaymas), Clientes B2B / Minas Insignia (Buenavista del Cobre en Cananea, La Caridad en Nacozari, Penmont en Caborca) y Competidores Locales con sus respectivos estratos de personal y ponderaciones de impacto.
   * `glm-5.3-flash` y `kimi-k3`: Modelos complementarios de alto rendimiento y bajo costo.
 * **Proxy de Servidor Seguro:** `/api/ai/proxy` intercepta llamadas con target `https://api.b.ai/` e inyecta dinámicamente `BAI_KEY` desde variables de entorno de servidor en caso de omisión en cliente.
 * **Endpoint de Diagnóstico en Tiempo Real:** `POST /api/test/bai` para verificación de conectividad y latencia mediante handshake instantáneo.

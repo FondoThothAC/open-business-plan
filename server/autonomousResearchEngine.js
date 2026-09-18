@@ -157,7 +157,7 @@ export class AutonomousResearchEngine {
     targetMarket = 'Restaurantes en México y cadenas en EE.UU. (Arizona/California)',
     inversionInicial = 4000000,
     keywords = 'carne empacadora frigorifico cortes tif',
-    tokenDenue = '1b9e230f-2ae0-48db-bd20-8810b1db575e'
+    tokenDenue = process.env.DENUE_KEY || process.env.VITE_DENUE_KEY || ''
   } = {}) {
     const lat = 29.0948;
     const lng = -110.9692;

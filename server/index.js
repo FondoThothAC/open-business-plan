@@ -3,6 +3,11 @@ import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
 import cors from 'cors';
+import dotenv from 'dotenv';
+
+// Cargar variables de entorno locales (.env.local primero, fallback a .env)
+dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
+dotenv.config();
 import { search as ddgSearch } from 'duck-duck-scrape';
 import { scrapeSocialFollowers, scrapeEcommercePrices, scrapeUberEatsRappi, scrapeAirbnbTripAdvisor, scrapeMercadoLibre } from './scraper.js';
 import { busquedaMultiFuente, analizarViabilidad } from './competitorEngine.js';
@@ -191,7 +196,8 @@ app.post('/api/save', (req, res) => {
     const projectTypeRaw = planData.config?.projectType || 'business';
     const projectType = projectTypeRaw === 'social_bid' ? 'social' : 'negocios';
     const rawName = planData.config?.brandKit?.companyName || planData.semilla?.nombre_proyecto || planData.semilla?.negocio?.nombre_marca || 'Proyecto';
-    const persistentId = String(planData.config?.projectId || `project_${crypto.randomUUID()}`).replace(/[^a-z0-9]/gi, '_').toLowerCase();
+    const generatedUuid = crypto.randomUUID ? crypto.randomUUID() : crypto.randomBytes(16).toString('hex');
+    const persistentId = String(planData.config?.projectId || `project_${generatedUuid}`).replace(/[^a-z0-9]/gi, '_').toLowerCase();
     const safeName = persistentId;
     
     // Check if X-User-Id header or query/config userId is provided to isolate
@@ -1795,7 +1801,7 @@ app.post('/api/research/autonomous-competitors', async (req, res) => {
       keywords = ''
     } = req.body || {};
 
-    const denueToken = process.env.VITE_DENUE_KEY || process.env.DENUE_KEY || '1b9e230f-2ae0-48db-bd20-8810b1db575e';
+    const denueToken = process.env.DENUE_KEY || process.env.VITE_DENUE_KEY || '';
 
     const resultado = await AutonomousResearchEngine.ejecutarInvestigacionAutonoma({
       companyName,
