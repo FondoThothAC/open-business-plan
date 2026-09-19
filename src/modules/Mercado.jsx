@@ -1,5 +1,5 @@
 import { usePlan } from '../context/PlanContext';
-import AnalisisCompetenciaGoogle from '../components/AnalisisCompetenciaGoogle';
+import DeepMarketResearch from '../components/DeepMarketResearch';
 
 export default function Mercado() {
   const { planData, updateSection } = usePlan();
@@ -65,7 +65,7 @@ export default function Mercado() {
             </div>
           </div>
           
-          <AnalisisCompetenciaGoogle />
+          <DeepMarketResearch />
         </div>
       </div>
     </div>

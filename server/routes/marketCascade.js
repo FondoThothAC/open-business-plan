@@ -112,6 +112,10 @@ export async function ejecutarCascadaMercado({ projectId, query, sector, ubicaci
   return payload;
 }
 
+import { InegiAgebEngine } from '../api/inegiAgebEngine.js';
+import { PerplexitySearchEngine } from '../api/perplexitySearchEngine.js';
+import { marketResearchAgent } from '../swarm/MarketResearchAgent.js';
+
 router.post('/cascada', async (req, res) => {
   try {
     const result = await ejecutarCascadaMercado(req.body || {});
@@ -122,7 +126,47 @@ router.post('/cascada', async (req, res) => {
   }
 });
 
+router.post('/deep-research', async (req, res) => {
+  try {
+    const { businessIdea, lat = 29.08919, lng = -110.96133, radius = 3000 } = req.body;
+    
+    if (!businessIdea) {
+      return res.status(400).json({ success: false, error: 'businessIdea es requerido' });
+    }
+
+    // 1. Extraer Demografía de INEGI AGEB
+    const inegiEngine = new InegiAgebEngine();
+    const inegiData = await inegiEngine.extractDemographicProfile(Number(lat), Number(lng), Number(radius));
+
+    // 2. Extraer contexto de mercado web
+    const perplexityEngine = new PerplexitySearchEngine();
+    const perplexityData = await perplexityEngine.searchMarketContext(businessIdea, 5);
+
+    // 3. Generar reporte con el Agente LLM
+    const onThought = (msg) => console.log(`[MarketResearchAgent] ${msg}`);
+    const reportMarkdown = await marketResearchAgent.generateDeepReport({
+      businessIdea,
+      inegiData,
+      perplexityData,
+      onThought
+    });
+
+    return res.status(200).json({
+      success: true,
+      reportMarkdown,
+      metadata: {
+        inegiData,
+        perplexityData
+      }
+    });
+  } catch (error) {
+    console.error('[DeepResearch] Error:', error.message);
+    return res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 router.get('/cache/status', (_req, res) => {
+
   try {
     const files = fs.readdirSync(CACHE_DIR).filter((file) => file.endsWith('.json'));
     return res.json({ total_archivos_cache: files.length, ttl_horas: 24, directorio: CACHE_DIR });
