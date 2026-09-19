@@ -14,6 +14,9 @@ import { verificarToken, buscarPorId } from '../auth.js';
 //  Rutas que NO requieren autenticación
 // ─────────────────────────────────────────────────────────
 const RUTAS_PUBLICAS = [
+  '/auth/login',
+  '/auth/register',
+  '/health',
   '/api/auth/login',
   '/api/auth/register',
   '/api/health'
@@ -81,7 +84,6 @@ export function authGuard(req, res, next) {
     role: usuario.role,
     displayName: usuario.displayName,
     email: usuario.email,
-    apiKeys: usuario.apiKeys || {},
     status: usuario.status
   };
 

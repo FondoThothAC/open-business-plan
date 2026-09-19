@@ -22,8 +22,9 @@ import { acquireGenerationLock, releaseGenerationLock, getGenerationLockStatus }
 import { renameProject } from '../src/lib/serverUtils/projectRename.js';
 import marketCascadeRouter from './routes/marketCascade.js';
 import { GenerationJobStore } from './generationJobStore.js';
-import { registrarUsuario, loginUsuario, listarUsuarios, activarUsuario, desactivarUsuario, eliminarUsuario, actualizarApiKeys, obtenerApiKeys, cambiarPassword } from './auth.js';
+import { registrarUsuario, loginUsuario, listarUsuarios, activarUsuario, desactivarUsuario, eliminarUsuario, actualizarApiKeys, obtenerApiKeys, cambiarPassword, obtenerApiKeysParaServicio } from './auth.js';
 import { authGuard, soloAdmin } from './middleware/authGuard.js';
+import { EXAMPLE_PROJECT_IDS, PRIVATE_ADMIN_IDS, assertSafeProjectSegment, resolveReadableProject, resolveWritableProject, resolveCloneSource, userFolder } from './projectAccess.js';
 
 // ─────────────────────────────────────────────────────────
 //  Helper Seguro para Búsqueda DuckDuckGo (Control de Tasa y Backoff)
@@ -161,23 +162,30 @@ app.delete('/api/auth/users/:id', soloAdmin, (req, res) => {
   res.json(resultado);
 });
 
-app.use('/api/mercado', marketCascadeRouter);
+app.use('/api/mercado', (req, _res, next) => {
+  req.user.serviceApiKeys = obtenerApiKeysParaServicio(req.user.id);
+  next();
+}, marketCascadeRouter);
 
 app.post('/api/generation-jobs', (req, res) => {
-  const { projectId, ownerId, items, baseRevision } = req.body || {};
+  const { projectId, items, baseRevision } = req.body || {};
   if (!projectId || !Array.isArray(items) || items.length === 0) return res.status(400).json({ error: 'projectId e items son requeridos.' });
-  const job = generationJobs.create({ projectId, ownerId, items, baseRevision });
+  const job = generationJobs.create({ projectId, ownerId: req.user.id, items, baseRevision });
   res.status(201).json(job);
 });
 
-app.get('/api/generation-jobs', (req, res) => res.json(generationJobs.list(req.query.projectId)));
+app.get('/api/generation-jobs', (req, res) => res.json(generationJobs.list(req.query.projectId).filter(job => req.user.role === 'superadmin' || job.ownerId === req.user.id)));
 app.get('/api/generation-jobs/:id', (req, res) => {
   const job = generationJobs.get(req.params.id);
   if (!job) return res.status(404).json({ error: 'Trabajo no encontrado.' });
+  if (req.user.role !== 'superadmin' && job.ownerId !== req.user.id) return res.status(403).json({ error: 'No tienes acceso a este trabajo.' });
   res.json(job);
 });
 app.post('/api/generation-jobs/:id/:action(pause|resume|cancel)', (req, res) => {
   const status = req.params.action === 'pause' ? 'paused' : req.params.action === 'resume' ? 'queued' : 'cancelled';
+  const existing = generationJobs.get(req.params.id);
+  if (!existing) return res.status(404).json({ error: 'Trabajo no encontrado.' });
+  if (req.user.role !== 'superadmin' && existing.ownerId !== req.user.id) return res.status(403).json({ error: 'No tienes acceso a este trabajo.' });
   const job = generationJobs.update(req.params.id, { status });
   if (!job) return res.status(404).json({ error: 'Trabajo no encontrado.' });
   res.json(job);
@@ -289,15 +297,16 @@ app.post('/api/save', (req, res) => {
     const rawName = planData.config?.brandKit?.companyName || planData.semilla?.nombre_proyecto || planData.semilla?.negocio?.nombre_marca || 'Proyecto';
     const generatedUuid = crypto.randomUUID ? crypto.randomUUID() : crypto.randomBytes(16).toString('hex');
     const persistentId = String(planData.config?.projectId || `project_${generatedUuid}`).replace(/[^a-z0-9]/gi, '_').toLowerCase();
+    assertSafeProjectSegment(persistentId);
     const safeName = persistentId;
     
-    // Check if X-User-Id header or query/config userId is provided to isolate
-    const userId = req.headers['x-user-id'] || req.query.userId || planData.config?.userId || '';
-    const userFolder = userId ? `user_${userId.replace(/[^a-z0-9]/gi, '_').toLowerCase()}` : '';
+    // Ownership comes only from the verified authenticated identity.
+    const userId = req.user.username;
+    const ownerFolder = userFolder(req.user);
 
     // Create new structure: proyectos/{type}/{userFolder}/{safeName}/
     const dirParts = ['proyectos', projectType];
-    if (userFolder) dirParts.push(userFolder);
+    if (ownerFolder) dirParts.push(ownerFolder);
     dirParts.push(safeName);
 
     const dirPath = path.resolve(...dirParts);
@@ -323,7 +332,8 @@ app.post('/api/save', (req, res) => {
         }
       } catch {}
     }
-    planData.config = { ...planData.config, projectId: persistentId, displayName: rawName, revision: Number(planData.config?.revision || 0) + 1 };
+    const { externalApis: _externalApis, apiKeys: _apiKeys, ...safeConfig } = planData.config;
+    planData.config = { ...safeConfig, projectId: persistentId, userOwner: userId, displayName: rawName, revision: Number(planData.config?.revision || 0) + 1 };
 
     // Guardado versionado inmutable con control anti-regresión
     const versionResult = saveWithVersioning({
@@ -402,21 +412,6 @@ app.get('/api/projects', (req, res) => {
   const reqUserId = req.user?.username || req.headers['x-user-id'] || req.query.userId || '';
   const isTargetAdmin = req.user?.role === 'superadmin';
 
-  // Proyectos ejemplo canónicos compartidos
-  const EXAMPLE_PROJECT_IDS = new Set([
-    'br_jula_financiera_mx',
-    'brujula',
-    'ferreter_a_y_suministros_kino',
-    'ferreteria_kino',
-    'sove',
-    'vcv_cortes_finos_sa_de_cv'
-  ]);
-
-  // Proyectos privados exclusivos del superadmin (nunca visibles a usuarios regulares)
-  const PRIVATE_ADMIN_IDS = new Set([
-    'comercio_cu_ntico_internacional_tr_sapi_de_cv'
-  ]);
-
   ['negocios', 'social'].forEach(type => {
     const dir = path.join(baseDir, type);
     if (fs.existsSync(dir)) {
@@ -493,54 +488,22 @@ app.get('/api/projects', (req, res) => {
 
 app.get('/api/projects/:type/:id', (req, res) => {
   const { type, id } = req.params;
-  const reqUserId = req.headers['x-user-id'] || req.query.userId || '';
-  const isTargetAdmin = req.user?.role === 'superadmin';
-
-  let filePath = path.resolve('proyectos', type, id, `${id}.json`);
-  
-  if (reqUserId && !isTargetAdmin) {
-    const userFolder = `user_${reqUserId.replace(/[^a-z0-9]/gi, '_').toLowerCase()}`;
-    const userSpecificPath = path.resolve('proyectos', type, userFolder, id, `${id}.json`);
-    if (fs.existsSync(userSpecificPath)) {
-      filePath = userSpecificPath;
-    }
-  } else if (isTargetAdmin) {
-    if (!fs.existsSync(filePath)) {
-      const typeDir = path.resolve('proyectos', type);
-      if (fs.existsSync(typeDir)) {
-        const entries = fs.readdirSync(typeDir, { withFileTypes: true });
-        for (const entry of entries) {
-          if (entry.isDirectory() && entry.name.startsWith('user_')) {
-            const potentialPath = path.join(typeDir, entry.name, id, `${id}.json`);
-            if (fs.existsSync(potentialPath)) {
-              filePath = potentialPath;
-              break;
-            }
-          }
-        }
-      }
-    }
-  }
-
-  if (!fs.existsSync(filePath)) {
-     filePath = path.resolve('proyectos', type, `${id}.json`);
-  }
-  
-  if (fs.existsSync(filePath)) {
+  try {
+    const project = resolveReadableProject(type, id, req.user);
+    if (!project) return res.status(404).json({ error: 'Proyecto no encontrado.' });
     try {
-      const data = fs.readFileSync(filePath, 'utf8');
+      const data = fs.readFileSync(project.path, 'utf8');
       res.json(JSON.parse(data));
     } catch {
       res.status(500).json({ error: 'Error al parsear el archivo de proyecto' });
     }
-  } else {
-    res.status(404).json({ error: 'Proyecto no encontrado' });
-  }
+  } catch (error) { res.status(400).json({ error: error.message }); }
 });
 
 // Mutex de Generación Concurrente por ProjectId
 app.post('/api/projects/:type/:id/lock', (req, res) => {
-  const { id } = req.params;
+  const { id, type } = req.params;
+  if (!resolveWritableProject(type, id, req.user)) return res.status(403).json({ error: 'No tienes permiso para bloquear este proyecto.' });
   const { sessionId, meta } = req.body || {};
   if (!sessionId) {
     return res.status(400).json({ success: false, error: 'sessionId requerido para adquirir lock' });
@@ -560,14 +523,16 @@ app.post('/api/projects/:type/:id/lock', (req, res) => {
 });
 
 app.post('/api/projects/:type/:id/unlock', (req, res) => {
-  const { id } = req.params;
+  const { id, type } = req.params;
+  if (!resolveWritableProject(type, id, req.user)) return res.status(403).json({ error: 'No tienes permiso para desbloquear este proyecto.' });
   const { sessionId, force = false } = req.body || {};
   const result = releaseGenerationLock(id, sessionId, force);
   res.json(result);
 });
 
 app.get('/api/projects/:type/:id/lock', (req, res) => {
-  const { id } = req.params;
+  const { id, type } = req.params;
+  if (!resolveReadableProject(type, id, req.user)) return res.status(404).json({ error: 'Proyecto no encontrado.' });
   const status = getGenerationLockStatus(id);
   res.json(status);
 });
@@ -576,9 +541,9 @@ app.get('/api/projects/:type/:id/lock', (req, res) => {
 app.post('/api/projects/:type/:id/rename', (req, res) => {
   try {
     const { type, id } = req.params;
+    if (!resolveWritableProject(type, id, req.user)) return res.status(403).json({ error: 'No tienes permiso para renombrar este proyecto.' });
     const { newId, newCompanyName, allowOverwrite = false } = req.body || {};
-    const reqUserId = req.headers['x-user-id'] || req.query.userId || '';
-    const userFolder = reqUserId && reqUserId !== 'admin' ? `user_${reqUserId.replace(/[^a-z0-9]/gi, '_').toLowerCase()}` : '';
+    const ownerFolder = req.user.role === 'superadmin' ? '' : userFolder(req.user);
 
     const result = renameProject({
       baseDir: path.resolve('proyectos'),
@@ -586,7 +551,7 @@ app.post('/api/projects/:type/:id/rename', (req, res) => {
       currentId: id,
       newId,
       newCompanyName,
-      userFolder,
+      userFolder: ownerFolder,
       allowOverwrite
     });
 
@@ -610,11 +575,11 @@ app.post('/api/projects/:type/:id/rename', (req, res) => {
 app.delete('/api/projects/:type/:id', (req, res) => {
   try {
     const { type, id } = req.params;
-    const reqUserId = req.headers['x-user-id'] || req.query.userId || '';
-    const userFolder = reqUserId && reqUserId !== 'admin' ? `user_${reqUserId.replace(/[^a-z0-9]/gi, '_').toLowerCase()}` : '';
+    if (!resolveWritableProject(type, id, req.user)) return res.status(403).json({ error: 'No tienes permiso para eliminar este proyecto.' });
+    const ownerFolder = req.user.role === 'superadmin' ? '' : userFolder(req.user);
 
     const baseDir = path.resolve('proyectos');
-    const typeDir = userFolder ? path.join(baseDir, type, userFolder) : path.join(baseDir, type);
+    const typeDir = ownerFolder ? path.join(baseDir, type, ownerFolder) : path.join(baseDir, type);
     const projectDir = path.join(typeDir, id);
     const singleJson = path.join(typeDir, `${id}.json`);
 
@@ -658,41 +623,15 @@ app.post('/api/projects/:type/:id/clone', (req, res) => {
   try {
     const { type, id } = req.params;
     const { newName } = req.body || {};
-    const targetUserId = req.user?.username || req.headers['x-user-id'] || 'usuario';
-
-    if (id === 'comercio_cu_ntico_internacional_tr_sapi_de_cv' && req.user?.role !== 'superadmin') {
-      return res.status(403).json({ success: false, error: 'No tienes permiso para clonar este proyecto privado de administración.' });
-    }
-
-    const baseDir = path.resolve('proyectos');
-    let sourcePath = path.resolve(baseDir, type, id, `${id}.json`);
-
-    if (!fs.existsSync(sourcePath)) {
-      sourcePath = path.resolve(baseDir, type, `${id}.json`);
-    }
-
-    // Si aún no se encuentra, buscar recursivamente en subdirectorios user_
-    if (!fs.existsSync(sourcePath)) {
-      const typeDir = path.resolve(baseDir, type);
-      if (fs.existsSync(typeDir)) {
-        const entries = fs.readdirSync(typeDir, { withFileTypes: true });
-        for (const entry of entries) {
-          if (entry.isDirectory() && entry.name.startsWith('user_')) {
-            const candidate = path.join(typeDir, entry.name, id, `${id}.json`);
-            if (fs.existsSync(candidate)) {
-              sourcePath = candidate;
-              break;
-            }
-          }
-        }
-      }
-    }
-
-    if (!fs.existsSync(sourcePath)) {
+    assertSafeProjectSegment(type, 'tipo');
+    assertSafeProjectSegment(id);
+    const targetUserId = req.user.username;
+    const source = resolveCloneSource(type, id, req.user);
+    if (!source) {
       return res.status(404).json({ success: false, error: 'Proyecto origen no encontrado para clonar.' });
     }
-
-    const sourceData = JSON.parse(fs.readFileSync(sourcePath, 'utf8'));
+    const baseDir = path.resolve('proyectos');
+    const sourceData = JSON.parse(fs.readFileSync(source.path, 'utf8'));
 
     // Generar nuevo ID limpio y único
     const randomSuffix = crypto.randomBytes(3).toString('hex');
@@ -717,8 +656,7 @@ app.post('/api/projects/:type/:id/clone', (req, res) => {
       }
     };
 
-    const userFolder = `user_${targetUserId.replace(/[^a-z0-9]/gi, '_').toLowerCase()}`;
-    const targetDir = path.resolve(baseDir, type, userFolder, newProjectId);
+    const targetDir = path.resolve(baseDir, type, userFolder(req.user), newProjectId);
 
     if (!fs.existsSync(targetDir)) {
       fs.mkdirSync(targetDir, { recursive: true });

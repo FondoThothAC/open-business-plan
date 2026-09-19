@@ -31,6 +31,7 @@ export default function UserProfileModal({ isOpen, onClose }) {
     tavily: '',
     brave: ''
   });
+  const [configuredKeys, setConfiguredKeys] = useState({});
 
   // Visibilidad de contraseñas/keys
   const [visibleKeys, setVisibleKeys] = useState({});
@@ -53,12 +54,8 @@ export default function UserProfileModal({ isOpen, onClose }) {
   // Cargar keys actuales del usuario
   useEffect(() => {
     if (isOpen && user) {
-      if (user.apiKeys) {
-        setApiKeys(prev => ({
-          ...prev,
-          ...user.apiKeys
-        }));
-      }
+      if (user.apiKeys) setConfiguredKeys(user.apiKeys);
+      setApiKeys(prev => Object.fromEntries(Object.keys(prev).map(key => [key, ''])));
       setKeysSuccess(false);
       setKeysError(null);
       setPassSuccess(false);
@@ -81,7 +78,8 @@ export default function UserProfileModal({ isOpen, onClose }) {
     setKeysSuccess(false);
 
     try {
-      const res = await updateKeys(apiKeys);
+      const changes = Object.fromEntries(Object.entries(apiKeys).filter(([, value]) => value.trim()));
+      const res = await updateKeys(changes);
       if (res.success) {
         setKeysSuccess(true);
         setTimeout(() => setKeysSuccess(false), 3500);
@@ -272,7 +270,7 @@ export default function UserProfileModal({ isOpen, onClose }) {
                       <input
                         type={isVisible ? 'text' : 'password'}
                         className="form-control"
-                        placeholder={item.placeholder}
+                        placeholder={configuredKeys[item.key]?.configured ? `Configurada: ${configuredKeys[item.key].masked}` : item.placeholder}
                         value={apiKeys[item.key] || ''}
                         onChange={e => handleKeyChange(item.key, e.target.value)}
                         style={{ fontSize: '0.78rem', paddingRight: '2rem', width: '100%' }}

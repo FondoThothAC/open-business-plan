@@ -28,6 +28,8 @@ const JWT_SECRET = process.env.JWT_SECRET || generarSecretoInicial();
 const JWT_EXPIRY = process.env.JWT_EXPIRY || '7d';
 const BCRYPT_ROUNDS = 12;
 const USERS_FILE = path.resolve('server', 'data', 'users.json');
+const API_KEYS_ENCRYPTION_KEY = process.env.API_KEYS_ENCRYPTION_KEY || JWT_SECRET;
+const ENCRYPTION_ALGORITHM = 'aes-256-gcm';
 
 /**
  * Genera un secreto JWT aleatorio y lo guarda en .env.local si no existe.
@@ -56,24 +58,25 @@ function cargarUsuarios() {
       if (!fs.existsSync(dirPath)) {
         fs.mkdirSync(dirPath, { recursive: true });
       }
-      // Crear archivo con admin por defecto
+      // Nunca crear una cuenta administradora con una contraseña conocida.
+      const bootstrapPassword = process.env.BOOTSTRAP_SUPERADMIN_PASSWORD || '';
       const adminDefault = {
         users: [{
           id: 'u_superadmin_roberto',
           username: 'roberto',
           email: 'roberto@fondothoth.com',
-          passwordHash: bcrypt.hashSync('admin', BCRYPT_ROUNDS),
+          passwordHash: bootstrapPassword ? bcrypt.hashSync(bootstrapPassword, BCRYPT_ROUNDS) : '',
           role: 'superadmin',
           displayName: 'Roberto Celis',
-          status: 'active',
+          status: bootstrapPassword ? 'active' : 'pending_bootstrap',
           apiKeys: {},
           createdAt: new Date().toISOString(),
           lastLogin: null
         }]
       };
       fs.writeFileSync(USERS_FILE, JSON.stringify(adminDefault, null, 2), 'utf8');
-      console.log('[Auth] ✅ Archivo de usuarios creado con admin por defecto.');
-      console.log('[Auth] ⚠️  Cambia la contraseña del admin en el primer login.');
+      console.log('[Auth] Archivo de usuarios inicializado.');
+      if (!bootstrapPassword) console.warn('[Auth] Configura BOOTSTRAP_SUPERADMIN_PASSWORD y activa al superadmin antes de usar producción.');
       return adminDefault;
     }
     return JSON.parse(fs.readFileSync(USERS_FILE, 'utf8'));
@@ -98,6 +101,53 @@ function guardarUsuarios(data) {
   fs.renameSync(tempFile, USERS_FILE);
 }
 
+function encryptionKey() {
+  if (!API_KEYS_ENCRYPTION_KEY) return null;
+  return crypto.createHash('sha256').update(API_KEYS_ENCRYPTION_KEY).digest();
+}
+
+function encryptApiKey(value) {
+  const key = encryptionKey();
+  if (!key || !value) return value;
+  const iv = crypto.randomBytes(12);
+  const cipher = crypto.createCipheriv(ENCRYPTION_ALGORITHM, key, iv);
+  const encrypted = Buffer.concat([cipher.update(value, 'utf8'), cipher.final()]);
+  const tag = cipher.getAuthTag();
+  return `enc:v1:${iv.toString('base64')}:${tag.toString('base64')}:${encrypted.toString('base64')}`;
+}
+
+function decryptApiKey(value) {
+  if (!value || !value.startsWith('enc:v1:')) return value || '';
+  const key = encryptionKey();
+  if (!key) return '';
+  try {
+    const [, , ivRaw, tagRaw, ciphertext] = value.split(':');
+    const decipher = crypto.createDecipheriv(ENCRYPTION_ALGORITHM, key, Buffer.from(ivRaw, 'base64'));
+    decipher.setAuthTag(Buffer.from(tagRaw, 'base64'));
+    return Buffer.concat([decipher.update(Buffer.from(ciphertext, 'base64')), decipher.final()]).toString('utf8');
+  } catch { return ''; }
+}
+
+function maskApiKey(value) {
+  const plain = decryptApiKey(value);
+  if (!plain) return { configured: false, masked: '' };
+  return { configured: true, masked: `${plain.slice(0, 3)}${'•'.repeat(Math.max(4, Math.min(8, plain.length - 5)))}${plain.slice(-2)}` };
+}
+
+function migrateApiKeys(data) {
+  if (!encryptionKey()) return false;
+  let changed = false;
+  for (const user of data.users || []) {
+    for (const [name, value] of Object.entries(user.apiKeys || {})) {
+      if (value && !String(value).startsWith('enc:v1:')) {
+        user.apiKeys[name] = encryptApiKey(String(value));
+        changed = true;
+      }
+    }
+  }
+  return changed;
+}
+
 /**
  * Busca un usuario por username (case-insensitive).
  * @param {string} username
@@ -105,6 +155,7 @@ function guardarUsuarios(data) {
  */
 function buscarPorUsername(username) {
   const data = cargarUsuarios();
+  if (migrateApiKeys(data)) guardarUsuarios(data);
   return data.users.find(u => u.username.toLowerCase() === username.toLowerCase()) || null;
 }
 
@@ -115,6 +166,7 @@ function buscarPorUsername(username) {
  */
 function buscarPorId(id) {
   const data = cargarUsuarios();
+  if (migrateApiKeys(data)) guardarUsuarios(data);
   return data.users.find(u => u.id === id) || null;
 }
 
@@ -329,10 +381,12 @@ export function actualizarApiKeys(userId, keys) {
   if (idx === -1) return { success: false, error: 'Usuario no encontrado.' };
 
   // Merge: mantiene keys existentes, actualiza las proporcionadas
-  data.users[idx].apiKeys = {
-    ...data.users[idx].apiKeys,
-    ...keys
-  };
+  migrateApiKeys(data);
+  for (const [name, value] of Object.entries(keys || {})) {
+    if (value === undefined || value === null || String(value).startsWith('•••')) continue;
+    if (String(value).trim() === '') continue;
+    else data.users[idx].apiKeys[name] = encryptApiKey(String(value).trim());
+  }
 
   // Limpiar keys vacías
   for (const [key, value] of Object.entries(data.users[idx].apiKeys)) {
@@ -342,7 +396,7 @@ export function actualizarApiKeys(userId, keys) {
   }
 
   guardarUsuarios(data);
-  return { success: true, apiKeys: data.users[idx].apiKeys };
+  return { success: true, apiKeys: Object.fromEntries(Object.entries(data.users[idx].apiKeys).map(([name, value]) => [name, maskApiKey(value)])) };
 }
 
 /**
@@ -352,7 +406,13 @@ export function actualizarApiKeys(userId, keys) {
  */
 export function obtenerApiKeys(userId) {
   const usuario = buscarPorId(userId);
-  return usuario?.apiKeys || {};
+  return Object.fromEntries(Object.entries(usuario?.apiKeys || {}).map(([name, value]) => [name, maskApiKey(value)]));
+}
+
+/** Uso exclusivo del backend: nunca enviar las claves descifradas al cliente. */
+export function obtenerApiKeysParaServicio(userId) {
+  const usuario = buscarPorId(userId);
+  return Object.fromEntries(Object.entries(usuario?.apiKeys || {}).map(([name, value]) => [name, decryptApiKey(value)]));
 }
 
 /**
@@ -391,8 +451,8 @@ export function cambiarPassword(userId, passwordActual, passwordNueva) {
  * @returns {Object} Usuario sin passwordHash
  */
 function sanitizarUsuario(usuario) {
-  const { passwordHash, ...limpio } = usuario;
-  return limpio;
+  const { passwordHash: _passwordHash, apiKeys, ...limpio } = usuario;
+  return { ...limpio, apiKeys: Object.fromEntries(Object.entries(apiKeys || {}).map(([name, value]) => [name, maskApiKey(value)])) };
 }
 
 export { JWT_SECRET, buscarPorId };

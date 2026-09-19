@@ -3,21 +3,26 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { usePlan } from '../context/PlanContext';
 import { getApiBase } from '../config/apiConfig';
-import { Search, Loader2, Sparkles, MapPin } from 'lucide-react';
+import { Search, Loader2, Sparkles } from 'lucide-react';
 
-export default function DeepMarketResearch() {
+export default function DeepMarketResearch({ locationHint = '' }) {
   const { planData, updateSection } = usePlan();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   
   // States para la configuración de búsqueda
-  const [businessIdea, setBusinessIdea] = useState(planData?.semilla?.negocio?.giro || planData?.semilla?.negocio?.nombre || '');
-  const [lat, setLat] = useState('29.08919'); // Default Hermosillo
-  const [lng, setLng] = useState('-110.96133'); // Default Hermosillo
+  const [businessIdea, setBusinessIdea] = useState(planData?.semilla?.negocio?.giro || planData?.semilla?.negocio?.nombre || planData?.mercado?.analisis?.producto || '');
+  const [marketLocation, setMarketLocation] = useState(locationHint);
+  const [channel, setChannel] = useState(planData?.mercado?.comercializacion?.canal || '');
+  const [lat, setLat] = useState('');
+  const [lng, setLng] = useState('');
   const [radius, setRadius] = useState('3000');
 
   const handleGenerateReport = async () => {
-    if (!businessIdea.trim()) return;
+    if (!businessIdea.trim() || !marketLocation.trim() || !lat.trim() || !lng.trim()) {
+      setError('Indica producto, mercado y coordenadas confirmadas. El sistema no usará una ubicación predeterminada.');
+      return;
+    }
     setLoading(true);
     setError(null);
     try {
@@ -26,7 +31,7 @@ export default function DeepMarketResearch() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          businessIdea,
+          context: { product: businessIdea, marketLocation, channel, projectId: planData?.config?.projectId || '' },
           lat: parseFloat(lat),
           lng: parseFloat(lng),
           radius: parseInt(radius, 10)
@@ -40,8 +45,8 @@ export default function DeepMarketResearch() {
 
       if (data.success && data.reportMarkdown) {
         // Guardar en el plan
-        const currentReport = planData?.mercado?.inteligencia_mercado_cascada?.reporte_profundo || '';
-        updateSection('mercado', 'inteligencia_mercado_cascada', 'reporte_profundo', data.reportMarkdown);
+        updateSection('mercado', 'inteligencia_mercado_cascada', 'reporte_profundo', data.reportMarkdown, { provenance: 'research', source: 'market-research-v2' });
+        updateSection('mercado', 'inteligencia_mercado_cascada', 'reporte_evidencia', data.report, { provenance: 'research', source: 'market-research-v2' });
       } else {
         throw new Error('El reporte se generó pero llegó vacío.');
       }
@@ -61,7 +66,7 @@ export default function DeepMarketResearch() {
         <h3 style={{ margin: 0, fontSize: '1.25rem' }}>Investigación de Mercado Profunda (AI + INEGI)</h3>
       </div>
       <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
-        Este motor extrae demografía oficial de INEGI AGEB/DENUE y realiza scraping web avanzado (Perplexity method) para sintetizar un reporte de mercado completo.
+        Separa establecimientos observados, fuentes web, estimaciones y datos pendientes. DENUE no se utiliza para inferir ingreso de los hogares.
       </p>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '1.5rem' }}>
@@ -74,6 +79,10 @@ export default function DeepMarketResearch() {
             value={businessIdea}
             onChange={(e) => setBusinessIdea(e.target.value)}
           />
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+          <div><label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '0.25rem' }}>Mercado de venta confirmado</label><input className="form-control" value={marketLocation} onChange={(e) => setMarketLocation(e.target.value)} placeholder="Ej: Monterrey, Nuevo León" /></div>
+          <div><label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '0.25rem' }}>Canal</label><input className="form-control" value={channel} onChange={(e) => setChannel(e.target.value)} placeholder="Ej: B2B distribuidores" /></div>
         </div>
         
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
@@ -94,7 +103,7 @@ export default function DeepMarketResearch() {
         <button 
           className="btn btn-primary" 
           onClick={handleGenerateReport} 
-          disabled={loading || !businessIdea.trim()} 
+          disabled={loading || !businessIdea.trim() || !marketLocation.trim() || !lat.trim() || !lng.trim()}
           style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', padding: '0.75rem', marginTop: '0.5rem' }}
         >
           {loading ? <Loader2 size={18} className="animate-spin" /> : <Search size={18} />}

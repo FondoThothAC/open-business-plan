@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { registrarUsuario, loginUsuario, listarUsuarios, activarUsuario, desactivarUsuario, eliminarUsuario, actualizarApiKeys, obtenerApiKeys, cambiarPassword } from '../server/auth.js';
+import { registrarUsuario, loginUsuario, listarUsuarios, activarUsuario, desactivarUsuario, eliminarUsuario, actualizarApiKeys, obtenerApiKeys, cambiarPassword, buscarPorId } from '../server/auth.js';
 
 describe('Sistema Multiusuario y Roles (TDD)', () => {
   const testUser = `testuser_${Date.now()}`;
@@ -55,11 +55,12 @@ describe('Sistema Multiusuario y Roles (TDD)', () => {
     });
 
     assert.equal(keysRes.success, true);
-    assert.equal(keysRes.apiKeys.openrouter, 'sk-or-test-12345');
-    assert.equal(keysRes.apiKeys.groq, 'gsk-test-67890');
+    assert.equal(keysRes.apiKeys.openrouter.configured, true);
+    assert.equal(keysRes.apiKeys.groq.configured, true);
 
     const fetchedKeys = obtenerApiKeys(createdUserId);
-    assert.equal(fetchedKeys.openrouter, 'sk-or-test-12345');
+    assert.equal(fetchedKeys.openrouter.configured, true);
+    assert.match(buscarPorId(createdUserId).apiKeys.openrouter, /^enc:v1:/);
   });
 
   it('Permite cambiar la contraseña verificando la actual', () => {

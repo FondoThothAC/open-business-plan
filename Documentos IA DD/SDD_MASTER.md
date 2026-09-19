@@ -328,10 +328,9 @@ Con base en el Plan de Saneamiento y Endurecimiento formalizado en `docs/archite
 * **Matriz de Compuertas de Decisión (KPIs Gate):** Criterios cuantitativos de tracción (EBITDA mensual $\ge$ $1.5M MXN, OTD $\ge$ 98%, retención $\ge$ 85%, validación HACCP y LOI firmada) requeridos para desbloquear la solicitud de fondos Serie A de $20M MXN.
 
 ### 5.8 Motor Deep Research "Método Perplexity" con Extracción Demográfica INEGI AGEB
-* **Arquitectura de Fusión (Web + Datos Oficiales):** Combinación de búsquedas semánticas multi-agente en tiempo real (Tavily, Brave, DDG) con la extracción profunda de datos geolocalizados del INEGI (AGEBs, Mapa Digital).
-* **`inegiAgebEngine.js`:** Módulo especializado para interceptar coordenadas y extraer población total, distribución por edades y poder adquisitivo (NSE) cruzando datos del Censo y DENUE.
-* **`MarketResearchAgent.js` (LLM de Síntesis):** Agente de Swarm encargado de procesar la metadata cruda de los web scrapers y de INEGI para redactar un "Deep Dive Report" en formato Markdown. 
-* **Erradicación de Tablas Simples:** Reemplazo de la vista clásica de competidores en el frontend por un renderizador Markdown avanzado que muestra un análisis narrativo profundo con gráficas y citaciones reales.
-* **Gobernanza UXDD:** La interfaz nunca se congela; muestra estados de carga granulares ("Extrayendo AGEB...", "Buscando en Brave...", "Sintetizando...").
-
+* **Arquitectura de evidencia:** Descompone competencia, precio/canal y demanda en búsquedas separadas; conserva URL, extracto, fecha y estado de cada fuente antes de redactar el Markdown.
+* **DENUE y Censo no se confunden:** `inegiAgebEngine.js` obtiene establecimientos, actividad, tamaño y ubicación desde DENUE. La población, edad, escolaridad y viviendas requieren el conjunto censal por AGEB/manzana versionado; nunca se infiere ingreso a partir del tamaño de los negocios.
+* **Estimaciones explícitas:** Todo escenario conserva fuente, año, geografía, fórmula, supuestos y limitaciones. ENIGH sólo se usa en su dominio publicado; no se presenta como medición de una colonia.
+* **Clasificación verificable:** Un establecimiento se marca como competencia directa, indirecta/sustituto, cliente potencial o pendiente con una razón y evidencia de producto, canal y cobertura.
+* **Gobernanza UXDD:** La vista de rutas activas de Mercado persiste Markdown, evidencia, indicadores y pendientes. No utiliza Hermosillo ni coordenadas predeterminadas cuando falta el territorio confirmado.
 

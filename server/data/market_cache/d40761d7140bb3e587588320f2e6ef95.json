@@ -1,5 +1,5 @@
 {
-  "timestamp": 1789692072171,
+  "timestamp": 1789855308042,
   "ttlHours": 24,
   "data": {
     "success": true,
@@ -32,6 +32,6 @@
       "establecimientos": [],
       "evidencias": []
     },
-    "timestamp": 1789692072171
+    "timestamp": 1789855308042
   }
 }

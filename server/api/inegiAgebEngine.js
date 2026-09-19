@@ -1,91 +1,36 @@
 import fetch from 'node-fetch';
 
-/**
- * Motor de Extracción Demográfica INEGI AGEB
- * 
- * Cruza coordenadas (Lat/Lng) con el Directorio Estadístico Nacional de Unidades Económicas (DENUE)
- * y el Catálogo Único de Claves Geoestadísticas (WSCATGEO) para deducir el perfil
- * socioeconómico y densidad poblacional de una zona de influencia.
- */
+/** DENUE describes establishments. It must never be used to infer household income. */
 export class InegiAgebEngine {
-  constructor(tokenDenue = process.env.DENUE_KEY || process.env.VITE_DENUE_KEY) {
-    this.tokenDenue = tokenDenue;
-  }
+  constructor(token = process.env.DENUE_KEY || '') { this.token = token; }
 
-  /**
-   * Extrae el perfil demográfico y comercial de una zona basada en coordenadas.
-   * @param {number} lat - Latitud
-   * @param {number} lng - Longitud
-   * @param {number} radius - Radio en metros (default: 3000)
-   * @returns {Promise<Object>} Perfil demográfico
-   */
-  async extractDemographicProfile(lat, lng, radius = 3000) {
-    let profile = {
-      coordenadas: { lat, lng, radio_metros: radius },
-      actividad_economica: 'Desconocida',
-      nivel_socioeconomico_estimado: 'N/A',
-      densidad_comercial: 0,
-      puntos_interes: [],
-      provenance: 'none'
+  async extractDemographicProfile(lat, lng, radius = 3000, { scian = 'todos' } = {}) {
+    const profile = {
+      territory: { lat, lng, radiusMeters: radius, verified: false },
+      establishments: [],
+      census: { status: 'pending', message: 'Carga el conjunto Censo 2020 por AGEB/manzana para obtener población, edades, escolaridad y viviendas.' },
+      indicators: [],
+      provenance: [{ source: 'INEGI DENUE', status: 'pending', message: 'No hay token DENUE configurado.' }]
     };
-
-    if (!this.tokenDenue) {
-      console.warn('[INEGI AGEB Engine] No hay token de DENUE configurado. Se omitirá la extracción oficial.');
+    if (!Number.isFinite(lat) || !Number.isFinite(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180 || !Number.isFinite(radius) || radius <= 0 || radius > 5000) {
+      profile.provenance[0] = { source: 'INEGI DENUE', status: 'invalid_context', message: 'Coordenadas o radio inválidos. DENUE admite radios de 1 a 5,000 metros.' };
       return profile;
     }
-
+    profile.territory.verified = true;
+    if (!this.token) return profile;
     try {
-      // Usamos el DENUE para consultar todos los establecimientos comerciales en el radio
-      // El giro "todos" nos dará el volumen total de actividad económica en el polígono
-      const urlDenue = `https://www.inegi.org.mx/app/api/denue/v1/consulta/Buscar/todos/${lat},${lng}/${radius}/${this.tokenDenue}`;
-      
-      const res = await fetch(urlDenue, { signal: AbortSignal.timeout(10000) });
-      if (!res.ok) {
-        throw new Error(`Error HTTP de INEGI: ${res.status}`);
-      }
-      
-      const data = await res.json();
-      
-      if (Array.isArray(data) && data.length > 0) {
-        profile.densidad_comercial = data.length;
-        profile.provenance = 'verified_real';
-        
-        // Analizar la estratificación de los comercios para estimar el NSE y flujo
-        let micro = 0;
-        let pymes = 0;
-        let corporativos = 0;
-        
-        data.forEach(est => {
-          if (est.Estrato.includes('0 a 5') || est.Estrato.includes('6 a 10')) micro++;
-          else if (est.Estrato.includes('11 a 50') || est.Estrato.includes('51 a 100')) pymes++;
-          else corporativos++;
-          
-          if (profile.puntos_interes.length < 5) {
-            profile.puntos_interes.push({
-              nombre: est.Nombre,
-              actividad: est.Clase_actividad,
-              estrato: est.Estrato
-            });
-          }
-        });
-
-        // Heurística de nivel socioeconómico basado en la densidad corporativa vs micro
-        if (corporativos > micro * 0.1) {
-          profile.nivel_socioeconomico_estimado = 'A/B (Alto - Corporativo/Comercial)';
-          profile.actividad_economica = 'Alta densidad corporativa y servicios de alto valor.';
-        } else if (pymes > micro * 0.2) {
-          profile.nivel_socioeconomico_estimado = 'C+ / C (Medio - Comercial/Residencial)';
-          profile.actividad_economica = 'Zona de comercio consolidado y servicios mixtos.';
-        } else {
-          profile.nivel_socioeconomico_estimado = 'D+ / D (Medio Bajo - Microcomercio)';
-          profile.actividad_economica = 'Zona dominada por microempresas y comercio vecinal.';
-        }
-      }
-
-      return profile;
+      const query = String(scian || 'todos').replace(/[^a-zA-Z0-9,]/g, '') || 'todos';
+      const url = `https://www.inegi.org.mx/app/api/denue/v1/consulta/Buscar/${query}/${lat},${lng}/${radius}/${this.token}`;
+      const res = await fetch(url, { signal: AbortSignal.timeout(10000) });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const rows = await res.json();
+      profile.establishments = (Array.isArray(rows) ? rows : []).map(row => ({
+        officialId: String(row.Id || row.id || ''), name: row.Nombre || '', activity: row.Clase_actividad || '', scian: row.Codigo_actividad || '', size: row.Estrato || '', address: [row.Calle, row.Numero_exterior, row.Colonia].filter(Boolean).join(' '), lat: Number(row.Latitud), lng: Number(row.Longitud), source: 'INEGI DENUE', observedAt: new Date().toISOString()
+      }));
+      profile.provenance[0] = { source: 'INEGI DENUE', status: 'observed', retrievedAt: new Date().toISOString(), coverage: `${radius} m alrededor de las coordenadas` };
     } catch (error) {
-      console.warn('[INEGI AGEB Engine] Fallo al extraer datos de DENUE/AGEB:', error.message);
-      return profile;
+      profile.provenance[0] = { source: 'INEGI DENUE', status: 'unavailable', message: error.message };
     }
+    return profile;
   }
 }

@@ -114,7 +114,7 @@ export async function ejecutarCascadaMercado({ projectId, query, sector, ubicaci
 
 import { InegiAgebEngine } from '../api/inegiAgebEngine.js';
 import { PerplexitySearchEngine } from '../api/perplexitySearchEngine.js';
-import { marketResearchAgent } from '../swarm/MarketResearchAgent.js';
+import { buildMarketReport } from '../api/marketResearchService.js';
 
 router.post('/cascada', async (req, res) => {
   try {
@@ -128,37 +128,25 @@ router.post('/cascada', async (req, res) => {
 
 router.post('/deep-research', async (req, res) => {
   try {
-    const { businessIdea, lat = 29.08919, lng = -110.96133, radius = 3000 } = req.body;
-    
-    if (!businessIdea) {
-      return res.status(400).json({ success: false, error: 'businessIdea es requerido' });
+    const { context = {}, lat, lng, radius = 3000, scian = 'todos', census = null, enigh = null } = req.body || {};
+    const product = String(context.product || context.businessIdea || '').trim();
+    const marketLocation = String(context.marketLocation || context.location || '').trim();
+    if (!product || !marketLocation || !Number.isFinite(Number(lat)) || !Number.isFinite(Number(lng))) {
+      return res.status(400).json({ success: false, error: 'Se requiere producto, mercado confirmado y coordenadas válidas; no se usará una ubicación predeterminada.' });
     }
-
-    // 1. Extraer Demografía de INEGI AGEB
-    const inegiEngine = new InegiAgebEngine();
-    const inegiData = await inegiEngine.extractDemographicProfile(Number(lat), Number(lng), Number(radius));
-
-    // 2. Extraer contexto de mercado web
-    const perplexityEngine = new PerplexitySearchEngine();
-    const perplexityData = await perplexityEngine.searchMarketContext(businessIdea, 5);
-
-    // 3. Generar reporte con el Agente LLM
-    const onThought = (msg) => console.log(`[MarketResearchAgent] ${msg}`);
-    const reportMarkdown = await marketResearchAgent.generateDeepReport({
-      businessIdea,
-      inegiData,
-      perplexityData,
-      onThought
-    });
-
-    return res.status(200).json({
-      success: true,
-      reportMarkdown,
-      metadata: {
-        inegiData,
-        perplexityData
-      }
-    });
+    const keys = req.user?.serviceApiKeys || {};
+    const inegiEngine = new InegiAgebEngine(keys.inegi || process.env.DENUE_KEY || '');
+    const denue = await inegiEngine.extractDemographicProfile(Number(lat), Number(lng), Number(radius), { scian });
+    const engine = new PerplexitySearchEngine(keys);
+    const questions = [
+      `${product} competencia ${marketLocation}`,
+      `${product} precio canal distribución ${marketLocation}`,
+      `${product} demanda tendencia ${marketLocation}`
+    ];
+    const searches = [];
+    for (const query of questions) searches.push(await engine.searchMarketContext(query, 4));
+    const report = buildMarketReport({ context: { ...context, product, marketLocation }, denue, searches, census, enigh });
+    return res.status(200).json({ success: true, report, reportMarkdown: report.markdown });
   } catch (error) {
     console.error('[DeepResearch] Error:', error.message);
     return res.status(500).json({ success: false, error: error.message });

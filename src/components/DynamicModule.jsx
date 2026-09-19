@@ -19,6 +19,7 @@ import ArbolProblemasObjetivos from './ArbolProblemasObjetivos';
 import XMatrixHoshinKanri from './XMatrixHoshinKanri';
 import AmoebaStructureViewer from './AmoebaStructureViewer';
 import MicroCroquisEditor from './MicroCroquisEditor';
+import DeepMarketResearch from './DeepMarketResearch';
 
 const BusinessModelSelector = ({ value, onChange }) => {
   const models = [
@@ -169,11 +170,7 @@ export default function DynamicModule() {
     planData?.semilla?.negocio?.ubicacion ||
     planData?.tecnico?.ubicacion?.micro ||
     planData?.tecnico?.ubicacion?.macro ||
-    'Hermosillo, Sonora';
-
-  if (locationHint.trim().toLowerCase() === 'sonora') {
-    locationHint = 'Hermosillo, Sonora';
-  }
+    '';
 
   const projectContext = planData?.semilla?.negocio?.giro || planData?.semilla?.negocio?.nombre || 'servicios profesionales';
   
@@ -213,6 +210,7 @@ export default function DynamicModule() {
   ) : null;
 
   const isFinancialModule = pillarId === 'finanzas' || moduleId === 'estados_financieros' || moduleId === 'rentabilidad';
+  const isMarketResearchModule = pillarId === 'mercado' && ['competencia', 'inteligencia_mercado_cascada'].includes(moduleId);
 
   if (pillarId === 'simulador_financiero' && moduleId === 'simulador') {
     const rawBase = import.meta.env.BASE_URL || '/';
@@ -254,6 +252,10 @@ export default function DynamicModule() {
         description={moduleDef.description}
       />
     );
+  }
+
+  if (isMarketResearchModule) {
+    return <DeepMarketResearch locationHint={locationHint} />;
   }
 
   if (pillarId === 'tecnico' && moduleId === 'operativa') {

@@ -9,9 +9,9 @@ import * as cheerio from 'cheerio';
  * extrayendo texto plano para alimentar al agente LLM de investigación.
  */
 export class PerplexitySearchEngine {
-  constructor() {
-    this.tavilyKey = process.env.TAVILY_API_KEY || '';
-    this.braveKey = process.env.BRAVE_SEARCH_API_KEY || '';
+  constructor(keys = {}, { allowSharedKeys = process.env.ALLOW_SHARED_SEARCH_KEYS === 'true' } = {}) {
+    this.tavilyKey = keys.tavily || keys.tavilyKey || (allowSharedKeys ? process.env.TAVILY_API_KEY || '' : '');
+    this.braveKey = keys.brave || keys.braveKey || (allowSharedKeys ? process.env.BRAVE_SEARCH_API_KEY || process.env.BRAVE_SEARCH_KEY || '' : '');
   }
 
   /**
@@ -19,18 +19,22 @@ export class PerplexitySearchEngine {
    */
   async scrapeUrlContent(url) {
     try {
+      const parsed = new URL(url);
+      if (!['http:', 'https:'].includes(parsed.protocol) || ['localhost', '127.0.0.1', '::1'].includes(parsed.hostname) || /^10\.|^127\.|^169\.254\.|^192\.168\.|^172\.(1[6-9]|2\d|3[01])\./.test(parsed.hostname)) return '';
       const res = await fetch(url, {
         signal: AbortSignal.timeout(8000),
         headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36' }
       });
       if (!res.ok) return '';
-      const html = await res.text();
+      const length = Number(res.headers.get('content-length') || 0);
+      if (length > 1_000_000) return '';
+      const html = (await res.text()).slice(0, 1_000_000);
       const $ = cheerio.load(html);
       
       $('script, style, nav, footer, header, noscript').remove();
       let text = $('body').text().replace(/\s+/g, ' ').trim();
       return text.substring(0, 3000); // Limitar a 3000 chars por fuente
-    } catch (err) {
+    } catch {
       return '';
     }
   }
