@@ -131,11 +131,11 @@ router.post('/deep-research', async (req, res) => {
     const { context = {}, lat, lng, radius = 3000, scian = 'todos', census = null, enigh = null } = req.body || {};
     const product = String(context.product || context.businessIdea || '').trim();
     const marketLocation = String(context.marketLocation || context.location || '').trim();
-    if (!product || !marketLocation || !Number.isFinite(Number(lat)) || !Number.isFinite(Number(lng))) {
+    if (!product || !marketLocation || lat === null || lng === null || lat === '' || lng === '' || !Number.isFinite(Number(lat)) || !Number.isFinite(Number(lng)) || Math.abs(Number(lat)) > 90 || Math.abs(Number(lng)) > 180 || !Number.isFinite(Number(radius)) || Number(radius) < 1 || Number(radius) > 5000) {
       return res.status(400).json({ success: false, error: 'Se requiere producto, mercado confirmado y coordenadas válidas; no se usará una ubicación predeterminada.' });
     }
     const keys = req.user?.serviceApiKeys || {};
-    const inegiEngine = new InegiAgebEngine(keys.inegi || process.env.DENUE_KEY || '');
+    const inegiEngine = new InegiAgebEngine(keys.inegi || undefined);
     const denue = await inegiEngine.extractDemographicProfile(Number(lat), Number(lng), Number(radius), { scian });
     const engine = new PerplexitySearchEngine(keys);
     const questions = [

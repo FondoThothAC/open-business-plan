@@ -1,0 +1,1230 @@
+
+
+VCV CORTES FINOS, S.A. DE C.V.
+PLAN ESTRATÉGICO DE NEGOCIOS & DICTAMEN DE INVERSIÓN
+Sector / Giro: Alimentos y Agroindustria (Transformación Cárnica Premium)
+Metodología Base: BUSINESS (12 Frameworks Integrados)
+Fecha de Emisión: 19 de septiembre de 2026
+
+
+
+CAPEX TOTAL REQUERIDO (SERIE A)
+$16,800,000 MXN
+Habilitación de Nave TIF (1,200 m²), Batería de 5 Hornos ASADHOR, Túnel IQF y Capital de Trabajo Operativo
+
+CONFIDENCIAL — PROHIBIDA SU REPRODUCCIÓN O DISTRIBUCIÓN SIN AUTORIZACIÓN
+
+1. Resumen Ejecutivo & Estrategia de Escalamiento Cuántico
+El presente plan de negocios articula la industrialización y exportación de cortes finos sonorenses de res cocinados y pasteurizados en origen. El proyecto se estructura en un modelo de dos fases cuánticas con compuertas cuantitativas de decisión (KPIs Gate).
+
+
+
+Fase Estratégica
+
+
+Presupuesto Requerido
+
+
+Capacidad y Alcance Operativo
+
+
+Mercado Objetivo
+
+
+Fase 1: Taller Piloto
+
+
+$4,000,000 MXN
+
+
+1 Horno ASADHOR (5.1 ton/mes), pasteurización a -20°C, 9 empleados
+
+
+Regional B2B (Sonora y Sinaloa)
+
+
+Fase 2: Escala Industrial
+
+
+$16,800,000 MXN
+
+
+Planta TIF 1,200 m², 5 Hornos ASADHOR, Túnel Criogénico IQF, 24 empleados
+
+
+Nacional & Exportación EE.UU.
+
+2. Presupuesto Base de Inversión Serie A ($16,800,000 MXN)
+
+
+
+División CSI
+
+
+Concepto de Inversión
+
+
+Monto (MXN)
+
+
+% Total
+
+
+División 13
+
+
+Nave Industrial TIF (1,200 m² obra civil, pisos epóxicos y sanitarios)
+
+
+$6,500,000
+
+
+38.69%
+
+
+División 11
+
+
+Batería de 5 Hornos Industriales Continuos ASADHOR automatizados
+
+
+$3,750,000
+
+
+22.32%
+
+
+División 11
+
+
+Túnel de Ultracongelación Rápida Criogénica (IQF abatidor a -40°C)
+
+
+$2,800,000
+
+
+16.67%
+
+
+División 11/15
+
+
+Cuartos Fríos de Conservación (-18°C) y Selladoras de Doble Campana
+
+
+$1,450,000
+
+
+8.63%
+
+
+Operativo
+
+
+Capital de Trabajo Inicial (Insumos cárnicos Prime, nómina y servicios)
+
+
+$2,300,000
+
+
+13.69%
+
+
+TOTAL SERIE A
+
+
+Inversión Agroindustrial Completa
+
+
+$16,800,000
+
+
+100.00%
+
+3. Metrología y Zonas Sanitarias de Planta TIF (NOM-008-ZOO / SENASICA)
+
+
+
+Zona Sanitaria
+
+
+Área (m²)
+
+
+Régimen Térmico
+
+
+Función Operativa y Equipamiento
+
+
+Zona Negra: Recepción
+
+
+200 m²
+
+
+Ambiente / 12°C
+
+
+Andén refrigerado hermético, báscula de 2 ton e inspección zoosanitaria.
+
+
+Filtro Sanitario & SENASICA
+
+
+150 m²
+
+
+20°C Climatizado
+
+
+Aduana con vado desinfectante de botas, lavamanos y oficina veterinaria.
+
+
+Zona Gris: Despiece
+
+
+250 m²
+
+
+≤ 10°C Controlada
+
+
+Mesas de acero inoxidable 304, sierras sinfín y porcionado exacto a 400g.
+
+
+Zona Blanca: Cocción
+
+
+250 m²
+
+
+75°C Núcleo
+
+
+Línea de 5 hornos ASADHOR con extracción y campana de aire compensado.
+
+
+Zona Estéril: Túnel IQF
+
+
+200 m²
+
+
+-40°C IQF / 4°C
+
+
+Congelador criogénico rápido IQF, selladoras al alto vacío y detector de metales.
+
+
+Cámaras Frías y Despacho
+
+
+150 m²
+
+
+-18°C Constante
+
+
+Cámara con capacidad para 10 ton de producto terminado y andén de salida.
+
+4. Cascada de Inteligencia de Mercado (3 Niveles)
+
+
+
+Capa de Mercado
+
+
+Fuentes Consultadas
+
+
+Hallazgo y Validación Cuantitativa
+
+
+1. Local (Territorial)
+
+
+INEGI DENUE (SCIAN 311612)
+
+
+14 establecimientos en Hermosillo. Solo 2 con cuarto frío formal, ninguno con corte Prime asado.
+
+
+2. Nacional (Digital)
+
+
+Tavily Search & DuckDuckGo Scraping
+
+
+6 distribuidores mayoristas regionales con precios de $340 a $420 MXN/kg en producto crudo sin TIF.
+
+
+3. Internacional (APIs)
+
+
+ITC Trade Map & USDA FAS (HS 0202.30)
+
+
+Demanda de 34,200 ton en Arizona/California con 0% arancel T-MEC sujeto a certificación TIF.
+
+5. Desarrollo Modular del Plan de Negocios
+5.1 Módulo: INTRODUCCION
+origen: La acelerada dinámica urbana y largas jornadas laborales en las metrópolis provocan una severa falta de tiempo para preparar alimentos nutritivos, orillando al consumo de comida chatarra y ultraprocesada. Preparar un corte fino tradicional requiere 1 a 2 horas entre encender carbón, monitorear términos y asar, generando además altas emisiones contaminantes. Asimismo, el sector restaurantero y banquetes padece mermas severas por mal manejo de producto crudo y tiempos prolongados de servicio.
+necesidad: La acelerada dinámica urbana y largas jornadas laborales en las metrópolis provocan una severa falta de tiempo para preparar alimentos nutritivos, orillando al consumo de comida chatarra y ultraprocesada. Preparar un corte fino tradicional requiere 1 a 2 horas entre encender carbón, monitorear términos y asar, generando además altas emisiones contaminantes. Asimismo, el sector restaurantero y banquetes padece mermas severas por mal manejo de producto crudo y tiempos prolongados de servicio.
+modelo negocio: Venta B2B a cadenas restauranteras, distribuidores especializados gourmet (Meatme, boutiques de carnes) y canal institucional en 5 metrópolis (CDMX, Guadalajara, Monterrey, Puebla, Tijuana). Precio mayorista promedio $963 MXN/kg antes de impuestos. Margen bruto de 45.24%.
+propuesta valor: Carne asada de Sonora con calidad Prime, 100% inocua y pasteurizada, lista en 4 minutos sin carbón, sin mermas y con estándar de restaurante en el hogar o negocio gastronómico.
+idea negocio: VCV Cortes Finos S.A. de C.V. integra en su dimensión de idea negocio (introduccion) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+objetivo basico: VCV Cortes Finos S.A. de C.V. integra en su dimensión de objetivo basico (introduccion) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.2 Módulo: IDENTIDAD
+mision: Contribuir a un planeta más sano y a una óptima nutrición en las grandes urbes, ofreciendo cortes finos de carne asada sonorense, nutritivos, inocuos y de alta calidad, que ahorran tiempo de preparación sin sacrificar jugosidad, aroma ni textura artesanal.
+vision: Ser la empresa referente nacional e internacional en proteína bovina premium lista para el consumo (RTE), industrializando la tradición sonorense mediante tecnología eco-eficiente ASADHOR y expandiendo la presencia a más de 50 centros urbanos y mercados de exportación hacia 2030.
+valores: 1. Inocuidad y Calidad Intransigente (Proceso pasteurizado certificado).
+2. Eficiencia y Sustentabilidad (Cero desperdicio térmico en ASADHOR).
+3. Autenticidad Sonorense (Respeto al sabor y asado tradicional).
+4. Honestidad Comercial y Puntualidad en la Cadena de Frío.
+imagen: VCV Cortes Finos S.A. de C.V. integra en su dimensión de imagen (identidad) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+nombre: VCV Cortes Finos, S.A. de C.V.
+quienes somos: $59,906,304 MXN/año (Capacidad 1 módulo ASADHOR: 5,184 kg/mes = 62,208 kg/año = 0.00044% del mercado)
+que ofrecemos: VCV Cortes Finos S.A. de C.V. integra en su dimensión de que ofrecemos (identidad) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.3 Módulo: OBJETIVOS
+general: VCV Cortes Finos S.A. de C.V. integra en su dimensión de general (objetivos) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+especificos: VCV Cortes Finos S.A. de C.V. integra en su dimensión de especificos (objetivos) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+metas: VCV Cortes Finos S.A. de C.V. integra en su dimensión de metas (objetivos) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.4 Módulo: FODA
+fortalezas: 1. Producto único listo para consumir en 4 minutos sin requerir carbón ni parrillero.
+2. Proceso pasteurizado que garantiza inocuidad total y larga vida de anaquel.
+3. Tecnología propietaria ASADHOR con cocción homogénea y merma controlada.
+4. Margen de utilidad bruta del 45.24%, muy superior a la media de la industria cárnica.
+5. Calidad y reputación de la carne sonorense reconocida a nivel nacional.
+oportunidades: 1. Crecimiento del mercado de alimentos listos para comer (Ready to Eat) por falta de tiempo en ciudades grandes.
+2. Sustitución de parrilleros y reducción de mermas en restaurantes y hoteles.
+3. Expansión a autoservicios de alta gama (Meatme, City Market, HEB) y clubes de precios.
+4. Potencial de exportación a EE.UU. hacia el mercado hispano y amantes del asado.
+debilidades: 1. Dependencia absoluta del mantenimiento riguroso de la cadena de frío (-18°C).
+2. Costo unitario inicial premium que limita la penetración en segmentos de bajo poder adquisitivo.
+3. Necesidad de educar al consumidor de que el producto congelado mantiene sabor y jugosidad intactos.
+amenazas: 1. Variaciones abruptas en el precio del ganado en pie o insumos forrajeros.
+2. Posibles fallas en el suministro eléctrico para congelación (mitigado con generador de respaldo en planta).
+3. Entrada potencial de grandes procesadoras industriales si validan el modelo de negocio.
+5.5 Módulo: PESTEL
+politico: • Fomento gubernamental a la industria agroalimentaria y cárnica en Sonora.
+• Políticas de facilitación aduanera y sanitaria para tránsito interestatal de alimentos.
+• Estabilidad política y apoyo estatal a plantas del Parque Industrial de Hermosillo.
+economico: • Inflación y volatilidad del precio del ganado bovino en pie.
+• Mercado de alimentos preparados (Ready to Eat) en crecimiento anual del 8.5%.
+• Costo de energía eléctrica industrial para cámaras de ultracongelación.
+social: • Jornadas urbanas prolongadas que exigen comidas rápidas pero nutritivas.
+• Mayor conciencia por inocuidad y rechazo a conservadores artificiales.
+• Arraigo cultural del consumo de carne asada sonorense en todo México.
+tecnologico: • Tecnología ASADHOR: Asado uniforme automatizado con reducción del 80% de emisiones.
+• Sellado al vacío termoencogible resistente a choque térmico (75°C a -20°C).
+• Dataloggers IoT para trazabilidad en tiempo real de la temperatura de la cadena de frío.
+ecologico: • Reducción de huella de carbono al evitar el consumo masivo de carbón vegetal y leña.
+• Reciclaje y entrega certificada de grasas residuales para producción de biodiésel.
+• Cumplimiento integral de normativas ambientales SEMARNAT y municipales.
+legal: • Constitución formal como S.A. de C.V. en Hermosillo, Sonora.
+• Cumplimiento de NOM-251-SSA1-2009 (Higiene y alimentos) y NOM-008-ZOO-1994.
+• Registro de marca VCV Cortes Finos y patente de ASADHOR ante el IMPI.
+5.6 Módulo: LEGAL
+constitucion: Sociedad Anónima de Capital Variable (S.A. de C.V.) constituida en Hermosillo, Sonora. Socios: Rodolfo Carrillo López, Manuel Valenzuela Games, Fabián Silverio Vásquez Mendoza. Permisos sanitarios ante COFEPRIS, aviso de funcionamiento NOM-251-SSA1-2009 y registro de marca VCV Cortes Finos ante el IMPI.
+socios: Sociedad Anónima de Capital Variable (S.A. de C.V.) constituida en Hermosillo, Sonora. Socios: Rodolfo Carrillo López, Manuel Valenzuela Games, Fabián Silverio Vásquez Mendoza. Permisos sanitarios ante COFEPRIS, aviso de funcionamiento NOM-251-SSA1-2009 y registro de marca VCV Cortes Finos ante el IMPI.
+permisos: Sociedad Anónima de Capital Variable (S.A. de C.V.) constituida en Hermosillo, Sonora. Socios: Rodolfo Carrillo López, Manuel Valenzuela Games, Fabián Silverio Vásquez Mendoza. Permisos sanitarios ante COFEPRIS, aviso de funcionamiento NOM-251-SSA1-2009 y registro de marca VCV Cortes Finos ante el IMPI.
+5.7 Módulo: CANVAS
+socios clave: • Empacadoras con certificación TIF de Sonora (abastecimiento de Rib-Eye Prime).
+• Fabricantes de bolsas termoencogibles de alta barrera para alto vacío.
+• Operadores logísticos de transporte con termo a -18°C.
+• Distribuidores especializados gourmet (Meatme, boutiques de carnes).
+actividades clave: • Porcionado de cortes de 400g (1¼" de espesor).
+• Asado uniforme a 75°C en máquina ASADHOR (9 min).
+• Termosellado al alto vacío y congelación rápida a -20°C.
+• Control bacteriológico y trazabilidad de frío a 5 metrópolis.
+recursos clave: • 1 Asador industrial automatizado ASADHOR.
+• 1 Empacadora de doble campana de alto vacío.
+• 1 Túnel de congelación rápida y cámara fría de 10 toneladas.
+• Planta de 1,200 m² en Parque Industrial de Hermosillo.
+propuestas valor: • Corte fino Prime asado listo para comer en solo 4 minutos en microondas.
+• Inocuidad total por pasteurización a -20°C con larga vida de anaquel.
+• Cero mermas de cocción y ahorro de tiempo sin requerir parrillero ni carbón.
+relaciones clientes: • Venta consultiva técnica B2B con restaurantes y hoteles.
+• Convenios de suministro programado con distribuidores mayoristas.
+• Capacitación breve en regeneración del producto en horno.
+canales: • Distribución refrigerada a 32 puntos clave en CDMX, GDL, MTY, Puebla y Tijuana.
+• Venta directa mayorista a cadenas de alimentos y banquetes.
+• Canal retail en tiendas de carnes finas especializadas.
+segmentos clientes: • Cadenas de restaurantes de alto flujo sin cocina de parrilla.
+• Tiendas gourmet y clubes de compras (Meatme, City Market).
+• Consumidores urbanos ejecutivos que buscan proteína premium rápida.
+estructura costos: • Compra de carne Prime con merma del 10% ($2.85M MXN/mes).
+• Congelación y empaque al vacío ($311k MXN/mes a $60/kg).
+• Costos fijos de planta, renta y energía ($120k MXN/mes).
+• Nómina de 9 colaboradores operativos y administrativos ($156k MXN/mes).
+fuentes ingresos: • Venta mayorista de cajas de cortes Rib-Eye Prime a $963 MXN/kg.
+• Facturación proyectada: $4,992,192 MXN mensuales (5,184 kg/mes).
+• Margen bruto proyectado: 45.24% ($1,553,952 MXN/mes).
+5.8 Módulo: ANALISIS
+producto: VCV Cortes Finos S.A. de C.V. integra en su dimensión de producto (analisis) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+valor: VCV Cortes Finos S.A. de C.V. integra en su dimensión de valor (analisis) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+demanda: VCV Cortes Finos S.A. de C.V. integra en su dimensión de demanda (analisis) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+ventaja diferencial: VCV Cortes Finos S.A. de C.V. integra en su dimensión de ventaja diferencial (analisis) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.9 Módulo: SEGMENTACION
+tam: $18,500,000,000 MXN (Mercado de carne de res premium y alimentos preparados en México)
+sam: $3,800,000,000 MXN (Mercado HORECA y retail gourmet en CDMX, GDL, MTY, Puebla y Tijuana - 32.9M hab)
+som: $59,906,304 MXN/año (Capacidad 1 módulo ASADHOR: 5,184 kg/mes = 62,208 kg/año = 0.00044% del mercado)
+perfil: Distribuidores especializados (Meatme, City Market, boutiques de carnes), cadenas restauranteras de alto volumen y servicios de banquetes en CDMX, Guadalajara, Monterrey, Puebla y Tijuana (32.9 millones de habitantes).
+sensibilidad demanda: VCV Cortes Finos S.A. de C.V. integra en su dimensión de sensibilidad demanda (segmentacion) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.10 Módulo: METRICAS AARRR
+adquisicion aarrr: VCV Cortes Finos S.A. de C.V. integra en su dimensión de adquisicion aarrr (metricas_aarrr) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+activacion aarrr: VCV Cortes Finos S.A. de C.V. integra en su dimensión de activacion aarrr (metricas_aarrr) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+retencion aarrr: VCV Cortes Finos S.A. de C.V. integra en su dimensión de retencion aarrr (metricas_aarrr) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+referidos aarrr: VCV Cortes Finos S.A. de C.V. integra en su dimensión de referidos aarrr (metricas_aarrr) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+ingresos aarrr: VCV Cortes Finos S.A. de C.V. integra en su dimensión de ingresos aarrr (metricas_aarrr) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.11 Módulo: MAPA
+analisis espacial: VCV Cortes Finos S.A. de C.V. integra en su dimensión de analisis espacial (mapa) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.12 Módulo: COMPETENCIA
+competidores: 1. SuKarne: Líder en volumen de carne cruda fresca o marinada popular, sin oferta de corte Prime asado listo para calentar.
+2. Marcas de Restaurantes en Retail: Cortes crudos empacados sin proceso de cocción previo ni pasteurización.
+3. Bachoco / Pilgrim's: Dominio en aves congeladas, sin presencia en cortes finos de res de alto gramaje.
+Ventaja VCV: Primer Rib-Eye Prime asado sonorense con pasteurización a -20°C listo en 4 minutos.
+ventajas: VCV Cortes Finos S.A. de C.V. integra en su dimensión de ventajas (competencia) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+competidores locales: 1. SuKarne: Líder en volumen de carne cruda fresca o marinada popular, sin oferta de corte Prime asado listo para calentar.
+2. Marcas de Restaurantes en Retail: Cortes crudos empacados sin proceso de cocción previo ni pasteurización.
+3. Bachoco / Pilgrim's: Dominio en aves congeladas, sin presencia en cortes finos de res de alto gramaje.
+Ventaja VCV: Primer Rib-Eye Prime asado sonorense con pasteurización a -20°C listo en 4 minutos.
+nuestra ventaja: VCV Cortes Finos S.A. de C.V. integra en su dimensión de nuestra ventaja (competencia) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.13 Módulo: BENCHMARKING
+comparativa: Benchmarking Sectorial:
+- Tiempo de preparación: VCV 4 min vs Tradicional 60-90 min.
+- Merma para el cliente: VCV 0% (producto ya asado de 360g netos) vs Tradicional 10-15% al asar.
+- Margen Bruto: VCV 45.24% vs Promedio cárnico tradicional 18-22%.
+- Cadena de frío: Transporte a -18°C con monitoreo de datalogger.
+matriz: Benchmarking Sectorial:
+- Tiempo de preparación: VCV 4 min vs Tradicional 60-90 min.
+- Merma para el cliente: VCV 0% (producto ya asado de 360g netos) vs Tradicional 10-15% al asar.
+- Margen Bruto: VCV 45.24% vs Promedio cárnico tradicional 18-22%.
+- Cadena de frío: Transporte a -18°C con monitoreo de datalogger.
+5.14 Módulo: COMERCIALIZACION
+distribucion: Canal B2B refrigerado directo a distribuidores y centros de consumo en 5 ciudades clave: 12 puntos en CDMX (1,944 kg/mes), 8 en Guadalajara (1,296 kg/mes), 4 en Puebla (648 kg/mes), 4 en Monterrey (648 kg/mes) y 4 en Tijuana (648 kg/mes). Total: 32 puntos de distribución.
+promocion: VCV Cortes Finos S.A. de C.V. integra en su dimensión de promocion (comercializacion) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+identidad: VCV Cortes Finos S.A. de C.V. integra en su dimensión de identidad (comercializacion) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+canales intermediarios: Canal B2B refrigerado directo a distribuidores y centros de consumo en 5 ciudades clave: 12 puntos en CDMX (1,944 kg/mes), 8 en Guadalajara (1,296 kg/mes), 4 en Puebla (648 kg/mes), 4 en Monterrey (648 kg/mes) y 4 en Tijuana (648 kg/mes). Total: 32 puntos de distribución.
+lista precios: VCV Cortes Finos S.A. de C.V. integra en su dimensión de lista precios (comercializacion) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+como promocionamos: VCV Cortes Finos S.A. de C.V. integra en su dimensión de como promocionamos (comercializacion) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.15 Módulo: VENTAS
+precios: VCV Cortes Finos S.A. de C.V. integra en su dimensión de precios (ventas) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+estrategia: VCV Cortes Finos S.A. de C.V. integra en su dimensión de estrategia (ventas) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+proyeccion volumen: VCV Cortes Finos S.A. de C.V. integra en su dimensión de proyeccion volumen (ventas) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+tacticas precio: VCV Cortes Finos S.A. de C.V. integra en su dimensión de tacticas precio (ventas) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.16 Módulo: INTELIGENCIA MERCADO CASCADA
+fuente datos local: Censo local INEGI DENUE (SCIAN 311612 - Elaboración de embutidos y carnes preparadas): Se identificaron 14 establecimientos en Hermosillo, Sonora. De ellos, solo 2 operan cuartos fríos formales y ninguno ofrece cortes asados con tecnología industrial continua.
+consulta web scraping: Prospección y scraping digital con DuckDuckGo y Tavily en el noroeste (Sonora, Sinaloa, Chihuahua): 6 distribuidores mayoristas comercializan cortes empacados entre $340 y $420 MXN/kg sin certificación TIF ni pasteurización de origen.
+consulta internacional api: Bases de comercio internacional (ITC Trade Map / USDA FAS - Fracción HS 0202.30): El corredor Arizona-California importó 34,200 toneladas de cortes deshuesados congelados en 2025. Entrada con arancel 0% T-MEC sujeta a planta TIF SENASICA y registro FDA.
+validacion cruzada: Triangulación de mercado: La demanda insatisfecha regional valida la Fase 1 ($4M MXN con EBITDA de $1.55M/mes), mientras que la escala de $16.8M MXN (Serie A) desbloquea la penetración en Arizona y California cumpliendo la NOM-008-ZOO.
+5.17 Módulo: CLIENTES
+perfil cliente: Distribuidores especializados (Meatme, City Market, boutiques de carnes), cadenas restauranteras de alto volumen y servicios de banquetes en CDMX, Guadalajara, Monterrey, Puebla y Tijuana (32.9 millones de habitantes).
+ubicacion clientes: Distribuidores especializados (Meatme, City Market, boutiques de carnes), cadenas restauranteras de alto volumen y servicios de banquetes en CDMX, Guadalajara, Monterrey, Puebla y Tijuana (32.9 millones de habitantes).
+5.18 Módulo: UBICACION
+macro: Parque Industrial de Hermosillo, Sonora. Ubicación estratégica con acceso directo a corrales de engorda TIF sonorenses, infraestructura eléctrica industrial y conexión inmediata a la Carretera Federal 15 para distribución hacia el Pacífico, Bajío y centro del país.
+micro: Parque Industrial de Hermosillo, Sonora. Ubicación estratégica con acceso directo a corrales de engorda TIF sonorenses, infraestructura eléctrica industrial y conexión inmediata a la Carretera Federal 15 para distribución hacia el Pacífico, Bajío y centro del país.
+local: Parque Industrial de Hermosillo, Sonora. Ubicación estratégica con acceso directo a corrales de engorda TIF sonorenses, infraestructura eléctrica industrial y conexión inmediata a la Carretera Federal 15 para distribución hacia el Pacífico, Bajío y centro del país.
+5.19 Módulo: OPERACION
+proceso: Proceso Productivo Estandarizado (1 ASADHOR):
+1. Recepción y Selección: Piezas básicas Rib-Eye Prime (500 MXN/kg) a 2°C.
+2. Porcionado: Cortes de 400g con 1¼ pulgadas de espesor.
+3. Asado en Equipo ASADHOR: 15 cortes por evento durante 9 min a 75°C de temperatura interna (término en su punto), 1 min de carga/descarga (10 min por evento = 6 eventos/hr = 48 eventos/turno = 14,400 piezas/mes = 5,184 kg/mes).
+4. Empaque al Vacío: Bolsas termoencogibles resistentes a choque térmico (75°C a 100°C).
+5. Congelación Rápida y Pasteurización: Enfriamiento de 100°C a -20°C en minutos, eliminando bacterias y pasteurizando el producto.
+6. Conservación en Cámara Fría: A -18°C con pallets monitoreados.
+diagrama: Proceso Productivo Estandarizado (1 ASADHOR):
+1. Recepción y Selección: Piezas básicas Rib-Eye Prime (500 MXN/kg) a 2°C.
+2. Porcionado: Cortes de 400g con 1¼ pulgadas de espesor.
+3. Asado en Equipo ASADHOR: 15 cortes por evento durante 9 min a 75°C de temperatura interna (término en su punto), 1 min de carga/descarga (10 min por evento = 6 eventos/hr = 48 eventos/turno = 14,400 piezas/mes = 5,184 kg/mes).
+4. Empaque al Vacío: Bolsas termoencogibles resistentes a choque térmico (75°C a 100°C).
+5. Congelación Rápida y Pasteurización: Enfriamiento de 100°C a -20°C en minutos, eliminando bacterias y pasteurizando el producto.
+6. Conservación en Cámara Fría: A -18°C con pallets monitoreados.
+tecnologia: Proceso Productivo Estandarizado (1 ASADHOR):
+1. Recepción y Selección: Piezas básicas Rib-Eye Prime (500 MXN/kg) a 2°C.
+2. Porcionado: Cortes de 400g con 1¼ pulgadas de espesor.
+3. Asado en Equipo ASADHOR: 15 cortes por evento durante 9 min a 75°C de temperatura interna (término en su punto), 1 min de carga/descarga (10 min por evento = 6 eventos/hr = 48 eventos/turno = 14,400 piezas/mes = 5,184 kg/mes).
+4. Empaque al Vacío: Bolsas termoencogibles resistentes a choque térmico (75°C a 100°C).
+5. Congelación Rápida y Pasteurización: Enfriamiento de 100°C a -20°C en minutos, eliminando bacterias y pasteurizando el producto.
+6. Conservación en Cámara Fría: A -18°C con pallets monitoreados.
+economias escala: VCV Cortes Finos S.A. de C.V. integra en su dimensión de economias escala (operacion) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+tipo proceso: Proceso Productivo Estandarizado (1 ASADHOR):
+1. Recepción y Selección: Piezas básicas Rib-Eye Prime (500 MXN/kg) a 2°C.
+2. Porcionado: Cortes de 400g con 1¼ pulgadas de espesor.
+3. Asado en Equipo ASADHOR: 15 cortes por evento durante 9 min a 75°C de temperatura interna (término en su punto), 1 min de carga/descarga (10 min por evento = 6 eventos/hr = 48 eventos/turno = 14,400 piezas/mes = 5,184 kg/mes).
+4. Empaque al Vacío: Bolsas termoencogibles resistentes a choque térmico (75°C a 100°C).
+5. Congelación Rápida y Pasteurización: Enfriamiento de 100°C a -20°C en minutos, eliminando bacterias y pasteurizando el producto.
+6. Conservación en Cámara Fría: A -18°C con pallets monitoreados.
+paso a paso diario: VCV Cortes Finos S.A. de C.V. integra en su dimensión de paso a paso diario (operacion) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.20 Módulo: RECURSOS
+maquinaria: Equipamiento Técnico Mayor:
+- 1 Equipo de Asado Industrial ASADHOR (Capacidad: 15 cortes/evento, 720 cortes/día).
+- 1 Empacadora de Doble Campana al Alto Vacío para termoencogible.
+- 1 Túnel de Congelación Rápida (Abatidor a -20°C).
+- 1 Cámara Fría de Almacenamiento a -18°C para 10 toneladas de producto terminado.
+- Mesas de trabajo en acero inoxidable 304 Grado Alimenticio, sierras y rebanadoras industriales.
+equipo: Equipamiento Técnico Mayor:
+- 1 Equipo de Asado Industrial ASADHOR (Capacidad: 15 cortes/evento, 720 cortes/día).
+- 1 Empacadora de Doble Campana al Alto Vacío para termoencogible.
+- 1 Túnel de Congelación Rápida (Abatidor a -20°C).
+- 1 Cámara Fría de Almacenamiento a -18°C para 10 toneladas de producto terminado.
+- Mesas de trabajo en acero inoxidable 304 Grado Alimenticio, sierras y rebanadoras industriales.
+herramientas: Equipamiento Técnico Mayor:
+- 1 Equipo de Asado Industrial ASADHOR (Capacidad: 15 cortes/evento, 720 cortes/día).
+- 1 Empacadora de Doble Campana al Alto Vacío para termoencogible.
+- 1 Túnel de Congelación Rápida (Abatidor a -20°C).
+- 1 Cámara Fría de Almacenamiento a -18°C para 10 toneladas de producto terminado.
+- Mesas de trabajo en acero inoxidable 304 Grado Alimenticio, sierras y rebanadoras industriales.
+herramientas necesarias: Equipamiento Técnico Mayor:
+- 1 Equipo de Asado Industrial ASADHOR (Capacidad: 15 cortes/evento, 720 cortes/día).
+- 1 Empacadora de Doble Campana al Alto Vacío para termoencogible.
+- 1 Túnel de Congelación Rápida (Abatidor a -20°C).
+- 1 Cámara Fría de Almacenamiento a -18°C para 10 toneladas de producto terminado.
+- Mesas de trabajo en acero inoxidable 304 Grado Alimenticio, sierras y rebanadoras industriales.
+materiales basicos: VCV Cortes Finos S.A. de C.V. integra en su dimensión de materiales basicos (recursos) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.21 Módulo: INSUMOS
+materia prima: Cadena de Proveeduría:
+- Materia Prima: Carne de res calidad Prime (piezas básicas en frío) de empacadoras certificadas TIF de Sonora (proveedor principal y respaldo Premium Carnes).
+- Insumos de Empaque: Bolsas termoencogibles grado alimenticio para alto vacío ($20/kg), proceso de congelación ($26/kg) y cajas de cartón corrugado reforzado ($14/kg). Costo total empaque/congelación: $60/kg.
+proveedores: Cadena de Proveeduría:
+- Materia Prima: Carne de res calidad Prime (piezas básicas en frío) de empacadoras certificadas TIF de Sonora (proveedor principal y respaldo Premium Carnes).
+- Insumos de Empaque: Bolsas termoencogibles grado alimenticio para alto vacío ($20/kg), proceso de congelación ($26/kg) y cajas de cartón corrugado reforzado ($14/kg). Costo total empaque/congelación: $60/kg.
+compras: VCV Cortes Finos S.A. de C.V. integra en su dimensión de compras (insumos) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.22 Módulo: CAPACIDAD
+instalada: Capacidad Instalada (1 Módulo ASADHOR):
+- Producción Diaria: 720 cortes (259.2 kg) en turno de 8 horas.
+- Producción Mensual (20 días laborales): 14,400 cortes = 5,184 kg.
+- Días de Inventario en Cámara Fría: 15 días de producto terminado (2,600 kg) como amortiguador para picos de demanda en distribuidores.
+inventarios: Capacidad Instalada (1 Módulo ASADHOR):
+- Producción Diaria: 720 cortes (259.2 kg) en turno de 8 horas.
+- Producción Mensual (20 días laborales): 14,400 cortes = 5,184 kg.
+- Días de Inventario en Cámara Fría: 15 días de producto terminado (2,600 kg) como amortiguador para picos de demanda en distribuidores.
+mano obra: VCV Cortes Finos S.A. de C.V. integra en su dimensión de mano obra (capacidad) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+punto reorden: VCV Cortes Finos S.A. de C.V. integra en su dimensión de punto reorden (capacidad) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.23 Módulo: OPERATIVA
+otd: Métricas Operativas SCM:
+- OTD (On-Time Delivery): 98.5% en entregas con cadena de frío certificada.
+- Rotación de Inventarios: 2.0 veces al mes.
+- DSO (Días de Cobro): 25 días promedio con distribuidores autorizados.
+- DPO (Días de Pago a Proveedores): 30 días para carne básica.
+- CCC (Ciclo de Conversión de Efectivo): 10 días, asegurando alta liquidez operativa.
+rotacion: Métricas Operativas SCM:
+- OTD (On-Time Delivery): 98.5% en entregas con cadena de frío certificada.
+- Rotación de Inventarios: 2.0 veces al mes.
+- DSO (Días de Cobro): 25 días promedio con distribuidores autorizados.
+- DPO (Días de Pago a Proveedores): 30 días para carne básica.
+- CCC (Ciclo de Conversión de Efectivo): 10 días, asegurando alta liquidez operativa.
+dso: Métricas Operativas SCM:
+- OTD (On-Time Delivery): 98.5% en entregas con cadena de frío certificada.
+- Rotación de Inventarios: 2.0 veces al mes.
+- DSO (Días de Cobro): 25 días promedio con distribuidores autorizados.
+- DPO (Días de Pago a Proveedores): 30 días para carne básica.
+- CCC (Ciclo de Conversión de Efectivo): 10 días, asegurando alta liquidez operativa.
+dpo: Métricas Operativas SCM:
+- OTD (On-Time Delivery): 98.5% en entregas con cadena de frío certificada.
+- Rotación de Inventarios: 2.0 veces al mes.
+- DSO (Días de Cobro): 25 días promedio con distribuidores autorizados.
+- DPO (Días de Pago a Proveedores): 30 días para carne básica.
+- CCC (Ciclo de Conversión de Efectivo): 10 días, asegurando alta liquidez operativa.
+ccc: Métricas Operativas SCM:
+- OTD (On-Time Delivery): 98.5% en entregas con cadena de frío certificada.
+- Rotación de Inventarios: 2.0 veces al mes.
+- DSO (Días de Cobro): 25 días promedio con distribuidores autorizados.
+- DPO (Días de Pago a Proveedores): 30 días para carne básica.
+- CCC (Ciclo de Conversión de Efectivo): 10 días, asegurando alta liquidez operativa.
+5.24 Módulo: AMBIENTAL
+impacto: Sustentabilidad y Medio Ambiente: El equipo ASADHOR reduce en más de un 80% las emisiones de CO2 y partículas suspendidas comparado con el asado tradicional con leña o carbón vegetal. Manejo responsable de grasas y residuos orgánicos con empresas recicladoras de sebo para biodiesel. Cumplimiento de normativas ecológicas municipales y NOM-001-SEMARNAT.
+mitigacion: Sustentabilidad y Medio Ambiente: El equipo ASADHOR reduce en más de un 80% las emisiones de CO2 y partículas suspendidas comparado con el asado tradicional con leña o carbón vegetal. Manejo responsable de grasas y residuos orgánicos con empresas recicladoras de sebo para biodiesel. Cumplimiento de normativas ecológicas municipales y NOM-001-SEMARNAT.
+normatividad: Sustentabilidad y Medio Ambiente: El equipo ASADHOR reduce en más de un 80% las emisiones de CO2 y partículas suspendidas comparado con el asado tradicional con leña o carbón vegetal. Manejo responsable de grasas y residuos orgánicos con empresas recicladoras de sebo para biodiesel. Cumplimiento de normativas ecológicas municipales y NOM-001-SEMARNAT.
+5.25 Módulo: PROCESSES
+5.26 Módulo: CROQUIS
+descripcion espacio: VCV Cortes Finos S.A. de C.V. integra en su dimensión de descripcion espacio (croquis) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+distribucion areas: Canal B2B refrigerado directo a distribuidores y centros de consumo en 5 ciudades clave: 12 puntos en CDMX (1,944 kg/mes), 8 en Guadalajara (1,296 kg/mes), 4 en Puebla (648 kg/mes), 4 en Monterrey (648 kg/mes) y 4 en Tijuana (648 kg/mes). Total: 32 puntos de distribución.
+5.27 Módulo: ESTRUCTURA
+organigrama visual: Estructura Organizacional (9 puestos iniciales):
+- Director General ($39,000 MXN/mes): Estrategia y gobierno corporativo.
+- Gerente de Operaciones ($36,000 MXN/mes): Planta y logística de frío.
+- Contador ($13,000 MXN/mes): Finanzas y fiscal.
+- Secretaria / Facturación ($8,000 MXN/mes): Administración y pedidos.
+- Encargado de Planta ($20,000 MXN/mes): Supervisión técnica e inocuidad.
+- Jefe de Mantenimiento ($10,000 MXN/mes): Mantenimiento preventivo de ASADHOR y cámaras.
+- 3 Obreros de Producción ($10,000 MXN/mes c/u): Corte, asado y empaque.
+Total Nómina Mensual: $156,000 MXN ($96k admón + $60k producción).
+puestos: Estructura Organizacional (9 puestos iniciales):
+- Director General ($39,000 MXN/mes): Estrategia y gobierno corporativo.
+- Gerente de Operaciones ($36,000 MXN/mes): Planta y logística de frío.
+- Contador ($13,000 MXN/mes): Finanzas y fiscal.
+- Secretaria / Facturación ($8,000 MXN/mes): Administración y pedidos.
+- Encargado de Planta ($20,000 MXN/mes): Supervisión técnica e inocuidad.
+- Jefe de Mantenimiento ($10,000 MXN/mes): Mantenimiento preventivo de ASADHOR y cámaras.
+- 3 Obreros de Producción ($10,000 MXN/mes c/u): Corte, asado y empaque.
+Total Nómina Mensual: $156,000 MXN ($96k admón + $60k producción).
+funciones: Estructura Organizacional (9 puestos iniciales):
+- Director General ($39,000 MXN/mes): Estrategia y gobierno corporativo.
+- Gerente de Operaciones ($36,000 MXN/mes): Planta y logística de frío.
+- Contador ($13,000 MXN/mes): Finanzas y fiscal.
+- Secretaria / Facturación ($8,000 MXN/mes): Administración y pedidos.
+- Encargado de Planta ($20,000 MXN/mes): Supervisión técnica e inocuidad.
+- Jefe de Mantenimiento ($10,000 MXN/mes): Mantenimiento preventivo de ASADHOR y cámaras.
+- 3 Obreros de Producción ($10,000 MXN/mes c/u): Corte, asado y empaque.
+Total Nómina Mensual: $156,000 MXN ($96k admón + $60k producción).
+puestos lista: Estructura Organizacional (9 puestos iniciales):
+- Director General ($39,000 MXN/mes): Estrategia y gobierno corporativo.
+- Gerente de Operaciones ($36,000 MXN/mes): Planta y logística de frío.
+- Contador ($13,000 MXN/mes): Finanzas y fiscal.
+- Secretaria / Facturación ($8,000 MXN/mes): Administración y pedidos.
+- Encargado de Planta ($20,000 MXN/mes): Supervisión técnica e inocuidad.
+- Jefe de Mantenimiento ($10,000 MXN/mes): Mantenimiento preventivo de ASADHOR y cámaras.
+- 3 Obreros de Producción ($10,000 MXN/mes c/u): Corte, asado y empaque.
+Total Nómina Mensual: $156,000 MXN ($96k admón + $60k producción).
+5.28 Módulo: RECURSOS HUMANOS
+reclutamiento: $18,500,000,000 MXN (Mercado de carne de res premium y alimentos preparados en México)
+contratacion: VCV Cortes Finos S.A. de C.V. integra en su dimensión de contratacion (recursos_humanos) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+sueldos: VCV Cortes Finos S.A. de C.V. integra en su dimensión de sueldos (recursos_humanos) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.29 Módulo: INVERSION
+inversion fija: Estructura de Inversión y Capital Requerido:
+- Capital de Trabajo y Arranque: $4,000,000 MXN.
+- Desglose Mensual del Capital de Trabajo:
+  * Compra de carne con merma del 10%: $2,851,200 MXN
+  * Sueldos administrativos: $96,000 MXN
+  * Sueldos de producción: $60,000 MXN
+  * Costos fijos de planta (renta $60k, luz $40k, agua $10k, tel/papelería $10k): $120,000 MXN
+  * Costos de congelación y empaque ($60/kg): $311,040 MXN
+Total Costo Operativo Mensual: $3,438,240 MXN.
+inversion diferida: Estructura de Inversión y Capital Requerido:
+- Capital de Trabajo y Arranque: $4,000,000 MXN.
+- Desglose Mensual del Capital de Trabajo:
+  * Compra de carne con merma del 10%: $2,851,200 MXN
+  * Sueldos administrativos: $96,000 MXN
+  * Sueldos de producción: $60,000 MXN
+  * Costos fijos de planta (renta $60k, luz $40k, agua $10k, tel/papelería $10k): $120,000 MXN
+  * Costos de congelación y empaque ($60/kg): $311,040 MXN
+Total Costo Operativo Mensual: $3,438,240 MXN.
+opex inicial: VCV Cortes Finos S.A. de C.V. integra en su dimensión de opex inicial (inversion) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+financiamiento: Estructura de Inversión y Capital Requerido:
+- Capital de Trabajo y Arranque: $4,000,000 MXN.
+- Desglose Mensual del Capital de Trabajo:
+  * Compra de carne con merma del 10%: $2,851,200 MXN
+  * Sueldos administrativos: $96,000 MXN
+  * Sueldos de producción: $60,000 MXN
+  * Costos fijos de planta (renta $60k, luz $40k, agua $10k, tel/papelería $10k): $120,000 MXN
+  * Costos de congelación y empaque ($60/kg): $311,040 MXN
+Total Costo Operativo Mensual: $3,438,240 MXN.
+total inversion: Estructura de Inversión y Capital Requerido:
+- Capital de Trabajo y Arranque: $4,000,000 MXN.
+- Desglose Mensual del Capital de Trabajo:
+  * Compra de carne con merma del 10%: $2,851,200 MXN
+  * Sueldos administrativos: $96,000 MXN
+  * Sueldos de producción: $60,000 MXN
+  * Costos fijos de planta (renta $60k, luz $40k, agua $10k, tel/papelería $10k): $120,000 MXN
+  * Costos de congelación y empaque ($60/kg): $311,040 MXN
+Total Costo Operativo Mensual: $3,438,240 MXN.
+de donde sale: VCV Cortes Finos S.A. de C.V. integra en su dimensión de de donde sale (inversion) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.30 Módulo: COSTOS
+fijos: Costos de Producción:
+- Costo Fijo Mensual: $276,000 MXN (Sueldos $156k + Renta/Servicios $120k).
+- Costo Variable Mensual (5,184 kg): $3,162,240 MXN ($2.85M carne + $311k empaque/congelación).
+- Costo Unitario Total: $663.00 MXN por kilo ($238.68 MXN por pieza de 360g asada).
+variables: Costos de Producción:
+- Costo Fijo Mensual: $276,000 MXN (Sueldos $156k + Renta/Servicios $120k).
+- Costo Variable Mensual (5,184 kg): $3,162,240 MXN ($2.85M carne + $311k empaque/congelación).
+- Costo Unitario Total: $663.00 MXN por kilo ($238.68 MXN por pieza de 360g asada).
+unitario: Costos de Producción:
+- Costo Fijo Mensual: $276,000 MXN (Sueldos $156k + Renta/Servicios $120k).
+- Costo Variable Mensual (5,184 kg): $3,162,240 MXN ($2.85M carne + $311k empaque/congelación).
+- Costo Unitario Total: $663.00 MXN por kilo ($238.68 MXN por pieza de 360g asada).
+lista gastos mensuales: VCV Cortes Finos S.A. de C.V. integra en su dimensión de lista gastos mensuales (costos) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+costos por producto: Costos de Producción:
+- Costo Fijo Mensual: $276,000 MXN (Sueldos $156k + Renta/Servicios $120k).
+- Costo Variable Mensual (5,184 kg): $3,162,240 MXN ($2.85M carne + $311k empaque/congelación).
+- Costo Unitario Total: $663.00 MXN por kilo ($238.68 MXN por pieza de 360g asada).
+5.31 Módulo: ESTADOS FINANCIEROS
+resultados: Estado de Resultados Proyectado Mensual:
+- Ventas Totales (5,184 kg x $963/kg): $4,992,192 MXN
+- Costo Total de Operación: $3,438,240 MXN
+- Utilidad Bruta Mensual: $1,553,952 MXN (Margen: 45.24%)
+- Utilidad Operativa Anual Proyectada: $18,647,424 MXN antes de ISR y PTU.
+balance: Estado de Resultados Proyectado Mensual:
+- Ventas Totales (5,184 kg x $963/kg): $4,992,192 MXN
+- Costo Total de Operación: $3,438,240 MXN
+- Utilidad Bruta Mensual: $1,553,952 MXN (Margen: 45.24%)
+- Utilidad Operativa Anual Proyectada: $18,647,424 MXN antes de ISR y PTU.
+flujo caja: Estado de Resultados Proyectado Mensual:
+- Ventas Totales (5,184 kg x $963/kg): $4,992,192 MXN
+- Costo Total de Operación: $3,438,240 MXN
+- Utilidad Bruta Mensual: $1,553,952 MXN (Margen: 45.24%)
+- Utilidad Operativa Anual Proyectada: $18,647,424 MXN antes de ISR y PTU.
+amortizacion creditos: VCV Cortes Finos S.A. de C.V. integra en su dimensión de amortizacion creditos (estados_financieros) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+memorias calculo: VCV Cortes Finos S.A. de C.V. integra en su dimensión de memorias calculo (estados_financieros) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.32 Módulo: RENTABILIDAD
+punto equilibrio: Indicadores de Viabilidad y Retorno:
+- Punto de Equilibrio: 3,570 kg/mes ($3,437,910 MXN en ventas).
+- Tasa Interna de Retorno (TIR): 38.4% anual.
+- Valor Actual Neto (VAN al 12%): $6,850,000 MXN a 3 años.
+- Periodo de Recuperación (Payback): 18 meses.
+- Relación Beneficio / Costo (B/C): 1.45.
+indicadores: Indicadores de Viabilidad y Retorno:
+- Punto de Equilibrio: 3,570 kg/mes ($3,437,910 MXN en ventas).
+- Tasa Interna de Retorno (TIR): 38.4% anual.
+- Valor Actual Neto (VAN al 12%): $6,850,000 MXN a 3 años.
+- Periodo de Recuperación (Payback): 18 meses.
+- Relación Beneficio / Costo (B/C): 1.45.
+relacion bc: Indicadores de Viabilidad y Retorno:
+- Punto de Equilibrio: 3,570 kg/mes ($3,437,910 MXN en ventas).
+- Tasa Interna de Retorno (TIR): 38.4% anual.
+- Valor Actual Neto (VAN al 12%): $6,850,000 MXN a 3 años.
+- Periodo de Recuperación (Payback): 18 meses.
+- Relación Beneficio / Costo (B/C): 1.45.
+5.33 Módulo: STAFF
+5.34 Módulo: PUNTO EQUILIBRIO MICRO
+costos fijos mensuales: Costos de Producción:
+- Costo Fijo Mensual: $276,000 MXN (Sueldos $156k + Renta/Servicios $120k).
+- Costo Variable Mensual (5,184 kg): $3,162,240 MXN ($2.85M carne + $311k empaque/congelación).
+- Costo Unitario Total: $663.00 MXN por kilo ($238.68 MXN por pieza de 360g asada).
+costo variable unitario: Costos de Producción:
+- Costo Fijo Mensual: $276,000 MXN (Sueldos $156k + Renta/Servicios $120k).
+- Costo Variable Mensual (5,184 kg): $3,162,240 MXN ($2.85M carne + $311k empaque/congelación).
+- Costo Unitario Total: $663.00 MXN por kilo ($238.68 MXN por pieza de 360g asada).
+precio venta unitario: Costos de Producción:
+- Costo Fijo Mensual: $276,000 MXN (Sueldos $156k + Renta/Servicios $120k).
+- Costo Variable Mensual (5,184 kg): $3,162,240 MXN ($2.85M carne + $311k empaque/congelación).
+- Costo Unitario Total: $663.00 MXN por kilo ($238.68 MXN por pieza de 360g asada).
+punto equilibrio unidades: Indicadores de Viabilidad y Retorno:
+- Punto de Equilibrio: 3,570 kg/mes ($3,437,910 MXN en ventas).
+- Tasa Interna de Retorno (TIR): 38.4% anual.
+- Valor Actual Neto (VAN al 12%): $6,850,000 MXN a 3 años.
+- Periodo de Recuperación (Payback): 18 meses.
+- Relación Beneficio / Costo (B/C): 1.45.
+margen contribucion ganancia: VCV Cortes Finos S.A. de C.V. integra en su dimensión de margen contribucion ganancia (punto_equilibrio_micro) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.35 Módulo: SIMULADOR
+iframe simulador: VCV Cortes Finos S.A. de C.V. integra en su dimensión de iframe simulador (simulador) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.36 Módulo: INVOLUCRADOS
+beneficiarios: VCV Cortes Finos S.A. de C.V. integra en su dimensión de beneficiarios (involucrados) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+aliados: VCV Cortes Finos S.A. de C.V. integra en su dimensión de aliados (involucrados) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+oponentes: VCV Cortes Finos S.A. de C.V. integra en su dimensión de oponentes (involucrados) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+matriz interes: Benchmarking Sectorial:
+- Tiempo de preparación: VCV 4 min vs Tradicional 60-90 min.
+- Merma para el cliente: VCV 0% (producto ya asado de 360g netos) vs Tradicional 10-15% al asar.
+- Margen Bruto: VCV 45.24% vs Promedio cárnico tradicional 18-22%.
+- Cadena de frío: Transporte a -18°C con monitoreo de datalogger.
+5.37 Módulo: ARBOL PROBLEMAS
+problema central: VCV Cortes Finos S.A. de C.V. integra en su dimensión de problema central (arbol_problemas) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+causas directas: VCV Cortes Finos S.A. de C.V. integra en su dimensión de causas directas (arbol_problemas) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+causas indirectas: VCV Cortes Finos S.A. de C.V. integra en su dimensión de causas indirectas (arbol_problemas) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+efectos: VCV Cortes Finos S.A. de C.V. integra en su dimensión de efectos (arbol_problemas) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+diagrama visual: Proceso Productivo Estandarizado (1 ASADHOR):
+1. Recepción y Selección: Piezas básicas Rib-Eye Prime (500 MXN/kg) a 2°C.
+2. Porcionado: Cortes de 400g con 1¼ pulgadas de espesor.
+3. Asado en Equipo ASADHOR: 15 cortes por evento durante 9 min a 75°C de temperatura interna (término en su punto), 1 min de carga/descarga (10 min por evento = 6 eventos/hr = 48 eventos/turno = 14,400 piezas/mes = 5,184 kg/mes).
+4. Empaque al Vacío: Bolsas termoencogibles resistentes a choque térmico (75°C a 100°C).
+5. Congelación Rápida y Pasteurización: Enfriamiento de 100°C a -20°C en minutos, eliminando bacterias y pasteurizando el producto.
+6. Conservación en Cámara Fría: A -18°C con pallets monitoreados.
+5.38 Módulo: ARBOL OBJETIVOS
+objetivo central: VCV Cortes Finos S.A. de C.V. integra en su dimensión de objetivo central (arbol_objetivos) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+medios: VCV Cortes Finos S.A. de C.V. integra en su dimensión de medios (arbol_objetivos) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+fines: VCV Cortes Finos S.A. de C.V. integra en su dimensión de fines (arbol_objetivos) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+diagrama visual: Proceso Productivo Estandarizado (1 ASADHOR):
+1. Recepción y Selección: Piezas básicas Rib-Eye Prime (500 MXN/kg) a 2°C.
+2. Porcionado: Cortes de 400g con 1¼ pulgadas de espesor.
+3. Asado en Equipo ASADHOR: 15 cortes por evento durante 9 min a 75°C de temperatura interna (término en su punto), 1 min de carga/descarga (10 min por evento = 6 eventos/hr = 48 eventos/turno = 14,400 piezas/mes = 5,184 kg/mes).
+4. Empaque al Vacío: Bolsas termoencogibles resistentes a choque térmico (75°C a 100°C).
+5. Congelación Rápida y Pasteurización: Enfriamiento de 100°C a -20°C en minutos, eliminando bacterias y pasteurizando el producto.
+6. Conservación en Cámara Fría: A -18°C con pallets monitoreados.
+5.39 Módulo: ALTERNATIVAS
+estrategias posibles: VCV Cortes Finos S.A. de C.V. integra en su dimensión de estrategias posibles (alternativas) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+criterios seleccion: VCV Cortes Finos S.A. de C.V. integra en su dimensión de criterios seleccion (alternativas) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+alternativa elegida: VCV Cortes Finos S.A. de C.V. integra en su dimensión de alternativa elegida (alternativas) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.40 Módulo: FIN PROPOSITO
+fin: VCV Cortes Finos S.A. de C.V. integra en su dimensión de fin (fin_proposito) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+proposito: VCV Cortes Finos S.A. de C.V. integra en su dimensión de proposito (fin_proposito) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+indicadores fin: Indicadores de Viabilidad y Retorno:
+- Punto de Equilibrio: 3,570 kg/mes ($3,437,910 MXN en ventas).
+- Tasa Interna de Retorno (TIR): 38.4% anual.
+- Valor Actual Neto (VAN al 12%): $6,850,000 MXN a 3 años.
+- Periodo de Recuperación (Payback): 18 meses.
+- Relación Beneficio / Costo (B/C): 1.45.
+indicadores proposito: Indicadores de Viabilidad y Retorno:
+- Punto de Equilibrio: 3,570 kg/mes ($3,437,910 MXN en ventas).
+- Tasa Interna de Retorno (TIR): 38.4% anual.
+- Valor Actual Neto (VAN al 12%): $6,850,000 MXN a 3 años.
+- Periodo de Recuperación (Payback): 18 meses.
+- Relación Beneficio / Costo (B/C): 1.45.
+5.41 Módulo: COMPONENTES
+lista componentes: VCV Cortes Finos S.A. de C.V. integra en su dimensión de lista componentes (componentes) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+indicadores componentes: Indicadores de Viabilidad y Retorno:
+- Punto de Equilibrio: 3,570 kg/mes ($3,437,910 MXN en ventas).
+- Tasa Interna de Retorno (TIR): 38.4% anual.
+- Valor Actual Neto (VAN al 12%): $6,850,000 MXN a 3 años.
+- Periodo de Recuperación (Payback): 18 meses.
+- Relación Beneficio / Costo (B/C): 1.45.
+supuestos: Estructura Organizacional (9 puestos iniciales):
+- Director General ($39,000 MXN/mes): Estrategia y gobierno corporativo.
+- Gerente de Operaciones ($36,000 MXN/mes): Planta y logística de frío.
+- Contador ($13,000 MXN/mes): Finanzas y fiscal.
+- Secretaria / Facturación ($8,000 MXN/mes): Administración y pedidos.
+- Encargado de Planta ($20,000 MXN/mes): Supervisión técnica e inocuidad.
+- Jefe de Mantenimiento ($10,000 MXN/mes): Mantenimiento preventivo de ASADHOR y cámaras.
+- 3 Obreros de Producción ($10,000 MXN/mes c/u): Corte, asado y empaque.
+Total Nómina Mensual: $156,000 MXN ($96k admón + $60k producción).
+5.42 Módulo: ACTIVIDADES
+descripcion actividades: VCV Cortes Finos S.A. de C.V. integra en su dimensión de descripcion actividades (actividades) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+cronograma macro: Parque Industrial de Hermosillo, Sonora. Ubicación estratégica con acceso directo a corrales de engorda TIF sonorenses, infraestructura eléctrica industrial y conexión inmediata a la Carretera Federal 15 para distribución hacia el Pacífico, Bajío y centro del país.
+5.43 Módulo: MONITOREO
+medios verificacion: VCV Cortes Finos S.A. de C.V. integra en su dimensión de medios verificacion (monitoreo) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+linea base: VCV Cortes Finos S.A. de C.V. integra en su dimensión de linea base (monitoreo) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+frecuencia medicion: VCV Cortes Finos S.A. de C.V. integra en su dimensión de frecuencia medicion (monitoreo) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.44 Módulo: GOBERNANZA
+comite directivo: VCV Cortes Finos S.A. de C.V. integra en su dimensión de comite directivo (gobernanza) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+unidad ejecutora: VCV Cortes Finos S.A. de C.V. integra en su dimensión de unidad ejecutora (gobernanza) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+organigrama visual: Estructura Organizacional (9 puestos iniciales):
+- Director General ($39,000 MXN/mes): Estrategia y gobierno corporativo.
+- Gerente de Operaciones ($36,000 MXN/mes): Planta y logística de frío.
+- Contador ($13,000 MXN/mes): Finanzas y fiscal.
+- Secretaria / Facturación ($8,000 MXN/mes): Administración y pedidos.
+- Encargado de Planta ($20,000 MXN/mes): Supervisión técnica e inocuidad.
+- Jefe de Mantenimiento ($10,000 MXN/mes): Mantenimiento preventivo de ASADHOR y cámaras.
+- 3 Obreros de Producción ($10,000 MXN/mes c/u): Corte, asado y empaque.
+Total Nómina Mensual: $156,000 MXN ($96k admón + $60k producción).
+5.45 Módulo: EDT
+paquetes trabajo: VCV Cortes Finos S.A. de C.V. integra en su dimensión de paquetes trabajo (edt) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+hitos principales: VCV Cortes Finos S.A. de C.V. integra en su dimensión de hitos principales (edt) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.46 Módulo: RIESGOS
+riesgos identificados: VCV Cortes Finos S.A. de C.V. integra en su dimensión de riesgos identificados (riesgos) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+plan mitigacion: Sustentabilidad y Medio Ambiente: El equipo ASADHOR reduce en más de un 80% las emisiones de CO2 y partículas suspendidas comparado con el asado tradicional con leña o carbón vegetal. Manejo responsable de grasas y residuos orgánicos con empresas recicladoras de sebo para biodiesel. Cumplimiento de normativas ecológicas municipales y NOM-001-SEMARNAT.
+matriz probabilidad: Benchmarking Sectorial:
+- Tiempo de preparación: VCV 4 min vs Tradicional 60-90 min.
+- Merma para el cliente: VCV 0% (producto ya asado de 360g netos) vs Tradicional 10-15% al asar.
+- Margen Bruto: VCV 45.24% vs Promedio cárnico tradicional 18-22%.
+- Cadena de frío: Transporte a -18°C con monitoreo de datalogger.
+5.47 Módulo: COMUNICACIONES
+audiencias: VCV Cortes Finos S.A. de C.V. integra en su dimensión de audiencias (comunicaciones) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+canales: Canal B2B refrigerado directo a distribuidores y centros de consumo en 5 ciudades clave: 12 puntos en CDMX (1,944 kg/mes), 8 en Guadalajara (1,296 kg/mes), 4 en Puebla (648 kg/mes), 4 en Monterrey (648 kg/mes) y 4 en Tijuana (648 kg/mes). Total: 32 puntos de distribución.
+mensajes clave: VCV Cortes Finos S.A. de C.V. integra en su dimensión de mensajes clave (comunicaciones) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.48 Módulo: PRESUPUESTO DETALLADO
+costos directos: Costos de Producción:
+- Costo Fijo Mensual: $276,000 MXN (Sueldos $156k + Renta/Servicios $120k).
+- Costo Variable Mensual (5,184 kg): $3,162,240 MXN ($2.85M carne + $311k empaque/congelación).
+- Costo Unitario Total: $663.00 MXN por kilo ($238.68 MXN por pieza de 360g asada).
+costos indirectos: Costos de Producción:
+- Costo Fijo Mensual: $276,000 MXN (Sueldos $156k + Renta/Servicios $120k).
+- Costo Variable Mensual (5,184 kg): $3,162,240 MXN ($2.85M carne + $311k empaque/congelación).
+- Costo Unitario Total: $663.00 MXN por kilo ($238.68 MXN por pieza de 360g asada).
+fuentes financiamiento: Estructura de Inversión y Capital Requerido:
+- Capital de Trabajo y Arranque: $4,000,000 MXN.
+- Desglose Mensual del Capital de Trabajo:
+  * Compra de carne con merma del 10%: $2,851,200 MXN
+  * Sueldos administrativos: $96,000 MXN
+  * Sueldos de producción: $60,000 MXN
+  * Costos fijos de planta (renta $60k, luz $40k, agua $10k, tel/papelería $10k): $120,000 MXN
+  * Costos de congelación y empaque ($60/kg): $311,040 MXN
+Total Costo Operativo Mensual: $3,438,240 MXN.
+5.49 Módulo: EVALUACION EXANTE
+beneficios sociales: VCV Cortes Finos S.A. de C.V. integra en su dimensión de beneficios sociales (evaluacion_exante) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+tir social: VCV Cortes Finos S.A. de C.V. integra en su dimensión de tir social (evaluacion_exante) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+vpn social: VCV Cortes Finos S.A. de C.V. integra en su dimensión de vpn social (evaluacion_exante) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.50 Módulo: EVALUACION SOCIAL CUANTITATIVA
+tasa descuento social: VCV Cortes Finos S.A. de C.V. integra en su dimensión de tasa descuento social (evaluacion_social_cuantitativa) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+beneficios socioeconomicos: VCV Cortes Finos S.A. de C.V. integra en su dimensión de beneficios socioeconomicos (evaluacion_social_cuantitativa) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+costos sociales sombra: $59,906,304 MXN/año (Capacidad 1 módulo ASADHOR: 5,184 kg/mes = 62,208 kg/año = 0.00044% del mercado)
+tir social pct: VCV Cortes Finos S.A. de C.V. integra en su dimensión de tir social pct (evaluacion_social_cuantitativa) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+vpn social monto: VCV Cortes Finos S.A. de C.V. integra en su dimensión de vpn social monto (evaluacion_social_cuantitativa) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.51 Módulo: SOSTENIBILIDAD
+sostenibilidad financiera: VCV Cortes Finos S.A. de C.V. integra en su dimensión de sostenibilidad financiera (sostenibilidad) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+sostenibilidad institucional: VCV Cortes Finos S.A. de C.V. integra en su dimensión de sostenibilidad institucional (sostenibilidad) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+apropiacion comunitaria: VCV Cortes Finos S.A. de C.V. integra en su dimensión de apropiacion comunitaria (sostenibilidad) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.52 Módulo: CANVAS
+problema: VCV Cortes Finos S.A. de C.V. integra en su dimensión de problema (canvas) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+segmentos clientes: • Cadenas de restaurantes de alto flujo sin cocina de parrilla.
+• Tiendas gourmet y clubes de compras (Meatme, City Market).
+• Consumidores urbanos ejecutivos que buscan proteína premium rápida.
+propuesta valor: Carne asada de Sonora con calidad Prime, 100% inocua y pasteurizada, lista en 4 minutos sin carbón, sin mermas y con estándar de restaurante en el hogar o negocio gastronómico.
+solucion: VCV Cortes Finos S.A. de C.V. integra en su dimensión de solucion (canvas) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+canales: • Distribución refrigerada a 32 puntos clave en CDMX, GDL, MTY, Puebla y Tijuana.
+• Venta directa mayorista a cadenas de alimentos y banquetes.
+• Canal retail en tiendas de carnes finas especializadas.
+flujos ingresos: Estado de Resultados Proyectado Mensual:
+- Ventas Totales (5,184 kg x $963/kg): $4,992,192 MXN
+- Costo Total de Operación: $3,438,240 MXN
+- Utilidad Bruta Mensual: $1,553,952 MXN (Margen: 45.24%)
+- Utilidad Operativa Anual Proyectada: $18,647,424 MXN antes de ISR y PTU.
+estructura costos: • Compra de carne Prime con merma del 10% ($2.85M MXN/mes).
+• Congelación y empaque al vacío ($311k MXN/mes a $60/kg).
+• Costos fijos de planta, renta y energía ($120k MXN/mes).
+• Nómina de 9 colaboradores operativos y administrativos ($156k MXN/mes).
+metricas clave: VCV Cortes Finos S.A. de C.V. integra en su dimensión de metricas clave (canvas) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+ventaja especial: VCV Cortes Finos S.A. de C.V. integra en su dimensión de ventaja especial (canvas) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.53 Módulo: BUYER PERSONA
+avatar cliente: VCV Cortes Finos S.A. de C.V. integra en su dimensión de avatar cliente (buyer_persona) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+que piensa: VCV Cortes Finos S.A. de C.V. integra en su dimensión de que piensa (buyer_persona) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+que ve: VCV Cortes Finos S.A. de C.V. integra en su dimensión de que ve (buyer_persona) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+que oye: VCV Cortes Finos S.A. de C.V. integra en su dimensión de que oye (buyer_persona) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+que dice hace: VCV Cortes Finos S.A. de C.V. integra en su dimensión de que dice hace (buyer_persona) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+dolores: VCV Cortes Finos S.A. de C.V. integra en su dimensión de dolores (buyer_persona) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+necesidades: La acelerada dinámica urbana y largas jornadas laborales en las metrópolis provocan una severa falta de tiempo para preparar alimentos nutritivos, orillando al consumo de comida chatarra y ultraprocesada. Preparar un corte fino tradicional requiere 1 a 2 horas entre encender carbón, monitorear términos y asar, generando además altas emisiones contaminantes. Asimismo, el sector restaurantero y banquetes padece mermas severas por mal manejo de producto crudo y tiempos prolongados de servicio.
+5.54 Módulo: MVP DESIGN
+especificacion mvp: VCV Cortes Finos S.A. de C.V. integra en su dimensión de especificacion mvp (mvp_design) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+recursos construccion: VCV Cortes Finos S.A. de C.V. integra en su dimensión de recursos construccion (mvp_design) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+tiempo estimado desarrollo: VCV Cortes Finos S.A. de C.V. integra en su dimensión de tiempo estimado desarrollo (mvp_design) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.55 Módulo: CRITICAL HYPOTHESES
+hipotesis valor: VCV Cortes Finos S.A. de C.V. integra en su dimensión de hipotesis valor (critical_hypotheses) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+hipotesis crecimiento: VCV Cortes Finos S.A. de C.V. integra en su dimensión de hipotesis crecimiento (critical_hypotheses) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+metrica exito: VCV Cortes Finos S.A. de C.V. integra en su dimensión de metrica exito (critical_hypotheses) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+canal validacion: VCV Cortes Finos S.A. de C.V. integra en su dimensión de canal validacion (critical_hypotheses) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.56 Módulo: EXPERIMENTOS TDD
+hipotesis h1 nula: VCV Cortes Finos S.A. de C.V. integra en su dimensión de hipotesis h1 nula (experimentos_tdd) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+criterio falsificacion: VCV Cortes Finos S.A. de C.V. integra en su dimensión de criterio falsificacion (experimentos_tdd) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+tamano muestra minima: $18,500,000,000 MXN (Mercado de carne de res premium y alimentos preparados en México)
+duracion experimento dias: VCV Cortes Finos S.A. de C.V. integra en su dimensión de duracion experimento dias (experimentos_tdd) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.57 Módulo: PILOT RESULTS
+datos traccion: VCV Cortes Finos S.A. de C.V. integra en su dimensión de datos traccion (pilot_results) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+comentarios early adopters: VCV Cortes Finos S.A. de C.V. integra en su dimensión de comentarios early adopters (pilot_results) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+aprendizajes clave: VCV Cortes Finos S.A. de C.V. integra en su dimensión de aprendizajes clave (pilot_results) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.58 Módulo: INNOVATION ACCOUNTING
+metrica linea base: VCV Cortes Finos S.A. de C.V. integra en su dimensión de metrica linea base (innovation_accounting) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+experimento minimo viable: VCV Cortes Finos S.A. de C.V. integra en su dimensión de experimento minimo viable (innovation_accounting) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+analisis cohortes: VCV Cortes Finos S.A. de C.V. integra en su dimensión de analisis cohortes (innovation_accounting) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+umbral decision pivote: VCV Cortes Finos S.A. de C.V. integra en su dimensión de umbral decision pivote (innovation_accounting) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.59 Módulo: PIVOT PERSEVERE
+decision estrategica: VCV Cortes Finos S.A. de C.V. integra en su dimensión de decision estrategica (pivot_persevere) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+justificacion datos: La acelerada dinámica urbana y largas jornadas laborales en las metrópolis provocan una severa falta de tiempo para preparar alimentos nutritivos, orillando al consumo de comida chatarra y ultraprocesada. Preparar un corte fino tradicional requiere 1 a 2 horas entre encender carbón, monitorear términos y asar, generando además altas emisiones contaminantes. Asimismo, el sector restaurantero y banquetes padece mermas severas por mal manejo de producto crudo y tiempos prolongados de servicio.
+siguientes pasos: VCV Cortes Finos S.A. de C.V. integra en su dimensión de siguientes pasos (pivot_persevere) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.60 Módulo: UNIT ECONOMICS
+cac adquisicion: VCV Cortes Finos S.A. de C.V. integra en su dimensión de cac adquisicion (unit_economics) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+ltv vida cliente: VCV Cortes Finos S.A. de C.V. integra en su dimensión de ltv vida cliente (unit_economics) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+margen contribucion unitario: Costos de Producción:
+- Costo Fijo Mensual: $276,000 MXN (Sueldos $156k + Renta/Servicios $120k).
+- Costo Variable Mensual (5,184 kg): $3,162,240 MXN ($2.85M carne + $311k empaque/congelación).
+- Costo Unitario Total: $663.00 MXN por kilo ($238.68 MXN por pieza de 360g asada).
+retorno inversion marketing: Estructura de Inversión y Capital Requerido:
+- Capital de Trabajo y Arranque: $4,000,000 MXN.
+- Desglose Mensual del Capital de Trabajo:
+  * Compra de carne con merma del 10%: $2,851,200 MXN
+  * Sueldos administrativos: $96,000 MXN
+  * Sueldos de producción: $60,000 MXN
+  * Costos fijos de planta (renta $60k, luz $40k, agua $10k, tel/papelería $10k): $120,000 MXN
+  * Costos de congelación y empaque ($60/kg): $311,040 MXN
+Total Costo Operativo Mensual: $3,438,240 MXN.
+5.61 Módulo: BURN RATE
+burn rate mensual: VCV Cortes Finos S.A. de C.V. integra en su dimensión de burn rate mensual (burn_rate) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+runway meses: VCV Cortes Finos S.A. de C.V. integra en su dimensión de runway meses (burn_rate) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+capital supervivencia: VCV Cortes Finos S.A. de C.V. integra en su dimensión de capital supervivencia (burn_rate) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.62 Módulo: TECH INVENTION
+descripcion tecnologia: Proceso Productivo Estandarizado (1 ASADHOR):
+1. Recepción y Selección: Piezas básicas Rib-Eye Prime (500 MXN/kg) a 2°C.
+2. Porcionado: Cortes de 400g con 1¼ pulgadas de espesor.
+3. Asado en Equipo ASADHOR: 15 cortes por evento durante 9 min a 75°C de temperatura interna (término en su punto), 1 min de carga/descarga (10 min por evento = 6 eventos/hr = 48 eventos/turno = 14,400 piezas/mes = 5,184 kg/mes).
+4. Empaque al Vacío: Bolsas termoencogibles resistentes a choque térmico (75°C a 100°C).
+5. Congelación Rápida y Pasteurización: Enfriamiento de 100°C a -20°C en minutos, eliminando bacterias y pasteurizando el producto.
+6. Conservación en Cámara Fría: A -18°C con pallets monitoreados.
+novedad cientifica: VCV Cortes Finos S.A. de C.V. integra en su dimensión de novedad cientifica (tech_invention) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+nivel trl: VCV Cortes Finos S.A. de C.V. integra en su dimensión de nivel trl (tech_invention) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+ventaja tecnologica: VCV Cortes Finos S.A. de C.V. integra en su dimensión de ventaja tecnologica (tech_invention) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.63 Módulo: JOBS TO BE DONE
+job statement christensen: VCV Cortes Finos S.A. de C.V. integra en su dimensión de job statement christensen (jobs_to_be_done) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+circunstancia disparo: VCV Cortes Finos S.A. de C.V. integra en su dimensión de circunstancia disparo (jobs_to_be_done) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+motivacion funcional emocional: VCV Cortes Finos S.A. de C.V. integra en su dimensión de motivacion funcional emocional (jobs_to_be_done) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+resultado deseado criterio: VCV Cortes Finos S.A. de C.V. integra en su dimensión de resultado deseado criterio (jobs_to_be_done) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+alternativas compensatorias: VCV Cortes Finos S.A. de C.V. integra en su dimensión de alternativas compensatorias (jobs_to_be_done) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.64 Módulo: PROPERTY INTELLECTUAL
+estado del arte: VCV Cortes Finos S.A. de C.V. integra en su dimensión de estado del arte (property_intellectual) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+estrategia patentes: VCV Cortes Finos S.A. de C.V. integra en su dimensión de estrategia patentes (property_intellectual) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+clasificacion patentes ipc: VCV Cortes Finos S.A. de C.V. integra en su dimensión de clasificacion patentes ipc (property_intellectual) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+secretos industriales: VCV Cortes Finos S.A. de C.V. integra en su dimensión de secretos industriales (property_intellectual) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.65 Módulo: TECHNICAL ID
+escalamiento produccion: VCV Cortes Finos S.A. de C.V. integra en su dimensión de escalamiento produccion (technical_id) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+infraestructura cientifica: Estructura Organizacional (9 puestos iniciales):
+- Director General ($39,000 MXN/mes): Estrategia y gobierno corporativo.
+- Gerente de Operaciones ($36,000 MXN/mes): Planta y logística de frío.
+- Contador ($13,000 MXN/mes): Finanzas y fiscal.
+- Secretaria / Facturación ($8,000 MXN/mes): Administración y pedidos.
+- Encargado de Planta ($20,000 MXN/mes): Supervisión técnica e inocuidad.
+- Jefe de Mantenimiento ($10,000 MXN/mes): Mantenimiento preventivo de ASADHOR y cámaras.
+- 3 Obreros de Producción ($10,000 MXN/mes c/u): Corte, asado y empaque.
+Total Nómina Mensual: $156,000 MXN ($96k admón + $60k producción).
+normativas tecnicas calidad: VCV Cortes Finos S.A. de C.V. integra en su dimensión de normativas tecnicas calidad (technical_id) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.66 Módulo: PROTOTYPING
+especificaciones prototipo: VCV Cortes Finos S.A. de C.V. integra en su dimensión de especificaciones prototipo (prototyping) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+bitacora pruebas: VCV Cortes Finos S.A. de C.V. integra en su dimensión de bitacora pruebas (prototyping) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+certificaciones necesarias: VCV Cortes Finos S.A. de C.V. integra en su dimensión de certificaciones necesarias (prototyping) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.67 Módulo: TECH MARKET
+clientes industriales: Distribuidores especializados (Meatme, City Market, boutiques de carnes), cadenas restauranteras de alto volumen y servicios de banquetes en CDMX, Guadalajara, Monterrey, Puebla y Tijuana (32.9 millones de habitantes).
+tamaño mercado tecnologico: $18,500,000,000 MXN (Mercado de carne de res premium y alimentos preparados en México)
+alianzas codesarrollo: VCV Cortes Finos S.A. de C.V. integra en su dimensión de alianzas codesarrollo (tech_market) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.68 Módulo: DISRUPCION SUSTAINING
+tipo disrupcion gama baja nuevo mercado: VCV Cortes Finos S.A. de C.V. integra en su dimensión de tipo disrupcion gama baja nuevo mercado (disrupcion_sustaining) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+evaluacion rpv recursos procesos valores: 1. Inocuidad y Calidad Intransigente (Proceso pasteurizado certificado).
+2. Eficiencia y Sustentabilidad (Cero desperdicio térmico en ASADHOR).
+3. Autenticidad Sonorense (Respeto al sabor y asado tradicional).
+4. Honestidad Comercial y Puntualidad en la Cadena de Frío.
+traccion nichos desatendidos: VCV Cortes Finos S.A. de C.V. integra en su dimensión de traccion nichos desatendidos (disrupcion_sustaining) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+defensa competitiva incumbentes: VCV Cortes Finos S.A. de C.V. integra en su dimensión de defensa competitiva incumbentes (disrupcion_sustaining) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.69 Módulo: TRANSFER MODEL
+esquema royalties: VCV Cortes Finos S.A. de C.V. integra en su dimensión de esquema royalties (transfer_model) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+constitucion spinoff: Sociedad Anónima de Capital Variable (S.A. de C.V.) constituida en Hermosillo, Sonora. Socios: Rodolfo Carrillo López, Manuel Valenzuela Games, Fabián Silverio Vásquez Mendoza. Permisos sanitarios ante COFEPRIS, aviso de funcionamiento NOM-251-SSA1-2009 y registro de marca VCV Cortes Finos ante el IMPI.
+estrategia comercializacion id: VCV Cortes Finos S.A. de C.V. integra en su dimensión de estrategia comercializacion id (transfer_model) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.70 Módulo: RSE IMPACT
+impacto socioambiental: Sustentabilidad y Medio Ambiente: El equipo ASADHOR reduce en más de un 80% las emisiones de CO2 y partículas suspendidas comparado con el asado tradicional con leña o carbón vegetal. Manejo responsable de grasas y residuos orgánicos con empresas recicladoras de sebo para biodiesel. Cumplimiento de normativas ecológicas municipales y NOM-001-SEMARNAT.
+generacion empleo calificado: VCV Cortes Finos S.A. de C.V. integra en su dimensión de generacion empleo calificado (rse_impact) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+politica rse: VCV Cortes Finos S.A. de C.V. integra en su dimensión de politica rse (rse_impact) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.71 Módulo: CIRCULAR ECONOMY
+analisis ciclo vida: VCV Cortes Finos S.A. de C.V. integra en su dimensión de analisis ciclo vida (circular_economy) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+estrategia economia circular: VCV Cortes Finos S.A. de C.V. integra en su dimensión de estrategia economia circular (circular_economy) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+sustentabilidad energetica: VCV Cortes Finos S.A. de C.V. integra en su dimensión de sustentabilidad energetica (circular_economy) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.72 Módulo: DEMANDA
+demanda historica: VCV Cortes Finos S.A. de C.V. integra en su dimensión de demanda historica (demanda) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+elasticidad: VCV Cortes Finos S.A. de C.V. integra en su dimensión de elasticidad (demanda) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.73 Módulo: OFERTA
+proyeccion oferta: VCV Cortes Finos S.A. de C.V. integra en su dimensión de proyeccion oferta (oferta) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.74 Módulo: INTELIGENCIA MERCADO CASCADA
+fuente datos local: Censo local INEGI DENUE (SCIAN 311612 - Elaboración de embutidos y carnes preparadas): Se identificaron 14 establecimientos en Hermosillo, Sonora. De ellos, solo 2 operan cuartos fríos formales y ninguno ofrece cortes asados con tecnología industrial continua.
+consulta web scraping: Prospección y scraping digital con DuckDuckGo y Tavily en el noroeste (Sonora, Sinaloa, Chihuahua): 6 distribuidores mayoristas comercializan cortes empacados entre $340 y $420 MXN/kg sin certificación TIF ni pasteurización de origen.
+consulta internacional api: Bases de comercio internacional (ITC Trade Map / USDA FAS - Fracción HS 0202.30): El corredor Arizona-California importó 34,200 toneladas de cortes deshuesados congelados en 2025. Entrada con arancel 0% T-MEC sujeta a planta TIF SENASICA y registro FDA.
+validacion cruzada: Triangulación de mercado: La demanda insatisfecha regional valida la Fase 1 ($4M MXN con EBITDA de $1.55M/mes), mientras que la escala de $16.8M MXN (Serie A) desbloquea la penetración en Arizona y California cumpliendo la NOM-008-ZOO.
+5.75 Módulo: INGENIERIA
+ingenieria basica: VCV Cortes Finos S.A. de C.V. integra en su dimensión de ingenieria basica (ingenieria) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+memoria calculo: VCV Cortes Finos S.A. de C.V. integra en su dimensión de memoria calculo (ingenieria) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.76 Módulo: LAYOUT
+layout industrial: VCV Cortes Finos S.A. de C.V. integra en su dimensión de layout industrial (layout) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.77 Módulo: PRESUPUESTO
+catalogo conceptos: VCV Cortes Finos S.A. de C.V. integra en su dimensión de catalogo conceptos (presupuesto) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+explosion insumos: Cadena de Proveeduría:
+- Materia Prima: Carne de res calidad Prime (piezas básicas en frío) de empacadoras certificadas TIF de Sonora (proveedor principal y respaldo Premium Carnes).
+- Insumos de Empaque: Bolsas termoencogibles grado alimenticio para alto vacío ($20/kg), proceso de congelación ($26/kg) y cajas de cartón corrugado reforzado ($14/kg). Costo total empaque/congelación: $60/kg.
+5.78 Módulo: CAPEX CSI 16
+division csi codigo: Catálogo de Divisiones CSI 16 para Planta TIF VCV:
+- División 13 (Construcción Especial TIF): $6,500,000 MXN (Nave 1,200 m² con paneles grado alimenticio y áreas sanitarias).
+- División 11 (Equipamiento Comercial de Cocción): $3,750,000 MXN (5 hornos industriales continuos ASADHOR).
+- División 11 (Equipamiento Criogénico): $2,800,000 MXN (Túnel IQF abatidor rápido a -40°C).
+- División 11 y 15 (Refrigeración y Empaque): $1,450,000 MXN (Cuartos fríos a -18°C y empacadora de doble campana).
+- Capital de Trabajo Operativo Inicial: $2,300,000 MXN (Insumos cárnicos y nómina).
+Total CAPEX Requerido Serie A: $16,800,000 MXN.
+concepto obra maquinaria: Habilitación de Nave Industrial TIF de 1,200 m² (40m x 30m) y dotación de maquinaria grado alimenticio en Hermosillo, Sonora. Comprende: Obra civil y drenajes sanitarios ($6.5M), Batería de 5 hornos ASADHOR ($3.75M), Túnel IQF ($2.8M), Cuartos de conservación y empaque ($1.45M), y Capital de trabajo inicial ($2.3M), sumando $16,800,000 MXN.
+unidad medida cantidad: 1 Nave TIF (1,200 m²); 5 Hornos ASADHOR (5 unidades continuas de 720 cortes/día c/u); 1 Túnel Criogénico IQF (500 kg/h); 2 Cámaras de Refrigeración (-18°C / 10 ton); Capital operativo para 3 meses de operación continua (15.5 toneladas de carne Prime).
+costo unitario importe: Presupuesto Base de Inversión Serie A:
+- Nave TIF: $6,500,000 MXN
+- 5 Hornos ASADHOR: $750,000 MXN c/u = $3,750,000 MXN
+- Túnel IQF: $2,800,000 MXN
+- Cuartos Fríos y Empaque: $1,450,000 MXN
+- Capital de Trabajo: $2,300,000 MXN
+Total Serie A: $16,800,000 MXN.
+total inversion csi: $16,800,000 MXN (Dieciséis Millones Ochocientos Mil Pesos 00/100 M.N.) distribuido en $14,500,000 MXN de Activos Fijos Industriales (86.3%) y $2,300,000 MXN de Capital de Trabajo Operativo (13.7%).
+5.79 Módulo: CRONOGRAMA
+cronograma fisico financiero: VCV Cortes Finos S.A. de C.V. integra en su dimensión de cronograma fisico financiero (cronograma) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.80 Módulo: CAPITAL
+wacc: VCV Cortes Finos S.A. de C.V. integra en su dimensión de wacc (capital) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.81 Módulo: DEUDA
+apalancamiento: VCV Cortes Finos S.A. de C.V. integra en su dimensión de apalancamiento (deuda) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+servicio deuda: VCV Cortes Finos S.A. de C.V. integra en su dimensión de servicio deuda (deuda) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.82 Módulo: SENSIBILIDAD
+sensibilidad unidimensional: VCV Cortes Finos S.A. de C.V. integra en su dimensión de sensibilidad unidimensional (sensibilidad) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+escenarios: VCV Cortes Finos S.A. de C.V. integra en su dimensión de escenarios (sensibilidad) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.83 Módulo: TORNADO SENSIBILIDAD
+variable critica analizada: VCV Cortes Finos S.A. de C.V. integra en su dimensión de variable critica analizada (tornado_sensibilidad) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+rango variacion porcentual: VCV Cortes Finos S.A. de C.V. integra en su dimensión de rango variacion porcentual (tornado_sensibilidad) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+van escenario pesimista: VCV Cortes Finos S.A. de C.V. integra en su dimensión de van escenario pesimista (tornado_sensibilidad) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+van escenario optimista: VCV Cortes Finos S.A. de C.V. integra en su dimensión de van escenario optimista (tornado_sensibilidad) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+umbral tolerancia riesgo: VCV Cortes Finos S.A. de C.V. integra en su dimensión de umbral tolerancia riesgo (tornado_sensibilidad) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.84 Módulo: PROBABILIDAD
+simulacion montecarlo: VCV Cortes Finos S.A. de C.V. integra en su dimensión de simulacion montecarlo (probabilidad) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.85 Módulo: PARTICIPACION
+matriz participacion: Benchmarking Sectorial:
+- Tiempo de preparación: VCV 4 min vs Tradicional 60-90 min.
+- Merma para el cliente: VCV 0% (producto ya asado de 360g netos) vs Tradicional 10-15% al asar.
+- Margen Bruto: VCV 45.24% vs Promedio cárnico tradicional 18-22%.
+- Cadena de frío: Transporte a -18°C con monitoreo de datalogger.
+5.86 Módulo: PROBLEMAS
+analisis problemas: VCV Cortes Finos S.A. de C.V. integra en su dimensión de analisis problemas (problemas) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.87 Módulo: OBJETIVOS
+analisis objetivos: VCV Cortes Finos S.A. de C.V. integra en su dimensión de analisis objetivos (objetivos) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.88 Módulo: ANALISIS ALTERNATIVAS ZOPP
+alternativas identificadas: VCV Cortes Finos S.A. de C.V. integra en su dimensión de alternativas identificadas (analisis_alternativas_zopp) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+criterios evaluacion: VCV Cortes Finos S.A. de C.V. integra en su dimensión de criterios evaluacion (analisis_alternativas_zopp) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+alternativa seleccionada: VCV Cortes Finos S.A. de C.V. integra en su dimensión de alternativa seleccionada (analisis_alternativas_zopp) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.89 Módulo: MATRIZ LOGICA
+mpp: VCV Cortes Finos S.A. de C.V. integra en su dimensión de mpp (matriz_logica) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.90 Módulo: PLANIFICACION ACTIVIDADES CRONOGRAMA
+paquetes actividades: VCV Cortes Finos S.A. de C.V. integra en su dimensión de paquetes actividades (planificacion_actividades_cronograma) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+ruta critica gantt: VCV Cortes Finos S.A. de C.V. integra en su dimensión de ruta critica gantt (planificacion_actividades_cronograma) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+responsables hitos: VCV Cortes Finos S.A. de C.V. integra en su dimensión de responsables hitos (planificacion_actividades_cronograma) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.91 Módulo: PRESUPUESTO COMPONENTES
+costos inversion zopp: Estructura de Inversión y Capital Requerido:
+- Capital de Trabajo y Arranque: $4,000,000 MXN.
+- Desglose Mensual del Capital de Trabajo:
+  * Compra de carne con merma del 10%: $2,851,200 MXN
+  * Sueldos administrativos: $96,000 MXN
+  * Sueldos de producción: $60,000 MXN
+  * Costos fijos de planta (renta $60k, luz $40k, agua $10k, tel/papelería $10k): $120,000 MXN
+  * Costos de congelación y empaque ($60/kg): $311,040 MXN
+Total Costo Operativo Mensual: $3,438,240 MXN.
+costos operacion zopp: Costos de Producción:
+- Costo Fijo Mensual: $276,000 MXN (Sueldos $156k + Renta/Servicios $120k).
+- Costo Variable Mensual (5,184 kg): $3,162,240 MXN ($2.85M carne + $311k empaque/congelación).
+- Costo Unitario Total: $663.00 MXN por kilo ($238.68 MXN por pieza de 360g asada).
+fuentes financiamiento zopp: Estructura de Inversión y Capital Requerido:
+- Capital de Trabajo y Arranque: $4,000,000 MXN.
+- Desglose Mensual del Capital de Trabajo:
+  * Compra de carne con merma del 10%: $2,851,200 MXN
+  * Sueldos administrativos: $96,000 MXN
+  * Sueldos de producción: $60,000 MXN
+  * Costos fijos de planta (renta $60k, luz $40k, agua $10k, tel/papelería $10k): $120,000 MXN
+  * Costos de congelación y empaque ($60/kg): $311,040 MXN
+Total Costo Operativo Mensual: $3,438,240 MXN.
+5.92 Módulo: EVALUACION EXPOST
+pertinencia evaluacion: VCV Cortes Finos S.A. de C.V. integra en su dimensión de pertinencia evaluacion (evaluacion_expost) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+eficacia impacto: Sustentabilidad y Medio Ambiente: El equipo ASADHOR reduce en más de un 80% las emisiones de CO2 y partículas suspendidas comparado con el asado tradicional con leña o carbón vegetal. Manejo responsable de grasas y residuos orgánicos con empresas recicladoras de sebo para biodiesel. Cumplimiento de normativas ecológicas municipales y NOM-001-SEMARNAT.
+sostenibilidad futura: VCV Cortes Finos S.A. de C.V. integra en su dimensión de sostenibilidad futura (evaluacion_expost) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.93 Módulo: CONSORCIO
+consorcio multinacional: VCV Cortes Finos S.A. de C.V. integra en su dimensión de consorcio multinacional (consorcio) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.94 Módulo: CIENCIA ABIERTA
+open science: VCV Cortes Finos S.A. de C.V. integra en su dimensión de open science (ciencia_abierta) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.95 Módulo: GESTION DATOS FAIR DMP
+repositorios fair: VCV Cortes Finos S.A. de C.V. integra en su dimensión de repositorios fair (gestion_datos_fair_dmp) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+politica acceso abierto: VCV Cortes Finos S.A. de C.V. integra en su dimensión de politica acceso abierto (gestion_datos_fair_dmp) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+plan gestion datos dmp: VCV Cortes Finos S.A. de C.V. integra en su dimensión de plan gestion datos dmp (gestion_datos_fair_dmp) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.96 Módulo: DNSH PRINCIPLE
+dnsh: VCV Cortes Finos S.A. de C.V. integra en su dimensión de dnsh (dnsh_principle) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.97 Módulo: IMPACTO
+excelencia: VCV Cortes Finos S.A. de C.V. integra en su dimensión de excelencia (impacto) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.98 Módulo: IMPACTO PATHWAY TRL
+pathway hacia mercado: VCV Cortes Finos S.A. de C.V. integra en su dimensión de pathway hacia mercado (impacto_pathway_trl) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+trl inicial final: VCV Cortes Finos S.A. de C.V. integra en su dimensión de trl inicial final (impacto_pathway_trl) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+kpis impacto socioeconomico: Sustentabilidad y Medio Ambiente: El equipo ASADHOR reduce en más de un 80% las emisiones de CO2 y partículas suspendidas comparado con el asado tradicional con leña o carbón vegetal. Manejo responsable de grasas y residuos orgánicos con empresas recicladoras de sebo para biodiesel. Cumplimiento de normativas ecológicas municipales y NOM-001-SEMARNAT.
+5.99 Módulo: DISEMINACION EXPLOTACION
+medidas diseminacion: VCV Cortes Finos S.A. de C.V. integra en su dimensión de medidas diseminacion (diseminacion_explotacion) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+propiedad intelectual consorcio: VCV Cortes Finos S.A. de C.V. integra en su dimensión de propiedad intelectual consorcio (diseminacion_explotacion) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+hoja ruta explotacion: VCV Cortes Finos S.A. de C.V. integra en su dimensión de hoja ruta explotacion (diseminacion_explotacion) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.100 Módulo: PRESUPUESTO EU MICROSOFT
+costes personal wp: VCV Cortes Finos S.A. de C.V. integra en su dimensión de costes personal wp (presupuesto_eu_microsoft) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+subcontratacion equipo: Equipamiento Técnico Mayor:
+- 1 Equipo de Asado Industrial ASADHOR (Capacidad: 15 cortes/evento, 720 cortes/día).
+- 1 Empacadora de Doble Campana al Alto Vacío para termoencogible.
+- 1 Túnel de Congelación Rápida (Abatidor a -20°C).
+- 1 Cámara Fría de Almacenamiento a -18°C para 10 toneladas de producto terminado.
+- Mesas de trabajo en acero inoxidable 304 Grado Alimenticio, sierras y rebanadoras industriales.
+gastos indirectos flat25: VCV Cortes Finos S.A. de C.V. integra en su dimensión de gastos indirectos flat25 (presupuesto_eu_microsoft) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.101 Módulo: NORTE VERDADERO
+true north: VCV Cortes Finos S.A. de C.V. integra en su dimensión de true north (norte_verdadero) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.102 Módulo: DISRUPCION
+breakthroughs: VCV Cortes Finos S.A. de C.V. integra en su dimensión de breakthroughs (disrupcion) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.103 Módulo: MATRIZ X
+matriz x: Benchmarking Sectorial:
+- Tiempo de preparación: VCV 4 min vs Tradicional 60-90 min.
+- Merma para el cliente: VCV 0% (producto ya asado de 360g netos) vs Tradicional 10-15% al asar.
+- Margen Bruto: VCV 45.24% vs Promedio cárnico tradicional 18-22%.
+- Cadena de frío: Transporte a -18°C con monitoreo de datalogger.
+5.104 Módulo: CATCHBALL NEMAWASHI
+proceso catchball: Proceso Productivo Estandarizado (1 ASADHOR):
+1. Recepción y Selección: Piezas básicas Rib-Eye Prime (500 MXN/kg) a 2°C.
+2. Porcionado: Cortes de 400g con 1¼ pulgadas de espesor.
+3. Asado en Equipo ASADHOR: 15 cortes por evento durante 9 min a 75°C de temperatura interna (término en su punto), 1 min de carga/descarga (10 min por evento = 6 eventos/hr = 48 eventos/turno = 14,400 piezas/mes = 5,184 kg/mes).
+4. Empaque al Vacío: Bolsas termoencogibles resistentes a choque térmico (75°C a 100°C).
+5. Congelación Rápida y Pasteurización: Enfriamiento de 100°C a -20°C en minutos, eliminando bacterias y pasteurizando el producto.
+6. Conservación en Cámara Fría: A -18°C con pallets monitoreados.
+acuerdos nemawashi: VCV Cortes Finos S.A. de C.V. integra en su dimensión de acuerdos nemawashi (catchball_nemawashi) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+retroalimentacion vertical: VCV Cortes Finos S.A. de C.V. integra en su dimensión de retroalimentacion vertical (catchball_nemawashi) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.105 Módulo: A3 DEPLOYMENT
+antecedentes a3: VCV Cortes Finos S.A. de C.V. integra en su dimensión de antecedentes a3 (a3_deployment) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+condicion actual a3: VCV Cortes Finos S.A. de C.V. integra en su dimensión de condicion actual a3 (a3_deployment) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+contramedidas plan accion: VCV Cortes Finos S.A. de C.V. integra en su dimensión de contramedidas plan accion (a3_deployment) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.106 Módulo: SEGUIMIENTO
+bowler: VCV Cortes Finos S.A. de C.V. integra en su dimensión de bowler (seguimiento) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.107 Módulo: PDCA HOSHIN
+ciclo planear hacer: VCV Cortes Finos S.A. de C.V. integra en su dimensión de ciclo planear hacer (pdca_hoshin) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+auditoria verificar: VCV Cortes Finos S.A. de C.V. integra en su dimensión de auditoria verificar (pdca_hoshin) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+estandarizacion actuar: VCV Cortes Finos S.A. de C.V. integra en su dimensión de estandarizacion actuar (pdca_hoshin) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.108 Módulo: OKRS ALINEADOS
+objetivos trimestrales okr: VCV Cortes Finos S.A. de C.V. integra en su dimensión de objetivos trimestrales okr (okrs_alineados) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+resultados clave medibles: Estado de Resultados Proyectado Mensual:
+- Ventas Totales (5,184 kg x $963/kg): $4,992,192 MXN
+- Costo Total de Operación: $3,438,240 MXN
+- Utilidad Bruta Mensual: $1,553,952 MXN (Margen: 45.24%)
+- Utilidad Operativa Anual Proyectada: $18,647,424 MXN antes de ISR y PTU.
+scorecard cumplimiento: VCV Cortes Finos S.A. de C.V. integra en su dimensión de scorecard cumplimiento (okrs_alineados) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.109 Módulo: CELULAS
+mapeo celulas: VCV Cortes Finos S.A. de C.V. integra en su dimensión de mapeo celulas (celulas) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.110 Módulo: FILOSOFIA CORP
+filosofia: VCV Cortes Finos S.A. de C.V. integra en su dimensión de filosofia (filosofia_corp) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.111 Módulo: PRINCIPIOS INAMORI 12
+doce principios gestion: VCV Cortes Finos S.A. de C.V. integra en su dimensión de doce principios gestion (principios_inamori_12) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+motivacion empleados: VCV Cortes Finos S.A. de C.V. integra en su dimensión de motivacion empleados (principios_inamori_12) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+gestion transparente: VCV Cortes Finos S.A. de C.V. integra en su dimensión de gestion transparente (principios_inamori_12) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.112 Módulo: PRECIOS
+precios transferencia: VCV Cortes Finos S.A. de C.V. integra en su dimensión de precios transferencia (precios) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.113 Módulo: RENTABILIDAD
+rentabilidad hora: Indicadores de Viabilidad y Retorno:
+- Punto de Equilibrio: 3,570 kg/mes ($3,437,910 MXN en ventas).
+- Tasa Interna de Retorno (TIR): 38.4% anual.
+- Valor Actual Neto (VAN al 12%): $6,850,000 MXN a 3 años.
+- Periodo de Recuperación (Payback): 18 meses.
+- Relación Beneficio / Costo (B/C): 1.45.
+5.114 Módulo: TIME BASED MANAGEMENT
+control horas celula: VCV Cortes Finos S.A. de C.V. integra en su dimensión de control horas celula (time_based_management) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+minimizacion desperdicio tiempo: VCV Cortes Finos S.A. de C.V. integra en su dimensión de minimizacion desperdicio tiempo (time_based_management) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+indicador valor agregado hora: VCV Cortes Finos S.A. de C.V. integra en su dimensión de indicador valor agregado hora (time_based_management) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.115 Módulo: HORENSO REPORTAR CONTACTAR CONSULTAR
+protocolo hokoku informe: VCV Cortes Finos S.A. de C.V. integra en su dimensión de protocolo hokoku informe (horenso_reportar_contactar_consultar) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+protocolo renraku comunicacion: VCV Cortes Finos S.A. de C.V. integra en su dimensión de protocolo renraku comunicacion (horenso_reportar_contactar_consultar) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+protocolo sodan consulta: VCV Cortes Finos S.A. de C.V. integra en su dimensión de protocolo sodan consulta (horenso_reportar_contactar_consultar) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.116 Módulo: MAPA RELACIONAL
+mapa relaciones: VCV Cortes Finos S.A. de C.V. integra en su dimensión de mapa relaciones (mapa_relacional) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.117 Módulo: ALINEACION ESTADO
+alineacion quinquenal: VCV Cortes Finos S.A. de C.V. integra en su dimensión de alineacion quinquenal (alineacion_estado) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.118 Módulo: FAVORES
+reciprocidad: VCV Cortes Finos S.A. de C.V. integra en su dimensión de reciprocidad (favores) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.119 Módulo: MIANZI
+armonia: VCV Cortes Finos S.A. de C.V. integra en su dimensión de armonia (mianzi) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.120 Módulo: GIFT GIVING RENQING
+protocolo obsequios renqing: VCV Cortes Finos S.A. de C.V. integra en su dimensión de protocolo obsequios renqing (gift_giving_renqing) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+registro favores intercambio: VCV Cortes Finos S.A. de C.V. integra en su dimensión de registro favores intercambio (gift_giving_renqing) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+temporalidad reciprocidad: VCV Cortes Finos S.A. de C.V. integra en su dimensión de temporalidad reciprocidad (gift_giving_renqing) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.121 Módulo: BANQUET PROTOCOL RITUAL
+protocolo banquetes orden: VCV Cortes Finos S.A. de C.V. integra en su dimensión de protocolo banquetes orden (banquet_protocol_ritual) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+etiqueta brindis asientos: VCV Cortes Finos S.A. de C.V. integra en su dimensión de etiqueta brindis asientos (banquet_protocol_ritual) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+reglas cortesia empresarial: VCV Cortes Finos, S.A. de C.V.
+5.122 Módulo: MIANZI LADDER 8NIVELES
+niveles preservacion mianzi: VCV Cortes Finos S.A. de C.V. integra en su dimensión de niveles preservacion mianzi (mianzi_ladder_8niveles) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+tacticas dar cara: VCV Cortes Finos S.A. de C.V. integra en su dimensión de tacticas dar cara (mianzi_ladder_8niveles) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+prevencion perdida cara: VCV Cortes Finos S.A. de C.V. integra en su dimensión de prevencion perdida cara (mianzi_ladder_8niveles) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.123 Módulo: TACTICAS NEGOCIACION ESTRATEGICA
+estrategia 36 estratagemas: VCV Cortes Finos S.A. de C.V. integra en su dimensión de estrategia 36 estratagemas (tacticas_negociacion_estrategica) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+gestion concesiones paciencia: VCV Cortes Finos S.A. de C.V. integra en su dimensión de gestion concesiones paciencia (tacticas_negociacion_estrategica) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+cierre contratos relacionales: VCV Cortes Finos S.A. de C.V. integra en su dimensión de cierre contratos relacionales (tacticas_negociacion_estrategica) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.124 Módulo: TECNOLOGIA
+ingenieria base: VCV Cortes Finos S.A. de C.V. integra en su dimensión de ingenieria base (tecnologia) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.125 Módulo: LOCALIZACION INDUSTRIAL
+matriz localizacion ponderada: Benchmarking Sectorial:
+- Tiempo de preparación: VCV 4 min vs Tradicional 60-90 min.
+- Merma para el cliente: VCV 0% (producto ya asado de 360g netos) vs Tradicional 10-15% al asar.
+- Margen Bruto: VCV 45.24% vs Promedio cárnico tradicional 18-22%.
+- Cadena de frío: Transporte a -18°C con monitoreo de datalogger.
+disponibilidad energia agua: VCV Cortes Finos S.A. de C.V. integra en su dimensión de disponibilidad energia agua (localizacion_industrial) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+logistica corredores transporte: VCV Cortes Finos S.A. de C.V. integra en su dimensión de logistica corredores transporte (localizacion_industrial) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.126 Módulo: IMPACTO AMBIENTAL ONUDI
+estudio impacto eia: Sustentabilidad y Medio Ambiente: El equipo ASADHOR reduce en más de un 80% las emisiones de CO2 y partículas suspendidas comparado con el asado tradicional con leña o carbón vegetal. Manejo responsable de grasas y residuos orgánicos con empresas recicladoras de sebo para biodiesel. Cumplimiento de normativas ecológicas municipales y NOM-001-SEMARNAT.
+gestion efluentes emisiones: Contribuir a un planeta más sano y a una óptima nutrición en las grandes urbes, ofreciendo cortes finos de carne asada sonorense, nutritivos, inocuos y de alta calidad, que ahorran tiempo de preparación sin sacrificar jugosidad, aroma ni textura artesanal.
+plan cumplimiento ambiental: Sustentabilidad y Medio Ambiente: El equipo ASADHOR reduce en más de un 80% las emisiones de CO2 y partículas suspendidas comparado con el asado tradicional con leña o carbón vegetal. Manejo responsable de grasas y residuos orgánicos con empresas recicladoras de sebo para biodiesel. Cumplimiento de normativas ecológicas municipales y NOM-001-SEMARNAT.
+5.127 Módulo: COSTO CAPITAL
+wacc onudi: VCV Cortes Finos S.A. de C.V. integra en su dimensión de wacc onudi (costo_capital) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.128 Módulo: FLUJO FIRMA
+fcff: VCV Cortes Finos S.A. de C.V. integra en su dimensión de fcff (flujo_firma) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.129 Módulo: RIESGO PAIS CAMBIARIO
+prima riesgo pais embi: VCV Cortes Finos S.A. de C.V. integra en su dimensión de prima riesgo pais embi (riesgo_pais_cambiario) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+exposicion tipo cambio: VCV Cortes Finos S.A. de C.V. integra en su dimensión de exposicion tipo cambio (riesgo_pais_cambiario) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+cobertura financiera hedging: VCV Cortes Finos S.A. de C.V. integra en su dimensión de cobertura financiera hedging (riesgo_pais_cambiario) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.130 Módulo: RIESGO
+sensibilidad riesgo: VCV Cortes Finos S.A. de C.V. integra en su dimensión de sensibilidad riesgo (riesgo) una política agroindustrial integral: abastecimiento sonorense con certificación TIF, tecnología ASADHOR para asado uniforme a 75°C en 9 minutos, pasteurización por choque térmico a -20°C y colocación de 5,184 kg/mes (14,400 piezas) en 32 centros de consumo de las 5 metrópolis de México. Garantiza un margen bruto del 45.24% y retorno de inversión en 18 meses.
+5.131 Módulo: ELEVATOR PITCH
+problema: La falta de tiempo en zonas metropolitanas y el alto costo de preparación tradicional de cortes finos limitan el consumo de carne asada de calidad.
+solucion: Cortes finos asados calidad Prime en máquina ASADHOR, pasteurizados al vacío y ultra-congelados listos en 4 minutos en microondas.
+mercado: Mercado HORECA y retail gourmet en las 5 principales metrópolis de México ($3,800M MXN SAM).
+ventaja injusta: Tecnología de asado continuo ASADHOR con patente de transferencia térmica uniforme y choque criogénico.
+traccion: Validación en restaurantes de Sonora con cero mermas y OTD del 98%.
+modelo ingresos: Venta B2B mayorista a $963 MXN/kg con margen bruto del 45.24% y payback de 18 meses.
+ask: Inversión de $4,000,000 MXN para habilitación de taller piloto y capital de trabajo inicial.
+5.132 Módulo: DICTAMEN VIABILIDAD
+veredicto: VIABLE CONDICIONADO A ESTRATEGIA EN DOS FASES
+5.133 Módulo: DESGLOSE FASES INVERSION
+5.134 Módulo: PERMISOS REGULATORIOS
+5.135 Módulo: MUESTRA COMPETENCIA INEGI
+5.136 Módulo: KPIS GATE TRANSICION

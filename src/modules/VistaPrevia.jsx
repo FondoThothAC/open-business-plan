@@ -50,31 +50,63 @@ function isVariableOpex(row) {
   return label.includes('variable') || label.includes('comercial') || label.includes('venta') || label.includes('comisión');
 }
 
-export function parseNumericAmount(val, fallback = 0) {
+export function parseNumericAmount(val, fallback = 0, preferredKeyword = null) {
   if (val === null || val === undefined || val === '') return fallback;
   if (typeof val === 'number') return isNaN(val) ? fallback : val;
-  const str = String(val).trim();
-  
-  const millonMatch = str.match(/(\d+(?:[.,]\d+)?)\s*millon(?:es)?/i);
-  if (millonMatch) {
-    const num = parseFloat(millonMatch[1].replace(',', '.'));
-    if (!isNaN(num)) return num * 1000000;
+  const rawStr = String(val).trim();
+  if (!rawStr) return fallback;
+
+  // Detección directa de millones en frases simples cortas (ej. "16.8 millones", "$4M")
+  if (!rawStr.includes('\n') && !rawStr.includes(';')) {
+    const singleMillion = rawStr.match(/^[^0-9]*(\d+(?:[.,]\d+)?)\s*(?:millones?|millón|m\b)/i);
+    if (singleMillion) {
+      const num = parseFloat(singleMillion[1].replace(',', '.'));
+      if (!isNaN(num)) return num * 1000000;
+    }
+    const singleCurrency = rawStr.match(/\$\s*([\d,]+(?:\.\d+)?)/);
+    if (singleCurrency) {
+      const num = parseFloat(singleCurrency[1].replace(/,/g, ''));
+      if (!isNaN(num)) return num;
+    }
   }
-  
-  let cleanStr = str.replace(/[^0-9.,-]/g, '');
+
+  // Análisis línea por línea para textos multilínea con viñetas o tablas
+  const lines = rawStr.split(/\r?\n/).map(l => l.trim().replace(/^[-*•\s]+/, ''));
+  const entries = [];
+
+  for (const line of lines) {
+    const regex = /\$\s*([\d,]+(?:\.\d+)?)(?:\s*(?:MXN|pesos|USD))?((?:\s*\/\s*(?:kg|pza|mes|hr|evento|año))?)/gi;
+    let match;
+    while ((match = regex.exec(line)) !== null) {
+      const num = parseFloat(match[1].replace(/,/g, ''));
+      const isPerUnit = Boolean(match[2] && /\/\s*(?:kg|pza|hr|evento)/i.test(match[2]));
+      if (!isNaN(num) && num > 0) {
+        entries.push({ num, line, isPerUnit });
+      }
+    }
+  }
+
+  if (entries.length > 0) {
+    if (preferredKeyword) {
+      const kwRegex = new RegExp(preferredKeyword, 'i');
+      const kwMatch = entries.find(e => kwRegex.test(e.line) && !e.isPerUnit);
+      if (kwMatch) return kwMatch.num;
+    }
+
+    const nonUnitary = entries.filter(e => !e.isPerUnit);
+    const candidates = nonUnitary.length > 0 ? nonUnitary : entries;
+
+    const totalMatch = candidates.find(e => /total/i.test(e.line));
+    if (totalMatch) return totalMatch.num;
+
+    return candidates[0].num;
+  }
+
+  // Fallback seguro sin guiones ni concatenación multilínea
+  const cleanStr = rawStr.replace(/^[-*•\s]+/, '').replace(/[^0-9.,]/g, '');
   if (!cleanStr) return fallback;
-
-  const commaIndex = cleanStr.lastIndexOf(',');
-  const dotIndex = cleanStr.lastIndexOf('.');
-  
-  if (commaIndex > dotIndex) {
-    cleanStr = cleanStr.replace(/\./g, '').replace(',', '.');
-  } else {
-    cleanStr = cleanStr.replace(/,/g, '');
-  }
-
-  const parsed = parseFloat(cleanStr);
-  return isNaN(parsed) ? fallback : parsed;
+  const parsed = parseFloat(cleanStr.replace(/,/g, ''));
+  return isNaN(parsed) ? fallback : Math.abs(parsed);
 }
 
 // --- SUBCOMPONENTE: BENCHMARKING TABLE ---
@@ -1323,15 +1355,16 @@ const ModuleRefinementPanel = ({ pillarKey, moduleKey, fields, planData, updateS
   );
 };
 
-export function DocxExportButton({ planData }) {
+export function DocxExportButton({ planData, scope = 'executive' }) {
   const [isExporting, setIsExporting] = useState(false);
 
   const handleExport = async () => {
     if (!planData) return;
     try {
       setIsExporting(true);
-      const filename = `${(planData.companyName || planData.nombre || 'plan-negocios').toLowerCase().replace(/[^a-z0-9]+/g, '-')}-ejecutivo.docx`;
-      await downloadProjectAsDocx(planData, filename);
+      const suffix = scope === 'full' ? 'maestro-12-frameworks' : 'ejecutivo';
+      const filename = `${(planData.companyName || planData.nombre || 'plan-negocios').toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${suffix}.docx`;
+      await downloadProjectAsDocx(planData, filename, { scope });
     } catch (err) {
       console.error('[DocxExportButton] Error al exportar Word:', err);
       alert('Ocurrió un error al generar el documento Word editable. Verifique la consola.');
@@ -1359,12 +1392,271 @@ export function DocxExportButton({ planData }) {
         fontWeight: 600,
         cursor: isExporting ? 'wait' : 'pointer'
       }}
-      title="Descargar versión completa en Microsoft Word (.docx) 100% editable"
+      title={scope === 'full' ? 'Descargar Documento Maestro Completo (12 Metodologías) en Word (.docx)' : 'Descargar Dossier Ejecutivo Canónico en Word (.docx)'}
     >
       <FileDown className="w-4 h-4" />
-      <span>{isExporting ? 'Generando Word...' : 'Exportar Word (.docx)'}</span>
+      <span>{isExporting ? 'Generando Word...' : `Exportar Word (${scope === 'full' ? 'Maestro' : 'Ejecutivo'})`}</span>
     </button>
   );
+}
+
+export function ExportScopeToggle({ exportScope, onScopeChange }) {
+  return (
+    <div
+      className="no-print"
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        background: 'var(--bg-panel, #1e293b)',
+        border: '1px solid var(--border-color, #334155)',
+        borderRadius: '8px',
+        padding: '3px',
+        gap: '3px',
+        height: '42px'
+      }}
+    >
+      <button
+        type="button"
+        onClick={() => onScopeChange('executive')}
+        style={{
+          padding: '6px 12px',
+          fontSize: '0.8rem',
+          fontWeight: exportScope === 'executive' ? 700 : 500,
+          borderRadius: '6px',
+          border: 'none',
+          cursor: 'pointer',
+          background: exportScope === 'executive' ? 'linear-gradient(135deg, #0d9488 0%, #0f766e 100%)' : 'transparent',
+          color: exportScope === 'executive' ? '#ffffff' : 'var(--text-secondary, #94a3b8)',
+          boxShadow: exportScope === 'executive' ? '0 2px 8px rgba(13, 148, 136, 0.3)' : 'none',
+          transition: 'all 0.2s ease',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '6px'
+        }}
+        title="Dossier Ejecutivo Canónico (~20-25 págs con metodología activa y finanzas consolidadas a 5 años)"
+      >
+        <span>📄</span>
+        <span>Dossier Ejecutivo</span>
+      </button>
+      <button
+        type="button"
+        onClick={() => onScopeChange('full')}
+        style={{
+          padding: '6px 12px',
+          fontSize: '0.8rem',
+          fontWeight: exportScope === 'full' ? 700 : 500,
+          borderRadius: '6px',
+          border: 'none',
+          cursor: 'pointer',
+          background: exportScope === 'full' ? 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)' : 'transparent',
+          color: exportScope === 'full' ? '#ffffff' : 'var(--text-secondary, #94a3b8)',
+          boxShadow: exportScope === 'full' ? '0 2px 8px rgba(99, 102, 241, 0.3)' : 'none',
+          transition: 'all 0.2s ease',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '6px'
+        }}
+        title="Documento Maestro Integral (12 Metodologías y Frameworks Integrados)"
+      >
+        <span>📚</span>
+        <span>Maestro (12 Metodologías)</span>
+      </button>
+    </div>
+  );
+}
+
+export function computePreviewFinancialData(planData) {
+  try {
+    const raw = planData?.organizacion?.estados_financieros?.corrida_automatica;
+    if (raw && typeof raw === 'string') {
+      return JSON.parse(raw);
+    }
+    if (raw && typeof raw === 'object') {
+      return raw;
+    }
+  } catch (err) {
+    console.warn('[VistaPrevia] Error parseando corrida_automatica:', err);
+  }
+
+  // Fallback: calcular corrida financiera al vuelo si no existe
+  try {
+    const banxicoData = planData?.naturaleza?.pestel?.indicadores_banxico || {};
+    const currentInflation = banxicoData.inflacion ? parseFloat(banxicoData.inflacion) : 4.5;
+    const currentTIIE = banxicoData.tiie ? parseFloat(banxicoData.tiie) : 10;
+    const estimatedWACC = currentTIIE + 2.0;
+
+    const capexRows = readJson(planData?.organizacion?.inversion?.desglose_capex_json, []);
+    const opexRows = readJson(planData?.organizacion?.costos?.desglose_opex_json, []);
+    const revenueRows = readJson(planData?.organizacion?.estados_financieros?.ingresos_json, []);
+
+    let initialInvestmentVal = 20000000;
+    let annualSalesGoalVal = 16000000;
+    let monthlyFixedCostsVal = 285000;
+    let monthlyVariableCostsVal = 8000;
+
+    // 1. Inversión Total con soporte para capital, arranque, capex
+    const inversionTexto = planData?.organizacion?.inversion?.financiamiento ||
+                           planData?.organizacion?.inversion?.inversion_fija ||
+                           planData?.organizacion?.inversion?.monto_total ||
+                           planData?.organizacion?.inversion?.capex ||
+                           planData?.semilla?.inversion_esperada ||
+                           planData?.semilla?.finanzas?.inversion_total || '';
+    if (inversionTexto) {
+      initialInvestmentVal = parseNumericAmount(inversionTexto, 20000000, 'arranque|inversión|capital|total|capex');
+    }
+
+    // 2. Costos Fijos Mensuales
+    const fijosTexto = planData?.organizacion?.costos?.fijos || planData?.semilla?.finanzas?.costos_fijos || '';
+    if (fijosTexto) {
+      const rawFijos = parseNumericAmount(fijosTexto, 285000, 'fijo|mensual');
+      monthlyFixedCostsVal = rawFijos > 2000000 ? Math.round(rawFijos / 12) : rawFijos;
+    }
+
+    // 3. Ventas Anuales Año 1
+    const resultadosTexto = planData?.organizacion?.estados_financieros?.resultados || 
+                            planData?.organizacion?.objetivos?.metas ||
+                            planData?.semilla?.finanzas?.meta_ingresos || '';
+    if (resultadosTexto) {
+      annualSalesGoalVal = parseNumericAmount(resultadosTexto, 16000000, 'ventas|ingreso|anual');
+    }
+
+    // 4. Costos Variables Mensuales
+    const variablesTexto = planData?.organizacion?.costos?.variables || '';
+    if (variablesTexto) {
+      const rawVars = parseNumericAmount(variablesTexto, 0, 'variable');
+      if (rawVars > 0 && rawVars < 100) {
+        monthlyVariableCostsVal = Math.round((annualSalesGoalVal / 12) * (rawVars / 100));
+      } else if (rawVars > 0) {
+        monthlyVariableCostsVal = rawVars > 2000000 ? Math.round(rawVars / 12) : rawVars;
+      } else {
+        monthlyVariableCostsVal = Math.round((annualSalesGoalVal / 12) * 0.65);
+      }
+    } else {
+      monthlyVariableCostsVal = Math.round((annualSalesGoalVal / 12) * 0.65);
+    }
+
+    const financeData = {
+      projectDuration: 5,
+      taxRate: 30,
+      discountRate: estimatedWACC,
+      inflationRate: currentInflation,
+      annualSalesGoal: annualSalesGoalVal,
+      annualSalesGrowth: 5,
+      monthlyFixedCosts: monthlyFixedCostsVal,
+      monthlyVariableCosts: monthlyVariableCostsVal,
+      annualCostGrowth: 3,
+      initialInvestment: initialInvestmentVal,
+    };
+
+    const investmentItems = capexRows.length > 0
+      ? capexRows.map((row, index) => ({
+          id: index + 1,
+          name: row.concepto || row.name || `Inversión ${index + 1}`,
+          amount: parseNumericAmount(row.monto || row.amount),
+          type: ['Activo Fijo', 'Activo Diferido', 'Capital de Trabajo'].includes(row.tipo) ? row.tipo : 'Activo Fijo',
+          acquisitionSource: row.fuente || 'Aportación (Nuevo)',
+        })).filter((row) => row.amount > 0)
+      : [{ id: 1, name: 'Inversión Inicial Base', amount: financeData.initialInvestment, type: 'Activo Fijo', acquisitionSource: 'Aportación (Nuevo)' }];
+
+    const recurringRevenues = revenueRows.length > 0
+      ? revenueRows.map((row, index) => ({
+          id: index + 1,
+          name: row.concepto || row.name || `Ingreso ${index + 1}`,
+          initialMonthlyAmount: parseNumericAmount(row.mensual || (parseNumericAmount(row.anual) / 12) || 0),
+          annualGrowthRates: Array(financeData.projectDuration).fill(parseNumericAmount(row.crecimiento || financeData.annualSalesGrowth || 0)),
+        })).filter((row) => row.initialMonthlyAmount > 0)
+      : [{ id: 1, name: 'Ventas Proyectadas', initialMonthlyAmount: financeData.annualSalesGoal / 12, annualGrowthRates: Array(financeData.projectDuration).fill(financeData.annualSalesGrowth) }];
+
+    const recurringExpenses = opexRows.length > 0
+      ? opexRows.map((row, index) => ({
+          id: index + 1,
+          name: row.concepto || row.name || `Gasto ${index + 1}`,
+          type: isVariableOpex(row) ? 'Variable' : 'Fijo',
+          initialMonthlyAmount: parseNumericAmount(row.mensual || 0),
+          growthType: 'annual',
+          monthlyGrowthRate: 0,
+          annualGrowthRates: Array(financeData.projectDuration).fill(financeData.annualCostGrowth),
+        })).filter((row) => row.initialMonthlyAmount > 0)
+      : [
+          { id: 1, name: 'Costos Fijos Operativos', type: 'Fijo', initialMonthlyAmount: financeData.monthlyFixedCosts, growthType: 'annual', monthlyGrowthRate: 0, annualGrowthRates: Array(financeData.projectDuration).fill(financeData.annualCostGrowth) },
+          { id: 2, name: 'Costos Variables Estimados', type: 'Variable', initialMonthlyAmount: financeData.monthlyVariableCosts, growthType: 'annual', monthlyGrowthRate: 0, annualGrowthRates: Array(financeData.projectDuration).fill(financeData.annualCostGrowth) },
+        ];
+
+    const projData = {
+      projectDuration: financeData.projectDuration,
+      taxRate: financeData.taxRate,
+      discountRate: financeData.discountRate,
+      inflationRate: financeData.inflationRate,
+      minimumAcceptableIRR: financeData.discountRate,
+      investmentItems,
+      depreciableAssets: [],
+      recurringRevenues,
+      recurringExpenses,
+      loans: [],
+      payrollConfig: {
+        positions: [],
+        temporaryEmployees: 0,
+        temporaryEmployeeSalary: 0,
+        dailyMinimumWage: 250,
+        vacationDaysPerYear: 12,
+        vacationBonusRate: 25,
+        socialChargesRate: 30,
+        annualSalaryGrowthRate: 5,
+      },
+      workingCapitalConfig: { requiredMonthsOfFixedCosts: 3 },
+      advancedConfig: { products: [] },
+    };
+
+    return calculateFinancialProjections(projData, 'years');
+  } catch (e) {
+    console.error('[computePreviewFinancialData] Error calculando proyecciones de respaldo:', e);
+    return null;
+  }
+}
+
+export function computeOrderedModules(planData, currentFramework, exportScope = 'executive') {
+  let list = [];
+  if (exportScope === 'executive') {
+    (currentFramework?.pillars || []).forEach(pillar => {
+      (pillar.modules || []).forEach(mod => {
+        list.push({
+          pillarKey: pillar.key,
+          pillarTitle: pillar.title,
+          key: mod.key,
+          title: mod.title
+        });
+      });
+    });
+  } else {
+    // Modo Maestro: incluir todos los frameworks canónicos
+    Object.entries(FRAMEWORKS).forEach(([fwKey, fwConfig]) => {
+      (fwConfig.pillars || []).forEach(pillar => {
+        (pillar.modules || []).forEach(mod => {
+          if (!list.some(item => item.pillarKey === pillar.key && item.key === mod.key)) {
+            list.push({
+              pillarKey: pillar.key,
+              pillarTitle: `${fwConfig.name || fwKey}: ${pillar.title}`,
+              key: mod.key,
+              title: mod.title,
+              frameworkKey: fwKey
+            });
+          }
+        });
+      });
+    });
+  }
+
+  const order = planData?.config?.moduleOrder || [];
+  if (order.length === 0) return list;
+
+  return [...list].sort((a, b) => {
+    const indexA = order.indexOf(a.key);
+    const indexB = order.indexOf(b.key);
+    if (indexA === -1 && indexB === -1) return 0;
+    if (indexA === -1) return 1;
+    if (indexB === -1) return -1;
+    return indexA - indexB;
+  });
 }
 
 export default function VistaPrevia() {
@@ -1373,6 +1665,7 @@ export default function VistaPrevia() {
   const [zoomLevel, setZoomLevel] = React.useState(100); // Nivel de Zoom en % (50% a 150%)
   const [fitToWidth, setFitToWidth] = React.useState(false); // Modo de ajuste automático al ancho de ventana
   const [refactorStatus, setRefactorStatus] = React.useState({ active: false, total: 0, completed: 0, currentField: '' });
+  const [exportScope, setExportScope] = React.useState('executive'); // 'executive' (Dossier canónico ~20-25 págs) | 'full' (Maestro 12 Metodologías)
 
   const handleProjectCleanup = () => {
     const findings = getProjectContamination?.() || [];
@@ -1584,158 +1877,7 @@ export default function VistaPrevia() {
   };
 
   const previewFinancialData = useMemo(() => {
-    try {
-      const raw = planData?.organizacion?.estados_financieros?.corrida_automatica;
-      if (raw && typeof raw === 'string') {
-        return JSON.parse(raw);
-      }
-    } catch (err) {
-      console.warn('[VistaPrevia] Error parseando corrida_automatica:', err);
-    }
-
-    // Fallback: calcular corrida financiera al vuelo si no existe
-    try {
-      const banxicoData = planData.naturaleza?.pestel?.indicadores_banxico || {};
-      const currentInflation = banxicoData.inflacion ? parseFloat(banxicoData.inflacion) : 4.5;
-      const currentTIIE = banxicoData.tiie ? parseFloat(banxicoData.tiie) : 10;
-      const estimatedWACC = currentTIIE + 2.0;
-
-      const capexRows = readJson(planData.organizacion?.inversion?.desglose_capex_json, []);
-      const opexRows = readJson(planData.organizacion?.costos?.desglose_opex_json, []);
-      const revenueRows = readJson(planData.organizacion?.estados_financieros?.ingresos_json, []);
-
-      // Intentar extraer cifras de los textos descriptivos
-      let initialInvestmentVal = 120000;
-      let annualSalesGoalVal = 500000;
-      let monthlyFixedCostsVal = 15000;
-      let monthlyVariableCostsVal = 8000;
-
-      // 1. Inversión Total (Soporte prioritario para campos corporativos M)
-      const inversionTexto = planData.organizacion?.inversion?.financiamiento ||
-                             planData.organizacion?.inversion?.inversion_fija ||
-                             planData.organizacion?.inversion?.monto_total ||
-                             planData.organizacion?.inversion?.capex ||
-                             planData.semilla?.inversion_esperada ||
-                             planData.semilla?.finanzas?.inversion_total || '';
-      if (inversionTexto) {
-        initialInvestmentVal = parseNumericAmount(inversionTexto, 20000000);
-      } else {
-        initialInvestmentVal = 20000000;
-      }
-
-      // 2. Costos Fijos Mensuales
-      const fijosTexto = planData.organizacion?.costos?.fijos || planData.semilla?.finanzas?.costos_fijos || '';
-      if (fijosTexto) {
-        const rawFijos = parseNumericAmount(fijosTexto, 285000);
-        monthlyFixedCostsVal = rawFijos > 2000000 ? Math.round(rawFijos / 12) : rawFijos;
-      } else {
-        monthlyFixedCostsVal = 285000;
-      }
-
-      // 3. Ventas Anuales Año 1 (ej. M)
-      const resultadosTexto = planData.organizacion?.estados_financieros?.resultados || 
-                              planData.organizacion?.objetivos?.metas ||
-                              planData.semilla?.finanzas?.meta_ingresos || '';
-      if (resultadosTexto) {
-        annualSalesGoalVal = parseNumericAmount(resultadosTexto, 16000000);
-      } else {
-        annualSalesGoalVal = 16000000;
-      }
-
-      // 4. Costos Variables Mensuales (65% del ingreso operativo base)
-      const variablesTexto = planData.organizacion?.costos?.variables || '';
-      if (variablesTexto) {
-        const rawVars = parseNumericAmount(variablesTexto, 0);
-        if (rawVars > 0 && rawVars < 100) {
-          // Si viene como porcentaje (ej. 65%)
-          monthlyVariableCostsVal = Math.round((annualSalesGoalVal / 12) * (rawVars / 100));
-        } else if (rawVars > 0) {
-          monthlyVariableCostsVal = rawVars > 2000000 ? Math.round(rawVars / 12) : rawVars;
-        } else {
-          monthlyVariableCostsVal = Math.round((annualSalesGoalVal / 12) * 0.65);
-        }
-      } else {
-        monthlyVariableCostsVal = Math.round((annualSalesGoalVal / 12) * 0.65);
-      }
-
-      const financeData = {
-        projectDuration: 5,
-        taxRate: 30,
-        discountRate: estimatedWACC,
-        inflationRate: currentInflation,
-        annualSalesGoal: annualSalesGoalVal,
-        annualSalesGrowth: 5,
-        monthlyFixedCosts: monthlyFixedCostsVal,
-        monthlyVariableCosts: monthlyVariableCostsVal,
-        annualCostGrowth: 3,
-        initialInvestment: initialInvestmentVal,
-      };
-
-      const investmentItems = capexRows.length > 0
-        ? capexRows.map((row, index) => ({
-            id: index + 1,
-            name: row.concepto || row.name || `Inversión ${index + 1}`,
-            amount: parseNumericAmount(row.monto || row.amount),
-            type: ['Activo Fijo', 'Activo Diferido', 'Capital de Trabajo'].includes(row.tipo) ? row.tipo : 'Activo Fijo',
-            acquisitionSource: row.fuente || 'Aportación (Nuevo)',
-          })).filter((row) => row.amount > 0)
-        : [{ id: 1, name: 'Inversión Inicial Base', amount: financeData.initialInvestment, type: 'Activo Fijo', acquisitionSource: 'Aportación (Nuevo)' }];
-
-      const recurringRevenues = revenueRows.length > 0
-        ? revenueRows.map((row, index) => ({
-            id: index + 1,
-            name: row.concepto || row.name || `Ingreso ${index + 1}`,
-            initialMonthlyAmount: parseNumericAmount(row.mensual || (parseNumericAmount(row.anual) / 12) || 0),
-            annualGrowthRates: Array(financeData.projectDuration).fill(parseNumericAmount(row.crecimiento || financeData.annualSalesGrowth || 0)),
-          })).filter((row) => row.initialMonthlyAmount > 0)
-        : [{ id: 1, name: 'Ventas Proyectadas', initialMonthlyAmount: financeData.annualSalesGoal / 12, annualGrowthRates: Array(financeData.projectDuration).fill(financeData.annualSalesGrowth) }];
-
-      const recurringExpenses = opexRows.length > 0
-        ? opexRows.map((row, index) => ({
-            id: index + 1,
-            name: row.concepto || row.name || `Gasto ${index + 1}`,
-            type: isVariableOpex(row) ? 'Variable' : 'Fijo',
-            initialMonthlyAmount: parseNumericAmount(row.mensual || 0),
-            growthType: 'annual',
-            monthlyGrowthRate: 0,
-            annualGrowthRates: Array(financeData.projectDuration).fill(financeData.annualCostGrowth),
-          })).filter((row) => row.initialMonthlyAmount > 0)
-        : [
-            { id: 1, name: 'Costos Fijos Operativos', type: 'Fijo', initialMonthlyAmount: financeData.monthlyFixedCosts, growthType: 'annual', monthlyGrowthRate: 0, annualGrowthRates: Array(financeData.projectDuration).fill(financeData.annualCostGrowth) },
-            { id: 2, name: 'Costos Variables Estimados', type: 'Variable', initialMonthlyAmount: financeData.monthlyVariableCosts, growthType: 'annual', monthlyGrowthRate: 0, annualGrowthRates: Array(financeData.projectDuration).fill(financeData.annualCostGrowth) },
-          ];
-
-      const projData = {
-        projectDuration: financeData.projectDuration,
-        taxRate: financeData.taxRate,
-        discountRate: financeData.discountRate,
-        inflationRate: financeData.inflationRate,
-        minimumAcceptableIRR: financeData.discountRate,
-        investmentItems,
-        depreciableAssets: [],
-        recurringRevenues,
-        recurringExpenses,
-        loans: [],
-        payrollConfig: {
-          positions: [],
-          temporaryEmployees: 0,
-          temporaryEmployeeSalary: 0,
-          dailyMinimumWage: 250,
-          vacationDaysPerYear: 12,
-          vacationBonusRate: 25,
-          socialChargesRate: 30,
-          annualSalaryGrowthRate: 5,
-        },
-        workingCapitalConfig: { requiredMonthsOfFixedCosts: 3 },
-        advancedConfig: { products: [] },
-      };
-
-      const result = calculateFinancialProjections(projData, 'years');
-      return result;
-    } catch (e) {
-      console.error("Error calculating fallback projections in VistaPrevia: ", e);
-      return null;
-    }
+    return computePreviewFinancialData(planData);
   }, [planData]);
 
   useEffect(() => {
@@ -1766,35 +1908,10 @@ export default function VistaPrevia() {
   const projectType = planData?.config?.projectType || 'business';
   const currentFramework = FRAMEWORKS[projectType] || FRAMEWORKS.business;
 
-  const allFrameworkModules = useMemo(() => {
-    const list = [];
-    currentFramework.pillars.forEach(pillar => {
-      pillar.modules.forEach(mod => {
-        list.push({
-          pillarKey: pillar.key,
-          pillarTitle: pillar.title,
-          key: mod.key,
-          title: mod.title
-        });
-      });
-    });
-    return list;
-  }, [currentFramework]);
-
-  // Ordenar módulos basado en planData.config.moduleOrder
+  // Ordenar módulos basado en planData.config.moduleOrder y exportScope
   const orderedModules = useMemo(() => {
-    const order = planData.config?.moduleOrder || [];
-    if (order.length === 0) return allFrameworkModules;
-    const sorted = [...allFrameworkModules].sort((a, b) => {
-      const indexA = order.indexOf(a.key);
-      const indexB = order.indexOf(b.key);
-      if (indexA === -1 && indexB === -1) return 0;
-      if (indexA === -1) return 1;
-      if (indexB === -1) return -1;
-      return indexA - indexB;
-    });
-    return sorted;
-  }, [allFrameworkModules, planData.config?.moduleOrder]);
+    return computeOrderedModules(planData, currentFramework, exportScope);
+  }, [planData, currentFramework, exportScope]);
 
   // Calcular números de página estimados para el índice y los pies de página
   const { executiveSummaryPage, executiveDashboardPage, modulePageNumbers, financialReportsPage, anexosPage, sourcesPage } = useMemo(() => {
@@ -2735,7 +2852,9 @@ export default function VistaPrevia() {
             </button>
           )}
 
-          <DocxExportButton planData={planData} />
+          <ExportScopeToggle exportScope={exportScope} onScopeChange={setExportScope} />
+
+          <DocxExportButton planData={planData} scope={exportScope} />
 
           <button className="btn btn-primary" onClick={() => window.print()} style={{ height: '42px' }}>
             <Printer className="w-4 h-4" />

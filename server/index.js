@@ -1,13 +1,14 @@
+import './loadEnvironment.js';
 import express from 'express';
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
 import cors from 'cors';
-import dotenv from 'dotenv';
+
 
 // Cargar variables de entorno locales (.env.local primero, fallback a .env)
-dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
-dotenv.config();
+
+
 import { search as ddgSearch } from 'duck-duck-scrape';
 import { scrapeSocialFollowers, scrapeEcommercePrices, scrapeUberEatsRappi, scrapeAirbnbTripAdvisor, scrapeMercadoLibre } from './scraper.js';
 import { busquedaMultiFuente, analizarViabilidad } from './competitorEngine.js';

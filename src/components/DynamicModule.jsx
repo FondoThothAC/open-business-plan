@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useParams, Navigate } from 'react-router-dom';
 import { usePlan } from '../context/PlanContext';
 import { FRAMEWORKS } from '../config/frameworks';
@@ -69,11 +69,17 @@ export default function DynamicModule() {
   const { pillarId: paramPillarId, moduleId: paramModuleId, tipoDoc, slug } = useParams();
   const { planData, updateStaff, updateProcesses, updateSection, loadProjectBySlug } = usePlan();
 
+  const loaderRef = useRef(loadProjectBySlug);
+  loaderRef.current = loadProjectBySlug;
+  const [resolvedRoute, setResolvedRoute] = useState(null);
   useEffect(() => {
-    if (slug && loadProjectBySlug) {
-      loadProjectBySlug(slug);
-    }
-  }, [slug, loadProjectBySlug]);
+    let active = true;
+    setResolvedRoute(null);
+    Promise.resolve(slug ? loaderRef.current(slug) : true)
+      .then(ok => { if (active) setResolvedRoute({ slug, ok }); })
+      .catch(() => { if (active) setResolvedRoute({ slug, ok: false }); });
+    return () => { active = false; };
+  }, [slug]);
 
   const effectiveFrameworkKey = FRAMEWORK_SLUG_MAP[tipoDoc] || planData?.config?.projectType || 'business';
   const moduleId = paramModuleId;
@@ -255,7 +261,9 @@ export default function DynamicModule() {
   }
 
   if (isMarketResearchModule) {
-    return <DeepMarketResearch locationHint={locationHint} />;
+    if (!resolvedRoute || resolvedRoute.slug !== slug) return <p role="status">Cargando proyecto…</p>;
+    if (!resolvedRoute.ok) return <p role="alert">No se pudo cargar el proyecto solicitado. Vuelve a seleccionarlo.</p>;
+    return <DeepMarketResearch key={planData?.config?.projectId || slug} locationHint={locationHint} />;
   }
 
   if (pillarId === 'tecnico' && moduleId === 'operativa') {

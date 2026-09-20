@@ -6,7 +6,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { PROJECT_EXAMPLES } from '../lib/projects_db';
 import { FRAMEWORKS } from '../config/frameworks';
 import { getApiBase } from '../config/apiConfig';
-import { buildSemanticUrl, FRAMEWORK_SLUG_MAP } from '../config/urlRouting';
+import { buildSemanticUrl, FRAMEWORK_SLUG_MAP, slugify } from '../config/urlRouting';
 import ActivityFeed from './ActivityFeed';
 import GenerationControls from './GenerationControls';
 import BobChatModal from './BobChatModal';
@@ -918,7 +918,10 @@ export default function Layout() {
                                 key={`saved-neg-${p.id}`}
                                 onClick={async () => {
                                   const success = await loadSavedProject('negocios', p.id);
-                                  if (success) setIsDropdownOpen(false);
+                                  if (success) {
+                                    setIsDropdownOpen(false);
+                                    navigate(buildSemanticUrl({ projectType: type, moduleId: location.pathname.split('/').filter(Boolean).at(-2) || 'introduccion', slug: slugify(p.name || p.id) }));
+                                  }
                                 }}
                                 style={{
                                   width: '100%',
@@ -975,7 +978,10 @@ export default function Layout() {
                                 key={`saved-soc-${p.id}`}
                                 onClick={async () => {
                                   const success = await loadSavedProject('social', p.id);
-                                  if (success) setIsDropdownOpen(false);
+                                  if (success) {
+                                    setIsDropdownOpen(false);
+                                    navigate(buildSemanticUrl({ projectType: type, moduleId: location.pathname.split('/').filter(Boolean).at(-2) || 'introduccion', slug: slugify(p.name || p.id) }));
+                                  }
                                 }}
                                 style={{
                                   width: '100%',

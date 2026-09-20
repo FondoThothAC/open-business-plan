@@ -77,3 +77,56 @@
 
 * **Almacenamiento Local:** Los planes se guardan en el `localStorage` del navegador y se sincronizan opcionalmente con el backend local en formato JSON comprimido.
 * **Sanitización de Contexto (`cleanPlanDataForAi`):** Antes de enviar el estado a los LLMs, se eliminan matrices numéricas gigantes, imágenes base64 y datos binarios para optimizar tokens y costos de contexto.
+
+---
+
+## 3. Esquema de Corrida Financiera Automática (`corrida_automatica`)
+
+Ubicación canónica: `planData.organizacion.estados_financieros.corrida_automatica`
+
+```json
+{
+  "incomeStatement": [
+    {
+      "year": "Number (1..5)",
+      "revenue": "Number (MXN)",
+      "variableCosts": "Number (MXN)",
+      "grossMargin": "Number (MXN)",
+      "fixedCosts": "Number (MXN)",
+      "ebitda": "Number (MXN)",
+      "depreciation": "Number (MXN)",
+      "ebit": "Number (MXN)",
+      "taxes": "Number (ISR 30%)",
+      "netIncome": "Number (MXN)"
+    }
+  ],
+  "cashFlow": [
+    {
+      "year": "Number (1..5)",
+      "initialCash": "Number (MXN)",
+      "operatingInflow": "Number (MXN)",
+      "operatingOutflow": "Number (MXN)",
+      "netOperatingCash": "Number (MXN)",
+      "finalCash": "Number (MXN)"
+    }
+  ],
+  "kpis": {
+    "irr": "Number (TIR en %)",
+    "npv": "Number (VPN en MXN)",
+    "paybackPeriodYears": "Number (Años)",
+    "grossMarginPct": "Number (Margen Bruto Real %)",
+    "markupPct": "Number (Markup sobre Costo %)",
+    "breakEvenKgMonthly": "Number (Punto de Equilibrio en Unidades/Kg)",
+    "breakEvenRevenueMonthly": "Number (Punto de Equilibrio en Facturación MXN)"
+  }
+}
+```
+
+---
+
+## 4. Esquema de Exportación Documental & Alcance
+
+* **`exportScope`**: `'executive' | 'full'`.
+  * `'executive'`: Filtra exclusivamente la metodología activa en `FRAMEWORKS[projectType]`, omitiendo frameworks auxiliares y desplegando tablas financieras anuales compactas a 5 años (~20-25 páginas).
+  * `'full'`: Exporta los 12 frameworks canónicos completos con taxonomía multinivel de pilares y módulos.
+

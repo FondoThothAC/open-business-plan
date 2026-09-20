@@ -1,3 +1,4 @@
+import './loadEnvironment.js';
 /**
  * @file auth.js
  * @description Sistema de autenticación para Open Business Plan.
@@ -24,6 +25,9 @@ import crypto from 'crypto';
 // ─────────────────────────────────────────────────────────
 
 // Secreto JWT: desde .env o genera uno aleatorio persistente
+if (process.env.NODE_ENV === 'production' && (!process.env.JWT_SECRET || !process.env.API_KEYS_ENCRYPTION_KEY || process.env.JWT_SECRET === process.env.API_KEYS_ENCRYPTION_KEY)) {
+  throw new Error('Production requires persistent, independent JWT_SECRET and API_KEYS_ENCRYPTION_KEY.');
+}
 const JWT_SECRET = process.env.JWT_SECRET || generarSecretoInicial();
 const JWT_EXPIRY = process.env.JWT_EXPIRY || '7d';
 const BCRYPT_ROUNDS = 12;
@@ -130,7 +134,7 @@ function decryptApiKey(value) {
 
 function maskApiKey(value) {
   const plain = decryptApiKey(value);
-  if (!plain) return { configured: false, masked: '' };
+  if (!plain) return { configured: false, masked: '', status: value ? 'requires_reentry' : 'missing_key' };
   return { configured: true, masked: `${plain.slice(0, 3)}${'•'.repeat(Math.max(4, Math.min(8, plain.length - 5)))}${plain.slice(-2)}` };
 }
 

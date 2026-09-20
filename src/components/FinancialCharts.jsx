@@ -965,7 +965,8 @@ export const FinancialReports = ({ projections, _netInitialInvestment, loans }) 
  * PrintableFinancialReports — Renders all financial sub-reports expanded side-by-side,
  * without tabs, so they all appear in print/Vista Previa as individual sections.
  */
-export const PrintableFinancialReports = ({ projections, staff = [], planData = {} }) => {
+export const PrintableFinancialReports = ({ projections, staff = [], planData = {}, showMonthlyDetails = false }) => {
+  const [expandedMonthly, setExpandedMonthly] = useState(showMonthlyDetails);
   const normalized = normalizeFinancialData(projections, staff);
 
   if (!projections || !Array.isArray(projections.annualSummaries) || projections.annualSummaries.length === 0) {
@@ -1112,64 +1113,68 @@ export const PrintableFinancialReports = ({ projections, staff = [], planData = 
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
     link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `proyecciones_financieras_${Date.now()}.csv`);
+    link.setAttribute('download', `reportes_financieros_${planData.id || 'proyecto'}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
-      
-      {/* Barra de Acciones Financieras */}
-      <div className="no-print" style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginBottom: '1rem' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+      {/* Botones de Control en Vista Previa */}
+      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', alignItems: 'center' }} className="no-print">
         <button
           type="button"
-          onClick={exportToCSV}
-          className="btn btn-secondary"
+          onClick={() => setExpandedMonthly(prev => !prev)}
           style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            padding: '0.5rem 1rem',
+            padding: '6px 14px',
             fontSize: '0.8rem',
-            fontWeight: 700,
-            background: '#ffffff',
+            fontWeight: 600,
+            borderRadius: '6px',
             border: '1px solid #cbd5e1',
-            borderRadius: '8px',
-            color: '#0f172a',
+            background: expandedMonthly ? '#e0f2fe' : '#ffffff',
+            color: expandedMonthly ? '#0284c7' : '#475569',
             cursor: 'pointer'
           }}
         >
-          <span>📥 Exportar Tablas Financieras a CSV (Excel)</span>
+          {expandedMonthly ? '📄 Colapsar Desglose Mensual (Modo Ejecutivo)' : '📑 Expandir Desglose Mensual Completo (60 Meses)'}
+        </button>
+        <button
+          type="button"
+          onClick={exportToCSV}
+          style={{
+            padding: '6px 14px',
+            fontSize: '0.8rem',
+            fontWeight: 600,
+            borderRadius: '6px',
+            border: '1px solid #cbd5e1',
+            background: '#ffffff',
+            color: '#475569',
+            cursor: 'pointer'
+          }}
+        >
+          📥 Exportar CSV
         </button>
       </div>
 
-      {/* ── Proyección de Flujo de Caja (Gráfica) ── */}
-      <div style={{ ...sectionStyle, pageBreakBefore: 'avoid' }}>
+      {/* ── KPIs Financieros Clave ── */}
+      <div style={sectionStyle}>
         <div style={panelStyle}>
-          <h4 style={sectionTitleStyle}>📊 Proyección de Flujo de Caja (5 Años)</h4>
-          <CashFlowChart data={normalized.chartData} />
+          <h4 style={sectionTitleStyle}>🎯 Indicadores Clave de Desempeño Financiero</h4>
+          <FinancialMetricsCards metrics={metrics} />
         </div>
       </div>
 
-      {/* ── Valuación de la Empresa por Múltiplos y Eficiencia de Personal ── */}
-      <div style={{ ...sectionStyle, pageBreakInside: 'avoid' }}>
+      {/* ── Dictamen de Valuación Pre-Money & Métricas Cuánticas ── */}
+      <div style={sectionStyle}>
         <div style={panelStyle}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1.25rem' }}>
-            <h4 style={{ ...sectionTitleStyle, margin: 0 }}>🏢 Valuación de Empresa por Múltiplos & Eficiencia de Personal</h4>
-            <span style={{ fontSize: '0.7rem', background: 'rgba(99, 102, 241, 0.1)', color: '#4f46e5', padding: '3px 10px', borderRadius: '12px', fontWeight: 700 }}>
-              Benchmark Corporativo (Human Capital Efficiency)
-            </span>
-          </div>
-
+          <h4 style={sectionTitleStyle}>💎 Dictamen de Valuación & Métricas de Eficiencia Cuántica</h4>
           {(() => {
-            const firstYearSales = annualIncomeData?.[0]?.sales || 1;
-            const _firstYearNet = annualIncomeData?.[0]?.netIncome || 1;
-            const firstYearEbitda = (annualIncomeData?.[0]?.ebt || 0) + (annualIncomeData?.[0]?.annualInterest || 0) + (annualIncomeData?.[0]?.annualDepreciation || 0) || (firstYearSales * 0.25);
+            const firstYear = annualSummaries[0]?.incomeStatement || {};
+            const firstYearSales = firstYear.sales || 0;
+            const firstYearEbitda = (firstYear.grossProfit || 0) - (firstYear.fixedCosts || 0);
+            const staffCount = Math.max(1, (staff || []).length);
             
-            // Estimación de plantilla promedio (default 4 personas o extraído)
-            const staffCount = 4;
             const revenuePerEmployee = firstYearSales / staffCount;
             const ebitdaPerEmployee = firstYearEbitda / staffCount;
 
@@ -1209,34 +1214,30 @@ export const PrintableFinancialReports = ({ projections, staff = [], planData = 
                 <div style={{ overflowX: 'auto' }}>
                   <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem', textAlign: 'left' }}>
                     <thead>
-                      <tr style={{ background: '#f1f5f9', borderBottom: '2px solid #cbd5e1' }}>
-                        <th style={{ padding: '0.6rem 0.8rem', color: '#334155' }}>Escenario / Giro</th>
-                        <th style={{ padding: '0.6rem 0.8rem', color: '#334155' }}>Múltiplo EV/EBITDA</th>
-                        <th style={{ padding: '0.6rem 0.8rem', color: '#334155' }}>EBITDA Base (Año 1)</th>
-                        <th style={{ padding: '0.6rem 0.8rem', color: '#334155', fontWeight: 800 }}>Valuación Estimada (EV)</th>
-                        <th style={{ padding: '0.6rem 0.8rem', color: '#334155' }}>Aplicación</th>
+                      <tr style={{ background: '#f1f5f9', color: '#475569', borderBottom: '1px solid #cbd5e1' }}>
+                        <th style={{ padding: '0.6rem 0.8rem', fontWeight: 700 }}>Metodología de Valuación</th>
+                        <th style={{ padding: '0.6rem 0.8rem', fontWeight: 700 }}>Múltiplo Aplicado</th>
+                        <th style={{ padding: '0.6rem 0.8rem', fontWeight: 700, textAlign: 'right' }}>Valuación Estimada</th>
+                        <th style={{ padding: '0.6rem 0.8rem', fontWeight: 700 }}>Perfil de Inversor</th>
                       </tr>
                     </thead>
                     <tbody>
-                      <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
-                        <td style={{ padding: '0.6rem 0.8rem', fontWeight: 700, color: '#4f46e5' }}>🚀 Tecnología / IA / SaaS</td>
-                        <td style={{ padding: '0.6rem 0.8rem' }}>18.0x – 25.0x</td>
-                        <td style={{ padding: '0.6rem 0.8rem' }}>{fmt(firstYearEbitda)}</td>
-                        <td style={{ padding: '0.6rem 0.8rem', fontWeight: 900, color: '#4f46e5' }}>{fmt(valuationTech)}</td>
-                        <td style={{ padding: '0.6rem 0.8rem', fontSize: '0.72rem', color: '#64748b' }}>Ronda Seed / Venture Capital</td>
+                      <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
+                        <td style={{ padding: '0.6rem 0.8rem', fontWeight: 600 }}>Tecnología / SaaS / IoT (18x EBITDA)</td>
+                        <td style={{ padding: '0.6rem 0.8rem', color: '#64748b' }}>18.0x EBITDA Año 1</td>
+                        <td style={{ padding: '0.6rem 0.8rem', fontWeight: 700, color: '#0f172a', textAlign: 'right' }}>{fmt(valuationTech)}</td>
+                        <td style={{ padding: '0.6rem 0.8rem', fontSize: '0.72rem', color: '#64748b' }}>Venture Capital / Escala Rápida</td>
                       </tr>
-                      <tr style={{ borderBottom: '1px solid #e2e8f0', background: '#fafafa' }}>
-                        <td style={{ padding: '0.6rem 0.8rem', fontWeight: 700, color: '#0f172a' }}>💼 Servicios & Consultoría</td>
-                        <td style={{ padding: '0.6rem 0.8rem' }}>6.0x – 8.0x</td>
-                        <td style={{ padding: '0.6rem 0.8rem' }}>{fmt(firstYearEbitda)}</td>
-                        <td style={{ padding: '0.6rem 0.8rem', fontWeight: 800, color: '#0f172a' }}>{fmt(valuationServices)}</td>
-                        <td style={{ padding: '0.6rem 0.8rem', fontSize: '0.72rem', color: '#64748b' }}>M&A / Venta de Participación</td>
+                      <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
+                        <td style={{ padding: '0.6rem 0.8rem', fontWeight: 600 }}>Servicios Industriales & MaaS (6.5x EBITDA)</td>
+                        <td style={{ padding: '0.6rem 0.8rem', color: '#64748b' }}>6.5x EBITDA Año 1</td>
+                        <td style={{ padding: '0.6rem 0.8rem', fontWeight: 700, color: '#0f172a', textAlign: 'right' }}>{fmt(valuationServices)}</td>
+                        <td style={{ padding: '0.6rem 0.8rem', fontSize: '0.72rem', color: '#64748b' }}>Private Equity / Estratégico</td>
                       </tr>
-                      <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
-                        <td style={{ padding: '0.6rem 0.8rem', fontWeight: 700, color: '#334155' }}>🏪 Comercio / Franquicia / Retail</td>
-                        <td style={{ padding: '0.6rem 0.8rem' }}>4.5x – 6.0x</td>
-                        <td style={{ padding: '0.6rem 0.8rem' }}>{fmt(firstYearEbitda)}</td>
-                        <td style={{ padding: '0.6rem 0.8rem', fontWeight: 800, color: '#334155' }}>{fmt(valuationCommerce)}</td>
+                      <tr>
+                        <td style={{ padding: '0.6rem 0.8rem', fontWeight: 600 }}>Comercio & Retail Tradicional (5.0x EBITDA)</td>
+                        <td style={{ padding: '0.6rem 0.8rem', color: '#64748b' }}>5.0x EBITDA Año 1</td>
+                        <td style={{ padding: '0.6rem 0.8rem', fontWeight: 700, color: '#0f172a', textAlign: 'right' }}>{fmt(valuationCommerce)}</td>
                         <td style={{ padding: '0.6rem 0.8rem', fontSize: '0.72rem', color: '#64748b' }}>Inversionista Tradicional / Crédito</td>
                       </tr>
                     </tbody>
@@ -1245,6 +1246,14 @@ export const PrintableFinancialReports = ({ projections, staff = [], planData = 
               </div>
             );
           })()}
+        </div>
+      </div>
+
+      {/* ── Proyección de Flujo de Caja (Gráfica) ── */}
+      <div style={{ ...sectionStyle, pageBreakBefore: 'avoid' }}>
+        <div style={panelStyle}>
+          <h4 style={sectionTitleStyle}>📊 Proyección de Flujo de Caja (5 Años)</h4>
+          <CashFlowChart data={normalized.chartData} />
         </div>
       </div>
 
@@ -1260,7 +1269,7 @@ export const PrintableFinancialReports = ({ projections, staff = [], planData = 
             monthlyHeaders={['Mes', 'Ventas', 'C. Fijos', 'C. Variables', 'C. Totales', 'U. Bruta', 'Deprec.', 'Intereses', 'U. A. Imp.', 'Imp.', 'U. Neta']}
             monthlyKeys={['month', 'sales', 'fixedCosts', 'variableCosts', 'totalCosts', 'grossProfit', 'monthlyDepreciation', 'monthlyInterest', 'ebt', 'taxes', 'netIncome']}
             showSalesPercentage={true}
-            alwaysExpanded={true}
+            alwaysExpanded={expandedMonthly}
           />
         </div>
       </div>
@@ -1276,7 +1285,7 @@ export const PrintableFinancialReports = ({ projections, staff = [], planData = 
             monthlyData={monthlyCashFlowData || []}
             monthlyHeaders={['Mes', 'Flujo Neto Mensual', 'Flujo Acumulado']}
             monthlyKeys={['month', 'netCashFlow', 'cumulativeCashFlow']}
-            alwaysExpanded={true}
+            alwaysExpanded={expandedMonthly}
           />
         </div>
       </div>
@@ -1296,7 +1305,7 @@ export const PrintableFinancialReports = ({ projections, staff = [], planData = 
             monthlyData={monthlyBreakEvenData || []}
             monthlyHeaders={['Mes', 'Ventas', 'C. Fijos', 'P. Eq. ($)', 'P. Eq. (%)']}
             monthlyKeys={['month', 'sales', 'fixedCosts', 'bepAmount', 'bepPercentage']}
-            alwaysExpanded={true}
+            alwaysExpanded={expandedMonthly}
           />
         </div>
       </div>
@@ -1313,7 +1322,7 @@ export const PrintableFinancialReports = ({ projections, staff = [], planData = 
               monthlyData={monthlyCostBenefitData || []}
               monthlyHeaders={['Mes', 'Beneficios', 'Costos', 'B. Neto', 'B. Acum.', 'C. Acum.', 'B.N. Acum.']}
               monthlyKeys={['month', 'benefits', 'costs', 'netBenefit', 'cumulativeBenefits', 'cumulativeCosts', 'cumulativeNetBenefit']}
-              alwaysExpanded={true}
+              alwaysExpanded={expandedMonthly}
             />
           </div>
         </div>
@@ -1333,7 +1342,7 @@ export const PrintableFinancialReports = ({ projections, staff = [], planData = 
                 monthlyData={monthlyFixedData}
                 monthlyHeaders={['Mes', 'Costo Fijo Mensual']}
                 monthlyKeys={['month', 'fixedCosts']}
-                alwaysExpanded={true}
+                alwaysExpanded={expandedMonthly}
               />
             </div>
             <div>
@@ -1345,7 +1354,7 @@ export const PrintableFinancialReports = ({ projections, staff = [], planData = 
                 monthlyData={monthlyVariableData}
                 monthlyHeaders={['Mes', 'Costo Variable Mensual']}
                 monthlyKeys={['month', 'variableCosts']}
-                alwaysExpanded={true}
+                alwaysExpanded={expandedMonthly}
               />
             </div>
           </div>

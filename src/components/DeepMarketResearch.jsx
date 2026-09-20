@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { usePlan } from '../context/PlanContext';
@@ -7,16 +7,31 @@ import { Search, Loader2, Sparkles } from 'lucide-react';
 
 export default function DeepMarketResearch({ locationHint = '' }) {
   const { planData, updateSection } = usePlan();
+  const requestRef = useRef(null);
+  
+  useEffect(() => () => requestRef.current?.abort(), []);
+  
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   
   // States para la configuración de búsqueda
-  const [businessIdea, setBusinessIdea] = useState(planData?.semilla?.negocio?.giro || planData?.semilla?.negocio?.nombre || planData?.mercado?.analisis?.producto || '');
-  const [marketLocation, setMarketLocation] = useState(locationHint);
-  const [channel, setChannel] = useState(planData?.mercado?.comercializacion?.canal || '');
+  const [businessIdea, setBusinessIdea] = useState('');
+  const [marketLocation, setMarketLocation] = useState('');
+  const [channel, setChannel] = useState('');
   const [lat, setLat] = useState('');
   const [lng, setLng] = useState('');
   const [radius, setRadius] = useState('3000');
+
+  // React re-sync state on project change
+  useEffect(() => {
+    setBusinessIdea(planData?.semilla?.negocio?.giro || planData?.semilla?.negocio?.nombre || planData?.mercado?.analisis?.producto || '');
+    setMarketLocation(locationHint || '');
+    setChannel(planData?.mercado?.comercializacion?.canal || '');
+    setLat('');
+    setLng('');
+    setRadius('3000');
+    setError(null);
+  }, [planData?.config?.projectId, locationHint]);
 
   const handleGenerateReport = async () => {
     if (!businessIdea.trim() || !marketLocation.trim() || !lat.trim() || !lng.trim()) {
@@ -26,9 +41,14 @@ export default function DeepMarketResearch({ locationHint = '' }) {
     setLoading(true);
     setError(null);
     try {
+      const controller = new AbortController();
+      requestRef.current?.abort();
+      requestRef.current = controller;
+      const projectId = planData?.config?.projectId;
       const apiBase = getApiBase();
       const res = await fetch(`${apiBase}/api/mercado/deep-research`, {
         method: 'POST',
+        signal: controller.signal,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           context: { product: businessIdea, marketLocation, channel, projectId: planData?.config?.projectId || '' },
@@ -39,24 +59,26 @@ export default function DeepMarketResearch({ locationHint = '' }) {
       });
 
       const data = await res.json();
+      if (controller.signal.aborted) return;
       if (!res.ok) {
         throw new Error(data.error || 'Error al generar el reporte profundo.');
       }
 
       if (data.success && data.reportMarkdown) {
         // Guardar en el plan
-        updateSection('mercado', 'inteligencia_mercado_cascada', 'reporte_profundo', data.reportMarkdown, { provenance: 'research', source: 'market-research-v2' });
-        updateSection('mercado', 'inteligencia_mercado_cascada', 'reporte_evidencia', data.report, { provenance: 'research', source: 'market-research-v2' });
+        updateSection('mercado', 'inteligencia_mercado_cascada', 'reporte_profundo', data.reportMarkdown, { provenance: 'research', source: 'market-research-v2', expectedProjectId: projectId });
+        updateSection('mercado', 'inteligencia_mercado_cascada', 'reporte_evidencia', data.report, { provenance: 'research', source: 'market-research-v2', expectedProjectId: projectId });
       } else {
         throw new Error('El reporte se generó pero llegó vacío.');
       }
     } catch (err) {
-      setError(err.message);
+      if (err.name !== 'AbortError') setError(err.message);
     } finally {
       setLoading(false);
     }
   };
 
+  const evidence = planData?.mercado?.inteligencia_mercado_cascada?.reporte_evidencia;
   const currentReport = planData?.mercado?.inteligencia_mercado_cascada?.reporte_profundo;
 
   return (
@@ -107,7 +129,7 @@ export default function DeepMarketResearch({ locationHint = '' }) {
           style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', padding: '0.75rem', marginTop: '0.5rem' }}
         >
           {loading ? <Loader2 size={18} className="animate-spin" /> : <Search size={18} />}
-          <span>{loading ? 'Sintetizando Reporte Profundo...' : 'Generar Reporte de Mercado'}</span>
+          <span>{loading ? 'Consultando fuentes de mercado…' : 'Generar Reporte de Mercado'}</span>
         </button>
       </div>
 
@@ -117,6 +139,7 @@ export default function DeepMarketResearch({ locationHint = '' }) {
         </div>
       )}
 
+      {evidence?.status && evidence.status !== 'completed' && <p role="status" style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>{evidence.status === 'blocked' ? 'Investigación sin evidencia: revisa el estado de los proveedores.' : 'Investigación parcial: hay datos pendientes de verificar.'}</p>}
       {currentReport && (
         <div style={{ 
           background: 'var(--bg-panel-hover)', 

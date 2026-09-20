@@ -601,6 +601,23 @@ export const PlanProvider = ({ children }) => {
     // Si ya coincide con el proyecto activo en memoria, no recargar
     if (currentProjectSlug === cleanSlug) return true;
 
+    // 4. Buscar en proyectos guardados del servidor VPS
+    try {
+      const backendBase = getApiBase();
+      const res = await fetch(`${backendBase}/api/projects`);
+      if (res.ok) {
+        const data = await res.json();
+        const allSaved = [...(data.negocios || []), ...(data.social || [])];
+        const found = allSaved.find(p => slugify(p.name) === cleanSlug || p.id === cleanSlug);
+        if (found) {
+          return await loadSavedProject(found.projectType || 'negocios', found.id);
+        }
+      }
+    } catch (err) {
+      console.warn('Error buscando proyecto por slug en backend:', err);
+    }
+
+
     // 1. Verificar alias conocidos (ej. comercio-cuantico -> hidraulica_minera)
     const resolvedId = KNOWN_PROJECT_SLUGS[cleanSlug];
     if (resolvedId && PROJECT_EXAMPLES[resolvedId]) {
@@ -622,27 +639,13 @@ export const PlanProvider = ({ children }) => {
       }
     }
 
-    // 4. Buscar en proyectos guardados del servidor VPS
-    try {
-      const backendBase = getApiBase();
-      const res = await fetch(`${backendBase}/api/projects`);
-      if (res.ok) {
-        const data = await res.json();
-        const allSaved = [...(data.negocios || []), ...(data.social || [])];
-        const found = allSaved.find(p => slugify(p.name) === cleanSlug || p.id === cleanSlug);
-        if (found) {
-          return await loadSavedProject(found.projectType || 'negocios', found.id);
-        }
-      }
-    } catch (err) {
-      console.warn('Error buscando proyecto por slug en backend:', err);
-    }
 
     return false;
   };
 
   const updateSection = (pillar, module, field, value, metadata = null) => {
     setPlanData(prev => {
+      if (metadata?.expectedProjectId && prev.config?.projectId !== metadata.expectedProjectId) return prev;
       const projectType = prev.config?.projectType || 'business';
       const address = fieldAddress(projectType, pillar, module, field);
       const previousMeta = prev.config?.fieldMeta?.[address] || {};

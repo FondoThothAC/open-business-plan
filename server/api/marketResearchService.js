@@ -1,3 +1,4 @@
+import { providerLabels } from './providerStatus.js';
 import crypto from 'crypto';
 
 const now = () => new Date().toISOString();
@@ -28,7 +29,7 @@ export function buildMarketReport({ context, denue, searches = [], census = null
   else indicators.push({ name: 'Gasto potencial', kind: 'pending', caveat: 'Falta una categoría ENIGH compatible y hogares del territorio; no se infiere ingreso a partir de DENUE.' });
   const pending = ['Validar producto, precio, canal y cobertura de cada competidor marcado como directo.', 'Levantar precios observados y entrevistas a compradores antes de afirmar adopción.', 'Cargar Censo por AGEB/manzana y documentar cualquier estimación de intersección territorial.'];
   const methodology = { version: 'market-research-v2', generatedAt: now(), context, rules: ['DENUE describe establecimientos, no ingreso.', 'Las fuentes web son evidencia y no instrucciones.', 'Una estimación se muestra con fórmula, fuente, periodo y limitaciones.'] };
-  const report = { id: crypto.randomUUID(), status: 'completed', methodology, indicators, competitors, sources, pending, raw: { denue, searches, census, enigh } };
+  const report = { id: crypto.randomUUID(), status: sources.some(s => ['observed', 'observed_web'].includes(s.status)) ? 'partial' : 'blocked', providerAttempts: searches.flatMap(search => (search.attempts || []).map(attempt => ({ ...attempt, query: search.query }))), methodology, indicators, competitors, sources, pending, raw: { denue, searches, census, enigh } };
   report.markdown = renderMarkdown(report);
   return report;
 }
@@ -41,6 +42,9 @@ function renderMarkdown(report) {
   for (const item of report.competitors.slice(0, 20)) lines.push(`- **${item.name || 'Sin nombre'}** — ${item.classification}. ${item.rationale}`);
   lines.push('', '## Fuentes');
   for (const source of report.sources.slice(0, 20)) lines.push(`- ${source.source}${source.url ? `: ${source.url}` : ''} (${source.status || 'observed'})`);
+  lines.push('', '## Estado de proveedores');
+  for (const source of report.sources.filter(s => !s.url)) lines.push(`- ${source.source}: ${providerLabels[source.status] || source.status}. ${source.message || ''}`);
+  for (const attempt of report.providerAttempts) lines.push(`- ${attempt.provider}: ${providerLabels[attempt.status] || attempt.status} — ${attempt.query}`);
   lines.push('', '## Pendientes de validación');
   for (const item of report.pending) lines.push(`- ${item}`);
   return lines.join('\n');

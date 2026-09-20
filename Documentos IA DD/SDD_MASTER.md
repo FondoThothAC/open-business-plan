@@ -334,3 +334,16 @@ Con base en el Plan de Saneamiento y Endurecimiento formalizado en `docs/archite
 * **Clasificación verificable:** Un establecimiento se marca como competencia directa, indirecta/sustituto, cliente potencial o pendiente con una razón y evidencia de producto, canal y cobertura.
 * **Gobernanza UXDD:** La vista de rutas activas de Mercado persiste Markdown, evidencia, indicadores y pendientes. No utiliza Hermosillo ni coordenadas predeterminadas cuando falta el territorio confirmado.
 
+### 5.9 Motor de Exportación Multi-Alcance & Calibración Financiera de Precisión (`docxExportEngine.js`, `VistaPrevia.jsx`, `calculadoraFinanciera.js`)
+* **Arquitectura de Alcance Dual (`scope: 'executive' | 'full'`):**
+  * **Dossier Ejecutivo Canónico (`scope = 'executive'`):** Exportación compacta (~20-25 páginas) limitada a la metodología activa (`FRAMEWORKS[projectType]`), eliminando texto robótico genérico y consolidando estados financieros a 5 años en formato tabular de alta dirección.
+  * **Documento Maestro Completo (`scope = 'full'`):** Integración exhaustiva de los 12 frameworks canónicos sin truncamiento, estructurados por metodología y pilar.
+* **Parser Numérico de Precisión Anti-Colisión (`parseNumericAmount`):**
+  * Blindaje con expresiones regulares sensibles al contexto y filtrado de viñetas (`•` y `-`), evitando que los guiones se interpreten como signos negativos o concatenen importes multilínea en cifras astronómicas.
+  * Inclusión del parámetro `preferredKeyword` para discriminar importes totales frente a costos unitarios (`/kg`, `/pza`).
+* **Persistencia Estructurada de Corrida Financiera (`corrida_automatica`):**
+  * Almacenamiento directo del modelo proyectado a 5 años en `planData.organizacion.estados_financieros.corrida_automatica` como objeto JSON nativo.
+  * Tablas consolidadas de Estado de Resultados (Ingresos, Costo Variable, Utilidad Bruta, Costos Fijos, EBITDA, Depreciación, EBIT, ISR, Utilidad Neta) y Flujo de Caja Libre.
+  * Calibración rigurosa de Unit Economics: Margen Bruto Real de 31.13% (con nota de Markup de 45.24%) y Punto de Equilibrio de 781.87 kg/mes ($752,940 MXN/mes).
+
+

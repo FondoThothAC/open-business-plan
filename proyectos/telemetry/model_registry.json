@@ -11,7 +11,7 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-04T08:24:26.783Z"
+      "lastVerified": "2026-09-19T22:21:28.403Z"
     },
     "liquid/lfm-2.5-2.6b:free": {
       "input": 0,
@@ -24,7 +24,7 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-04T08:24:26.784Z"
+      "lastVerified": "2026-09-19T22:21:28.403Z"
     },
     "nvidia/nemotron-3.5-lightning:free": {
       "input": 0,
@@ -37,7 +37,7 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-04T08:24:26.784Z"
+      "lastVerified": "2026-09-19T22:21:28.403Z"
     },
     "thinkingmachines/inkling-small:free": {
       "input": 0,
@@ -50,7 +50,7 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-04T08:24:26.784Z"
+      "lastVerified": "2026-09-19T22:21:28.403Z"
     },
     "poolside/laguna-s-2.1:free": {
       "input": 0,
@@ -63,7 +63,7 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-04T08:24:26.784Z"
+      "lastVerified": "2026-09-19T22:21:28.403Z"
     },
     "thinkingmachines/inkling:free": {
       "input": 0,
@@ -76,7 +76,7 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-04T08:24:26.784Z"
+      "lastVerified": "2026-09-19T22:21:28.403Z"
     },
     "poolside/laguna-xs-2.1:free": {
       "input": 0,
@@ -89,7 +89,7 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-04T08:24:26.784Z"
+      "lastVerified": "2026-09-19T22:21:28.403Z"
     },
     "cohere/north-mini-code:free": {
       "input": 0,
@@ -102,7 +102,7 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-04T08:24:26.784Z"
+      "lastVerified": "2026-09-19T22:21:28.403Z"
     },
     "z-ai/glm-5.2:free": {
       "input": 0,
@@ -115,7 +115,7 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-04T08:24:26.784Z"
+      "lastVerified": "2026-09-19T22:21:28.403Z"
     },
     "nvidia/nemotron-3.5-content-safety:free": {
       "input": 0,
@@ -128,7 +128,7 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-04T08:24:26.784Z"
+      "lastVerified": "2026-09-19T22:21:28.403Z"
     },
     "nvidia/nemotron-3-ultra-550b-a55b:free": {
       "input": 0,
@@ -141,7 +141,7 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-04T08:24:26.784Z"
+      "lastVerified": "2026-09-19T22:21:28.403Z"
     },
     "minimax/minimax-m3:free": {
       "input": 0,
@@ -153,8 +153,8 @@
       "capabilities": [
         "chat"
       ],
-      "isHot": true,
-      "lastVerified": "2026-09-04T08:24:26.784Z"
+      "isHot": false,
+      "lastVerified": "2026-09-19T22:21:28.403Z"
     },
     "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free": {
       "input": 0,
@@ -167,7 +167,7 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-04T08:24:26.784Z"
+      "lastVerified": "2026-09-19T22:21:28.403Z"
     },
     "google/gemma-4-26b-a4b-it:free": {
       "input": 0,
@@ -180,7 +180,7 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-04T08:24:26.784Z"
+      "lastVerified": "2026-09-19T22:21:28.403Z"
     },
     "google/gemma-4-31b-it:free": {
       "input": 0,
@@ -193,7 +193,7 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-04T08:24:26.784Z"
+      "lastVerified": "2026-09-19T22:21:28.403Z"
     },
     "google/lyria-3-pro-preview": {
       "input": 0,
@@ -206,7 +206,7 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-04T08:24:26.784Z"
+      "lastVerified": "2026-09-19T22:21:28.403Z"
     },
     "google/lyria-3-clip-preview": {
       "input": 0,
@@ -219,7 +219,7 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-04T08:24:26.784Z"
+      "lastVerified": "2026-09-19T22:21:28.403Z"
     },
     "minimax/minimax-m2.7:free": {
       "input": 0,
@@ -231,8 +231,8 @@
       "capabilities": [
         "chat"
       ],
-      "isHot": true,
-      "lastVerified": "2026-09-04T08:24:26.784Z"
+      "isHot": false,
+      "lastVerified": "2026-09-19T22:21:28.403Z"
     },
     "nvidia/nemotron-3-super-120b-a12b:free": {
       "input": 0,
@@ -245,7 +245,7 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-04T08:24:26.784Z"
+      "lastVerified": "2026-09-19T22:21:28.403Z"
     },
     "openrouter/free": {
       "input": 0,
@@ -258,7 +258,7 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-04T08:24:26.784Z"
+      "lastVerified": "2026-09-19T22:21:28.403Z"
     },
     "inclusionai/ling-3.0-flash-fin:free": {
       "input": 0,
@@ -271,9 +271,327 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-04T08:24:26.784Z"
+      "lastVerified": "2026-09-19T22:21:28.403Z"
+    },
+    "inclusionai/ling-3.0-flash-vl:free": {
+      "input": 0,
+      "output": 0,
+      "name": "inclusionAI: Ling 3.0 Flash VL (free)",
+      "provider": "openrouter",
+      "tier": "free",
+      "contextWindow": 262144,
+      "capabilities": [
+        "chat"
+      ],
+      "isHot": true,
+      "lastVerified": "2026-09-19T22:21:28.403Z"
+    },
+    "nex-agi/nex-n2.5-mini:free": {
+      "input": 0,
+      "output": 0,
+      "name": "Nex AGI: Nex-N2.5-Mini (free)",
+      "provider": "openrouter",
+      "tier": "free",
+      "contextWindow": 262144,
+      "capabilities": [
+        "chat"
+      ],
+      "isHot": true,
+      "lastVerified": "2026-09-19T22:21:28.403Z"
+    },
+    "nex-agi/nex-n2.5-pro:free": {
+      "input": 0,
+      "output": 0,
+      "name": "Nex AGI: Nex-N2.5-Pro (free)",
+      "provider": "openrouter",
+      "tier": "free",
+      "contextWindow": 262144,
+      "capabilities": [
+        "chat"
+      ],
+      "isHot": true,
+      "lastVerified": "2026-09-19T22:21:28.403Z"
+    },
+    "inclusionai/ling-3.0-flash-sante:free": {
+      "input": 0,
+      "output": 0,
+      "name": "inclusionAI: Ling 3.0 Flash Sante (free)",
+      "provider": "openrouter",
+      "tier": "free",
+      "contextWindow": 262144,
+      "capabilities": [
+        "chat"
+      ],
+      "isHot": true,
+      "lastVerified": "2026-09-19T22:21:28.403Z"
+    },
+    "qwen/qwen3.8-27b:free": {
+      "input": 0,
+      "output": 0,
+      "name": "Qwen: Qwen3.8 27B (free)",
+      "provider": "openrouter",
+      "tier": "free",
+      "contextWindow": 262144,
+      "capabilities": [
+        "chat"
+      ],
+      "isHot": true,
+      "lastVerified": "2026-09-19T22:21:28.403Z"
+    },
+    "deepseek/deepseek-v4-flash-0731:free": {
+      "input": 0,
+      "output": 0,
+      "name": "DeepSeek: DeepSeek V4 Flash 0731 (free)",
+      "provider": "openrouter",
+      "tier": "free",
+      "contextWindow": 1048576,
+      "capabilities": [
+        "chat"
+      ],
+      "isHot": true,
+      "lastVerified": "2026-09-19T22:21:28.403Z"
+    },
+    "mistral-large-3:675b": {
+      "name": "mistral-large-3:675b",
+      "provider": "ollama_cloud",
+      "contextWindow": 131072,
+      "capabilities": [
+        "chat"
+      ],
+      "availability": "catalog_listed",
+      "authenticated": false,
+      "lastVerified": "2026-09-19T22:21:28.403Z",
+      "isHot": false
+    },
+    "glm-5.3-flash": {
+      "name": "glm-5.3-flash",
+      "provider": "ollama_cloud",
+      "contextWindow": 131072,
+      "capabilities": [
+        "chat"
+      ],
+      "availability": "catalog_listed",
+      "authenticated": false,
+      "lastVerified": "2026-09-19T22:21:28.403Z",
+      "isHot": false
+    },
+    "kimi-k3": {
+      "name": "kimi-k3",
+      "provider": "ollama_cloud",
+      "contextWindow": 131072,
+      "capabilities": [
+        "chat"
+      ],
+      "availability": "catalog_listed",
+      "authenticated": false,
+      "lastVerified": "2026-09-19T22:21:28.403Z",
+      "isHot": false
+    },
+    "deepseek-v4-pro:0813": {
+      "name": "deepseek-v4-pro:0813",
+      "provider": "ollama_cloud",
+      "contextWindow": 131072,
+      "capabilities": [
+        "chat"
+      ],
+      "availability": "catalog_listed",
+      "authenticated": false,
+      "lastVerified": "2026-09-19T22:21:28.403Z",
+      "isHot": false
+    },
+    "gemma4:31b": {
+      "name": "gemma4:31b",
+      "provider": "ollama_cloud",
+      "contextWindow": 131072,
+      "capabilities": [
+        "chat"
+      ],
+      "availability": "catalog_listed",
+      "authenticated": false,
+      "lastVerified": "2026-09-19T22:21:28.403Z",
+      "isHot": false
+    },
+    "nemotron-3-ultra": {
+      "name": "nemotron-3-ultra",
+      "provider": "ollama_cloud",
+      "contextWindow": 131072,
+      "capabilities": [
+        "chat"
+      ],
+      "availability": "catalog_listed",
+      "authenticated": false,
+      "lastVerified": "2026-09-19T22:21:28.403Z",
+      "isHot": false
+    },
+    "gpt-oss:20b": {
+      "name": "gpt-oss:20b",
+      "provider": "ollama_cloud",
+      "contextWindow": 131072,
+      "capabilities": [
+        "chat"
+      ],
+      "availability": "catalog_listed",
+      "authenticated": false,
+      "lastVerified": "2026-09-19T22:21:28.403Z",
+      "isHot": false
+    },
+    "minimax-m2.7": {
+      "name": "minimax-m2.7",
+      "provider": "ollama_cloud",
+      "contextWindow": 131072,
+      "capabilities": [
+        "chat"
+      ],
+      "availability": "catalog_listed",
+      "authenticated": false,
+      "lastVerified": "2026-09-19T22:21:28.403Z",
+      "isHot": false
+    },
+    "deepseek-v4-flash:0731": {
+      "name": "deepseek-v4-flash:0731",
+      "provider": "ollama_cloud",
+      "contextWindow": 131072,
+      "capabilities": [
+        "chat"
+      ],
+      "availability": "catalog_listed",
+      "authenticated": false,
+      "lastVerified": "2026-09-19T22:21:28.403Z",
+      "isHot": false
+    },
+    "qwen3.5:397b": {
+      "name": "qwen3.5:397b",
+      "provider": "ollama_cloud",
+      "contextWindow": 131072,
+      "capabilities": [
+        "chat"
+      ],
+      "availability": "catalog_listed",
+      "authenticated": false,
+      "lastVerified": "2026-09-19T22:21:28.403Z",
+      "isHot": false
+    },
+    "glm-5.1": {
+      "name": "glm-5.1",
+      "provider": "ollama_cloud",
+      "contextWindow": 131072,
+      "capabilities": [
+        "chat"
+      ],
+      "availability": "catalog_listed",
+      "authenticated": false,
+      "lastVerified": "2026-09-19T22:21:28.403Z",
+      "isHot": false
+    },
+    "glm-5.2": {
+      "name": "glm-5.2",
+      "provider": "ollama_cloud",
+      "contextWindow": 131072,
+      "capabilities": [
+        "chat"
+      ],
+      "availability": "catalog_listed",
+      "authenticated": false,
+      "lastVerified": "2026-09-19T22:21:28.403Z",
+      "isHot": false
+    },
+    "deepseek-v4.1-flash": {
+      "name": "deepseek-v4.1-flash",
+      "provider": "ollama_cloud",
+      "contextWindow": 131072,
+      "capabilities": [
+        "chat"
+      ],
+      "availability": "catalog_listed",
+      "authenticated": false,
+      "lastVerified": "2026-09-19T22:21:28.403Z",
+      "isHot": false
+    },
+    "nemotron-3-nano:30b": {
+      "name": "nemotron-3-nano:30b",
+      "provider": "ollama_cloud",
+      "contextWindow": 131072,
+      "capabilities": [
+        "chat"
+      ],
+      "availability": "catalog_listed",
+      "authenticated": false,
+      "lastVerified": "2026-09-19T22:21:28.403Z",
+      "isHot": false
+    },
+    "minimax-m3": {
+      "name": "minimax-m3",
+      "provider": "ollama_cloud",
+      "contextWindow": 131072,
+      "capabilities": [
+        "chat"
+      ],
+      "availability": "catalog_listed",
+      "authenticated": false,
+      "lastVerified": "2026-09-19T22:21:28.403Z",
+      "isHot": false
+    },
+    "kimi-k2.7-code": {
+      "name": "kimi-k2.7-code",
+      "provider": "ollama_cloud",
+      "contextWindow": 131072,
+      "capabilities": [
+        "chat"
+      ],
+      "availability": "catalog_listed",
+      "authenticated": false,
+      "lastVerified": "2026-09-19T22:21:28.403Z",
+      "isHot": false
+    },
+    "gpt-oss:120b": {
+      "name": "gpt-oss:120b",
+      "provider": "ollama_cloud",
+      "contextWindow": 131072,
+      "capabilities": [
+        "chat"
+      ],
+      "availability": "catalog_listed",
+      "authenticated": false,
+      "lastVerified": "2026-09-19T22:21:28.403Z",
+      "isHot": false
+    },
+    "nemotron-3-super": {
+      "name": "nemotron-3-super",
+      "provider": "ollama_cloud",
+      "contextWindow": 131072,
+      "capabilities": [
+        "chat"
+      ],
+      "availability": "catalog_listed",
+      "authenticated": false,
+      "lastVerified": "2026-09-19T22:21:28.403Z",
+      "isHot": false
+    },
+    "glm-5.3": {
+      "name": "glm-5.3",
+      "provider": "ollama_cloud",
+      "contextWindow": 131072,
+      "capabilities": [
+        "chat"
+      ],
+      "availability": "catalog_listed",
+      "authenticated": false,
+      "lastVerified": "2026-09-19T22:21:28.403Z",
+      "isHot": false
+    },
+    "kimi-k2.6": {
+      "name": "kimi-k2.6",
+      "provider": "ollama_cloud",
+      "contextWindow": 131072,
+      "capabilities": [
+        "chat"
+      ],
+      "availability": "catalog_listed",
+      "authenticated": false,
+      "lastVerified": "2026-09-19T22:21:28.403Z",
+      "isHot": false
     }
   },
-  "lastCronRun": "2026-09-04T08:24:26.522Z",
+  "lastCronRun": "2026-09-19T22:21:28.058Z",
   "cronStatus": "completed"
 }

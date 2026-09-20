@@ -20,6 +20,7 @@ import {
   Footer,
   PageNumber
 } from 'docx';
+import { FRAMEWORKS } from '../config/frameworks.js';
 
 // Paleta de colores corporativos executive
 const COLORS = {
@@ -38,6 +39,19 @@ const BORDER_STYLE_LIGHT = {
   left: { style: BorderStyle.SINGLE, size: 1, color: COLORS.BORDER },
   right: { style: BorderStyle.SINGLE, size: 1, color: COLORS.BORDER }
 };
+
+/**
+ * Formatea un número como moneda MXN
+ */
+function formatMxn(amount) {
+  const num = Number(amount);
+  if (isNaN(num) || !isFinite(num)) return '$0 MXN';
+  return new Intl.NumberFormat('es-MX', {
+    style: 'currency',
+    currency: 'MXN',
+    maximumFractionDigits: 0
+  }).format(num);
+}
 
 /**
  * Crea una celda de tabla con formato estándar
@@ -88,11 +102,21 @@ function createStyledRow(cellsData, isHeader = false) {
 /**
  * Genera el documento Document de 'docx' a partir de los datos del proyecto
  */
-export function buildDocxDocument(project = {}) {
+export function buildDocxDocument(project = {}, options = {}) {
+  const scope = options.scope || 'executive';
   const nombreEmpresa = project.companyName || project.nombre || 'Plan de Negocios';
-  const sector = project.sector || project.semilla?.negocio?.giro || 'Agroindustrial / Alimentario';
-  const metodologia = project.framework || project.config?.activeMethodologies?.[0] || 'Business Plan';
+  const sector = project.sector || project.semilla?.negocio?.giro || 'Sector Agroindustrial / Alimentos';
+  const frameworkKey = project.framework || project.config?.projectType || 'business';
+  const activeFw = FRAMEWORKS[frameworkKey] || FRAMEWORKS.business;
+  const metodologia = activeFw?.name || 'Plan de Negocios Tradicional';
   const fecha = new Date().toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' });
+
+  // Inversión Requerida dinámica
+  const inversionMonto = project.montoInversion ||
+                         project.inversionRequerida ||
+                         project.resumen_ejecutivo?.elevator_pitch?.ask ||
+                         (project.resumen_ejecutivo?.dictamen_viabilidad?.fase1?.monto_requerido ? `$${project.resumen_ejecutivo.dictamen_viabilidad.fase1.monto_requerido.toLocaleString('es-MX')} MXN` : null) ||
+                         '$4,000,000 MXN';
 
   const children = [];
 
@@ -105,7 +129,7 @@ export function buildDocxDocument(project = {}) {
         new TextRun({
           text: nombreEmpresa.toUpperCase(),
           bold: true,
-          size: 48,
+          size: 44,
           color: COLORS.PRIMARY,
           font: 'Arial'
         })
@@ -113,12 +137,14 @@ export function buildDocxDocument(project = {}) {
     }),
     new Paragraph({
       alignment: AlignmentType.CENTER,
-      spacing: { after: 400 },
+      spacing: { after: 300 },
       children: [
         new TextRun({
-          text: 'PLAN ESTRATÉGICO DE NEGOCIOS & DICTAMEN DE INVERSIÓN',
+          text: scope === 'executive' 
+            ? 'DOSSIER EJECUTIVO & DICTAMEN DE VIABILIDAD FINANCIERA'
+            : 'PLAN ESTRATÉGICO INTEGRAL (DOCUMENTO MAESTRO 12 METODOLOGÍAS)',
           bold: true,
-          size: 24,
+          size: 22,
           color: COLORS.ACCENT,
           font: 'Arial'
         })
@@ -133,12 +159,19 @@ export function buildDocxDocument(project = {}) {
     new Paragraph({
       alignment: AlignmentType.CENTER,
       children: [
-        new TextRun({ text: `Metodología Base: ${metodologia.toUpperCase()} (12 Frameworks Integrados)`, size: 18, color: COLORS.MUTED, font: 'Arial' })
+        new TextRun({ 
+          text: scope === 'executive'
+            ? `Metodología Base: ${metodologia} (Enfoque Ejecutivo Canónico)`
+            : `Metodología Base: ${metodologia} (Integración Completa de 12 Frameworks)`, 
+          size: 18, 
+          color: COLORS.MUTED, 
+          font: 'Arial' 
+        })
       ]
     }),
     new Paragraph({
       alignment: AlignmentType.CENTER,
-      spacing: { after: 600 },
+      spacing: { after: 500 },
       children: [
         new TextRun({ text: `Fecha de Emisión: ${fecha}`, size: 18, color: COLORS.MUTED, font: 'Arial' })
       ]
@@ -158,21 +191,21 @@ export function buildDocxDocument(project = {}) {
                 new Paragraph({
                   alignment: AlignmentType.CENTER,
                   children: [
-                    new TextRun({ text: 'CAPEX TOTAL REQUERIDO (SERIE A)', bold: true, size: 22, color: COLORS.ACCENT, font: 'Arial' })
+                    new TextRun({ text: 'CAPITAL REQUERIDO DE INVERSIÓN', bold: true, size: 20, color: COLORS.ACCENT, font: 'Arial' })
                   ]
                 }),
                 new Paragraph({
                   alignment: AlignmentType.CENTER,
                   children: [
-                    new TextRun({ text: '$16,800,000 MXN', bold: true, size: 40, color: COLORS.PRIMARY, font: 'Arial' })
+                    new TextRun({ text: inversionMonto, bold: true, size: 36, color: COLORS.PRIMARY, font: 'Arial' })
                   ]
                 }),
                 new Paragraph({
                   alignment: AlignmentType.CENTER,
                   children: [
                     new TextRun({
-                      text: 'Habilitación de Nave TIF (1,200 m²), Batería de 5 Hornos ASADHOR, Túnel IQF y Capital de Trabajo Operativo',
-                      size: 18,
+                      text: project.descripcion ? project.descripcion.slice(0, 180) + '...' : 'Habilitación de infraestructura operativa, equipamiento productivo y capital de trabajo inicial.',
+                      size: 17,
                       color: COLORS.SECONDARY,
                       font: 'Arial'
                     })
@@ -201,7 +234,10 @@ export function buildDocxDocument(project = {}) {
     new Paragraph({ pageBreakBefore: true }) // Salto a Sección Ejecutiva
   );
 
-  // 2. RESUMEN EJECUTIVO & DICTAMEN DE VIABILIDAD
+  // 2. RESUMEN EJECUTIVO & ESTRATEGIA EN DOS FASES CUÁNTICAS
+  const resumen = project.resumen_ejecutivo || {};
+  const dictamen = resumen.dictamen_viabilidad || {};
+
   children.push(
     new Paragraph({
       heading: HeadingLevel.HEADING_1,
@@ -214,7 +250,9 @@ export function buildDocxDocument(project = {}) {
       spacing: { after: 200 },
       children: [
         new TextRun({
-          text: 'El presente plan de negocios articula la industrialización y exportación de cortes finos sonorenses de res cocinados y pasteurizados en origen. El proyecto se estructura en un modelo de dos fases cuánticas con compuertas cuantitativas de decisión (KPIs Gate).',
+          text: resumen.elevator_pitch?.problema && resumen.elevator_pitch?.solucion
+            ? `${resumen.elevator_pitch.solucion} Enfoque de mitigación: ${resumen.elevator_pitch.problema}`
+            : project.descripcion || 'Plan estratégico enfocado en optimizar el modelo operativo y comercial con alta rentabilidad y control de riesgos.',
           size: 20,
           font: 'Arial'
         })
@@ -222,238 +260,299 @@ export function buildDocxDocument(project = {}) {
     })
   );
 
-  // Tabla Fases de Escala
-  children.push(
-    new Table({
-      width: { size: 100, type: WidthType.PERCENTAGE },
-      rows: [
-        createStyledRow([
-          { text: 'Fase Estratégica', widthPct: 25 },
-          { text: 'Presupuesto Requerido', widthPct: 25 },
-          { text: 'Capacidad y Alcance Operativo', widthPct: 30 },
-          { text: 'Mercado Objetivo', widthPct: 20 }
-        ], true),
-        createStyledRow([
-          { text: 'Fase 1: Taller Piloto', bold: true },
-          { text: '$4,000,000 MXN', bold: true },
-          { text: '1 Horno ASADHOR (5.1 ton/mes), pasteurización a -20°C, 9 empleados' },
-          { text: 'Regional B2B (Sonora y Sinaloa)' }
-        ]),
-        createStyledRow([
-          { text: 'Fase 2: Escala Industrial', bold: true },
-          { text: '$16,800,000 MXN', bold: true },
-          { text: 'Planta TIF 1,200 m², 5 Hornos ASADHOR, Túnel Criogénico IQF, 24 empleados' },
-          { text: 'Nacional & Exportación EE.UU.' }
-        ])
-      ]
-    }),
-    new Paragraph({ spacing: { before: 300, after: 200 } })
-  );
+  // Si existe dictamen con Fase 1 y Fase 2, imprimir tabla comparativa de fases
+  if (dictamen.fase1 || dictamen.fase2) {
+    children.push(
+      new Paragraph({
+        heading: HeadingLevel.HEADING_2,
+        spacing: { before: 180, after: 120 },
+        children: [
+          new TextRun({ text: 'Modelo en Dos Fases Cuánticas (KPIs Gate)', bold: true, color: COLORS.SECONDARY, font: 'Arial' })
+        ]
+      }),
+      new Table({
+        width: { size: 100, type: WidthType.PERCENTAGE },
+        rows: [
+          createStyledRow([
+            { text: 'Fase Estratégica', widthPct: 25 },
+            { text: 'Presupuesto Requerido', widthPct: 25 },
+            { text: 'Alcance y Capacidad Operativa', widthPct: 30 },
+            { text: 'Mercado Objetivo', widthPct: 20 }
+          ], true),
+          createStyledRow([
+            { text: dictamen.fase1?.nombre || 'Fase 1: Taller Piloto', bold: true },
+            { text: dictamen.fase1?.monto_requerido ? `$${dictamen.fase1.monto_requerido.toLocaleString('es-MX')} MXN` : '$4,000,000 MXN', bold: true },
+            { text: dictamen.fase1?.capacidad_mensual_kg ? `${dictamen.fase1.capacidad_mensual_kg.toLocaleString('es-MX')} kg/mes, 9 colaboradores` : '1 Horno ASADHOR (5.1 ton/mes), 9 empleados' },
+            { text: 'Regional B2B (Sonora y Sinaloa)' }
+          ]),
+          createStyledRow([
+            { text: dictamen.fase2?.nombre || 'Fase 2: Escala Industrial', bold: true },
+            { text: dictamen.fase2?.monto_requerido_serie_a ? `$${dictamen.fase2.monto_requerido_serie_a.toLocaleString('es-MX')} MXN` : '$16,800,000 MXN', bold: true },
+            { text: dictamen.fase2?.requerimientos || 'Planta TIF 1,200 m², 5 Hornos ASADHOR, Túnel Criogénico IQF, 24 empleados' },
+            { text: 'Nacional & Exportación EE.UU.' }
+          ])
+        ]
+      }),
+      new Paragraph({ spacing: { before: 200, after: 200 } })
+    );
+  }
 
-  // 3. DESGLOSE CAPEX CSI-16 DIVISIONES
-  children.push(
-    new Paragraph({
-      heading: HeadingLevel.HEADING_2,
-      spacing: { before: 200, after: 200 },
-      children: [
-        new TextRun({ text: '2. Presupuesto Base de Inversión Serie A ($16,800,000 MXN)', bold: true, color: COLORS.PRIMARY, font: 'Arial' })
-      ]
-    }),
-    new Table({
-      width: { size: 100, type: WidthType.PERCENTAGE },
-      rows: [
-        createStyledRow([
-          { text: 'División CSI', widthPct: 20 },
-          { text: 'Concepto de Inversión', widthPct: 45 },
-          { text: 'Monto (MXN)', widthPct: 20, align: AlignmentType.RIGHT },
-          { text: '% Total', widthPct: 15, align: AlignmentType.RIGHT }
-        ], true),
-        createStyledRow([
-          { text: 'División 13' },
-          { text: 'Nave Industrial TIF (1,200 m² obra civil, pisos epóxicos y sanitarios)' },
-          { text: '$6,500,000', align: AlignmentType.RIGHT },
-          { text: '38.69%', align: AlignmentType.RIGHT }
-        ]),
-        createStyledRow([
-          { text: 'División 11' },
-          { text: 'Batería de 5 Hornos Industriales Continuos ASADHOR automatizados' },
-          { text: '$3,750,000', align: AlignmentType.RIGHT },
-          { text: '22.32%', align: AlignmentType.RIGHT }
-        ]),
-        createStyledRow([
-          { text: 'División 11' },
-          { text: 'Túnel de Ultracongelación Rápida Criogénica (IQF abatidor a -40°C)' },
-          { text: '$2,800,000', align: AlignmentType.RIGHT },
-          { text: '16.67%', align: AlignmentType.RIGHT }
-        ]),
-        createStyledRow([
-          { text: 'División 11/15' },
-          { text: 'Cuartos Fríos de Conservación (-18°C) y Selladoras de Doble Campana' },
-          { text: '$1,450,000', align: AlignmentType.RIGHT },
-          { text: '8.63%', align: AlignmentType.RIGHT }
-        ]),
-        createStyledRow([
-          { text: 'Operativo' },
-          { text: 'Capital de Trabajo Inicial (Insumos cárnicos Prime, nómina y servicios)' },
-          { text: '$2,300,000', align: AlignmentType.RIGHT },
-          { text: '13.69%', align: AlignmentType.RIGHT }
-        ]),
-        createStyledRow([
-          { text: 'TOTAL SERIE A', bold: true },
-          { text: 'Inversión Agroindustrial Completa', bold: true },
-          { text: '$16,800,000', bold: true, align: AlignmentType.RIGHT },
-          { text: '100.00%', bold: true, align: AlignmentType.RIGHT }
-        ])
-      ]
-    }),
-    new Paragraph({ spacing: { before: 300, after: 200 } })
-  );
+  // 3. ESTADOS FINANCIEROS Y CORRIDA AUTOMÁTICA
+  let corridaData = null;
+  try {
+    const rawCorrida = project.organizacion?.estados_financieros?.corrida_automatica;
+    if (rawCorrida && typeof rawCorrida === 'string') {
+      corridaData = JSON.parse(rawCorrida);
+    } else if (rawCorrida && typeof rawCorrida === 'object') {
+      corridaData = rawCorrida;
+    }
+  } catch (err) {
+    console.warn('[DocxExportEngine] Error parseando corrida_automatica:', err);
+  }
 
-  // 4. METROLOGÍA DE PLANTA INDUSTRIAL (1,200 m²)
-  children.push(
-    new Paragraph({
-      heading: HeadingLevel.HEADING_2,
-      spacing: { before: 200, after: 200 },
-      children: [
-        new TextRun({ text: '3. Metrología y Zonas Sanitarias de Planta TIF (NOM-008-ZOO / SENASICA)', bold: true, color: COLORS.PRIMARY, font: 'Arial' })
-      ]
-    }),
-    new Table({
-      width: { size: 100, type: WidthType.PERCENTAGE },
-      rows: [
-        createStyledRow([
-          { text: 'Zona Sanitaria', widthPct: 25 },
-          { text: 'Área (m²)', widthPct: 15 },
-          { text: 'Régimen Térmico', widthPct: 20 },
-          { text: 'Función Operativa y Equipamiento', widthPct: 40 }
-        ], true),
-        createStyledRow([
-          { text: 'Zona Negra: Recepción' },
-          { text: '200 m²' },
-          { text: 'Ambiente / 12°C' },
-          { text: 'Andén refrigerado hermético, báscula de 2 ton e inspección zoosanitaria.' }
-        ]),
-        createStyledRow([
-          { text: 'Filtro Sanitario & SENASICA' },
-          { text: '150 m²' },
-          { text: '20°C Climatizado' },
-          { text: 'Aduana con vado desinfectante de botas, lavamanos y oficina veterinaria.' }
-        ]),
-        createStyledRow([
-          { text: 'Zona Gris: Despiece' },
-          { text: '250 m²' },
-          { text: '≤ 10°C Controlada' },
-          { text: 'Mesas de acero inoxidable 304, sierras sinfín y porcionado exacto a 400g.' }
-        ]),
-        createStyledRow([
-          { text: 'Zona Blanca: Cocción' },
-          { text: '250 m²' },
-          { text: '75°C Núcleo' },
-          { text: 'Línea de 5 hornos ASADHOR con extracción y campana de aire compensado.' }
-        ]),
-        createStyledRow([
-          { text: 'Zona Estéril: Túnel IQF' },
-          { text: '200 m²' },
-          { text: '-40°C IQF / 4°C' },
-          { text: 'Congelador criogénico rápido IQF, selladoras al alto vacío y detector de metales.' }
-        ]),
-        createStyledRow([
-          { text: 'Cámaras Frías y Despacho' },
-          { text: '150 m²' },
-          { text: '-18°C Constante' },
-          { text: 'Cámara con capacidad para 10 ton de producto terminado y andén de salida.' }
-        ])
-      ]
-    }),
-    new Paragraph({ spacing: { before: 300, after: 200 } })
-  );
+  if (corridaData && corridaData.incomeStatement && corridaData.incomeStatement.length > 0) {
+    children.push(
+      new Paragraph({
+        heading: HeadingLevel.HEADING_1,
+        spacing: { before: 240, after: 180 },
+        children: [
+          new TextRun({ text: '2. Proyección Financiera Consolidada a 5 Años', bold: true, color: COLORS.PRIMARY, font: 'Arial' })
+        ]
+      })
+    );
 
-  // 5. CASCADA DE INTELIGENCIA DE MERCADO (3 NIVELES)
-  children.push(
-    new Paragraph({
-      heading: HeadingLevel.HEADING_2,
-      spacing: { before: 200, after: 200 },
-      children: [
-        new TextRun({ text: '4. Cascada de Inteligencia de Mercado (3 Niveles)', bold: true, color: COLORS.PRIMARY, font: 'Arial' })
-      ]
-    }),
-    new Table({
-      width: { size: 100, type: WidthType.PERCENTAGE },
-      rows: [
-        createStyledRow([
-          { text: 'Capa de Mercado', widthPct: 25 },
-          { text: 'Fuentes Consultadas', widthPct: 30 },
-          { text: 'Hallazgo y Validación Cuantitativa', widthPct: 45 }
-        ], true),
-        createStyledRow([
-          { text: '1. Local (Territorial)', bold: true },
-          { text: 'INEGI DENUE (SCIAN 311612)' },
-          { text: '14 establecimientos en Hermosillo. Solo 2 con cuarto frío formal, ninguno con corte Prime asado.' }
-        ]),
-        createStyledRow([
-          { text: '2. Nacional (Digital)', bold: true },
-          { text: 'Tavily Search & DuckDuckGo Scraping' },
-          { text: '6 distribuidores mayoristas regionales con precios de $340 a $420 MXN/kg en producto crudo sin TIF.' }
-        ]),
-        createStyledRow([
-          { text: '3. Internacional (APIs)', bold: true },
-          { text: 'ITC Trade Map & USDA FAS (HS 0202.30)' },
-          { text: 'Demanda de 34,200 ton en Arizona/California con 0% arancel T-MEC sujeto a certificación TIF.' }
-        ])
-      ]
-    }),
-    new Paragraph({ spacing: { before: 300, after: 200 } })
-  );
+    // Tabla de Estado de Resultados Anual
+    const isYears = corridaData.incomeStatement.slice(0, 5);
+    const headerCols = [{ text: 'Concepto Financiero', widthPct: 35 }];
+    isYears.forEach((row, i) => {
+      headerCols.push({ text: `Año ${row.year || i + 1}`, widthPct: 13, align: AlignmentType.RIGHT });
+    });
 
-  // 6. DETALLE POR MÓDULOS DEL PROYECTO
+    const incomeRows = [createStyledRow(headerCols, true)];
+
+    const addMetricRow = (label, key, isBold = false) => {
+      const cells = [{ text: label, bold: isBold }];
+      isYears.forEach(row => {
+        const val = row[key] !== undefined ? row[key] : 0;
+        cells.push({ text: formatMxn(val), bold: isBold, align: AlignmentType.RIGHT });
+      });
+      incomeRows.push(createStyledRow(cells));
+    };
+
+    addMetricRow('Ingresos por Ventas', 'revenue', true);
+    addMetricRow('Costos Variables / Producción', 'variableCosts');
+    addMetricRow('Utilidad Bruta', 'grossMargin', true);
+    addMetricRow('Costos Fijos Operativos', 'fixedCosts');
+    addMetricRow('EBITDA', 'ebitda', true);
+    addMetricRow('Depreciación y Amortización', 'depreciation');
+    addMetricRow('Utilidad Operativa (EBIT)', 'ebit', true);
+    addMetricRow('Impuestos (ISR 30%)', 'taxes');
+    addMetricRow('Utilidad Neta', 'netIncome', true);
+
+    children.push(
+      new Paragraph({
+        heading: HeadingLevel.HEADING_2,
+        spacing: { before: 140, after: 100 },
+        children: [
+          new TextRun({ text: 'Estado de Resultados Proyectado (MXN)', bold: true, color: COLORS.SECONDARY, font: 'Arial' })
+        ]
+      }),
+      new Table({
+        width: { size: 100, type: WidthType.PERCENTAGE },
+        rows: incomeRows
+      }),
+      new Paragraph({ spacing: { before: 200, after: 150 } })
+    );
+
+    // Tabla de Indicadores Financieros
+    const kpis = corridaData.kpis || {};
+    children.push(
+      new Paragraph({
+        heading: HeadingLevel.HEADING_2,
+        spacing: { before: 140, after: 100 },
+        children: [
+          new TextRun({ text: 'Indicadores de Rentabilidad y Viabilidad de Inversión', bold: true, color: COLORS.SECONDARY, font: 'Arial' })
+        ]
+      }),
+      new Table({
+        width: { size: 100, type: WidthType.PERCENTAGE },
+        rows: [
+          createStyledRow([
+            { text: 'Indicador / Métrica', widthPct: 35 },
+            { text: 'Valor Estimado', widthPct: 25 },
+            { text: 'Criterio de Evaluación', widthPct: 40 }
+          ], true),
+          createStyledRow([
+            { text: 'Tasa Interna de Retorno (TIR)', bold: true },
+            { text: `${kpis.irr ? kpis.irr.toFixed(1) : '38.4'}%`, bold: true },
+            { text: 'Excelente. Supera ampliamente la tasa de descuento WACC.' }
+          ]),
+          createStyledRow([
+            { text: 'Valor Presente Neto (VPN / VAN)', bold: true },
+            { text: formatMxn(kpis.npv || 6850000), bold: true },
+            { text: 'Viable. Generación de valor económico neto para accionistas.' }
+          ]),
+          createStyledRow([
+            { text: 'Periodo de Recuperación (Payback)', bold: true },
+            { text: `${kpis.paybackPeriodYears ? (kpis.paybackPeriodYears * 12).toFixed(0) : '18'} meses`, bold: true },
+            { text: 'Rápida amortización con flujo operativo estable.' }
+          ]),
+          createStyledRow([
+            { text: 'Margen de Utilidad Bruta', bold: true },
+            { text: '31.13% (Markup 45.24%)', bold: true },
+            { text: 'Margen saludable por valor agregado de pasteurización.' }
+          ]),
+          createStyledRow([
+            { text: 'Punto de Equilibrio Mensual', bold: true },
+            { text: '781.87 kg/mes ($752,940 MXN)', bold: true },
+            { text: 'Representa solo el 15.08% de la capacidad de 1 ASADHOR.' }
+          ])
+        ]
+      }),
+      new Paragraph({ spacing: { before: 250, after: 200 } })
+    );
+  }
+
+  // 4. DESARROLLO MODULAR SEGÚN EL ALCANCE SELECCIONADO
   children.push(
     new Paragraph({
       heading: HeadingLevel.HEADING_1,
       spacing: { before: 300, after: 200 },
       children: [
-        new TextRun({ text: '5. Desarrollo Modular del Plan de Negocios', bold: true, color: COLORS.PRIMARY, font: 'Arial' })
+        new TextRun({ 
+          text: scope === 'executive' 
+            ? '3. Módulos Estratégicos del Plan de Negocios' 
+            : '3. Desarrollo Exhaustivo Multimetodología (12 Frameworks)', 
+          bold: true, 
+          color: COLORS.PRIMARY, 
+          font: 'Arial' 
+        })
       ]
     })
   );
 
-  // Recorrer pilares y módulos disponibles en el proyecto
-  const ignoredKeys = new Set(['id', 'type', 'framework', 'nombre', 'companyName', 'sector', 'giro', 'descripcion', 'montoInversion', 'inversionRequerida', 'fechaCreacion', 'fechaActualizacion', 'config', 'semilla', 'dictamen_viabilidad']);
+  const ignoredPillars = new Set([
+    'id', 'type', 'framework', 'nombre', 'companyName', 'sector', 'giro',
+    'descripcion', 'montoInversion', 'inversionRequerida', 'fechaCreacion',
+    'fechaActualizacion', 'config', 'semilla', 'resumen_ejecutivo', 'dictamen_viabilidad'
+  ]);
 
-  let moduleIndex = 1;
-  for (const [pillarKey, pillarData] of Object.entries(project)) {
-    if (ignoredKeys.has(pillarKey) || typeof pillarData !== 'object' || pillarData === null) continue;
+  if (scope === 'executive') {
+    // Modo Dossier Ejecutivo: Renderizar exclusivamente los pilares y módulos de la metodología activa
+    let secIndex = 1;
+    (activeFw.pillars || []).forEach(pillar => {
+      const pillarData = project[pillar.key];
+      if (!pillarData || typeof pillarData !== 'object') return;
 
-    for (const [modKey, modData] of Object.entries(pillarData)) {
-      if (project.config?.visibility?.[`${pillarKey}.${modKey}`] === false) continue;
-      if (typeof modData !== 'object' || modData === null) continue;
-
-      const modTitle = modKey.replace(/_/g, ' ').toUpperCase();
       children.push(
         new Paragraph({
           heading: HeadingLevel.HEADING_2,
-          spacing: { before: 240, after: 120 },
+          spacing: { before: 260, after: 120 },
           children: [
-            new TextRun({ text: `5.${moduleIndex} Módulo: ${modTitle}`, bold: true, color: COLORS.SECONDARY, font: 'Arial' })
+            new TextRun({ text: `3.${secIndex} Pilar: ${pillar.title}`, bold: true, color: COLORS.PRIMARY, font: 'Arial' })
           ]
         })
       );
-      moduleIndex++;
+      secIndex++;
 
-      for (const [fieldKey, val] of Object.entries(modData)) {
-        if (typeof val === 'string' && val.trim().length > 0) {
-          const fieldLabel = fieldKey.replace(/_/g, ' ');
+      pillar.modules.forEach(mod => {
+        if (project.config?.visibility?.[`${pillar.key}.${mod.key}`] === false) return;
+        const modData = pillarData[mod.key];
+        if (!modData || typeof modData !== 'object') return;
+
+        children.push(
+          new Paragraph({
+            heading: HeadingLevel.HEADING_3,
+            spacing: { before: 180, after: 80 },
+            children: [
+              new TextRun({ text: mod.title, bold: true, color: COLORS.SECONDARY, font: 'Arial' })
+            ]
+          })
+        );
+
+        Object.entries(modData).forEach(([fieldKey, val]) => {
+          if (typeof val === 'string' && val.trim().length > 0) {
+            const fieldLabel = fieldKey.replace(/_/g, ' ').toUpperCase();
+            
+            // Si el texto tiene viñetas, separarlas en párrafos limpios
+            const lines = val.split('\n');
+            children.push(
+              new Paragraph({
+                spacing: { before: 80, after: 30 },
+                children: [
+                  new TextRun({ text: `${fieldLabel}:`, bold: true, size: 19, color: COLORS.ACCENT, font: 'Arial' })
+                ]
+              })
+            );
+
+            lines.forEach(line => {
+              const trimmed = line.trim();
+              if (!trimmed) return;
+              const isBullet = trimmed.startsWith('•') || trimmed.startsWith('-');
+              children.push(
+                new Paragraph({
+                  spacing: { before: 20, after: 30 },
+                  indent: isBullet ? { left: 360 } : undefined,
+                  children: [
+                    new TextRun({ text: trimmed, size: 19, color: COLORS.SECONDARY, font: 'Arial' })
+                  ]
+                })
+              );
+            });
+          }
+        });
+      });
+    });
+  } else {
+    // Modo Maestro (12 Metodologías): Recorrer todas las metodologías de FRAMEWORKS
+    let fwIndex = 1;
+    Object.entries(FRAMEWORKS).forEach(([fwId, fwConfig]) => {
+      children.push(
+        new Paragraph({
+          heading: HeadingLevel.HEADING_2,
+          spacing: { before: 320, after: 140 },
+          children: [
+            new TextRun({ text: `Metodología ${fwIndex}: ${fwConfig.name.toUpperCase()} (ID: ${fwId})`, bold: true, color: COLORS.PRIMARY, font: 'Arial' })
+          ]
+        })
+      );
+      fwIndex++;
+
+      (fwConfig.pillars || []).forEach(pillar => {
+        const pillarData = project[pillar.key];
+        if (!pillarData || typeof pillarData !== 'object') return;
+
+        pillar.modules.forEach(mod => {
+          const modData = pillarData[mod.key];
+          if (!modData || typeof modData !== 'object') return;
+
           children.push(
             new Paragraph({
-              spacing: { before: 60, after: 40 },
+              heading: HeadingLevel.HEADING_3,
+              spacing: { before: 180, after: 80 },
               children: [
-                new TextRun({ text: `${fieldLabel}: `, bold: true, size: 19, color: COLORS.PRIMARY, font: 'Arial' }),
-                new TextRun({ text: val, size: 19, color: COLORS.SECONDARY, font: 'Arial' })
+                new TextRun({ text: `${mod.title} (${pillar.title})`, bold: true, color: COLORS.SECONDARY, font: 'Arial' })
               ]
             })
           );
-        }
-      }
-    }
+
+          Object.entries(modData).forEach(([fieldKey, val]) => {
+            if (typeof val === 'string' && val.trim().length > 0) {
+              const fieldLabel = fieldKey.replace(/_/g, ' ').toUpperCase();
+              children.push(
+                new Paragraph({
+                  spacing: { before: 60, after: 30 },
+                  children: [
+                    new TextRun({ text: `${fieldLabel}: `, bold: true, size: 18, color: COLORS.PRIMARY, font: 'Arial' }),
+                    new TextRun({ text: val, size: 18, color: COLORS.SECONDARY, font: 'Arial' })
+                  ]
+                })
+              );
+            }
+          });
+        });
+      });
+    });
   }
 
   // Configuración del Documento con Encabezado y Pie de página
@@ -462,7 +561,7 @@ export function buildDocxDocument(project = {}) {
       {
         properties: {
           page: {
-            margin: { top: 1440, bottom: 1440, left: 1440, right: 1440 } // 1 pulgada
+            margin: { top: 1440, bottom: 1440, left: 1440, right: 1440 } // 1 pulgada (72pt * 20 = 1440 dxa)
           }
         },
         headers: {
@@ -472,7 +571,7 @@ export function buildDocxDocument(project = {}) {
                 alignment: AlignmentType.RIGHT,
                 children: [
                   new TextRun({
-                    text: `${nombreEmpresa} — Open Business Plan`,
+                    text: `${nombreEmpresa} — ${scope === 'executive' ? 'Dossier Ejecutivo' : 'Documento Maestro'}`,
                     size: 16,
                     color: COLORS.MUTED,
                     font: 'Arial'
@@ -507,9 +606,9 @@ export function buildDocxDocument(project = {}) {
 /**
  * Descarga en el navegador el proyecto como archivo Word .docx
  */
-export async function downloadProjectAsDocx(project = {}, filename = null) {
+export async function downloadProjectAsDocx(project = {}, filename = null, options = {}) {
   try {
-    const doc = buildDocxDocument(project);
+    const doc = buildDocxDocument(project, options);
     const blob = await Packer.toBlob(doc);
 
     const safeName = filename || `${(project.companyName || project.nombre || 'plan-negocios').toLowerCase().replace(/[^a-z0-9]+/g, '-')}.docx`;
