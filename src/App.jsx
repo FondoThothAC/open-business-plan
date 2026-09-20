@@ -15,6 +15,7 @@ import PitchDeck from './modules/PitchDeck';
 import Anteproyecto from './components/Anteproyecto';
 import DynamicModule from './components/DynamicModule';
 import ErrorBoundary from './components/ErrorBoundary';
+import ReviewPage from './components/ReviewPage';
 
 // [HDD] Primer arranque: si no hay setup en localStorage, mostramos el wizard
 function AppContent() {
@@ -44,6 +45,7 @@ function AppContent() {
     <BrowserRouter basename={import.meta.env.BASE_URL}>
       {showWizard && <SetupWizard onComplete={handleWizardComplete} />}
       <Routes>
+        <Route path="review/:token" element={<ReviewPageRoute />} />
         <Route path="/" element={<Layout />}>
           <Route index element={<Navigate to="/semilla" replace />} />
 
@@ -81,6 +83,11 @@ function AppContent() {
   );
 }
 
+function ReviewPageRoute() {
+  const token = window.location.pathname.split('/').filter(Boolean).at(-1);
+  return <ReviewPage token={token} />;
+}
+
 /**
  * Guard de autenticación.
  * Muestra LoginScreen si no hay sesión activa.
@@ -88,6 +95,10 @@ function AppContent() {
  */
 function AuthGuard({ children }) {
   const { isAuthenticated, loading } = useAuth();
+
+  // Las revisiones externas usan un enlace de alcance limitado, no la sesión interna.
+  const isExternalReview = window.location.pathname.split('/').includes('review');
+  if (isExternalReview) return children;
 
   // Mientras se verifica el JWT almacenado, mostrar spinner
   if (loading) {
@@ -140,4 +151,3 @@ function App() {
 }
 
 export default App;
-

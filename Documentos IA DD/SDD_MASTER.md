@@ -354,6 +354,16 @@ Con base en el Plan de Saneamiento y Endurecimiento formalizado en `docs/archite
   * Dossier ejecutivo consolidado en orientación vertical Letter (`612 x 792 pts`) en exactamente 20 páginas sin páginas en blanco.
   * Respaldo histórico del PDF de 114 páginas en `vcv/historico-114p-vcv-cortes-finos.pdf` (8.4 MB) y generación del nuevo PDF ejecutivo de 2.1 MB.
   * Sincronización fiel de cifras canónicas: Inversión $4M MXN, Ventas $59.9M MXN, Utilidad Neta $12.7M MXN, TIR 38.4%, VPN $6.85M MXN, Payback 18 meses, B/C 1.45.
-
-
+### 5.11 Módulo de Revisión Externa Temporal, Sanitización de Secretos y Revocación de Sesiones
+* **Enlaces Temporales de Revisión (`server/reviewStore.js`, `server/index.js`, `src/components/ReviewPage.jsx`):**
+  * `POST /api/projects/:type/:id/review-invites`: Crea un enlace temporal con token criptográfico único (SHA-256 en reposo), alcance configurable (`executive` | `full`) y duración de 1 a 30 días (7 por defecto).
+  * `GET /api/review/:token`: Permite el acceso sin sesión interna al documento del proyecto, expurgando 100% las API keys, contraseñas, configuraciones sensibles e identificadores de infraestructura interna.
+  * `POST /api/review/:token/comments`: Almacena observaciones y notas del revisor externo con timestamp ISO, correo de contacto, versión del plan y ancla a nivel de módulo o bloque.
+  * `DELETE /api/projects/:type/:id/review-invites/:inviteId`: Revocación inmediata del enlace; cualquier acceso subsecuente es bloqueado con HTTP 404 / 410.
+* **Revocación Proactiva de Sesiones JWT (`server/auth.js`, `server/middleware/authGuard.js`):**
+  * Toda modificación crítica de credenciales (cambio de contraseña, reseteo administrativo, cambio de rol RBAC o desactivación de cuenta) incrementa atómicamente el campo `sessionVersion` del usuario en `server/data/users.json`.
+  * El middleware `authGuard` verifica que `Number(payload.sessionVersion) === Number(usuario.sessionVersion)`. Ante discrepancias, responde de inmediato con HTTP 401 (`code: 'SESSION_REVOKED'`), forzando nuevo inicio de sesión e impidiendo el secuestro de tokens obsoletos.
+* **Integración y Flujo de Interfaz (`VistaPrevia.jsx`, `Layout.jsx`, `AdminUsersPanel.jsx`):**
+  * En `VistaPrevia`, el botón "Compartir para revisión" genera el enlace, lo copia al portapapeles y despliega la URL temporal generada.
+  * En `AdminUsersPanel`, la acción `onOpenProject` carga el proyecto seleccionado e interactúa con el enrutador semántico para dirigir al administrador a la vista correspondiente sin pérdida de estado.
 

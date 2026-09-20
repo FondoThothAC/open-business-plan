@@ -43,6 +43,20 @@ import {
 import { authGuard, soloAdmin, soloRevisorOSuperAdmin, prohibirRevisorMutacion } from './middleware/authGuard.js';
 import { registrarAuditoria, obtenerAuditoria } from './auditLogger.js';
 import { EXAMPLE_PROJECT_IDS, PRIVATE_ADMIN_IDS, assertSafeProjectSegment, resolveReadableProject, resolveWritableProject, resolveCloneSource, userFolder } from './projectAccess.js';
+import { createReviewInvite, getReviewInvite, addReviewComment, listReviewComments, revokeReviewInvite } from './reviewStore.js';
+
+function documentForExternalReview(data) {
+  const copy = JSON.parse(JSON.stringify(data || {}));
+  if (copy.config) {
+    delete copy.config.search;
+    delete copy.config.externalApis;
+    delete copy.config.ai;
+    delete copy.config.apiKeys;
+    delete copy.config.comments;
+    delete copy.config.reviewInvites;
+  }
+  return copy;
+}
 
 // ─────────────────────────────────────────────────────────
 //  Helper Seguro para Búsqueda DuckDuckGo (Control de Tasa y Backoff)
@@ -170,6 +184,28 @@ app.post('/api/auth/register', (req, res) => {
     return res.status(400).json({ error: resultado.error });
   }
   res.status(201).json(resultado);
+});
+
+// Revisión externa por enlace: no crea una sesión interna ni expone el proyecto completo.
+app.get('/api/review/:token', (req, res) => {
+  const invite = getReviewInvite(req.params.token);
+  if (!invite) return res.status(404).json({ error: 'Enlace inválido, vencido o revocado.', code: 'REVIEW_LINK_INVALID' });
+  try {
+    const data = JSON.parse(fs.readFileSync(invite.projectPath, 'utf8'));
+    res.json({ success: true, review: { id: invite.id, email: invite.email, scope: invite.scope, expiresAt: invite.expiresAt,
+      project: { id: invite.projectId, type: invite.projectType, name: data.config?.brandKit?.companyName || data.semilla?.nombre_proyecto || invite.projectId },
+      document: documentForExternalReview(data), comments: invite.comments } });
+  } catch { res.status(404).json({ error: 'La versión compartida ya no está disponible.', code: 'REVIEW_DOCUMENT_MISSING' }); }
+});
+app.post('/api/review/:token/comments', (req, res) => {
+  const comment = addReviewComment(req.params.token, req.body || {});
+  if (!comment) return res.status(400).json({ error: 'Comentario inválido o enlace vencido.', code: 'REVIEW_COMMENT_REJECTED' });
+  res.status(201).json({ success: true, comment });
+});
+app.get('/api/review/:token/comments', (req, res) => {
+  const comments = listReviewComments(req.params.token);
+  if (!comments) return res.status(404).json({ error: 'Enlace inválido o vencido.' });
+  res.json({ comments });
 });
 
 // ─────────────────────────────────────────────────────────
@@ -310,6 +346,21 @@ app.get('/api/admin/users/:id/projects', soloAdmin, (req, res) => {
 app.get('/api/admin/audit', soloAdmin, (req, res) => {
   const auditEntries = obtenerAuditoria(req.query || {});
   res.json({ success: true, audit: auditEntries });
+});
+
+app.post('/api/projects/:type/:id/review-invites', prohibirRevisorMutacion, (req, res) => {
+  const project = resolveReadableProject(req.params.type, req.params.id, req.user);
+  if (!project) return res.status(404).json({ error: 'Proyecto no encontrado.' });
+  const result = createReviewInvite({ project, ownerId: project.ownerId || req.user.id, email: req.body?.email,
+    scope: req.body?.scope, days: req.body?.days });
+  registrarAuditoria({ actorId: req.user.id, actorUsername: req.user.username, actorRole: req.user.role,
+    action: 'PROJECT_REVIEW_INVITE_CREATED', targetType: 'project', targetId: req.params.id,
+    details: { email: result.invite.email, expiresAt: result.invite.expiresAt, scope: result.invite.scope } });
+  res.status(201).json({ success: true, invite: result.invite, token: result.token });
+});
+app.delete('/api/projects/:type/:id/review-invites/:inviteId', prohibirRevisorMutacion, (req, res) => {
+  if (!revokeReviewInvite(req.params.inviteId, req.user.id) && req.user.role !== 'superadmin') return res.status(404).json({ error: 'Enlace no encontrado.' });
+  res.json({ success: true });
 });
 
 app.post('/api/auth/users/:id/activate', soloAdmin, (req, res) => {

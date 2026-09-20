@@ -83,6 +83,15 @@ export default function Layout() {
   const [showAdminPanel, setShowAdminPanel] = useState(false);
   const [cloningProjectId, setCloningProjectId] = useState(null);
 
+  const openAdminProject = async (id, type) => {
+    const storageType = type === 'social_bid' || type === 'social' ? 'social' : 'negocios';
+    const loaded = await loadSavedProject(storageType, id);
+    if (!loaded) return;
+    setShowAdminPanel(false);
+    const projectType = storageType === 'social' ? 'social_bid' : 'business';
+    navigate(buildSemanticUrl({ projectType, section: 'vista-previa', slug: slugify(id) }));
+  };
+
   const [forceActivityOpen, setForceActivityOpen] = useState(false);
   
   // Auto-abrir monitor durante industrialización
@@ -1878,6 +1887,7 @@ export default function Layout() {
       <AdminUsersPanel
         isOpen={showAdminPanel}
         onClose={() => setShowAdminPanel(false)}
+        onOpenProject={openAdminProject}
       />
 
       {/* Modal de Perfil de Usuario y API Keys Personales */}

@@ -152,6 +152,18 @@ Escenario: Generación canónica y validación visual del dossier ejecutivo de V
   Y el Tablero Ejecutivo desglosa con total claridad la inversión de Fase 1 ($4,000,000 MXN) y el Escenario Total de Expansión ($16,800,000 MXN)
   Y no se incluyen páginas en blanco ni fragmentos huérfanos de tablas.
 ```
-
-
+## Escenario 16: Enlaces Temporales de Revisión Externa, Comentarios Anclados y Revocación Inmediata de Sesiones
+```gherkin
+Escenario: Compartición de anteproyecto con clientes externos y protección ante cambios de credenciales
+  Dado un proyecto con datos capturados y guardado en el sistema
+  Cuando el usuario hace clic en "Compartir para revisión" en Vista Previa
+  Entonces el sistema genera un enlace seguro con token criptográfico temporal y validez de 7 días
+  Y al abrir dicho enlace mediante "/review/<token>" un cliente externo puede leer el plan sin iniciar sesión interna
+  Y el documento compartido carece de llaves de API, contraseñas o configuraciones confidenciales
+  Y el revisor puede emitir comentarios anclados a módulos específicos con su correo de contacto
+  Pero si el propietario revoca el enlace desde la plataforma
+  Entonces cualquier intento posterior de acceso o comentario es bloqueado con HTTP 404/410
+  Y si el administrador cambia la contraseña, desactiva o modifica el rol de cualquier cuenta
+  Entonces el backend incrementa sessionVersion y todas las sesiones previas activas son revocadas de inmediato.
+```
 

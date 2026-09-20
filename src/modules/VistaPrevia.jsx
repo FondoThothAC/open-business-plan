@@ -32,6 +32,8 @@ import { getBoxIdsForModule } from '../config/moduleBoxMap';
 import { RenderBox } from '../components/boxes';
 import { BoxBenchmark } from '../components/boxes/BoxBenchmark';
 import { CroquisPreviewWidget } from '../components/MicroCroquisEditor';
+import { useAuth } from '../contexts/AuthContext';
+import { getApiBase } from '../config/apiConfig';
 
 function readJson(raw, fallback) {
   if (!raw || typeof raw !== 'string') return fallback;
@@ -1737,6 +1739,8 @@ export function computeOrderedModules(planData, currentFramework, exportScope = 
 
 export default function VistaPrevia() {
   const { planData, updateConfig, manualSaveProject, updateSection, addComment, deleteComment, getProjectContamination, sanitizeCurrentProject } = usePlan();
+  const { authFetch } = useAuth();
+  const [reviewLink, setReviewLink] = React.useState(null);
   const [printMargin, setPrintMargin] = React.useState(0.8); // Margen en cm
   const [zoomLevel, setZoomLevel] = React.useState(100); // Nivel de Zoom en % (50% a 150%)
   const [fitToWidth, setFitToWidth] = React.useState(false); // Modo de ajuste automático al ancho de ventana
@@ -1754,6 +1758,19 @@ export default function VistaPrevia() {
       sanitizeCurrentProject?.();
       window.alert('Contenido contaminado eliminado. Revisa la Vista Previa antes de guardar.');
     }
+  };
+
+  const createReviewLink = async () => {
+    const type = planData?.config?.projectType === 'social_bid' ? 'social' : 'negocios';
+    const id = planData?.config?.projectId;
+    if (!id) return window.alert('Guarda el proyecto antes de compartirlo.');
+    const response = await authFetch(`${getApiBase()}/api/projects/${type}/${encodeURIComponent(id)}/review-invites`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ scope: exportScope, days: 7 })
+    });
+    const body = await response.json().catch(() => ({}));
+    if (!response.ok) return window.alert(body.error || 'No se pudo crear el enlace.');
+    const link = `${window.location.origin}${import.meta.env.BASE_URL}review/${body.token}`;
+    setReviewLink(link); await navigator.clipboard?.writeText(link); window.alert('Enlace creado y copiado al portapapeles.');
   };
 
   // Guard de seguridad DESPUÉS de todos los hooks (regla: hooks no pueden ser condicionales)
@@ -2796,6 +2813,8 @@ export default function VistaPrevia() {
           <p className="text-secondary mt-1">Arrastra u ordena secciones, define orientaciones individuales por página e imprime el reporte final.</p>
         </div>
         <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
+          <button className="btn-secondary no-print" onClick={createReviewLink} title="Crear enlace temporal de revisión">Compartir para revisión</button>
+          {reviewLink && <input className="no-print" readOnly value={reviewLink} onFocus={e => e.target.select()} style={{ maxWidth: 280 }} />}
           {/* Badge de Alcance y Páginas Estimadas */}
           <div style={{
             display: 'flex', alignItems: 'center', gap: '0.5rem',

@@ -77,6 +77,9 @@ export function authGuard(req, res, next) {
       code: 'ACCOUNT_INACTIVE'
     });
   }
+  if (Number(resultado.payload.sessionVersion || 0) !== Number(usuario.sessionVersion || 0)) {
+    return res.status(401).json({ error: 'La sesión fue revocada. Inicia sesión nuevamente.', code: 'SESSION_REVOKED' });
+  }
 
   // Inyectar datos del usuario autenticado
   req.user = {

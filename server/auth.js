@@ -78,6 +78,7 @@ function cargarUsuarios() {
           apiKeys: {},
           createdAt: new Date().toISOString(),
           lastLogin: null
+          ,sessionVersion: 0
         }]
       };
       fs.writeFileSync(USERS_FILE, JSON.stringify(adminDefault, null, 2), 'utf8');
@@ -215,6 +216,7 @@ export function registrarUsuario({ username, email, password, displayName }) {
     apiKeys: {},
     createdAt: new Date().toISOString(),
     lastLogin: null
+    ,sessionVersion: 0
   };
 
   data.users.push(nuevoUsuario);
@@ -282,6 +284,7 @@ export function loginUsuario({ username, password, rememberMe = false }) {
     role: usuario.role || 'user',
     displayName: usuario.displayName,
     rememberMe: Boolean(rememberMe)
+    ,sessionVersion: usuario.sessionVersion || 0
   };
   const token = jwt.sign(payload, JWT_SECRET, { expiresIn: durationStr });
 
@@ -399,6 +402,8 @@ export function actualizarUsuarioAdmin(userId, cambios = {}, actorAdmin = null) 
   if (idx === -1) return { success: false, error: 'Usuario no encontrado.' };
 
   const actual = data.users[idx];
+  const previousRole = actual.role;
+  const previousStatus = actual.status;
 
   // Proteger al superadmin principal para que no sea degradado ni deshabilitado accidentalmente
   if (actual.role === 'superadmin' && cambios.role && cambios.role !== 'superadmin') {
@@ -431,6 +436,10 @@ export function actualizarUsuarioAdmin(userId, cambios = {}, actorAdmin = null) 
 
   if (typeof cambios.email === 'string') {
     actual.email = cambios.email.trim();
+  }
+
+  if (actual.role !== previousRole || actual.status !== previousStatus) {
+    actual.sessionVersion = (actual.sessionVersion || 0) + 1;
   }
 
   guardarUsuarios(data);
@@ -469,6 +478,7 @@ export function resetearPasswordAdmin(userId, nuevaPassword = null, actorAdmin =
   if (idx === -1) return { success: false, error: 'Usuario no encontrado.' };
 
   data.users[idx].passwordHash = bcrypt.hashSync(passwordFinal, BCRYPT_ROUNDS);
+  data.users[idx].sessionVersion = (data.users[idx].sessionVersion || 0) + 1;
   guardarUsuarios(data);
 
   registrarAuditoria({
@@ -608,6 +618,7 @@ export function cambiarPassword(userId, passwordActual, passwordNueva) {
   }
 
   data.users[idx].passwordHash = bcrypt.hashSync(passwordNueva, BCRYPT_ROUNDS);
+  data.users[idx].sessionVersion = (data.users[idx].sessionVersion || 0) + 1;
   guardarUsuarios(data);
 
   registrarAuditoria({

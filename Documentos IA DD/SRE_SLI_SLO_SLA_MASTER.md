@@ -14,6 +14,8 @@
 * **SLI-07 (Tiempo de Generación de Dossier Ejecutivo PDF/DOCX):** Tiempo total de compilación y renderizado del documento ejecutivo en formato Letter vertical (Target: < 12.0s en p95).
 * **SLI-08 (Extensión Garantizada de Dossier Ejecutivo):** Número de páginas finales del dossier ejecutivo para comités de inversión (Target: exactamente 20 páginas, límite máximo permisible: 25 páginas).
 * **SLI-09 (Durabilidad e Integridad de Auditoría):** Porcentaje de operaciones administrativas y editoriales asentadas exitosamente en `audit_log.json` (Target: 100.0%).
+* **SLI-10 (Latencia de Entrega en Revisión Externa):** Tiempo de resolución y entrega de documento sanitizado vía `/api/review/:token` (Target: < 150ms en p95).
+* **SLI-11 (Efectividad de Revocación de Sesión):** Tiempo de bloqueo de JWT ante incremento de `sessionVersion` (Target: 0ms, efectivo en la primera petición posterior).
 
 ---
 
@@ -26,6 +28,8 @@
 * **SLO-05:** 100% de cookies emitidas en producción deben contener directivas `HttpOnly`, `SameSite=Lax` y `Secure` sin exponer el JWT en el cuerpo de respuesta JSON.
 * **SLO-06:** 0 fugas de acceso no autorizado al módulo de Comercio Cuántico TR por roles distintos a `superadmin`.
 * **SLO-07:** 0 discrepancias de cifras financieras clave entre Vista Previa, DOCX y PDF para el caso canónico VCV (Inversión $4M / $16.8M, Ventas $59.9M, Utilidad $12.7M, Margen 31.13%, BEP 781.87 kg/mes).
+* **SLO-08:** 0 filtraciones de API keys, hashes o secretos del proyecto en el endpoint `/api/review/:token` servido a revisores externos.
+* **SLO-09:** 100% de coherencia en revocación inmediata de sesiones activas al cambiar/restablecer credenciales o alterar roles de usuario.
 
 ---
 

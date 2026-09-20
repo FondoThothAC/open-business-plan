@@ -42,3 +42,11 @@
 * **`JWT_SECRET`:** Clave criptográfica simétrica de 64 bytes hexadecimales generada con `crypto.randomBytes(64)` y persistida en `/var/www/open-business-plan/.env`. Garantiza que los reinicios de PM2 o del servidor no invaliden las sesiones activas de los usuarios.
 * **`API_KEYS_ENCRYPTION_KEY`:** Clave de cifrado AES-256-GCM de 32 bytes hexadecimales generada con `crypto.randomBytes(32)` para cifrar en reposo las API keys personales en `server/data/users.json` (prefijo `enc:v1:`).
 * **Protección CSRF y Reverse Proxy:** Middleware de validación de origen en mutaciones autenticadas con `app.set('trust proxy', 1)` para resolver con precisión la IP del cliente y las cabeceras `X-Forwarded-Proto` entregadas por Nginx.
+
+---
+
+## 4. Seguridad en Revisión Externa y Versionado de Sesiones
+
+* **Inocuidad y Sanitización de Proyectos Compartidos:** Los documentos servidos mediante `/api/review/:token` son sometidos a un proceso de expurgación profunda en el servidor (`server/index.js`), eliminando llaves de API (OpenAI, Anthropic, Gemini, Groq, Tavily, Brave), hashes de contraseñas, configuraciones de entorno y secretos del creador antes de la entrega al cliente.
+* **Tokens de Enlace Criptográficamente Seguros:** Los tokens de revisión se generan mediante 32 bytes de entropía aleatoria (`crypto.randomBytes(32).toString('base64url')`). En disco (`review_invites.json`), únicamente se almacena el resumen hash SHA-256 (`tokenHash`), protegiendo el acceso incluso ante lecturas no autorizadas del archivo de persistencia.
+* **Invalidación Inmediata por `sessionVersion`:** Cada cuenta de usuario cuenta con un contador entero `sessionVersion`. Cualquier mutación de seguridad (cambio o reseteo de contraseña, modificación de rol o desactivación) incrementa dicho contador. El middleware `authGuard` bloquea con HTTP 401 (`SESSION_REVOKED`) cualquier JWT preexistente firmado con versiones anteriores, neutralizando ventanas de vulnerabilidad por robo o persistencia indebida de tokens.

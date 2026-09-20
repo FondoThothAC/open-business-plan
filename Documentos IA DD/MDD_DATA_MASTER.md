@@ -149,12 +149,46 @@ Ubicación canónica: `planData.organizacion.estados_financieros.corrida_automat
     "groq": "Encrypted String",
     "openrouter": "Encrypted String"
   },
+  "sessionVersion": "Number (entero autoincremental para revocación inmediata)",
   "createdAt": "ISO8601 String",
   "lastLogin": "ISO8601 String"
 }
 ```
 
-### 5.2 Ciclo de Vida Editorial de Proyectos (`ProjectWorkflow`)
+### 5.2 Entidad Invitación de Revisión Externa (`ReviewInvite`)
+Ubicación: `server/data/review_invites.json`
+```json
+{
+  "id": "String (rev_...)",
+  "tokenHash": "String (SHA-256 digest del token crudo)",
+  "projectType": "negocios | social",
+  "projectId": "String",
+  "projectPath": "String",
+  "ownerId": "String",
+  "email": "String (correo del revisor externo)",
+  "scope": "executive | full",
+  "createdAt": "ISO8601 String",
+  "expiresAt": "ISO8601 String",
+  "revokedAt": "ISO8601 String | null",
+  "comments": [
+    {
+      "id": "String (c_...)",
+      "createdAt": "ISO8601 String",
+      "status": "open | resolved",
+      "authorEmail": "String",
+      "text": "String",
+      "anchor": {
+        "moduleId": "String",
+        "fieldKey": "String | null",
+        "blockText": "String | null"
+      },
+      "revision": "String | null"
+    }
+  ]
+}
+```
+
+### 5.3 Ciclo de Vida Editorial de Proyectos (`ProjectWorkflow`)
 ```json
 {
   "avance": "Number (0..100) [Cálculo cuantitativo de campos completados]",
@@ -175,7 +209,7 @@ Ubicación canónica: `planData.organizacion.estados_financieros.corrida_automat
 }
 ```
 
-### 5.3 Bitácora de Auditoría Inmutable (`AuditEntry`)
+### 5.4 Bitácora de Auditoría Inmutable (`AuditEntry`)
 Ubicación: `server/data/audit_log.json`
 ```json
 {

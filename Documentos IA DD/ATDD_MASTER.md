@@ -63,3 +63,10 @@
 
 ## 7. Criterios de Aceptación: Auditoría Persistente
 * **AC-23 (Inmutabilidad y Trazabilidad):** Toda acción administrativa (creación de usuario, cambio de rol, cambio de contraseña, modificación de proyecto, exportación) debe ser registrada de forma síncrona en `server/data/audit_log.json` con timestamp ISO, ID de usuario, IP, acción y detalles.
+
+---
+
+## 8. Criterios de Aceptación: Revisión Externa, Revocación de Sesión y Panel Administrativo
+* **AC-24 (Enlaces de Revisión Sanitizados y Comentarios):** La generación de enlaces temporales (`/review/:token`) debe expedir tokens criptográficos seguros sin requerir sesión previa. El documento retornado debe tener eliminadas todas las API keys, contraseñas y metadatos sensibles. Los comentarios deben guardarse con fecha, correo y anclaje a bloque/módulo.
+* **AC-25 (Revocación Inmediata por sessionVersion):** Todo cambio de contraseña, reseteo administrativo, alteración de rol o desactivación debe incrementar `sessionVersion`. El middleware `authGuard` debe responder inmediatamente con HTTP 401 (`SESSION_REVOKED`) ante tokens que no coincidan con la versión activa.
+* **AC-26 (Apertura Directa de Proyectos desde Administración):** Al hacer clic en "Abrir proyecto" en la pestaña de proyectos del panel administrativo (`AdminUsersPanel`), el sistema debe cargar el proyecto correspondiente y redirigir fluidamente a la URL semántica (`/obp/:tipoDoc/vista-previa/:slug`) cerrando el modal sin errores de navegación.

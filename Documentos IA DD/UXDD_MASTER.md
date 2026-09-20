@@ -13,6 +13,7 @@
 * **Transparencia Radical de Procedencia (`ProvenanceBadge`):** Toda cifra, competidor y cotización exhibe su grado de veracidad mediante badges distintivos (🟢 Factual Verificado, 🟡 Hardware Local, 🔴 Estimación Sintética, ⚪ Sin Datos). Si un dato no se encuentra, el sistema no inventa; expone el estado honesto vacío para que el usuario conozca la limitación del mercado.
 * **Dossier Ejecutivo de Alta Densidad y Elegancia Editorial:** La Vista Previa y las exportaciones a PDF/DOCX entregan un documento ejecutivo pulido de exactamente 20 páginas (máximo 25), en orientación vertical Letter estándar (`612 x 792 pts`), eliminando bloques de texto redundantes, notas al pie secundarias y tablas excesivas de 60 meses para favorecer la lectura de comités de inversión.
 * **Estética Premium:** Paleta en modos claro/oscuro balanceados, tipografías sans-serif de alta legibilidad, efectos de glassmorphism y micro-interacciones suaves.
+* **Revisión Externa Fricción-Cero:** Clientes, aliados e inversionistas externos acceden a una vista especializada (`ReviewPage`) con un solo clic en el enlace temporal recibido, sin necesidad de crear cuenta ni ingresar credenciales internas. El documento se presenta con formato editorial ejecutivo y anclaje de comentarios por módulo/bloque.
 
 ---
 
@@ -20,7 +21,7 @@
 
 ```mermaid
 journey
-    title Flujo Editorial y de Creación de Plan de Negocios
+    title Flujo Editorial, Supervisión y Revisión Externa
     section Acceso
       Inicio de Sesión (Recordarme): 5: Usuario
       Validación de Cookie HttpOnly: 5: Servidor
@@ -31,8 +32,13 @@ journey
       Edición Asistida / Solicitud de Revisión: 4: Usuario
     section Supervisión y Aprobación
       Inspección Superadmin (Banner Supervisor): 5: Superadmin
+      Apertura Directa desde Panel Admin: 5: Superadmin
       Retroalimentación & Comentarios Editoriales: 4: Revisor
       Aprobación Final / Reversión por Edición: 5: Superadmin
+    section Revisión Externa & Compartición
+      Generación de Enlace Temporal en Vista Previa: 5: Usuario
+      Acceso Anónimo Sanitizado (/review/token): 5: Revisor Externo
+      Comentarios Anclados a Módulos/Bloques: 4: Revisor Externo
     section Salida Ejecutiva
       Vista Previa Ejecutiva (20 Páginas): 5: Usuario
       Exportación Paritaria DOCX / PDF: 5: Usuario

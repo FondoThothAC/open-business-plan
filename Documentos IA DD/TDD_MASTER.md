@@ -49,8 +49,9 @@
 | **TDD-38** | `AutonomousResearchEngine & Multinivel Competitors & Gate KPIs` | Integración / Backend & Agéntica | Cascada geográfica obligatoria (INEGI + DuckDuckGo + Serper/Tavily), categorización de competidores (Amenaza/Oportunidad/Sustituto) y generación sintáctica de Flowchart Mermaid con compuertas de decisión. |
 | **TDD-39** | `VCV Twelve Frameworks & Precision Financial Calibration` | Unitaria / Finanzas & Documental | Valida cobertura de 12 metodologías canónicas para VCV Cortes Finos, calibración estricta de Margen Bruto Real al 31.13% (Markup 45.24%), Punto de Equilibrio de 781.87 kg/mes ($752,940 MXN), no-contaminación de campos (quienes_somos vs SOM, reclutamiento vs TAM), y estructura a 5 años de corrida_automatica. |
 | **TDD-40** | `AdminAuthWorkflow & RBAC Security Suite` | Integración / Seguridad & API | Valida ciclo de vida completo de usuarios, emisión y verificación de cookie `obp_auth_token` con Recordarme, restricciones por rol (superadmin, revisor, user), exclusividad de Comercio Cuántico TR, reversión automática de proyectos a En revisión, y persistencia inmutable en `audit_log.json`. |
+| **TDD-41** | `ReviewWorkflow & SessionRevocation Suite` | Integración / API & Seguridad | Valida creación de enlaces temporales (`/review/:token`), expiración, revocación de tokens, sanitización de datos (cero exposición de API keys), captura y listado de comentarios anclados, y revocación instantánea de JWTs obsoletos vía `sessionVersion`. |
 
-**Estado de Ejecución:** 330/330 tests pasando (100% de la suite completa aprobada en verde).
+**Estado de Ejecución:** 336/336 tests pasando (100% de la suite completa aprobada en verde).
 
 ---
 

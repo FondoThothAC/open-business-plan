@@ -29,7 +29,7 @@
 * `ExecutiveFinancialDashboard`: Tablero directivo de 6 KPIs clave (Inversión Inicial, Ventas Proyectadas Año 5, Utilidad Neta Año 5, Margen Bruto, Punto de Equilibrio, Indicadores TIR/VPN) con semaforización condicional y diferenciación explícita entre Fase 1 ($4M MXN) y Escenario de Expansión ($16.8M MXN).
 * `DecisionFlow`: Diagrama interactivo del roadmap de inversión y expansión con modo vertical enriquecido y modo horizontal compacto (`isCompact=true`, 185px) optimizado para impresión ejecutiva Letter.
 * `ProjectWorkspaceModal`: Gestor integral de proyectos con filtrado por propietario, avance, estado editorial, detección de módulos faltantes, botón de continuación directa y acciones de duplicar, archivar, restaurar y exportar.
-* `AdminUsersPanel`: Panel de control de administración con 3 pestañas principales: Gestión de Usuarios (CRUD, roles, reseteo de claves), Proyectos por Propietario (supervisión global) y Registro de Auditoría Inmutable (inspección de eventos del sistema).
+* `AdminUsersPanel`: Panel de control de administración con 3 pestañas principales: Gestión de Usuarios (CRUD, roles, reseteo de claves), Proyectos por Propietario (supervisión global con acción `onOpenProject` para navegación directa) y Registro de Auditoría Inmutable (inspección de eventos del sistema).
 * `MachineryRfqModal`: Modal formal para cotización de maquinaria pesada B2B conectado directamente a `ModuloOperaciones`, con descarga de paquetes RFQ, envío de correos a distribuidores autorizados y actualización automática de CAPEX/VAN/TIR.
 * `BobChatModal`: Modal interactivo de copiloto con soporte de reconocimiento de voz y debate estratégico.
 * `InegiMap`: Mapa geoespacial interactivo con capas de competidores DENUE y cálculo de densidad.
@@ -41,5 +41,6 @@
 * `LoginScreen`: Pantalla de acceso con selector de credenciales, autenticación por cookies seguras, interruptor de Recordarme y validación de sesiones activas.
 * `DynamicModule` / `ModuleWrapper`: Vista modular con botón de trazabilidad agéntica, botón dedicado de "Deep Research" y badges de procedencia verificada.
 * `ModuloOperaciones`: Módulo de ingeniería y planta con botón de acción para invocar `MachineryRfqModal` y coordinar cotizaciones CAPEX.
-* `VistaPrevia`: Renderizador de documento completo con paginación modular y continua, modo dossier ejecutivo (20–25 páginas, objetivo 20), deduplicación de bloques repetidos, protegido por `ErrorBoundary` y guard de hidratación asíncrona de `planData`.
+* `VistaPrevia`: Renderizador de documento completo con paginación modular y continua, modo dossier ejecutivo (20–25 páginas, objetivo 20), deduplicación de bloques repetidos, protegido por `ErrorBoundary` y guard de hidratación asíncrona de `planData`. Incorpora botón "Compartir para revisión" con creación automática de enlace temporal de lectura.
+* `ReviewPage`: Vista pública/restringida accesible mediante `/review/:token` para revisores, inversionistas y clientes externos. Ofrece renderizado de documento sanitizado, selector de anclas por bloque o módulo, captura de comentarios contextuales y visualización del historial de notas sin requerir cuenta interna.
 * `Configuracion`: Panel de administración con gestión de proveedores de IA y panel dedicado de Motores de Búsqueda Web estratificados en Fila 1 y Fila 2.
