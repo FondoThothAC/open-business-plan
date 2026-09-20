@@ -1,11 +1,11 @@
 /**
  * @file authGuard.js
- * @description Middleware de autorización para Express.
+ * @description Middleware de autorización para Express con soporte de cookies HttpOnly y 3 roles.
  * Protege todas las rutas /api/* excepto las públicas.
  * Inyecta req.user con los datos del usuario autenticado.
  * 
- * [SECDD] Ninguna ruta protegida es accesible sin JWT válido.
- * [IDD]  Contrato: req.user = { id, username, role, displayName, apiKeys }
+ * [SECDD] Autenticación primaria basada en cookie HttpOnly obp_auth_token; fallback retrocompatible con Bearer token.
+ * [IDD]  Contrato: req.user = { id, username, role, displayName, email, status }
  */
 
 import { verificarToken, buscarPorId } from '../auth.js';
@@ -24,25 +24,26 @@ const RUTAS_PUBLICAS = [
 
 /**
  * Middleware principal de autenticación.
- * Verifica el token JWT y enriquece req.user con datos del usuario.
- * 
- * Flujo:
- *  1. Verificar si la ruta es pública → skip
- *  2. Extraer token del header Authorization: Bearer <token>
- *  3. Verificar y decodificar JWT
- *  4. Cargar usuario completo desde el store
- *  5. Inyectar req.user y continuar
+ * Extrae token JWT prioritariamente desde la cookie HttpOnly 'obp_auth_token',
+ * o de forma secundaria desde el header 'Authorization: Bearer <token>'.
+ * Enriquece req.user con los datos del usuario.
  */
 export function authGuard(req, res, next) {
-  // Permitir rutas públicas sin autenticación
   const rutaLimpia = req.path.replace(/\/$/, '');
   if (RUTAS_PUBLICAS.some(ruta => rutaLimpia === ruta || rutaLimpia.startsWith(ruta + '/'))) {
     return next();
   }
 
-  // Extraer token del header Authorization
-  const authHeader = req.headers.authorization || '';
-  const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
+  // 1. Prioridad: Cookie HttpOnly
+  let token = req.cookies?.obp_auth_token || null;
+
+  // 2. Fallback: Header Authorization (para migración de clientes y scripts)
+  if (!token) {
+    const authHeader = req.headers.authorization || '';
+    if (authHeader.startsWith('Bearer ')) {
+      token = authHeader.slice(7).trim();
+    }
+  }
 
   if (!token) {
     return res.status(401).json({
@@ -55,7 +56,7 @@ export function authGuard(req, res, next) {
   const resultado = verificarToken(token);
   if (!resultado.valid) {
     return res.status(401).json({
-      error: resultado.error || 'Token inválido.',
+      error: resultado.error || 'Token inválido o expirado.',
       code: 'TOKEN_INVALID'
     });
   }
@@ -69,7 +70,7 @@ export function authGuard(req, res, next) {
     });
   }
 
-  // Verificar que la cuenta sigue activa
+  // Verificar estado de la cuenta
   if (usuario.status !== 'active') {
     return res.status(403).json({
       error: 'Cuenta desactivada o pendiente de aprobación.',
@@ -77,31 +78,56 @@ export function authGuard(req, res, next) {
     });
   }
 
-  // Inyectar datos del usuario en el request
+  // Inyectar datos del usuario autenticado
   req.user = {
     id: usuario.id,
     username: usuario.username,
-    role: usuario.role,
+    role: usuario.role || 'user',
     displayName: usuario.displayName,
     email: usuario.email,
     status: usuario.status
   };
 
-  // También setear x-user-id para compatibilidad con el sistema existente
   req.headers['x-user-id'] = usuario.username;
 
   next();
 }
 
 /**
- * Middleware que restringe acceso solo a superadmin.
- * Debe usarse DESPUÉS de authGuard.
+ * Middleware que restringe acceso exclusivamente al rol superadmin.
  */
 export function soloAdmin(req, res, next) {
   if (!req.user || req.user.role !== 'superadmin') {
     return res.status(403).json({
-      error: 'Acceso denegado. Se requieren permisos de administrador.',
-      code: 'ADMIN_REQUIRED'
+      error: 'Acceso denegado. Se requieren permisos de superadministrador.',
+      code: 'SUPERADMIN_REQUIRED'
+    });
+  }
+  next();
+}
+
+/**
+ * Middleware que permite acceso a superadmin o revisor (modo lectura y comentarios).
+ */
+export function soloRevisorOSuperAdmin(req, res, next) {
+  if (!req.user || (req.user.role !== 'superadmin' && req.user.role !== 'revisor')) {
+    return res.status(403).json({
+      error: 'Acceso denegado. Se requiere rol de revisor o superadministrador.',
+      code: 'REVIEWER_OR_ADMIN_REQUIRED'
+    });
+  }
+  next();
+}
+
+/**
+ * Middleware que impide que los revisores modifiquen el contenido de los proyectos.
+ * Los revisores solo pueden consultar y agregar comentarios.
+ */
+export function prohibirRevisorMutacion(req, res, next) {
+  if (req.user && req.user.role === 'revisor') {
+    return res.status(403).json({
+      error: 'Acceso denegado. El rol de revisor solo puede consultar proyectos y agregar notas o comentarios; no puede modificar el contenido ni la configuración.',
+      code: 'REVISOR_MUTATION_FORBIDDEN'
     });
   }
   next();

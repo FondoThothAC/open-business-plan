@@ -163,9 +163,6 @@ export default function BusinessModelCanvas({ readOnly = false }) {
           }
         }
         @media print {
-          @page {
-            size: landscape;
-          }
           .business-model-canvas-container {
             margin: 0 auto !important;
             padding: 0 !important;

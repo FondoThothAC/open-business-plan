@@ -13,3 +13,6 @@
 * **Aislamiento de Guardado y Prevención de Corrupción (Concurrency Guard):** Mutex por `projectId` y rechazo HTTP 409 ante peticiones que intenten degradar el estado persistido de un proyecto.
 * **Sanitización de LLM Outputs:** Todo texto devuelto por los modelos se pasa por sanitizadores que remueven scripts maliciosos, etiquetas `<think>` no deseadas y carácteres de escape problemáticos antes de inyectarlo en el DOM.
 * **Network Failover Seguro:** Las peticiones a proveedores locales (Ollama/LM Studio) pasan por un proxy local de loopback (`localhost:3001/api/ai/proxy`) evitando problemas de CORS y bloqueos de red interna.
+* **Sesiones Seguras con Cookies HttpOnly & SameSite:** Erradicación del almacenamiento de tokens JWT en `localStorage`. Las credenciales de sesión se gestionan mediante cookies con banderas `HttpOnly` (inmunes a XSS), `SameSite: 'Lax'` (protección contra CSRF) y `Secure` en HTTPS. La directiva Recordarme diferencia entre sesiones volátiles de navegador y renovaciones persistentes de 30 días.
+* **Auditoría Inmutable (Append-Only Audit Trail):** Registro estricto de eventos críticos en `server/data/audit_log.json` con timestamp ISO, ID de usuario, IP de origen, acción ejecutada y metadata contextual. Las consultas están restringidas exclusivamente al rol `superadmin`.
+

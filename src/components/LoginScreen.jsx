@@ -20,6 +20,7 @@ export default function LoginScreen() {
   const [modo, setModo] = useState('login'); // 'login' | 'register' | 'pendiente'
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
   const [email, setEmail] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [error, setError] = useState('');
@@ -31,7 +32,7 @@ export default function LoginScreen() {
     setError('');
     setCargando(true);
 
-    const resultado = await login(username, password);
+    const resultado = await login(username, password, rememberMe);
     if (!resultado.success) {
       setError(resultado.error);
     }
@@ -268,6 +269,41 @@ export default function LoginScreen() {
               autoComplete="current-password"
               required
             />
+
+            {/* Checkbox Recordarme */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              marginBottom: '1.25rem',
+              padding: '0.25rem 0.2rem'
+            }}>
+              <label style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                cursor: 'pointer',
+                userSelect: 'none',
+                fontSize: '0.8rem',
+                color: 'rgba(255, 255, 255, 0.7)'
+              }}>
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  style={{
+                    cursor: 'pointer',
+                    width: '16px',
+                    height: '16px',
+                    accentColor: '#38bdf8'
+                  }}
+                />
+                <span>Recordarme (30 días)</span>
+              </label>
+              <span style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.35)' }}>
+                {rememberMe ? 'Sesión extendida' : 'Sesión de navegador'}
+              </span>
+            </div>
 
             <button
               type="submit"

@@ -1,11 +1,12 @@
 /**
  * @file AuthContext.jsx
- * @description Contexto de autenticación para React.
- * Gestiona el estado de sesión, JWT, login/logout, y perfil del usuario.
+ * @description Contexto de autenticación para React con soporte para cookies HttpOnly y Recordarme.
+ * Gestiona el estado de sesión del usuario, verificación de roles (superadmin, revisor, user)
+ * y migración transparente de tokens heredados desde localStorage.
  * 
- * [CDD] Componente proveedor reutilizable que envuelve toda la app.
- * [SECDD] El JWT se almacena en localStorage con key 'obp_auth_token'.
- * [DDD] Entidad User: { id, username, role, displayName, email, apiKeys }
+ * [CDD] Componente proveedor reutilizable que envuelve la aplicación.
+ * [SECDD] El JWT se almacena exclusivamente en cookies HttpOnly y SameSite; ya no se expone a localStorage.
+ * [DDD] Entidad User: { id, username, role, displayName, email, apiKeys, status }
  */
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
@@ -13,13 +14,26 @@ import { getApiBase } from '../config/apiConfig.js';
 
 const AuthContext = createContext(null);
 
-// Key de localStorage para persistir la sesión
+// Keys legadas de localStorage para migración y compatibilidad
 const TOKEN_KEY = 'obp_auth_token';
 const USER_KEY = 'obp_auth_user';
 
 /**
- * Hook para acceder al contexto de autenticación.
- * @returns {{ user, token, isAuthenticated, isAdmin, login, logout, register, updateKeys, refreshProfile, loading }}
+ * Hook para acceder al contexto de autenticación en cualquier componente.
+ * @returns {{
+ *   user: Object|null,
+ *   isAuthenticated: boolean,
+ *   isAdmin: boolean,
+ *   isRevisor: boolean,
+ *   isRegularUser: boolean,
+ *   login: Function,
+ *   logout: Function,
+ *   register: Function,
+ *   updateKeys: Function,
+ *   refreshProfile: Function,
+ *   authFetch: Function,
+ *   loading: boolean
+ * }}
  */
 export function useAuth() {
   const context = useContext(AuthContext);
@@ -31,92 +45,108 @@ export function useAuth() {
 
 /**
  * Proveedor de autenticación que envuelve la app.
- * Verifica el JWT al cargar y expone funciones de login/logout/registro.
+ * Gestiona ciclo de vida de sesiones basadas en cookies HttpOnly con migración transparente.
  */
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const apiBase = getApiBase();
 
   /**
-   * Realiza un fetch autenticado con el JWT.
+   * Realiza un fetch autenticado incluyendo credenciales de cookies HttpOnly.
+   * Si existiera un token legado en localStorage, lo añade como fallback de migración.
    * @param {string} url
    * @param {Object} options
    * @returns {Promise<Response>}
    */
   const authFetch = useCallback(async (url, options = {}) => {
-    const currentToken = localStorage.getItem(TOKEN_KEY);
-    if (currentToken) {
-      options.headers = {
-        ...options.headers,
-        'Authorization': `Bearer ${currentToken}`
-      };
+    const fetchOptions = {
+      ...options,
+      credentials: 'include',
+      headers: {
+        ...(options.headers || {})
+      }
+    };
+
+    const tokenLegado = localStorage.getItem(TOKEN_KEY);
+    if (tokenLegado && !fetchOptions.headers['Authorization']) {
+      fetchOptions.headers['Authorization'] = `Bearer ${tokenLegado}`;
     }
-    return fetch(url, options);
+
+    return fetch(url, fetchOptions);
   }, []);
 
   /**
-   * Verifica el token almacenado al cargar la app.
-   * Si el token es válido, carga el perfil del usuario.
+   * Verifica la sesión activa al arrancar la app.
+   * Si existe un token heredado en localStorage, lo envía una sola vez para que el servidor
+   * establezca la cookie HttpOnly y luego lo elimina permanentemente del navegador.
    */
   useEffect(() => {
     const verificarSesion = async () => {
-      const tokenGuardado = localStorage.getItem(TOKEN_KEY);
-      if (!tokenGuardado) {
-        setLoading(false);
-        return;
+      const tokenLegado = localStorage.getItem(TOKEN_KEY);
+      const headers = {};
+      if (tokenLegado) {
+        headers['Authorization'] = `Bearer ${tokenLegado}`;
       }
 
       try {
         const res = await fetch(`${apiBase}/api/auth/me`, {
-          headers: { 'Authorization': `Bearer ${tokenGuardado}` }
+          method: 'GET',
+          credentials: 'include',
+          headers
         });
 
         if (res.ok) {
           const datos = await res.json();
           setUser(datos);
-          setToken(tokenGuardado);
-          // Compatibilidad: setear también el user_id para el interceptor legacy
           localStorage.setItem('openplan_user_id', datos.username);
+
+          // Si el servidor aceptó la sesión y había un token legado en localStorage, purgarlo
+          if (tokenLegado) {
+            localStorage.removeItem(TOKEN_KEY);
+            console.log('[Auth] Sesión migrada con éxito a cookie HttpOnly. Token legado eliminado de localStorage.');
+          }
         } else {
-          // Token inválido o expirado — limpiar sesión
+          // Sesión no válida o expirada
+          setUser(null);
           localStorage.removeItem(TOKEN_KEY);
           localStorage.removeItem(USER_KEY);
           localStorage.removeItem('openplan_user_id');
         }
       } catch {
-        // Error de red — mantener sesión local si existe
+        // En caso de corte de red, intentar cargar caché visual temporal de usuario
         const userGuardado = localStorage.getItem(USER_KEY);
         if (userGuardado) {
           try {
             setUser(JSON.parse(userGuardado));
-            setToken(tokenGuardado);
           } catch {
             // JSON corrupto
           }
         }
+      } finally {
+        setLoading(false);
       }
-
-      setLoading(false);
     };
 
     verificarSesion();
   }, [apiBase]);
 
   /**
-   * Inicia sesión con username y password.
+   * Inicia sesión con credenciales y opción Recordarme.
+   * El token se gestiona exclusivamente por cookie HttpOnly del servidor.
    * @param {string} username
    * @param {string} password
-   * @returns {{ success: boolean, error?: string }}
+   * @param {boolean} [rememberMe=false]
+   * @returns {Promise<{ success: boolean, error?: string }>}
    */
-  const login = async (username, password) => {
+  const login = async (username, password, rememberMe = false) => {
     try {
       const res = await fetch(`${apiBase}/api/auth/login`, {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
+        body: JSON.stringify({ username, password, rememberMe })
       });
 
       const datos = await res.json();
@@ -125,11 +155,10 @@ export function AuthProvider({ children }) {
         return { success: false, error: datos.error || 'Error de autenticación.' };
       }
 
-      // Guardar sesión
-      localStorage.setItem(TOKEN_KEY, datos.token);
+      // La sesión ahora viaja en cookie HttpOnly. Purgar cualquier token legado
+      localStorage.removeItem(TOKEN_KEY);
       localStorage.setItem(USER_KEY, JSON.stringify(datos.user));
       localStorage.setItem('openplan_user_id', datos.user.username);
-      setToken(datos.token);
       setUser(datos.user);
 
       return { success: true };
@@ -139,14 +168,15 @@ export function AuthProvider({ children }) {
   };
 
   /**
-   * Registra un nuevo usuario (queda pendiente de aprobación).
-   * @param {{ username, email, password, displayName }} datos
-   * @returns {{ success: boolean, message?: string, error?: string }}
+   * Registra un nuevo usuario en estado pendiente de aprobación.
+   * @param {{ username: string, email?: string, password: string, displayName?: string }} datos
+   * @returns {Promise<{ success: boolean, message?: string, error?: string }>}
    */
   const register = async ({ username, email, password, displayName }) => {
     try {
       const res = await fetch(`${apiBase}/api/auth/register`, {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, email, password, displayName })
       });
@@ -164,20 +194,28 @@ export function AuthProvider({ children }) {
   };
 
   /**
-   * Cierra la sesión actual.
+   * Cierra la sesión activa en el servidor eliminando la cookie HttpOnly y limpiando el estado.
    */
-  const logout = () => {
-    localStorage.removeItem(TOKEN_KEY);
-    localStorage.removeItem(USER_KEY);
-    localStorage.removeItem('openplan_user_id');
-    setToken(null);
-    setUser(null);
+  const logout = async () => {
+    try {
+      await fetch(`${apiBase}/api/auth/logout`, {
+        method: 'POST',
+        credentials: 'include'
+      });
+    } catch {
+      // Ignorar errores de red al cerrar sesión
+    } finally {
+      localStorage.removeItem(TOKEN_KEY);
+      localStorage.removeItem(USER_KEY);
+      localStorage.removeItem('openplan_user_id');
+      setUser(null);
+    }
   };
 
   /**
-   * Actualiza las API keys del usuario actual.
-   * @param {Object} keys — { openrouter: 'sk-...', groq: 'gsk-...' }
-   * @returns {{ success: boolean, error?: string }}
+   * Actualiza las API keys del usuario autenticado.
+   * @param {Object} keys
+   * @returns {Promise<{ success: boolean, error?: string }>}
    */
   const updateKeys = async (keys) => {
     try {
@@ -217,9 +255,10 @@ export function AuthProvider({ children }) {
 
   const value = {
     user,
-    token,
-    isAuthenticated: !!token && !!user,
+    isAuthenticated: !!user,
     isAdmin: user?.role === 'superadmin',
+    isRevisor: user?.role === 'revisor',
+    isRegularUser: user?.role === 'user',
     login,
     logout,
     register,

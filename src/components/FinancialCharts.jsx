@@ -962,6 +962,132 @@ export const FinancialReports = ({ projections, _netInitialInvestment, loans }) 
 };
 
 /**
+ * Componente que renderiza las tarjetas de indicadores financieros clave (TIR, VPN, ROI, Payback).
+ * Diseñado con estética corporativa sobria y compatible con impresión en modo ejecutivo.
+ */
+export const FinancialMetricsCards = ({ metrics = {} }) => {
+  const formatearMoneda = (val) => {
+    const num = Number(val);
+    if (!Number.isFinite(num)) return '$0 MXN';
+    return new Intl.NumberFormat('es-MX', {
+      style: 'currency',
+      currency: 'MXN',
+      maximumFractionDigits: 0
+    }).format(num);
+  };
+
+  const formatearPorcentaje = (val) => {
+    const num = Number(val);
+    if (!Number.isFinite(num)) return '0.0%';
+    return `${num.toFixed(1)}%`;
+  };
+
+  const tirValor = metrics.tir ?? metrics.irr ?? 0;
+  const vpnValor = metrics.npv ?? metrics.vpn ?? 0;
+  const roiValor = metrics.roi ?? 0;
+  const paybackValor = metrics.paybackPeriod ?? metrics.payback ?? 'N/D';
+
+  const tarjetas = [
+    {
+      titulo: 'Tasa Interna de Retorno (TIR)',
+      valor: formatearPorcentaje(tirValor),
+      descripcion: 'Rendimiento anual ponderado del proyecto',
+      color: '#0284c7',
+      fondo: '#f0f9ff',
+      borde: '#bae6fd'
+    },
+    {
+      titulo: 'Valor Presente Neto (VPN)',
+      valor: formatearMoneda(vpnValor),
+      descripcion: 'Creación neta de valor a tasa de descuento',
+      color: '#059669',
+      fondo: '#ecfdf5',
+      borde: '#a7f3d0'
+    },
+    {
+      titulo: 'Retorno de Inversión (ROI)',
+      valor: formatearPorcentaje(roiValor),
+      descripcion: 'Eficiencia de generación de utilidades sobre capital',
+      color: '#d97706',
+      fondo: '#fffbeb',
+      borde: '#fde68a'
+    },
+    {
+      titulo: 'Período de Recuperación (Payback)',
+      valor: typeof paybackValor === 'number' ? `${paybackValor.toFixed(1)} Años` : String(paybackValor),
+      descripcion: 'Horizonte temporal para recuperar la inversión inicial',
+      color: '#7c3aed',
+      fondo: '#f5f3ff',
+      borde: '#ddd6fe'
+    }
+  ];
+
+  return (
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+        gap: '1rem',
+        margin: '1rem 0 1.5rem 0'
+      }}
+    >
+      {tarjetas.map((tarjeta, index) => (
+        <div
+          key={index}
+          style={{
+            backgroundColor: tarjeta.fondo,
+            border: `1px solid ${tarjeta.borde}`,
+            borderRadius: '10px',
+            padding: '1.1rem',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            boxShadow: '0 1px 3px rgba(0, 0, 0, 0.04)'
+          }}
+        >
+          <div>
+            <span
+              style={{
+                fontSize: '0.75rem',
+                fontWeight: 700,
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em',
+                color: '#64748b',
+                display: 'block',
+                marginBottom: '0.35rem'
+              }}
+            >
+              {tarjeta.titulo}
+            </span>
+            <span
+              style={{
+                fontSize: '1.45rem',
+                fontWeight: 800,
+                color: tarjeta.color,
+                display: 'block',
+                lineHeight: 1.2
+              }}
+            >
+              {tarjeta.valor}
+            </span>
+          </div>
+          <p
+            style={{
+              fontSize: '0.72rem',
+              color: '#64748b',
+              margin: '0.6rem 0 0 0',
+              lineHeight: 1.3
+            }}
+          >
+            {tarjeta.descripcion}
+          </p>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+/**
  * PrintableFinancialReports — Renders all financial sub-reports expanded side-by-side,
  * without tabs, so they all appear in print/Vista Previa as individual sections.
  */
@@ -1165,89 +1291,91 @@ export const PrintableFinancialReports = ({ projections, staff = [], planData = 
         </div>
       </div>
 
-      {/* ── Dictamen de Valuación Pre-Money & Métricas Cuánticas ── */}
-      <div style={sectionStyle}>
-        <div style={panelStyle}>
-          <h4 style={sectionTitleStyle}>💎 Dictamen de Valuación & Métricas de Eficiencia Cuántica</h4>
-          {(() => {
-            const firstYear = annualSummaries[0]?.incomeStatement || {};
-            const firstYearSales = firstYear.sales || 0;
-            const firstYearEbitda = (firstYear.grossProfit || 0) - (firstYear.fixedCosts || 0);
-            const staffCount = Math.max(1, (staff || []).length);
-            
-            const revenuePerEmployee = firstYearSales / staffCount;
-            const ebitdaPerEmployee = firstYearEbitda / staffCount;
+      {/* ── Dictamen de Valuación Pre-Money & Métricas Cuánticas (exclusivo Documento Maestro) ── */}
+      {expandedMonthly && (
+        <div style={sectionStyle}>
+          <div style={panelStyle}>
+            <h4 style={sectionTitleStyle}>💎 Dictamen de Valuación & Métricas de Eficiencia Cuántica</h4>
+            {(() => {
+              const firstYear = annualSummaries[0]?.incomeStatement || {};
+              const firstYearSales = firstYear.sales || 0;
+              const firstYearEbitda = (firstYear.grossProfit || 0) - (firstYear.fixedCosts || 0);
+              const staffCount = Math.max(1, (staff || []).length);
+              
+              const revenuePerEmployee = firstYearSales / staffCount;
+              const ebitdaPerEmployee = firstYearEbitda / staffCount;
 
-            // Múltiplos estándar por giro
-            const multipleTechEbitda = 18.0;
-            const multipleServicesEbitda = 6.5;
-            const multipleCommerceEbitda = 5.0;
+              // Múltiplos estándar por giro
+              const multipleTechEbitda = 18.0;
+              const multipleServicesEbitda = 6.5;
+              const multipleCommerceEbitda = 5.0;
 
-            const valuationTech = Math.max(0, firstYearEbitda * multipleTechEbitda);
-            const valuationServices = Math.max(0, firstYearEbitda * multipleServicesEbitda);
-            const valuationCommerce = Math.max(0, firstYearEbitda * multipleCommerceEbitda);
+              const valuationTech = Math.max(0, firstYearEbitda * multipleTechEbitda);
+              const valuationServices = Math.max(0, firstYearEbitda * multipleServicesEbitda);
+              const valuationCommerce = Math.max(0, firstYearEbitda * multipleCommerceEbitda);
 
-            const fmt = (val) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', maximumFractionDigits: 0 }).format(val);
+              const fmt = (val) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', maximumFractionDigits: 0 }).format(val);
 
-            return (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-                {/* Métricas de productividad por empleado */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
-                  <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '10px', border: '1px solid #e2e8f0', textAlign: 'center' }}>
-                    <div style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: 800, textTransform: 'uppercase' }}>Ingreso Anual / Empleado</div>
-                    <div style={{ fontSize: '1.25rem', fontWeight: 900, color: '#0f172a', marginTop: '0.2rem' }}>{fmt(revenuePerEmployee)}</div>
-                    <div style={{ fontSize: '0.7rem', color: '#10b981', fontWeight: 600 }}>Alta Productividad</div>
+              return (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                  {/* Métricas de productividad por empleado */}
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
+                    <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '10px', border: '1px solid #e2e8f0', textAlign: 'center' }}>
+                      <div style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: 800, textTransform: 'uppercase' }}>Ingreso Anual / Empleado</div>
+                      <div style={{ fontSize: '1.25rem', fontWeight: 900, color: '#0f172a', marginTop: '0.2rem' }}>{fmt(revenuePerEmployee)}</div>
+                      <div style={{ fontSize: '0.7rem', color: '#10b981', fontWeight: 600 }}>Alta Productividad</div>
+                    </div>
+                    <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '10px', border: '1px solid #e2e8f0', textAlign: 'center' }}>
+                      <div style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: 800, textTransform: 'uppercase' }}>EBITDA Anual / Empleado</div>
+                      <div style={{ fontSize: '1.25rem', fontWeight: 900, color: '#4f46e5', marginTop: '0.2rem' }}>{fmt(ebitdaPerEmployee)}</div>
+                      <div style={{ fontSize: '0.7rem', color: '#64748b' }}>Margen Operativo Neto</div>
+                    </div>
+                    <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '10px', border: '1px solid #e2e8f0', textAlign: 'center' }}>
+                      <div style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: 800, textTransform: 'uppercase' }}>Plantilla de Arranque</div>
+                      <div style={{ fontSize: '1.25rem', fontWeight: 900, color: '#0f172a', marginTop: '0.2rem' }}>{staffCount} colaboradores</div>
+                      <div style={{ fontSize: '0.7rem', color: '#64748b' }}>Estructura Atómica</div>
+                    </div>
                   </div>
-                  <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '10px', border: '1px solid #e2e8f0', textAlign: 'center' }}>
-                    <div style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: 800, textTransform: 'uppercase' }}>EBITDA Anual / Empleado</div>
-                    <div style={{ fontSize: '1.25rem', fontWeight: 900, color: '#4f46e5', marginTop: '0.2rem' }}>{fmt(ebitdaPerEmployee)}</div>
-                    <div style={{ fontSize: '0.7rem', color: '#64748b' }}>Margen Operativo Neto</div>
-                  </div>
-                  <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '10px', border: '1px solid #e2e8f0', textAlign: 'center' }}>
-                    <div style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: 800, textTransform: 'uppercase' }}>Plantilla de Arranque</div>
-                    <div style={{ fontSize: '1.25rem', fontWeight: 900, color: '#0f172a', marginTop: '0.2rem' }}>{staffCount} colaboradores</div>
-                    <div style={{ fontSize: '0.7rem', color: '#64748b' }}>Estructura Atómica</div>
+
+                  {/* Tabla comparativa de múltiplos de valuación */}
+                  <div style={{ overflowX: 'auto' }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem', textAlign: 'left' }}>
+                      <thead>
+                        <tr style={{ background: '#f1f5f9', color: '#475569', borderBottom: '1px solid #cbd5e1' }}>
+                          <th style={{ padding: '0.6rem 0.8rem', fontWeight: 700 }}>Metodología de Valuación</th>
+                          <th style={{ padding: '0.6rem 0.8rem', fontWeight: 700 }}>Múltiplo Aplicado</th>
+                          <th style={{ padding: '0.6rem 0.8rem', fontWeight: 700, textAlign: 'right' }}>Valuación Estimada</th>
+                          <th style={{ padding: '0.6rem 0.8rem', fontWeight: 700 }}>Perfil de Inversor</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
+                          <td style={{ padding: '0.6rem 0.8rem', fontWeight: 600 }}>Tecnología / SaaS / IoT (18x EBITDA)</td>
+                          <td style={{ padding: '0.6rem 0.8rem', color: '#64748b' }}>18.0x EBITDA Año 1</td>
+                          <td style={{ padding: '0.6rem 0.8rem', fontWeight: 700, color: '#0f172a', textAlign: 'right' }}>{fmt(valuationTech)}</td>
+                          <td style={{ padding: '0.6rem 0.8rem', fontSize: '0.72rem', color: '#64748b' }}>Venture Capital / Escala Rápida</td>
+                        </tr>
+                        <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
+                          <td style={{ padding: '0.6rem 0.8rem', fontWeight: 600 }}>Servicios Industriales & MaaS (6.5x EBITDA)</td>
+                          <td style={{ padding: '0.6rem 0.8rem', color: '#64748b' }}>6.5x EBITDA Año 1</td>
+                          <td style={{ padding: '0.6rem 0.8rem', fontWeight: 700, color: '#0f172a', textAlign: 'right' }}>{fmt(valuationServices)}</td>
+                          <td style={{ padding: '0.6rem 0.8rem', fontSize: '0.72rem', color: '#64748b' }}>Private Equity / Estratégico</td>
+                        </tr>
+                        <tr>
+                          <td style={{ padding: '0.6rem 0.8rem', fontWeight: 600 }}>Comercio & Retail Tradicional (5.0x EBITDA)</td>
+                          <td style={{ padding: '0.6rem 0.8rem', color: '#64748b' }}>5.0x EBITDA Año 1</td>
+                          <td style={{ padding: '0.6rem 0.8rem', fontWeight: 700, color: '#0f172a', textAlign: 'right' }}>{fmt(valuationCommerce)}</td>
+                          <td style={{ padding: '0.6rem 0.8rem', fontSize: '0.72rem', color: '#64748b' }}>Inversionista Tradicional / Crédito</td>
+                        </tr>
+                      </tbody>
+                    </table>
                   </div>
                 </div>
-
-                {/* Tabla comparativa de múltiplos de valuación */}
-                <div style={{ overflowX: 'auto' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem', textAlign: 'left' }}>
-                    <thead>
-                      <tr style={{ background: '#f1f5f9', color: '#475569', borderBottom: '1px solid #cbd5e1' }}>
-                        <th style={{ padding: '0.6rem 0.8rem', fontWeight: 700 }}>Metodología de Valuación</th>
-                        <th style={{ padding: '0.6rem 0.8rem', fontWeight: 700 }}>Múltiplo Aplicado</th>
-                        <th style={{ padding: '0.6rem 0.8rem', fontWeight: 700, textAlign: 'right' }}>Valuación Estimada</th>
-                        <th style={{ padding: '0.6rem 0.8rem', fontWeight: 700 }}>Perfil de Inversor</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
-                        <td style={{ padding: '0.6rem 0.8rem', fontWeight: 600 }}>Tecnología / SaaS / IoT (18x EBITDA)</td>
-                        <td style={{ padding: '0.6rem 0.8rem', color: '#64748b' }}>18.0x EBITDA Año 1</td>
-                        <td style={{ padding: '0.6rem 0.8rem', fontWeight: 700, color: '#0f172a', textAlign: 'right' }}>{fmt(valuationTech)}</td>
-                        <td style={{ padding: '0.6rem 0.8rem', fontSize: '0.72rem', color: '#64748b' }}>Venture Capital / Escala Rápida</td>
-                      </tr>
-                      <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
-                        <td style={{ padding: '0.6rem 0.8rem', fontWeight: 600 }}>Servicios Industriales & MaaS (6.5x EBITDA)</td>
-                        <td style={{ padding: '0.6rem 0.8rem', color: '#64748b' }}>6.5x EBITDA Año 1</td>
-                        <td style={{ padding: '0.6rem 0.8rem', fontWeight: 700, color: '#0f172a', textAlign: 'right' }}>{fmt(valuationServices)}</td>
-                        <td style={{ padding: '0.6rem 0.8rem', fontSize: '0.72rem', color: '#64748b' }}>Private Equity / Estratégico</td>
-                      </tr>
-                      <tr>
-                        <td style={{ padding: '0.6rem 0.8rem', fontWeight: 600 }}>Comercio & Retail Tradicional (5.0x EBITDA)</td>
-                        <td style={{ padding: '0.6rem 0.8rem', color: '#64748b' }}>5.0x EBITDA Año 1</td>
-                        <td style={{ padding: '0.6rem 0.8rem', fontWeight: 700, color: '#0f172a', textAlign: 'right' }}>{fmt(valuationCommerce)}</td>
-                        <td style={{ padding: '0.6rem 0.8rem', fontSize: '0.72rem', color: '#64748b' }}>Inversionista Tradicional / Crédito</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            );
-          })()}
+              );
+            })()}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* ── Proyección de Flujo de Caja (Gráfica) ── */}
       <div style={{ ...sectionStyle, pageBreakBefore: 'avoid' }}>
@@ -1310,8 +1438,8 @@ export const PrintableFinancialReports = ({ projections, staff = [], planData = 
         </div>
       </div>
 
-      {/* ── Análisis Costo-Beneficio ── */}
-      {Array.isArray(annualCostBenefitData) && annualCostBenefitData.length > 0 && (
+      {/* ── Análisis Costo-Beneficio (exclusivo Documento Maestro) ── */}
+      {expandedMonthly && Array.isArray(annualCostBenefitData) && annualCostBenefitData.length > 0 && (
         <div style={sectionStyle}>
           <div style={panelStyle}>
             <h4 style={sectionTitleStyle}>🔄 Análisis Costo-Beneficio</h4>
@@ -1328,41 +1456,43 @@ export const PrintableFinancialReports = ({ projections, staff = [], planData = 
         </div>
       )}
 
-      {/* ── Costos Fijos vs Variables ── */}
-      <div style={sectionStyle}>
-        <div style={panelStyle}>
-          <h4 style={sectionTitleStyle}>📉 Costos Fijos vs. Variables</h4>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
-            <div>
-              <h5 style={{ fontWeight: 800, fontSize: '0.875rem', marginBottom: '0.75rem', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Costos Fijos</h5>
-              <ReportTable
-                headers={['Año', 'Costo Fijo Anual']}
-                annualData={annualFixedData}
-                keys={['year', 'fixedCosts']}
-                monthlyData={monthlyFixedData}
-                monthlyHeaders={['Mes', 'Costo Fijo Mensual']}
-                monthlyKeys={['month', 'fixedCosts']}
-                alwaysExpanded={expandedMonthly}
-              />
-            </div>
-            <div>
-              <h5 style={{ fontWeight: 800, fontSize: '0.875rem', marginBottom: '0.75rem', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Costos Variables</h5>
-              <ReportTable
-                headers={['Año', 'Costo Variable Anual']}
-                annualData={annualVariableData}
-                keys={['year', 'variableCosts']}
-                monthlyData={monthlyVariableData}
-                monthlyHeaders={['Mes', 'Costo Variable Mensual']}
-                monthlyKeys={['month', 'variableCosts']}
-                alwaysExpanded={expandedMonthly}
-              />
+      {/* ── Costos Fijos vs Variables (exclusivo Documento Maestro) ── */}
+      {expandedMonthly && (
+        <div style={sectionStyle}>
+          <div style={panelStyle}>
+            <h4 style={sectionTitleStyle}>📉 Costos Fijos vs. Variables</h4>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
+              <div>
+                <h5 style={{ fontWeight: 800, fontSize: '0.875rem', marginBottom: '0.75rem', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Costos Fijos</h5>
+                <ReportTable
+                  headers={['Año', 'Costo Fijo Anual']}
+                  annualData={annualFixedData}
+                  keys={['year', 'fixedCosts']}
+                  monthlyData={monthlyFixedData}
+                  monthlyHeaders={['Mes', 'Costo Fijo Mensual']}
+                  monthlyKeys={['month', 'fixedCosts']}
+                  alwaysExpanded={expandedMonthly}
+                />
+              </div>
+              <div>
+                <h5 style={{ fontWeight: 800, fontSize: '0.875rem', marginBottom: '0.75rem', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Costos Variables</h5>
+                <ReportTable
+                  headers={['Año', 'Costo Variable Anual']}
+                  annualData={annualVariableData}
+                  keys={['year', 'variableCosts']}
+                  monthlyData={monthlyVariableData}
+                  monthlyHeaders={['Mes', 'Costo Variable Mensual']}
+                  monthlyKeys={['month', 'variableCosts']}
+                  alwaysExpanded={expandedMonthly}
+                />
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
 
-      {/* ── Amortización de Créditos ── */}
-      {loans.length > 0 && loanSchedules && (
+      {/* ── Amortización de Créditos (exclusivo Documento Maestro) ── */}
+      {expandedMonthly && loans.length > 0 && loanSchedules && (
         <div style={sectionStyle}>
           <div style={panelStyle}>
             <h4 style={sectionTitleStyle}>🏦 Amortización de Créditos</h4>
@@ -1371,8 +1501,8 @@ export const PrintableFinancialReports = ({ projections, staff = [], planData = 
         </div>
       )}
 
-      {/* ── Mapa de Calor de Costos ── */}
-      {Array.isArray(monthlyBreakdown) && monthlyBreakdown.length > 0 && (
+      {/* ── Mapa de Calor de Costos (exclusivo Documento Maestro) ── */}
+      {expandedMonthly && Array.isArray(monthlyBreakdown) && monthlyBreakdown.length > 0 && (
         <div style={sectionStyle}>
           <div style={panelStyle}>
             <h4 style={sectionTitleStyle}>🌡️ Mapa de Calor de Costos Mensuales</h4>
@@ -1381,10 +1511,12 @@ export const PrintableFinancialReports = ({ projections, staff = [], planData = 
         </div>
       )}
 
-      {/* ── Fondo de Reserva de Liquidación Intocable (FRLI) & Kill Switch ── */}
-      <div style={sectionStyle}>
-        <LiquidationReserveWidget projections={projections} staff={staff} />
-      </div>
+      {/* ── Fondo de Reserva de Liquidación Intocable (exclusivo Documento Maestro) ── */}
+      {expandedMonthly && (
+        <div style={sectionStyle}>
+          <LiquidationReserveWidget projections={projections} staff={staff} />
+        </div>
+      )}
 
     </div>
   );

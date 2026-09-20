@@ -2,16 +2,16 @@ import './loadEnvironment.js';
 /**
  * @file auth.js
  * @description Sistema de autenticación para Open Business Plan.
- * Implementa registro con aprobación manual, login con JWT,
- * gestión de usuarios y API keys por usuario.
+ * Implementa gestión de sesiones seguras mediante cookies HttpOnly, Recordarme (30 días),
+ * roles (superadmin, revisor, user), auditoría administrativa y API keys encriptadas.
  * 
  * Almacenamiento: JSON en disco (server/data/users.json).
  * Hashing: bcryptjs (puro JS, sin compilación nativa).
- * Tokens: JWT con expiración configurable.
+ * Tokens: JWT con expiración dinámica ('30d' con Recordarme, '1d' de sesión).
  * 
  * [SECDD] Las contraseñas NUNCA se almacenan en texto plano.
  * [SECDD] Las API keys se almacenan encriptadas en el perfil.
- * [DDD]  Entidades: User { id, username, email, role, apiKeys, status }
+ * [DDD]  Entidades: User { id, username, email, role, status, apiKeys, createdAt, lastLogin }
  */
 
 import fs from 'fs';
@@ -19,25 +19,28 @@ import path from 'path';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
+import { registrarAuditoria } from './auditLogger.js';
 
 // ─────────────────────────────────────────────────────────
 //  Configuración
 // ─────────────────────────────────────────────────────────
 
-// Secreto JWT: desde .env o genera uno aleatorio persistente
 if (process.env.NODE_ENV === 'production' && (!process.env.JWT_SECRET || !process.env.API_KEYS_ENCRYPTION_KEY || process.env.JWT_SECRET === process.env.API_KEYS_ENCRYPTION_KEY)) {
   throw new Error('Production requires persistent, independent JWT_SECRET and API_KEYS_ENCRYPTION_KEY.');
 }
 const JWT_SECRET = process.env.JWT_SECRET || generarSecretoInicial();
-const JWT_EXPIRY = process.env.JWT_EXPIRY || '7d';
+const JWT_EXPIRY_REMEMBER = '30d';
+const JWT_EXPIRY_SESSION = '1d';
 const BCRYPT_ROUNDS = 12;
 const USERS_FILE = path.resolve('server', 'data', 'users.json');
 const API_KEYS_ENCRYPTION_KEY = process.env.API_KEYS_ENCRYPTION_KEY || JWT_SECRET;
 const ENCRYPTION_ALGORITHM = 'aes-256-gcm';
 
+export const ROLES_VALIDOS = new Set(['superadmin', 'revisor', 'user']);
+export const ESTADOS_VALIDOS = new Set(['active', 'pending', 'disabled']);
+
 /**
- * Genera un secreto JWT aleatorio y lo guarda en .env.local si no existe.
- * Solo se ejecuta una vez en el primer arranque.
+ * Genera un secreto JWT aleatorio y lo advierte en consola si no existe en variables de entorno.
  */
 function generarSecretoInicial() {
   const secreto = crypto.randomBytes(64).toString('hex');
@@ -52,7 +55,7 @@ function generarSecretoInicial() {
 
 /**
  * Carga los usuarios desde el archivo JSON.
- * Crea el archivo con el admin por defecto si no existe.
+ * Crea el archivo con el superadmin por defecto si no existe.
  * @returns {{ users: Array<Object> }}
  */
 function cargarUsuarios() {
@@ -62,7 +65,6 @@ function cargarUsuarios() {
       if (!fs.existsSync(dirPath)) {
         fs.mkdirSync(dirPath, { recursive: true });
       }
-      // Nunca crear una cuenta administradora con una contraseña conocida.
       const bootstrapPassword = process.env.BOOTSTRAP_SUPERADMIN_PASSWORD || '';
       const adminDefault = {
         users: [{
@@ -79,7 +81,7 @@ function cargarUsuarios() {
         }]
       };
       fs.writeFileSync(USERS_FILE, JSON.stringify(adminDefault, null, 2), 'utf8');
-      console.log('[Auth] Archivo de usuarios inicializado.');
+      console.log('[Auth] Archivo de usuarios inicializado con superadmin.');
       if (!bootstrapPassword) console.warn('[Auth] Configura BOOTSTRAP_SUPERADMIN_PASSWORD y activa al superadmin antes de usar producción.');
       return adminDefault;
     }
@@ -99,8 +101,7 @@ function guardarUsuarios(data) {
   if (!fs.existsSync(dirPath)) {
     fs.mkdirSync(dirPath, { recursive: true });
   }
-  // Escritura atómica: escribir a temp y renombrar
-  const tempFile = USERS_FILE + '.tmp';
+  const tempFile = USERS_FILE + '.tmp.' + Date.now();
   fs.writeFileSync(tempFile, JSON.stringify(data, null, 2), 'utf8');
   fs.renameSync(tempFile, USERS_FILE);
 }
@@ -157,7 +158,7 @@ function migrateApiKeys(data) {
  * @param {string} username
  * @returns {Object|null}
  */
-function buscarPorUsername(username) {
+export function buscarPorUsername(username) {
   const data = cargarUsuarios();
   if (migrateApiKeys(data)) guardarUsuarios(data);
   return data.users.find(u => u.username.toLowerCase() === username.toLowerCase()) || null;
@@ -168,7 +169,7 @@ function buscarPorUsername(username) {
  * @param {string} id
  * @returns {Object|null}
  */
-function buscarPorId(id) {
+export function buscarPorId(id) {
   const data = cargarUsuarios();
   if (migrateApiKeys(data)) guardarUsuarios(data);
   return data.users.find(u => u.id === id) || null;
@@ -181,10 +182,9 @@ function buscarPorId(id) {
 /**
  * Registra un nuevo usuario con estado 'pending' (requiere aprobación del admin).
  * @param {{ username: string, email: string, password: string, displayName: string }} datos
- * @returns {{ success: boolean, user?: Object, error?: string }}
+ * @returns {{ success: boolean, user?: Object, message?: string, error?: string }}
  */
 export function registrarUsuario({ username, email, password, displayName }) {
-  // Validaciones
   if (!username || !password) {
     return { success: false, error: 'Usuario y contraseña son obligatorios.' };
   }
@@ -198,7 +198,6 @@ export function registrarUsuario({ username, email, password, displayName }) {
     return { success: false, error: 'La contraseña debe tener al menos 6 caracteres.' };
   }
 
-  // Verificar duplicados
   const existente = buscarPorUsername(username);
   if (existente) {
     return { success: false, error: 'Ese nombre de usuario ya está registrado.' };
@@ -212,7 +211,7 @@ export function registrarUsuario({ username, email, password, displayName }) {
     passwordHash: bcrypt.hashSync(password, BCRYPT_ROUNDS),
     role: 'user',
     displayName: displayName || username,
-    status: 'pending', // Requiere aprobación del admin
+    status: 'pending',
     apiKeys: {},
     createdAt: new Date().toISOString(),
     lastLogin: null
@@ -220,6 +219,16 @@ export function registrarUsuario({ username, email, password, displayName }) {
 
   data.users.push(nuevoUsuario);
   guardarUsuarios(data);
+
+  registrarAuditoria({
+    actorId: nuevoUsuario.id,
+    actorUsername: nuevoUsuario.username,
+    actorRole: 'anon',
+    action: 'USER_REGISTERED',
+    targetType: 'user',
+    targetId: nuevoUsuario.id,
+    details: { email: nuevoUsuario.email, status: 'pending' }
+  });
 
   console.log(`[Auth] 📝 Nuevo registro pendiente: ${username} (${email})`);
 
@@ -231,11 +240,11 @@ export function registrarUsuario({ username, email, password, displayName }) {
 }
 
 /**
- * Autentica un usuario y retorna un JWT.
- * @param {{ username: string, password: string }} credenciales
- * @returns {{ success: boolean, token?: string, user?: Object, error?: string }}
+ * Autentica un usuario y retorna JWT y configuración de sesión.
+ * @param {{ username: string, password: string, rememberMe?: boolean }} credenciales
+ * @returns {{ success: boolean, token?: string, user?: Object, expiresInSeconds?: number, rememberMe?: boolean, error?: string }}
  */
-export function loginUsuario({ username, password }) {
+export function loginUsuario({ username, password, rememberMe = false }) {
   if (!username || !password) {
     return { success: false, error: 'Usuario y contraseña son obligatorios.' };
   }
@@ -245,13 +254,11 @@ export function loginUsuario({ username, password }) {
     return { success: false, error: 'Credenciales inválidas.' };
   }
 
-  // Verificar contraseña
   const passwordValida = bcrypt.compareSync(password, usuario.passwordHash);
   if (!passwordValida) {
     return { success: false, error: 'Credenciales inválidas.' };
   }
 
-  // Verificar estado de la cuenta
   if (usuario.status === 'pending') {
     return { success: false, error: 'Tu cuenta está pendiente de aprobación. Contacta al administrador.' };
   }
@@ -259,7 +266,6 @@ export function loginUsuario({ username, password }) {
     return { success: false, error: 'Tu cuenta ha sido desactivada. Contacta al administrador.' };
   }
 
-  // Actualizar último login
   const data = cargarUsuarios();
   const idx = data.users.findIndex(u => u.id === usuario.id);
   if (idx !== -1) {
@@ -267,21 +273,36 @@ export function loginUsuario({ username, password }) {
     guardarUsuarios(data);
   }
 
-  // Generar JWT
+  const durationStr = rememberMe ? JWT_EXPIRY_REMEMBER : JWT_EXPIRY_SESSION;
+  const expiresInSeconds = rememberMe ? (30 * 24 * 3600) : (24 * 3600);
+
   const payload = {
     sub: usuario.id,
     username: usuario.username,
-    role: usuario.role,
-    displayName: usuario.displayName
+    role: usuario.role || 'user',
+    displayName: usuario.displayName,
+    rememberMe: Boolean(rememberMe)
   };
-  const token = jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRY });
+  const token = jwt.sign(payload, JWT_SECRET, { expiresIn: durationStr });
 
-  console.log(`[Auth] ✅ Login exitoso: ${username} (${usuario.role})`);
+  registrarAuditoria({
+    actorId: usuario.id,
+    actorUsername: usuario.username,
+    actorRole: usuario.role || 'user',
+    action: 'USER_LOGIN',
+    targetType: 'session',
+    targetId: usuario.id,
+    details: { rememberMe: Boolean(rememberMe), durationStr }
+  });
+
+  console.log(`[Auth] ✅ Login exitoso: ${username} (${usuario.role}) - Recordarme: ${rememberMe}`);
 
   return {
     success: true,
     token,
-    user: sanitizarUsuario(usuario)
+    user: sanitizarUsuario(usuario),
+    expiresInSeconds,
+    rememberMe: Boolean(rememberMe)
   };
 }
 
@@ -303,12 +324,12 @@ export function verificarToken(token) {
 }
 
 // ─────────────────────────────────────────────────────────
-//  Gestión de Usuarios (Admin)
+//  Gestión Administrativa de Usuarios (Superadmin)
 // ─────────────────────────────────────────────────────────
 
 /**
- * Lista todos los usuarios (solo para superadmin).
- * @returns {Array<Object>} Usuarios sanitizados (sin passwordHash)
+ * Lista todos los usuarios registrados.
+ * @returns {Array<Object>} Usuarios sanitizados
  */
 export function listarUsuarios() {
   const data = cargarUsuarios();
@@ -316,46 +337,180 @@ export function listarUsuarios() {
 }
 
 /**
- * Activa una cuenta pendiente.
- * @param {string} userId
- * @returns {{ success: boolean, error?: string }}
+ * Crea un usuario directamente desde el panel de administración.
+ * @param {{ username: string, email?: string, password: string, displayName?: string, role?: string, status?: string }} datos
+ * @param {Object} [actorAdmin] Superadmin que realiza la acción
+ * @returns {{ success: boolean, user?: Object, error?: string }}
  */
-export function activarUsuario(userId) {
+export function crearUsuarioAdmin({ username, email, password, displayName, role = 'user', status = 'active' }, actorAdmin = null) {
+  if (!username || !password) {
+    return { success: false, error: 'Usuario y contraseña son requeridos.' };
+  }
+  if (!ROLES_VALIDOS.has(role)) {
+    return { success: false, error: `Rol inválido. Roles permitidos: ${Array.from(ROLES_VALIDOS).join(', ')}` };
+  }
+  if (!ESTADOS_VALIDOS.has(status)) {
+    return { success: false, error: `Estado inválido. Estados permitidos: ${Array.from(ESTADOS_VALIDOS).join(', ')}` };
+  }
+  if (buscarPorUsername(username)) {
+    return { success: false, error: 'El nombre de usuario ya está registrado.' };
+  }
+
+  const data = cargarUsuarios();
+  const nuevo = {
+    id: `u_${username.toLowerCase()}_${crypto.randomBytes(4).toString('hex')}`,
+    username: username.toLowerCase(),
+    email: email || '',
+    passwordHash: bcrypt.hashSync(password, BCRYPT_ROUNDS),
+    role,
+    displayName: displayName || username,
+    status,
+    apiKeys: {},
+    createdAt: new Date().toISOString(),
+    lastLogin: null
+  };
+
+  data.users.push(nuevo);
+  guardarUsuarios(data);
+
+  registrarAuditoria({
+    actorId: actorAdmin?.id || 'admin',
+    actorUsername: actorAdmin?.username || 'admin',
+    actorRole: actorAdmin?.role || 'superadmin',
+    action: 'ADMIN_CREATE_USER',
+    targetType: 'user',
+    targetId: nuevo.id,
+    details: { username: nuevo.username, role: nuevo.role, status: nuevo.status }
+  });
+
+  return { success: true, user: sanitizarUsuario(nuevo) };
+}
+
+/**
+ * Actualiza rol, nombre o estado de un usuario.
+ * @param {string} userId
+ * @param {{ displayName?: string, email?: string, role?: string, status?: string }} cambios
+ * @param {Object} [actorAdmin]
+ * @returns {{ success: boolean, user?: Object, error?: string }}
+ */
+export function actualizarUsuarioAdmin(userId, cambios = {}, actorAdmin = null) {
   const data = cargarUsuarios();
   const idx = data.users.findIndex(u => u.id === userId);
   if (idx === -1) return { success: false, error: 'Usuario no encontrado.' };
-  
-  data.users[idx].status = 'active';
+
+  const actual = data.users[idx];
+
+  // Proteger al superadmin principal para que no sea degradado ni deshabilitado accidentalmente
+  if (actual.role === 'superadmin' && cambios.role && cambios.role !== 'superadmin') {
+    const superadminsRestantes = data.users.filter(u => u.role === 'superadmin' && u.id !== userId);
+    if (superadminsRestantes.length === 0) {
+      return { success: false, error: 'No se puede degradar al único superadministrador del sistema.' };
+    }
+  }
+
+  if (cambios.role) {
+    if (!ROLES_VALIDOS.has(cambios.role)) {
+      return { success: false, error: 'Rol no admitido.' };
+    }
+    actual.role = cambios.role;
+  }
+
+  if (cambios.status) {
+    if (!ESTADOS_VALIDOS.has(cambios.status)) {
+      return { success: false, error: 'Estado no admitido.' };
+    }
+    if (actual.role === 'superadmin' && cambios.status !== 'active') {
+      return { success: false, error: 'No se puede desactivar al superadministrador.' };
+    }
+    actual.status = cambios.status;
+  }
+
+  if (typeof cambios.displayName === 'string' && cambios.displayName.trim()) {
+    actual.displayName = cambios.displayName.trim();
+  }
+
+  if (typeof cambios.email === 'string') {
+    actual.email = cambios.email.trim();
+  }
+
   guardarUsuarios(data);
-  console.log(`[Auth] ✅ Usuario activado: ${data.users[idx].username}`);
-  return { success: true, user: sanitizarUsuario(data.users[idx]) };
+
+  registrarAuditoria({
+    actorId: actorAdmin?.id || 'admin',
+    actorUsername: actorAdmin?.username || 'admin',
+    actorRole: actorAdmin?.role || 'superadmin',
+    action: 'ADMIN_UPDATE_USER',
+    targetType: 'user',
+    targetId: userId,
+    details: cambios
+  });
+
+  return { success: true, user: sanitizarUsuario(actual) };
+}
+
+/**
+ * Restablece la contraseña de un usuario por parte de un superadmin.
+ * Si no se proporciona una contraseña, autogenera una contraseña temporal segura.
+ * @param {string} userId
+ * @param {string} [nuevaPassword]
+ * @param {Object} [actorAdmin]
+ * @returns {{ success: boolean, temporaryPassword?: string, message?: string, error?: string }}
+ */
+export function resetearPasswordAdmin(userId, nuevaPassword = null, actorAdmin = null) {
+  let passwordFinal = nuevaPassword;
+  if (!passwordFinal || typeof passwordFinal !== 'string' || passwordFinal.trim().length === 0) {
+    passwordFinal = `Temp_${crypto.randomBytes(4).toString('hex')}!`;
+  } else if (passwordFinal.length < 6) {
+    return { success: false, error: 'La nueva contraseña debe tener al menos 6 caracteres.' };
+  }
+
+  const data = cargarUsuarios();
+  const idx = data.users.findIndex(u => u.id === userId);
+  if (idx === -1) return { success: false, error: 'Usuario no encontrado.' };
+
+  data.users[idx].passwordHash = bcrypt.hashSync(passwordFinal, BCRYPT_ROUNDS);
+  guardarUsuarios(data);
+
+  registrarAuditoria({
+    actorId: actorAdmin?.id || 'admin',
+    actorUsername: actorAdmin?.username || 'admin',
+    actorRole: actorAdmin?.role || 'superadmin',
+    action: 'ADMIN_PASSWORD_RESET',
+    targetType: 'user',
+    targetId: userId,
+    details: { username: data.users[idx].username }
+  });
+
+  return { success: true, temporaryPassword: passwordFinal, message: 'Contraseña restablecida exitosamente.' };
+}
+
+/**
+ * Activa una cuenta pendiente.
+ * @param {string} userId
+ * @param {Object} [actorAdmin]
+ * @returns {{ success: boolean, user?: Object, error?: string }}
+ */
+export function activarUsuario(userId, actorAdmin = null) {
+  return actualizarUsuarioAdmin(userId, { status: 'active' }, actorAdmin);
 }
 
 /**
  * Desactiva una cuenta de usuario.
  * @param {string} userId
+ * @param {Object} [actorAdmin]
  * @returns {{ success: boolean, error?: string }}
  */
-export function desactivarUsuario(userId) {
-  const data = cargarUsuarios();
-  const idx = data.users.findIndex(u => u.id === userId);
-  if (idx === -1) return { success: false, error: 'Usuario no encontrado.' };
-  if (data.users[idx].role === 'superadmin') {
-    return { success: false, error: 'No se puede desactivar al superadmin.' };
-  }
-  
-  data.users[idx].status = 'disabled';
-  guardarUsuarios(data);
-  console.log(`[Auth] 🚫 Usuario desactivado: ${data.users[idx].username}`);
-  return { success: true };
+export function desactivarUsuario(userId, actorAdmin = null) {
+  return actualizarUsuarioAdmin(userId, { status: 'disabled' }, actorAdmin);
 }
 
 /**
  * Elimina un usuario permanentemente.
  * @param {string} userId
+ * @param {Object} [actorAdmin]
  * @returns {{ success: boolean, error?: string }}
  */
-export function eliminarUsuario(userId) {
+export function eliminarUsuario(userId, actorAdmin = null) {
   const data = cargarUsuarios();
   const idx = data.users.findIndex(u => u.id === userId);
   if (idx === -1) return { success: false, error: 'Usuario no encontrado.' };
@@ -365,6 +520,17 @@ export function eliminarUsuario(userId) {
 
   const [eliminado] = data.users.splice(idx, 1);
   guardarUsuarios(data);
+
+  registrarAuditoria({
+    actorId: actorAdmin?.id || 'admin',
+    actorUsername: actorAdmin?.username || 'admin',
+    actorRole: actorAdmin?.role || 'superadmin',
+    action: 'ADMIN_DELETE_USER',
+    targetType: 'user',
+    targetId: userId,
+    details: { username: eliminado.username }
+  });
+
   console.log(`[Auth] 🗑️ Usuario eliminado: ${eliminado.username}`);
   return { success: true };
 }
@@ -376,15 +542,14 @@ export function eliminarUsuario(userId) {
 /**
  * Actualiza las API keys de un usuario.
  * @param {string} userId
- * @param {Object} keys — Objeto con las claves { openrouter: 'sk-...', groq: 'gsk-...' }
- * @returns {{ success: boolean, error?: string }}
+ * @param {Object} keys
+ * @returns {{ success: boolean, apiKeys?: Object, error?: string }}
  */
 export function actualizarApiKeys(userId, keys) {
   const data = cargarUsuarios();
   const idx = data.users.findIndex(u => u.id === userId);
   if (idx === -1) return { success: false, error: 'Usuario no encontrado.' };
 
-  // Merge: mantiene keys existentes, actualiza las proporcionadas
   migrateApiKeys(data);
   for (const [name, value] of Object.entries(keys || {})) {
     if (value === undefined || value === null || String(value).startsWith('•••')) continue;
@@ -392,7 +557,6 @@ export function actualizarApiKeys(userId, keys) {
     else data.users[idx].apiKeys[name] = encryptApiKey(String(value).trim());
   }
 
-  // Limpiar keys vacías
   for (const [key, value] of Object.entries(data.users[idx].apiKeys)) {
     if (!value || value.trim() === '') {
       delete data.users[idx].apiKeys[key];
@@ -404,23 +568,27 @@ export function actualizarApiKeys(userId, keys) {
 }
 
 /**
- * Obtiene las API keys de un usuario.
+ * Obtiene las API keys enmascaradas de un usuario.
  * @param {string} userId
- * @returns {Object} Claves API del usuario
+ * @returns {Object}
  */
 export function obtenerApiKeys(userId) {
   const usuario = buscarPorId(userId);
   return Object.fromEntries(Object.entries(usuario?.apiKeys || {}).map(([name, value]) => [name, maskApiKey(value)]));
 }
 
-/** Uso exclusivo del backend: nunca enviar las claves descifradas al cliente. */
+/**
+ * Obtiene las API keys descifradas para uso exclusivo de llamadas backend a LLMs.
+ * @param {string} userId
+ * @returns {Object}
+ */
 export function obtenerApiKeysParaServicio(userId) {
   const usuario = buscarPorId(userId);
   return Object.fromEntries(Object.entries(usuario?.apiKeys || {}).map(([name, value]) => [name, decryptApiKey(value)]));
 }
 
 /**
- * Cambia la contraseña de un usuario.
+ * Cambia la contraseña de un usuario verificando la contraseña actual.
  * @param {string} userId
  * @param {string} passwordActual
  * @param {string} passwordNueva
@@ -441,6 +609,16 @@ export function cambiarPassword(userId, passwordActual, passwordNueva) {
 
   data.users[idx].passwordHash = bcrypt.hashSync(passwordNueva, BCRYPT_ROUNDS);
   guardarUsuarios(data);
+
+  registrarAuditoria({
+    actorId: usuario.id,
+    actorUsername: usuario.username,
+    actorRole: usuario.role || 'user',
+    action: 'USER_CHANGE_PASSWORD',
+    targetType: 'user',
+    targetId: usuario.id
+  });
+
   console.log(`[Auth] 🔑 Contraseña cambiada: ${usuario.username}`);
   return { success: true };
 }
@@ -450,13 +628,18 @@ export function cambiarPassword(userId, passwordActual, passwordNueva) {
 // ─────────────────────────────────────────────────────────
 
 /**
- * Remueve campos sensibles del objeto de usuario para enviar al frontend.
+ * Remueve campos sensibles del objeto de usuario para enviar al cliente.
  * @param {Object} usuario
- * @returns {Object} Usuario sin passwordHash
+ * @returns {Object} Usuario sanitizado
  */
-function sanitizarUsuario(usuario) {
+export function sanitizarUsuario(usuario) {
   const { passwordHash: _passwordHash, apiKeys, ...limpio } = usuario;
-  return { ...limpio, apiKeys: Object.fromEntries(Object.entries(apiKeys || {}).map(([name, value]) => [name, maskApiKey(value)])) };
+  return {
+    ...limpio,
+    role: limpio.role || 'user',
+    status: limpio.status || 'active',
+    apiKeys: Object.fromEntries(Object.entries(apiKeys || {}).map(([name, value]) => [name, maskApiKey(value)]))
+  };
 }
 
-export { JWT_SECRET, buscarPorId };
+export { JWT_SECRET };

@@ -334,16 +334,26 @@ Con base en el Plan de Saneamiento y Endurecimiento formalizado en `docs/archite
 * **Clasificación verificable:** Un establecimiento se marca como competencia directa, indirecta/sustituto, cliente potencial o pendiente con una razón y evidencia de producto, canal y cobertura.
 * **Gobernanza UXDD:** La vista de rutas activas de Mercado persiste Markdown, evidencia, indicadores y pendientes. No utiliza Hermosillo ni coordenadas predeterminadas cuando falta el territorio confirmado.
 
-### 5.9 Motor de Exportación Multi-Alcance & Calibración Financiera de Precisión (`docxExportEngine.js`, `VistaPrevia.jsx`, `calculadoraFinanciera.js`)
-* **Arquitectura de Alcance Dual (`scope: 'executive' | 'full'`):**
-  * **Dossier Ejecutivo Canónico (`scope = 'executive'`):** Exportación compacta (~20-25 páginas) limitada a la metodología activa (`FRAMEWORKS[projectType]`), eliminando texto robótico genérico y consolidando estados financieros a 5 años en formato tabular de alta dirección.
-  * **Documento Maestro Completo (`scope = 'full'`):** Integración exhaustiva de los 12 frameworks canónicos sin truncamiento, estructurados por metodología y pilar.
-* **Parser Numérico de Precisión Anti-Colisión (`parseNumericAmount`):**
-  * Blindaje con expresiones regulares sensibles al contexto y filtrado de viñetas (`•` y `-`), evitando que los guiones se interpreten como signos negativos o concatenen importes multilínea en cifras astronómicas.
-  * Inclusión del parámetro `preferredKeyword` para discriminar importes totales frente a costos unitarios (`/kg`, `/pza`).
-* **Persistencia Estructurada de Corrida Financiera (`corrida_automatica`):**
-  * Almacenamiento directo del modelo proyectado a 5 años en `planData.organizacion.estados_financieros.corrida_automatica` como objeto JSON nativo.
-  * Tablas consolidadas de Estado de Resultados (Ingresos, Costo Variable, Utilidad Bruta, Costos Fijos, EBITDA, Depreciación, EBIT, ISR, Utilidad Neta) y Flujo de Caja Libre.
-  * Calibración rigurosa de Unit Economics: Margen Bruto Real de 31.13% (con nota de Markup de 45.24%) y Punto de Equilibrio de 781.87 kg/mes ($752,940 MXN/mes).
+### 5.10 Gestión Integral de Usuarios, Sesiones HttpOnly, Auditoría Inmutable y Dossier Canónico VCV (20 Páginas)
+* **Arquitectura de Autenticación & Sesión Segura (`server/auth.js`, `server/middleware/authGuard.js`, `src/context/AuthContext.jsx`):**
+  * Sustitución completa de tokens JWT en `localStorage` por cookies seguras `HttpOnly`, `Secure` (en producción/HTTPS) y `SameSite: 'Lax'`.
+  * Opción "Recordarme" calibrada: sesión volátil (cerrar navegador) vs persistencia de 30 días con renovación controlada.
+  * Migración automática con purga del navegador de tokens heredados `openplan_token` al iniciar sesión.
+* **Modelo de Roles y Privilegios:**
+  * `superadmin`: Acceso irrestricto, administración integral de usuarios, cambio de roles, auditoría, reseteo de contraseñas, y visualización exclusiva del módulo Comercio Cuántico TR.
+  * `revisor`: Acceso a proyectos asignados y públicos para comentar y validar; sin permisos de aprobación final ni borrado.
+  * `user`: Propietario de proyectos; puede crear, editar, solicitar revisión y archivar sus propios anteproyectos.
+* **Bitácora de Auditoría Inmutable (`server/auditLogger.js`, `server/data/audit_log.json`):**
+  * Registro inmutable de eventos críticos: logins, cambios de rol, aprobación/rechazo de proyectos, reseteo de claves y exportaciones.
+  * Consulta centralizada protegida por rol `superadmin` mediante `GET /api/admin/audit`.
+* **Gobernanza de Proyectos & Proyectos Incompletos (`ProjectWorkspaceModal.jsx`, `Layout.jsx`):**
+  * Desacoplamiento explícito entre avance cuantitativo (`avance`) y estado editorial (`Borrador`, `En revisión`, `Aprobado`, `Archivado`).
+  * Visualización de módulos faltantes, responsable, última edición y botón **Continuar**.
+  * Apertura de proyectos de otros usuarios en modo supervisor/revisor con banner superior informativo, sin suplantación de identidad.
+* **Calibración Canónica de Exportación VCV a 20 Páginas (`scripts/generate_vcv_dossier.js`, `VistaPrevia.jsx`):**
+  * Dossier ejecutivo consolidado en orientación vertical Letter (`612 x 792 pts`) en exactamente 20 páginas sin páginas en blanco.
+  * Respaldo histórico del PDF de 114 páginas en `vcv/historico-114p-vcv-cortes-finos.pdf` (8.4 MB) y generación del nuevo PDF ejecutivo de 2.1 MB.
+  * Sincronización fiel de cifras canónicas: Inversión $4M MXN, Ventas $59.9M MXN, Utilidad Neta $12.7M MXN, TIR 38.4%, VPN $6.85M MXN, Payback 18 meses, B/C 1.45.
+
 
 

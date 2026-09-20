@@ -281,13 +281,13 @@ export function buildDocxDocument(project = {}, options = {}) {
           ], true),
           createStyledRow([
             { text: dictamen.fase1?.nombre || 'Fase 1: Taller Piloto', bold: true },
-            { text: dictamen.fase1?.monto_requerido ? `$${dictamen.fase1.monto_requerido.toLocaleString('es-MX')} MXN` : '$4,000,000 MXN', bold: true },
+            { text: dictamen.fase1?.monto_requerido ? `$${dictamen.fase1.monto_requerido.toLocaleString('es-MX')} MXN` : 'Pendiente de definir', bold: true },
             { text: dictamen.fase1?.capacidad_mensual_kg ? `${dictamen.fase1.capacidad_mensual_kg.toLocaleString('es-MX')} kg/mes, 9 colaboradores` : '1 Horno ASADHOR (5.1 ton/mes), 9 empleados' },
             { text: 'Regional B2B (Sonora y Sinaloa)' }
           ]),
           createStyledRow([
             { text: dictamen.fase2?.nombre || 'Fase 2: Escala Industrial', bold: true },
-            { text: dictamen.fase2?.monto_requerido_serie_a ? `$${dictamen.fase2.monto_requerido_serie_a.toLocaleString('es-MX')} MXN` : '$16,800,000 MXN', bold: true },
+            { text: dictamen.fase2?.monto_requerido_serie_a ? `$${dictamen.fase2.monto_requerido_serie_a.toLocaleString('es-MX')} MXN` : 'Pendiente de definir', bold: true },
             { text: dictamen.fase2?.requerimientos || 'Planta TIF 1,200 m², 5 Hornos ASADHOR, Túnel Criogénico IQF, 24 empleados' },
             { text: 'Nacional & Exportación EE.UU.' }
           ])
@@ -384,17 +384,17 @@ export function buildDocxDocument(project = {}, options = {}) {
           ], true),
           createStyledRow([
             { text: 'Tasa Interna de Retorno (TIR)', bold: true },
-            { text: `${kpis.irr ? kpis.irr.toFixed(1) : '38.4'}%`, bold: true },
+            { text: kpis.irr != null ? `${kpis.irr.toFixed(1)}%` : 'Pendiente', bold: true },
             { text: 'Excelente. Supera ampliamente la tasa de descuento WACC.' }
           ]),
           createStyledRow([
             { text: 'Valor Presente Neto (VPN / VAN)', bold: true },
-            { text: formatMxn(kpis.npv || 6850000), bold: true },
+            { text: kpis.npv != null ? formatMxn(kpis.npv) : 'Pendiente', bold: true },
             { text: 'Viable. Generación de valor económico neto para accionistas.' }
           ]),
           createStyledRow([
             { text: 'Periodo de Recuperación (Payback)', bold: true },
-            { text: `${kpis.paybackPeriodYears ? (kpis.paybackPeriodYears * 12).toFixed(0) : '18'} meses`, bold: true },
+            { text: kpis.paybackPeriodYears != null ? `${(kpis.paybackPeriodYears * 12).toFixed(0)} meses` : 'Pendiente', bold: true },
             { text: 'Rápida amortización con flujo operativo estable.' }
           ]),
           createStyledRow([

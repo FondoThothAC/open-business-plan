@@ -48,29 +48,35 @@ const RoadmapNode = ({ data }) => {
     badgeBg = '#fee2e2';
   }
 
+  const isCompact = data.isCompact;
+
   return (
     <div style={{
-      padding: '12px 16px',
+      padding: isCompact ? '8px 12px' : '12px 16px',
       borderRadius: '10px',
       background: bgColor,
       border: `2px solid ${borderColor}`,
       color: textColor,
-      minWidth: '220px',
-      maxWidth: '280px',
-      fontSize: '0.82rem',
+      minWidth: isCompact ? '200px' : '220px',
+      maxWidth: isCompact ? '250px' : '280px',
+      fontSize: isCompact ? '0.75rem' : '0.82rem',
       fontFamily: 'var(--font-body, system-ui, sans-serif)',
       boxShadow: '0 4px 12px rgba(0,0,0,0.06)',
       position: 'relative',
       textAlign: 'left'
     }}>
-      <Handle type="target" position={Position.Top} style={{ background: borderColor, width: 8, height: 8 }} />
+      <Handle 
+        type="target" 
+        position={isCompact ? Position.Left : Position.Top} 
+        style={{ background: borderColor, width: 8, height: 8 }} 
+      />
       
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
         <span style={{
-          fontSize: '0.68rem',
+          fontSize: '0.65rem',
           fontWeight: 800,
           textTransform: 'uppercase',
-          padding: '2px 6px',
+          padding: '2px 5px',
           borderRadius: '4px',
           background: badgeBg,
           color: badgeColor
@@ -78,23 +84,27 @@ const RoadmapNode = ({ data }) => {
           {data.badge || 'Etapa'}
         </span>
         {data.amount && (
-          <span style={{ fontSize: '0.78rem', fontWeight: 800, color: textColor }}>
+          <span style={{ fontSize: '0.75rem', fontWeight: 800, color: textColor }}>
             {data.amount}
           </span>
         )}
       </div>
 
-      <div style={{ fontWeight: 700, fontSize: '0.88rem', marginBottom: '4px', lineHeight: 1.3 }}>
+      <div style={{ fontWeight: 700, fontSize: isCompact ? '0.8rem' : '0.88rem', marginBottom: '3px', lineHeight: 1.25 }}>
         {data.title}
       </div>
 
       {data.description && (
-        <div style={{ fontSize: '0.75rem', opacity: 0.88, lineHeight: 1.4 }}>
+        <div style={{ fontSize: isCompact ? '0.7rem' : '0.75rem', opacity: 0.88, lineHeight: 1.35 }}>
           {data.description}
         </div>
       )}
 
-      <Handle type="source" position={Position.Bottom} style={{ background: borderColor, width: 8, height: 8 }} />
+      <Handle 
+        type="source" 
+        position={isCompact ? Position.Right : Position.Bottom} 
+        style={{ background: borderColor, width: 8, height: 8 }} 
+      />
     </div>
   );
 };
@@ -103,11 +113,13 @@ const nodeTypes = {
   roadmapNode: RoadmapNode
 };
 
-export default function DecisionFlow({ phases = [] }) {
+export default function DecisionFlow({ phases = [], isCompact = false }) {
   const nodes = useMemo(() => phases.map((phase, index) => ({
     id: `phase-${index}`,
     type: 'roadmapNode',
-    position: { x: 260, y: index * 180 },
+    position: isCompact 
+      ? { x: 30 + index * 290, y: 20 }
+      : { x: 260, y: index * 180 },
     data: {
       type: index === 0 ? 'phase1' : 'phase2',
       badge: phase.nombre || `Fase ${index + 1}`,
@@ -115,9 +127,10 @@ export default function DecisionFlow({ phases = [] }) {
         ? `$${Number(phase.monto_requerido ?? phase.monto_requerido_serie_a ?? phase.monto).toLocaleString('es-MX')} MXN`
         : '',
       title: phase.titulo || phase.nombre || `Fase ${index + 1}`,
-      description: phase.requerimientos || phase.normatividad || phase.mercado || ''
+      description: phase.requerimientos || phase.normatividad || phase.mercado || '',
+      isCompact
     }
-  })), [phases]);
+  })), [phases, isCompact]);
 
   const edges = useMemo(() => nodes.slice(1).map((node, index) => ({
     id: `phase-edge-${index}`,
@@ -130,7 +143,7 @@ export default function DecisionFlow({ phases = [] }) {
   return (
     <div style={{
       width: '100%',
-      height: '520px',
+      height: isCompact ? '185px' : '520px',
       background: '#f8fafc',
       borderRadius: '10px',
       border: '1px solid #e2e8f0',
@@ -141,15 +154,19 @@ export default function DecisionFlow({ phases = [] }) {
         edges={edges}
         nodeTypes={nodeTypes}
         fitView
-        fitViewOptions={{ padding: 0.2 }}
+        fitViewOptions={{ padding: 0.15 }}
         attributionPosition="bottom-right"
         style={{ width: '100%', height: '100%' }}
       >
-        <MiniMap 
-          nodeColor={n => n.data?.type === 'phase1' ? '#10b981' : n.data?.type === 'phase2' ? '#f59e0b' : '#3b82f6'} 
-          style={{ height: 90, width: 130, borderRadius: 6, border: '1px solid #cbd5e1' }} 
-        />
-        <Controls showInteractive={false} />
+        {!isCompact && (
+          <>
+            <MiniMap 
+              nodeColor={n => n.data?.type === 'phase1' ? '#10b981' : n.data?.type === 'phase2' ? '#f59e0b' : '#3b82f6'} 
+              style={{ height: 90, width: 130, borderRadius: 6, border: '1px solid #cbd5e1' }} 
+            />
+            <Controls showInteractive={false} />
+          </>
+        )}
         <Background color="#cbd5e1" gap={16} size={1} />
       </ReactFlow>
     </div>

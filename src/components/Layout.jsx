@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FileSpreadsheet, LineChart, PieChart, Settings, Eye, BrainCircuit, ChevronDown, ChevronRight, ChevronLeft, Save, FilePlus, FolderOpen, Check, Image as ImageIcon, Sprout, Copy, Star, Briefcase, Zap, Globe, Cpu, ShoppingBag, Landmark, ListChecks, Compass, Target, Layers, Share2, Factory, UploadCloud, Bell, Terminal, User, LogOut, Shield } from 'lucide-react';
+import { LayoutDashboard, FileSpreadsheet, LineChart, PieChart, Settings, Eye, BrainCircuit, ChevronDown, ChevronRight, ChevronLeft, Save, FilePlus, Folder, FolderOpen, Check, Image as ImageIcon, Sprout, Copy, Star, Briefcase, Zap, Globe, Cpu, ShoppingBag, Landmark, ListChecks, Compass, Target, Layers, Share2, Factory, UploadCloud, Bell, Terminal, User, LogOut, Shield } from 'lucide-react';
 import { usePlan } from '../context/PlanContext';
 import { useAuth } from '../contexts/AuthContext';
 import { PROJECT_EXAMPLES } from '../lib/projects_db';
@@ -14,6 +14,7 @@ import GrillMePromptModal from './GrillMePromptModal';
 import TouchBarBridge from './TouchBarBridge';
 import ServerHealthBanner from './ServerHealthBanner';
 import WordDocumentCenterModal from './WordDocumentCenterModal';
+import ProjectWorkspaceModal from './ProjectWorkspaceModal';
 import DocumentUploader from './DocumentUploader';
 import TerminalDrawer from './TerminalDrawer';
 import AdminUsersPanel from './AdminUsersPanel';
@@ -100,6 +101,7 @@ export default function Layout() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isBobOpen, setIsBobOpen] = useState(false);
   const [showWorkspaceModal, setShowWorkspaceModal] = useState(false);
+  const [showProjectsModal, setShowProjectsModal] = useState(false);
   const [showRagModal, setShowRagModal] = useState(false);
   const [activeGrillMePrompt, setActiveGrillMePrompt] = useState(null);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => {
@@ -660,6 +662,36 @@ export default function Layout() {
       {/* Main Content Area */}
       <main className="main-content">
         <ServerHealthBanner />
+
+        {/* Banner de Modo Administración / Revisor cuando se visualiza un proyecto ajeno sin suplantar */}
+        {Boolean(user && (isAdmin || isRevisor) && planData?.config?.userOwner && planData.config.userOwner !== user.username) && (
+          <div style={{
+            background: isAdmin ? 'linear-gradient(90deg, #1e1b4b 0%, #312e81 100%)' : 'linear-gradient(90deg, #064e3b 0%, #065f46 100%)',
+            color: '#ffffff',
+            padding: '0.5rem 1.5rem',
+            fontSize: '0.8rem',
+            fontWeight: 600,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            borderBottom: '1px solid rgba(255,255,255,0.15)',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <Shield size={16} color={isAdmin ? '#a5b4fc' : '#6ee7b7'} />
+              <span>
+                <strong>{isAdmin ? '🛡️ Modo Administración (Sin suplantación)' : '👁️ Modo Revisor (Solo Lectura)'}</strong>
+                {' • Propietario del Proyecto: '}
+                <span style={{ textDecoration: 'underline', color: '#ffffff' }}>{planData.config.userOwner}</span>
+                {planData.config?.workflowStatus ? ` • Estado Editorial: ${planData.config.workflowStatus}` : ''}
+              </span>
+            </div>
+            <span style={{ fontSize: '0.72rem', opacity: 0.85, background: 'rgba(255,255,255,0.1)', padding: '2px 8px', borderRadius: '12px' }}>
+              Auditoría Central Activa
+            </span>
+          </div>
+        )}
+
         <header className="top-header no-print" style={{ minHeight: '70px', padding: '0.5rem 1.5rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', flexWrap: 'wrap', gap: '1rem' }}>
             
@@ -744,9 +776,31 @@ export default function Layout() {
               {/* Selector de Proyecto Unificado y Personalizado */}
               <div style={{ display: 'flex', gap: '0.5rem' }}>
                 <button
+                  onClick={() => setShowProjectsModal(true)}
+                  style={{
+                    padding: '0.6rem 1.1rem',
+                    background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(5, 150, 105, 0.25))',
+                    color: '#10b981',
+                    border: '1px solid rgba(16, 185, 129, 0.3)',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    fontWeight: 700,
+                    fontSize: '0.85rem',
+                    transition: 'all 0.2s',
+                    boxShadow: '0 2px 8px rgba(16, 185, 129, 0.15)'
+                  }}
+                  title="Gestor de Proyectos, Estados de Trabajo y Módulos Incompletos"
+                >
+                  <Folder size={16} /> <span>Proyectos</span>
+                </button>
+
+                <button
                   onClick={() => setShowWorkspaceModal(true)}
                   style={{
-                    padding: '0.6rem 1.2rem',
+                    padding: '0.6rem 1.1rem',
                     background: 'linear-gradient(135deg, rgba(37, 99, 235, 0.15), rgba(59, 130, 246, 0.25))',
                     color: '#3b82f6',
                     border: '1px solid rgba(59, 130, 246, 0.3)',
@@ -1775,6 +1829,19 @@ export default function Layout() {
       <WordDocumentCenterModal
         isOpen={showWorkspaceModal}
         onClose={() => setShowWorkspaceModal(false)}
+      />
+
+      {/* Gestor Central de Proyectos y Módulos Incompletos */}
+      <ProjectWorkspaceModal
+        isOpen={showProjectsModal}
+        onClose={() => setShowProjectsModal(false)}
+        onLoadProject={(id, category) => {
+          loadSavedProject(category, id);
+        }}
+        onDeleteProject={null}
+        onNavigateToModule={(moduleKey, projectType) => {
+          navigate(buildSemanticUrl({ projectType, moduleId: moduleKey, slug: currentProjectSlug }));
+        }}
       />
 
       {/* Modal RAG Multimodal accesible globalmente desde la Barra Lateral */}

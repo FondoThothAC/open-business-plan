@@ -7,6 +7,11 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   base: process.env.VITE_BASE_PATH || '/obp/',
   plugins: [react()],
+  server: {
+    watch: {
+      ignored: ['**/scratch/**', '**/vcv/**', '**/proyectos/**']
+    }
+  },
   build: {
     minify: 'terser',
     sourcemap: false, // Prevenir extracción de código fuente original

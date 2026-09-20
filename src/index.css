@@ -677,8 +677,8 @@ textarea.form-control {
   }
 
   @page {
-    margin: 1cm;
-    size: auto;
+    margin: 0.8cm;
+    size: portrait;
   }
 
   html, body, #root, .app-container, .main-content, .view-container {
@@ -709,18 +709,18 @@ textarea.form-control {
     background: white !important;
   }
 
-  /* Resetear tarjetas en impresión para evitar "página dentro de página" */
+  /* Resetear tarjetas en impresión para flujo continuo natural */
   .print-page {
     box-shadow: none !important;
     border: none !important;
     border-radius: 0 !important;
     padding: 0 !important;
-    margin: 0 0 1.5rem 0 !important;
+    margin: 0 0 1rem 0 !important;
     max-width: 100% !important;
     width: 100% !important;
     background: transparent !important;
-    page-break-inside: avoid !important;
-    break-inside: avoid !important;
+    page-break-inside: auto !important;
+    break-inside: auto !important;
   }
  
   .sidebar, .top-header, .no-print, .btn, .view-header, .view-toggle, .btn-summarize,
@@ -1483,9 +1483,14 @@ textarea.form-control {
     display: none !important;
   }
 
-  /* Each financial sub-report starts on its own page */
+  /* El primer sub-reporte arranca de inmediato tras el encabezado; los siguientes saltan de página de forma limpia */
   .financial-report-page {
-    page-break-before: always;
+    page-break-before: auto;
+    break-before: auto;
+    margin-top: 1.5rem;
+  }
+  .financial-report-page:not(:first-of-type) {
+    page-break-before: page;
     break-before: page;
   }
 
@@ -1634,6 +1639,17 @@ textarea.form-control {
   .human-capital-matrix {
     page-break-inside: avoid;
     break-inside: avoid;
+  }
+
+  /* Compact Financial Tables for Executive Dossier */
+  .financial-table th,
+  .financial-table td {
+    padding: 0.35rem 0.5rem !important;
+    font-size: 7.5pt !important;
+  }
+
+  .financial-table-wrapper {
+    margin-bottom: 0.5rem !important;
   }
 }
 

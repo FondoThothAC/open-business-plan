@@ -11,7 +11,7 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-19T22:21:28.403Z"
+      "lastVerified": "2026-09-20T20:35:12.586Z"
     },
     "liquid/lfm-2.5-2.6b:free": {
       "input": 0,
@@ -24,7 +24,7 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-19T22:21:28.403Z"
+      "lastVerified": "2026-09-20T20:35:12.586Z"
     },
     "nvidia/nemotron-3.5-lightning:free": {
       "input": 0,
@@ -37,7 +37,7 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-19T22:21:28.403Z"
+      "lastVerified": "2026-09-20T20:35:12.586Z"
     },
     "thinkingmachines/inkling-small:free": {
       "input": 0,
@@ -50,7 +50,7 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-19T22:21:28.403Z"
+      "lastVerified": "2026-09-20T20:35:12.586Z"
     },
     "poolside/laguna-s-2.1:free": {
       "input": 0,
@@ -63,7 +63,7 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-19T22:21:28.403Z"
+      "lastVerified": "2026-09-20T20:35:12.586Z"
     },
     "thinkingmachines/inkling:free": {
       "input": 0,
@@ -76,7 +76,7 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-19T22:21:28.403Z"
+      "lastVerified": "2026-09-20T20:35:12.586Z"
     },
     "poolside/laguna-xs-2.1:free": {
       "input": 0,
@@ -89,7 +89,7 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-19T22:21:28.403Z"
+      "lastVerified": "2026-09-20T20:35:12.586Z"
     },
     "cohere/north-mini-code:free": {
       "input": 0,
@@ -102,7 +102,7 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-19T22:21:28.403Z"
+      "lastVerified": "2026-09-20T20:35:12.586Z"
     },
     "z-ai/glm-5.2:free": {
       "input": 0,
@@ -115,7 +115,7 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-19T22:21:28.403Z"
+      "lastVerified": "2026-09-20T20:35:12.586Z"
     },
     "nvidia/nemotron-3.5-content-safety:free": {
       "input": 0,
@@ -128,7 +128,7 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-19T22:21:28.403Z"
+      "lastVerified": "2026-09-20T20:35:12.586Z"
     },
     "nvidia/nemotron-3-ultra-550b-a55b:free": {
       "input": 0,
@@ -141,7 +141,7 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-19T22:21:28.403Z"
+      "lastVerified": "2026-09-20T20:35:12.586Z"
     },
     "minimax/minimax-m3:free": {
       "input": 0,
@@ -154,7 +154,7 @@
         "chat"
       ],
       "isHot": false,
-      "lastVerified": "2026-09-19T22:21:28.403Z"
+      "lastVerified": "2026-09-20T20:35:12.586Z"
     },
     "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free": {
       "input": 0,
@@ -167,7 +167,7 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-19T22:21:28.403Z"
+      "lastVerified": "2026-09-20T20:35:12.586Z"
     },
     "google/gemma-4-26b-a4b-it:free": {
       "input": 0,
@@ -180,7 +180,7 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-19T22:21:28.403Z"
+      "lastVerified": "2026-09-20T20:35:12.586Z"
     },
     "google/gemma-4-31b-it:free": {
       "input": 0,
@@ -193,7 +193,7 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-19T22:21:28.403Z"
+      "lastVerified": "2026-09-20T20:35:12.586Z"
     },
     "google/lyria-3-pro-preview": {
       "input": 0,
@@ -206,7 +206,7 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-19T22:21:28.403Z"
+      "lastVerified": "2026-09-20T20:35:12.586Z"
     },
     "google/lyria-3-clip-preview": {
       "input": 0,
@@ -219,7 +219,7 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-19T22:21:28.403Z"
+      "lastVerified": "2026-09-20T20:35:12.586Z"
     },
     "minimax/minimax-m2.7:free": {
       "input": 0,
@@ -232,7 +232,7 @@
         "chat"
       ],
       "isHot": false,
-      "lastVerified": "2026-09-19T22:21:28.403Z"
+      "lastVerified": "2026-09-20T20:35:12.586Z"
     },
     "nvidia/nemotron-3-super-120b-a12b:free": {
       "input": 0,
@@ -245,7 +245,7 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-19T22:21:28.403Z"
+      "lastVerified": "2026-09-20T20:35:12.586Z"
     },
     "openrouter/free": {
       "input": 0,
@@ -258,7 +258,7 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-19T22:21:28.403Z"
+      "lastVerified": "2026-09-20T20:35:12.586Z"
     },
     "inclusionai/ling-3.0-flash-fin:free": {
       "input": 0,
@@ -271,7 +271,7 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-19T22:21:28.403Z"
+      "lastVerified": "2026-09-20T20:35:12.586Z"
     },
     "inclusionai/ling-3.0-flash-vl:free": {
       "input": 0,
@@ -284,7 +284,7 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-19T22:21:28.403Z"
+      "lastVerified": "2026-09-20T20:35:12.586Z"
     },
     "nex-agi/nex-n2.5-mini:free": {
       "input": 0,
@@ -297,7 +297,7 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-19T22:21:28.403Z"
+      "lastVerified": "2026-09-20T20:35:12.586Z"
     },
     "nex-agi/nex-n2.5-pro:free": {
       "input": 0,
@@ -310,7 +310,7 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-19T22:21:28.403Z"
+      "lastVerified": "2026-09-20T20:35:12.586Z"
     },
     "inclusionai/ling-3.0-flash-sante:free": {
       "input": 0,
@@ -323,7 +323,7 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-19T22:21:28.403Z"
+      "lastVerified": "2026-09-20T20:35:12.586Z"
     },
     "qwen/qwen3.8-27b:free": {
       "input": 0,
@@ -336,7 +336,7 @@
         "chat"
       ],
       "isHot": true,
-      "lastVerified": "2026-09-19T22:21:28.403Z"
+      "lastVerified": "2026-09-20T20:35:12.586Z"
     },
     "deepseek/deepseek-v4-flash-0731:free": {
       "input": 0,
@@ -348,8 +348,8 @@
       "capabilities": [
         "chat"
       ],
-      "isHot": true,
-      "lastVerified": "2026-09-19T22:21:28.403Z"
+      "isHot": false,
+      "lastVerified": "2026-09-20T20:35:12.586Z"
     },
     "mistral-large-3:675b": {
       "name": "mistral-large-3:675b",
@@ -360,7 +360,7 @@
       ],
       "availability": "catalog_listed",
       "authenticated": false,
-      "lastVerified": "2026-09-19T22:21:28.403Z",
+      "lastVerified": "2026-09-20T20:35:12.586Z",
       "isHot": false
     },
     "glm-5.3-flash": {
@@ -372,7 +372,7 @@
       ],
       "availability": "catalog_listed",
       "authenticated": false,
-      "lastVerified": "2026-09-19T22:21:28.403Z",
+      "lastVerified": "2026-09-20T20:35:12.586Z",
       "isHot": false
     },
     "kimi-k3": {
@@ -384,7 +384,7 @@
       ],
       "availability": "catalog_listed",
       "authenticated": false,
-      "lastVerified": "2026-09-19T22:21:28.403Z",
+      "lastVerified": "2026-09-20T20:35:12.586Z",
       "isHot": false
     },
     "deepseek-v4-pro:0813": {
@@ -396,7 +396,7 @@
       ],
       "availability": "catalog_listed",
       "authenticated": false,
-      "lastVerified": "2026-09-19T22:21:28.403Z",
+      "lastVerified": "2026-09-20T20:35:12.586Z",
       "isHot": false
     },
     "gemma4:31b": {
@@ -408,7 +408,7 @@
       ],
       "availability": "catalog_listed",
       "authenticated": false,
-      "lastVerified": "2026-09-19T22:21:28.403Z",
+      "lastVerified": "2026-09-20T20:35:12.586Z",
       "isHot": false
     },
     "nemotron-3-ultra": {
@@ -420,7 +420,7 @@
       ],
       "availability": "catalog_listed",
       "authenticated": false,
-      "lastVerified": "2026-09-19T22:21:28.403Z",
+      "lastVerified": "2026-09-20T20:35:12.586Z",
       "isHot": false
     },
     "gpt-oss:20b": {
@@ -432,7 +432,7 @@
       ],
       "availability": "catalog_listed",
       "authenticated": false,
-      "lastVerified": "2026-09-19T22:21:28.403Z",
+      "lastVerified": "2026-09-20T20:35:12.586Z",
       "isHot": false
     },
     "minimax-m2.7": {
@@ -444,7 +444,7 @@
       ],
       "availability": "catalog_listed",
       "authenticated": false,
-      "lastVerified": "2026-09-19T22:21:28.403Z",
+      "lastVerified": "2026-09-20T20:35:12.586Z",
       "isHot": false
     },
     "deepseek-v4-flash:0731": {
@@ -456,7 +456,7 @@
       ],
       "availability": "catalog_listed",
       "authenticated": false,
-      "lastVerified": "2026-09-19T22:21:28.403Z",
+      "lastVerified": "2026-09-20T20:35:12.586Z",
       "isHot": false
     },
     "qwen3.5:397b": {
@@ -468,7 +468,7 @@
       ],
       "availability": "catalog_listed",
       "authenticated": false,
-      "lastVerified": "2026-09-19T22:21:28.403Z",
+      "lastVerified": "2026-09-20T20:35:12.586Z",
       "isHot": false
     },
     "glm-5.1": {
@@ -480,7 +480,7 @@
       ],
       "availability": "catalog_listed",
       "authenticated": false,
-      "lastVerified": "2026-09-19T22:21:28.403Z",
+      "lastVerified": "2026-09-20T20:35:12.586Z",
       "isHot": false
     },
     "glm-5.2": {
@@ -492,7 +492,7 @@
       ],
       "availability": "catalog_listed",
       "authenticated": false,
-      "lastVerified": "2026-09-19T22:21:28.403Z",
+      "lastVerified": "2026-09-20T20:35:12.586Z",
       "isHot": false
     },
     "deepseek-v4.1-flash": {
@@ -504,7 +504,7 @@
       ],
       "availability": "catalog_listed",
       "authenticated": false,
-      "lastVerified": "2026-09-19T22:21:28.403Z",
+      "lastVerified": "2026-09-20T20:35:12.586Z",
       "isHot": false
     },
     "nemotron-3-nano:30b": {
@@ -516,7 +516,7 @@
       ],
       "availability": "catalog_listed",
       "authenticated": false,
-      "lastVerified": "2026-09-19T22:21:28.403Z",
+      "lastVerified": "2026-09-20T20:35:12.586Z",
       "isHot": false
     },
     "minimax-m3": {
@@ -528,7 +528,7 @@
       ],
       "availability": "catalog_listed",
       "authenticated": false,
-      "lastVerified": "2026-09-19T22:21:28.403Z",
+      "lastVerified": "2026-09-20T20:35:12.586Z",
       "isHot": false
     },
     "kimi-k2.7-code": {
@@ -540,7 +540,7 @@
       ],
       "availability": "catalog_listed",
       "authenticated": false,
-      "lastVerified": "2026-09-19T22:21:28.403Z",
+      "lastVerified": "2026-09-20T20:35:12.586Z",
       "isHot": false
     },
     "gpt-oss:120b": {
@@ -552,7 +552,7 @@
       ],
       "availability": "catalog_listed",
       "authenticated": false,
-      "lastVerified": "2026-09-19T22:21:28.403Z",
+      "lastVerified": "2026-09-20T20:35:12.586Z",
       "isHot": false
     },
     "nemotron-3-super": {
@@ -564,7 +564,7 @@
       ],
       "availability": "catalog_listed",
       "authenticated": false,
-      "lastVerified": "2026-09-19T22:21:28.403Z",
+      "lastVerified": "2026-09-20T20:35:12.586Z",
       "isHot": false
     },
     "glm-5.3": {
@@ -576,7 +576,7 @@
       ],
       "availability": "catalog_listed",
       "authenticated": false,
-      "lastVerified": "2026-09-19T22:21:28.403Z",
+      "lastVerified": "2026-09-20T20:35:12.586Z",
       "isHot": false
     },
     "kimi-k2.6": {
@@ -588,10 +588,10 @@
       ],
       "availability": "catalog_listed",
       "authenticated": false,
-      "lastVerified": "2026-09-19T22:21:28.403Z",
+      "lastVerified": "2026-09-20T20:35:12.586Z",
       "isHot": false
     }
   },
-  "lastCronRun": "2026-09-19T22:21:28.058Z",
+  "lastCronRun": "2026-09-20T20:35:12.206Z",
   "cronStatus": "completed"
 }

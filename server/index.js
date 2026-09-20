@@ -23,8 +23,25 @@ import { acquireGenerationLock, releaseGenerationLock, getGenerationLockStatus }
 import { renameProject } from '../src/lib/serverUtils/projectRename.js';
 import marketCascadeRouter from './routes/marketCascade.js';
 import { GenerationJobStore } from './generationJobStore.js';
-import { registrarUsuario, loginUsuario, listarUsuarios, activarUsuario, desactivarUsuario, eliminarUsuario, actualizarApiKeys, obtenerApiKeys, cambiarPassword, obtenerApiKeysParaServicio } from './auth.js';
-import { authGuard, soloAdmin } from './middleware/authGuard.js';
+import cookieParser from 'cookie-parser';
+import { 
+  registrarUsuario, 
+  loginUsuario, 
+  listarUsuarios, 
+  activarUsuario, 
+  desactivarUsuario, 
+  eliminarUsuario, 
+  actualizarApiKeys, 
+  obtenerApiKeys, 
+  cambiarPassword, 
+  obtenerApiKeysParaServicio,
+  crearUsuarioAdmin,
+  actualizarUsuarioAdmin,
+  resetearPasswordAdmin,
+  buscarPorId
+} from './auth.js';
+import { authGuard, soloAdmin, soloRevisorOSuperAdmin, prohibirRevisorMutacion } from './middleware/authGuard.js';
+import { registrarAuditoria, obtenerAuditoria } from './auditLogger.js';
 import { EXAMPLE_PROJECT_IDS, PRIVATE_ADMIN_IDS, assertSafeProjectSegment, resolveReadableProject, resolveWritableProject, resolveCloneSource, userFolder } from './projectAccess.js';
 
 // ─────────────────────────────────────────────────────────
@@ -72,20 +89,40 @@ function broadcast(eventData) {
   });
 }
 
-app.use(cors());
+const configuredOrigins = new Set(
+  String(process.env.CORS_ORIGINS || 'http://localhost:5173,http://localhost:4173,https://fondothoth.com')
+    .split(',').map(value => value.trim()).filter(Boolean)
+);
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || configuredOrigins.has(origin)) return callback(null, true);
+    if (process.env.NODE_ENV !== 'production') return callback(null, true);
+    return callback(new Error('Origen no permitido por la política CORS.'));
+  },
+  credentials: true
+}));
+app.use(cookieParser());
 app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+
+// CSRF de origen para mutaciones autenticadas. SameSite=Lax protege navegadores
+// modernos; esta comprobación cubre clientes que envían cookies explícitamente.
+app.use((req, res, next) => {
+  const mutating = ['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method);
+  const origin = req.headers.origin;
+  if (process.env.NODE_ENV === 'production' && mutating && origin && !configuredOrigins.has(origin)) {
+    return res.status(403).json({ error: 'Origen no permitido.', code: 'CSRF_ORIGIN_REJECTED' });
+  }
+  next();
+});
 
 // ─────────────────────────────────────────────────────────
 //  Headers de Seguridad Anti-Scraping / Anti-IA
 // ─────────────────────────────────────────────────────────
 app.use((req, res, next) => {
-  // Prevenir carga en iframes (anti-clickjacking, anti-scraping)
   res.setHeader('X-Frame-Options', 'DENY');
-  // Prevenir MIME sniffing
   res.setHeader('X-Content-Type-Options', 'nosniff');
-  // No enviar referrer a sitios externos
   res.setHeader('Referrer-Policy', 'same-origin');
-  // XSS Protection
   res.setHeader('X-XSS-Protection', '1; mode=block');
   next();
 });
@@ -94,12 +131,35 @@ app.use((req, res, next) => {
 //  Rutas de Autenticación (PÚBLICAS — sin authGuard)
 // ─────────────────────────────────────────────────────────
 app.post('/api/auth/login', (req, res) => {
-  const { username, password } = req.body || {};
-  const resultado = loginUsuario({ username, password });
+  const { username, password, rememberMe } = req.body || {};
+  const resultado = loginUsuario({ username, password, rememberMe });
   if (!resultado.success) {
     return res.status(401).json({ error: resultado.error });
   }
-  res.json(resultado);
+
+  // Establecer cookie HttpOnly segura
+  const cookieOptions = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    path: '/'
+  };
+  if (resultado.rememberMe) {
+    cookieOptions.maxAge = 30 * 24 * 60 * 60 * 1000; // 30 días
+  }
+  res.cookie('obp_auth_token', resultado.token, cookieOptions);
+
+  // La respuesta no expone el JWT al cliente
+  res.json({
+    success: true,
+    user: resultado.user,
+    message: 'Sesión iniciada exitosamente.'
+  });
+});
+
+app.post('/api/auth/logout', (req, res) => {
+  res.clearCookie('obp_auth_token', { path: '/' });
+  res.json({ success: true, message: 'Sesión cerrada correctamente.' });
 });
 
 app.post('/api/auth/register', (req, res) => {
@@ -122,6 +182,21 @@ app.use('/api', authGuard);
 app.get('/api/auth/me', (req, res) => {
   const { id, username, role, displayName, email, status } = req.user;
   const apiKeys = obtenerApiKeys(id);
+
+  // Si vino con header y no tenía cookie, establecer la cookie para completar la migración
+  if (!req.cookies?.obp_auth_token) {
+    const authHeader = req.headers.authorization || '';
+    if (authHeader.startsWith('Bearer ')) {
+      const legacyToken = authHeader.slice(7).trim();
+      res.cookie('obp_auth_token', legacyToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        path: '/'
+      });
+    }
+  }
+
   res.json({ id, username, role, displayName, email, status, apiKeys });
 });
 
@@ -139,26 +214,117 @@ app.put('/api/auth/me/password', (req, res) => {
 });
 
 // ─────────────────────────────────────────────────────────
-//  Rutas de Admin (solo superadmin)
+//  Rutas Administrativas (Superadmin)
 // ─────────────────────────────────────────────────────────
 app.get('/api/auth/users', soloAdmin, (req, res) => {
   res.json(listarUsuarios());
 });
 
+app.get('/api/admin/users', soloAdmin, (req, res) => {
+  res.json(listarUsuarios());
+});
+
+app.post('/api/admin/users', soloAdmin, (req, res) => {
+  const resultado = crearUsuarioAdmin(req.body || {}, req.user);
+  if (!resultado.success) return res.status(400).json({ error: resultado.error });
+  res.status(201).json(resultado);
+});
+
+app.patch('/api/admin/users/:id', soloAdmin, (req, res) => {
+  const resultado = actualizarUsuarioAdmin(req.params.id, req.body || {}, req.user);
+  if (!resultado.success) return res.status(400).json({ error: resultado.error });
+  res.json(resultado);
+});
+
+app.post('/api/admin/users/:id/password-reset', soloAdmin, (req, res) => {
+  const { password } = req.body || {};
+  const resultado = resetearPasswordAdmin(req.params.id, password, req.user);
+  if (!resultado.success) return res.status(400).json({ error: resultado.error });
+  res.json(resultado);
+});
+
+app.get('/api/admin/users/:id/projects', soloAdmin, (req, res) => {
+  const targetUser = buscarPorId(req.params.id);
+  if (!targetUser) return res.status(404).json({ error: 'Usuario no encontrado.' });
+
+  const baseDir = path.resolve('proyectos');
+  const userProjects = [];
+  const targetUsername = targetUser.username.toLowerCase();
+  const folderCandidate = `user_${targetUsername.replace(/[^a-z0-9]/gi, '_')}`;
+
+  ['negocios', 'social'].forEach(type => {
+    const dir = path.join(baseDir, type);
+    if (!fs.existsSync(dir)) return;
+
+    const scanUserDir = (d) => {
+      if (!fs.existsSync(d)) return;
+      const entries = fs.readdirSync(d, { withFileTypes: true });
+      for (const entry of entries) {
+        if (!entry.isDirectory()) continue;
+        if (entry.name === '.archive' || entry.name === 'node_modules') continue;
+
+        const jsonFile = path.join(d, entry.name, `${entry.name}.json`);
+        if (fs.existsSync(jsonFile)) {
+          try {
+            const stats = fs.statSync(jsonFile);
+            const data = JSON.parse(fs.readFileSync(jsonFile, 'utf8'));
+            const owner = String(data.config?.userOwner || '').toLowerCase();
+            if (owner === targetUsername || d.includes(folderCandidate)) {
+              const comp = calculateCompletion(data);
+              const missing = calculateMissingModules(data);
+              userProjects.push({
+                id: entry.name,
+                name: data.config?.brandKit?.companyName || data.semilla?.nombre_proyecto || entry.name,
+                type,
+                completion: comp,
+                workflowStatus: data.config?.workflowStatus || 'Borrador',
+                missingModules: missing,
+                nextAction: missing.length > 0 ? `Completar ${missing[0].moduleTitle}` : 'Listo para revisión',
+                lastEdited: data.config?.fechaActualizacion || stats.mtime,
+                size: stats.size
+              });
+            }
+          } catch {}
+        }
+      }
+    };
+
+    // Escanear carpeta propia del usuario si existe
+    scanUserDir(path.join(dir, folderCandidate));
+  });
+
+  res.json({
+    success: true,
+    user: {
+      id: targetUser.id,
+      username: targetUser.username,
+      displayName: targetUser.displayName,
+      role: targetUser.role,
+      status: targetUser.status
+    },
+    projects: userProjects
+  });
+});
+
+app.get('/api/admin/audit', soloAdmin, (req, res) => {
+  const auditEntries = obtenerAuditoria(req.query || {});
+  res.json({ success: true, audit: auditEntries });
+});
+
 app.post('/api/auth/users/:id/activate', soloAdmin, (req, res) => {
-  const resultado = activarUsuario(req.params.id);
+  const resultado = activarUsuario(req.params.id, req.user);
   if (!resultado.success) return res.status(400).json({ error: resultado.error });
   res.json(resultado);
 });
 
 app.post('/api/auth/users/:id/disable', soloAdmin, (req, res) => {
-  const resultado = desactivarUsuario(req.params.id);
+  const resultado = desactivarUsuario(req.params.id, req.user);
   if (!resultado.success) return res.status(400).json({ error: resultado.error });
   res.json(resultado);
 });
 
 app.delete('/api/auth/users/:id', soloAdmin, (req, res) => {
-  const resultado = eliminarUsuario(req.params.id);
+  const resultado = eliminarUsuario(req.params.id, req.user);
   if (!resultado.success) return res.status(400).json({ error: resultado.error });
   res.json(resultado);
 });
@@ -286,7 +452,7 @@ function jsonToMarkdown(planData) {
   return md;
 }
 
-app.post('/api/save', (req, res) => {
+app.post('/api/save', prohibirRevisorMutacion, (req, res) => {
   try {
     const planData = req.body;
     if (!planData || typeof planData !== 'object' || !planData.config) {
@@ -301,11 +467,17 @@ app.post('/api/save', (req, res) => {
     assertSafeProjectSegment(persistentId);
     const safeName = persistentId;
     
-    // Ownership comes only from the verified authenticated identity.
-    const userId = req.user.username;
-    const ownerFolder = userFolder(req.user);
+    // El propietario deriva de la identidad autenticada, preservando el dueño original si edita un superadmin
+    let userId = req.user.username;
+    let ownerFolder = userFolder(req.user);
 
-    // Create new structure: proyectos/{type}/{userFolder}/{safeName}/
+    // Verificar si el proyecto ya existía en otra carpeta
+    const existingReadable = resolveReadableProject(projectType, persistentId, req.user);
+    if (existingReadable && existingReadable.kind === 'administered' && req.user.role === 'superadmin') {
+      userId = existingReadable.owner;
+      ownerFolder = `user_${String(userId).replace(/[^a-z0-9]/gi, '_').toLowerCase()}`;
+    }
+
     const dirParts = ['proyectos', projectType];
     if (ownerFolder) dirParts.push(ownerFolder);
     dirParts.push(safeName);
@@ -315,7 +487,6 @@ app.post('/api/save', (req, res) => {
       fs.mkdirSync(dirPath, { recursive: true });
     }
     
-    // Create documentos subfolder
     const docsPath = path.join(dirPath, 'documentos');
     if (!fs.existsSync(docsPath)) {
       fs.mkdirSync(docsPath, { recursive: true });
@@ -324,17 +495,46 @@ app.post('/api/save', (req, res) => {
     const allowRegression = req.query.allowRegression === 'true' || req.body.allowRegression === true;
     const baseRevision = Number(req.headers['if-match-revision'] || req.body.baseRevision);
     const existingPath = path.join(dirPath, `${safeName}.json`);
-    if (Number.isFinite(baseRevision) && fs.existsSync(existingPath)) {
+    let existingStatus = 'Borrador';
+
+    if (fs.existsSync(existingPath)) {
       try {
         const existing = JSON.parse(fs.readFileSync(existingPath, 'utf8'));
         const currentRevision = Number(existing.config?.revision || 0);
-        if (currentRevision !== baseRevision) {
+        existingStatus = existing.config?.workflowStatus || 'Borrador';
+        if (Number.isFinite(baseRevision) && currentRevision !== baseRevision) {
           return res.status(409).json({ success: false, code: 'REVISION_CONFLICT', currentRevision, message: 'El proyecto cambió en otra sesión. Recarga o revisa la comparación antes de guardar.' });
         }
       } catch {}
     }
+
+    // Si un proyecto estaba 'Aprobado' y es modificado, vuelve automáticamente a 'En revisión'
+    let targetWorkflowStatus = planData.config?.workflowStatus || existingStatus || 'Borrador';
+    const reviewHistory = Array.isArray(planData.config?.reviewHistory) ? [...planData.config.reviewHistory] : [];
+    
+    if (existingStatus === 'Aprobado') {
+      targetWorkflowStatus = 'En revisión';
+      reviewHistory.push({
+        timestamp: new Date().toISOString(),
+        from: 'Aprobado',
+        to: 'En revisión',
+        by: req.user.username,
+        role: req.user.role,
+        reason: 'El proyecto fue modificado tras haber sido aprobado. Vuelve a revisión editorial para revalidación.'
+      });
+    }
+
     const { externalApis: _externalApis, apiKeys: _apiKeys, ...safeConfig } = planData.config;
-    planData.config = { ...safeConfig, projectId: persistentId, userOwner: userId, displayName: rawName, revision: Number(planData.config?.revision || 0) + 1 };
+    planData.config = { 
+      ...safeConfig, 
+      projectId: persistentId, 
+      userOwner: userId, 
+      displayName: rawName, 
+      workflowStatus: targetWorkflowStatus,
+      reviewHistory,
+      fechaActualizacion: new Date().toISOString(),
+      revision: Number(planData.config?.revision || 0) + 1 
+    };
 
     // Guardado versionado inmutable con control anti-regresión
     const versionResult = saveWithVersioning({
@@ -348,12 +548,25 @@ app.post('/api/save', (req, res) => {
     const mdContent = jsonToMarkdown(planData);
     fs.writeFileSync(mdPath, mdContent);
 
+    if (req.user.role === 'superadmin' && userId !== req.user.username) {
+      registrarAuditoria({
+        actorId: req.user.id,
+        actorUsername: req.user.username,
+        actorRole: req.user.role,
+        action: 'PROJECT_MODIFIED_BY_ADMIN',
+        targetType: 'project',
+        targetId: persistentId,
+        details: { targetOwner: userId, newRevision: planData.config.revision }
+      });
+    }
+
     res.json({
       success: true,
       message: 'Proyecto guardado en disco duro local con versionado inmutable (.json y .md)',
       file: safeName,
       projectId: persistentId,
       revision: planData.config.revision,
+      workflowStatus: targetWorkflowStatus,
       versionHash: versionResult.versionHash,
       modulesCount: versionResult.modulesCount
     });
@@ -373,7 +586,7 @@ app.post('/api/save', (req, res) => {
 function calculateCompletion(planData) {
   if (!planData) return 0;
   const projectType = planData.config?.projectType || 'business';
-  const framework = FRAMEWORKS[projectType];
+  const framework = FRAMEWORKS[projectType] || FRAMEWORKS.business;
   if (!framework) return 0;
   
   let totalFields = 0;
@@ -406,12 +619,43 @@ function calculateCompletion(planData) {
   return totalFields > 0 ? Math.round((filledFields / totalFields) * 100) : 0;
 }
 
+function calculateMissingModules(planData) {
+  if (!planData) return [];
+  const projectType = planData.config?.projectType || 'business';
+  const framework = FRAMEWORKS[projectType] || FRAMEWORKS.business;
+  if (!framework) return [];
+  const missing = [];
+  
+  (framework.pillars || []).forEach(pillar => {
+    (pillar.modules || []).forEach(mod => {
+      const moduleData = planData[pillar.key]?.[mod.key] || {};
+      const hasContent = Object.values(moduleData).some(v => {
+        if (!v) return false;
+        if (typeof v === 'string') return v.trim().length > 0;
+        if (Array.isArray(v)) return v.length > 0;
+        if (typeof v === 'object') return Object.keys(v).length > 0;
+        return true;
+      });
+      if (!hasContent) {
+        missing.push({
+          pillarKey: pillar.key,
+          pillarTitle: pillar.title,
+          moduleKey: mod.key,
+          moduleTitle: mod.title
+        });
+      }
+    });
+  });
+  return missing;
+}
+
 app.get('/api/projects', (req, res) => {
   const baseDir = path.resolve('proyectos');
   const results = { negocios: [], social: [] };
 
   const reqUserId = req.user?.username || req.headers['x-user-id'] || req.query.userId || '';
   const isTargetAdmin = req.user?.role === 'superadmin';
+  const isRevisor = req.user?.role === 'revisor';
 
   ['negocios', 'social'].forEach(type => {
     const dir = path.join(baseDir, type);
@@ -427,7 +671,7 @@ app.get('/api/projects', (req, res) => {
                 continue;
               }
               if (entry.name.startsWith('user_')) {
-                if (isTargetAdmin) {
+                if (isTargetAdmin || isRevisor) {
                   scanDir(path.join(targetDir, entry.name), entry.name);
                 } else if (reqUserId && entry.name === `user_${reqUserId.replace(/[^a-z0-9]/gi, '_').toLowerCase()}`) {
                   scanDir(path.join(targetDir, entry.name), entry.name);
@@ -435,7 +679,7 @@ app.get('/api/projects', (req, res) => {
                 continue;
               }
 
-              // Si es un proyecto privado del superadmin y el solicitante no es superadmin, omitir
+              // Comercio Cuántico TR es privado exclusivo del superadmin
               if (PRIVATE_ADMIN_IDS.has(entry.name) && !isTargetAdmin) {
                 continue;
               }
@@ -444,8 +688,8 @@ app.get('/api/projects', (req, res) => {
               const isExample = EXAMPLE_PROJECT_IDS.has(entry.name);
               const isPrivate = PRIVATE_ADMIN_IDS.has(entry.name);
 
-              // Si no es admin y está en la raíz, solo permitir proyectos marcados como ejemplo
-              if (!isTargetAdmin && !targetUserFolder && !isExample) {
+              // Si no es admin ni revisor y está en la raíz, solo permitir ejemplos
+              if (!isTargetAdmin && !isRevisor && !targetUserFolder && !isExample) {
                 continue;
               }
 
@@ -453,14 +697,25 @@ app.get('/api/projects', (req, res) => {
               if (fs.existsSync(jsonPath)) {
                  const stats = fs.statSync(jsonPath);
                  let completion = 0;
+                 let missingModules = [];
+                 let workflowStatus = 'Borrador';
                  let projectType = type === 'social' ? 'social_bid' : 'business';
                  let projectName = entry.name.replace(/_/g, ' ');
+                 let userOwner = targetUserFolder ? targetUserFolder.replace(/^user_/, '') : 'ejemplo';
+
                  try {
                    const data = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
                    completion = calculateCompletion(data);
+                   missingModules = calculateMissingModules(data);
+                   workflowStatus = data.config?.workflowStatus || 'Borrador';
                    projectType = data.config?.projectType || projectType;
                    projectName = data.config?.brandKit?.companyName || data.semilla?.nombre_proyecto || data.semilla?.negocio?.nombre_marca || projectName;
+                   userOwner = data.config?.userOwner || userOwner;
                  } catch {}
+
+                 const nextAction = missingModules.length > 0 
+                   ? `Completar ${missingModules[0].moduleTitle}` 
+                   : (workflowStatus === 'Borrador' ? 'Enviar a revisión' : (workflowStatus === 'En revisión' ? 'Dictamen editorial pendiente' : 'Aprobado para inversión'));
 
                  projects.push({
                    id: entry.name,
@@ -469,8 +724,13 @@ app.get('/api/projects', (req, res) => {
                    mtime: stats.mtime,
                    size: stats.size,
                    completion,
+                   workflowStatus,
+                   missingModules,
+                   nextAction,
+                   responsible: userOwner,
+                   lastEdited: stats.mtime,
                    projectType,
-                   userOwner: targetUserFolder ? targetUserFolder.replace(/^user_/, '') : 'ejemplo',
+                   userOwner,
                    isExample: isExample || (!targetUserFolder && !isPrivate),
                    isPrivateAdmin: isPrivate
                  });
@@ -493,12 +753,178 @@ app.get('/api/projects/:type/:id', (req, res) => {
     const project = resolveReadableProject(type, id, req.user);
     if (!project) return res.status(404).json({ error: 'Proyecto no encontrado.' });
     try {
-      const data = fs.readFileSync(project.path, 'utf8');
-      res.json(JSON.parse(data));
+      const data = JSON.parse(fs.readFileSync(project.path, 'utf8'));
+      
+      // Adjuntar metadatos de acceso para el frontend
+      data._accessMeta = {
+        owner: project.owner,
+        kind: project.kind,
+        mode: req.user.role === 'superadmin' ? (project.kind === 'administered' ? 'admin_view' : 'direct') : (req.user.role === 'revisor' ? 'review_only' : 'direct')
+      };
+
+      if (req.user.role === 'superadmin' && project.kind === 'administered') {
+        registrarAuditoria({
+          actorId: req.user.id,
+          actorUsername: req.user.username,
+          actorRole: req.user.role,
+          action: 'PROJECT_ACCESSED_BY_ADMIN',
+          targetType: 'project',
+          targetId: id,
+          details: { owner: project.owner }
+        });
+      }
+
+      res.json(data);
     } catch {
       res.status(500).json({ error: 'Error al parsear el archivo de proyecto' });
     }
   } catch (error) { res.status(400).json({ error: error.message }); }
+});
+
+// Transición de Estado de Trabajo Editorial
+app.patch('/api/projects/:type/:id/status', async (req, res) => {
+  const { type, id } = req.params;
+  const { status, note } = req.body || {};
+  
+  if (!['Borrador', 'En revisión', 'Aprobado', 'Archivado'].includes(status)) {
+    return res.status(400).json({ error: 'Estado de trabajo no válido. Valores permitidos: Borrador, En revisión, Aprobado, Archivado.' });
+  }
+
+  // Permisos estrictos: solo superadmin puede aprobar
+  if (status === 'Aprobado' && req.user.role !== 'superadmin') {
+    return res.status(403).json({ error: 'Únicamente el superadministrador puede marcar un proyecto como Aprobado.' });
+  }
+
+  const proj = resolveReadableProject(type, id, req.user);
+  if (!proj) return res.status(404).json({ error: 'Proyecto no encontrado.' });
+
+  // Si no es superadmin, solo el dueño puede cambiar a 'En revisión' o 'Archivado'
+  if (req.user.role !== 'superadmin' && proj.owner !== req.user.username) {
+    return res.status(403).json({ error: 'No tienes permiso para modificar el estado de este proyecto.' });
+  }
+
+  try {
+    const raw = fs.readFileSync(proj.path, 'utf8');
+    const data = JSON.parse(raw);
+    data.config = data.config || {};
+    const prevStatus = data.config.workflowStatus || 'Borrador';
+    data.config.workflowStatus = status;
+    data.config.reviewHistory = Array.isArray(data.config.reviewHistory) ? data.config.reviewHistory : [];
+    data.config.reviewHistory.push({
+      timestamp: new Date().toISOString(),
+      from: prevStatus,
+      to: status,
+      by: req.user.username,
+      role: req.user.role,
+      note: note || ''
+    });
+
+    fs.writeFileSync(proj.path, JSON.stringify(data, null, 2), 'utf8');
+    
+    registrarAuditoria({
+      actorId: req.user.id,
+      actorUsername: req.user.username,
+      actorRole: req.user.role,
+      action: 'PROJECT_STATUS_CHANGED',
+      targetType: 'project',
+      targetId: id,
+      details: { from: prevStatus, to: status, note }
+    });
+
+    res.json({ success: true, workflowStatus: status, reviewHistory: data.config.reviewHistory });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Comentarios Editoriales (Revisor, Superadmin, Propietario)
+app.post('/api/projects/:type/:id/comments', (req, res) => {
+  const { type, id } = req.params;
+  const { text, sectionKey, pillarKey } = req.body || {};
+  if (!text || !text.trim()) return res.status(400).json({ error: 'El comentario no puede estar vacío.' });
+
+  const proj = resolveReadableProject(type, id, req.user);
+  if (!proj) return res.status(404).json({ error: 'Proyecto no encontrado.' });
+
+  try {
+    const raw = fs.readFileSync(proj.path, 'utf8');
+    const data = JSON.parse(raw);
+    data.config = data.config || {};
+    data.config.reviewComments = Array.isArray(data.config.reviewComments) ? data.config.reviewComments : [];
+    const nuevoComentario = {
+      id: `comm_${Date.now()}_${crypto.randomBytes(3).toString('hex')}`,
+      timestamp: new Date().toISOString(),
+      author: req.user.displayName || req.user.username,
+      username: req.user.username,
+      role: req.user.role,
+      text: text.trim(),
+      sectionKey: sectionKey || null,
+      pillarKey: pillarKey || null
+    };
+    data.config.reviewComments.push(nuevoComentario);
+    fs.writeFileSync(proj.path, JSON.stringify(data, null, 2), 'utf8');
+
+    registrarAuditoria({
+      actorId: req.user.id,
+      actorUsername: req.user.username,
+      actorRole: req.user.role,
+      action: 'PROJECT_COMMENT_ADDED',
+      targetType: 'project',
+      targetId: id,
+      details: { commentId: nuevoComentario.id }
+    });
+
+    res.json({ success: true, comment: nuevoComentario, comments: data.config.reviewComments });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Duplicar Proyecto
+app.post('/api/projects/:type/:id/duplicate', prohibirRevisorMutacion, (req, res) => {
+  const { type, id } = req.params;
+  const { newName } = req.body || {};
+  const source = resolveReadableProject(type, id, req.user);
+  if (!source) return res.status(404).json({ error: 'Proyecto origen no encontrado.' });
+
+  try {
+    const raw = fs.readFileSync(source.path, 'utf8');
+    const data = JSON.parse(raw);
+    const newId = `proj_${Date.now()}_${crypto.randomBytes(3).toString('hex')}`;
+    const targetFolder = userFolder(req.user);
+    const targetDir = path.resolve('proyectos', type, targetFolder, newId);
+    fs.mkdirSync(targetDir, { recursive: true });
+
+    data.config = data.config || {};
+    data.config.projectId = newId;
+    data.config.userOwner = req.user.username;
+    data.config.workflowStatus = 'Borrador';
+    data.config.revision = 1;
+    data.config.fechaCreacion = new Date().toISOString();
+    data.config.fechaActualizacion = new Date().toISOString();
+    if (newName) {
+      data.config.displayName = newName;
+      if (data.config.brandKit) data.config.brandKit.companyName = newName;
+      if (data.semilla) data.semilla.nombre_proyecto = newName;
+    }
+
+    const targetJson = path.join(targetDir, `${newId}.json`);
+    fs.writeFileSync(targetJson, JSON.stringify(data, null, 2), 'utf8');
+    
+    registrarAuditoria({
+      actorId: req.user.id,
+      actorUsername: req.user.username,
+      actorRole: req.user.role,
+      action: 'PROJECT_DUPLICATED',
+      targetType: 'project',
+      targetId: newId,
+      details: { sourceId: id, newName }
+    });
+
+    res.json({ success: true, newId, file: `${newId}.json`, message: 'Proyecto duplicado exitosamente.' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 // Mutex de Generación Concurrente por ProjectId
@@ -616,6 +1042,76 @@ app.delete('/api/projects/:type/:id', (req, res) => {
     }
   } catch (error) {
     res.status(500).json({ success: false, error: `Error al eliminar proyecto: ${error.message}` });
+  }
+});
+
+// Archivado explícito (cambia estado a 'Archivado')
+app.post('/api/projects/:type/:id/archive', prohibirRevisorMutacion, (req, res) => {
+  try {
+    const { type, id } = req.params;
+    const proj = resolveWritableProject(type, id, req.user);
+    if (!proj) return res.status(403).json({ error: 'No tienes permiso para archivar este proyecto.' });
+
+    const raw = fs.readFileSync(proj.path, 'utf8');
+    const data = JSON.parse(raw);
+    data.config = data.config || {};
+    data.config.workflowStatus = 'Archivado';
+    data.config.reviewHistory = Array.isArray(data.config.reviewHistory) ? data.config.reviewHistory : [];
+    data.config.reviewHistory.push({
+      timestamp: new Date().toISOString(),
+      event: 'PROJECT_ARCHIVED',
+      by: req.user.username,
+      role: req.user.role
+    });
+    fs.writeFileSync(proj.path, JSON.stringify(data, null, 2), 'utf8');
+
+    registrarAuditoria({
+      actorId: req.user.id,
+      actorUsername: req.user.username,
+      actorRole: req.user.role,
+      action: 'PROJECT_ARCHIVED',
+      targetType: 'project',
+      targetId: id
+    });
+
+    res.json({ success: true, message: 'Proyecto archivado exitosamente.', workflowStatus: 'Archivado' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Restauración de proyecto archivado a Borrador
+app.post('/api/projects/:type/:id/restore', prohibirRevisorMutacion, (req, res) => {
+  try {
+    const { type, id } = req.params;
+    const proj = resolveWritableProject(type, id, req.user);
+    if (!proj) return res.status(403).json({ error: 'No tienes permiso para restaurar este proyecto.' });
+
+    const raw = fs.readFileSync(proj.path, 'utf8');
+    const data = JSON.parse(raw);
+    data.config = data.config || {};
+    data.config.workflowStatus = 'Borrador';
+    data.config.reviewHistory = Array.isArray(data.config.reviewHistory) ? data.config.reviewHistory : [];
+    data.config.reviewHistory.push({
+      timestamp: new Date().toISOString(),
+      event: 'PROJECT_RESTORED',
+      by: req.user.username,
+      role: req.user.role
+    });
+    fs.writeFileSync(proj.path, JSON.stringify(data, null, 2), 'utf8');
+
+    registrarAuditoria({
+      actorId: req.user.id,
+      actorUsername: req.user.username,
+      actorRole: req.user.role,
+      action: 'PROJECT_RESTORED',
+      targetType: 'project',
+      targetId: id
+    });
+
+    res.json({ success: true, message: 'Proyecto restaurado exitosamente a estado Borrador.', workflowStatus: 'Borrador' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 });
 
