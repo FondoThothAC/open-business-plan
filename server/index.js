@@ -74,6 +74,7 @@ export async function safeDdgSearch(query, reintentos = 2) {
 }
 
 const app = express();
+app.set('trust proxy', 1);
 const PORT = process.env.PORT || 3001;
 const generationJobs = new GenerationJobStore();
 

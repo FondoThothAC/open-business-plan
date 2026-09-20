@@ -122,14 +122,14 @@ export function buildDocxDocument(project = {}, options = {}) {
 
   // 1. PORTADA EJECUTIVA
   children.push(
-    new Paragraph({ spacing: { before: 800, after: 200 } }),
+    new Paragraph({ spacing: { before: 600, after: 150 } }),
     new Paragraph({
       alignment: AlignmentType.CENTER,
       children: [
         new TextRun({
           text: nombreEmpresa.toUpperCase(),
           bold: true,
-          size: 44,
+          size: 42,
           color: COLORS.PRIMARY,
           font: 'Arial'
         })
@@ -137,14 +137,14 @@ export function buildDocxDocument(project = {}, options = {}) {
     }),
     new Paragraph({
       alignment: AlignmentType.CENTER,
-      spacing: { after: 300 },
+      spacing: { after: 240 },
       children: [
         new TextRun({
           text: scope === 'executive' 
             ? 'DOSSIER EJECUTIVO & DICTAMEN DE VIABILIDAD FINANCIERA'
             : 'PLAN ESTRATÉGICO INTEGRAL (DOCUMENTO MAESTRO 12 METODOLOGÍAS)',
           bold: true,
-          size: 22,
+          size: 20,
           color: COLORS.ACCENT,
           font: 'Arial'
         })
@@ -153,7 +153,7 @@ export function buildDocxDocument(project = {}, options = {}) {
     new Paragraph({
       alignment: AlignmentType.CENTER,
       children: [
-        new TextRun({ text: `Sector / Giro: ${sector}`, size: 20, color: COLORS.MUTED, font: 'Arial' })
+        new TextRun({ text: `Sector / Giro: ${sector}`, size: 18, color: COLORS.MUTED, font: 'Arial' })
       ]
     }),
     new Paragraph({
@@ -163,7 +163,7 @@ export function buildDocxDocument(project = {}, options = {}) {
           text: scope === 'executive'
             ? `Metodología Base: ${metodologia} (Enfoque Ejecutivo Canónico)`
             : `Metodología Base: ${metodologia} (Integración Completa de 12 Frameworks)`, 
-          size: 18, 
+          size: 17, 
           color: COLORS.MUTED, 
           font: 'Arial' 
         })
@@ -171,9 +171,9 @@ export function buildDocxDocument(project = {}, options = {}) {
     }),
     new Paragraph({
       alignment: AlignmentType.CENTER,
-      spacing: { after: 500 },
+      spacing: { after: 400 },
       children: [
-        new TextRun({ text: `Fecha de Emisión: ${fecha}`, size: 18, color: COLORS.MUTED, font: 'Arial' })
+        new TextRun({ text: `Fecha de Emisión: ${fecha}`, size: 17, color: COLORS.MUTED, font: 'Arial' })
       ]
     }),
 
@@ -186,18 +186,18 @@ export function buildDocxDocument(project = {}, options = {}) {
             new TableCell({
               borders: BORDER_STYLE_LIGHT,
               shading: { fill: 'F0FDFA' }, // Teal suave
-              margins: { top: 200, bottom: 200, left: 200, right: 200 },
+              margins: { top: 160, bottom: 160, left: 160, right: 160 },
               children: [
                 new Paragraph({
                   alignment: AlignmentType.CENTER,
                   children: [
-                    new TextRun({ text: 'CAPITAL REQUERIDO DE INVERSIÓN', bold: true, size: 20, color: COLORS.ACCENT, font: 'Arial' })
+                    new TextRun({ text: 'CAPITAL REQUERIDO DE INVERSIÓN', bold: true, size: 18, color: COLORS.ACCENT, font: 'Arial' })
                   ]
                 }),
                 new Paragraph({
                   alignment: AlignmentType.CENTER,
                   children: [
-                    new TextRun({ text: inversionMonto, bold: true, size: 36, color: COLORS.PRIMARY, font: 'Arial' })
+                    new TextRun({ text: inversionMonto, bold: true, size: 34, color: COLORS.PRIMARY, font: 'Arial' })
                   ]
                 }),
                 new Paragraph({
@@ -205,7 +205,7 @@ export function buildDocxDocument(project = {}, options = {}) {
                   children: [
                     new TextRun({
                       text: project.descripcion ? project.descripcion.slice(0, 180) + '...' : 'Habilitación de infraestructura operativa, equipamiento productivo y capital de trabajo inicial.',
-                      size: 17,
+                      size: 16,
                       color: COLORS.SECONDARY,
                       font: 'Arial'
                     })
@@ -218,13 +218,13 @@ export function buildDocxDocument(project = {}, options = {}) {
       ]
     }),
 
-    new Paragraph({ spacing: { before: 800, after: 200 } }),
+    new Paragraph({ spacing: { before: 600, after: 150 } }),
     new Paragraph({
       alignment: AlignmentType.CENTER,
       children: [
         new TextRun({
           text: 'CONFIDENCIAL — PROHIBIDA SU REPRODUCCIÓN O DISTRIBUCIÓN SIN AUTORIZACIÓN',
-          size: 16,
+          size: 15,
           color: COLORS.MUTED,
           italics: true,
           font: 'Arial'
@@ -241,19 +241,19 @@ export function buildDocxDocument(project = {}, options = {}) {
   children.push(
     new Paragraph({
       heading: HeadingLevel.HEADING_1,
-      spacing: { before: 200, after: 200 },
+      spacing: { before: 180, after: 160 },
       children: [
         new TextRun({ text: '1. Resumen Ejecutivo & Estrategia de Escalamiento Cuántico', bold: true, color: COLORS.PRIMARY, font: 'Arial' })
       ]
     }),
     new Paragraph({
-      spacing: { after: 200 },
+      spacing: { after: 160 },
       children: [
         new TextRun({
           text: resumen.elevator_pitch?.problema && resumen.elevator_pitch?.solucion
             ? `${resumen.elevator_pitch.solucion} Enfoque de mitigación: ${resumen.elevator_pitch.problema}`
             : project.descripcion || 'Plan estratégico enfocado en optimizar el modelo operativo y comercial con alta rentabilidad y control de riesgos.',
-          size: 20,
+          size: 19,
           font: 'Arial'
         })
       ]
@@ -265,7 +265,7 @@ export function buildDocxDocument(project = {}, options = {}) {
     children.push(
       new Paragraph({
         heading: HeadingLevel.HEADING_2,
-        spacing: { before: 180, after: 120 },
+        spacing: { before: 150, after: 100 },
         children: [
           new TextRun({ text: 'Modelo en Dos Fases Cuánticas (KPIs Gate)', bold: true, color: COLORS.SECONDARY, font: 'Arial' })
         ]
@@ -293,7 +293,7 @@ export function buildDocxDocument(project = {}, options = {}) {
           ])
         ]
       }),
-      new Paragraph({ spacing: { before: 200, after: 200 } })
+      new Paragraph({ spacing: { before: 160, after: 160 } })
     );
   }
 
@@ -314,7 +314,7 @@ export function buildDocxDocument(project = {}, options = {}) {
     children.push(
       new Paragraph({
         heading: HeadingLevel.HEADING_1,
-        spacing: { before: 240, after: 180 },
+        spacing: { before: 200, after: 140 },
         children: [
           new TextRun({ text: '2. Proyección Financiera Consolidada a 5 Años', bold: true, color: COLORS.PRIMARY, font: 'Arial' })
         ]
@@ -352,7 +352,7 @@ export function buildDocxDocument(project = {}, options = {}) {
     children.push(
       new Paragraph({
         heading: HeadingLevel.HEADING_2,
-        spacing: { before: 140, after: 100 },
+        spacing: { before: 120, after: 80 },
         children: [
           new TextRun({ text: 'Estado de Resultados Proyectado (MXN)', bold: true, color: COLORS.SECONDARY, font: 'Arial' })
         ]
@@ -361,7 +361,7 @@ export function buildDocxDocument(project = {}, options = {}) {
         width: { size: 100, type: WidthType.PERCENTAGE },
         rows: incomeRows
       }),
-      new Paragraph({ spacing: { before: 200, after: 150 } })
+      new Paragraph({ spacing: { before: 160, after: 120 } })
     );
 
     // Tabla de Indicadores Financieros
@@ -369,7 +369,7 @@ export function buildDocxDocument(project = {}, options = {}) {
     children.push(
       new Paragraph({
         heading: HeadingLevel.HEADING_2,
-        spacing: { before: 140, after: 100 },
+        spacing: { before: 120, after: 80 },
         children: [
           new TextRun({ text: 'Indicadores de Rentabilidad y Viabilidad de Inversión', bold: true, color: COLORS.SECONDARY, font: 'Arial' })
         ]
@@ -409,7 +409,7 @@ export function buildDocxDocument(project = {}, options = {}) {
           ])
         ]
       }),
-      new Paragraph({ spacing: { before: 250, after: 200 } })
+      new Paragraph({ spacing: { before: 200, after: 160 } })
     );
   }
 
@@ -417,7 +417,7 @@ export function buildDocxDocument(project = {}, options = {}) {
   children.push(
     new Paragraph({
       heading: HeadingLevel.HEADING_1,
-      spacing: { before: 300, after: 200 },
+      spacing: { before: 240, after: 160 },
       children: [
         new TextRun({ 
           text: scope === 'executive' 
@@ -431,12 +431,6 @@ export function buildDocxDocument(project = {}, options = {}) {
     })
   );
 
-  const ignoredPillars = new Set([
-    'id', 'type', 'framework', 'nombre', 'companyName', 'sector', 'giro',
-    'descripcion', 'montoInversion', 'inversionRequerida', 'fechaCreacion',
-    'fechaActualizacion', 'config', 'semilla', 'resumen_ejecutivo', 'dictamen_viabilidad'
-  ]);
-
   if (scope === 'executive') {
     // Modo Dossier Ejecutivo: Renderizar exclusivamente los pilares y módulos de la metodología activa
     let secIndex = 1;
@@ -447,7 +441,7 @@ export function buildDocxDocument(project = {}, options = {}) {
       children.push(
         new Paragraph({
           heading: HeadingLevel.HEADING_2,
-          spacing: { before: 260, after: 120 },
+          spacing: { before: 200, after: 100 },
           children: [
             new TextRun({ text: `3.${secIndex} Pilar: ${pillar.title}`, bold: true, color: COLORS.PRIMARY, font: 'Arial' })
           ]
@@ -463,24 +457,31 @@ export function buildDocxDocument(project = {}, options = {}) {
         children.push(
           new Paragraph({
             heading: HeadingLevel.HEADING_3,
-            spacing: { before: 180, after: 80 },
+            spacing: { before: 140, after: 60 },
             children: [
               new TextRun({ text: mod.title, bold: true, color: COLORS.SECONDARY, font: 'Arial' })
             ]
           })
         );
 
+        // Deduplicar bloques de texto idénticos en modo ejecutivo para evitar repeticiones
+        const seenValues = new Set();
+
         Object.entries(modData).forEach(([fieldKey, val]) => {
           if (typeof val === 'string' && val.trim().length > 0) {
+            const trimmedVal = val.trim();
+            if (seenValues.has(trimmedVal)) return;
+            seenValues.add(trimmedVal);
+
             const fieldLabel = fieldKey.replace(/_/g, ' ').toUpperCase();
             
             // Si el texto tiene viñetas, separarlas en párrafos limpios
             const lines = val.split('\n');
             children.push(
               new Paragraph({
-                spacing: { before: 80, after: 30 },
+                spacing: { before: 60, after: 20 },
                 children: [
-                  new TextRun({ text: `${fieldLabel}:`, bold: true, size: 19, color: COLORS.ACCENT, font: 'Arial' })
+                  new TextRun({ text: `${fieldLabel}:`, bold: true, size: 18, color: COLORS.ACCENT, font: 'Arial' })
                 ]
               })
             );
@@ -491,10 +492,10 @@ export function buildDocxDocument(project = {}, options = {}) {
               const isBullet = trimmed.startsWith('•') || trimmed.startsWith('-');
               children.push(
                 new Paragraph({
-                  spacing: { before: 20, after: 30 },
-                  indent: isBullet ? { left: 360 } : undefined,
+                  spacing: { before: 15, after: 25 },
+                  indent: isBullet ? { left: 300 } : undefined,
                   children: [
-                    new TextRun({ text: trimmed, size: 19, color: COLORS.SECONDARY, font: 'Arial' })
+                    new TextRun({ text: trimmed, size: 18, color: COLORS.SECONDARY, font: 'Arial' })
                   ]
                 })
               );
@@ -510,7 +511,7 @@ export function buildDocxDocument(project = {}, options = {}) {
       children.push(
         new Paragraph({
           heading: HeadingLevel.HEADING_2,
-          spacing: { before: 320, after: 140 },
+          spacing: { before: 260, after: 120 },
           children: [
             new TextRun({ text: `Metodología ${fwIndex}: ${fwConfig.name.toUpperCase()} (ID: ${fwId})`, bold: true, color: COLORS.PRIMARY, font: 'Arial' })
           ]
@@ -529,7 +530,7 @@ export function buildDocxDocument(project = {}, options = {}) {
           children.push(
             new Paragraph({
               heading: HeadingLevel.HEADING_3,
-              spacing: { before: 180, after: 80 },
+              spacing: { before: 160, after: 70 },
               children: [
                 new TextRun({ text: `${mod.title} (${pillar.title})`, bold: true, color: COLORS.SECONDARY, font: 'Arial' })
               ]
@@ -541,7 +542,7 @@ export function buildDocxDocument(project = {}, options = {}) {
               const fieldLabel = fieldKey.replace(/_/g, ' ').toUpperCase();
               children.push(
                 new Paragraph({
-                  spacing: { before: 60, after: 30 },
+                  spacing: { before: 50, after: 25 },
                   children: [
                     new TextRun({ text: `${fieldLabel}: `, bold: true, size: 18, color: COLORS.PRIMARY, font: 'Arial' }),
                     new TextRun({ text: val, size: 18, color: COLORS.SECONDARY, font: 'Arial' })
@@ -555,13 +556,13 @@ export function buildDocxDocument(project = {}, options = {}) {
     });
   }
 
-  // Configuración del Documento con Encabezado y Pie de página
+  // Configuración del Documento con Encabezado y Pie de página con márgenes ejecutivos (1080 dxa = 0.75 in)
   return new Document({
     sections: [
       {
         properties: {
           page: {
-            margin: { top: 1440, bottom: 1440, left: 1440, right: 1440 } // 1 pulgada (72pt * 20 = 1440 dxa)
+            margin: { top: 1080, bottom: 1080, left: 1080, right: 1080 } // 0.75 in (54pt * 20 = 1080 dxa)
           }
         },
         headers: {
@@ -572,7 +573,7 @@ export function buildDocxDocument(project = {}, options = {}) {
                 children: [
                   new TextRun({
                     text: `${nombreEmpresa} — ${scope === 'executive' ? 'Dossier Ejecutivo' : 'Documento Maestro'}`,
-                    size: 16,
+                    size: 15,
                     color: COLORS.MUTED,
                     font: 'Arial'
                   })
@@ -587,11 +588,11 @@ export function buildDocxDocument(project = {}, options = {}) {
               new Paragraph({
                 alignment: AlignmentType.CENTER,
                 children: [
-                  new TextRun({ text: 'Página ', size: 16, color: COLORS.MUTED, font: 'Arial' }),
-                  new TextRun({ children: [PageNumber.CURRENT], size: 16, color: COLORS.MUTED, font: 'Arial' }),
-                  new TextRun({ text: ' de ', size: 16, color: COLORS.MUTED, font: 'Arial' }),
-                  new TextRun({ children: [PageNumber.TOTAL_PAGES], size: 16, color: COLORS.MUTED, font: 'Arial' }),
-                  new TextRun({ text: ' • Documento Confidencial', size: 16, color: COLORS.MUTED, font: 'Arial' })
+                  new TextRun({ text: 'Página ', size: 15, color: COLORS.MUTED, font: 'Arial' }),
+                  new TextRun({ children: [PageNumber.CURRENT], size: 15, color: COLORS.MUTED, font: 'Arial' }),
+                  new TextRun({ text: ' de ', size: 15, color: COLORS.MUTED, font: 'Arial' }),
+                  new TextRun({ children: [PageNumber.TOTAL_PAGES], size: 15, color: COLORS.MUTED, font: 'Arial' }),
+                  new TextRun({ text: ' • Documento Confidencial', size: 15, color: COLORS.MUTED, font: 'Arial' })
                 ]
               })
             ]
