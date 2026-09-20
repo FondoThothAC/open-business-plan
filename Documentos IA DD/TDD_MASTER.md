@@ -1,6 +1,6 @@
 # TDD MASTER — Test-Driven Development & Quality Matrix
 **Proyecto:** Open Business Plan (Fondo Thoth AC)  
-**Versión:** 3.1.0  
+**Versión:** 3.2.0  
 **Cobertura Mínima Requerida:** 85% Lógica de Negocio y Finanzas | 80% Integración Agéntica  
 
 ---
@@ -48,8 +48,9 @@
 | **TDD-37** | `ExecutiveSummary & Viability Two-Phases & INEGI DENUE` | Unitaria / Regulación & Datos | Valida estructura Linda Pinson (7 elementos), dictamen honesto en 2 fases ($4M regional viable vs $20M exportación Serie A) y muestra de competidores censados por INEGI DENUE. |
 | **TDD-38** | `AutonomousResearchEngine & Multinivel Competitors & Gate KPIs` | Integración / Backend & Agéntica | Cascada geográfica obligatoria (INEGI + DuckDuckGo + Serper/Tavily), categorización de competidores (Amenaza/Oportunidad/Sustituto) y generación sintáctica de Flowchart Mermaid con compuertas de decisión. |
 | **TDD-39** | `VCV Twelve Frameworks & Precision Financial Calibration` | Unitaria / Finanzas & Documental | Valida cobertura de 12 metodologías canónicas para VCV Cortes Finos, calibración estricta de Margen Bruto Real al 31.13% (Markup 45.24%), Punto de Equilibrio de 781.87 kg/mes ($752,940 MXN), no-contaminación de campos (quienes_somos vs SOM, reclutamiento vs TAM), y estructura a 5 años de corrida_automatica. |
+| **TDD-40** | `AdminAuthWorkflow & RBAC Security Suite` | Integración / Seguridad & API | Valida ciclo de vida completo de usuarios, emisión y verificación de cookie `obp_auth_token` con Recordarme, restricciones por rol (superadmin, revisor, user), exclusividad de Comercio Cuántico TR, reversión automática de proyectos a En revisión, y persistencia inmutable en `audit_log.json`. |
 
-**Estado de Ejecución:** 321/321 tests pasando (100% de la suite completa aprobada en verde).
+**Estado de Ejecución:** 330/330 tests pasando (100% de la suite completa aprobada en verde).
 
 ---
 
@@ -58,3 +59,4 @@
 * **Mock APIs Externas**: Interceptar llamadas a Tavily, Serper, Banxico SieAPI e INEGI mediante handlers controlados en `tests/mocks/`.
 * **Mock OCR / Documentos**: Fixtures de cotizaciones en PDF de maquinaria (ej. Torno CNC Haas ST-20, Montacargas CAT 5000lbs) con datos conocidos para validar precisión de extracción.
 * **Mock Estado Financiero**: Fixtures de proyecciones a 5 años (`previewFinancialData`) con estados de resultados, flujos de caja y métricas de proyectos industriales/mineros.
+* **Mock Autenticación y RBAC**: Tokens JWT firmados para simular roles `superadmin`, `revisor` y `user`, junto con cookies simuladas en suites HTTP de `supertest`.

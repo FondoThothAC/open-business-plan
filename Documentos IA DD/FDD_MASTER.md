@@ -24,4 +24,8 @@
 | **F15** | Deep Research & Cuotas Fila 1/2 | Búsqueda profunda multinivel con Brave Search Freemium (2,000 req/mes), Tavily y cuotas persistidas | ✅ Implementado |
 | **F16** | Endpoints Reales de Mercado | Cotizaciones reales de maquinaria y proveedores con erradicación total de benchmarks inventados | ✅ Implementado |
 | **F17** | ProvenanceBadge & Control Reactivo | Visualización universal de procedencia en 4 niveles y auto-pausa reactiva en TerminalDrawer | ✅ Implementado |
-
+| **F18** | Autenticación Segura & Cookies | Cookie HttpOnly `obp_auth_token` con Recordarme (30 días vs sesión) y purga de localStorage | ✅ Implementado |
+| **F19** | RBAC Jerárquico | Roles superadmin, revisor y user con protección exclusiva de Comercio Cuántico TR | ✅ Implementado |
+| **F20** | Auditoría Persistente | Registro inmutable de eventos administrativos y mutaciones en `server/data/audit_log.json` | ✅ Implementado |
+| **F21** | Gobernanza de Proyectos | Separación de avance vs estado editorial, reversión a revisión y botón Continuar en incompletos | ✅ Implementado |
+| **F22** | Dossier Ejecutivo VCV 20P | Modelo canónico unificado, PDF de 20 páginas Letter, diferenciación $4M / $16.8M e inspección visual 100% | ✅ Implementado |

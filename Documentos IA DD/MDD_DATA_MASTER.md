@@ -130,3 +130,71 @@ Ubicación canónica: `planData.organizacion.estados_financieros.corrida_automat
   * `'executive'`: Filtra exclusivamente la metodología activa en `FRAMEWORKS[projectType]`, omitiendo frameworks auxiliares y desplegando tablas financieras anuales compactas a 5 años (~20-25 páginas).
   * `'full'`: Exporta los 12 frameworks canónicos completos con taxonomía multinivel de pilares y módulos.
 
+---
+
+## 5. Esquema de Entidades de Seguridad & RBAC
+
+### 5.1 Entidad Usuario (`User`)
+```json
+{
+  "id": "String (uuid / u_prefix)",
+  "username": "String (alphanumeric safe)",
+  "email": "String (RFC 5322)",
+  "role": "superadmin | revisor | user",
+  "status": "active | pending | disabled",
+  "displayName": "String",
+  "passwordHash": "String (bcrypt, cost 12)",
+  "apiKeys": {
+    "gemini": "Encrypted String (AES-256-GCM)",
+    "groq": "Encrypted String",
+    "openrouter": "Encrypted String"
+  },
+  "createdAt": "ISO8601 String",
+  "lastLogin": "ISO8601 String"
+}
+```
+
+### 5.2 Ciclo de Vida Editorial de Proyectos (`ProjectWorkflow`)
+```json
+{
+  "avance": "Number (0..100) [Cálculo cuantitativo de campos completados]",
+  "workflowStatus": "Borrador | En revisión | Aprobado | Archivado",
+  "userOwner": "String (user.id o username estable)",
+  "reviewerNotes": [
+    {
+      "id": "String",
+      "authorId": "String",
+      "authorName": "String",
+      "role": "revisor | superadmin",
+      "comment": "String",
+      "createdAt": "ISO8601 String"
+    }
+  ],
+  "lastEditedBy": "String",
+  "lastEditedAt": "ISO8601 String"
+}
+```
+
+### 5.3 Bitácora de Auditoría Inmutable (`AuditEntry`)
+Ubicación: `server/data/audit_log.json`
+```json
+{
+  "id": "String (UUID)",
+  "timestamp": "ISO8601 String",
+  "actorId": "String (User ID)",
+  "actorUsername": "String",
+  "role": "superadmin | revisor | user",
+  "action": "LOGIN | LOGOUT | ROLE_CHANGE | USER_ACTIVATE | USER_DEACTIVATE | PASSWORD_RESET | PROJECT_STATUS_CHANGE | PROJECT_ARCHIVE | EXPORT",
+  "target": "String (User ID / Project ID)",
+  "ip": "String",
+  "details": "Object (metadata contextual)"
+}
+```
+
+---
+
+## 6. Modelo de Inversión y Escenarios VCV Cortes Finos
+* **Fase 1 (Taller Piloto Regional B2B):** `$4,000,000 MXN` (Arranque con 1 módulo continuo ASADHOR, túnel de enfriamiento y selladora al vacío).
+* **Fase 2 (Escalamiento Cuántico a Exportación Binacional):** `$16,800,000 MXN` (Ronda Serie A para certificación TIF SENASICA, auditoría bilateral USDA/FSIS, túnel IQF criogénico y registro FDA).
+
+

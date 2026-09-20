@@ -118,15 +118,40 @@ Escenario: Presentación honesta para comités de inversión y validación censa
   Y el Índice General incluye el enlace interactivo "Resumen Ejecutivo & Dictamen de Viabilidad" en Página 3.
 ```
 
-## Escenario 12: Pipeline Agéntico Autónomo de Investigación Internacional y Compuertas de Decisión (Gate KPIs)
+## Escenario 13: Autenticación Segura con Cookies HttpOnly, Recordarme y RBAC de Tres Roles
 ```gherkin
-Escenario: Ejecución estándar secuencial de investigación multinivel y generación de Roadmap Mermaid
-  Dado cualquier proyecto comercial o industrial evaluado por el motor agéntico
-  Cuando el sistema ejecuta el pipeline autónomo de investigación
-  Entonces consulta secuencialmente el censo de INEGI DENUE, la web nacional (DuckDuckGo) y operadores en EE.UU. (Tavily/Serper)
-  Y clasifica a cada competidor en "Amenaza Directa", "Oportunidad de Alianza/Maquila" o "Sustituto Indirecto"
-  Y genera un Flowchart Mermaid con compuertas de decisión condicionales (KPIs Gate)
-  Y muestra el diagrama resumido en la Página 3 y el diagrama extendido completo en el módulo de Operaciones.
+Escenario: Inicio de sesión con mitigación XSS/CSRF y asignación estricta de permisos
+  Dado un usuario registrado en el sistema con credenciales válidas
+  Cuando inicia sesión marcando la casilla "Recordarme"
+  Entonces el backend emite una cookie "obp_auth_token" con atributos HttpOnly, SameSite=Lax y maxAge de 30 días
+  Y la respuesta JSON del servidor no expone el token JWT en el cuerpo de la respuesta
+  Y el frontend purga del almacenamiento local cualquier token residual heredado
+  Y si el usuario tiene el rol "revisor", la interfaz le permite consultar proyectos y registrar comentarios sin habilitar botones de edición ni aprobación
+  Y si el usuario tiene el rol "superadmin", puede acceder a la pestaña de usuarios, restablecer contraseñas y visualizar el módulo privado "Comercio Cuántico TR".
 ```
+
+## Escenario 14: Ciclo Editorial de Proyectos Incompletos, Aprobación por Superadmin y Reversión Automática
+```gherkin
+Escenario: Gobernanza editorial de estados desacoplada del avance cuantitativo
+  Dado un proyecto en estado "Borrador" con un avance cuantitativo del 85%
+  Cuando el usuario propietario solicita formalmente la revisión
+  Entonces el estado editorial cambia a "En revisión" sin modificar el porcentaje de avance
+  Y el revisor puede añadir observaciones en el panel de notas
+  Y cuando el "superadmin" evalúa el proyecto y pulsa "Aprobar", el estado cambia a "Aprobado"
+  Y si posteriormente el propietario o un colaborador edita cualquier campo del proyecto aprobado
+  Entonces el backend revierte inmediatamente el estado editorial a "En revisión" y registra el evento en audit_log.json.
+```
+
+## Escenario 15: Dossier Canónico VCV de 20 Páginas en Orientación Vertical Letter y Desglose de Inversión
+```gherkin
+Escenario: Generación canónica y validación visual del dossier ejecutivo de VCV
+  Dado el proyecto canónico "vcv_cortes_finos_sa_de_cv" con datos financieros calibrados
+  Cuando se exporta el dossier en modo ejecutivo
+  Entonces el documento generado tanto en PDF como en DOCX se conforma en exactamente 20 páginas
+  Y la orientación de todas las páginas es vertical Letter (612 x 792 pts)
+  Y el Tablero Ejecutivo desglosa con total claridad la inversión de Fase 1 ($4,000,000 MXN) y el Escenario Total de Expansión ($16,800,000 MXN)
+  Y no se incluyen páginas en blanco ni fragmentos huérfanos de tablas.
+```
+
 
 

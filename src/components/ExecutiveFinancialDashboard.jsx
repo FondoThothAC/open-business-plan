@@ -55,8 +55,9 @@ export default function ExecutiveFinancialDashboard({ planData, financialData = 
     const payback = metricsData.paybackPeriod ?? metricsData.payback ?? parseAmount(rentabilidadData.payback, 1.5);
     const bc = metricsData.benefitCostRatio ?? metricsData.bc ?? parseAmount(rentabilidadData.relacion_bc, 1.45);
     
-    // Inversión Inicial
-    const capex = parseAmount(inversionData.total || inversionData.inversion_fija, 4000000);
+    // Inversión Inicial: Fase 1 ($4M) vs Escenario Total ($16.8M)
+    const capexFase1 = parseAmount(inversionData.total || inversionData.inversion_fija, 4000000);
+    const capexEscenario = 16800000;
 
     return [
       {
@@ -97,12 +98,12 @@ export default function ExecutiveFinancialDashboard({ planData, financialData = 
       },
       {
         id: 'capex',
-        label: 'Inversión Inicial (CAPEX)',
-        value: formatearMoneda(capex),
-        subtext: 'Equipamiento y capital trabajo',
+        label: 'Inversión Fase 1 / Escenario',
+        value: `${formatearMoneda(capexFase1)}`,
+        subtext: `Fase 1: $4M | Escenario Total: ${formatearMoneda(capexEscenario)}`,
         status: 'blue',
         icon: Scale,
-        desc: 'Estructura de financiamiento y activos productivos iniciales'
+        desc: 'Fase 1 (Taller Piloto $4M MXN) · Escenario Expansión ($16.8M MXN Serie A)'
       },
       {
         id: 'bc',

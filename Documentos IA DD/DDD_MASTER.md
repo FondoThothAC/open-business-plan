@@ -20,6 +20,11 @@
 * **Instantánea de Versión Inmutable (Aggregate Snapshot):** Captura física con hash SHA-1 y manifiesto (`.versions/`) que asegura que el progreso de redacción no sea sobreescrito ni degradado por sesiones paralelas.
 * **Átomo de 3 Áreas (Value Object - Metodología Cuántica):** Tríada fundamental compuesta por Finanzas, Operaciones y Administración.
 * **Fusión Atómica (Anti-patrón):** Anomalía donde el fundador concentra las 3 áreas simultáneamente, exigiendo plan de delegación obligatorio.
+* **Usuario & Rol (Aggregate Root):** Identidad autenticada en el dominio (`superadmin`, `revisor`, `user`) con facultades RBAC y aislamiento multi-tenant.
+* **Sesión Criptográfica (Value Object):** Token JWT transmitido exclusivamente mediante cookie segura HttpOnly `obp_auth_token` con política de retención dual (24 horas vs 30 días persistente con Recordarme).
+* **Estado Editorial de Proyecto (Value Object):** Máquina de estados desacoplada del avance matemático (`Borrador` $\rightarrow$ `En revisión` $\rightarrow$ `Aprobado` $\rightarrow$ `Archivado`), con regla de invariancia que revierte un proyecto aprobado a revisión ante cualquier mutación.
+* **Bitácora de Auditoría (Domain Event Stream):** Historial inmutable en disco (`server/data/audit_log.json`) que registra eventos de autenticación, escalación de privilegios, revisiones y exportaciones.
+* **Dossier Canónico (Bounded Context de Presentación):** Representación editorial sincronizada al 100% entre Vista Previa web, exportación DOCX y renderizado a PDF en orientación vertical Letter (meta de 20–25 páginas ejecutivas).
 
 ---
 
@@ -27,13 +32,27 @@
 
 ```mermaid
 classDiagram
+    class Usuario {
+        +String id
+        +String username
+        +Role role
+        +Status status
+        +List~Proyecto~ proyectos
+        +iniciarSesion(rememberMe)
+        +cambiarRol(nuevoRol)
+    }
     class PlanNegocios {
         +String id
+        +String userOwner
+        +WorkflowStatus workflowStatus
+        +Number avance
         +Semilla semilla
         +Configuracion config
         +Map modulos
-        +calcularViabilidad()
-        +ejecutarGeneracionAgentica()
+        +solicitarRevision()
+        +aprobar(superadmin)
+        +revertirARevision()
+        +archivar()
     }
     class Modulo {
         +String key
@@ -42,23 +61,17 @@ classDiagram
         +Boolean locked
         +Trajectory trajectory
     }
-    class Trajectory {
-        +String harnessVersion
-        +List~DAGNode~ trajectoryDAG
-        +Map metrics
-        +exportJSON()
-    }
-    class AgentTool {
-        +String name
-        +execute(args)
-    }
-    class AIProviderCascade {
-        +callMinimaxFirst()
-        +callWithFallback()
+    class AuditoriaLog {
+        +String id
+        +Date timestamp
+        +String actorId
+        +String action
+        +registrarEvento()
     }
 
+    Usuario "1" *-- "0..*" PlanNegocios : Propietario
     PlanNegocios *-- Modulo
-    Modulo *-- Trajectory
-    PlanNegocios --> AIProviderCascade
-    Modulo ..> AgentTool : Invocado en ReAct Loop
+    PlanNegocios ..> AuditoriaLog : Emite eventos
+    Usuario ..> AuditoriaLog : Emite eventos
 ```
+
