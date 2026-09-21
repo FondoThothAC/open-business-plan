@@ -21,16 +21,15 @@ const CTX_PRESETS = [
 
 const PROVIDER_PRESETS = {
   ollama: [
-    { value: 'minimax-m3:cloud', label: 'minimax-m3:cloud (Nube - Prioridad Recomendada)' },
+    { value: 'qwen3.5:cloud', label: 'qwen3.5:cloud (Nube - Gratuito)' },
+    { value: 'kimi-k2.6:cloud', label: 'kimi-k2.6:cloud (Nube - Gratuito)' },
+    { value: 'glm-5.1:cloud', label: 'glm-5.1:cloud (Nube - Gratuito)' },
+    { value: 'nemotron-3-super:cloud', label: 'nemotron-3-super:cloud (Nube - Gratuito)' },
+    { value: 'gemma4:31b-cloud', label: 'gemma4:31b-cloud (Nube - Gratuito)' },
     { value: 'qwen3.5:4b-mlx', label: 'qwen3.5:4b-mlx (Local)' },
     { value: 'nemotron-3-nano:4b', label: 'nemotron-3-nano:4b' },
     { value: 'qwen3.5:2b-mlx', label: 'qwen3.5:2b-mlx' },
     { value: 'gemma4:e2b-mlx', label: 'gemma4:e2b-mlx' },
-    { value: 'kimi-k2.6:cloud', label: 'kimi-k2.6:cloud (Nube - Gratuito)' },
-    { value: 'glm-5.1:cloud', label: 'glm-5.1:cloud (Nube - Gratuito)' },
-    { value: 'qwen3.5:cloud', label: 'qwen3.5:cloud (Nube - Gratuito)' },
-    { value: 'nemotron-3-super:cloud', label: 'nemotron-3-super:cloud (Nube - Gratuito)' },
-    { value: 'gemma4:31b-cloud', label: 'gemma4:31b-cloud (Nube - Gratuito)' },
   ],
   bai: [
     { value: 'gpt-5.2', label: 'B.AI: GPT-5.2 (Premium OpenAI Compatible)' },
@@ -42,7 +41,6 @@ const PROVIDER_PRESETS = {
     { value: 'deepseek-v4-flash', label: 'B.AI: DeepSeek V4 Flash' },
   ],
   minimax: [
-    { value: 'minimax-m3:cloud', label: 'MiniMax M3 (Cloud 1M Tokens)' },
     { value: 'abab6.5-chat', label: 'MiniMax abab 6.5' },
   ],
   lmstudio: [
@@ -97,7 +95,7 @@ const CLOUD_PROVIDER_DEFAULTS = {
   gemini:      'gemini-1.5-flash',
   openai:      'gpt-4o',
   openrouter:  'nvidia/nemotron-3.5-lightning:free',
-  ollama:      'minimax-m3:cloud',
+  ollama:      'qwen3.5:cloud',
 };
 
 const _getModelLabel = (p) => {
@@ -910,7 +908,6 @@ export default function Configuracion() {
                   <option value="qwen3.5:cloud">qwen3.5:cloud (Nube - Gratuito)</option>
                   <option value="nemotron-3-super:cloud">nemotron-3-super:cloud (Nube - Gratuito)</option>
                   <option value="gemma4:31b-cloud">gemma4:31b-cloud (Nube - Gratuito)</option>
-                  <option value="minimax-m3:cloud">minimax-m3:cloud (Nube - Gratuito)</option>
                 </optgroup>
                 <optgroup label="☁️ Nube Gratuita — Groq & OpenRouter">
                   <option value="qwen/qwen3.6-27b">Groq: Qwen 3.6 27B ★ (Ultra-Rápido 200k TPD)</option>
@@ -929,10 +926,10 @@ export default function Configuracion() {
                   <option value="gemini-1.5-pro">Google: Gemini 1.5 Pro</option>
                   <option value="mistral-large-latest">Mistral Large</option>
                 </optgroup>
-                {ollamaModels.filter(m => !['nemotron','gemma4:e4b','gemma4:pro','gemma4:e2b','qwen2.5:7b','phi4:14b','llama3.1:8b','mistral:7b', 'qwen3.5:2b-mlx', 'qwen3.5:4b-mlx', 'kimi-k2.6:cloud', 'glm-5.1:cloud', 'qwen3.5:cloud', 'nemotron-3-super:cloud', 'gemma4:31b-cloud', 'minimax-m3:cloud'].includes(m.name)).length > 0 && (
+                {ollamaModels.filter(m => !['nemotron','gemma4:e4b','gemma4:pro','gemma4:e2b','qwen2.5:7b','phi4:14b','llama3.1:8b','mistral:7b', 'qwen3.5:2b-mlx', 'qwen3.5:4b-mlx', 'kimi-k2.6:cloud', 'glm-5.1:cloud', 'qwen3.5:cloud', 'nemotron-3-super:cloud', 'gemma4:31b-cloud'].includes(m.name)).length > 0 && (
                   <optgroup label="— Detectados en tu Ollama —">
                     {ollamaModels
-                      .filter(m => !['nemotron','gemma4:e4b','gemma4:pro','gemma4:e2b','qwen2.5:7b','phi4:14b','llama3.1:8b','mistral:7b', 'qwen3.5:2b-mlx', 'qwen3.5:4b-mlx', 'kimi-k2.6:cloud', 'glm-5.1:cloud', 'qwen3.5:cloud', 'nemotron-3-super:cloud', 'gemma4:31b-cloud', 'minimax-m3:cloud'].includes(m.name))
+                      .filter(m => !['nemotron','gemma4:e4b','gemma4:pro','gemma4:e2b','qwen2.5:7b','phi4:14b','llama3.1:8b','mistral:7b', 'qwen3.5:2b-mlx', 'qwen3.5:4b-mlx', 'kimi-k2.6:cloud', 'glm-5.1:cloud', 'qwen3.5:cloud', 'nemotron-3-super:cloud', 'gemma4:31b-cloud'].includes(m.name))
                       .map(m => <option key={m.name} value={m.name}>{m.name}</option>)
                     }
                   </optgroup>
@@ -1351,7 +1348,7 @@ export default function Configuracion() {
                       />
                       <div style={{ fontSize: '0.6rem', color: 'var(--text-muted)', marginBottom: '0.25rem' }}>
                         {planData.config.ai.bobOllamaKey 
-                          ? '✅ BOB usará esta key exclusiva para conversaciones (minimax-m3:cloud)'
+                          ? '✅ BOB usará esta key exclusiva para conversaciones (qwen3.5:cloud)'
                           : '💡 Sin key dedicada, BOB usará la key principal compartida. Recomendamos crear una segunda cuenta.'
                         }
                       </div>
@@ -3277,7 +3274,7 @@ export default function Configuracion() {
               🌐 Modo Web Zero-Install (Chrome / Safari)
             </h4>
             <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', lineHeight: 1.4, margin: 0 }}>
-              La barra OLED de tu MacBook Pro muestra automáticamente el modelo activo (<strong>minimax-m3:cloud</strong>), el porcentaje de avance y el último log mediante la API MediaSession nativa.
+              La barra OLED de tu MacBook Pro muestra automáticamente el modelo activo (<strong>{planData.config?.ai?.model || 'qwen3.5:cloud'}</strong>), el porcentaje de avance y el último log mediante la API MediaSession nativa.
             </p>
           </div>
 

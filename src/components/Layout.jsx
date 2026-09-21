@@ -701,11 +701,11 @@ export default function Layout() {
           </div>
         )}
 
-        <header className="top-header no-print" style={{ minHeight: '70px', padding: '0.5rem 1.5rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', flexWrap: 'wrap', gap: '1rem' }}>
+        <header className="top-header no-print" style={{ minHeight: '64px', height: 'auto', padding: '0.4rem 1.25rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', flexWrap: 'wrap', gap: '0.5rem' }}>
             
             {/* Left: Project Identity & Type */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: '1 1 auto', minWidth: '300px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flex: '1 1 auto', minWidth: '260px' }}>
               <div style={{ display: 'flex', flexDirection: 'column' }}>
                 <select 
                   value={planType} 
