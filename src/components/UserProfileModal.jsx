@@ -249,22 +249,23 @@ export default function UserProfileModal({ isOpen, onClose }) {
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.85rem' }}>
               {[
-                { key: 'openrouter', label: 'OpenRouter (Recomendado Gratuito)', placeholder: 'sk-or-v1-...' },
-                { key: 'groq', label: 'Groq Cloud (Ultra Rápido)', placeholder: 'gsk_...' },
-                { key: 'ollamaCloud', label: 'MiniMax / Ollama Cloud', placeholder: 'Key de nube...' },
-                { key: 'gemini', label: 'Google Gemini', placeholder: 'AIzaSy...' },
-                { key: 'openai', label: 'OpenAI (GPT-4o / GPT-5)', placeholder: 'sk-...' },
-                { key: 'claude', label: 'Anthropic Claude', placeholder: 'sk-ant-...' },
-                { key: 'mistral', label: 'Mistral AI', placeholder: 'Key Mistral...' },
-                { key: 'nvidia', label: 'NVIDIA NIM (Nemotron)', placeholder: 'nvapi-...' },
-                { key: 'tavily', label: 'Tavily Search (Búsqueda Web)', placeholder: 'tvly-...' },
-                { key: 'brave', label: 'Brave Search API', placeholder: 'BSA...' },
+                { key: 'openrouter', label: 'OpenRouter (Recomendado Gratuito)', placeholder: 'sk-or-v1-...', guide: 'https://openrouter.ai/settings/keys' },
+                { key: 'groq', label: 'Groq Cloud (Ultra Rápido)', placeholder: 'gsk_...', guide: 'https://console.groq.com/keys' },
+                { key: 'ollamaCloud', label: 'MiniMax / Ollama Cloud', placeholder: 'Key de nube...', guide: 'https://ollama.com/settings/keys' },
+                { key: 'gemini', label: 'Google Gemini', placeholder: 'AIzaSy...', guide: 'https://aistudio.google.com/app/apikey' },
+                { key: 'openai', label: 'OpenAI (GPT-4o / GPT-5)', placeholder: 'sk-...', guide: 'https://platform.openai.com/api-keys' },
+                { key: 'claude', label: 'Anthropic Claude', placeholder: 'sk-ant-...', guide: 'https://console.anthropic.com/settings/keys' },
+                { key: 'mistral', label: 'Mistral AI', placeholder: 'Key Mistral...', guide: 'https://console.mistral.ai/api-keys' },
+                { key: 'nvidia', label: 'NVIDIA NIM (Nemotron)', placeholder: 'nvapi-...', guide: 'https://build.nvidia.com/settings/api-keys' },
+                { key: 'tavily', label: 'Tavily Search (Búsqueda Web)', placeholder: 'tvly-...', guide: 'https://app.tavily.com/home' },
+                { key: 'brave', label: 'Brave Search API', placeholder: 'BSA...', guide: 'https://api-dashboard.search.brave.com/app/keys' },
               ].map(item => {
                 const isVisible = visibleKeys[item.key];
                 return (
                   <div key={item.key} style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
-                    <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-primary)' }}>
-                      {item.label}
+                    <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-primary)', display: 'flex', justifyContent: 'space-between', gap: '0.4rem' }}>
+                      <span>{item.label}</span>
+                      <a href={item.guide} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent-color)', fontSize: '0.65rem', whiteSpace: 'nowrap' }}>Obtener clave ↗</a>
                     </label>
                     <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
                       <input

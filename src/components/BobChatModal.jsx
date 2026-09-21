@@ -1,13 +1,23 @@
 import { useState, useEffect, useRef } from 'react';
-import { Bot, Mic, MicOff, Send, X, Zap, RefreshCw, RotateCcw } from 'lucide-react';
+import { Bot, Mic, MicOff, Send, X, Zap, RefreshCw, RotateCcw, Key, ExternalLink, ShieldCheck } from 'lucide-react';
 import { CelisVoiceEngine } from '../lib/voiceEngine';
 import { sendBobMessage } from '../lib/bobAgent';
 import { usePlan } from '../context/PlanContext';
+import { useAuth } from '../contexts/AuthContext';
+import { getApiBase } from '../config/apiConfig';
+
+const API_GUIDES = {
+  ollamaCloud: { label: 'Ollama Cloud', url: 'https://ollama.com/settings/keys', steps: 'Inicia sesión → Settings → Keys → crea y copia una clave.' },
+  groq: { label: 'Groq Cloud', url: 'https://console.groq.com/keys', steps: 'Crea una cuenta → API Keys → Create API Key.' },
+  openrouter: { label: 'OpenRouter', url: 'https://openrouter.ai/settings/keys', steps: 'Inicia sesión → Keys → Create Key. Hay modelos gratuitos.' },
+  openai: { label: 'OpenAI', url: 'https://platform.openai.com/api-keys', steps: 'Abre API Keys → Create new secret key. Requiere facturación API separada.' }
+};
 
 export default function BobChatModal({ isOpen, onClose, planData, onExecuteCommand }) {
   if (!isOpen) return null;
 
   const { activeModuleKey } = usePlan();
+  const { user, updateKeys, authFetch } = useAuth();
 
   // Clave de persistencia por proyecto
   const projectName = planData?.semilla?.nombre_proyecto || planData?.id || 'default_project';
@@ -40,6 +50,10 @@ export default function BobChatModal({ isOpen, onClose, planData, onExecuteComma
   const [inputText, setInputText] = useState('');
   const [isListening, setIsListening] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [showApiSetup, setShowApiSetup] = useState(false);
+  const [apiProvider, setApiProvider] = useState('ollamaCloud');
+  const [apiSecret, setApiSecret] = useState('');
+  const [apiSetupState, setApiSetupState] = useState({ state: 'idle', message: '' });
   const voiceEngineRef = useRef(null);
   const messagesEndRef = useRef(null);
 
@@ -113,6 +127,26 @@ export default function BobChatModal({ isOpen, onClose, planData, onExecuteComma
         id: `welcome_${Date.now()}`,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       }]);
+    }
+  };
+
+  const saveAndTestApiKey = async (event) => {
+    event.preventDefault();
+    if (!apiSecret.trim()) return;
+    setApiSetupState({ state: 'loading', message: 'Guardando cifrada y verificando…' });
+    const saved = await updateKeys({ [apiProvider]: apiSecret.trim() });
+    setApiSecret(''); // se elimina inmediatamente de memoria visual y nunca entra al chat
+    if (!saved.success) {
+      setApiSetupState({ state: 'error', message: saved.error || 'No se pudo guardar la clave.' });
+      return;
+    }
+    try {
+      const response = await authFetch(`${getApiBase()}/api/auth/me/keys/${apiProvider}/test`, { method: 'POST' });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'La clave no pasó la verificación.');
+      setApiSetupState({ state: 'success', message: `${API_GUIDES[apiProvider].label} quedó conectado a BOB.` });
+    } catch (error) {
+      setApiSetupState({ state: 'error', message: `La clave se guardó, pero no pudo verificarse: ${error.message}` });
     }
   };
 
@@ -256,6 +290,7 @@ export default function BobChatModal({ isOpen, onClose, planData, onExecuteComma
   };
 
   const quickActions = [
+    { label: '🔑 Configurar API', action: () => setShowApiSetup(true) },
     { label: '🛡️ Reserva Cierre (FRLI)', prompt: '¿Cuál es mi Fondo de Reserva de Liquidación Intocable (FRLI) recomendado y cuándo debo activar el protocolo de cierre si hay pérdidas?' },
     { label: '🎯 Grill-Me', prompt: '/grill-me Entrevístame para completar la propuesta de valor y modelo de ingresos' },
     { label: '🏢 Multi-Sucursales', prompt: 'Queremos expandir el proyecto abriendo sucursales en varias ciudades. ¿Qué opciones de despliegue y estructura cuántica me recomiendas?' },
@@ -325,7 +360,7 @@ export default function BobChatModal({ isOpen, onClose, planData, onExecuteComma
         {quickActions.map((qa, i) => (
           <button
             key={i}
-            onClick={() => handleSend(qa.prompt)}
+            onClick={() => qa.action ? qa.action() : handleSend(qa.prompt)}
             disabled={isLoading}
             style={{
               padding: '3px 8px',
@@ -343,6 +378,26 @@ export default function BobChatModal({ isOpen, onClose, planData, onExecuteComma
           </button>
         ))}
       </div>
+
+      {showApiSetup && (
+        <form onSubmit={saveAndTestApiKey} style={{ padding: '0.75rem', background: '#eef2ff', borderBottom: '1px solid #c7d2fe', color: '#1e293b' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', gap: '0.5rem', alignItems: 'center', marginBottom: '0.55rem' }}>
+            <strong style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.78rem' }}><ShieldCheck size={15} color="#4f46e5" /> Conexión segura de BOB</strong>
+            <button type="button" onClick={() => { setShowApiSetup(false); setApiSecret(''); }} style={{ border: 0, background: 'transparent', cursor: 'pointer' }}><X size={15} /></button>
+          </div>
+          <select value={apiProvider} onChange={e => { setApiProvider(e.target.value); setApiSetupState({ state: 'idle', message: '' }); }} style={{ width: '100%', padding: '0.45rem', borderRadius: '8px', border: '1px solid #cbd5e1', marginBottom: '0.45rem' }}>
+            {Object.entries(API_GUIDES).map(([key, guide]) => <option key={key} value={key}>{guide.label}{user?.apiKeys?.[key]?.configured ? ' ✓ configurada' : ''}</option>)}
+          </select>
+          <div style={{ fontSize: '0.68rem', color: '#64748b', marginBottom: '0.4rem' }}>{API_GUIDES[apiProvider].steps} <a href={API_GUIDES[apiProvider].url} target="_blank" rel="noopener noreferrer" style={{ color: '#4f46e5', fontWeight: 700 }}>Abrir manual <ExternalLink size={10} style={{ verticalAlign: 'middle' }} /></a></div>
+          <div style={{ display: 'flex', gap: '0.4rem' }}>
+            <input type="password" autoComplete="new-password" value={apiSecret} onChange={e => setApiSecret(e.target.value)} placeholder="Pega aquí la clave; no se enviará como mensaje" style={{ flex: 1, minWidth: 0, padding: '0.48rem 0.65rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.72rem' }} />
+            <button type="submit" disabled={!apiSecret.trim() || apiSetupState.state === 'loading'} style={{ border: 0, borderRadius: '8px', padding: '0 0.7rem', background: '#4f46e5', color: 'white', fontWeight: 700, cursor: 'pointer' }}><Key size={14} /></button>
+          </div>
+          <div style={{ fontSize: '0.64rem', marginTop: '0.4rem', color: apiSetupState.state === 'error' ? '#dc2626' : apiSetupState.state === 'success' ? '#059669' : '#64748b' }}>
+            {apiSetupState.message || 'Se almacena cifrada en tu cuenta. BOB sólo recibe permiso para usarla.'}
+          </div>
+        </form>
+      )}
 
       {/* Messages Feed */}
       <div style={{ flex: 1, padding: '1rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.75rem', background: '#f8fafc' }}>

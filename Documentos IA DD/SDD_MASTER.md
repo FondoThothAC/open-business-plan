@@ -367,3 +367,13 @@ Con base en el Plan de Saneamiento y Endurecimiento formalizado en `docs/archite
   * En `VistaPrevia`, el botón "Compartir para revisión" genera el enlace, lo copia al portapapeles y despliega la URL temporal generada.
   * En `AdminUsersPanel`, la acción `onOpenProject` carga el proyecto seleccionado e interactúa con el enrutador semántico para dirigir al administrador a la vista correspondiente sin pérdida de estado.
 
+### 5.12 Enrutamiento Agéntico de BOB y Autoconfiguración Segura de API Keys
+* **Endpoint de Chat Autenticado de BOB (`POST /api/ai/bob-chat`):**
+  * Requiere autenticación de usuario activa (`authGuard`).
+  * Desencripta en tiempo de ejecución las API keys privadas del usuario en memoria efímera mediante AES-256-GCM sin exponer los secretos en el cliente ni almacenarlos en historiales conversacionales.
+  * Resuelve la cascada multi-proveedor: Ollama Cloud (o proveedor configurado por el usuario: Groq, OpenRouter, OpenAI) con fallback transparente a Ollama local (`localhost:11434`).
+* **Autoconfiguración Guiada y Manuales Directos (`src/components/BobChatModal.jsx`, `src/components/UserProfileModal.jsx`):**
+  * Botón contextual *"Configurar API"* embebido en la cabecera e interfaz conversacional de BOB.
+  * Selector asistido de proveedor con manuales paso a paso y enlaces directos a las consolas oficiales para tramitar API keys (Ollama Cloud, Groq, OpenRouter, OpenAI, Mistral, Google Gemini, Anthropic, Cerebras, DeepSeek, SambaNova).
+  * Entrada mediante campo enmascarado protegido (`type="password"`); transmisión directa a `PUT /api/auth/me/keys` con validación y prueba inmediata de conectividad.
+

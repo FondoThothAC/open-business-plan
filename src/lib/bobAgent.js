@@ -11,6 +11,7 @@
  */
 
 import { callAiProvider } from './ai.js';
+import { getApiBase } from '../config/apiConfig.js';
 
 // Definición canónica de herramientas (Tools / MCP capabilities)
 export const BOB_TOOLS_SCHEMA = [
@@ -243,6 +244,34 @@ export async function sendBobMessage({
   const fullPrompt = `${systemPrompt}\n\n` + 
     history.slice(-8).map(m => `${m.sender === 'user' ? 'Usuario' : 'BOB'}: ${m.text}`).join('\n') +
     `\nUsuario: ${userMessage}\nBOB:`;
+
+  // Ruta preferida: el servidor usa la clave cifrada del perfil. La credencial no
+  // se entrega al navegador ni se inserta en el prompt o historial de BOB.
+  const providerAliases = {
+    ollama: 'ollamaCloud', ollama_cloud: 'ollamaCloud',
+    groq: 'groq', openrouter: 'openrouter', openai: 'openai'
+  };
+  try {
+    const requestedProvider = providerAliases[rawAi.primaryProvider];
+    const response = await fetch(`${getApiBase()}/api/ai/bob-chat`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt: fullPrompt, provider: requestedProvider, model: rawAi.model })
+    });
+    const data = await response.json().catch(() => ({}));
+    if (response.ok && data.reply) {
+      const { cleanText, toolCalls } = extractToolCalls(data.reply);
+      if (toolCalls.length > 0 && typeof onToolExecute === 'function') {
+        for (const call of toolCalls) await onToolExecute(call.tool, call.parameters);
+      }
+      return { reply: cleanText || data.reply, cleanText, toolCalls, rawResponse: data.reply, provider: data.provider, model: data.model };
+    }
+    // Si la cuenta aún no tiene claves, conservar Ollama local como respaldo.
+    if (data.code !== 'PERSONAL_API_KEY_REQUIRED') throw new Error(data.error || 'BOB no pudo conectar con el proveedor personal.');
+  } catch (error) {
+    console.warn('[BobAgent] Ruta segura del perfil no disponible; intentando configuración local:', error.message);
+  }
 
   // Construir configuración inteligente de IA con fallback multi-proveedor
   const primaryProv = rawAi.primaryProvider || 'groq';

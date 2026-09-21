@@ -243,6 +243,81 @@ app.put('/api/auth/me/keys', (req, res) => {
   res.json(resultado);
 });
 
+const PERSONAL_AI_PROVIDERS = {
+  ollamaCloud: { url: 'https://ollama.com/v1/chat/completions', model: 'minimax-m3:cloud' },
+  groq: { url: 'https://api.groq.com/openai/v1/chat/completions', model: 'llama-3.3-70b-versatile' },
+  openrouter: { url: 'https://openrouter.ai/api/v1/chat/completions', model: 'openai/gpt-oss-20b:free' },
+  openai: { url: 'https://api.openai.com/v1/chat/completions', model: 'gpt-4o-mini' }
+};
+
+async function callPersonalAi(provider, apiKey, prompt, model, maxTokens = 1200) {
+  const cfg = PERSONAL_AI_PROVIDERS[provider];
+  if (!cfg) throw new Error('Proveedor no compatible con BOB.');
+  const response = await fetch(cfg.url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${apiKey}`,
+      ...(provider === 'openrouter' ? { 'HTTP-Referer': 'https://fondothoth.com/obp', 'X-Title': 'Open Business Plan' } : {})
+    },
+    body: JSON.stringify({
+      model: model || cfg.model,
+      messages: [{ role: 'user', content: prompt }],
+      max_tokens: maxTokens,
+      temperature: 0.35
+    }),
+    signal: AbortSignal.timeout(180000)
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok || data.error) {
+    throw new Error(data.error?.message || data.message || `El proveedor respondió HTTP ${response.status}.`);
+  }
+  return { text: data.choices?.[0]?.message?.content || '', model: data.model || model || cfg.model };
+}
+
+// BOB usa las credenciales cifradas de la cuenta exclusivamente en el servidor.
+// La clave nunca vuelve al navegador ni forma parte del historial conversacional.
+app.post('/api/ai/bob-chat', async (req, res) => {
+  const { prompt, provider: requestedProvider, model } = req.body || {};
+  if (!prompt || typeof prompt !== 'string' || prompt.length > 120000) {
+    return res.status(400).json({ error: 'Prompt inválido o demasiado extenso.' });
+  }
+  const keys = obtenerApiKeysParaServicio(req.user.id);
+  const preference = requestedProvider
+    ? [requestedProvider, 'ollamaCloud', 'groq', 'openrouter', 'openai']
+    : ['ollamaCloud', 'groq', 'openrouter', 'openai'];
+  const providers = [...new Set(preference)].filter(name => keys[name] && PERSONAL_AI_PROVIDERS[name]);
+  if (!providers.length) {
+    return res.status(409).json({
+      error: 'Configura al menos una API key en tu cuenta.',
+      code: 'PERSONAL_API_KEY_REQUIRED'
+    });
+  }
+  let lastError = null;
+  for (const provider of providers) {
+    try {
+      const result = await callPersonalAi(provider, keys[provider], prompt, provider === requestedProvider ? model : undefined);
+      return res.json({ success: true, reply: result.text, provider, model: result.model });
+    } catch (error) {
+      lastError = error;
+    }
+  }
+  return res.status(502).json({ error: lastError?.message || 'No fue posible conectar con los proveedores configurados.' });
+});
+
+app.post('/api/auth/me/keys/:provider/test', async (req, res) => {
+  const provider = req.params.provider;
+  const keys = obtenerApiKeysParaServicio(req.user.id);
+  if (!keys[provider]) return res.status(404).json({ success: false, error: 'La clave no está configurada.' });
+  if (!PERSONAL_AI_PROVIDERS[provider]) return res.status(400).json({ success: false, error: 'Proveedor no compatible con la prueba automática.' });
+  try {
+    await callPersonalAi(provider, keys[provider], 'Responde únicamente: OK', undefined, 8);
+    res.json({ success: true, message: 'Clave verificada y lista para usarse con BOB.' });
+  } catch (error) {
+    res.status(400).json({ success: false, error: error.message });
+  }
+});
+
 app.put('/api/auth/me/password', (req, res) => {
   const { currentPassword, newPassword } = req.body || {};
   const resultado = cambiarPassword(req.user.id, currentPassword, newPassword);
