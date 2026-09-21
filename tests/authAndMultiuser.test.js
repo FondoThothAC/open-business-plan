@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { registrarUsuario, loginUsuario, listarUsuarios, activarUsuario, desactivarUsuario, eliminarUsuario, actualizarApiKeys, obtenerApiKeys, cambiarPassword, buscarPorId } from '../server/auth.js';
+import { registrarUsuario, loginUsuario, listarUsuarios, activarUsuario, desactivarUsuario, eliminarUsuario, actualizarApiKeys, obtenerApiKeys, cambiarPassword, buscarPorId, actualizarUsuarioAdmin } from '../server/auth.js';
 
 describe('Sistema Multiusuario y Roles (TDD)', () => {
   const testUser = `testuser_${Date.now()}`;
@@ -35,6 +35,19 @@ describe('Sistema Multiusuario y Roles (TDD)', () => {
     const activateRes = activarUsuario(createdUserId);
     assert.equal(activateRes.success, true);
     assert.equal(activateRes.user.status, 'active');
+    assert.equal(activateRes.user.sharedApiAccess.active, true);
+    const trialDays = (Date.parse(activateRes.user.sharedApiAccess.expiresAt) - Date.parse(activateRes.user.sharedApiAccess.startsAt)) / 86400000;
+    assert.equal(trialDays, 30);
+  });
+
+  it('Permite retirar y restaurar el acceso temporal a APIs compartidas', () => {
+    const revoked = actualizarUsuarioAdmin(createdUserId, { sharedApiAccessEnabled: false });
+    assert.equal(revoked.success, true);
+    assert.equal(revoked.user.sharedApiAccess.active, false);
+
+    const restored = actualizarUsuarioAdmin(createdUserId, { sharedApiAccessEnabled: true });
+    assert.equal(restored.success, true);
+    assert.equal(restored.user.sharedApiAccess.active, true);
   });
 
   it('Permite el login exitoso tras ser activado y genera JWT', () => {

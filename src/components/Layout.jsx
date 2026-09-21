@@ -78,7 +78,7 @@ export default function Layout() {
     generationStatus, _generationProgress, startIndustrialization, _pauseIndustrialization, _stopIndustrialization, getProjectCompletion
   } = usePlan();
   
-  const { user, logout, isAdmin } = useAuth();
+  const { user, logout, isAdmin, isRevisor } = useAuth();
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [showAdminPanel, setShowAdminPanel] = useState(false);
   const [cloningProjectId, setCloningProjectId] = useState(null);

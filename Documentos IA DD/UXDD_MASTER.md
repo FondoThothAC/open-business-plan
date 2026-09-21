@@ -42,4 +42,10 @@ journey
     section Salida Ejecutiva
       Vista Previa Ejecutiva (20 Páginas): 5: Usuario
       Exportación Paritaria DOCX / PDF: 5: Usuario
+    section Resiliencia y Recuperación de Fallos
+      Detección de Excepción en Render: 5: ErrorBoundary
+      Presentación no invasiva (Tema Oscuro): 5: UI
+      Navegación contextual a Semilla (/obp/semilla): 5: Usuario
+      Recarga limpia de bundle no cacheado: 5: Usuario
 ```
+

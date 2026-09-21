@@ -216,6 +216,30 @@ export default function AdminUsersPanel({ isOpen, onClose, onOpenProject }) {
     }
   };
 
+  const handleSharedApiAccess = async (userId, enabled) => {
+    setActionLoading(`apis_${userId}`);
+    setError(null);
+    setSuccessMessage(null);
+    try {
+      const res = await authFetch(`${apiBase}/api/admin/users/${userId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sharedApiAccessEnabled: enabled })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setSuccessMessage(enabled ? 'Acceso compartido habilitado por 30 días.' : 'Acceso compartido retirado.');
+        setUsers(prev => prev.map(u => u.id === userId ? data.user : u));
+      } else {
+        setError(data.error || 'No se pudo actualizar el acceso a las APIs compartidas.');
+      }
+    } catch (err) {
+      setError(`Error: ${err.message}`);
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
   const handleRestablecerPassword = async (e) => {
     e.preventDefault();
     if (!passwordResetUser) return;
@@ -413,6 +437,7 @@ export default function AdminUsersPanel({ isOpen, onClose, onOpenProject }) {
                     <th style={{ padding: '0.75rem 1rem', color: '#94a3b8' }}>Email</th>
                     <th style={{ padding: '0.75rem 1rem', color: '#94a3b8' }}>Rol (RBAC)</th>
                     <th style={{ padding: '0.75rem 1rem', color: '#94a3b8' }}>Estado</th>
+                    <th style={{ padding: '0.75rem 1rem', color: '#94a3b8' }}>APIs compartidas</th>
                     <th style={{ padding: '0.75rem 1rem', color: '#94a3b8' }}>Último Acceso</th>
                     <th style={{ padding: '0.75rem 1rem', color: '#94a3b8', textAlign: 'right' }}>Acciones</th>
                   </tr>
@@ -420,7 +445,7 @@ export default function AdminUsersPanel({ isOpen, onClose, onOpenProject }) {
                 <tbody>
                   {loading && users.length === 0 ? (
                     <tr>
-                      <td colSpan="6" style={{ padding: '3rem', textAlign: 'center', color: '#94a3b8' }}>
+                      <td colSpan="7" style={{ padding: '3rem', textAlign: 'center', color: '#94a3b8' }}>
                         <RefreshCw size={24} className="animate-spin" style={{ margin: '0 auto 0.5rem' }} />
                         <div>Cargando directorio de usuarios...</div>
                       </td>
@@ -473,6 +498,28 @@ export default function AdminUsersPanel({ isOpen, onClose, onOpenProject }) {
                             <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: '#6b7280', fontSize: '0.72rem', fontWeight: 700 }}>
                               <XCircle size={13} /> Desactivado
                             </span>
+                          )}
+                        </td>
+                        <td style={{ padding: '0.75rem 1rem' }}>
+                          {isSuperadmin ? (
+                            <span style={{ color: '#64748b', fontSize: '0.7rem' }}>Propias</span>
+                          ) : (
+                            <button
+                              onClick={() => handleSharedApiAccess(u.id, !u.sharedApiAccess?.active)}
+                              disabled={isBusy || !isActive}
+                              style={{
+                                padding: '3px 8px', fontSize: '0.68rem', borderRadius: '6px', cursor: isActive ? 'pointer' : 'not-allowed',
+                                background: u.sharedApiAccess?.active ? 'rgba(16,185,129,0.14)' : 'rgba(100,116,139,0.12)',
+                                color: u.sharedApiAccess?.active ? '#10b981' : '#94a3b8',
+                                border: `1px solid ${u.sharedApiAccess?.active ? 'rgba(16,185,129,0.3)' : 'rgba(100,116,139,0.25)'}`
+                              }}
+                              title={u.sharedApiAccess?.active && u.sharedApiAccess?.expiresAt
+                                ? `Vence ${new Date(u.sharedApiAccess.expiresAt).toLocaleDateString('es-MX')}`
+                                : 'Habilitar acceso por 30 días'}
+                            >
+                              <Lock size={11} style={{ marginRight: '3px' }} />
+                              {u.sharedApiAccess?.active ? 'Compartidas ✓' : 'Sin acceso'}
+                            </button>
                           )}
                         </td>
                         <td style={{ padding: '0.75rem 1rem', color: '#94a3b8', fontSize: '0.72rem' }}>

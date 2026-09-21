@@ -38,7 +38,8 @@ import {
   crearUsuarioAdmin,
   actualizarUsuarioAdmin,
   resetearPasswordAdmin,
-  buscarPorId
+  buscarPorId,
+  obtenerEstadoApisCompartidas
 } from './auth.js';
 import { authGuard, soloAdmin, soloRevisorOSuperAdmin, prohibirRevisorMutacion } from './middleware/authGuard.js';
 import { registrarAuditoria, obtenerAuditoria } from './auditLogger.js';
@@ -91,6 +92,16 @@ const app = express();
 app.set('trust proxy', 1);
 const PORT = process.env.PORT || 3001;
 const generationJobs = new GenerationJobStore();
+
+function sharedApiKey(req, ...environmentNames) {
+  const user = buscarPorId(req.user?.id);
+  if (!obtenerEstadoApisCompartidas(user).active) return '';
+  for (const name of environmentNames) {
+    const value = process.env[name];
+    if (value) return value;
+  }
+  return '';
+}
 
 // ─────────────────────────────────────────────────────────
 //  SSE — Clientes suscritos al monitor en tiempo real
@@ -234,7 +245,8 @@ app.get('/api/auth/me', (req, res) => {
     }
   }
 
-  res.json({ id, username, role, displayName, email, status, apiKeys });
+  const account = buscarPorId(id);
+  res.json({ id, username, role, displayName, email, status, apiKeys, sharedApiAccess: obtenerEstadoApisCompartidas(account) });
 });
 
 app.put('/api/auth/me/keys', (req, res) => {
@@ -457,7 +469,14 @@ app.delete('/api/auth/users/:id', soloAdmin, (req, res) => {
 });
 
 app.use('/api/mercado', (req, _res, next) => {
-  req.user.serviceApiKeys = obtenerApiKeysParaServicio(req.user.id);
+  const personalKeys = obtenerApiKeysParaServicio(req.user.id);
+  req.user.serviceApiKeys = {
+    ...personalKeys,
+    inegi: personalKeys.inegi || personalKeys.denue || sharedApiKey(req, 'DENUE_KEY', 'INEGI_KEY', 'VITE_DENUE_KEY', 'VITE_INEGI_KEY'),
+    banxico: personalKeys.banxico || sharedApiKey(req, 'BANXICO_KEY', 'VITE_BANXICO_KEY'),
+    tavily: personalKeys.tavily || personalKeys.tavilyKey || sharedApiKey(req, 'TAVILY_API_KEY', 'VITE_TAVILY_KEY'),
+    brave: personalKeys.brave || personalKeys.braveKey || sharedApiKey(req, 'BRAVE_SEARCH_KEY', 'BRAVE_API_KEY', 'VITE_BRAVE_SEARCH_KEY')
+  };
   next();
 }, marketCascadeRouter);
 
@@ -1377,7 +1396,7 @@ app.post('/api/search', async (req, res) => {
   // 2. Ejecución según el proveedor seleccionado
   try {
     if (normProvider === 'tavily' || normProvider === 'tavily_pro') {
-      const resolvedKey = apiKey || process.env.TAVILY_API_KEY || '';
+      const resolvedKey = apiKey || sharedApiKey(req, 'TAVILY_API_KEY', 'VITE_TAVILY_KEY');
       if (!resolvedKey) {
         if (failover) {
           console.warn('[API Search] Sin API key para Tavily. Derivando a DuckDuckGo...');
@@ -1439,7 +1458,7 @@ app.post('/api/search', async (req, res) => {
       }
 
     } else if (normProvider === 'brave' || normProvider === 'brave_pro') {
-      const resolvedKey = braveApiKey || apiKey || process.env.BRAVE_SEARCH_KEY || process.env.BRAVE_API_KEY || '';
+      const resolvedKey = braveApiKey || apiKey || sharedApiKey(req, 'BRAVE_SEARCH_KEY', 'BRAVE_API_KEY', 'VITE_BRAVE_SEARCH_KEY');
       if (!resolvedKey) {
         if (failover) {
           console.warn('[API Search] Sin API key para Brave Search. Derivando a DuckDuckGo...');
@@ -1567,7 +1586,7 @@ app.post('/api/search', async (req, res) => {
 
       // Cascada Fila 1: Si DuckDuckGo no arroja resultados o está saturado, consultar Tavily y luego Brave Search
       if ((!searchResults || searchResults.length === 0) && failover) {
-        const resolvedTavily = apiKey || process.env.TAVILY_API_KEY || '';
+        const resolvedTavily = apiKey || sharedApiKey(req, 'TAVILY_API_KEY', 'VITE_TAVILY_KEY');
         if (resolvedTavily && checkSearchQuota('tavily', Boolean(allowPaidTier)).allowed) {
           try {
             console.info(`[API Search Cascada] DuckDuckGo sin resultados para "${query}". Intentando Tavily (1,000 req/mes)...`);
@@ -1604,7 +1623,7 @@ app.post('/api/search', async (req, res) => {
 
         // Si aún no hay resultados tras Tavily, intentar Brave Search
         if ((!searchResults || searchResults.length === 0)) {
-          const resolvedBrave = braveApiKey || process.env.BRAVE_SEARCH_KEY || process.env.BRAVE_API_KEY || '';
+          const resolvedBrave = braveApiKey || sharedApiKey(req, 'BRAVE_SEARCH_KEY', 'BRAVE_API_KEY', 'VITE_BRAVE_SEARCH_KEY');
           if (resolvedBrave && checkSearchQuota('brave', Boolean(allowPaidTier)).allowed) {
             try {
               console.info(`[API Search Cascada] Tavily sin resultados. Intentando Brave Search ($5 crédito)...`);
@@ -1955,7 +1974,7 @@ function setToMemoryCache(key, data, ttl = CACHE_DEFAULT_TTL) {
 }
 
 app.get('/api/inegi/denue', async (req, res) => {
-  const token = String(req.query.token || '').trim();
+  const token = String(req.query.token || sharedApiKey(req, 'DENUE_KEY', 'INEGI_KEY', 'VITE_DENUE_KEY', 'VITE_INEGI_KEY')).trim();
   const lat = Number(req.query.lat);
   const lng = Number(req.query.lng);
   const radius = Number(req.query.radius || 2500);
@@ -2103,7 +2122,7 @@ app.get('/api/inegi/denue', async (req, res) => {
 //  DENUE — Método Ficha (detalle de un establecimiento)
 // ─────────────────────────────────────────────────────────
 app.get('/api/inegi/denue/ficha/:id', async (req, res) => {
-  const token = String(req.query.token || '').trim();
+  const token = String(req.query.token || sharedApiKey(req, 'DENUE_KEY', 'INEGI_KEY', 'VITE_DENUE_KEY', 'VITE_INEGI_KEY')).trim();
   const id = String(req.params.id || '').trim();
 
   if (!token) return res.status(400).json({ success: false, error: 'Token DENUE requerido' });
@@ -2152,7 +2171,7 @@ app.get('/api/inegi/denue/ficha/:id', async (req, res) => {
 //  DENUE — Método Nombre (buscar por nombre/razón social)
 // ─────────────────────────────────────────────────────────
 app.get('/api/inegi/denue/nombre', async (req, res) => {
-  const token = String(req.query.token || '').trim();
+  const token = String(req.query.token || sharedApiKey(req, 'DENUE_KEY', 'INEGI_KEY', 'VITE_DENUE_KEY', 'VITE_INEGI_KEY')).trim();
   const nombre = String(req.query.nombre || '').trim();
   const entidad = String(req.query.entidad || '00').trim();
   const inicio = String(req.query.inicio || '1').trim();
@@ -2197,7 +2216,7 @@ app.get('/api/inegi/denue/nombre', async (req, res) => {
 //  DENUE — Método BuscarEntidad (por entidad federativa)
 // ─────────────────────────────────────────────────────────
 app.get('/api/inegi/denue/entidad', async (req, res) => {
-  const token = String(req.query.token || '').trim();
+  const token = String(req.query.token || sharedApiKey(req, 'DENUE_KEY', 'INEGI_KEY', 'VITE_DENUE_KEY', 'VITE_INEGI_KEY')).trim();
   const condicion = String(req.query.condicion || 'todos').trim();
   const entidad = String(req.query.entidad || '00').trim();
   const inicio = String(req.query.inicio || '1').trim();
@@ -2237,7 +2256,7 @@ app.get('/api/inegi/denue/entidad', async (req, res) => {
 //  DENUE — Método BuscarAreaAct (por área geográfica + actividad SCIAN)
 // ─────────────────────────────────────────────────────────
 app.get('/api/inegi/denue/area', async (req, res) => {
-  const token = String(req.query.token || '').trim();
+  const token = String(req.query.token || sharedApiKey(req, 'DENUE_KEY', 'INEGI_KEY', 'VITE_DENUE_KEY', 'VITE_INEGI_KEY')).trim();
   const entidad = String(req.query.entidad || '00').trim();
   const municipio = String(req.query.municipio || '0').trim();
   const localidad = String(req.query.localidad || '0').trim();
@@ -2297,7 +2316,7 @@ app.get('/api/inegi/denue/area', async (req, res) => {
 //  DENUE — Método Cuantificar (conteo por área + actividad + estrato)
 // ─────────────────────────────────────────────────────────
 app.get('/api/inegi/denue/cuantificar', async (req, res) => {
-  const token = String(req.query.token || '').trim();
+  const token = String(req.query.token || sharedApiKey(req, 'DENUE_KEY', 'INEGI_KEY', 'VITE_DENUE_KEY', 'VITE_INEGI_KEY')).trim();
   const actividad = String(req.query.actividad || '0').trim();
   const area = String(req.query.area || '0').trim();
   const estrato = String(req.query.estrato || '0').trim();
@@ -2331,7 +2350,7 @@ app.get('/api/inegi/denue/cuantificar', async (req, res) => {
 //  API de Indicadores del INEGI (Banco de Indicadores v2.0)
 // ─────────────────────────────────────────────────────────
 app.get('/api/inegi/indicadores', async (req, res) => {
-  const token = String(req.query.token || '').trim();
+  const token = String(req.query.token || sharedApiKey(req, 'INEGI_KEY', 'DENUE_KEY', 'VITE_INEGI_KEY', 'VITE_DENUE_KEY')).trim();
   const ids = String(req.query.ids || '').trim();
   const area = String(req.query.area || '0700').trim();
   const ultimo = req.query.ultimo === 'true' || req.query.ultimo === '1';
@@ -2402,7 +2421,8 @@ app.get('/api/inegi/indicadores', async (req, res) => {
 //  Motor de Inteligencia Competitiva Multi-Fuente
 // ─────────────────────────────────────────────────────────
 app.post('/api/market/competitors', async (req, res) => {
-  const { lat, lng, query, radius = 2000, denueToken, googleApiKey, bingApiKey, allowSynthetic = false } = req.body;
+  const { lat, lng, query, radius = 2000, denueToken: requestedDenueToken, googleApiKey, bingApiKey, allowSynthetic = false } = req.body;
+  const denueToken = requestedDenueToken || sharedApiKey(req, 'DENUE_KEY', 'INEGI_KEY', 'VITE_DENUE_KEY', 'VITE_INEGI_KEY');
 
   if (!lat || !lng) {
     return res.status(400).json({ success: false, error: 'Lat/Lng requeridos' });
@@ -2583,7 +2603,7 @@ app.post('/api/research/autonomous-competitors', async (req, res) => {
       keywords = ''
     } = req.body || {};
 
-    const denueToken = process.env.DENUE_KEY || process.env.VITE_DENUE_KEY || '';
+    const denueToken = sharedApiKey(req, 'DENUE_KEY', 'INEGI_KEY', 'VITE_DENUE_KEY', 'VITE_INEGI_KEY');
 
     const resultado = await AutonomousResearchEngine.ejecutarInvestigacionAutonoma({
       companyName,
@@ -2918,7 +2938,8 @@ app.delete('/api/projects/:type/:id/logs', (req, res) => {
 // ─────────────────────────────────────────────────────────
 app.post('/api/test/tavily', async (req, res) => {
   const { apiKey } = req.body;
-  if (!apiKey) {
+  const key = apiKey || sharedApiKey(req, 'TAVILY_API_KEY', 'VITE_TAVILY_KEY');
+  if (!key) {
     return res.status(400).json({ success: false, error: 'Token/API Key no proporcionado' });
   }
   try {
@@ -2926,7 +2947,7 @@ app.post('/api/test/tavily', async (req, res) => {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        api_key: apiKey,
+        api_key: key,
         query: 'test ping',
         max_results: 1
       }),
@@ -2945,7 +2966,7 @@ app.post('/api/test/tavily', async (req, res) => {
 
 app.post('/api/test/brave', async (req, res) => {
   const { apiKey } = req.body;
-  const key = apiKey || process.env.BRAVE_SEARCH_KEY || process.env.BRAVE_API_KEY || '';
+  const key = apiKey || sharedApiKey(req, 'BRAVE_SEARCH_KEY', 'BRAVE_API_KEY', 'VITE_BRAVE_SEARCH_KEY');
   if (!key) {
     return res.status(400).json({ success: false, error: 'Token/API Key de Brave no proporcionado' });
   }
@@ -3007,7 +3028,7 @@ app.post('/api/test/search', async (req, res) => {
       }
       return res.json({ success: false, provider: 'serper', error: `HTTP ${resp.status}` });
     } else if (normProvider === 'tavily') {
-      const key = apiKey || process.env.TAVILY_API_KEY || '';
+      const key = apiKey || sharedApiKey(req, 'TAVILY_API_KEY', 'VITE_TAVILY_KEY');
       if (!key) return res.status(400).json({ success: false, error: 'API Key de Tavily no proporcionada' });
       const resp = await fetch('https://api.tavily.com/search', {
         method: 'POST',
@@ -3021,7 +3042,7 @@ app.post('/api/test/search', async (req, res) => {
       }
       return res.json({ success: false, provider: 'tavily', error: data.error || `HTTP ${resp.status}` });
     } else if (normProvider === 'brave') {
-      const key = braveApiKey || apiKey || process.env.BRAVE_SEARCH_KEY || process.env.BRAVE_API_KEY || '';
+      const key = braveApiKey || apiKey || sharedApiKey(req, 'BRAVE_SEARCH_KEY', 'BRAVE_API_KEY', 'VITE_BRAVE_SEARCH_KEY');
       if (!key) return res.status(400).json({ success: false, error: 'API Key de Brave no proporcionada' });
       const resp = await fetch('https://api.search.brave.com/res/v1/web/search?q=test&count=1', {
         headers: { 'Accept': 'application/json', 'X-Subscription-Token': key },
@@ -3041,7 +3062,7 @@ app.post('/api/test/search', async (req, res) => {
 });
 
 app.post('/api/test/inegi', async (req, res) => {
-  const { token } = req.body;
+  const token = req.body?.token || sharedApiKey(req, 'DENUE_KEY', 'INEGI_KEY', 'VITE_DENUE_KEY', 'VITE_INEGI_KEY');
   if (!token) {
     return res.status(400).json({ success: false, error: 'Token/API Key no proporcionado' });
   }
@@ -3389,7 +3410,7 @@ app.post('/api/test/tokenrouter', async (req, res) => {
 
 
 app.post('/api/test/banxico', async (req, res) => {
-  const { token } = req.body;
+  const token = req.body?.token || sharedApiKey(req, 'BANXICO_KEY', 'VITE_BANXICO_KEY');
   if (!token) {
     return res.status(400).json({ success: false, error: 'Token/API Key no proporcionado' });
   }
@@ -3425,7 +3446,7 @@ app.post('/api/test/banxico', async (req, res) => {
 });
 
 app.get('/api/banxico/indicators', async (req, res) => {
-  const token = String(req.query.token || '').trim();
+  const token = String(req.query.token || sharedApiKey(req, 'BANXICO_KEY', 'VITE_BANXICO_KEY')).trim();
   
   // Calcular intervalo de fechas (últimos 6 meses)
   const endDateObj = new Date();
@@ -3902,8 +3923,8 @@ app.post('/api/research/start', async (req, res) => {
 
     // Prioridad: process.env del servidor > apiKeys pasadas en el payload del cliente
     const resolvedApiKeys = {
-      tavilyKey: process.env.TAVILY_API_KEY || apiKeys.tavilyKey || apiKeys.apiKey || '',
-      braveKey: process.env.BRAVE_SEARCH_KEY || process.env.BRAVE_API_KEY || apiKeys.braveKey || apiKeys.braveApiKey || '',
+      tavilyKey: apiKeys.tavilyKey || apiKeys.apiKey || sharedApiKey(req, 'TAVILY_API_KEY', 'VITE_TAVILY_KEY'),
+      braveKey: apiKeys.braveKey || apiKeys.braveApiKey || sharedApiKey(req, 'BRAVE_SEARCH_KEY', 'BRAVE_API_KEY', 'VITE_BRAVE_SEARCH_KEY'),
       exaKey: process.env.EXA_API_KEY || apiKeys.exaKey || '',
       perplexityKey: process.env.PERPLEXITY_API_KEY || apiKeys.perplexityKey || ''
     };

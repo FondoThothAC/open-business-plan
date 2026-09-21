@@ -35,9 +35,25 @@ const BCRYPT_ROUNDS = 12;
 const USERS_FILE = path.resolve('server', 'data', 'users.json');
 const API_KEYS_ENCRYPTION_KEY = process.env.API_KEYS_ENCRYPTION_KEY || JWT_SECRET;
 const ENCRYPTION_ALGORITHM = 'aes-256-gcm';
+const SHARED_API_TRIAL_DAYS = 30;
 
 export const ROLES_VALIDOS = new Set(['superadmin', 'revisor', 'user']);
 export const ESTADOS_VALIDOS = new Set(['active', 'pending', 'disabled']);
+
+function crearAccesoApisCompartidas(startNow = false) {
+  if (!startNow) return { enabled: true, startsAt: null, expiresAt: null, revokedAt: null };
+  const startsAt = new Date();
+  const expiresAt = new Date(startsAt.getTime() + SHARED_API_TRIAL_DAYS * 86400000);
+  return { enabled: true, startsAt: startsAt.toISOString(), expiresAt: expiresAt.toISOString(), revokedAt: null };
+}
+
+export function obtenerEstadoApisCompartidas(usuario) {
+  const grant = usuario?.sharedApiAccess;
+  const enabled = grant?.enabled !== false;
+  const expiresAt = grant?.expiresAt || null;
+  const active = Boolean(enabled && expiresAt && Date.parse(expiresAt) > Date.now());
+  return { enabled, active, startsAt: grant?.startsAt || null, expiresAt, revokedAt: grant?.revokedAt || null };
+}
 
 /**
  * Genera un secreto JWT aleatorio y lo advierte en consola si no existe en variables de entorno.
@@ -86,7 +102,18 @@ function cargarUsuarios() {
       if (!bootstrapPassword) console.warn('[Auth] Configura BOOTSTRAP_SUPERADMIN_PASSWORD y activa al superadmin antes de usar producción.');
       return adminDefault;
     }
-    return JSON.parse(fs.readFileSync(USERS_FILE, 'utf8'));
+    const data = JSON.parse(fs.readFileSync(USERS_FILE, 'utf8'));
+    let changed = false;
+    for (const user of data.users || []) {
+      if (!user.sharedApiAccess) {
+        user.sharedApiAccess = user.status === 'active'
+          ? crearAccesoApisCompartidas(true)
+          : crearAccesoApisCompartidas(false);
+        changed = true;
+      }
+    }
+    if (changed) guardarUsuarios(data);
+    return data;
   } catch (error) {
     console.error('[Auth] Error cargando usuarios:', error.message);
     return { users: [] };
@@ -214,6 +241,7 @@ export function registrarUsuario({ username, email, password, displayName }) {
     displayName: displayName || username,
     status: 'pending',
     apiKeys: {},
+    sharedApiAccess: crearAccesoApisCompartidas(false),
     createdAt: new Date().toISOString(),
     lastLogin: null
     ,sessionVersion: 0
@@ -369,6 +397,7 @@ export function crearUsuarioAdmin({ username, email, password, displayName, role
     displayName: displayName || username,
     status,
     apiKeys: {},
+    sharedApiAccess: crearAccesoApisCompartidas(status === 'active'),
     createdAt: new Date().toISOString(),
     lastLogin: null
   };
@@ -428,6 +457,20 @@ export function actualizarUsuarioAdmin(userId, cambios = {}, actorAdmin = null) 
       return { success: false, error: 'No se puede desactivar al superadministrador.' };
     }
     actual.status = cambios.status;
+    if (cambios.status === 'active' && !actual.sharedApiAccess?.startsAt) {
+      actual.sharedApiAccess = crearAccesoApisCompartidas(true);
+    }
+  }
+
+  if (typeof cambios.sharedApiAccessEnabled === 'boolean') {
+    const previous = actual.sharedApiAccess || crearAccesoApisCompartidas(false);
+    if (cambios.sharedApiAccessEnabled) {
+      actual.sharedApiAccess = previous.expiresAt && Date.parse(previous.expiresAt) > Date.now()
+        ? { ...previous, enabled: true, revokedAt: null }
+        : crearAccesoApisCompartidas(true);
+    } else {
+      actual.sharedApiAccess = { ...previous, enabled: false, revokedAt: new Date().toISOString() };
+    }
   }
 
   if (typeof cambios.displayName === 'string' && cambios.displayName.trim()) {
@@ -649,6 +692,7 @@ export function sanitizarUsuario(usuario) {
     ...limpio,
     role: limpio.role || 'user',
     status: limpio.status || 'active',
+    sharedApiAccess: obtenerEstadoApisCompartidas(usuario),
     apiKeys: Object.fromEntries(Object.entries(apiKeys || {}).map(([name, value]) => [name, maskApiKey(value)]))
   };
 }

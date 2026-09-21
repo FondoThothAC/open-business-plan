@@ -375,5 +375,14 @@ Con base en el Plan de Saneamiento y Endurecimiento formalizado en `docs/archite
 * **Autoconfiguración Guiada y Manuales Directos (`src/components/BobChatModal.jsx`, `src/components/UserProfileModal.jsx`):**
   * Botón contextual *"Configurar API"* embebido en la cabecera e interfaz conversacional de BOB.
   * Selector asistido de proveedor con manuales paso a paso y enlaces directos a las consolas oficiales para tramitar API keys (Ollama Cloud, Groq, OpenRouter, OpenAI, Mistral, Google Gemini, Anthropic, Cerebras, DeepSeek, SambaNova).
-  * Entrada mediante campo enmascarado protegido (`type="password"`); transmisión directa a `PUT /api/auth/me/keys` con validación y prueba inmediata de conectividad.
+### 5.13 Blindaje de ErrorBoundary, Resolución de Base Path y Política Anti-Caché Nginx (RFC 7234)
+* **Resolución Relativa de Subruta Base en ErrorBoundary (`src/components/ErrorBoundary.jsx`):**
+  * Corrección crítica de navegación: se erradica el redireccionamiento estático y rígido a `/semilla` (que expulsaba al usuario al dominio raíz `fondothoth.com/semilla` provocando errores 404).
+  * Inyección dinámica de `import.meta.env.BASE_URL` para respetar el subpath `/obp/` (`${normalizedBase}/semilla`), garantizando que la recuperación del usuario se mantenga dentro del contexto SPA.
+  * Inclusión de acción dual: botón prioritario *"Volver a Semilla"* y botón secundario *"Recargar Aplicación"* (`window.location.reload()`) para resolver estados transitorios desincronizados.
+  * Estilizado premium consistente con el tema oscuro de la plataforma, evitando fondos blancos invasivos y presentando detalles técnicos desplegables para soporte ágil.
+* **Directivas Anti-Caché en Servidor Web Nginx (`/etc/nginx/sites-available/fondothoth-landing`):**
+  * Para el archivo de entrada SPA (`location = /obp/index.html` y fallback `location /obp/`): `add_header Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0"; expires -1;`.
+  * Evita la retención heurística de bundles JS antiguos en navegadores de clientes tras nuevos despliegues (`BAEI3IYc.js` -> `CtHfLXOW.js`).
+  * Para los recursos empaquetados e inmutables con hash (`location /obp/assets/`): `add_header Cache-Control "public, max-age=31536000, immutable"; expires 1y;` para máximo rendimiento y latencia cero.
 
