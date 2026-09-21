@@ -267,10 +267,13 @@ export async function sendBobMessage({
       }
       return { reply: cleanText || data.reply, cleanText, toolCalls, rawResponse: data.reply, provider: data.provider, model: data.model };
     }
-    // Si la cuenta aún no tiene claves, conservar Ollama local como respaldo.
-    if (data.code !== 'PERSONAL_API_KEY_REQUIRED') throw new Error(data.error || 'BOB no pudo conectar con el proveedor personal.');
+    if (data.code === 'PERSONAL_API_KEY_REQUIRED') throw new Error(data.error || 'Configura tu propia API key en tu perfil.');
+    throw new Error(data.error || 'BOB no pudo conectar con el proveedor personal.');
   } catch (error) {
-    console.warn('[BobAgent] Ruta segura del perfil no disponible; intentando configuración local:', error.message);
+    const endpoint = String(rawAi.endpoint || 'http://localhost:11434');
+    const isLocalOllama = rawAi.primaryProvider === 'ollama' && /localhost|127\.0\.0\.1/.test(endpoint);
+    if (!isLocalOllama) throw error;
+    console.warn('[BobAgent] Usando Ollama local sin credenciales de nube:', error.message);
   }
 
   // Construir configuración inteligente de IA con fallback multi-proveedor
@@ -288,7 +291,7 @@ export async function sendBobMessage({
     minimaxKey: rawAi.minimaxKey,
     baiKey: rawAi.baiKey,
     endpoint: rawAi.endpoint,
-    disableAutoFallback: false
+    disableAutoFallback: true
   };
 
   const rawResponse = await callAiProvider(aiConfig, fullPrompt, false);

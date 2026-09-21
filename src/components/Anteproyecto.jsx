@@ -28,6 +28,7 @@ export default function Anteproyecto() {
 
   const [rawText, setRawText] = useState('');
   const [isRecording, setIsRecording] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState('');
 
   // Estados de Inferencia, Benchmarks y Diagnóstico Cuántico
@@ -131,6 +132,7 @@ export default function Anteproyecto() {
     }
 
     setStep(2);
+    setIsProcessing(true);
     setError('');
 
     try {
@@ -169,7 +171,15 @@ export default function Anteproyecto() {
       console.error("Error al procesar el anteproyecto:", err);
       setError(err.message || 'Error al analizar la idea.');
       setStep(1);
+    } finally {
+      setIsProcessing(false);
     }
+  };
+
+  const goToStep = (targetStep) => {
+    if (isProcessing || isSwarmRunning) return;
+    setError('');
+    setStep(Math.min(4, Math.max(1, targetStep)));
   };
 
   // Actualizar un campo individual de la semilla
@@ -230,9 +240,15 @@ export default function Anteproyecto() {
       }
     };
 
+    es.onerror = () => {
+      setError('Se perdió la conexión con Swarm. Puedes volver a intentarlo sin perder la información capturada.');
+      setIsSwarmRunning(false);
+      es.close();
+    };
+
     // Disparar la ejecución en el backend Express
     try {
-      await fetch(`${apiBase}/api/swarm/industrialize`, {
+      const response = await fetch(`${apiBase}/api/swarm/industrialize`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -247,9 +263,15 @@ export default function Anteproyecto() {
           }
         })
       });
+      if (!response.ok) {
+        const failure = await response.json().catch(() => ({}));
+        throw new Error(failure.error || `Swarm respondió con error ${response.status}`);
+      }
     } catch (err) {
       console.error("Error al activar industrialización Swarm:", err);
+      setError(`No se pudo iniciar Swarm: ${err.message}`);
       setIsSwarmRunning(false);
+      es.close();
     }
   };
 
@@ -290,17 +312,17 @@ export default function Anteproyecto() {
       {/* Stepper */}
       <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginBottom: '2.5rem' }}>
         {[1, 2, 3, 4].map(i => (
-          <div key={i} style={{
+          <button key={i} type="button" onClick={() => goToStep(i)} disabled={isProcessing || isSwarmRunning} aria-label={`Ir al paso ${i}`} title={`Ir al paso ${i}`} style={{
             width: 40, height: 40, borderRadius: '50%',
             background: step >= i ? 'var(--accent-color)' : 'var(--bg-panel-hover)',
             color: step >= i ? 'white' : 'var(--text-secondary)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontWeight: 700, border: step === i ? '2px solid white' : 'none',
             boxShadow: step === i ? '0 0 0 4px var(--accent-color)' : 'none',
-            transition: 'all 0.3s'
+            transition: 'all 0.3s', cursor: isProcessing || isSwarmRunning ? 'wait' : 'pointer', padding: 0
           }}>
             {step > i ? <CheckCircle size={20} /> : i}
-          </div>
+          </button>
         ))}
       </div>
 
@@ -399,11 +421,20 @@ export default function Anteproyecto() {
       {/* STEP 2: Procesamiento e Inferencia */}
       {step === 2 && (
         <div style={{ textAlign: 'center', padding: '4rem 2rem', animation: 'fadeIn 0.3s ease' }}>
-          <Loader2 size={64} style={{ color: 'var(--accent-color)', animation: 'spin 1.5s linear infinite', margin: '0 auto 1.5rem' }} />
-          <h2 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>Analizando tu anteproyecto...</h2>
-          <p style={{ color: 'var(--text-secondary)' }}>
-            Clasificando la metodología óptima, consultando la base de benchmarks de industria y diagnosticando tu perfil cuántico...
-          </p>
+          {isProcessing ? (
+            <>
+              <Loader2 size={64} style={{ color: 'var(--accent-color)', animation: 'spin 1.5s linear infinite', margin: '0 auto 1.5rem' }} />
+              <h2 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>Analizando tu anteproyecto...</h2>
+              <p style={{ color: 'var(--text-secondary)' }}>Clasificando la metodología, consultando benchmarks y preparando el diagnóstico.</p>
+            </>
+          ) : (
+            <>
+              <BrainCircuit size={56} style={{ color: 'var(--accent-color)', margin: '0 auto 1.5rem' }} />
+              <h2 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>Paso 2: Procesar y analizar</h2>
+              <p style={{ color: 'var(--text-secondary)' }}>Puedes ejecutar nuevamente el análisis o moverte a otro paso sin perder tus datos.</p>
+              <button className="btn btn-primary" onClick={processText} disabled={rawText.trim().length < 15}>Procesar nuevamente</button>
+            </>
+          )}
         </div>
       )}
 
@@ -464,6 +495,10 @@ export default function Anteproyecto() {
             onConfirmSeed={() => setStep(4)}
           />
 
+          <button type="button" className="btn btn-secondary" onClick={() => goToStep(1)} style={{ marginTop: '1rem' }}>
+            Volver al Paso 1
+          </button>
+
         </div>
       )}
 
@@ -471,11 +506,15 @@ export default function Anteproyecto() {
       {step === 4 && (
         <div style={{ animation: 'fadeIn 0.4s ease' }}>
           <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-            <h2 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>Paso 3: Confirma la Metodología Estratégica</h2>
+            <h2 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>Paso 4: Confirma la Metodología Estratégica</h2>
             <p style={{ color: 'var(--text-secondary)' }}>
               Selecciona el marco con el que la Oficina Virtual de Consultores (Swarm) industrializará tu proyecto.
             </p>
           </div>
+
+          <button type="button" className="btn btn-secondary" onClick={() => goToStep(3)} style={{ marginBottom: '1.5rem' }}>
+            Volver al Paso 3
+          </button>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
             {Object.entries(FRAMEWORKS).map(([key, framework]) => {

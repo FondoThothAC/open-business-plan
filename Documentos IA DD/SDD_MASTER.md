@@ -381,8 +381,13 @@ Con base en el Plan de Saneamiento y Endurecimiento formalizado en `docs/archite
   * Inyección dinámica de `import.meta.env.BASE_URL` para respetar el subpath `/obp/` (`${normalizedBase}/semilla`), garantizando que la recuperación del usuario se mantenga dentro del contexto SPA.
   * Inclusión de acción dual: botón prioritario *"Volver a Semilla"* y botón secundario *"Recargar Aplicación"* (`window.location.reload()`) para resolver estados transitorios desincronizados.
   * Estilizado premium consistente con el tema oscuro de la plataforma, evitando fondos blancos invasivos y presentando detalles técnicos desplegables para soporte ágil.
-* **Directivas Anti-Caché en Servidor Web Nginx (`/etc/nginx/sites-available/fondothoth-landing`):**
-  * Para el archivo de entrada SPA (`location = /obp/index.html` y fallback `location /obp/`): `add_header Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0"; expires -1;`.
-  * Evita la retención heurística de bundles JS antiguos en navegadores de clientes tras nuevos despliegues (`BAEI3IYc.js` -> `CtHfLXOW.js`).
-  * Para los recursos empaquetados e inmutables con hash (`location /obp/assets/`): `add_header Cache-Control "public, max-age=31536000, immutable"; expires 1y;` para máximo rendimiento y latencia cero.
+### 5.14 Aislamiento Estricto de Credenciales de IA, Sanitización del Plan y Catálogo Dinámico Ollama Cloud
+* **Sanitización del Objeto del Plan al Guardar (`src/lib/serverUtils/sanitizeProjectConfig.js`, `server/index.js`):**
+  * Toda persistencia en disco depura automáticamente llaves y tokens (`externalApis`, `apiKeys`, `ai.*Key`, `ai.*Token`).
+  * Los proyectos compartidos o exportados quedan completamente limpios de secretos.
+* **Canal Seguro de Generación con Cuenta Personal (`/api/ai/account-chat`):**
+  * Los modelos de Ollama Cloud (`gpt-oss:20b`, `gpt-oss:120b`, `nemotron-3-nano:30b`, `nemotron-3-super`, `nemotron-3-ultra`, `gemma4:31b`) se ejecutan a través del backend utilizando exclusivamente la clave cifrada del usuario conectado.
+  * Se eliminan fallbacks hacia claves obsoletas alojadas en archivos JSON.
+  * BOB muestra en cada respuesta el proveedor y modelo verificado por el backend.
+  * Catálogo dinámico consultado en vivo contra `https://ollama.com/api/tags` con perfiles de contexto óptimos (32K/64K de trabajo) para balancear profundidad y velocidad de respuesta.
 

@@ -445,7 +445,8 @@ ${JSON.stringify(seed, null, 2)}\n`
   const evidence = buildEvidenceContext(allPlanData, `${currentModule.title || ''} ${currentModule.description || ''}`);
   const documentsContext = evidence ? `\nEVIDENCIA RECUPERADA DEL PROYECTO:\n${evidence}\n` : '';
 
-  const isLocalProvider = primaryProvider === 'ollama' || primaryProvider === 'lmstudio';
+  const cloudOllamaModel = /^(gpt-oss:|gemma4:31b|nemotron-3-(nano:30b|super|ultra))|:cloud$/i.test(String(model || ''));
+  const isLocalProvider = (primaryProvider === 'ollama' && !cloudOllamaModel) || primaryProvider === 'lmstudio';
   const planContext = cleanPlanDataForAi(sanitizePlanContext(allPlanData), isLocalProvider);
 
   const guides = FIELD_GUIDES_MAP[projectTypeConfig] || FIELD_GUIDES_MAP.business || {};
@@ -971,6 +972,21 @@ export async function callAiProvider(config, prompt, expectJson = true, expected
     ollamaKey, baiKey,
     endpoint, lmStudioEndpoint, model, disableAutoFallback = false
   } = config;
+
+  // Los modelos de Ollama Cloud siempre pasan por el servidor autenticado para
+  // usar la llave cifrada del usuario actual. Nunca leen una llave del proyecto.
+  const cloudOllamaModel = /^(gpt-oss:|gemma4:31b|nemotron-3-(nano:30b|super|ultra))|:cloud$/i.test(String(model || ''));
+  if (provider === 'ollama' && cloudOllamaModel && typeof window !== 'undefined') {
+    const response = await fetch(`${getApiBase()}/api/ai/account-chat`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt, provider: 'ollamaCloud', model, maxTokens: expectJson ? 8192 : 4096 })
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data.error || 'No fue posible usar la API personal de Ollama Cloud.');
+    return expectJson ? parseAIResponse(data.reply, expectedKeys) : data.reply;
+  }
 
   const invokeSingle = async (prov, mod, key) => {
     if (prov === 'bai' || prov === 'b.ai') return await callBAI(key || baiKey || apiKey, mod, prompt, expectJson);

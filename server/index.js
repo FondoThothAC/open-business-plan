@@ -21,6 +21,7 @@ import { checkSearchQuota, incrementSearchQuota, getSearchQuotaStats } from './q
 import { saveWithVersioning } from '../src/lib/serverUtils/saveVersioning.js';
 import { acquireGenerationLock, releaseGenerationLock, getGenerationLockStatus } from '../src/lib/serverUtils/generationLock.js';
 import { renameProject } from '../src/lib/serverUtils/projectRename.js';
+import { sanitizeProjectConfig } from '../src/lib/serverUtils/sanitizeProjectConfig.js';
 import marketCascadeRouter from './routes/marketCascade.js';
 import { GenerationJobStore } from './generationJobStore.js';
 import cookieParser from 'cookie-parser';
@@ -256,7 +257,7 @@ app.put('/api/auth/me/keys', (req, res) => {
 });
 
 const PERSONAL_AI_PROVIDERS = {
-  ollamaCloud: { url: 'https://ollama.com/v1/chat/completions', model: 'minimax-m3:cloud' },
+  ollamaCloud: { url: 'https://ollama.com/v1/chat/completions', model: 'gpt-oss:20b' },
   groq: { url: 'https://api.groq.com/openai/v1/chat/completions', model: 'llama-3.3-70b-versatile' },
   openrouter: { url: 'https://openrouter.ai/api/v1/chat/completions', model: 'openai/gpt-oss-20b:free' },
   openai: { url: 'https://api.openai.com/v1/chat/completions', model: 'gpt-4o-mini' }
@@ -315,6 +316,29 @@ app.post('/api/ai/bob-chat', async (req, res) => {
     }
   }
   return res.status(502).json({ error: lastError?.message || 'No fue posible conectar con los proveedores configurados.' });
+});
+
+// Generación de módulos con las credenciales de la cuenta actual. La llave se
+// descifra y utiliza exclusivamente en el servidor y nunca vuelve al navegador.
+app.post('/api/ai/account-chat', async (req, res) => {
+  const { prompt, provider: requestedProvider = 'ollamaCloud', model, maxTokens = 4096 } = req.body || {};
+  if (!prompt || typeof prompt !== 'string' || prompt.length > 500000) {
+    return res.status(400).json({ error: 'Prompt inválido o demasiado extenso.' });
+  }
+  const keys = obtenerApiKeysParaServicio(req.user.id);
+  if (!PERSONAL_AI_PROVIDERS[requestedProvider]) {
+    return res.status(400).json({ error: 'Proveedor personal no compatible.' });
+  }
+  if (!keys[requestedProvider]) {
+    return res.status(409).json({ error: `Configura tu API key de ${requestedProvider} en tu perfil.`, code: 'PERSONAL_API_KEY_REQUIRED' });
+  }
+  try {
+    const safeMaxTokens = Math.max(64, Math.min(Number(maxTokens) || 4096, 16384));
+    const result = await callPersonalAi(requestedProvider, keys[requestedProvider], prompt, model, safeMaxTokens);
+    return res.json({ success: true, reply: result.text, provider: requestedProvider, model: result.model });
+  } catch (error) {
+    return res.status(502).json({ error: error.message });
+  }
 });
 
 app.post('/api/auth/me/keys/:provider/test', async (req, res) => {
@@ -670,7 +694,7 @@ app.post('/api/save', prohibirRevisorMutacion, (req, res) => {
       });
     }
 
-    const { externalApis: _externalApis, apiKeys: _apiKeys, ...safeConfig } = planData.config;
+    const safeConfig = sanitizeProjectConfig(planData.config);
     planData.config = { 
       ...safeConfig, 
       projectId: persistentId, 
@@ -2706,23 +2730,43 @@ app.post('/api/ai/proxy', async (req, res) => {
 });
 
 // ─── Endpoint para que el frontend consulte la configuración de IA del servidor ───
-app.get('/api/config/ollama', (req, res) => {
-  const ollamaKey = process.env.OLLAMA_KEY || '';
-  const ollambBobKey = process.env.OLLAMA_BOB_KEY || '';
-  const geminiKey = process.env.GEMINI_KEY || process.env.GOOGLE_API_KEY || '';
+app.get('/api/config/ollama', async (req, res) => {
+  const fallbackModels = ['gpt-oss:20b', 'gpt-oss:120b', 'gemma4:31b', 'nemotron-3-nano:30b', 'nemotron-3-super', 'nemotron-3-ultra'];
+  let availableCloudModels = fallbackModels;
+  let catalogSource = 'fallback';
+  try {
+    const personalKey = obtenerApiKeysParaServicio(req.user.id).ollamaCloud;
+    if (personalKey) {
+      const response = await fetch('https://ollama.com/api/tags', {
+        headers: { Authorization: `Bearer ${personalKey}` },
+        signal: AbortSignal.timeout(10000)
+      });
+      const data = await response.json().catch(() => ({}));
+      const liveModels = (data.models || []).map(item => item.name || item.model).filter(Boolean);
+      if (response.ok && liveModels.length) {
+        availableCloudModels = liveModels;
+        catalogSource = 'ollama-live-personal-account';
+      }
+    }
+  } catch (error) {
+    console.warn('[OllamaConfig] Catálogo en vivo no disponible:', error.message);
+  }
   res.json({
-    hasOllamaKey: !!ollamaKey,
-    hasBobKey: !!ollambBobKey,
-    hasGeminiKey: !!geminiKey,
-    defaultModel: 'minimax-m3:cloud',
-    availableCloudModels: [
-      'minimax-m3:cloud',
-      'kimi-k2.6:cloud',
-      'nemotron-3-super:cloud',
-      'gemma4:31b-cloud',
-      'glm-5.1:cloud',
-      'qwen3.5:cloud'
-    ]
+    hasOllamaKey: false,
+    hasBobKey: false,
+    hasGeminiKey: false,
+    credentialsScope: 'current-user',
+    defaultModel: 'gpt-oss:20b',
+    catalogSource,
+    availableCloudModels,
+    contextProfiles: {
+      'gpt-oss:20b': { maxContext: 131072, workingContext: 32768, role: 'chat-y-borrador' },
+      'gpt-oss:120b': { maxContext: 131072, workingContext: 65536, role: 'finanzas-y-razonamiento' },
+      'gemma4:31b': { maxContext: 262144, workingContext: 65536, role: 'documentos-y-multimodal' },
+      'nemotron-3-nano:30b': { maxContext: 1048576, workingContext: 65536, role: 'analisis-y-extraccion' },
+      'nemotron-3-super': { maxContext: 262144, workingContext: 65536, role: 'critica-y-redaccion' },
+      'nemotron-3-ultra': { maxContext: 262144, workingContext: 65536, role: 'sintesis-profunda' }
+    }
   });
 });
 
@@ -4200,8 +4244,8 @@ async function detectHotModels(registryData) {
   if (!registryData.models) registryData.models = {};
   
   const hotModels = new Set([
-    'minimax-m3:cloud', 'kimi-k2.6:cloud', 'qwen3.5:cloud', 'nemotron-3-super:cloud',
-    'gemma4:31b-cloud', 'glm-5.1:cloud'
+    'gpt-oss:20b', 'gpt-oss:120b', 'gemma4:31b', 'nemotron-3-nano:30b',
+    'nemotron-3-super', 'nemotron-3-ultra'
   ]);
 
   try {

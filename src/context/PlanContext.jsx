@@ -71,16 +71,16 @@ const createEmptyPlan = (projectType = 'business') => {
         pollinationsKey: KEYS.pollinations,
         baiKey: KEYS.bai,
         endpoint: 'http://localhost:11434', lmStudioEndpoint: 'http://localhost:1234/v1',
-        model: 'minimax-m3:cloud',   // Modelo principal activo por defecto (1M tokens, gratis en Ollama Cloud)
+        model: 'gpt-oss:20b',       // Modelo ágil por defecto de la cuenta personal de Ollama Cloud
         depth: 1,              // 1=Rápido, 2=Pro, 3=Profundo
         contextSize: 65536,    // 64k por defecto
         // [DDD] Modelos por rol
         agentModels: {
-          analista:     { model: 'minimax-m3:cloud', role: 'Analista Estratégico' },
-          critico:      { model: 'minimax-m3:cloud', role: 'Crítico Financiero' },
-          redactor:     { model: 'minimax-m3:cloud', role: 'Redactor Ejecutivo' },
-          estratega:    { model: 'minimax-m3:cloud', role: 'Estratega de Negocio' },
-          abogadoDiablo:{ model: 'minimax-m3:cloud', role: "Devil's Advocate" },
+          analista:     { model: 'nemotron-3-nano:30b', role: 'Analista Estratégico' },
+          critico:      { model: 'gpt-oss:120b', role: 'Crítico Financiero' },
+          redactor:     { model: 'nemotron-3-super', role: 'Redactor Ejecutivo' },
+          estratega:    { model: 'gpt-oss:120b', role: 'Estratega de Negocio' },
+          abogadoDiablo:{ model: 'nemotron-3-super', role: "Devil's Advocate" },
         }
       },
       brandKit: { primaryColor: '#6366f1', secondaryColor: '#8b5cf6', logoUrl: '', companyName: '' },

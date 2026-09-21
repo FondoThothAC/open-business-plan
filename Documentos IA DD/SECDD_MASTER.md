@@ -51,3 +51,16 @@
 * **Inocuidad y Sanitización de Proyectos Compartidos:** Los documentos servidos mediante `/api/review/:token` son sometidos a un proceso de expurgación profunda en el servidor (`server/index.js`), eliminando llaves de API (OpenAI, Anthropic, Gemini, Groq, Tavily, Brave), hashes de contraseñas, configuraciones de entorno y secretos del creador antes de la entrega al cliente.
 * **Tokens de Enlace Criptográficamente Seguros:** Los tokens de revisión se generan mediante 32 bytes de entropía aleatoria (`crypto.randomBytes(32).toString('base64url')`). En disco (`review_invites.json`), únicamente se almacena el resumen hash SHA-256 (`tokenHash`), protegiendo el acceso incluso ante lecturas no autorizadas del archivo de persistencia.
 * **Invalidación Inmediata por `sessionVersion`:** Cada cuenta de usuario cuenta con un contador entero `sessionVersion`. Cualquier mutación de seguridad (cambio o reseteo de contraseña, modificación de rol o desactivación) incrementa dicho contador. El middleware `authGuard` bloquea con HTTP 401 (`SESSION_REVOKED`) cualquier JWT preexistente firmado con versiones anteriores, neutralizando ventanas de vulnerabilidad por robo o persistencia indebida de tokens.
+
+---
+
+## 5. Sanitización de Persistencia de Proyectos y Aislamiento de Ollama Cloud
+
+* **Erradicación de Claves en el Archivo del Plan (`src/lib/serverUtils/sanitizeProjectConfig.js`):**
+  * Toda operación de guardado (`POST /api/save`) procesa la configuración mediante `sanitizeProjectConfig()`, eliminando preventivamente `externalApis`, `apiKeys` y cualquier propiedad dentro de `config.ai` terminada en `key` o `token`.
+  * Los proyectos compartidos, clonados o exportados nunca contienen credenciales residuales, evitando fugas accidentales entre usuarios o repositorios.
+* **Aislamiento Criptográfico de Ollama Cloud (`/api/ai/account-chat`):**
+  * Las llamadas a modelos de nube (`gpt-oss:20b`, `gpt-oss:120b`, `nemotron-3-nano:30b`, `nemotron-3-super`, `nemotron-3-ultra`, `gemma4:31b`) se delegan exclusivamente al endpoint seguro del servidor autenticado.
+  * La llave personal se descifra en memoria efímera mediante AES-256-GCM y nunca se expone al DOM ni al paquete del navegador.
+  * Respuestas enriquecidas: BOB reporta explícitamente en el cliente el proveedor y modelo verificado por el backend, erradicando alucinaciones sobre el motor en ejecución.
+

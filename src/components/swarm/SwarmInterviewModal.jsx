@@ -15,10 +15,12 @@ export function SwarmInterviewModal({ isOpen, onClose, ideaText, onConfirmSwarm 
   const [interviewResult, setInterviewResult] = useState(null);
   const [answers, setAnswers] = useState({});
   const [selectedFramework, setSelectedFramework] = useState('business');
+  const [error, setError] = useState('');
 
   // Solicitar entrevista inicial al servidor Express
   const handleStartInterview = async () => {
     setLoading(true);
+    setError('');
     try {
       const apiBase = getApiBase();
       const res = await fetch(`${apiBase}/api/swarm/interview`, {
@@ -27,12 +29,16 @@ export function SwarmInterviewModal({ isOpen, onClose, ideaText, onConfirmSwarm 
         body: JSON.stringify({ ideaText })
       });
       const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || `No se pudo iniciar la entrevista (${res.status})`);
+      }
       if (data.success) {
         setInterviewResult(data);
         setSelectedFramework(data.recommendedFramework || 'business');
       }
     } catch (err) {
       console.error('Error al iniciar entrevista con Swarm:', err);
+      setError(err.message || 'No se pudo conectar con Swarm.');
     } finally {
       setLoading(false);
     }
@@ -91,6 +97,13 @@ export function SwarmInterviewModal({ isOpen, onClose, ideaText, onConfirmSwarm 
           <div className="py-12 flex flex-col items-center justify-center space-y-3">
             <Sparkles className="w-8 h-8 text-purple-400 animate-spin" />
             <p className="text-sm font-medium text-slate-300">El Asesor de Inicio está analizando tu idea...</p>
+          </div>
+        ) : error ? (
+          <div className="py-10 flex flex-col items-center justify-center space-y-4 text-center">
+            <p className="text-sm text-red-300">{error}</p>
+            <button onClick={handleStartInterview} className="px-4 py-2 bg-purple-600 text-white text-xs font-bold rounded-lg">
+              Reintentar conexión
+            </button>
           </div>
         ) : interviewResult ? (
           <div className="space-y-6">

@@ -21,11 +21,12 @@ const CTX_PRESETS = [
 
 const PROVIDER_PRESETS = {
   ollama: [
-    { value: 'qwen3.5:cloud', label: 'qwen3.5:cloud (Nube - Gratuito)' },
-    { value: 'kimi-k2.6:cloud', label: 'kimi-k2.6:cloud (Nube - Gratuito)' },
-    { value: 'glm-5.1:cloud', label: 'glm-5.1:cloud (Nube - Gratuito)' },
-    { value: 'nemotron-3-super:cloud', label: 'nemotron-3-super:cloud (Nube - Gratuito)' },
-    { value: 'gemma4:31b-cloud', label: 'gemma4:31b-cloud (Nube - Gratuito)' },
+    { value: 'gpt-oss:20b', label: 'GPT-OSS 20B · rápido · 32k trabajo' },
+    { value: 'gpt-oss:120b', label: 'GPT-OSS 120B · razonamiento · 64k trabajo' },
+    { value: 'nemotron-3-nano:30b', label: 'Nemotron Nano 30B · análisis · 64k trabajo' },
+    { value: 'nemotron-3-super', label: 'Nemotron Super · redacción/critica · 64k trabajo' },
+    { value: 'nemotron-3-ultra', label: 'Nemotron Ultra · síntesis profunda · 64k trabajo' },
+    { value: 'gemma4:31b', label: 'Gemma 4 31B · documentos/imágenes · 64k trabajo' },
     { value: 'qwen3.5:4b-mlx', label: 'qwen3.5:4b-mlx (Local)' },
     { value: 'nemotron-3-nano:4b', label: 'nemotron-3-nano:4b' },
     { value: 'qwen3.5:2b-mlx', label: 'qwen3.5:2b-mlx' },
@@ -558,26 +559,28 @@ export default function Configuracion() {
 
   const fetchOllamaModels = async () => {
     setIsFetchingModels(true);
+    const models = new Map();
     try {
       const endpoint = planData.config.ai.endpoint || 'http://localhost:11434';
       const response = await fetch(`${endpoint}/api/tags`);
       const data = await response.json();
-      
-      if (data.models) {
-        setOllamaModels(data.models.map(m => ({
-          name: m.name,
-          details: m.details
-        })));
-        setOllamaOnline(true);
-      }
+      (data.models || []).forEach(m => models.set(m.name, { name: m.name, details: m.details, source: 'local' }));
+      setOllamaOnline(response.ok);
     } catch {
       setOllamaOnline(false);
-      setOllamaModels([
-        { name: 'gemma4:pro' },
-        { name: 'gemma4:e4b' },
-        { name: 'qwen2.5:1.5b' },
-      ]);
+    }
+    try {
+      const cloud = await fetch(`${getApiBase()}/api/config/ollama`, { credentials: 'include' });
+      const data = await cloud.json();
+      (data.availableCloudModels || []).forEach(name => models.set(name, {
+        name,
+        details: { parameter_size: data.contextProfiles?.[name]?.role || 'Ollama Cloud' },
+        source: data.catalogSource
+      }));
+    } catch {
+      // Las opciones canónicas permanecen disponibles mediante PROVIDER_PRESETS.
     } finally {
+      setOllamaModels([...models.values()]);
       setIsFetchingModels(false);
     }
   };
@@ -1304,54 +1307,15 @@ export default function Configuracion() {
                     />
                   </div>
 
-                  {/* OLLAMA CLOUD FREE (Kimi k2.6, MiniMax, Nemotron, Qwen) */}
+                  {/* OLLAMA CLOUD — credencial cifrada de la cuenta */}
                   <div style={{ padding: '1rem', borderRadius: '12px', background: 'var(--bg-panel-hover)', border: '1.5px solid rgba(99,102,241,0.4)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
                       <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#6366f1' }}>☁️ Ollama Cloud <span style={{ fontSize: '0.65rem', background: 'rgba(16,185,129,0.15)', color: '#10b981', padding: '1px 6px', borderRadius: '8px', marginLeft: '4px' }}>GRATIS</span></div>
                       <a href="https://ollama.com/settings/keys" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: '#6366f1', textDecoration: 'none', fontWeight: 700 }}>Obtener Key ↗</a>
                     </div>
-                    <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>Kimi k2.6 · MiniMax M3 · Nemotron Super · Gemma4 · Qwen3.5</div>
-                    
-                    {/* Key principal — Generación de Planes (Mesa de Expertos) */}
-                    <div style={{ fontSize: '0.62rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: '0.2rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>🏭 Key Principal (Generación de Planes)</div>
-                    <input 
-                      type="password" 
-                      className="form-control" 
-                      placeholder="65b426... (Ollama Cloud Key)"
-                      value={planData.config.ai.ollamaKey || ''}
-                      onChange={(e) => handleAiChange('ollamaKey', e.target.value)}
-                      style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}
-                    />
-                    <ApiStatusBadge status={ollamaCloudStatus} onTest={() => testOllamaCloud(planData.config.ai.ollamaKey)} disabled={!planData.config.ai.ollamaKey} />
-                    <ApiQuotaMeter 
-                      providerKey="ollama_cloud" 
-                      tokens={telToday.ollama_cloud ?? telemetryData.ollama_cloud ?? 0} 
-                      todayTokens={telToday.ollama_cloud ?? 0}
-                      accumulatedTokens={telAcc.ollama_cloud ?? telemetryData.ollama_cloud ?? 0}
-                      isConfigured={!!planData.config.ai.ollamaKey} 
-                      statusState={ollamaCloudStatus.state} 
-                    />
-
-                    {/* Key dedicada para BOB Chat — Cuenta separada */}
-                    <div style={{ marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: '1px dashed rgba(99,102,241,0.2)' }}>
-                      <div style={{ fontSize: '0.62rem', fontWeight: 700, color: '#8b5cf6', marginBottom: '0.2rem', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        🤖 Key de BOB Chat (Exclusiva)
-                        <span style={{ fontSize: '0.55rem', fontWeight: 400, color: 'var(--text-muted)', textTransform: 'none', letterSpacing: 0 }}>— Separa la cuota del copiloto de la generación de planes</span>
-                      </div>
-                      <input 
-                        type="password" 
-                        className="form-control" 
-                        placeholder="Segunda key de Ollama Cloud para BOB..."
-                        value={planData.config.ai.bobOllamaKey || ''}
-                        onChange={(e) => handleAiChange('bobOllamaKey', e.target.value)}
-                        style={{ fontSize: '0.8rem', marginBottom: '0.3rem' }}
-                      />
-                      <div style={{ fontSize: '0.6rem', color: 'var(--text-muted)', marginBottom: '0.25rem' }}>
-                        {planData.config.ai.bobOllamaKey 
-                          ? '✅ BOB usará esta key exclusiva para conversaciones (qwen3.5:cloud)'
-                          : '💡 Sin key dedicada, BOB usará la key principal compartida. Recomendamos crear una segunda cuenta.'
-                        }
-                      </div>
+                    <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>GPT-OSS · Nemotron · Gemma 4. El catálogo se sincroniza con el servidor.</div>
+                    <div style={{ padding: '0.65rem', borderRadius: '8px', background: 'rgba(16,185,129,0.10)', color: '#047857', fontSize: '0.7rem', lineHeight: 1.45 }}>
+                      🔐 La llave ya no se guarda dentro del proyecto. Configúrala en <strong>Mi perfil → API personales</strong>; BOB y la generación de módulos usarán la llave cifrada del usuario conectado.
                     </div>
                   </div>
 

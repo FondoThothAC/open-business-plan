@@ -15,6 +15,13 @@ const getEnvVar = (viteKey, nodeKey) => {
   return '';
 };
 
+// Credenciales de datos e investigación compartidas: únicamente servidor.
+// Nunca deben convertirse en variables VITE_* porque Vite las incrusta en el navegador.
+const getServerEnvVar = (nodeKey) => {
+  if (typeof process !== 'undefined' && process.env) return process.env[nodeKey] || '';
+  return '';
+};
+
 export const KEYS = {
   gemini:       getEnvVar('VITE_GEMINI_KEY', 'GEMINI_KEY'),
   groq:         getEnvVar('VITE_GROQ_KEY', 'GROQ_KEY'),
@@ -27,10 +34,10 @@ export const KEYS = {
   bobOllama:    getEnvVar('VITE_BOB_OLLAMA_KEY', 'BOB_OLLAMA_KEY'),
   pollinations: getEnvVar('VITE_POLLINATIONS_KEY', 'POLLINATIONS_KEY'),
   bai:          getEnvVar('VITE_BAI_KEY', 'BAI_KEY'),
-  denue:        getEnvVar('VITE_DENUE_KEY', 'DENUE_KEY'),
-  banxico:      getEnvVar('VITE_BANXICO_KEY', 'BANXICO_KEY'),
+  denue:        getServerEnvVar('DENUE_KEY'),
+  banxico:      getServerEnvVar('BANXICO_KEY'),
   alphaVantage: getEnvVar('VITE_ALPHAVANTAGE_KEY', 'ALPHAVANTAGE_KEY'),
-  tavily:       getEnvVar('VITE_TAVILY_KEY', 'TAVILY_API_KEY'),
-  brave:        getEnvVar('VITE_BRAVE_SEARCH_KEY', 'BRAVE_SEARCH_KEY'),
+  tavily:       getServerEnvVar('TAVILY_API_KEY'),
+  brave:        getServerEnvVar('BRAVE_SEARCH_KEY'),
   serper:       getEnvVar('VITE_SERPER_KEY', 'SERPER_API_KEY')
 };

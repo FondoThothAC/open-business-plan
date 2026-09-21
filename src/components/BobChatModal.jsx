@@ -26,7 +26,7 @@ export default function BobChatModal({ isOpen, onClose, planData, onExecuteComma
   const defaultWelcomeMessage = {
     id: 'welcome',
     sender: 'bob',
-    text: '¡Hola! Soy BOB, tu copiloto ejecutivo en CELIS ENGINE (minimax-m3:cloud). Puedo responder dudas, navegar entre secciones, auditar el equilibrio cuántico del fundador, calcular tu Fondo de Reserva de Liquidación (FRLI) o entrevistarte con /grill-me para completar el plan.',
+    text: '¡Hola! Soy BOB, tu copiloto ejecutivo en CELIS ENGINE. Las consultas de nube usan exclusivamente la API cifrada de tu cuenta; en cada respuesta verás el proveedor y modelo que contestaron.',
     timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     toolsExecuted: []
   };
@@ -271,7 +271,9 @@ export default function BobChatModal({ isOpen, onClose, planData, onExecuteComma
         sender: 'bob',
         text: result.cleanText || result.reply || 'Análisis completado.',
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        toolsExecuted: (result.toolCalls || []).map(t => t.tool)
+        toolsExecuted: (result.toolCalls || []).map(t => t.tool),
+        provider: result.provider,
+        model: result.model
       };
       setMessages(prev => [...prev, bobMsg]);
 
@@ -332,7 +334,7 @@ export default function BobChatModal({ isOpen, onClose, planData, onExecuteComma
             <div style={{ fontWeight: 800, fontSize: '0.92rem' }}>BOB · CELIS Engine</div>
             <div style={{ fontSize: '0.65rem', opacity: 0.9, display: 'flex', alignItems: 'center', gap: '5px' }}>
               <span>Historial Activo</span>
-              <span style={{ background: 'rgba(255,255,255,0.25)', padding: '1px 6px', borderRadius: '6px', fontSize: '0.55rem', fontWeight: 800 }}>minimax-m3:cloud</span>
+              <span style={{ background: 'rgba(255,255,255,0.25)', padding: '1px 6px', borderRadius: '6px', fontSize: '0.55rem', fontWeight: 800 }}>API personal</span>
             </div>
           </div>
         </div>
@@ -424,6 +426,11 @@ export default function BobChatModal({ isOpen, onClose, planData, onExecuteComma
                     <Zap size={10} /> Herramienta MCP: {t}
                   </span>
                 ))}
+              </div>
+            )}
+            {msg.sender === 'bob' && msg.provider && (
+              <div style={{ fontSize: '0.6rem', marginBottom: '5px', color: '#4f46e5', fontWeight: 700 }}>
+                🔐 {msg.provider} · {msg.model || 'modelo confirmado por el proveedor'}
               </div>
             )}
             <div style={{ whiteSpace: 'pre-wrap' }}>{msg.text}</div>
