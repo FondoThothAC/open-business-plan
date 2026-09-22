@@ -1739,7 +1739,7 @@ export function computeOrderedModules(planData, currentFramework, exportScope = 
 
 export default function VistaPrevia() {
   const { planData, updateConfig, manualSaveProject, updateSection, addComment, deleteComment, getProjectContamination, sanitizeCurrentProject } = usePlan();
-  const { authFetch } = useAuth();
+  const { authFetch, user } = useAuth();
   const [reviewLink, setReviewLink] = React.useState(null);
   const [printMargin, setPrintMargin] = React.useState(0.8); // Margen en cm
   const [zoomLevel, setZoomLevel] = React.useState(100); // Nivel de Zoom en % (50% a 150%)
@@ -2650,7 +2650,7 @@ export default function VistaPrevia() {
           zIndex: 1
         }}>
           <div style={{ fontSize: '1.2rem', color: isDarkExecutive || isGoldenPrestige ? '#f1f5f9' : isBlueprintTech ? '#e0f2fe' : '#1e293b', fontWeight: '700' }}>
-            {cover.creatorName ? `Creado por: ${cover.creatorName}` : 'Elaborado por: Roberto Eduardo Celis Robles'}
+            {cover.creatorName ? `Creado por: ${cover.creatorName}` : (user?.displayName ? `Elaborado por: ${user.displayName}` : (user?.username ? `Elaborado por: ${user.username}` : 'Elaborado por el Emprendedor'))}
           </div>
           {cover.showDate !== false && (
             <div style={{ fontSize: '1rem', color: isDarkExecutive || isGoldenPrestige ? '#64748b' : isBlueprintTech ? '#60a5fa' : isBrutalistBold ? '#57534e' : '#94a3b8', marginTop: '0.5rem' }}>

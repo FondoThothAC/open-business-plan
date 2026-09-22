@@ -5,12 +5,26 @@ import { Table } from 'lucide-react';
  * Totalmente adaptado al tema claro/oscuro del sistema
  */
 export function BoxTable({ definition = {}, values = {} }) {
-  const rows = values.rows || [
-    { concepto: '1. Oportunidad y Problema', valor: 'Paros no programados de $15k USD/h en maquinaria minera por fallas en mangueras.' },
-    { concepto: '2. Solución MaaS', valor: 'Mantenimiento predictivo con banco de pruebas 40k PSI y telemetría IoT en tiempo real.' },
-    { concepto: '3. Mercado Objetivo', valor: 'TAM: $180M MXN | SOM a 3 años: $18M MXN en el clúster minero de Sonora.' },
-    { concepto: '4. Viabilidad Financiera', valor: 'Inversión: $20M MXN | TIR: 15.11% | VAN: $1.83M MXN | Payback: 4.1 años.' }
+  const plan = values.planData || {};
+  const semilla = plan.semilla || {};
+  const negocio = semilla.negocio || {};
+  const fin = plan.finanzas || plan.simulador_financiero || plan.finanzas_agiles || {};
+  const dictamen = plan.resumen_ejecutivo?.dictamen_viabilidad || {};
+  const text = (...items) => items.find(v => typeof v === 'string' && v.trim()) || 'Pendiente de definir';
+  const money = (v) => Number.isFinite(Number(v)) ? `$${Number(v).toLocaleString('es-MX')} MXN` : null;
+  const financial = [
+    money(fin.capex ?? fin.inversionInicial ?? plan.organizacion?.inversion?.total_inversion),
+    fin.tir != null ? `TIR: ${fin.tir}%` : null,
+    money(fin.van ?? fin.npv ?? dictamen.van),
+    fin.payback != null ? `Payback: ${fin.payback} años` : null
+  ].filter(Boolean).join(' | ') || 'Pendiente de calcular con el modelo financiero del proyecto';
+  const generatedRows = [
+    { concepto: '1. Oportunidad y Problema', valor: text(semilla.problema, negocio.problema, plan.problema) },
+    { concepto: '2. Solución', valor: text(semilla.solucion, negocio.que_es, plan.solucion) },
+    { concepto: '3. Mercado Objetivo', valor: text(semilla.mercado_objetivo, plan.mercado?.segmento, plan.mercado?.descripcion) },
+    { concepto: '4. Viabilidad Financiera', valor: financial }
   ];
+  const rows = definition.id === 'box_resumen_ejecutivo_1p' ? generatedRows : (values.rows || generatedRows);
 
   return (
     <div style={{

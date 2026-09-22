@@ -1148,7 +1148,7 @@ export const PROJECT_EXAMPLES = {
           logoSize: "extra_large",
           logoAlign: "center",
           titleSize: "large",
-          creatorName: "Roberto Eduardo Celis Robles",
+          creatorName: "",
           subtitle: "PLAN ESTRATÉGICO MAESTRO",
           institution: "Formulación y Evaluación Académica 2026",
           showDate: true,

@@ -9,14 +9,14 @@ import { matchIndustry } from '../lib/benchmarkMatcher';
 import { evaluateQuantumProfile } from '../lib/quantumDiagnostic';
 import QuantumProfileCard from './QuantumProfileCard';
 import AdaptiveSeedForm from './AdaptiveSeedForm';
-import { Mic, MicOff, BrainCircuit, CheckCircle, Loader2, AlertCircle, Sparkles, Cpu } from 'lucide-react';
+import { Mic, MicOff, BrainCircuit, CheckCircle, Loader2, AlertCircle, Sparkles, Cpu, Zap, Play, X, Check } from 'lucide-react';
 import { PixelSwarmViewer } from './swarm/PixelSwarmViewer';
 import { SwarmInterviewModal } from './swarm/SwarmInterviewModal';
 import DocumentUploader from './DocumentUploader';
 
 export default function Anteproyecto() {
   const navigate = useNavigate();
-  const { planData, updateSemilla, updateConfig, initNewProjectFromSeed, _setPlanData } = usePlan();
+  const { planData, updateSemilla, updateConfig, initNewProjectFromSeed, startIndustrialization, _setPlanData } = usePlan();
 
   // Si la semilla ya tiene datos cargados en el plan, mostramos el paso de revisión (3)
   const [step, setStep] = useState(() => {
@@ -35,6 +35,10 @@ export default function Anteproyecto() {
   const [frameworkInference, setFrameworkInference] = useState(null);
   const [benchmarkMatch, setBenchmarkMatch] = useState(null);
   const [quantumDiagnostic, setQuantumDiagnostic] = useState(null);
+
+  // Selector dinámico de ritmo para Copiloto Autónomo
+  const [selectedFrameworkForLaunch, setSelectedFrameworkForLaunch] = useState(null);
+  const [launchMode, setLaunchMode] = useState('agil'); // 'agil' | 'profundo'
 
   // Asistencia IA por campo
   const [_activeDoubtField, _setActiveDoubtField] = useState(null);
@@ -272,6 +276,63 @@ export default function Anteproyecto() {
       setError(`No se pudo iniciar Swarm: ${err.message}`);
       setIsSwarmRunning(false);
       es.close();
+    }
+  };
+
+  // Lanzador autónomo tipo Puppet con navegación visual módulo a módulo
+  const handleLaunchAutonomous = () => {
+    if (!selectedFrameworkForLaunch) return;
+    const { key, framework } = selectedFrameworkForLaunch;
+    const seed = planData?.semilla || {};
+    const projName = seed.nombre_proyecto || seed.negocio?.nombre_marca || 'Proyecto Nuevo';
+    
+    // Configurar contexto y profundidad según el modo seleccionado
+    const isAgil = launchMode === 'agil';
+    updateConfig('ai', 'contextSize', isAgil ? 16384 : 65536);
+    updateConfig('ai', 'depth', isAgil ? 1 : 3);
+    
+    // Crear el nuevo proyecto aislado con la semilla y autoría asignada
+    if (initNewProjectFromSeed) {
+      initNewProjectFromSeed(key, seed, projName);
+    } else {
+      updateConfig('projectType', null, key);
+    }
+
+    // Iniciar la industrialización automática inmediata
+    if (startIndustrialization) {
+      startIndustrialization();
+    }
+
+    const firstPillar = framework.pillars?.[0];
+    const firstModule = firstPillar?.modules?.[0];
+    setSelectedFrameworkForLaunch(null);
+
+    // Navegar al primer módulo del proyecto
+    if (firstPillar && firstModule) {
+      navigate(`/modulo/${firstPillar.key}/${firstModule.key}`);
+    } else {
+      navigate('/semilla');
+    }
+  };
+
+  // Creación manual sin activar el generador automático
+  const handleCreateManual = () => {
+    if (!selectedFrameworkForLaunch) return;
+    const { key, framework } = selectedFrameworkForLaunch;
+    const seed = planData?.semilla || {};
+    const projName = seed.nombre_proyecto || seed.negocio?.nombre_marca || 'Proyecto Nuevo';
+    if (initNewProjectFromSeed) {
+      initNewProjectFromSeed(key, seed, projName);
+    } else {
+      updateConfig('projectType', null, key);
+    }
+    setSelectedFrameworkForLaunch(null);
+    const firstPillar = framework.pillars?.[0];
+    const firstModule = firstPillar?.modules?.[0];
+    if (firstPillar && firstModule) {
+      navigate(`/modulo/${firstPillar.key}/${firstModule.key}`);
+    } else {
+      navigate('/semilla');
     }
   };
 
@@ -522,21 +583,9 @@ export default function Anteproyecto() {
               return (
                 <button
                   key={key}
+                  type="button"
                   onClick={() => {
-                    const seed = planData?.semilla || {};
-                    const projName = seed.nombre_proyecto || seed.negocio?.nombre_marca || 'Proyecto Nuevo';
-                    if (initNewProjectFromSeed) {
-                      initNewProjectFromSeed(key, seed, projName);
-                    } else {
-                      updateConfig('projectType', null, key);
-                    }
-                    const firstPillar = framework.pillars?.[0];
-                    const firstModule = firstPillar?.modules?.[0];
-                    if (firstPillar && firstModule) {
-                      navigate(`/modulo/${firstPillar.key}/${firstModule.key}`);
-                    } else {
-                      navigate('/semilla');
-                    }
+                    setSelectedFrameworkForLaunch({ key, framework });
                   }}
                   style={{
                     background: isRecommended ? 'linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.05) 100%)' : 'var(--bg-panel)',
@@ -570,6 +619,150 @@ export default function Anteproyecto() {
                 </button>
               );
             })}
+          </div>
+        </div>
+      )}
+
+      {/* Modal de Despegue Autónomo (Modo Ágil vs Exhaustivo) */}
+      {selectedFrameworkForLaunch && (
+        <div 
+          style={{
+            position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+            background: 'rgba(0, 0, 0, 0.75)', backdropFilter: 'blur(8px)',
+            zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center',
+            padding: '1rem', animation: 'fadeIn 0.25s ease'
+          }}
+          onClick={() => setSelectedFrameworkForLaunch(null)}
+        >
+          <div 
+            className="glass-panel"
+            style={{
+              width: '100%', maxWidth: '580px', background: 'var(--bg-panel)',
+              border: '1px solid var(--border-color)', borderRadius: '16px',
+              padding: '2rem', boxShadow: '0 20px 40px rgba(0,0,0,0.4)',
+              display: 'flex', flexDirection: 'column', gap: '1.5rem',
+              animation: 'scaleUp 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid var(--border-color)', paddingBottom: '1rem' }}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--accent-color)', fontWeight: 800, fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                  <Sparkles size={16} /> Copiloto Autónomo
+                </div>
+                <h3 style={{ fontSize: '1.35rem', fontWeight: 800, margin: '0.25rem 0 0 0', color: 'var(--text-primary)' }}>
+                  {selectedFrameworkForLaunch.framework?.name || 'Metodología Seleccionada'}
+                </h3>
+                <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', margin: '0.25rem 0 0 0' }}>
+                  Define el ritmo y profundidad con que la IA redactará módulo por módulo tu plan.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedFrameworkForLaunch(null)}
+                style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', padding: '4px' }}
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Selector de Ritmo */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              {/* Tarjeta Modo Ágil */}
+              <div
+                onClick={() => setLaunchMode('agil')}
+                style={{
+                  padding: '1.2rem', borderRadius: '12px', cursor: 'pointer',
+                  border: launchMode === 'agil' ? '2px solid var(--accent-color)' : '1px solid var(--border-color)',
+                  background: launchMode === 'agil' ? 'rgba(99, 102, 241, 0.08)' : 'rgba(255, 255, 255, 0.02)',
+                  transition: 'all 0.2s', display: 'flex', flexDirection: 'column', gap: '0.5rem', position: 'relative'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#6366f1', fontWeight: 800, fontSize: '0.85rem' }}>
+                    <Zap size={16} /> Ágil Visual
+                  </div>
+                  {launchMode === 'agil' && (
+                    <span style={{ background: '#6366f1', color: 'white', borderRadius: '50%', width: '18px', height: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Check size={12} />
+                    </span>
+                  )}
+                </div>
+                <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', lineHeight: 1.4 }}>
+                  Ventana 16K. Redacción rápida (3-5 seg/módulo) con navegación continua campo por campo.
+                </div>
+                <span style={{ alignSelf: 'flex-start', fontSize: '0.65rem', padding: '2px 6px', borderRadius: '4px', background: 'rgba(99, 102, 241, 0.15)', color: '#6366f1', fontWeight: 700 }}>
+                  Recomendado para inicio
+                </span>
+              </div>
+
+              {/* Tarjeta Modo Exhaustivo */}
+              <div
+                onClick={() => setLaunchMode('profundo')}
+                style={{
+                  padding: '1.2rem', borderRadius: '12px', cursor: 'pointer',
+                  border: launchMode === 'profundo' ? '2px solid #8b5cf6' : '1px solid var(--border-color)',
+                  background: launchMode === 'profundo' ? 'rgba(139, 92, 246, 0.08)' : 'rgba(255, 255, 255, 0.02)',
+                  transition: 'all 0.2s', display: 'flex', flexDirection: 'column', gap: '0.5rem', position: 'relative'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#8b5cf6', fontWeight: 800, fontSize: '0.85rem' }}>
+                    <Cpu size={16} /> Exhaustivo
+                  </div>
+                  {launchMode === 'profundo' && (
+                    <span style={{ background: '#8b5cf6', color: 'white', borderRadius: '50%', width: '18px', height: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Check size={12} />
+                    </span>
+                  )}
+                </div>
+                <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', lineHeight: 1.4 }}>
+                  Ventana 64K. Análisis profundo (15-20 seg/módulo) con investigación web y finanzas detalladas.
+                </div>
+                <span style={{ alignSelf: 'flex-start', fontSize: '0.65rem', padding: '2px 6px', borderRadius: '4px', background: 'rgba(139, 92, 246, 0.15)', color: '#8b5cf6', fontWeight: 700 }}>
+                  Máxima profundidad
+                </span>
+              </div>
+            </div>
+
+            {/* Banner explicativo del efecto Puppet */}
+            <div style={{ background: 'rgba(99, 102, 241, 0.05)', border: '1px dashed var(--accent-color)', borderRadius: '10px', padding: '0.85rem 1rem', fontSize: '0.78rem', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+              <Sparkles size={20} style={{ color: 'var(--accent-color)', flexShrink: 0 }} />
+              <span>
+                <strong>Modo Puppet Activo:</strong> El sistema navegará automáticamente por cada área (Naturaleza, Mercado, Técnico, Organización y Finanzas) mostrando en vivo cómo se redacta cada módulo.
+              </span>
+            </div>
+
+            {/* Acciones del Modal */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginTop: '0.5rem' }}>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={handleLaunchAutonomous}
+                style={{
+                  padding: '0.85rem', fontSize: '0.95rem', fontWeight: 800,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
+                  background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+                  boxShadow: '0 4px 15px rgba(99, 102, 241, 0.35)', border: 'none', borderRadius: '10px'
+                }}
+              >
+                <Play size={18} fill="white" />
+                <span>Iniciar Copiloto Autónomo (Llenado Secuencial)</span>
+              </button>
+
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={handleCreateManual}
+                style={{
+                  padding: '0.7rem', fontSize: '0.82rem',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem',
+                  borderRadius: '10px'
+                }}
+              >
+                <span>Crear Proyecto y Editar Manualmente (Sin IA automática)</span>
+              </button>
+            </div>
           </div>
         </div>
       )}

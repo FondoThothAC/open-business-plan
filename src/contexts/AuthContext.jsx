@@ -133,6 +133,21 @@ export function AuthProvider({ children }) {
   }, [apiBase]);
 
   /**
+   * Purgar proyectos y datos temporales locales para evitar contaminación cruzada entre sesiones.
+   */
+  const purgarDatosProyectoLocal = () => {
+    localStorage.removeItem('openplan_v2_data');
+    localStorage.removeItem('openplan_active_project_id');
+    localStorage.removeItem('openplan_active_project_type');
+    localStorage.removeItem('openplan_active_project_file');
+    localStorage.removeItem('openplan_new_project_flag');
+    localStorage.removeItem('openplan_is_unsaved_new');
+    localStorage.removeItem('openplan_gen_status');
+    localStorage.removeItem('openplan_gen_progress');
+    localStorage.removeItem('openplan_gen_queue');
+  };
+
+  /**
    * Inicia sesión con credenciales y opción Recordarme.
    * El token se gestiona exclusivamente por cookie HttpOnly del servidor.
    * @param {string} username
@@ -153,6 +168,12 @@ export function AuthProvider({ children }) {
 
       if (!res.ok) {
         return { success: false, error: datos.error || 'Error de autenticación.' };
+      }
+
+      // Si el usuario que ingresa es diferente al previo almacenado, limpiar el borrador local para no cruzar planes
+      const previousUser = localStorage.getItem('openplan_user_id');
+      if (previousUser && previousUser !== datos.user.username) {
+        purgarDatosProyectoLocal();
       }
 
       // La sesión ahora viaja en cookie HttpOnly. Purgar cualquier token legado
@@ -208,6 +229,7 @@ export function AuthProvider({ children }) {
       localStorage.removeItem(TOKEN_KEY);
       localStorage.removeItem(USER_KEY);
       localStorage.removeItem('openplan_user_id');
+      purgarDatosProyectoLocal();
       setUser(null);
     }
   };

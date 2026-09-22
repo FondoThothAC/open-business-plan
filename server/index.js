@@ -622,6 +622,23 @@ function jsonToMarkdown(planData) {
   return md;
 }
 
+/**
+ * Normaliza nombres comerciales a slugs seguros para nombres de archivos y carpetas del sistema.
+ * @param {string} text
+ * @returns {string}
+ */
+function slugifyFileName(text) {
+  if (!text) return 'draft_activo';
+  const clean = String(text)
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '');
+  return clean || 'draft_activo';
+}
+
 app.post('/api/save', prohibirRevisorMutacion, (req, res) => {
   try {
     const planData = req.body;
@@ -631,9 +648,18 @@ app.post('/api/save', prohibirRevisorMutacion, (req, res) => {
 
     const projectTypeRaw = planData.config?.projectType || 'business';
     const projectType = projectTypeRaw === 'social_bid' ? 'social' : 'negocios';
-    const rawName = planData.config?.brandKit?.companyName || planData.semilla?.nombre_proyecto || planData.semilla?.negocio?.nombre_marca || 'Proyecto';
-    const generatedUuid = crypto.randomUUID ? crypto.randomUUID() : crypto.randomBytes(16).toString('hex');
-    const persistentId = String(planData.config?.projectId || `project_${generatedUuid}`).replace(/[^a-z0-9]/gi, '_').toLowerCase();
+    const rawName = planData.config?.brandKit?.companyName || planData.semilla?.nombre_proyecto || planData.semilla?.negocio?.nombre_marca || '';
+    const cleanSlug = slugifyFileName(rawName);
+
+    // Si el proyecto tiene nombre comercial real, usarlo como ID limpio; si no, usar un único borrador temporal
+    let persistentId = String(planData.config?.projectId || '').replace(/[^a-z0-9_]/gi, '_').toLowerCase();
+    const isUuidOrRandom = !persistentId || /^project_[a-f0-9_-]+$/i.test(persistentId) || /^[a-f0-9]{8}_[a-f0-9]{4}/i.test(persistentId) || /^[a-f0-9]{8}-[a-f0-9]{4}/i.test(persistentId);
+
+    if (cleanSlug && cleanSlug !== 'draft_activo' && cleanSlug !== 'proyecto' && cleanSlug !== 'proyecto_nuevo') {
+      persistentId = cleanSlug;
+    } else if (isUuidOrRandom) {
+      persistentId = 'draft_activo';
+    }
     assertSafeProjectSegment(persistentId);
     const safeName = persistentId;
     
@@ -655,6 +681,19 @@ app.post('/api/save', prohibirRevisorMutacion, (req, res) => {
     const dirPath = path.resolve(...dirParts);
     if (!fs.existsSync(dirPath)) {
       fs.mkdirSync(dirPath, { recursive: true });
+    }
+
+    // Si el proyecto antes residía como 'draft_activo' y ahora tiene nombre formal, remover el borrador huérfano
+    if (safeName !== 'draft_activo') {
+      const oldDraftParts = ['proyectos', projectType];
+      if (ownerFolder) oldDraftParts.push(ownerFolder);
+      oldDraftParts.push('draft_activo');
+      const oldDraftDir = path.resolve(...oldDraftParts);
+      if (fs.existsSync(oldDraftDir) && oldDraftDir !== dirPath) {
+        try {
+          fs.rmSync(oldDraftDir, { recursive: true, force: true });
+        } catch {}
+      }
     }
     
     const docsPath = path.join(dirPath, 'documentos');
@@ -4131,7 +4170,7 @@ let touchBarState = {
   currentModuleTitle: 'Introducción',
   progressPercent: 0,
   aiState: 'listo',
-  activeModel: 'minimax-m3:cloud',
+  activeModel: 'gpt-oss:20b',
   lastLog: 'Sistema listo',
   quantumStatus: 'Óptimo (2 Áreas)',
   updatedAt: new Date().toISOString()
@@ -4204,7 +4243,7 @@ async function _pingProvider(providerName, endpoint, apiKey, timeoutMs = 8000) {
       case 'ollama_cloud':
         url = 'https://ollama.com/v1/chat/completions';
         headers = { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' };
-        body = JSON.stringify({ model: 'minimax-m3:cloud', messages: [{ role: 'user', content: 'ping' }], max_tokens: 1 });
+        body = JSON.stringify({ model: 'gpt-oss:20b', messages: [{ role: 'user', content: 'ping' }], max_tokens: 1 });
         method = 'POST';
         break;
       case 'groq':

@@ -27,7 +27,7 @@ export default function SetupWizard({ onComplete }) {
   const [hardware, setHardware] = useState(null);
   const [ollamaModels, setOllamaModels] = useState([]);
   const [selectedCtx, setSelectedCtx] = useState(32768);
-  const [selectedModel, setSelectedModel] = useState('minimax-m3:cloud');
+  const [selectedModel, setSelectedModel] = useState('gpt-oss:20b');
   const [error, setError] = useState('');
 
   const detectHardware = async () => {
@@ -40,10 +40,9 @@ export default function SetupWizard({ onComplete }) {
       setOllamaModels(models);
       if (models.length > 0) {
         // Si minimax-m3:cloud está disponible en la lista o hay modelos locales
-        const hasMinimax = models.find(m => m.includes('minimax'));
-        setSelectedModel(hasMinimax || models[0] || 'minimax-m3:cloud');
+        setSelectedModel(models[0] || 'gpt-oss:20b');
       } else {
-        setSelectedModel('minimax-m3:cloud');
+        setSelectedModel('gpt-oss:20b');
       }
 
       let gpuVram = 0;
@@ -69,7 +68,7 @@ export default function SetupWizard({ onComplete }) {
       setError('Ollama local no detectado en localhost:11434. Operando con Ollama Cloud / Minimax-M3 (Nube Gratuito).');
       setHardware({ gpuVram: 0, systemRam: 8, ollamaOnline: false, models: [] });
       setSelectedCtx(32768);
-      setSelectedModel('minimax-m3:cloud');
+      setSelectedModel('gpt-oss:20b');
     } finally {
       setDetecting(false);
     }
@@ -82,7 +81,7 @@ export default function SetupWizard({ onComplete }) {
   const handleComplete = () => {
     const config = {
       mode,
-      model: selectedModel || 'minimax-m3:cloud',
+      model: selectedModel || 'gpt-oss:20b',
       contextSize: selectedCtx,
       endpoint: 'http://localhost:11434',
       setupComplete: true,

@@ -7,14 +7,20 @@ import { Calculator, TrendingUp, CheckCircle, RefreshCw } from 'lucide-react';
  * Totalmente adaptado al tema claro/oscuro del sistema
  */
 export function BoxFormula({ definition = {}, values = {}, onChange = () => {} }) {
-  const [capex, setCapex] = useState(values.capex || 20000000);
+  const plan = values.planData || {};
+  const financial = plan.finanzas || plan.simulador_financiero || plan.finanzas_agiles || {};
+  const derivedCapex = financial.capex ?? financial.inversionInicial ?? plan.organizacion?.inversion?.total_inversion;
+  const derivedFlows = financial.cashFlows || financial.flujos || financial.flujo_caja || [];
+  const [capex, setCapex] = useState(values.capex ?? (Number.isFinite(Number(derivedCapex)) ? Number(derivedCapex) : 0));
   const [wacc, setWacc] = useState(values.wacc || 0.12);
-  const [flows, setFlows] = useState(values.flows || [5000000, 6500000, 8000000, 9500000, 11000000]);
+  const [flows, setFlows] = useState(values.flows || (Array.isArray(derivedFlows) ? derivedFlows.map(Number).filter(Number.isFinite) : []));
+
+  const hasInputs = Number(capex) > 0 && flows.length > 0;
 
   const analysis = FinancialAnalyzer.analyze({
-    initialInvestment: Number(capex) || 20000000,
+    initialInvestment: Number(capex) || 0,
     cashFlows: flows,
-    equity: Number(capex) || 20000000,
+    equity: Number(capex) || 0,
     debt: 0
   });
 
@@ -59,8 +65,8 @@ export function BoxFormula({ definition = {}, values = {}, onChange = () => {} }
           fontSize: '0.8rem',
           fontWeight: 700
         }}>
-          {analysis.isViable ? <CheckCircle size={14} /> : <RefreshCw size={14} />}
-          {analysis.isViable ? 'Proyecto Viable' : 'Revisar Retorno'}
+          {hasInputs && analysis.isViable ? <CheckCircle size={14} /> : <RefreshCw size={14} />}
+          {!hasInputs ? 'Datos pendientes' : (analysis.isViable ? 'Proyecto Viable' : 'Revisar Retorno')}
         </div>
       </div>
 
@@ -74,7 +80,7 @@ export function BoxFormula({ definition = {}, values = {}, onChange = () => {} }
         <div style={{ background: 'var(--bg-panel-hover, rgba(0,0,0,0.02))', padding: '12px', borderRadius: '8px', border: '1px solid var(--border-color, #e4e4e7)' }}>
           <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary, #71717a)' }}>Valor Actual Neto (VAN)</span>
           <div style={{ fontSize: '1.2rem', fontWeight: 700, color: analysis.npv >= 0 ? '#10b981' : '#ef4444' }}>
-            {analysis.npvFormatted}
+            {hasInputs ? analysis.npvFormatted : 'Pendiente'}
           </div>
           <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary, #71717a)' }}>Tasa descuento: {(wacc * 100).toFixed(1)}%</span>
         </div>
@@ -82,7 +88,7 @@ export function BoxFormula({ definition = {}, values = {}, onChange = () => {} }
         <div style={{ background: 'var(--bg-panel-hover, rgba(0,0,0,0.02))', padding: '12px', borderRadius: '8px', border: '1px solid var(--border-color, #e4e4e7)' }}>
           <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary, #71717a)' }}>Tasa Interna Retorno (TIR)</span>
           <div style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--accent-color, #6366f1)' }}>
-            {analysis.irrPct}
+            {hasInputs ? analysis.irrPct : 'Pendiente'}
           </div>
           <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary, #71717a)' }}>Spread vs WACC: +{((analysis.irr - wacc) * 100).toFixed(1)}%</span>
         </div>
@@ -90,7 +96,7 @@ export function BoxFormula({ definition = {}, values = {}, onChange = () => {} }
         <div style={{ background: 'var(--bg-panel-hover, rgba(0,0,0,0.02))', padding: '12px', borderRadius: '8px', border: '1px solid var(--border-color, #e4e4e7)' }}>
           <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary, #71717a)' }}>Periodo de Recuperación</span>
           <div style={{ fontSize: '1.2rem', fontWeight: 700, color: '#f59e0b' }}>
-            {analysis.paybackFormatted}
+            {hasInputs ? analysis.paybackFormatted : 'Pendiente'}
           </div>
           <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary, #71717a)' }}>Horizonte: 5 años</span>
         </div>
@@ -98,7 +104,7 @@ export function BoxFormula({ definition = {}, values = {}, onChange = () => {} }
         <div style={{ background: 'var(--bg-panel-hover, rgba(0,0,0,0.02))', padding: '12px', borderRadius: '8px', border: '1px solid var(--border-color, #e4e4e7)' }}>
           <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary, #71717a)' }}>Relación Beneficio / Costo</span>
           <div style={{ fontSize: '1.2rem', fontWeight: 700, color: '#0ea5e9' }}>
-            {analysis.bcRatio}x
+            {hasInputs ? `${analysis.bcRatio}x` : 'Pendiente'}
           </div>
           <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary, #71717a)' }}>B/C &gt; 1.0 = Viable</span>
         </div>
@@ -106,6 +112,7 @@ export function BoxFormula({ definition = {}, values = {}, onChange = () => {} }
 
       {/* Editor de Entradas Rápidas */}
       <div style={{ background: 'var(--bg-panel-hover, rgba(0,0,0,0.02))', padding: '14px', borderRadius: '8px', border: '1px solid var(--border-color, #e4e4e7)' }}>
+        {!hasInputs && <div role="status" style={{ marginBottom: '12px', color: 'var(--text-secondary, #71717a)' }}>Este módulo no inventa cifras: captura o genera el CAPEX y los flujos del proyecto para calcular los indicadores.</div>}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
           <div>
             <label style={{ fontSize: '0.75rem', color: 'var(--text-secondary, #71717a)', display: 'block', marginBottom: '4px', fontWeight: 600 }}>Inversión Inicial CAPEX ($ MXN)</label>

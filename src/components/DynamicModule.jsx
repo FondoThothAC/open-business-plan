@@ -21,6 +21,8 @@ import AmoebaStructureViewer from './AmoebaStructureViewer';
 import MicroCroquisEditor from './MicroCroquisEditor';
 import DeepMarketResearch from './DeepMarketResearch';
 
+const normalizeSlug = (value) => String(value || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
 const BusinessModelSelector = ({ value, onChange }) => {
   const models = [
     { key: 'B2C', label: 'B2C (Empresa a Consumidor)', desc: 'Venta de productos o servicios directamente a clientes finales.', icon: '🛍️' },
@@ -218,12 +220,20 @@ export default function DynamicModule() {
   const isFinancialModule = pillarId === 'finanzas' || moduleId === 'estados_financieros' || moduleId === 'rentabilidad';
   const isMarketResearchModule = pillarId === 'mercado' && ['competencia', 'inteligencia_mercado_cascada'].includes(moduleId);
 
+  // No renderizar ningún módulo con datos del proyecto anterior durante una transición.
+  if (slug) {
+    if (!resolvedRoute || resolvedRoute.slug !== slug) return <p role="status">Cargando proyecto…</p>;
+    if (!resolvedRoute.ok) return <p role="alert">No se pudo cargar el proyecto solicitado. Vuelve a seleccionarlo.</p>;
+    const activeSlug = normalizeSlug(planData?.config?.projectSlug || planData?.config?.slug || planData?.semilla?.nombre_proyecto || planData?.semilla?.negocio?.nombre);
+    if (activeSlug && activeSlug !== normalizeSlug(slug)) return <p role="alert">El proyecto cargado no coincide con esta ruta. Selecciónalo de nuevo.</p>;
+  }
+
   if (pillarId === 'simulador_financiero' && moduleId === 'simulador') {
     const rawBase = import.meta.env.BASE_URL || '/';
     const basePath = rawBase.endsWith('/') ? rawBase : `${rawBase}/`;
     const iframeSrc = `${basePath}simulador/index.html`;
-    const projectTitle = planData?.semilla?.negocio?.nombre || 'Comercio Cuántico Internacional';
-    const projectGiro = planData?.semilla?.negocio?.giro || 'MaaS IoT / Inversión Minera';
+    const projectTitle = planData?.semilla?.negocio?.nombre || planData?.semilla?.nombre_proyecto || 'Proyecto sin nombre';
+    const projectGiro = planData?.semilla?.negocio?.giro || planData?.semilla?.giro || 'Pendiente de definir';
 
     return (
       <div className="module-view" style={{ padding: 0, height: 'calc(100vh - 80px)', overflow: 'hidden' }}>
@@ -261,8 +271,6 @@ export default function DynamicModule() {
   }
 
   if (isMarketResearchModule) {
-    if (!resolvedRoute || resolvedRoute.slug !== slug) return <p role="status">Cargando proyecto…</p>;
-    if (!resolvedRoute.ok) return <p role="alert">No se pudo cargar el proyecto solicitado. Vuelve a seleccionarlo.</p>;
     return <DeepMarketResearch key={planData?.config?.projectId || slug} locationHint={locationHint} />;
   }
 

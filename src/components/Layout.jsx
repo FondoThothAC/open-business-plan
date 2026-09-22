@@ -19,6 +19,7 @@ import DocumentUploader from './DocumentUploader';
 import TerminalDrawer from './TerminalDrawer';
 import AdminUsersPanel from './AdminUsersPanel';
 import UserProfileModal from './UserProfileModal';
+import AutonomousPuppetBanner from './AutonomousPuppetBanner';
 
 
 const METHODOLOGY_CONFIG = {
@@ -344,7 +345,22 @@ export default function Layout() {
     );
   };
 
-  const openIndustrializeConfig = () => {
+  const openIndustrializeConfig = async () => {
+    // La llave de Ollama Cloud es individual; nunca se sustituye por la del administrador.
+    try {
+      const response = await fetch(`${getApiBase()}/api/auth/me`, { credentials: 'include' });
+      const account = response.ok ? await response.json() : null;
+      const personalKey = account?.user?.apiKeys?.ollamaCloud || account?.apiKeys?.ollamaCloud || user?.apiKeys?.ollamaCloud;
+      if (!personalKey) {
+        alert('Antes de industrializar debes guardar y probar tu API personal de Ollama Cloud. Abre Mi perfil → API personales. No se usará la llave del administrador.');
+        setShowProfileModal(true);
+        return;
+      }
+    } catch {
+      alert('No se pudo verificar tu API personal de Ollama Cloud. Abre Mi perfil → API personales y prueba la llave antes de continuar.');
+      setShowProfileModal(true);
+      return;
+    }
     const projectType = planData?.config?.projectType || 'business';
     const framework = FRAMEWORKS[projectType] || FRAMEWORKS.business;
     const candidates = [];
@@ -1289,6 +1305,8 @@ export default function Layout() {
               </div>
             </div>
           </header>
+
+        <AutonomousPuppetBanner />
 
         <div className="view-container">
           <Outlet />

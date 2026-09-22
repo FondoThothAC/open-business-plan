@@ -27,7 +27,7 @@ export class TrajectoryRecorder {
     this.pillar = metadata.pillar || 'general';
     this.moduleKey = metadata.moduleKey || 'modulo';
     this.moduleTitle = metadata.title || metadata.moduleKey || 'Módulo';
-    this.model = metadata.model || 'minimax-m3:cloud';
+    this.model = metadata.model || 'gpt-oss:20b';
     this.provider = metadata.provider || 'ollama';
     this.mode = metadata.mode || 'standard'; // 'standard' | 'code' | 'minimal' | 'creator'
     this.parentSessionId = metadata.parentSessionId || null;
@@ -280,7 +280,7 @@ export async function runAgenticModuleGeneration({
   onLog = null
 }) {
   const { pillar, moduleKey, title, fields = [] } = currentModule;
-  const preferredModel = aiConfig?.model || 'minimax-m3:cloud';
+  const preferredModel = aiConfig?.model || 'gpt-oss:20b';
   const preferredProvider = aiConfig?.provider || 'ollama';
   const useDeepResearch = Boolean(currentModule.useDeepResearch || aiConfig?.useDeepResearch || pillar === 'mercado');
 

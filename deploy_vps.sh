@@ -55,7 +55,11 @@ rsync -avz --delete \
   -e "ssh -i '$SSH_KEY' -o StrictHostKeyChecking=no" \
   src/ \
   "$VPS:$VPS_APP_DIR/src/"
-echo "   ✓ Backend y librerías src/ sincronizados"
+rsync -avz --delete \
+  -e "ssh -i '$SSH_KEY' -o StrictHostKeyChecking=no" \
+  scripts/ \
+  "$VPS:$VPS_APP_DIR/scripts/"
+echo "   ✓ Backend, librerías src/ y scripts sincronizados"
 
 # ──────────────────────────────────────────────────────────────────────────────
 # 4. Sincronizar directorio canónico vcv/ y proyectos
@@ -161,6 +165,9 @@ if (fs.existsSync(p)) {
   }
 }
 "
+
+# Archivar carpetas huérfanas con UUIDs
+node scripts/archive_orphan_uuid_projects.js 2>/dev/null || true
 
 # Instalar dependencias de producción
 npm ci --omit=dev --ignore-scripts 2>&1 | tail -5

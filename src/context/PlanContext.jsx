@@ -47,9 +47,20 @@ import { KEYS } from '../config/keys.js';
 
 const createEmptyPlan = (projectType = 'business') => {
   const framework = FRAMEWORKS[projectType];
+  let defaultCreator = '';
+  if (typeof localStorage !== 'undefined') {
+    try {
+      const rawUser = localStorage.getItem('obp_auth_user');
+      if (rawUser) {
+        const parsed = JSON.parse(rawUser);
+        defaultCreator = parsed.displayName || parsed.username || '';
+      }
+    } catch {}
+  }
+
   const plan = {
     config: {
-      projectId: typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `project_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+      projectId: '',
       ownerId: 'local-admin',
       revision: 0,
       schemaVersion: 2,
@@ -102,7 +113,7 @@ const createEmptyPlan = (projectType = 'business') => {
         logoSize: 'medium', // 'small', 'medium', 'large'
         logoAlign: 'center', // 'left', 'center', 'right'
         titleSize: 'medium', // 'small', 'medium', 'large'
-        creatorName: '',
+        creatorName: defaultCreator,
         subtitle: 'Plan Estratégico Maestro',
         institution: 'Formulación y Evaluación Académica 2026',
         showDate: true,
@@ -480,15 +491,17 @@ export const PlanProvider = ({ children }) => {
         if (resData.file) {
           localStorage.removeItem('openplan_is_unsaved_new');
           setPlanData(prev => {
+            const finalProjectId = resData.projectId || prev.config?.projectId || resData.file;
             const next = {
               ...prev,
               config: { 
                 ...prev.config,
+                projectId: finalProjectId,
                 brandKit: { ...prev.config.brandKit, companyName: customPlanData.config.brandKit.companyName }
               }
             };
             localStorage.setItem('openplan_v2_data', JSON.stringify(next));
-            localStorage.setItem('openplan_active_project_id', next.config.projectId || resData.file);
+            localStorage.setItem('openplan_active_project_id', finalProjectId);
             localStorage.setItem('openplan_active_project_file', resData.file);
             const projectTypeRaw = next.config?.projectType || 'business';
             const projectType = projectTypeRaw === 'social_bid' ? 'social' : 'negocios';
@@ -799,8 +812,11 @@ export const PlanProvider = ({ children }) => {
     const fresh = createEmptyPlan(type);
     
     const finalName = projectName || seedData?.nombre_proyecto || seedData?.negocio?.nombre_marca || 'Proyecto Nuevo';
+    const cleanSlug = slugify(finalName);
+    const assignedProjectId = cleanSlug && cleanSlug !== 'proyecto_nuevo' && cleanSlug !== 'proyecto' ? cleanSlug : 'draft_activo';
+    
     fresh.config.brandKit.companyName = finalName;
-    fresh.config.projectId = undefined; // Desvinculado de cualquier plantilla previa
+    fresh.config.projectId = assignedProjectId;
     fresh.config.projectType = type;
     fresh.config.activeMethodologies = [type];
     fresh.config.ai = planData.config.ai;
@@ -808,9 +824,19 @@ export const PlanProvider = ({ children }) => {
     fresh.config.externalApis = planData.config.externalApis;
     fresh.semilla = seedData || {};
 
+    if (typeof localStorage !== 'undefined') {
+      try {
+        const rawUser = localStorage.getItem('obp_auth_user');
+        if (rawUser) {
+          const parsed = JSON.parse(rawUser);
+          fresh.config.coverDesign.creatorName = parsed.displayName || parsed.username || '';
+        }
+      } catch {}
+    }
+
     setPlanData(fresh);
     localStorage.setItem('openplan_v2_data', JSON.stringify(fresh));
-    localStorage.removeItem('openplan_active_project_id');
+    localStorage.setItem('openplan_active_project_id', assignedProjectId);
     localStorage.setItem('openplan_active_project_type', type === 'social_bid' ? 'social' : 'negocios');
     localStorage.removeItem('openplan_new_project_flag');
     localStorage.removeItem('openplan_is_unsaved_new');
