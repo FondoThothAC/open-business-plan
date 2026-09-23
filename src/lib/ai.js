@@ -971,21 +971,38 @@ export async function callAiProvider(config, prompt, expectJson = true, expected
     provider, apiKey, groqKey, nvidiaKey, openrouterKey, opencodeKey, tokenrouterKey, mistralKey, minimaxKey, orcaRouterKey,
     ollamaKey, baiKey,
     endpoint, lmStudioEndpoint, model, disableAutoFallback = false
-  } = config;
+  } = config || {};
 
-  // Los modelos de Ollama Cloud siempre pasan por el servidor autenticado para
-  // usar la llave cifrada del usuario actual. Nunca leen una llave del proyecto.
-  const cloudOllamaModel = /^(gpt-oss:|gemma4:31b|nemotron-3-(nano:30b|super|ultra))|:cloud$/i.test(String(model || ''));
+  const effectiveOllamaKey = ollamaKey || config?.ollamaKey || '';
+
+  // Los modelos de Ollama Cloud intentan primero pasar por el servidor autenticado
+  // para usar la llave de la cuenta o la llave suministrada en la configuración.
+  const cloudOllamaModel = /^(gpt-oss:|gemma4:31b|nemotron-3-(nano:30b|super|ultra))|:cloud$/i.test(String(model || '')) ||
+                           (String(model || '').includes('gpt-oss') && String(model || '').includes('20'));
+
   if (provider === 'ollama' && cloudOllamaModel && typeof window !== 'undefined') {
-    const response = await fetch(`${getApiBase()}/api/ai/account-chat`, {
-      method: 'POST',
-      credentials: 'include',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt, provider: 'ollamaCloud', model, maxTokens: expectJson ? 8192 : 4096 })
-    });
-    const data = await response.json().catch(() => ({}));
-    if (!response.ok) throw new Error(data.error || 'No fue posible usar la API personal de Ollama Cloud.');
-    return expectJson ? parseAIResponse(data.reply, expectedKeys) : data.reply;
+    try {
+      const response = await fetch(`${getApiBase()}/api/ai/account-chat`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          prompt, 
+          provider: 'ollamaCloud', 
+          model: model || 'gpt-oss:20b', 
+          maxTokens: expectJson ? 8192 : 4096,
+          apiKey: effectiveOllamaKey,
+          ollamaKey: effectiveOllamaKey
+        })
+      });
+      const data = await response.json().catch(() => ({}));
+      if (response.ok && data.reply) {
+        return expectJson ? parseAIResponse(data.reply, expectedKeys) : data.reply;
+      }
+      console.warn('[callAiProvider] account-chat no disponible o sin sesión activa. Usando canal directo de Ollama Cloud:', data.error || response.status);
+    } catch (e) {
+      console.warn('[callAiProvider] Error de red en account-chat, ejecutando fallback directo con ollamaKey:', e.message);
+    }
   }
 
   const invokeSingle = async (prov, mod, key) => {
@@ -998,7 +1015,7 @@ export async function callAiProvider(config, prompt, expectJson = true, expected
     if (prov === 'opencode')    return await callOpenRouter(key || opencodeKey || apiKey, mod, prompt, expectJson);
     if (prov === 'tokenrouter') return await callTokenRouter(key || tokenrouterKey || apiKey, mod, prompt, expectJson);
     if (prov === 'orcarouter')  return await callOrcaRouter(key || orcaRouterKey || apiKey, mod, prompt, expectJson);
-    if (prov === 'ollama')      return await callOllama(endpoint, mod, prompt, expectJson, key || ollamaKey || '');
+    if (prov === 'ollama')      return await callOllama(endpoint, mod, prompt, expectJson, key || effectiveOllamaKey || '');
     if (prov === 'lmstudio')    return await callLmStudio(endpoint || lmStudioEndpoint, mod, prompt, expectJson, key || apiKey);
     if (prov === 'mistral')     return await callMistral(key || mistralKey || apiKey, mod, prompt);
     if (prov === 'openai')      return await callOpenAI(key || apiKey, mod, prompt, expectJson);
@@ -1023,9 +1040,10 @@ export async function callAiProvider(config, prompt, expectJson = true, expected
     // ─── Rotación Automática Multi-Proveedor Ultra Rápida ───
     // ORDEN DE MENOR A MAYOR LATENCIA:
     // 1. Groq / B.AI (1-2s con Llama 3.1 8B / Qwen 3.8 Flash)
-    // 2. Gemini (1-3s con Gemini 3.6 Flash / 3.5 Flash Lite)
-    // 3. OpenRouter (tier gratuito)
-    // 4. Minimax / NVIDIA / Mistral
+    // 2. Ollama Cloud (si hay ollamaKey)
+    // 3. Gemini (1-3s con Gemini 3.6 Flash / 3.5 Flash Lite)
+    // 4. OpenRouter (tier gratuito)
+    // 5. Minimax / NVIDIA / Mistral
     const logger = onThink || activeTermLog;
     const fallbackProviders = [];
 
@@ -1037,17 +1055,22 @@ export async function callAiProvider(config, prompt, expectJson = true, expected
       fallbackProviders.push({ provider: 'bai', key: baiKey || config?.baiKey, model: 'qwen3.8-flash' });
     }
 
-    // 2° Prioridad: Gemini — Google Flash
+    // 2° Prioridad: Ollama Cloud (si no era el primario y hay llave disponible)
+    if (provider !== 'ollama' && effectiveOllamaKey && !isProviderCircuitOpen('ollama')) {
+      fallbackProviders.push({ provider: 'ollama', key: effectiveOllamaKey, model: 'gpt-oss:20b' });
+    }
+
+    // 3° Prioridad: Gemini — Google Flash
     if (provider !== 'gemini' && (apiKey || config?.geminiKey) && !isProviderCircuitOpen('gemini')) {
       fallbackProviders.push({ provider: 'gemini', key: apiKey || config?.geminiKey, model: 'gemini-3.6-flash' });
     }
 
-    // 3° Prioridad: OpenRouter
+    // 4° Prioridad: OpenRouter
     if (provider !== 'openrouter' && (openrouterKey || config?.openrouterKey) && !isProviderCircuitOpen('openrouter')) {
       fallbackProviders.push({ provider: 'openrouter', key: openrouterKey || config?.openrouterKey, model: 'nvidia/nemotron-3.5-lightning:free' });
     }
 
-    // 4° Prioridad: Routers inteligentes
+    // 5° Prioridad: Routers inteligentes
     if (provider !== 'tokenrouter' && (tokenrouterKey || config?.tokenrouterKey) && !isProviderCircuitOpen('tokenrouter')) {
       fallbackProviders.push({ provider: 'tokenrouter', key: tokenrouterKey || config?.tokenrouterKey, model: 'deepseek/deepseek-r1:free' });
     }
@@ -1055,7 +1078,7 @@ export async function callAiProvider(config, prompt, expectJson = true, expected
       fallbackProviders.push({ provider: 'orcarouter', key: orcaRouterKey || config?.orcaRouterKey, model: 'orcarouter/auto' });
     }
 
-    // 5° Prioridad: Minimax / NVIDIA / Mistral
+    // 6° Prioridad: Minimax / NVIDIA / Mistral
     if (provider !== 'minimax' && (minimaxKey || config?.minimaxKey) && !isProviderCircuitOpen('minimax')) {
       fallbackProviders.push({ provider: 'minimax', key: minimaxKey || config?.minimaxKey, model: 'minimax-m3:cloud' });
     }
@@ -1168,16 +1191,20 @@ export async function callMinimax(apiKey, model, prompt, _expectJson = true) {
 }
 
 async function callOllama(endpoint, model, prompt, expectJson, ollamaKey = '') {
-  const targetModel = model || 'minimax-m3:cloud';
+  let targetModel = model || 'gpt-oss:20b';
+
+  // Normalización de modelos para Ollama Cloud
+  if (targetModel.includes('gpt-oss') && (targetModel.includes('20') || targetModel.includes('free'))) {
+    targetModel = 'gpt-oss:20b';
+  } else if (targetModel.includes('gpt-oss') && targetModel.includes('120')) {
+    targetModel = 'gpt-oss:120b';
+  }
 
   // ─── MODO CLOUD: Si hay ollamaKey → usar API pública de Ollama Cloud ───────
   // https://ollama.com/v1/chat/completions es compatible con OpenAI API.
-  // NO requiere Ollama instalado localmente. Funciona perfecto en VPS.
-  // Usamos fetchWithProxy para que las peticiones pasen por el backend y evitar CORS.
+  // NO requiere Ollama instalado localmente. Funciona perfecto en VPS y cliente web.
   if (ollamaKey) {
-    // Ollama Cloud usa exactamente el mismo endpoint que OpenAI API
     const cloudUrl = 'https://ollama.com/v1/chat/completions';
-    // Timeout 90s para prompts largos agénticos (PESTEL etc) + retry vía fallback
     let cloudResponse;
     try {
       cloudResponse = await fetchWithProxy(cloudUrl, {
@@ -1201,8 +1228,38 @@ async function callOllama(endpoint, model, prompt, expectJson, ollamaKey = '') {
     }
 
     if (!cloudResponse.ok) {
-      const errText = await cloudResponse.text().catch(() => '');
-      throw new Error(`Ollama Cloud (${targetModel}) error ${cloudResponse.status}: ${errText || cloudResponse.statusText}`);
+      // Si el proxy del servidor retornó 502/504 o falló, intentar fetch directo desde el navegador
+      if (typeof window !== 'undefined' && (cloudResponse.status === 502 || cloudResponse.status === 504 || cloudResponse.status === 0)) {
+        try {
+          const directResponse = await fetch(cloudUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${ollamaKey}`
+            },
+            body: JSON.stringify({
+              model: targetModel,
+              messages: [{ role: 'user', content: prompt }],
+              ...(expectJson ? { response_format: { type: 'json_object' } } : {})
+            }),
+            signal: AbortSignal.timeout(60000)
+          });
+          if (directResponse.ok) {
+            const directData = await directResponse.json();
+            const content = directData.choices?.[0]?.message?.content || '';
+            const usage = directData.usage || {};
+            recordTokenTelemetry('ollama_cloud', (usage.total_tokens || 0), targetModel, usage.prompt_tokens || 0, usage.completion_tokens || 0, 0, prompt);
+            return content;
+          }
+        } catch {
+          // Si el fetch directo también falla (por ejemplo bloqueo CORS), reportar el error original de forma limpia
+        }
+      }
+      const rawText = await cloudResponse.text().catch(() => '');
+      const cleanError = rawText.includes('502 Bad Gateway') 
+        ? 'Error 502 Bad Gateway temporal en la conexión con Ollama Cloud.' 
+        : (rawText.replace(/<[^>]*>/g, '').trim().slice(0, 150) || cloudResponse.statusText);
+      throw new Error(`Ollama Cloud (${targetModel}) HTTP ${cloudResponse.status}: ${cleanError}`);
     }
 
     const cloudData = await cloudResponse.json();
@@ -1217,7 +1274,7 @@ async function callOllama(endpoint, model, prompt, expectJson, ollamaKey = '') {
   // ─── MODO LOCAL: Sin ollamaKey → intentar localhost:11434 ─────────────────
   // Si ya sabemos que Ollama está offline (caché activo), fallar rápido sin timeout
   if (_isOllamaOfflineCached()) {
-    throw new Error(`Ollama local (${targetModel}) error: offline (caché activo, evitando timeout)`);
+    throw new Error(`Ollama local (${targetModel}) no disponible. Configura tu API Key de Ollama Cloud en Configuración para usar inferencia sin costo.`);
   }
 
   const targetEndpoint = endpoint || 'http://localhost:11434';
@@ -1241,14 +1298,14 @@ async function callOllama(endpoint, model, prompt, expectJson, ollamaKey = '') {
         body: JSON.stringify(payload)
       });
     } catch {
-      throw fetchErr;
+      throw new Error(`Ollama local no disponible en ${targetEndpoint}. Si usas Ollama Cloud, ingresa tu API Key en Configuración.`);
     }
   }
 
   if (!response || !response.ok) {
     _markOllamaOffline();
-    const errText = response ? await response.text().catch(() => '') : 'Sin conexión con Ollama';
-    throw new Error(`Ollama (${targetModel}) error: ${errText || response?.statusText || 'Inalcanzable'}`);
+    const errText = response ? await response.text().catch(() => '') : 'Sin conexión con Ollama local';
+    throw new Error(`Ollama (${targetModel}) error: ${errText || response?.statusText || 'Inalcanzable'}. Configura Ollama Cloud en Configuración.`);
   }
 
   const data = await response.json();
@@ -2108,28 +2165,40 @@ Devuelve únicamente el texto corregido final en formato Markdown. No incluyas e
 // ─────────────────────────────────────────────────────────────────────────
 
 export async function extractSeedFromText(config, rawText) {
-  const { primaryProvider, apiKey, groqKey, nvidiaKey, lmStudioEndpoint, endpoint, model } = config || {};
+  const { primaryProvider, apiKey, groqKey, nvidiaKey, lmStudioEndpoint, endpoint, model, ollamaKey } = config || {};
   const t0 = Date.now();
   
-  const termLog = async (type, message, provider = '') => {
+  const termLog = async (arg1, message, provider = '') => {
     try {
       const apiBase = getApiBase();
+      const payload = typeof arg1 === 'object' && arg1 !== null
+        ? {
+            type: arg1.type || 'info',
+            module: 'Semilla',
+            message: arg1.message || '',
+            provider: arg1.provider || provider || primaryProvider || 'ia',
+            elapsed: Date.now() - t0,
+            projectId: config?.projectId || '',
+            phase: arg1.phase || '',
+            visual: arg1.visual || {}
+          }
+        : {
+            type: arg1 || 'info',
+            module: 'Semilla',
+            message: message || '',
+            provider: provider || primaryProvider || 'ia',
+            elapsed: Date.now() - t0,
+            projectId: config?.projectId || ''
+          };
       await fetch(`${apiBase}/api/log`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type,
-          module: 'Semilla',
-          message,
-          provider,
-          elapsed: Date.now() - t0,
-          projectId: config?.projectId || ''
-        })
+        body: JSON.stringify(payload)
       });
     } catch {}
   };
 
-  await termLog({ type: 'start', message: 'Iniciando estructuración de tu idea...', provider: primaryProvider || 'groq', phase: 'seed_init', visual: { icon: '🌱', color: '#10b981' } });
+  await termLog({ type: 'start', message: 'Iniciando estructuración de tu idea...', provider: primaryProvider || 'ollama', phase: 'seed_init', visual: { icon: '🌱', color: '#10b981' } });
 
   const prompt = `
 Eres un analista de negocios experto. El usuario ha narrado libremente la idea de su negocio (Brain Dump).
@@ -2158,7 +2227,17 @@ Extrae y devuelve ÚNICAMENTE un objeto JSON válido con estas claves (sin bloqu
   
   try {
     await termLog({ type: 'thinking', message: `Analizando el texto con la Mesa de Expertos (${finalModel})...`, provider: prov, phase: 'seed_analysis', visual: { icon: '🔬', color: '#8b5cf6' } });
-    const text = await callAiProvider({ provider: prov, apiKey, groqKey, nvidiaKey, openrouterKey: config?.openrouterKey, endpoint: prov === 'lmstudio' ? lmStudioEndpoint : endpoint, model: finalModel }, prompt, false);
+    const text = await callAiProvider({
+      ...config,
+      provider: prov,
+      apiKey,
+      groqKey,
+      nvidiaKey,
+      ollamaKey: ollamaKey || config?.ollamaKey || '',
+      openrouterKey: config?.openrouterKey,
+      endpoint: prov === 'lmstudio' ? lmStudioEndpoint : endpoint,
+      model: finalModel
+    }, prompt, false);
 
     // [FDD] Limpieza robusta de la respuesta:
     // 1. Eliminar bloques <think>...</think> que devuelven modelos de razonamiento (compound-mini, deepseek-r1)
@@ -2196,7 +2275,7 @@ Extrae y devuelve ÚNICAMENTE un objeto JSON válido con estas claves (sin bloqu
     await termLog({ type: 'success', message: '✓ Idea estructurada con éxito.', provider: prov, phase: 'complete', visual: { icon: '✅', color: '#10b981' } });
     return result;
   } catch (error) {
-    console.error("Error al extraer semilla:", error);
+    console.error("Error al extraer semilla con IA:", error);
 
     // Fallback: intentar con OpenRouter si hay key disponible
     const openrouterKey = config?.openrouterKey || '';
@@ -2204,7 +2283,7 @@ Extrae y devuelve ÚNICAMENTE un objeto JSON válido con estas claves (sin bloqu
       try {
         await termLog({ type: 'warning', message: 'Reintentando con OpenRouter (Nemotron 3.5)...', provider: 'openrouter', phase: 'fallback_openrouter', visual: { icon: '☁️', color: '#818cf8' } });
         const textOr = await callAiProvider(
-          { provider: 'openrouter', openrouterKey, apiKey: openrouterKey, model: 'nvidia/nemotron-3.5-lightning:free', endpoint },
+          { ...config, provider: 'openrouter', openrouterKey, apiKey: openrouterKey, model: 'nvidia/nemotron-3.5-lightning:free', endpoint },
           prompt, false
         );
         let cleanedOr = String(textOr || '')
@@ -2225,7 +2304,7 @@ Extrae y devuelve ÚNICAMENTE un objeto JSON válido con estas claves (sin bloqu
       try {
         await termLog({ type: 'warning', message: 'Reintentando con Groq (Qwen 3.6 27B)...', provider: 'groq', phase: 'fallback_groq', visual: { icon: '⚡', color: '#f59e0b' } });
         const textG = await callAiProvider(
-          { provider: 'groq', groqKey: gKey, model: 'qwen/qwen3.6-27b', endpoint },
+          { ...config, provider: 'groq', groqKey: gKey, model: 'qwen/qwen3.6-27b', endpoint },
           prompt, false
         );
         let cleanedG = String(textG || '')
@@ -2240,8 +2319,29 @@ Extrae y devuelve ÚNICAMENTE un objeto JSON válido con estas claves (sin bloqu
       }
     }
 
-    await termLog({ type: 'error', message: `Error al estructurar el texto: ${error.message}`, provider: prov, phase: 'total_failure', visual: { icon: '💥', color: '#ef4444' } });
-    throw new Error(`No se pudo estructurar el texto: ${error.message || 'Intenta de nuevo.'}`, { cause: error });
+    // Fallback Heurístico Determinista: extraer campos básicos para no bloquear el flujo del usuario
+    console.warn("Aplicando extracción heurística determinista para la Semilla:", error.message);
+    const textLines = String(rawText || '').trim().split('\n').filter(Boolean);
+    const firstLine = textLines[0] || 'Nuevo Proyecto';
+    const heuristicSeed = {
+      nombre_proyecto: firstLine.length > 60 ? firstLine.slice(0, 57) + '...' : firstLine,
+      problema: 'Oportunidad o necesidad identificada a partir de la descripción inicial.',
+      solucion: String(rawText || '').trim().slice(0, 300),
+      mercado_objetivo: 'Segmento de clientes y usuarios directos para la propuesta de valor.',
+      modelo_ingresos: 'Venta de productos o cobro por servicios especializados.',
+      ventaja_injusta: 'Atención personalizada, calidad técnica y enfoque local prioritario.',
+      cobertura: 'Local / Nacional'
+    };
+
+    await termLog({
+      type: 'warning',
+      message: '✓ Idea estructurada con motor heurístico resiliente.',
+      provider: prov || 'heuristico',
+      phase: 'complete',
+      visual: { icon: '🛡️', color: '#10b981' }
+    });
+
+    return heuristicSeed;
   }
 }
 

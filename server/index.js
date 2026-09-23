@@ -321,20 +321,52 @@ app.post('/api/ai/bob-chat', async (req, res) => {
 // Generación de módulos con las credenciales de la cuenta actual. La llave se
 // descifra y utiliza exclusivamente en el servidor y nunca vuelve al navegador.
 app.post('/api/ai/account-chat', async (req, res) => {
-  const { prompt, provider: requestedProvider = 'ollamaCloud', model, maxTokens = 4096 } = req.body || {};
+  const { prompt, provider: requestedProvider = 'ollamaCloud', model, maxTokens = 4096, apiKey, ollamaKey } = req.body || {};
   if (!prompt || typeof prompt !== 'string' || prompt.length > 500000) {
     return res.status(400).json({ error: 'Prompt inválido o demasiado extenso.' });
   }
-  const keys = obtenerApiKeysParaServicio(req.user.id);
   if (!PERSONAL_AI_PROVIDERS[requestedProvider]) {
     return res.status(400).json({ error: 'Proveedor personal no compatible.' });
   }
-  if (!keys[requestedProvider]) {
-    return res.status(409).json({ error: `Configura tu API key de ${requestedProvider} en tu perfil.`, code: 'PERSONAL_API_KEY_REQUIRED' });
+
+  const userId = req.user?.id;
+  const userKeys = userId ? obtenerApiKeysParaServicio(userId) : {};
+
+  // Resolver clave: del perfil, del cuerpo de la petición (apiKey u ollamaKey), o de variables de entorno
+  let resolvedKey = userKeys[requestedProvider] || 
+                    (requestedProvider === 'ollamaCloud' ? (userKeys.ollama || userKeys.ollama_cloud || userKeys.ollamaCloud) : null) ||
+                    apiKey || 
+                    ollamaKey ||
+                    (requestedProvider === 'ollamaCloud' ? process.env.OLLAMA_KEY : null);
+
+  if (!resolvedKey) {
+    return res.status(409).json({ 
+      error: `Configura tu API key de ${requestedProvider} en la sección de Configuración o en tu perfil.`, 
+      code: 'PERSONAL_API_KEY_REQUIRED' 
+    });
   }
+
+  // Si el usuario está autenticado y envió la key en la petición, persistirla en su perfil automáticamente
+  if (userId && (apiKey || ollamaKey) && !userKeys[requestedProvider]) {
+    try {
+      actualizarApiKeys(userId, { [requestedProvider]: (apiKey || ollamaKey) });
+    } catch (e) {
+      console.warn('[account-chat] No se pudo auto-persistir API key en perfil:', e.message);
+    }
+  }
+
   try {
     const safeMaxTokens = Math.max(64, Math.min(Number(maxTokens) || 4096, 16384));
-    const result = await callPersonalAi(requestedProvider, keys[requestedProvider], prompt, model, safeMaxTokens);
+    // Normalizar modelo si viene abreviado o genérico
+    let targetModel = model;
+    if (requestedProvider === 'ollamaCloud') {
+      if (!targetModel || (targetModel.includes('gpt-oss') && targetModel.includes('20'))) {
+        targetModel = 'gpt-oss:20b';
+      } else if (targetModel.includes('gpt-oss') && targetModel.includes('120')) {
+        targetModel = 'gpt-oss:120b';
+      }
+    }
+    const result = await callPersonalAi(requestedProvider, resolvedKey, prompt, targetModel, safeMaxTokens);
     return res.json({ success: true, reply: result.text, provider: requestedProvider, model: result.model });
   } catch (error) {
     return res.status(502).json({ error: error.message });
@@ -3715,13 +3747,15 @@ app.get('/api/swarm/stream/:sessionId', (req, res) => {
 // 3. Fase 2: Industrialización Multi-Agente
 app.post('/api/swarm/industrialize', async (req, res) => {
   try {
-    const { sessionId, context } = req.body;
+    const { sessionId, context, frameworkId, answers, ideaText, aiConfig } = req.body || {};
     if (!sessionId) {
       return res.status(400).json({ success: false, error: 'sessionId es requerido' });
     }
 
+    const finalContext = context || { frameworkId, answers, ideaText, aiConfig };
+
     // Ejecución en segundo plano con streaming SSE
-    swarmOrchestrator.runIndustrialization(sessionId, context || {}).catch(err => {
+    swarmOrchestrator.runIndustrialization(sessionId, finalContext).catch(err => {
       console.error('Error en ejecución del enjambre:', err);
     });
 

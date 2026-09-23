@@ -391,3 +391,21 @@ Con base en el Plan de Saneamiento y Endurecimiento formalizado en `docs/archite
   * BOB muestra en cada respuesta el proveedor y modelo verificado por el backend.
   * Catálogo dinámico consultado en vivo contra `https://ollama.com/api/tags` con perfiles de contexto óptimos (32K/64K de trabajo) para balancear profundidad y velocidad de respuesta.
 
+### 5.15 Resiliencia Integral en Anteproyecto, Swarm IA y Diagnóstico de Salud de Servidor
+* **Diagnóstico de Salud de Servidor sin Falsos Positivos (`src/components/ServerHealthBanner.jsx`):**
+  * Se sustituyó la consulta a `/api/projects` (que arrojaba código HTTP 401 para usuarios no autenticados) por `/api/health` con `credentials: 'include'`.
+  * La verificación de salud confirma disponibilidad real de PM2 sin disparar cintillos rojos erróneos de reinicio ("pm2 restart obp-backend") ante sesiones públicas.
+* **Resiliencia de Extracción y Clasificación en Semilla (`src/components/Anteproyecto.jsx`, `src/lib/ai.js`):**
+  * Incorporación de envoltorio con timeout preventivo (25s) y `Promise.all` resiliente para `extractSeedFromText`, `classifyProject` y `matchIndustry`.
+  * Ante demoras de red o fallas de proveedores de IA, el sistema ejecuta una degradación elegante determinista hacia el perfil del proyecto, asegurando que el Paso 2 nunca se congele y avanzando siempre al Paso 3 de forma fluida.
+  * Botón de escape explícito en la interfaz del Paso 2: *"Omitir espera y continuar al Paso 3"*.
+* **Soporte Integral de Ollama Cloud (`gpt-oss:20b`) y Sincronización Automática (`server/index.js`, `src/modules/Configuracion.jsx`):**
+  * `POST /api/ai/account-chat` admite explícitamente `apiKey` y `ollamaKey` en el cuerpo de la petición cuando el usuario las configura en el cliente, sincronizándolas de forma segura en `users.json` y resolviendo variables de entorno de respaldo.
+  * `Configuracion.jsx` sincroniza proactivamente cualquier alta o modificación de llaves con `PUT /api/auth/me/keys`.
+* **Habilitación de Swarm IA para Sesiones Públicas y Mixtas (`server/middleware/authGuard.js`, `src/components/swarm/SwarmInterviewModal.jsx`):**
+  * Inclusión de `/api/swarm/interview`, `/api/swarm/stream` y `/api/swarm/industrialize` en `RUTAS_PUBLICAS` con enriquecimiento opcional de token.
+  * Inyección de `credentials: 'include'` en peticiones fetch y `withCredentials: true` en `EventSource` para el flujo SSE de agentes enjambre.
+  * Fallback conversacional local garantizado en `SwarmInterviewModal` en caso de contingencias de red.
+
+
+

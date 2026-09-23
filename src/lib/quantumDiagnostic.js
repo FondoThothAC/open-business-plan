@@ -138,10 +138,20 @@ ${JSON.stringify(context, null, 2)}
 Devuelve ÚNICAMENTE un objeto JSON válido con los scores, antipatrones detectados y plan_delegacion específico.
 `;
 
-      const { primaryProvider, apiKey, groqKey, nvidiaKey, lmStudioEndpoint, endpoint, model } = aiConfig;
+      const { primaryProvider, apiKey, groqKey, nvidiaKey, ollamaKey, lmStudioEndpoint, endpoint, model } = aiConfig;
       const prov = primaryProvider || 'groq';
+      const effectiveModel = model || (prov === 'ollama' ? 'gpt-oss:20b' : 'groq/compound-mini');
       const responseText = await callAiProvider(
-        { provider: prov, apiKey, groqKey, nvidiaKey, endpoint: prov === 'lmstudio' ? lmStudioEndpoint : endpoint, model: model || 'groq/compound-mini' },
+        {
+          ...aiConfig,
+          provider: prov,
+          apiKey,
+          groqKey,
+          nvidiaKey,
+          ollamaKey: ollamaKey || apiKey || '',
+          endpoint: prov === 'lmstudio' ? lmStudioEndpoint : endpoint,
+          model: effectiveModel
+        },
         prompt,
         false
       );

@@ -16,15 +16,27 @@ export default function ServerHealthBanner() {
   const checkHealth = async () => {
     setChecking(true);
     const apiBase = getApiBase();
-    const result = await safeFetchJson(`${apiBase}/api/projects`);
-    if (!result.ok && result.isServerDown) {
+    try {
+      const result = await safeFetchJson(`${apiBase}/api/health`, { credentials: 'include' });
+      if (!result.ok && result.isServerDown) {
+        setIsDown(true);
+        setErrorMessage(result.error || 'Servidor backend no disponible.');
+      } else if (result.ok && (result.data?.status === 'ok' || result.data?.service)) {
+        setIsDown(false);
+        setErrorMessage('');
+      } else if (!result.ok && result.status !== 401) {
+        setIsDown(true);
+        setErrorMessage(result.error || 'Servidor backend no disponible.');
+      } else {
+        setIsDown(false);
+        setErrorMessage('');
+      }
+    } catch {
       setIsDown(true);
-      setErrorMessage(result.error || 'Servidor backend no disponible.');
-    } else {
-      setIsDown(false);
-      setErrorMessage('');
+      setErrorMessage('No se pudo contactar al servidor backend.');
+    } finally {
+      setChecking(false);
     }
-    setChecking(false);
   };
 
   useEffect(() => {

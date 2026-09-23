@@ -19,7 +19,10 @@ const RUTAS_PUBLICAS = [
   '/health',
   '/api/auth/login',
   '/api/auth/register',
-  '/api/health'
+  '/api/health',
+  '/api/swarm/interview',
+  '/api/swarm/stream',
+  '/api/swarm/industrialize'
 ];
 
 /**
@@ -30,9 +33,7 @@ const RUTAS_PUBLICAS = [
  */
 export function authGuard(req, res, next) {
   const rutaLimpia = req.path.replace(/\/$/, '');
-  if (RUTAS_PUBLICAS.some(ruta => rutaLimpia === ruta || rutaLimpia.startsWith(ruta + '/'))) {
-    return next();
-  }
+  const esRutaPublica = RUTAS_PUBLICAS.some(ruta => rutaLimpia === ruta || rutaLimpia.startsWith(ruta + '/'));
 
   // 1. Prioridad: Cookie HttpOnly
   let token = req.cookies?.obp_auth_token || null;
@@ -45,7 +46,11 @@ export function authGuard(req, res, next) {
     }
   }
 
+  // Si no hay token en ruta pública, continuar sin req.user
   if (!token) {
+    if (esRutaPublica) {
+      return next();
+    }
     return res.status(401).json({
       error: 'Acceso denegado. Se requiere autenticación.',
       code: 'AUTH_REQUIRED'
@@ -55,6 +60,9 @@ export function authGuard(req, res, next) {
   // Verificar JWT
   const resultado = verificarToken(token);
   if (!resultado.valid) {
+    if (esRutaPublica) {
+      return next();
+    }
     return res.status(401).json({
       error: resultado.error || 'Token inválido o expirado.',
       code: 'TOKEN_INVALID'
@@ -64,6 +72,9 @@ export function authGuard(req, res, next) {
   // Cargar usuario completo desde el store
   const usuario = buscarPorId(resultado.payload.sub);
   if (!usuario) {
+    if (esRutaPublica) {
+      return next();
+    }
     return res.status(401).json({
       error: 'Usuario no encontrado. Posiblemente fue eliminado.',
       code: 'USER_NOT_FOUND'
@@ -72,12 +83,18 @@ export function authGuard(req, res, next) {
 
   // Verificar estado de la cuenta
   if (usuario.status !== 'active') {
+    if (esRutaPublica) {
+      return next();
+    }
     return res.status(403).json({
       error: 'Cuenta desactivada o pendiente de aprobación.',
       code: 'ACCOUNT_INACTIVE'
     });
   }
   if (Number(resultado.payload.sessionVersion || 0) !== Number(usuario.sessionVersion || 0)) {
+    if (esRutaPublica) {
+      return next();
+    }
     return res.status(401).json({ error: 'La sesión fue revocada. Inicia sesión nuevamente.', code: 'SESSION_REVOKED' });
   }
 

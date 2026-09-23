@@ -64,7 +64,16 @@ Devuelve ÚNICAMENTE un objeto JSON válido con la siguiente estructura (sin for
   try {
     const prov = primaryProvider || 'groq';
     const responseText = await callAiProvider(
-      { provider: prov, apiKey, groqKey, nvidiaKey, endpoint: prov === 'lmstudio' ? lmStudioEndpoint : endpoint, model: model || 'qwen/qwen3.6-27b' },
+      { 
+        ...aiConfig, 
+        provider: prov, 
+        apiKey, 
+        groqKey, 
+        nvidiaKey, 
+        ollamaKey: aiConfig?.ollamaKey || '',
+        endpoint: prov === 'lmstudio' ? lmStudioEndpoint : endpoint, 
+        model: model || (prov === 'ollama' ? 'gpt-oss:20b' : 'qwen/qwen3.6-27b') 
+      },
       prompt,
       false
     );

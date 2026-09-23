@@ -30,7 +30,7 @@ export async function matchIndustry(rawText, semillaData, aiConfig) {
     };
   }
 
-  const { primaryProvider, apiKey, groqKey, nvidiaKey, lmStudioEndpoint, endpoint, model } = aiConfig || {};
+  const { primaryProvider, apiKey, groqKey, nvidiaKey, ollamaKey, lmStudioEndpoint, endpoint, model } = aiConfig || {};
 
   const prompt = `
 Eres un analista de inteligencia de mercados y economista industrial.
@@ -79,8 +79,18 @@ Devuelve ÚNICAMENTE un objeto JSON válido con este formato (sin markdown ni ex
 
   try {
     const prov = primaryProvider || 'groq';
+    const effectiveModel = model || (prov === 'ollama' ? 'gpt-oss:20b' : 'groq/compound-mini');
     const responseText = await callAiProvider(
-      { provider: prov, apiKey, groqKey, nvidiaKey, endpoint: prov === 'lmstudio' ? lmStudioEndpoint : endpoint, model: model || 'groq/compound-mini' },
+      {
+        ...aiConfig,
+        provider: prov,
+        apiKey,
+        groqKey,
+        nvidiaKey,
+        ollamaKey: ollamaKey || apiKey || '',
+        endpoint: prov === 'lmstudio' ? lmStudioEndpoint : endpoint,
+        model: effectiveModel
+      },
       prompt,
       false
     );

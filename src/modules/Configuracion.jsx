@@ -591,6 +591,28 @@ export default function Configuracion() {
 
   const handleAiChange = (field, value) => {
     updateConfig('ai', field, value);
+
+    // Sincronización proactiva de credenciales con la cuenta de usuario en el backend
+    if (field && (field.endsWith('Key') || field === 'apiKey')) {
+      const serverKeyMap = {
+        ollamaKey: 'ollamaCloud',
+        bobOllamaKey: 'ollamaCloud',
+        groqKey: 'groq',
+        openrouterKey: 'openrouter',
+        openaiKey: 'openai'
+      };
+      const providerField = serverKeyMap[field] || field;
+      const apiBase = getApiBase();
+
+      fetch(`${apiBase}/api/auth/me/keys`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ [field]: value, [providerField]: value })
+      }).catch(() => {
+        // Modo sin sesión o fuera de línea
+      });
+    }
   };
 
   const handleBrandChange = (field, value) => {

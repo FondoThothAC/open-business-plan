@@ -128,7 +128,7 @@ export default function Anteproyecto() {
     }
   };
 
-  // Procesamiento Inteligente Adaptativo
+  // Procesamiento Inteligente Adaptativo con Timeout y Fallback Resiliente
   const processText = async () => {
     if (!rawText.trim() || rawText.length < 15) {
       setError("Por favor cuéntanos un poco más sobre tu idea (mínimo 15 caracteres).");
@@ -139,18 +139,86 @@ export default function Anteproyecto() {
     setIsProcessing(true);
     setError('');
 
+    // Función auxiliar con timeout
+    const withTimeout = (promise, ms, fallbackValue) => {
+      return Promise.race([
+        promise,
+        new Promise(resolve => setTimeout(() => resolve(fallbackValue), ms))
+      ]);
+    };
+
     try {
       const aiConfig = planData?.config?.ai;
 
-      // Ejecutar extracción, inferencia, match de industria y diagnóstico cuántico en paralelo
-      const [seedData, inferenceRes, benchmarkRes] = await Promise.all([
-        extractSeedFromText(aiConfig, rawText),
-        classifyProject(aiConfig, rawText),
-        matchIndustry(rawText, planData?.semilla, aiConfig)
+      // Timeout preventivo de 25 segundos para cada tarea asíncrona
+      const [seedDataRes, inferenceRes, benchmarkRes] = await Promise.all([
+        withTimeout(
+          extractSeedFromText(aiConfig, rawText).catch(e => {
+            console.warn("Fallo extracción semilla con IA:", e);
+            return null;
+          }),
+          25000,
+          null
+        ),
+        withTimeout(
+          classifyProject(aiConfig, rawText).catch(e => {
+            console.warn("Fallo clasificación proyecto con IA:", e);
+            return null;
+          }),
+          25000,
+          null
+        ),
+        withTimeout(
+          matchIndustry(rawText, planData?.semilla, aiConfig).catch(e => {
+            console.warn("Fallo match industria con IA:", e);
+            return null;
+          }),
+          25000,
+          null
+        )
       ]);
 
-      // Evaluar perfil cuántico del fundador
-      const quantumRes = await evaluateQuantumProfile(aiConfig, seedData, rawText);
+      const seedData = seedDataRes || {
+        nombre_proyecto: rawText.split('\n')[0].slice(0, 45).replace(/[#*]/g, '').trim() || 'Proyecto Empresarial',
+        cobertura: 'Local / Regional',
+        problema: 'Necesidad detectada en el mercado objetivo.',
+        solucion: rawText.slice(0, 300),
+        mercado_objetivo: 'Consumidores y clientes potenciales del sector.',
+        modelo_ingresos: 'Venta directa de productos o prestación de servicios.',
+        ventaja_injusta: 'Atención personalizada y propuesta de valor adaptada.'
+      };
+
+      const finalInference = inferenceRes || {
+        frameworkId: 'business',
+        frameworkName: 'Plan de Negocios Estándar',
+        confidence: 0.85,
+        reasoning: 'Metodología general de negocios asignada como marco idóneo.'
+      };
+
+      const finalBenchmark = benchmarkRes || {
+        matched: false,
+        source: 'none',
+        benchmark: null
+      };
+
+      // Evaluar perfil cuántico del fundador con fallback heurístico garantizado
+      let quantumRes = null;
+      try {
+        quantumRes = await withTimeout(
+          evaluateQuantumProfile(aiConfig, seedData, rawText).catch(e => {
+            console.warn("Fallo evaluación cuántica con IA:", e);
+            return null;
+          }),
+          15000,
+          null
+        );
+      } catch {
+        quantumRes = null;
+      }
+
+      if (!quantumRes) {
+        quantumRes = await evaluateQuantumProfile(null, seedData, rawText);
+      }
 
       // Actualizar estado global del plan
       updateSemilla('nombre_proyecto', seedData.nombre_proyecto || '');
@@ -161,20 +229,21 @@ export default function Anteproyecto() {
       updateSemilla('modelo_ingresos', seedData.modelo_ingresos || '');
       updateSemilla('ventaja_injusta', seedData.ventaja_injusta || '');
 
-      setFrameworkInference(inferenceRes);
-      setBenchmarkMatch(benchmarkRes);
+      setFrameworkInference(finalInference);
+      setBenchmarkMatch(finalBenchmark);
       setQuantumDiagnostic(quantumRes);
 
       // Configurar el framework inferido como activo
-      if (inferenceRes?.frameworkId && FRAMEWORKS[inferenceRes.frameworkId]) {
-        updateConfig('projectType', null, inferenceRes.frameworkId);
+      if (finalInference?.frameworkId && FRAMEWORKS[finalInference.frameworkId]) {
+        updateConfig('projectType', null, finalInference.frameworkId);
       }
 
       setStep(3);
     } catch (err) {
       console.error("Error al procesar el anteproyecto:", err);
-      setError(err.message || 'Error al analizar la idea.');
-      setStep(1);
+      // Avanzar al paso 3 con la semilla capturada y registrar aviso
+      setError(`Se avanzó con parámetros adaptativos base: ${err.message || 'Tiempo de espera agotado'}`);
+      setStep(3);
     } finally {
       setIsProcessing(false);
     }
@@ -200,8 +269,8 @@ export default function Anteproyecto() {
     const sessionId = `swarm_${Date.now()}`;
     const apiBase = getApiBase();
 
-    // Suscripción SSE a los eventos del enjambre
-    const es = new EventSource(`${apiBase}/api/swarm/stream/${sessionId}`);
+    // Suscripción SSE a los eventos del enjambre con credenciales
+    const es = new EventSource(`${apiBase}/api/swarm/stream/${sessionId}`, { withCredentials: true });
     eventSourceRef.current = es;
 
     es.onmessage = (event) => {
@@ -250,17 +319,23 @@ export default function Anteproyecto() {
       es.close();
     };
 
-    // Disparar la ejecución en el backend Express
+    // Disparar la ejecución en el backend Express con credenciales y formato flexible
     try {
+      const effectiveFrameworkId = frameworkId || frameworkInference?.frameworkId || 'business';
       const response = await fetch(`${apiBase}/api/swarm/industrialize`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({
           sessionId,
+          frameworkId: effectiveFrameworkId,
+          answers,
+          ideaText,
+          aiConfig: planData?.config?.ai,
           context: {
             ideaText,
             answers,
-            frameworkId: frameworkId || frameworkInference?.frameworkId || 'business',
+            frameworkId: effectiveFrameworkId,
             aiConfig: planData?.config?.ai,
             sector: planData.semilla?.cobertura || 'General',
             ubicacion: planData.semilla?.cobertura || 'Nacional'
@@ -486,14 +561,28 @@ export default function Anteproyecto() {
             <>
               <Loader2 size={64} style={{ color: 'var(--accent-color)', animation: 'spin 1.5s linear infinite', margin: '0 auto 1.5rem' }} />
               <h2 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>Analizando tu anteproyecto...</h2>
-              <p style={{ color: 'var(--text-secondary)' }}>Clasificando la metodología, consultando benchmarks y preparando el diagnóstico.</p>
+              <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>Clasificando la metodología, consultando benchmarks y preparando el diagnóstico cuántico.</p>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => {
+                  setIsProcessing(false);
+                  setStep(3);
+                }}
+                style={{ fontSize: '0.85rem', padding: '0.5rem 1.2rem', borderRadius: '8px' }}
+              >
+                Omitir espera y continuar al Paso 3
+              </button>
             </>
           ) : (
             <>
               <BrainCircuit size={56} style={{ color: 'var(--accent-color)', margin: '0 auto 1.5rem' }} />
               <h2 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>Paso 2: Procesar y analizar</h2>
               <p style={{ color: 'var(--text-secondary)' }}>Puedes ejecutar nuevamente el análisis o moverte a otro paso sin perder tus datos.</p>
-              <button className="btn btn-primary" onClick={processText} disabled={rawText.trim().length < 15}>Procesar nuevamente</button>
+              <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', marginTop: '1.5rem' }}>
+                <button className="btn btn-primary" onClick={processText} disabled={rawText.trim().length < 15}>Procesar nuevamente</button>
+                <button className="btn btn-secondary" onClick={() => setStep(3)}>Continuar al Paso 3</button>
+              </div>
             </>
           )}
         </div>

@@ -64,3 +64,19 @@
   * La llave personal se descifra en memoria efímera mediante AES-256-GCM y nunca se expone al DOM ni al paquete del navegador.
   * Respuestas enriquecidas: BOB reporta explícitamente en el cliente el proveedor y modelo verificado por el backend, erradicando alucinaciones sobre el motor en ejecución.
 
+---
+
+## 6. Seguridad en Swarm IA, Verificación de Salud y Gestión de Llaves de Cuenta
+
+* **Healthcheck Público Desacoplado (`GET /api/health`):**
+  * La comprobación de operatividad del backend y PM2 expone un endpoint neutro sin autenticación forzada, evitando fallos 401 en sesiones públicas y eliminando falsos positivos en el banner de diagnóstico.
+  * No expone variables de entorno, rutas internas ni detalles de hardware o sistema operativo.
+* **Whitelisting Seguro de Swarm para Anteproyecto:**
+  * Las rutas de inicialización y streaming de Swarm (`/api/swarm/interview`, `/api/swarm/stream`, `/api/swarm/industrialize`) se incorporan a `RUTAS_PUBLICAS` en `authGuard.js` con enriquecimiento opcional de token.
+  * Si la petición incluye cookie JWT o header `Authorization`, se asocia a la cuenta del usuario para atribución de cuotas y auditoría; si es anónima o nueva, se procesa en modo sandbox temporal sin comprometer proyectos de otros usuarios.
+* **Sincronización y Cifrado Automático de API Keys en Reposo:**
+  * Al capturar la clave de Ollama Cloud en el cliente (`Configuracion.jsx`), se envía vía HTTPS con `credentials: 'include'` a `PUT /api/auth/me/keys`.
+  * El backend cifra inmediatamente la clave mediante AES-256-GCM (`enc:v1:...`) antes de guardarla en `users.json`, retornando únicamente la versión enmascarada (`••••••••`) al navegador.
+
+
+
