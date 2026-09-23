@@ -266,52 +266,103 @@ const PERSONAL_AI_PROVIDERS = {
 async function callPersonalAi(provider, apiKey, prompt, model, maxTokens = 1200) {
   const cfg = PERSONAL_AI_PROVIDERS[provider];
   if (!cfg) throw new Error('Proveedor no compatible con BOB.');
-  const response = await fetch(cfg.url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${apiKey}`,
-      ...(provider === 'openrouter' ? { 'HTTP-Referer': 'https://fondothoth.com/obp', 'X-Title': 'Open Business Plan' } : {})
-    },
-    body: JSON.stringify({
-      model: model || cfg.model,
-      messages: [{ role: 'user', content: prompt }],
-      max_tokens: maxTokens,
-      temperature: 0.35
-    }),
-    signal: AbortSignal.timeout(180000)
-  });
-  const data = await response.json().catch(() => ({}));
+
+  let targetModel = model || cfg.model;
+  // En Ollama Cloud, los modelos con sufijo :cloud o minimax-m3 requieren saldo de pago;
+  // normalizamos preventivamente a gpt-oss:20b para cuentas gratuitas.
+  if (provider === 'ollamaCloud') {
+    if (!targetModel || targetModel.includes('minimax') || targetModel.endsWith(':cloud')) {
+      targetModel = 'gpt-oss:20b';
+    }
+  }
+
+  const executeRequest = async (mod) => {
+    return await fetch(cfg.url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${apiKey}`,
+        ...(provider === 'openrouter' ? { 'HTTP-Referer': 'https://fondothoth.com/obp', 'X-Title': 'Open Business Plan' } : {})
+      },
+      body: JSON.stringify({
+        model: mod,
+        messages: [{ role: 'user', content: prompt }],
+        max_tokens: maxTokens,
+        temperature: 0.35
+      }),
+      signal: AbortSignal.timeout(180000)
+    });
+  };
+
+  let response = await executeRequest(targetModel);
+  let data = await response.json().catch(() => ({}));
+
+  // Si Ollama Cloud rechaza el modelo por cuota/pago (HTTP 402), reintentar automáticamente con gpt-oss:20b
+  if (provider === 'ollamaCloud' && response.status === 402 && targetModel !== 'gpt-oss:20b') {
+    console.warn(`[BobServer] Modelo ${targetModel} requiere saldo en Ollama Cloud. Reintentando con gpt-oss:20b...`);
+    targetModel = 'gpt-oss:20b';
+    response = await executeRequest(targetModel);
+    data = await response.json().catch(() => ({}));
+  }
+
   if (!response.ok || data.error) {
     throw new Error(data.error?.message || data.message || `El proveedor respondió HTTP ${response.status}.`);
   }
-  return { text: data.choices?.[0]?.message?.content || '', model: data.model || model || cfg.model };
+  return { text: data.choices?.[0]?.message?.content || '', model: data.model || targetModel };
 }
 
-// BOB usa las credenciales cifradas de la cuenta exclusivamente en el servidor.
-// La clave nunca vuelve al navegador ni forma parte del historial conversacional.
+// BOB usa las credenciales cifradas de la cuenta en el servidor, con soporte
+// transparente para llaves recibidas en el body o variables de entorno.
 app.post('/api/ai/bob-chat', async (req, res) => {
-  const { prompt, provider: requestedProvider, model } = req.body || {};
+  const { prompt, provider: rawProvider, model, apiKey, ollamaKey, bobOllamaKey, groqKey } = req.body || {};
   if (!prompt || typeof prompt !== 'string' || prompt.length > 120000) {
     return res.status(400).json({ error: 'Prompt inválido o demasiado extenso.' });
   }
-  const keys = obtenerApiKeysParaServicio(req.user.id);
+
+  // Normalización de alias de proveedores
+  const providerAliases = {
+    ollama: 'ollamaCloud',
+    ollama_cloud: 'ollamaCloud',
+    ollamaCloud: 'ollamaCloud',
+    minimax: 'ollamaCloud',
+    groq: 'groq',
+    openrouter: 'openrouter',
+    openai: 'openai'
+  };
+  const requestedProvider = providerAliases[rawProvider] || rawProvider;
+
+  const userId = req.user?.id;
+  const userKeys = userId ? obtenerApiKeysParaServicio(userId) : {};
+
+  // Resolver llaves combinando perfil de usuario, cuerpo del request y variables de entorno
+  const keys = {
+    ollamaCloud: userKeys.ollamaCloud || userKeys.ollama || userKeys.ollama_cloud || ollamaKey || bobOllamaKey || apiKey || process.env.OLLAMA_KEY,
+    groq: userKeys.groq || groqKey || process.env.GROQ_KEY,
+    openrouter: userKeys.openrouter || process.env.OPENROUTER_API_KEY,
+    openai: userKeys.openai || process.env.OPENAI_API_KEY
+  };
+
   const preference = requestedProvider
     ? [requestedProvider, 'ollamaCloud', 'groq', 'openrouter', 'openai']
     : ['ollamaCloud', 'groq', 'openrouter', 'openai'];
+
   const providers = [...new Set(preference)].filter(name => keys[name] && PERSONAL_AI_PROVIDERS[name]);
+
   if (!providers.length) {
     return res.status(409).json({
-      error: 'Configura al menos una API key en tu cuenta.',
+      error: 'Configura al menos una API key (por ejemplo Ollama Cloud) en tu perfil o configuración.',
       code: 'PERSONAL_API_KEY_REQUIRED'
     });
   }
+
   let lastError = null;
   for (const provider of providers) {
     try {
-      const result = await callPersonalAi(provider, keys[provider], prompt, provider === requestedProvider ? model : undefined);
+      const selectedModel = provider === requestedProvider ? model : undefined;
+      const result = await callPersonalAi(provider, keys[provider], prompt, selectedModel);
       return res.json({ success: true, reply: result.text, provider, model: result.model });
     } catch (error) {
+      console.warn(`[BobServer] Error con proveedor ${provider}:`, error.message);
       lastError = error;
     }
   }

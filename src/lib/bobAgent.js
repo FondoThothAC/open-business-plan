@@ -245,19 +245,36 @@ export async function sendBobMessage({
     history.slice(-8).map(m => `${m.sender === 'user' ? 'Usuario' : 'BOB'}: ${m.text}`).join('\n') +
     `\nUsuario: ${userMessage}\nBOB:`;
 
-  // Ruta preferida: el servidor usa la clave cifrada del perfil. La credencial no
-  // se entrega al navegador ni se inserta en el prompt o historial de BOB.
+  // Ruta preferida: el servidor usa la clave cifrada del perfil o las provistas en configuración.
   const providerAliases = {
-    ollama: 'ollamaCloud', ollama_cloud: 'ollamaCloud',
-    groq: 'groq', openrouter: 'openrouter', openai: 'openai'
+    ollama: 'ollamaCloud',
+    ollama_cloud: 'ollamaCloud',
+    ollamaCloud: 'ollamaCloud',
+    minimax: 'ollamaCloud',
+    groq: 'groq',
+    openrouter: 'openrouter',
+    openai: 'openai'
   };
+
+  const requestedProvider = providerAliases[rawAi.primaryProvider] || 'ollamaCloud';
+  const effectiveModel = (rawAi.model && !rawAi.model.includes('minimax') && !rawAi.model.endsWith(':cloud'))
+    ? rawAi.model
+    : 'gpt-oss:20b';
+
   try {
-    const requestedProvider = providerAliases[rawAi.primaryProvider];
     const response = await fetch(`${getApiBase()}/api/ai/bob-chat`, {
       method: 'POST',
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt: fullPrompt, provider: requestedProvider, model: rawAi.model })
+      body: JSON.stringify({
+        prompt: fullPrompt,
+        provider: requestedProvider,
+        model: effectiveModel,
+        apiKey: rawAi.apiKey,
+        ollamaKey: rawAi.ollamaKey || bobKey,
+        bobOllamaKey: bobKey,
+        groqKey: rawAi.groqKey
+      })
     });
     const data = await response.json().catch(() => ({}));
     if (response.ok && data.reply) {
@@ -265,23 +282,26 @@ export async function sendBobMessage({
       if (toolCalls.length > 0 && typeof onToolExecute === 'function') {
         for (const call of toolCalls) await onToolExecute(call.tool, call.parameters);
       }
-      return { reply: cleanText || data.reply, cleanText, toolCalls, rawResponse: data.reply, provider: data.provider, model: data.model };
+      return {
+        reply: cleanText || data.reply,
+        cleanText,
+        toolCalls,
+        rawResponse: data.reply,
+        provider: data.provider || requestedProvider,
+        model: data.model || effectiveModel
+      };
     }
-    if (data.code === 'PERSONAL_API_KEY_REQUIRED') throw new Error(data.error || 'Configura tu propia API key en tu perfil.');
-    throw new Error(data.error || 'BOB no pudo conectar con el proveedor personal.');
+    console.warn('[BobAgent] Respuesta no exitosa de /api/ai/bob-chat:', data.error || response.statusText);
   } catch (error) {
-    const endpoint = String(rawAi.endpoint || 'http://localhost:11434');
-    const isLocalOllama = rawAi.primaryProvider === 'ollama' && /localhost|127\.0\.0\.1/.test(endpoint);
-    if (!isLocalOllama) throw error;
-    console.warn('[BobAgent] Usando Ollama local sin credenciales de nube:', error.message);
+    console.warn('[BobAgent] Fallo al contactar /api/ai/bob-chat en servidor, activando fallback local/cliente:', error.message);
   }
 
-  // Construir configuración inteligente de IA con fallback multi-proveedor
-  const primaryProv = rawAi.primaryProvider || 'groq';
+  // Fallback Inteligente multi-proveedor en cliente
+  const primaryProv = (rawAi.primaryProvider === 'minimax') ? 'ollama_cloud' : (rawAi.primaryProvider || 'ollama_cloud');
   const aiConfig = {
     ...rawAi,
     provider: primaryProv,
-    model: rawAi.model || 'llama-3.3-70b-versatile',
+    model: effectiveModel,
     apiKey: rawAi.apiKey,
     groqKey: rawAi.groqKey,
     geminiKey: rawAi.apiKey || rawAi.geminiKey,
@@ -291,7 +311,7 @@ export async function sendBobMessage({
     minimaxKey: rawAi.minimaxKey,
     baiKey: rawAi.baiKey,
     endpoint: rawAi.endpoint,
-    disableAutoFallback: true
+    disableAutoFallback: false
   };
 
   const rawResponse = await callAiProvider(aiConfig, fullPrompt, false);
@@ -310,7 +330,10 @@ export async function sendBobMessage({
 
   return {
     reply: cleanText || rawResponse,
+    cleanText,
     toolCalls,
-    rawResponse
+    rawResponse,
+    provider: primaryProv,
+    model: effectiveModel
   };
 }

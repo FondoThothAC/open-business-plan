@@ -27,9 +27,17 @@ export default function Anteproyecto() {
   });
 
   const [rawText, setRawText] = useState('');
+  const [projectName, setProjectName] = useState(() => planData?.semilla?.nombre_proyecto || '');
   const [isRecording, setIsRecording] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState('');
+
+  // Sincronizar projectName si la semilla global se actualiza externamente
+  useEffect(() => {
+    if (planData?.semilla?.nombre_proyecto && !projectName) {
+      setProjectName(planData.semilla.nombre_proyecto);
+    }
+  }, [planData?.semilla?.nombre_proyecto]);
 
   // Estados de Inferencia, Benchmarks y Diagnóstico Cuántico
   const [frameworkInference, setFrameworkInference] = useState(null);
@@ -178,14 +186,20 @@ export default function Anteproyecto() {
         )
       ]);
 
-      const seedData = seedDataRes || {
-        nombre_proyecto: rawText.split('\n')[0].slice(0, 45).replace(/[#*]/g, '').trim() || 'Proyecto Empresarial',
+      // Nombre del proyecto explícito ingresado por el usuario o inferido por IA
+      const resolvedProjectName = (projectName && projectName.trim())
+        ? projectName.trim()
+        : (seedDataRes?.nombre_proyecto || rawText.split('\n')[0].slice(0, 45).replace(/[#*]/g, '').trim() || 'Proyecto Empresarial');
+
+      const seedData = {
         cobertura: 'Local / Regional',
         problema: 'Necesidad detectada en el mercado objetivo.',
         solucion: rawText.slice(0, 300),
         mercado_objetivo: 'Consumidores y clientes potenciales del sector.',
         modelo_ingresos: 'Venta directa de productos o prestación de servicios.',
-        ventaja_injusta: 'Atención personalizada y propuesta de valor adaptada.'
+        ventaja_injusta: 'Atención personalizada y propuesta de valor adaptada.',
+        ...(seedDataRes || {}),
+        nombre_proyecto: resolvedProjectName
       };
 
       const finalInference = inferenceRes || {
@@ -487,22 +501,53 @@ export default function Anteproyecto() {
             border: '1px solid var(--border-color)', boxShadow: '0 10px 30px rgba(0,0,0,0.05)'
           }}>
             <h2 style={{ fontSize: '1.25rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              Paso 1: Explica tu Idea (Audio o Texto)
+              Paso 1: Nombre de tu Proyecto y Explicación de la Idea
             </h2>
             <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem', fontSize: '0.95rem' }}>
-              Presiona el micrófono o escribe libremente. Ejemplo: <em>"Tengo la idea de abrir una tortillería de maíz en mi colonia con servicio a domicilio..."</em> o <em>"Quiero hacer un proyecto social para..."</em>
+              Asigna el nombre o marca a tu negocio para encontrarlo fácilmente en tu panel, y cuéntanos de qué trata por voz o texto libre.
             </p>
 
-            <div style={{ position: 'relative', marginBottom: '1.5rem' }}>
-              <textarea
+            {/* Campo explícito de Nombre del Proyecto */}
+            <div style={{ marginBottom: '1.5rem' }}>
+              <label htmlFor="nombre-proyecto-input" style={{ display: 'block', fontWeight: 700, fontSize: '0.95rem', marginBottom: '0.5rem', color: 'var(--text-primary)' }}>
+                Nombre del Proyecto o Marca Comercial
+              </label>
+              <input
+                id="nombre-proyecto-input"
+                type="text"
                 className="form-control"
                 style={{
-                  height: '220px', fontSize: '1.1rem', lineHeight: '1.6',
-                  padding: '1.5rem', borderRadius: '12px', resize: 'vertical',
+                  height: '48px', fontSize: '1.05rem', fontWeight: 500,
+                  borderRadius: '12px', padding: '0 1.25rem', width: '100%',
+                  borderColor: 'var(--border-color)',
+                  background: 'var(--bg-input, var(--bg-panel))',
+                  color: 'var(--text-primary)',
+                  boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.05)'
+                }}
+                placeholder="Ej. Taquería El Pastor Dorado, Consultora Apex, Panadería Central..."
+                value={projectName}
+                onChange={(e) => {
+                  setProjectName(e.target.value);
+                  updateSemilla('nombre_proyecto', e.target.value);
+                }}
+              />
+            </div>
+
+            {/* Área de texto para la idea con dictado por voz */}
+            <div style={{ position: 'relative', marginBottom: '1.5rem' }}>
+              <label htmlFor="idea-textarea" style={{ display: 'block', fontWeight: 600, fontSize: '0.9rem', marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>
+                Cuéntanos los detalles de tu idea o modelo de negocio:
+              </label>
+              <textarea
+                id="idea-textarea"
+                className="form-control"
+                style={{
+                  height: '200px', fontSize: '1.05rem', lineHeight: '1.6',
+                  padding: '1.25rem', borderRadius: '12px', resize: 'vertical',
                   borderColor: isRecording ? 'var(--accent-color)' : 'var(--border-color)',
                   boxShadow: isRecording ? '0 0 0 4px rgba(99, 102, 241, 0.1)' : 'none'
                 }}
-                placeholder="Hola, mi idea es..."
+                placeholder="Hola, mi idea es abrir un negocio de... con clientes objetivo como... y ofrecer..."
                 value={rawText}
                 onChange={(e) => setRawText(e.target.value)}
               />

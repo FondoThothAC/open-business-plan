@@ -279,10 +279,13 @@ export default function BobChatModal({ isOpen, onClose, planData, onExecuteComma
 
     } catch (err) {
       console.error('Error al consultar a BOB:', err);
+      const friendlyError = err?.message && !err.message.includes('fetch')
+        ? `Lo siento: ${err.message}`
+        : 'Lo siento, ocurrió un error de conexión con el motor cognitivo. Por favor verifica que tu API key de Ollama Cloud esté activa en Configuración o en tu perfil.';
       setMessages(prev => [...prev, {
         id: `bob_err_${Date.now()}`,
         sender: 'bob',
-        text: 'Lo siento, ocurrió un error de conexión con el motor cognitivo. Por favor intenta de nuevo.',
+        text: friendlyError,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         toolsExecuted: []
       }]);

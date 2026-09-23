@@ -407,5 +407,13 @@ Con base en el Plan de Saneamiento y Endurecimiento formalizado en `docs/archite
   * Inyección de `credentials: 'include'` en peticiones fetch y `withCredentials: true` en `EventSource` para el flujo SSE de agentes enjambre.
   * Fallback conversacional local garantizado en `SwarmInterviewModal` en caso de contingencias de red.
 
-
-
+### 5.16 Captura Explícita de Nombre de Proyecto en Semilla y Resiliencia de BOB con Ollama Cloud
+* **Captura de Identidad en Paso 1 de Semilla (`src/components/Anteproyecto.jsx`):**
+  * Se agregó un campo de entrada prioritario y visible en el Paso 1 para "Nombre del Proyecto o Marca Comercial" (`#nombre-proyecto-input`).
+  * Persistencia inmediata y reactiva hacia `planData.semilla.nombre_proyecto` y actualización de estado local sincronizado.
+  * La función `processText` respeta y prioriza el nombre provisto por el usuario, evitando que sea sobrescrito por títulos heurísticos o aproximaciones de IA.
+* **Calibración y Resiliencia de BOB para Cuentas Gratuitas de Ollama Cloud (`server/index.js`, `src/lib/bobAgent.js`, `src/components/BobChatModal.jsx`):**
+  * Normalización automática del modelo en `/api/ai/bob-chat`: los modelos con sufijo `:cloud` o `minimax-m3` (que devuelven HTTP 402 en cuentas gratuitas de Ollama Cloud) son mapeados automáticamente a `gpt-oss:20b`.
+  * Detección activa de error HTTP 402 con reintento transparente inmediato en `gpt-oss:20b`.
+  * Soporte en el cuerpo de la petición (`apiKey`, `ollamaKey`, `bobOllamaKey`, `groqKey`) y resolución hacia variables de entorno del servidor (`process.env.OLLAMA_KEY`, `process.env.GROQ_KEY`).
+  * Resiliencia del lado cliente en `src/lib/bobAgent.js`: ante cualquier error de comunicación o rechazo del servidor, `sendBobMessage` ejecuta fallback transparente a `callAiProvider` en el cliente, permitiendo que la interacción continúe sin interrupciones.

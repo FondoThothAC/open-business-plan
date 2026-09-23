@@ -13,7 +13,8 @@
 * **Transparencia Radical de Procedencia (`ProvenanceBadge`):** Toda cifra, competidor y cotización exhibe su grado de veracidad mediante badges distintivos (🟢 Factual Verificado, 🟡 Hardware Local, 🔴 Estimación Sintética, ⚪ Sin Datos). Si un dato no se encuentra, el sistema no inventa; expone el estado honesto vacío para que el usuario conozca la limitación del mercado.
 * **Dossier Ejecutivo de Alta Densidad y Elegancia Editorial:** La Vista Previa y las exportaciones a PDF/DOCX entregan un documento ejecutivo pulido de exactamente 20 páginas (máximo 25), en orientación vertical Letter estándar (`612 x 792 pts`), eliminando bloques de texto redundantes, notas al pie secundarias y tablas excesivas de 60 meses para favorecer la lectura de comités de inversión.
 * **Estética Premium:** Paleta en modos claro/oscuro balanceados, tipografías sans-serif de alta legibilidad, efectos de glassmorphism y micro-interacciones suaves.
-* **Revisión Externa Fricción-Cero:** Clientes, aliados e inversionistas externos acceden a una vista especializada (`ReviewPage`) con un solo clic en el enlace temporal recibido, sin necesidad de crear cuenta ni ingresar credenciales internas. El documento se presenta con formato editorial ejecutivo y anclaje de comentarios por módulo/bloque.
+* **Captura de Identidad en Semilla (Paso 1):** El usuario puede especificar el nombre comercial o marca de su proyecto directamente desde el Paso 1 de la Semilla, evitando inferencias ambiguas y facilitando su localización inmediata en el catálogo y barra superior.
+* **Copiloto BOB Resiliente:** El asistente cognitivo BOB utiliza por defecto el modelo gratuito y estable `gpt-oss:20b` en Ollama Cloud con fallback automático multi-proveedor (Groq, Gemini, OpenRouter) en caso de contingencias de saldo o red.
 
 ---
 
@@ -22,6 +23,10 @@
 ```mermaid
 journey
     title Flujo Editorial, Supervisión y Revisión Externa
+    section Semilla & Identidad
+      Definición Nombre Proyecto (Paso 1): 5: Usuario
+      Vaciado de Idea por Voz/Texto: 5: Usuario
+      Procesamiento IA & Diagnóstico Cuántico: 5: Sistema
     section Acceso
       Inicio de Sesión (Recordarme): 5: Usuario
       Validación de Cookie HttpOnly: 5: Servidor
