@@ -20,6 +20,8 @@ const RUTAS_PUBLICAS = [
   '/api/auth/login',
   '/api/auth/register',
   '/api/health',
+  '/ai/account-chat',
+  '/api/ai/account-chat',
   '/swarm/interview',
   '/swarm/stream',
   '/swarm/industrialize',
