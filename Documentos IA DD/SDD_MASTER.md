@@ -241,6 +241,16 @@ flowchart LR
   * Matriz de capital humano formal de 14 puestos clave con desglose de nómina IMSS al 32% y alineación atómica con la Regla 13 de Empresas Cuánticas (Fondo Thoth AC).
   * Sincronización inmutable dual en `comercio_cu_ntico_internacional_tr_sapi_de_cv.json` y su versión exportable en Markdown `comercio_cu_ntico_internacional_tr_sapi_de_cv.md`.
 
+### 3.9 Cumplimiento de Reglas de Hooks (React Error #300) y Motor RAG Financiero
+* **Erradicación de React Error #300:**
+  * Causa raíz: Retornos condicionales anticipados (`if (!trajectory) return null`, `if (!isOpen) return null`, `if (!promptData) return null`) situados antes de hooks de React (`useState`, `useEffect`, `useMemo`).
+  * Componentes corregidos: `AgentTrajectoryViewer.jsx`, `BobChatModal.jsx`, `GrillMePromptModal.jsx`. Todos los hooks se declaran al inicio incondicionalmente.
+* **Extracción Inteligente RAG y Proyecciones Realistas (`calculadoraFinanciera.js`):**
+  * Extracción tabular por filas de documentos PDF adjuntos: Materia prima ($5.70), Mano de obra directa ($3.09), Empaque ($1.62), Energéticos ($0.03) y Costo Total de Producción ($10.44).
+  * Correlación con proyecciones de mercado (15,000 unidades mensuales, margen bruto objetivo de 40%-42%, precio unitario de $18.00 MXN).
+  * Inyección de desgloses JSON estructurados (`desglose_capex_json`, `desglose_opex_json`, `ingresos_json`) y erradicación de estados "No calculable" destructivos en corridas automáticas con evidencia de negocio.
+  * Curva de despegue y ramp-up para Año 1 (~55% de capacidad promedio) garantizando métricas dentro del marco financiero plausible auditado por `financialSanityCheck` (TIR 35.0%, Payback 1.4 años, B/C 2.92).
+
 ---
 
 ## 4. Diagrama Maestro de Arquitectura y Flujos en yEd Graph Editor

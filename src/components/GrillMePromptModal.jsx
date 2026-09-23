@@ -2,11 +2,11 @@ import { useState } from 'react';
 import { HelpCircle, CheckCircle, ArrowRight } from 'lucide-react';
 
 export default function GrillMePromptModal({ promptData, onSubmitResponse, onCancel }) {
-  if (!promptData) return null;
-
   const [selectedKey, setSelectedKey] = useState(null);
   const [customText, setCustomText] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  if (!promptData) return null;
 
   const handleSubmit = (e) => {
     e?.preventDefault();

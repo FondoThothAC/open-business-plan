@@ -14,8 +14,6 @@ const API_GUIDES = {
 };
 
 export default function BobChatModal({ isOpen, onClose, planData, onExecuteCommand }) {
-  if (!isOpen) return null;
-
   const { activeModuleKey } = usePlan();
   const { user, updateKeys, authFetch } = useAuth();
 
@@ -302,6 +300,8 @@ export default function BobChatModal({ isOpen, onClose, planData, onExecuteComma
     { label: '⚛️ Diagnóstico Cuántico', prompt: 'Evalúa el balance atómico del fundador en las 3 áreas: Finanzas, Operativo, Administrativo' },
     { label: '📊 Ver Finanzas', prompt: 'Llévanos al módulo de finanzas y dime qué métricas clave necesitamos' },
   ];
+
+  if (!isOpen) return null;
 
   return (
     <div style={{

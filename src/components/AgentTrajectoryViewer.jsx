@@ -40,8 +40,6 @@ const STEP_TYPE_CONFIG = {
 };
 
 export default function AgentTrajectoryViewer({ trajectory, onClose }) {
-  if (!trajectory) return null;
-
   const [expandedNodes, setExpandedNodes] = useState({});
   const [filterType, setFilterType] = useState('all'); // 'all' | 'tools' | 'thoughts'
   
@@ -52,12 +50,12 @@ export default function AgentTrajectoryViewer({ trajectory, onClose }) {
 
   // Estados para Modal de Forking en Caliente
   const [forkModalNode, setForkModalNode] = useState(null);
-  const [forkModel, setForkModel] = useState(trajectory.modelUsed || 'gpt-5.2');
-  const [forkProvider, setForkProvider] = useState(trajectory.providerUsed || 'bai');
+  const [forkModel, setForkModel] = useState(trajectory?.modelUsed || 'gpt-5.2');
+  const [forkProvider, setForkProvider] = useState(trajectory?.providerUsed || 'bai');
   const [forkNote, setForkNote] = useState('');
   const [forkSuccessMsg, setForkSuccessMsg] = useState(null);
 
-  const steps = trajectory.trajectoryDAG || trajectory.steps || [];
+  const steps = trajectory?.trajectoryDAG || trajectory?.steps || [];
 
   // Temporizador para el Replay animado
   useEffect(() => {
@@ -74,6 +72,8 @@ export default function AgentTrajectoryViewer({ trajectory, onClose }) {
     }
     return () => clearTimeout(timer);
   }, [isReplaying, replayIndex, steps, replaySpeed]);
+
+  if (!trajectory) return null;
 
   const toggleNode = (idx) => {
     setExpandedNodes(prev => ({ ...prev, [idx]: !prev[idx] }));
