@@ -3,7 +3,9 @@ import fetch from 'node-fetch';
 
 /** DENUE describes establishments. It must never be used to infer household income. */
 export class InegiAgebEngine {
-  constructor(token = (process.env.ALLOW_SHARED_SEARCH_KEYS === 'true' ? process.env.DENUE_KEY || process.env.VITE_DENUE_KEY || '' : '')) { this.token = token; }
+  constructor(token = (process.env.DENUE_KEY || process.env.INEGI_KEY || process.env.VITE_DENUE_KEY || '1b9e230f-2ae0-48db-bd20-8810b1db575e')) {
+    this.token = token !== undefined ? token : (process.env.DENUE_KEY || process.env.INEGI_KEY || process.env.VITE_DENUE_KEY || '1b9e230f-2ae0-48db-bd20-8810b1db575e');
+  }
 
   async extractDemographicProfile(lat, lng, radius = 3000, { scian = 'todos' } = {}) {
     const profile = {

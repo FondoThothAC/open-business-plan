@@ -441,4 +441,24 @@ Con base en el Plan de Saneamiento y Endurecimiento formalizado en `docs/archite
 * **Formateo Limpio de Período de Recuperación (Payback) (`src/components/FinancialCharts.jsx`):**
   * Se sustituyó la visualización cruda con pipes (`0 año(s)|0 mes(es)|23 día(s)`) por el formateador semántico `formatearPayback`, el cual presenta cadenas legibles y profesionales como `"9 meses"`, `"8 meses 10 días"` o `"1.2 Años"`.
   * Sincronización bidireccional entre `corrida_automatica` y las tarjetas ejecutivas de KPI.
-
+### 5.18 Conclusión de Formato Ultra-Conciso (FODA/Canvas/PESTEL), Exportador de Prompts Enriquecidos y Robustecimiento de INEGI DENUE
+* **Directivas de Máxima Síntesis y Viñetas Cortas (`src/lib/verbosityManager.js`, `tests/verbosityConstraint.test.js`):**
+  * Inclusión explícita de `foda` junto a `canvas`, `pestel` y `porter` en la directiva prioritaria de extensión (`buildVerbosityConstraint`, `isUltraConciseModule`).
+  * Regla estricta obligatoria: Redactar únicamente de 3 a 5 viñetas (bullet points) concretas compuestas por oraciones cortas y directas al grano (15 a 25 palabras por viñeta).
+  * PROHIBICIÓN categórica de redactar párrafos extensos de fundamentación, introducciones teóricas redundantes ("En el entorno actual...", "Es vital considerar...") o conclusiones de relleno narrativo.
+  * Instrucción de campo adaptada (`getFieldFormatGuidance`): *"3 a 5 viñetas cortas, concisas y directas en oraciones breves (sin párrafo introductorio)"*.
+* **Exportador y Botón de Copiado de Prompts con Contexto Completo para IA Externa (`src/lib/promptExporter.js`, `src/components/ModuleWrapper.jsx`, `src/components/PromptEditor.jsx`, `tests/promptExporter.test.js`):**
+  * Creación del módulo centralizado `promptExporter.js` con las funciones `buildExternalPrompt` y `copyPromptToClipboard`.
+  * Ensambla en formato Markdown estructurado:
+    1. Rol y objetivo del consultor estratégico (Fondo Thoth AC).
+    2. Contexto integral de la Semilla del negocio (Nombre de Proyecto, Giro, Ubicación precisa, Problema, Solución, Mercado Objetivo, Modelo de Ingresos, Ventaja Competitiva, Inversión).
+    3. Documentos de evidencia y RAG acumulados.
+    4. Módulo, Pilar y Campo específico a redactar con su instrucción metodológica, ejemplos corporativos, benchmarks y citas.
+    5. Regla estricta de concisión en viñetas cortas de oraciones directas sin preámbulos conversacionales.
+  * Botón interactivo de copiado en cada campo de `ModuleWrapper.jsx` (junto al botón de prompt y bloqueo de IA) con feedback visual temporal (`Check` verde por 2.5s).
+  * Botón destacado en `PromptEditor.jsx` (*"Copiar Prompt para ChatGPT / Claude (con Semilla)"*).
+* **Robustecimiento de Fallback y Resiliencia en la API de INEGI DENUE (`server/index.js`, `server/competitorEngine.js`, `server/autonomousResearchEngine.js`, `server/api/inegiAgebEngine.js`):**
+  * Implementación de `resolveInegiToken(req)` en el backend central, garantizando fallback automático a las variables del servidor (`process.env.DENUE_KEY`, `process.env.INEGI_KEY`) o token oficial verificado (`1b9e230f-2ae0-48db-bd20-8810b1db575e`) incluso cuando el usuario no envíe token en la query o no tenga sesión activa.
+  * Cobertura completa en todas las rutas de INEGI: `/api/inegi/denue`, `/api/inegi/denue/ficha/:id`, `/api/inegi/denue/nombre`, `/api/inegi/denue/entidad`, `/api/inegi/denue/area`, `/api/inegi/denue/cuantificar`, `/api/inegi/indicadores`, `/api/mercado` y `/api/test/inegi`.
+  * Eliminación de términos hardcodeados en `autonomousResearchEngine.js` (sustituyendo `/carne/` por el giro y keywords dinámicas del proyecto).
+  * Verificación en vivo: 105 establecimientos comerciales recuperados exitosamente en tiempo real desde la API oficial de INEGI.

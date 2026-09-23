@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { usePlan } from '../context/PlanContext';
-import { Sparkles, Loader2, Brain, CheckCircle2, Lock, Unlock, Map as MapIcon, Network, Eye, EyeOff, HelpCircle, Edit3, Layout, ArrowRight, MessageSquare, Check, X, Activity, BadgeDollarSign, Compass, Globe, ShieldCheck, AlertTriangle } from 'lucide-react';
+import { Sparkles, Loader2, Brain, CheckCircle2, Lock, Unlock, Map as MapIcon, Network, Eye, EyeOff, HelpCircle, Edit3, Layout, ArrowRight, MessageSquare, Check, X, Activity, BadgeDollarSign, Compass, Globe, ShieldCheck, AlertTriangle, Copy } from 'lucide-react';
 import { generateModuleContent } from '../lib/ai';
 import { runAgenticModuleGeneration, getSavedTrajectories } from '../lib/agenticEngine';
 import AgentTrajectoryViewer from './AgentTrajectoryViewer';
@@ -22,6 +22,7 @@ import { BOX_REGISTRY } from '../config/boxRegistry';
 import { getBoxIdsForModule } from '../config/moduleBoxMap';
 import { RenderBox } from '../components/boxes';
 import PromptEditor from './PromptEditor';
+import { buildExternalPrompt, copyPromptToClipboard } from '../lib/promptExporter';
 
 export default function ModuleWrapper({ pillar, moduleKey, title, description, fields, extraAction }) {
   const { planData, updateSection, updateConfig, toggleLock, toggleModuleVisibility, addComment, deleteComment, addPendingItems, resolvePending } = usePlan();
@@ -41,6 +42,7 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
   const [currentTrajectory, setCurrentTrajectory] = useState(null);
   const [showTelemetryModal, setShowTelemetryModal] = useState(false);
   const [activePromptField, setActivePromptField] = useState(null);
+  const [copiedField, setCopiedField] = useState(null);
   
   const isLocked = (fieldKey) => planData.config.locks?.[`${pillar}.${moduleKey}.${fieldKey}`];
   const isModuleVisible = planData.config?.visibility?.[`${pillar}.${moduleKey}`] !== false;
@@ -60,11 +62,27 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
     return { instruccion: `Completa este campo con información relevante para ${fieldKey}.`, ejemplo: '' };
   };
 
+  const handleCopyPromptWithContext = async (field) => {
+    const guide = getFieldGuide(field.key);
+    const text = buildExternalPrompt({
+      pillar,
+      moduleKey,
+      moduleTitle: title,
+      field,
+      fieldGuide: guide,
+      planData
+    });
+    const ok = await copyPromptToClipboard(text);
+    if (ok) {
+      setCopiedField(field.key);
+      setTimeout(() => setCopiedField(null), 2500);
+    }
+  };
+
   const handleChange = (fieldKey, value) => {
     if (isLocked(fieldKey)) return;
     updateSection(pillar, moduleKey, fieldKey, value);
   };
-
 
   const handleAiGenerate = async (options = {}) => {
     const isDeep = Boolean(options.useDeepResearch);
@@ -521,6 +539,19 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
 
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
                       <button 
+                        onClick={() => handleCopyPromptWithContext(field)}
+                        className="btn-icon" 
+                        style={{ 
+                          width: '30px', 
+                          height: '30px', 
+                          color: copiedField === field.key ? 'var(--success-color, #10b981)' : 'var(--text-secondary)' 
+                        }}
+                        title={copiedField === field.key ? "¡Prompt copiado para IA externa!" : "Copiar Prompt con Referencia y Semilla para IA Externa (ChatGPT/Claude)"}
+                      >
+                        {copiedField === field.key ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                      </button>
+
+                      <button 
                         onClick={() => setActivePromptField(field)}
                         className="btn-icon" 
                         style={{ width: '30px', height: '30px', color: 'var(--accent-color)' }}
@@ -669,6 +700,7 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
               </div>
             );
           })()}
+        </div>
 
         {extraAction && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '100%' }}>
@@ -694,8 +726,12 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
         fieldLabel={activePromptField?.label}
         fieldKey={activePromptField?.key}
         promptData={activePromptField ? getFieldGuide(activePromptField.key) : null}
-        semilla={planData?.semilla}
-        documents={planData?.config?.documents}
+        semilla={planData?.naturaleza?.semilla || planData?.semilla}
+        documents={planData?.config?.uploadedDocuments || planData?.config?.documents || planData?.documents}
+        pillar={pillar}
+        moduleKey={moduleKey}
+        moduleTitle={title}
+        planData={planData}
         onSave={(newPrompt) => {
           if (activePromptField?.key) {
             updateConfig('customPrompts', activePromptField.key, newPrompt);
@@ -712,56 +748,94 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
       )}
 
       {showTelemetryModal && moduleData._trace && (
-        <div className="modal-backdrop" onClick={() => setShowTelemetryModal(false)}>
-          <div className="modal-content glass-panel" onClick={e => e.stopPropagation()} style={{ maxWidth: '800px', width: '90%', maxHeight: '90vh', overflowY: 'auto' }}>
-            <div className="modal-header">
-              <h2 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <BadgeDollarSign className="w-5 h-5 text-green-400" />
-                Trazabilidad y Costos (Estimados)
-              </h2>
-              <button className="close-btn" onClick={() => setShowTelemetryModal(false)}><X className="w-5 h-5" /></button>
+        <div 
+          style={{
+            position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+            backgroundColor: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            zIndex: 1000, padding: '1rem'
+          }}
+          onClick={() => setShowTelemetryModal(false)}
+        >
+          <div 
+            className="glass-panel" 
+            style={{ 
+              maxWidth: '650px', width: '100%', maxHeight: '85vh', overflowY: 'auto',
+              padding: '2rem', borderRadius: '16px', background: 'var(--bg-primary)',
+              border: '1px solid var(--border-color)', boxShadow: '0 20px 40px rgba(0,0,0,0.4)'
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                <BadgeDollarSign className="w-5 h-5 text-emerald-400" />
+                <h2 style={{ fontSize: '1.25rem', fontWeight: 800, margin: 0 }}>Trazabilidad y Costos de IA</h2>
+              </div>
+              <button 
+                className="btn-icon" 
+                onClick={() => setShowTelemetryModal(false)}
+                style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}
+              >
+                <X className="w-5 h-5" />
+              </button>
             </div>
-            <div className="modal-body" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                <div style={{ background: 'rgba(255,255,255,0.05)', padding: '1rem', borderRadius: '12px' }}>
-                  <h4 style={{ color: 'var(--text-secondary)', marginBottom: '0.5rem', fontSize: '0.85rem' }}>Tokens Totales Invertidos</h4>
-                  <div style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--accent-color)' }}>
-                    {moduleData._trace.tokens?.toLocaleString() || 0}
-                  </div>
-                  <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.5rem' }}>
-                    Prompt: {moduleData._trace.promptTokens?.toLocaleString() || 0} | Completion: {moduleData._trace.completionTokens?.toLocaleString() || 0}
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '1rem' }}>
+                <div style={{ background: 'rgba(255,255,255,0.03)', padding: '1rem', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Tokens de Entrada</div>
+                  <div style={{ fontSize: '1.2rem', fontWeight: 800, marginTop: '0.25rem', color: 'var(--accent-color)' }}>
+                    {moduleData._trace.tokens?.prompt?.toLocaleString() || 0}
                   </div>
                 </div>
-                <div style={{ background: 'rgba(34, 197, 94, 0.1)', padding: '1rem', borderRadius: '12px', border: '1px solid rgba(34, 197, 94, 0.2)' }}>
-                  <h4 style={{ color: 'var(--text-secondary)', marginBottom: '0.5rem', fontSize: '0.85rem' }}>Ahorro / Costo Equivalente</h4>
-                  <div style={{ fontSize: '2rem', fontWeight: 800, color: '#4ade80' }}>
-                    ${moduleData._trace.cost ? moduleData._trace.cost.toFixed(4) : '0.0000'} USD
+                <div style={{ background: 'rgba(255,255,255,0.03)', padding: '1rem', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Tokens de Salida</div>
+                  <div style={{ fontSize: '1.2rem', fontWeight: 800, marginTop: '0.25rem', color: '#10b981' }}>
+                    {moduleData._trace.tokens?.completion?.toLocaleString() || 0}
                   </div>
-                  <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.5rem' }}>
-                    Calculado usando tarifas comerciales API (2026)
+                </div>
+                <div style={{ background: 'rgba(255,255,255,0.03)', padding: '1rem', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Tokens Totales</div>
+                  <div style={{ fontSize: '1.2rem', fontWeight: 800, marginTop: '0.25rem', color: '#f59e0b' }}>
+                    {moduleData._trace.tokens?.total?.toLocaleString() || 0}
+                  </div>
+                </div>
+                <div style={{ background: 'rgba(255,255,255,0.03)', padding: '1rem', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Latencia Total</div>
+                  <div style={{ fontSize: '1.2rem', fontWeight: 800, marginTop: '0.25rem' }}>
+                    {moduleData._trace.duration ? (moduleData._trace.duration / 1000).toFixed(1) + 's' : 'N/A'}
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ background: 'rgba(16, 185, 129, 0.05)', border: '1px solid rgba(16, 185, 129, 0.2)', padding: '1.25rem', borderRadius: '12px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div>
+                    <div style={{ fontWeight: 700, color: '#10b981', fontSize: '0.9rem' }}>Costo Teórico Acumulado de la Sección</div>
+                    <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.2rem' }}>
+                      Calculado según tarifas API estándar del proveedor seleccionado
+                    </div>
+                  </div>
+                  <div style={{ fontSize: '1.5rem', fontWeight: 900, color: '#10b981' }}>
+                    ${(moduleData._trace.cost || 0).toFixed(4)} USD
                   </div>
                 </div>
               </div>
 
               {moduleData._trace.logs && moduleData._trace.logs.length > 0 && (
                 <div>
-                  <h3 style={{ fontSize: '1.1rem', marginBottom: '1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>Detalle de Peticiones</h3>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                  <h3 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '0.75rem', color: 'var(--text-primary)' }}>Ruta de Agentes Ejecutada</h3>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                     {moduleData._trace.logs.map((log, idx) => (
-                      <div key={idx} style={{ background: 'rgba(0,0,0,0.2)', padding: '1rem', borderRadius: '10px', fontSize: '0.85rem' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                          <span style={{ fontWeight: 'bold', color: 'var(--accent-color)' }}>{log.provider} - {log.model}</span>
+                      <div key={idx} style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-color)', padding: '0.75rem 1rem', borderRadius: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.8rem' }}>
+                        <div>
+                          <strong>{log.agent || log.role || `Paso ${idx + 1}`}</strong>
+                          <span style={{ color: 'var(--text-secondary)', marginLeft: '0.5rem' }}>({log.provider || 'AI'} - {log.model || 'default'})</span>
                         </div>
-                        {log.reasoning && (
-                          <div style={{ marginTop: '0.75rem', background: 'rgba(139, 92, 246, 0.1)', borderLeft: '3px solid #8b5cf6', padding: '0.75rem', borderRadius: '0 8px 8px 0' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#8b5cf6', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.8rem' }}>
-                              <Brain className="w-3.5 h-3.5" /> Razonamiento Interno
-                            </div>
-                            <div style={{ color: 'var(--text-secondary)', whiteSpace: 'pre-wrap', maxHeight: '150px', overflowY: 'auto' }}>
-                              {log.reasoning}
-                            </div>
-                          </div>
-                        )}
+                        <div style={{ display: 'flex', gap: '1rem', color: 'var(--text-secondary)' }}>
+                          <span>{log.tokens?.total || 0} tokens</span>
+                          <span>{log.duration ? (log.duration / 1000).toFixed(1) + 's' : ''}</span>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -772,6 +846,5 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
         </div>
       )}
     </div>
-  </div>
   );
 }

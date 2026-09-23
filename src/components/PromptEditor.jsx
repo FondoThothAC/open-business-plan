@@ -1,11 +1,27 @@
 import { useState, useEffect } from 'react';
-import { X, Save, AlignLeft, Lightbulb, TrendingUp, Quote, CheckSquare, Sparkles, Database, FileText, Cpu } from 'lucide-react';
+import { X, Save, AlignLeft, Lightbulb, TrendingUp, Quote, CheckSquare, Sparkles, Database, FileText, Cpu, Copy, Check } from 'lucide-react';
+import { buildExternalPrompt, copyPromptToClipboard } from '../lib/promptExporter';
 
 /**
- * Componente PromptEditor - Drawer lateral para editar los 5 campos del prompt y previsualizar el contexto RAG/Semilla
+ * Componente PromptEditor - Drawer lateral para editar los 5 campos del prompt,
+ * previsualizar el contexto RAG/Semilla y copiar el prompt completo para IA externa.
  */
-export default function PromptEditor({ isOpen, onClose, fieldLabel, fieldKey, promptData, onSave, semilla = {}, documents = [] }) {
+export default function PromptEditor({ 
+  isOpen, 
+  onClose, 
+  fieldLabel, 
+  fieldKey, 
+  promptData, 
+  onSave, 
+  semilla = {}, 
+  documents = [],
+  pillar = '',
+  moduleKey = '',
+  moduleTitle = '',
+  planData = {}
+}) {
   const [activeTab, setActiveTab] = useState('editor'); // 'editor' | 'context'
+  const [copied, setCopied] = useState(false);
   const [draft, setDraft] = useState({
     instruccion: '',
     ejemplo: '',
@@ -24,6 +40,7 @@ export default function PromptEditor({ isOpen, onClose, fieldLabel, fieldKey, pr
         placeholder: promptData.placeholder || ''
       });
       setActiveTab('editor');
+      setCopied(false);
     }
   }, [isOpen, promptData]);
 
@@ -32,6 +49,28 @@ export default function PromptEditor({ isOpen, onClose, fieldLabel, fieldKey, pr
   const handleSave = () => {
     onSave(draft);
     onClose();
+  };
+
+  const handleCopyExternalPrompt = async () => {
+    const fullPlan = planData && Object.keys(planData).length > 0 ? planData : {
+      naturaleza: { semilla },
+      config: { uploadedDocuments: documents }
+    };
+
+    const textToCopy = buildExternalPrompt({
+      pillar,
+      moduleKey,
+      moduleTitle,
+      field: { key: fieldKey, label: fieldLabel },
+      fieldGuide: draft,
+      planData: fullPlan
+    });
+
+    const success = await copyPromptToClipboard(textToCopy);
+    if (success) {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    }
   };
 
   const fieldStyle = {
@@ -68,8 +107,8 @@ export default function PromptEditor({ isOpen, onClose, fieldLabel, fieldKey, pr
         className="glass-panel"
         style={{
           position: 'fixed', top: 0, right: 0, bottom: 0,
-          width: '450px',
-          maxWidth: '92vw',
+          width: '470px',
+          maxWidth: '94vw',
           zIndex: 1050,
           display: 'flex',
           flexDirection: 'column',
@@ -91,8 +130,36 @@ export default function PromptEditor({ isOpen, onClose, fieldLabel, fieldKey, pr
                 Campo: <strong>{fieldLabel}</strong> {fieldKey && <span style={{ opacity: 0.6 }}>({fieldKey})</span>}
               </p>
             </div>
-            <button className="icon-btn-rounded" onClick={onClose}>
+            <button className="icon-btn-rounded" onClick={onClose} title="Cerrar editor">
               <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* Botón destacado para Copiar Prompt con Semilla para IA Externa */}
+          <div style={{ marginBottom: '0.85rem' }}>
+            <button
+              type="button"
+              onClick={handleCopyExternalPrompt}
+              style={{
+                width: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '0.5rem',
+                padding: '0.55rem 0.9rem',
+                borderRadius: '8px',
+                fontSize: '0.8rem',
+                fontWeight: 700,
+                border: copied ? '1px solid var(--success-color, #10b981)' : '1px solid rgba(99, 102, 241, 0.4)',
+                background: copied ? 'rgba(16, 185, 129, 0.15)' : 'rgba(99, 102, 241, 0.12)',
+                color: copied ? 'var(--success-color, #10b981)' : 'var(--accent-color, #818cf8)',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease'
+              }}
+              title="Copia el prompt completo con contexto de semilla, reglas de concisión y datos RAG listo para pegar en ChatGPT o Claude"
+            >
+              {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+              {copied ? '¡Prompt Copiado con Semilla y Referencia!' : 'Copiar Prompt para ChatGPT / Claude (con Semilla)'}
             </button>
           </div>
 
@@ -216,10 +283,10 @@ export default function PromptEditor({ isOpen, onClose, fieldLabel, fieldKey, pr
               </h5>
               {hasSemilla ? (
                 <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                  {semilla.nombreProyecto && <div><strong>Proyecto:</strong> {semilla.nombreProyecto}</div>}
-                  {semilla.industria && <div><strong>Industria:</strong> {semilla.industria}</div>}
-                  {semilla.ubicacion && <div><strong>Ubicación:</strong> {semilla.ubicacion}</div>}
-                  {semilla.montoInversion && <div><strong>Inversión:</strong> ${Number(semilla.montoInversion).toLocaleString()} MXN</div>}
+                  {(semilla.nombre_proyecto || semilla.nombreProyecto) && <div><strong>Proyecto:</strong> {semilla.nombre_proyecto || semilla.nombreProyecto}</div>}
+                  {(semilla.industria || semilla.giro) && <div><strong>Industria:</strong> {semilla.industria || semilla.giro}</div>}
+                  {(semilla.ubicacion || semilla.cobertura) && <div><strong>Ubicación:</strong> {semilla.ubicacion || semilla.cobertura}</div>}
+                  {(semilla.monto_inversion || semilla.montoInversion) && <div><strong>Inversión:</strong> ${Number(semilla.monto_inversion || semilla.montoInversion).toLocaleString()} MXN</div>}
                   {semilla.problema && <div><strong>Problema:</strong> {semilla.problema.substring(0, 150)}...</div>}
                 </div>
               ) : (
@@ -250,14 +317,26 @@ export default function PromptEditor({ isOpen, onClose, fieldLabel, fieldKey, pr
 
         {/* Footer */}
         {activeTab === 'editor' && (
-          <div style={{ padding: '1.25rem 1.5rem', borderTop: '1px solid var(--border-color)', display: 'flex', justifyContent: 'flex-end', gap: '1rem', background: 'rgba(0,0,0,0.1)' }}>
-            <button className="btn btn-secondary" onClick={onClose}>
-              Cancelar
+          <div style={{ padding: '1.25rem 1.5rem', borderTop: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(0,0,0,0.1)' }}>
+            <button 
+              type="button" 
+              className="btn btn-secondary" 
+              onClick={handleCopyExternalPrompt}
+              style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.8rem' }}
+              title="Copiar prompt listo para IA externa"
+            >
+              {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+              {copied ? '¡Copiado!' : 'Copiar Prompt'}
             </button>
-            <button className="btn btn-primary" onClick={handleSave} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Save className="w-4 h-4" />
-              Guardar Prompt
-            </button>
+            <div style={{ display: 'flex', gap: '0.75rem' }}>
+              <button className="btn btn-secondary" onClick={onClose}>
+                Cancelar
+              </button>
+              <button className="btn btn-primary" onClick={handleSave} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <Save className="w-4 h-4" />
+                Guardar Prompt
+              </button>
+            </div>
           </div>
         )}
       </div>
@@ -269,7 +348,7 @@ export default function PromptEditor({ isOpen, onClose, fieldLabel, fieldKey, pr
         }
         @keyframes fadeIn {
           from { opacity: 0; }
-          to { opacity: 1; }
+          to { transform: opacity: 1; }
         }
       `}</style>
     </>

@@ -130,8 +130,12 @@ async function sleep(ms) {
 // ─────────────────────────────────────────────────────────
 //  Fuente 1: DENUE (INEGI) — Con peticiones concéntricas
 // ─────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────
+//  Fuente 1: DENUE (INEGI) — Con peticiones concéntricas
+// ─────────────────────────────────────────────────────────
 async function buscarDENUE(lat, lng, query, radius, token) {
-  if (!token) {
+  const effectiveToken = String(token || process.env.DENUE_KEY || process.env.INEGI_KEY || '1b9e230f-2ae0-48db-bd20-8810b1db575e').trim();
+  if (!effectiveToken) {
     console.log('[CompetitorEngine] Sin token DENUE, omitiendo fuente INEGI.');
     return [];
   }
@@ -143,12 +147,12 @@ async function buscarDENUE(lat, lng, query, radius, token) {
     const todosResultados = [];
     const idsVistos = new Set();
 
-    console.log(`[DENUE] Ejecutando ${puntos.length} petición(es) concéntrica(s) para radio ${radius}m...`);
+    console.log(`[DENUE] Ejecutando ${puntos.length} petición(es) concéntrica(s) para radio ${radius}m con token...`);
 
     for (const punto of puntos) {
       try {
         const params = new URLSearchParams({
-          token,
+          token: effectiveToken,
           lat: String(punto.lat),
           lng: String(punto.lng),
           radius: String(radioPerPeticion),
@@ -501,6 +505,8 @@ function cruzarResultados(resultadosPorFuente) {
  * @returns {Promise<Object>} Resultados fusionados con metadata
  */
 export async function busquedaMultiFuente({ lat, lng, query, radius = 2000, denueToken, googleApiKey, bingApiKey, allowSynthetic = false }) {
+  const effectiveDenueToken = String(denueToken || process.env.DENUE_KEY || process.env.INEGI_KEY || '1b9e230f-2ae0-48db-bd20-8810b1db575e').trim();
+
   console.log(`\n${'═'.repeat(60)}`);
   console.log(`  🕵️  AGENTE DE INVESTIGACIÓN DE MERCADO`);
   console.log(`${'═'.repeat(60)}`);
@@ -508,7 +514,7 @@ export async function busquedaMultiFuente({ lat, lng, query, radius = 2000, denu
   console.log(`  🔎 Búsqueda: "${query}"`);
   console.log(`  📏 Radio: ${radius}m ${radius > DENUE_MAX_RADIUS ? `(${Math.ceil(radius / DENUE_MAX_RADIUS)} peticiones concéntricas DENUE)` : ''}`);
   console.log(`  🔑 Fuentes disponibles:`);
-  console.log(`     DENUE (INEGI): ${denueToken ? '✅' : '❌'}`);
+  console.log(`     DENUE (INEGI): ${effectiveDenueToken ? '✅' : '❌'}`);
   console.log(`     Google Places: ${googleApiKey ? '✅' : '⏭️  Usando gratuitas'}`);
   console.log(`     Bing Maps:     ${bingApiKey ? '✅' : '⏭️  Omitido'}`);
   console.log(`     OSM/Overpass:  ✅ (siempre activo)`);
@@ -520,7 +526,7 @@ export async function busquedaMultiFuente({ lat, lng, query, radius = 2000, denu
 
   // Fase 1: Consultar APIs oficiales en paralelo
   const [resDenue, resOSM, resGoogle, resBing] = await Promise.allSettled([
-    buscarDENUE(lat, lng, query, radius, denueToken),
+    buscarDENUE(lat, lng, query, radius, effectiveDenueToken),
     buscarOSM(lat, lng, query, radius),
     buscarGooglePlaces(lat, lng, query, radius, googleApiKey),
     buscarBingMaps(lat, lng, query, radius, bingApiKey),

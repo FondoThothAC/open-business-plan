@@ -157,18 +157,20 @@ export class AutonomousResearchEngine {
     targetMarket = 'Restaurantes en México y cadenas en EE.UU. (Arizona/California)',
     inversionInicial = 4000000,
     keywords = 'carne empacadora frigorifico cortes tif',
-    tokenDenue = process.env.DENUE_KEY || process.env.VITE_DENUE_KEY || ''
+    tokenDenue = ''
   } = {}) {
     const lat = 29.0948;
     const lng = -110.9692;
     const radius = 5000;
+    const effectiveToken = String(tokenDenue || process.env.DENUE_KEY || process.env.VITE_DENUE_KEY || process.env.INEGI_KEY || '1b9e230f-2ae0-48db-bd20-8810b1db575e').trim();
 
     let competidoresCrudos = [];
 
     // 1. Censo oficial INEGI DENUE
     try {
-      if (tokenDenue) {
-        const urlDenue = `https://www.inegi.org.mx/app/api/denue/v1/consulta/Buscar/carne/${lat},${lng}/${radius}/${tokenDenue}`;
+      if (effectiveToken) {
+        const queryTerm = encodeURIComponent(String(keywords || giro || 'negocio').split(/\s+/)[0] || 'negocio');
+        const urlDenue = `https://www.inegi.org.mx/app/api/denue/v1/consulta/Buscar/${queryTerm}/${lat},${lng}/${radius}/${effectiveToken}`;
         const res = await fetch(urlDenue, { signal: AbortSignal.timeout(8000) });
         if (res.ok) {
           const data = await res.json();

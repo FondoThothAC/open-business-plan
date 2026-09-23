@@ -5,7 +5,7 @@
  *
  * Calibra de forma adaptativa la extensión de las respuestas de los agentes
  * según la configuración seleccionada ('conciso', 'normal', 'detallado') y
- * la naturaleza del módulo (por ejemplo, reglas ultra-concisas para Canvas y PESTEL).
+ * la naturaleza del módulo (reglas ultra-concisas obligatorias para FODA, Canvas, PESTEL, etc.).
  */
 
 /**
@@ -22,27 +22,47 @@ export function normalizeVerbosity(verbosity = 'normal') {
 }
 
 /**
+ * Determina si un módulo requiere formato de viñetas ultra-concisas por su naturaleza matricial.
+ * @param {string} moduleKey - Clave del módulo analizado.
+ * @returns {boolean}
+ */
+export function isUltraConciseModule(moduleKey = '') {
+  const mod = (moduleKey || '').toLowerCase();
+  return mod === 'foda' || mod === 'canvas' || mod === 'pestel' || mod === 'porter' || mod === 'cinco_fuerzas';
+}
+
+/**
  * Construye la directiva de extensión a inyectar en el System Prompt.
  * @param {string} verbosity - Nivel de detalle configurado.
- * @param {string} moduleKey - Clave del módulo en ejecución (ej. 'canvas', 'pestel').
+ * @param {string} moduleKey - Clave del módulo en ejecución (ej. 'foda', 'canvas', 'pestel').
  * @returns {string} Restricción textual clara para el LLM.
  */
 export function buildVerbosityConstraint(verbosity = 'normal', moduleKey = '') {
   const normVerbosity = normalizeVerbosity(verbosity);
   const mod = (moduleKey || '').toLowerCase();
 
+  // Regla especial prioritaria para Análisis FODA (Fortalezas, Oportunidades, Debilidades, Amenazas)
+  if (mod === 'foda') {
+    return `\n\nREGLA ESTRICTA DE EXTENSIÓN PARA FODA: Formato ultra-conciso obligatorio. Redacta únicamente de 3 a 5 viñetas (bullet points) concretas por cuadrante, compuestas por oraciones cortas y directas al grano (máximo 15 a 25 palabras por viñeta). PROHIBIDO escribir párrafos extensos de fundamentación, introducciones teóricas o relleno narrativo redundante.`;
+  }
+
   // Regla especial prioritaria para Business Model Canvas (9 bloques concisos)
   if (mod === 'canvas') {
-    return `\n\nREGLA ESTRICTA DE EXTENSIÓN PARA CANVAS: Formato ultra-conciso obligatorio. Redacta únicamente de 3 a 5 oraciones cortas y directas en viñetas (bullet points) de máxima síntesis. PROHIBIDO escribir párrafos extensos, introducciones o explicaciones teóricas redundantes. Máximo 30 a 50 palabras por bloque.`;
+    return `\n\nREGLA ESTRICTA DE EXTENSIÓN PARA CANVAS: Formato ultra-conciso obligatorio. Redacta únicamente de 3 a 5 viñetas (bullet points) breves, compuestas por oraciones cortas y directas de máxima síntesis (máximo 15 a 25 palabras por viñeta). PROHIBIDO escribir párrafos extensos, introducciones o explicaciones teóricas redundantes.`;
   }
 
   // Regla especial para PESTEL (factores claros en viñetas sin lore excesivo)
   if (mod === 'pestel') {
-    return `\n\nREGLA ESTRICTA DE EXTENSIÓN PARA PESTEL: Redacta de 3 a 4 viñetas (bullet points) concretas, claras y directas por dimensión. Cada viñeta debe ser una oración puntual sin rodeos ni relleno narrativo.`;
+    return `\n\nREGLA ESTRICTA DE EXTENSIÓN PARA PESTEL: Formato ultra-conciso obligatorio. Redacta únicamente de 3 a 4 viñetas (bullet points) concretas, claras y directas por dimensión. Cada viñeta debe ser una oración puntual sin rodeos ni relleno narrativo (máximo 15 a 25 palabras por viñeta). PROHIBIDO redactar párrafos introductorios.`;
+  }
+
+  // Regla especial para Porter / Cinco Fuerzas
+  if (mod === 'porter' || mod === 'cinco_fuerzas') {
+    return `\n\nREGLA ESTRICTA DE EXTENSIÓN PARA 5 FUERZAS DE PORTER: Formato ultra-conciso obligatorio. Redacta de 3 a 4 viñetas (bullet points) cortas y directas por fuerza de la industria (máximo 15 a 25 palabras por viñeta). Sin párrafos introductorios.`;
   }
 
   if (normVerbosity === 'conciso') {
-    return `\n\nREGLA ESTRICTA DE EXTENSIÓN (Modo Conciso): Redacta de forma directa y sintética, utilizando viñetas (bullet points) breves de 50 a 80 palabras por campo. Ve directo al grano, sin explicaciones redundantes ni relleno.`;
+    return `\n\nREGLA ESTRICTA DE EXTENSIÓN (Modo Conciso): Redacta de forma directa y sintética, utilizando viñetas (bullet points) breves compuestas por oraciones cortas (máximo 15 a 25 palabras por viñeta, total de 40 a 70 palabras por campo). Ve directo al grano, sin introducciones ni explicaciones de relleno.`;
   }
 
   if (normVerbosity === 'detallado') {
@@ -50,7 +70,7 @@ export function buildVerbosityConstraint(verbosity = 'normal', moduleKey = '') {
   }
 
   // Nivel normal equilibrado
-  return `\n\nREGLA DE EXTENSIÓN (MODO NORMAL EQUILIBRADO): Redacta en un formato profesional y equilibrado, combinando 1 párrafo conciso de fundamentación con viñetas estructuradas (120 a 180 palabras por campo).`;
+  return `\n\nREGLA DE EXTENSIÓN (MODO NORMAL EQUILIBRADO): Redacta en un formato profesional y equilibrado, priorizando viñetas estructuradas con oraciones concisas y directas (máximo 80 a 120 palabras por campo), evitando párrafos largos de relleno.`;
 }
 
 /**
@@ -66,22 +86,30 @@ export function getFieldFormatGuidance(field = {}, verbosity = 'normal', moduleK
   }
 
   const mod = (moduleKey || '').toLowerCase();
+  if (mod === 'foda') {
+    return '3 a 5 viñetas cortas, concisas y directas en oraciones breves (máximo 20 palabras por viñeta, sin párrafo introductorio)';
+  }
+
   if (mod === 'canvas') {
-    return '3 a 5 viñetas cortas, concisas y directas (máximo 40 palabras)';
+    return '3 a 5 viñetas cortas, concisas y directas (máximo 20 palabras por viñeta, sin explicaciones largas)';
   }
 
   if (mod === 'pestel') {
-    return '3 a 4 viñetas directas y concretas de alto impacto';
+    return '3 a 4 viñetas directas y concretas de alto impacto en oraciones cortas';
+  }
+
+  if (mod === 'porter' || mod === 'cinco_fuerzas') {
+    return '3 a 4 viñetas cortas y concisas analizando la fuerza competitiva';
   }
 
   const normVerbosity = normalizeVerbosity(verbosity);
   if (normVerbosity === 'conciso') {
-    return 'Texto conciso en viñetas directas (máximo 60-80 palabras)';
+    return 'Texto conciso en viñetas directas de oraciones cortas (máximo 50-70 palabras)';
   }
 
   if (normVerbosity === 'detallado') {
     return 'Texto detallado y ejecutivo directamente vinculado a la propuesta de valor y ubicación del proyecto';
   }
 
-  return 'Texto profesional equilibrado (1 párrafo + viñetas, 120-180 palabras)';
+  return 'Texto profesional y conciso en viñetas claras (80-120 palabras)';
 }
