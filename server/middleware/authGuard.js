@@ -20,6 +20,9 @@ const RUTAS_PUBLICAS = [
   '/api/auth/login',
   '/api/auth/register',
   '/api/health',
+  '/swarm/interview',
+  '/swarm/stream',
+  '/swarm/industrialize',
   '/api/swarm/interview',
   '/api/swarm/stream',
   '/api/swarm/industrialize'
@@ -32,8 +35,18 @@ const RUTAS_PUBLICAS = [
  * Enriquece req.user con los datos del usuario.
  */
 export function authGuard(req, res, next) {
-  const rutaLimpia = req.path.replace(/\/$/, '');
-  const esRutaPublica = RUTAS_PUBLICAS.some(ruta => rutaLimpia === ruta || rutaLimpia.startsWith(ruta + '/'));
+  const rutaRelativa = (req.path || '').replace(/\/$/, '');
+  const rutaCompleta = ((req.baseUrl || '') + (req.path || '')).replace(/\/$/, '');
+  const rutaOriginal = (req.originalUrl || '').split('?')[0].replace(/\/$/, '');
+
+  const esRutaPublica = RUTAS_PUBLICAS.some(ruta => {
+    const rutaNorm = ruta.replace(/\/$/, '');
+    return (
+      rutaRelativa === rutaNorm || rutaRelativa.startsWith(rutaNorm + '/') ||
+      rutaCompleta === rutaNorm || rutaCompleta.startsWith(rutaNorm + '/') ||
+      rutaOriginal === rutaNorm || rutaOriginal.startsWith(rutaNorm + '/')
+    );
+  });
 
   // 1. Prioridad: Cookie HttpOnly
   let token = req.cookies?.obp_auth_token || null;
