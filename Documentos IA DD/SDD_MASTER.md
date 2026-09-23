@@ -427,3 +427,18 @@ Con base en el Plan de Saneamiento y Endurecimiento formalizado en `docs/archite
   * Detección activa de error HTTP 402 con reintento transparente inmediato en `gpt-oss:20b`.
   * Soporte en el cuerpo de la petición (`apiKey`, `ollamaKey`, `bobOllamaKey`, `groqKey`) y resolución hacia variables de entorno del servidor (`process.env.OLLAMA_KEY`, `process.env.GROQ_KEY`).
   * Resiliencia del lado cliente en `src/lib/bobAgent.js`: ante cualquier error de comunicación o rechazo del servidor, `sendBobMessage` ejecuta fallback transparente a `callAiProvider` en el cliente, permitiendo que la interacción continúe sin interrupciones.
+
+### 5.17 Calibración Financiera Realista para Microempresas y Depuración de Tabla de Maquinaria
+* **Corrección de Inflación 12x en Ingresos y Ruptura de Retroalimentación (`src/lib/finanzas/calculadoraFinanciera.js`):**
+  * Se eliminó el bucle de retroalimentación donde montos anuales extraídos de textos narrativos (`Año 1: Ventas $...`) eran tomados como ingresos mensuales, multiplicando artificialmente las ventas anuales por 12 (lo que elevaba proyectos barriales a $6,000,000 MXN en ventas y $11,000,000 MXN de VPN).
+  * Se implementó anclaje directo a la absorción de mercado real (`SOM` / `SAM` en `planData.mercado.segmentacion`): para proyectos locales/microempresariales (ej. repostería, alimentos artesanales en colonias de 2,000 a 3,000 habitantes), el volumen mensual se calibra a una demanda factible de 1,200 a 2,500 piezas/mes ($21,600 a $45,000 MXN/mes).
+  * Calibración proporcional de costos fijos (renta, servicios, administración) que no excedan el 30% del volumen de venta estimado en negocios artesanales/domiciliarios.
+  * Inversión inicial calibrada a activos tangibles de microproducción ($35,000 a $45,000 MXN), resultando en un VPN plausible de ~$143,697 MXN, TIR de 35.7% y Payback de 9 meses.
+* **Depuración de Tabla de Maquinaria y Equipo en Vista Previa (`src/modules/VistaPrevia.jsx`):**
+  * En `MaquinariaTable({ data, planData, exportScope })`, se prioriza el desglose estructurado de activos (`planData.organizacion.inversion.desglose_capex_json`), visualizando equipos reales con sus costos unitarios y vidas útiles reales.
+  * Filtro estricto contra oraciones narrativas en texto libre: oraciones explicativas que inician con *"Para la...", "La línea...", "Además...", "El proceso..."* son descartadas en lugar de ser interpretadas como máquinas con costo arbitrario de $180,000 MXN.
+  * Sustitución de fallbacks de minería pesada ($1.85M en bancos hidráulicos) por equipos pertinentes al sector comercial/artesanal (horno de convección $14k, batidora $8k, mesas inox $4.5k, selladora $1.5k).
+* **Formateo Limpio de Período de Recuperación (Payback) (`src/components/FinancialCharts.jsx`):**
+  * Se sustituyó la visualización cruda con pipes (`0 año(s)|0 mes(es)|23 día(s)`) por el formateador semántico `formatearPayback`, el cual presenta cadenas legibles y profesionales como `"9 meses"`, `"8 meses 10 días"` o `"1.2 Años"`.
+  * Sincronización bidireccional entre `corrida_automatica` y las tarjetas ejecutivas de KPI.
+

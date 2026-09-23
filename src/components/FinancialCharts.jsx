@@ -982,6 +982,25 @@ export const FinancialMetricsCards = ({ metrics = {} }) => {
     return `${num.toFixed(1)}%`;
   };
 
+  const formatearPayback = (val) => {
+    if (val === null || val === undefined || val === '' || val === 'N/D') return 'N/D';
+    if (typeof val === 'number') return `${val.toFixed(1)} Años`;
+    const str = String(val);
+    if (str.includes('|')) {
+      const matchYears = str.match(/(\d+)\s*año/i);
+      const matchMonths = str.match(/(\d+)\s*mes/i);
+      const matchDays = str.match(/(\d+)\s*d[íi]a/i);
+      const y = matchYears ? parseInt(matchYears[1], 10) : 0;
+      const m = matchMonths ? parseInt(matchMonths[1], 10) : 0;
+      const d = matchDays ? parseInt(matchDays[1], 10) : 0;
+      if (y > 0) return `${y} año${y > 1 ? 's' : ''}${m > 0 ? ` ${m} m` : ''}`;
+      if (m > 0) return `${m} mes${m > 1 ? 'es' : ''}${d > 0 ? ` ${d} d` : ''}`;
+      if (d > 0) return `${d} días`;
+      return 'Inmediato';
+    }
+    return str;
+  };
+
   const tirValor = metrics.tir ?? metrics.irr ?? 0;
   const vpnValor = metrics.npv ?? metrics.vpn ?? 0;
   const roiValor = metrics.roi ?? 0;
@@ -1014,7 +1033,7 @@ export const FinancialMetricsCards = ({ metrics = {} }) => {
     },
     {
       titulo: 'Período de Recuperación (Payback)',
-      valor: typeof paybackValor === 'number' ? `${paybackValor.toFixed(1)} Años` : String(paybackValor),
+      valor: formatearPayback(paybackValor),
       descripcion: 'Horizonte temporal para recuperar la inversión inicial',
       color: '#7c3aed',
       fondo: '#f5f3ff',

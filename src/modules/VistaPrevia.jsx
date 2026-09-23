@@ -473,69 +473,117 @@ function ImpactoAmbientalWidget({ data }) {
 }
 
 // --- SUBCOMPONENTE: MAQUINARIA Y TECNOLOGIA TABLE ---
-function MaquinariaTable({ data, exportScope }) {
+function MaquinariaTable({ data, planData, exportScope }) {
   const maquinaria = data?.maquinaria || '';
   const equipo = data?.equipo || '';
   const herramientas = data?.herramientas || '';
 
   const items = [];
-  
-  const parseText = (text, type) => {
-    if (!text || typeof text !== 'string') return;
-    
-    let rawLines = text
-      .split(/(?:\r?\n)+|(?:\s*[•·]\s*)|(?:\s*;\s*(?=[A-Z0-9]))|(?:\s*\.\s+(?=[0-9]+\.|\d+\)|\b[A-Z]))/)
-      .map(s => s.trim())
-      .filter(s => s.length > 5);
 
-    if (rawLines.length === 1 && rawLines[0].includes(').')) {
-      rawLines = rawLines[0].split(/\)\.\s*/).map((s, idx, arr) => idx < arr.length - 1 ? s + ')' : s).map(s => s.trim()).filter(s => s.length > 5);
-    }
-
-    rawLines.forEach(line => {
-      const priceMatch = line.match(/\$\s*(\d{1,3}(?:,\d{3})*(?:\.\d+)?|\d+)/) || line.match(/(\d{1,3}(?:,\d{3})+(?:\.\d+)?)\s*(?:MXN|USD|pesos)/i);
-      let price = null;
-      if (priceMatch) {
-        price = Number(priceMatch[1].replace(/,/g, ''));
-      }
-      
-      const yearsMatch = line.match(/(\d+)\s*(?:años?|year)/i);
-      const years = yearsMatch ? Number(yearsMatch[1]) : (type === 'Maquinaria' ? 10 : type === 'Equipo' ? 5 : 3);
-
-      let name = line
-        .replace(/^\d+[.)]\s*/, '')
-        .replace(/\([^)]*?(?:\$|\baños\b|MXN)[^)]*?\)/gi, '')
-        .replace(/:\s*\$[\d,]+.*/, '')
-        .replace(/\$[\d,]+(\s*MXN)?/gi, '')
-        .replace(/,\s*\d+\s*años.*/i, '')
-        .trim();
-
-      name = name.replace(/^[-–—:\s]+|[-–—:\s,.]+$/g, '').trim();
-
-      if (name.length > 70) name = name.substring(0, 70) + '...';
-
-      if (name && name.length > 2 && !/^\d+$/.test(name)) {
-        items.push({
-          nombre: name,
-          tipo: type,
-          costo: price || (type === 'Maquinaria' ? 180000 : type === 'Equipo' ? 45000 : 15000),
-          vidaUtil: years,
+  // 1. Prioridad: Desglose estructurado de inversión en el módulo de organización
+  try {
+    const rawCapex = planData?.organizacion?.inversion?.desglose_capex_json;
+    if (rawCapex) {
+      const parsed = typeof rawCapex === 'string' ? JSON.parse(rawCapex) : rawCapex;
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        parsed.forEach(item => {
+          const monto = Number(item.monto || item.amount || 0);
+          if (monto > 0) {
+            const nombre = item.concepto || item.name || 'Activo Fijo';
+            const tipo = item.tipo || (/tecnolog|software|comput/i.test(nombre) ? 'Tecnología' : (/licencia|permiso|marca/i.test(nombre) ? 'Intangible / Legal' : 'Maquinaria y Equipo'));
+            const vidaUtil = /tecnolog|comput|selladora/i.test(nombre) ? 3 : (/licencia|adecuac/i.test(nombre) ? 5 : 10);
+            items.push({
+              nombre,
+              tipo,
+              costo: monto,
+              vidaUtil,
+            });
+          }
         });
       }
-    });
-  };
+    }
+  } catch {}
 
-  parseText(maquinaria, 'Maquinaria');
-  parseText(equipo, 'Equipo');
-  parseText(herramientas, 'Herramienta');
+  // 2. Fallback: Parsear texto narrativo si no existe desglose estructurado
+  if (items.length === 0) {
+    const seedCapex = Number(planData?.semilla?.inversion_esperada || planData?.semilla?.finanzas?.inversion_total || 50000);
+    const isMicro = seedCapex < 150000;
+    const defaultFallbackCost = (type) => {
+      if (isMicro) {
+        return type === 'Maquinaria' ? Math.round(seedCapex * 0.35) : type === 'Equipo' ? Math.round(seedCapex * 0.18) : Math.round(seedCapex * 0.08);
+      }
+      return type === 'Maquinaria' ? 180000 : type === 'Equipo' ? 45000 : 15000;
+    };
 
-  const defaultItems = [
+    const parseText = (text, type) => {
+      if (!text || typeof text !== 'string') return;
+      
+      let rawLines = text
+        .split(/(?:\r?\n)+|(?:\s*[•·]\s*)|(?:\s*;\s*(?=[A-Z0-9]))|(?:\s*\.\s+(?=[0-9]+\.|\d+\)|\b[A-Z]))/)
+        .map(s => s.trim())
+        .filter(s => s.length > 3);
+
+      if (rawLines.length === 1 && rawLines[0].includes(').')) {
+        rawLines = rawLines[0].split(/\)\.\s*/).map((s, idx, arr) => idx < arr.length - 1 ? s + ')' : s).map(s => s.trim()).filter(s => s.length > 3);
+      }
+
+      rawLines.forEach(line => {
+        // Filtrar oraciones explicativas largas que no son nombres de equipos
+        if (/^(?:para\s+la|la\s+l[ií]nea|adem[aá]s|el\s+proceso|se\s+requiere|el\s+objetivo|los\s+equipos|cabe\s+destacar|asimismo)/i.test(line)) {
+          return;
+        }
+
+        const priceMatch = line.match(/\$\s*(\d{1,3}(?:,\d{3})*(?:\.\d+)?|\d+)/) || line.match(/(\d{1,3}(?:,\d{3})+(?:\.\d+)?)\s*(?:MXN|USD|pesos)/i);
+        let price = null;
+        if (priceMatch) {
+          price = Number(priceMatch[1].replace(/,/g, ''));
+        }
+        
+        const yearsMatch = line.match(/(\d+)\s*(?:años?|year)/i);
+        const years = yearsMatch ? Number(yearsMatch[1]) : (type === 'Maquinaria' ? 10 : type === 'Equipo' ? 5 : 3);
+
+        let name = line
+          .replace(/^\d+[.)]\s*/, '')
+          .replace(/\([^)]*?(?:\$|\baños\b|MXN)[^)]*?\)/gi, '')
+          .replace(/:\s*\$[\d,]+.*/, '')
+          .replace(/\$[\d,]+(\s*MXN)?/gi, '')
+          .replace(/,\s*\d+\s*años.*/i, '')
+          .trim();
+
+        name = name.replace(/^[-–—:\s]+|[-–—:\s,.]+$/g, '').trim();
+
+        if (name.length > 60) name = name.substring(0, 60) + '...';
+
+        if (name && name.length >= 3 && !/^\d+$/.test(name) && !/^(?:en|de|con|por|un|una|el|la)\s/i.test(name)) {
+          items.push({
+            nombre: name,
+            tipo: type,
+            costo: price || defaultFallbackCost(type),
+            vidaUtil: years,
+          });
+        }
+      });
+    };
+
+    parseText(maquinaria, 'Maquinaria');
+    parseText(equipo, 'Equipo');
+    parseText(herramientas, 'Herramienta');
+  }
+
+  // Fallbacks por sector si no se detectó ningún elemento
+  const isIndustrial = Boolean(planData?.semilla?.proyecto?.includes('Cuantico') || planData?.semilla?.proyecto?.includes('MHI'));
+  const defaultItems = isIndustrial ? [
     { nombre: 'Banco de Pruebas Dinámico e Hidráulico de Alta Presión', tipo: 'Maquinaria', costo: 1850000, vidaUtil: 15 },
     { nombre: 'Puente Grúa Monorriel de 10 Toneladas', tipo: 'Maquinaria', costo: 450000, vidaUtil: 20 },
     { nombre: 'Unidad Móvil de Microfiltración y Deshidratación de Aceite', tipo: 'Maquinaria', costo: 320000, vidaUtil: 10 },
     { nombre: 'Máquina de Lavado y Ultrasonido Industrial para Válvulas', tipo: 'Equipo', costo: 280000, vidaUtil: 12 },
     { nombre: 'Unidad Móvil Pick-up 4x4 equipada con módulo hidráulico', tipo: 'Vehículo / Logística', costo: 650000, vidaUtil: 5 },
     { nombre: 'Estación de Telemetría IoT y Diagnóstico Preventivo', tipo: 'Equipo', costo: 85000, vidaUtil: 5 }
+  ] : [
+    { nombre: 'Horno de convección y horneado', tipo: 'Maquinaria', costo: 14000, vidaUtil: 10 },
+    { nombre: 'Batidora industrial de pedestal', tipo: 'Maquinaria', costo: 8000, vidaUtil: 10 },
+    { nombre: 'Mesa de trabajo de acero inoxidable y charolas', tipo: 'Equipo', costo: 4500, vidaUtil: 10 },
+    { nombre: 'Selladora manual de bolsas y utensilios', tipo: 'Equipo', costo: 1500, vidaUtil: 5 }
   ];
 
   const finalItems = items.length > 0 ? items.slice(0, 8) : defaultItems;
