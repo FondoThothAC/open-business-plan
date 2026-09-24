@@ -55,9 +55,12 @@ export default function ExecutiveFinancialDashboard({ planData, financialData = 
     const payback = metricsData.paybackPeriod ?? metricsData.payback ?? parseAmount(rentabilidadData.payback, 1.5);
     const bc = metricsData.benefitCostRatio ?? metricsData.bc ?? parseAmount(rentabilidadData.relacion_bc, 1.45);
     
-    // Inversión Inicial: Fase 1 ($4M) vs Escenario Total ($16.8M)
-    const capexFase1 = parseAmount(inversionData.total || inversionData.inversion_fija, 4000000);
-    const capexEscenario = 16800000;
+    // Inversión Inicial real del plan: fallback canónico dinámico respetando la escala del negocio
+    const montoPlan = parseAmount(planData?.montoInversion, 0);
+    const inversionFija = parseAmount(inversionData.inversion_fija, 0);
+    const inversionTotal = parseAmount(inversionData.total, 0);
+    const capexFase1 = inversionTotal || inversionFija || montoPlan || 150000;
+    const capexEscenario = Math.round(capexFase1 * 2.5);
 
     return [
       {
@@ -98,12 +101,12 @@ export default function ExecutiveFinancialDashboard({ planData, financialData = 
       },
       {
         id: 'capex',
-        label: 'Inversión Fase 1 / Escenario',
+        label: 'Inversión Inicial / Escala',
         value: `${formatearMoneda(capexFase1)}`,
-        subtext: `Fase 1: $4M | Escenario Total: ${formatearMoneda(capexEscenario)}`,
+        subtext: `Inicial: ${formatearMoneda(capexFase1)} | Escala: ${formatearMoneda(capexEscenario)}`,
         status: 'blue',
         icon: Scale,
-        desc: 'Fase 1 (Taller Piloto $4M MXN) · Escenario Expansión ($16.8M MXN Serie A)'
+        desc: 'Inversión inicial requerida para maquinaria, herramientas y capital de trabajo'
       },
       {
         id: 'bc',

@@ -35,7 +35,11 @@ export default function DocumentUploader({ compact = false, onClose = null }) {
         const parsedDoc = await parseDocumentFile(file, {
           groqKey,
           onProgress: (pct) => {
-            setStatusMessage(`OCR ${file.name}: ${pct}%`);
+            if (isAud) {
+              setStatusMessage(`Transcribiendo audio ${file.name}: ${pct}% (Whisper)`);
+            } else {
+              setStatusMessage(`OCR ${file.name}: ${pct}%`);
+            }
           }
         });
         newDocs.push({

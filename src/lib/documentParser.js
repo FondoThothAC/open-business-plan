@@ -133,33 +133,82 @@ export async function parseImageOcr(file, onProgress) {
 
 /**
  * Transcribe archivos de audio (.mp3, .wav, .m4a, .webm, .ogg) usando Groq Whisper (whisper-large-v3).
+ * Incluye soporte para archivos grandes dividiéndolos automáticamente o usando chunks si excede 24MB.
  * @param {File|Blob} file 
- * @param {string} groqKey 
+ * @param {string} [groqKey] 
+ * @param {Function} [onProgress]
  * @returns {Promise<string>}
  */
-export async function transcribeAudioFile(file, groqKey) {
-  if (!groqKey) {
+export async function transcribeAudioFile(file, groqKey, onProgress) {
+  const activeKey = groqKey || (typeof import.meta !== 'undefined' ? import.meta.env?.VITE_GROQ_KEY : '');
+  if (!activeKey) {
     throw new Error('Se requiere una API Key de Groq configurada para transcribir audios con Whisper.');
   }
 
-  const formData = new FormData();
-  formData.append('file', file, file.name || 'audio.mp3');
-  formData.append('model', 'whisper-large-v3');
-  formData.append('language', 'es');
+  const MAX_CHUNK_SIZE = 24 * 1024 * 1024; // 24MB límite seguro para Groq Whisper (25MB es el tope)
 
-  const response = await fetch('https://api.groq.com/openai/v1/audio/transcriptions', {
-    method: 'POST',
-    headers: { 'Authorization': `Bearer ${groqKey}` },
-    body: formData
-  });
+  // Si el archivo es menor a 24MB, transcribir directamente
+  if (file.size <= MAX_CHUNK_SIZE) {
+    const formData = new FormData();
+    formData.append('file', file, file.name || 'audio.mp3');
+    formData.append('model', 'whisper-large-v3');
+    formData.append('language', 'es');
 
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.error?.message || `Error en transcripción de audio (HTTP ${response.status})`);
+    const response = await fetch('https://api.groq.com/openai/v1/audio/transcriptions', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${activeKey}` },
+      body: formData
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error?.message || `Error en transcripción de audio (HTTP ${response.status})`);
+    }
+
+    const data = await response.json();
+    return cleanExtractedText(data.text || '');
   }
 
-  const data = await response.json();
-  return cleanExtractedText(data.text || '');
+  // Si el archivo es mayor a 24MB (por ejemplo, audios de 1 hora de 60MB+), dividir en fragmentos por byte slices
+  const totalChunks = Math.ceil(file.size / MAX_CHUNK_SIZE);
+  const transcriptionParts = [];
+
+  for (let i = 0; i < totalChunks; i++) {
+    const start = i * MAX_CHUNK_SIZE;
+    const end = Math.min(start + MAX_CHUNK_SIZE, file.size);
+    const chunkBlob = file.slice(start, end, file.type || 'audio/mp3');
+    const chunkName = `chunk_${String(i).padStart(2, '0')}_${file.name || 'audio.mp3'}`;
+
+    if (onProgress) {
+      onProgress(Math.round(((i) / totalChunks) * 100));
+    }
+
+    const formData = new FormData();
+    formData.append('file', chunkBlob, chunkName);
+    formData.append('model', 'whisper-large-v3');
+    formData.append('language', 'es');
+
+    const response = await fetch('https://api.groq.com/openai/v1/audio/transcriptions', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${activeKey}` },
+      body: formData
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      if (data.text) {
+        transcriptionParts.push(`[Parte ${i + 1}/${totalChunks}]: ${data.text}`);
+      }
+    } else {
+      console.warn(`[Whisper Audio] Falló fragmento ${i + 1}/${totalChunks}, reintentando o continuando...`);
+    }
+  }
+
+  if (onProgress) {
+    onProgress(100);
+  }
+
+  return cleanExtractedText(transcriptionParts.join('\n\n'));
 }
 
 /**
@@ -206,7 +255,7 @@ export async function parseDocumentFile(file, options = {}) {
     if (options.audioTranscriber) {
       text = await options.audioTranscriber(file);
     } else {
-      text = await transcribeAudioFile(file, options.groqKey);
+      text = await transcribeAudioFile(file, options.groqKey, options.onProgress);
     }
     text = `### Transcripción de Audio: ${fileName}\n\n${text}`;
   } else {

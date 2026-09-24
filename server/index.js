@@ -141,8 +141,8 @@ app.use(cors({
   credentials: true
 }));
 app.use(cookieParser());
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+app.use(express.json({ limit: '100mb' }));
+app.use(express.urlencoded({ extended: true, limit: '100mb' }));
 
 // CSRF de origen para mutaciones autenticadas. SameSite=Lax protege navegadores
 // modernos; esta comprobación cubre clientes que envían cookies explícitamente.

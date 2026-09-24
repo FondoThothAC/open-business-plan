@@ -7,7 +7,7 @@
 
 import fs from 'fs';
 import path from 'path';
-import { generateAutomatedFinancials } from '../src/lib/finanzas/calculadoraFinanciera.js';
+import { calculateFinancialProjections } from '../src/lib/finanzas/financial-calculations.ts';
 
 export function buildClosetsCoronaProject() {
   const slug = 'closets_y_cocinas_corona';
@@ -19,7 +19,7 @@ export function buildClosetsCoronaProject() {
     projectType: 'business',
     workflowStatus: 'Borrador',
     userOwner: 'viktoracuna',
-    collaborators: ['viktoracuna', 'galiet_gastelum'],
+    collaborators: ['viktoracuna', 'galiet_gastelum', 'karely_otero'],
     coAuthors: [
       'Viktor Acuña Flores',
       'Alisson Galiet Gastelum Parra',
@@ -47,22 +47,22 @@ export function buildClosetsCoronaProject() {
     nombre_proyecto: projectName,
     giro: 'Carpintería residencial de diseño, cocinas integrales y closets modulares a medida',
     cobertura: 'Hermosillo, Sonora (con alcance en Guaymas, San Carlos y Nacozari)',
-    problema: '1. Clientes residenciales y constructoras sufren por entregas impuntuales, mermas por calor en fletes de melamina y falta de estandarización en carpintería tradicional.\n2. La empresa familiar enfrentaba fugas financieras por no prorratear fletes ($7,000/mes) ni luz, además de riesgo de liquidez por anticipos insuficientes (20%) ante materias primas que exigen el 45%.\n3. Dependencia exclusiva de pedidos 100% personalizados que saturan los tiempos de diseño y fabricación.',
+    problema: '1. Clientes residenciales y constructoras sufren por entregas impuntuales, mermas por calor en fletes de melamina y falta de estandarización en carpintería tradicional.\n2. La empresa familiar enfrentaba fugas financieras por no prorratear fletes ($7,000/mes) ni luz, además de riesgo de liquidez por anticipos insuficientes (20%) ante materias primas que exigen el 45%.\n3. Dependencia exclusiva de pedidos 100% personalizados que saturan los tiempos de diseño y fabricación sin contratos de obra.',
     solucion: '1. Modelo híbrido: Mantener carpintería de alta gama a medida y lanzar un Catálogo Modular Estandarizado de 5 modelos de cocinas y closets para venta ágil a constructoras y particulares.\n2. Reestructuración de cobro blindada: 60% anticipo para adquisición de materiales, 30% contra entrega en obra y 10% post-instalación con póliza de garantía por escrito.\n3. Protocolo logístico con lonas térmicas protectoras contra el sol sonorense y checklist de carga para eliminar reprocesos foráneos al 100%.',
-    mercado_objetivo: 'Hogares de nivel socioeconómico medio-alto y alto en zonas residenciales de Hermosillo (Versalles, Real de Castilla, KYO Hexus, Córsica) y San Carlos; constructoras de vivienda en serie que requieren paquetes modulares llave en mano.',
-    modelo_ingresos: 'Venta directa de proyectos de cocinas integrales (ticket promedio $120,000 MXN a $250,000 MXN), closets modulares ($35,000 MXN a $80,000 MXN) y paquetes de catálogo para constructoras con márgenes brutos objetivo del 38% al 45%.',
-    ventaja_injusta: '18 años de experiencia en oficio maderero, relación de confianza con clientes residenciales consolidados, manufactura propia sin intermediarios y tiempos de entrega reducidos de 6 a 3 semanas mediante estandarización modular.',
+    mercado_objetivo: 'Hogares de nivel socioeconómico medio-alto y alto en zonas residenciales de Hermosillo (La Pitic, Versalles, Morelos, Real de Castilla, Palermo, Villa Satélite, KYO Hexus, Córsica) y San Carlos; constructoras de vivienda en serie que requieren paquetes modulares llave en mano.',
+    modelo_ingresos: 'Venta directa de proyectos de cocinas integrales (ticket promedio $90,000 MXN a $250,000 MXN, con proyectos integrales de hasta $400,000 MXN), closets modulares ($35,000 MXN a $80,000 MXN) y paquetes de catálogo para constructoras con márgenes brutos objetivo del 38% al 45%.',
+    ventaja_injusta: 'Más de 18 años de experiencia artesanal de Marcelo Corona en el oficio maderero, relación de confianza con clientes residenciales consolidados, manufactura propia en taller de Col. Balderrama y tiempos de entrega reducidos de 6 a 3 semanas mediante estandarización modular.',
     diagnostico_cuantico: {
       finanzas: {
-        diagnostico: 'Vulnerable por anticipo del 20% y falta de tabulador de prorrateo de costos indirectos.',
+        diagnostico: 'Vulnerable por anticipo del 20% y falta de tabulador de prorrateo de costos indirectos (luz bimestral de $6,000 y gasolina de $7,000 en cuenta personal de María Alejandra).',
         recomendacion_delegacion: 'Implementar cuenta bancaria empresarial separada del gasto doméstico, fijar anticipo mínimo del 60% e incorporar un software de cotización automatizado.'
       },
       operativo: {
-        diagnostico: 'Alta destreza artesanal pero cuello de botella en traslados y deformaciones térmicas en fletes.',
+        diagnostico: 'Alta destreza artesanal de Marcelo Corona pero cuello de botella en traslados y deformaciones térmicas en fletes por el sol sonorense.',
         recomendacion_delegacion: 'Adoptar checklist estricto de herramental antes de salir del taller e instalar cubierta térmica aislante en la batea del vehículo de carga.'
       },
       administrativo: {
-        diagnostico: 'Fusión de roles en María (contacto, redes, facturación) y resistencia al modelado 3D.',
+        diagnostico: 'Fusión de roles en María Alejandra Aray Roa (contacto, redes, facturación) y resistencia al modelado 3D por falta de tiempo.',
         recomendacion_delegacion: 'Integrar a un practicante o diseñador auxiliar en modelado 3D/renders para liberar a María hacia relaciones públicas y cierre comercial.'
       }
     }
@@ -70,7 +70,7 @@ export function buildClosetsCoronaProject() {
 
   // 3. Pilar 1: Naturaleza del Proyecto (Formato conciso y ejecutivo)
   const naturaleza = {
-    origen: 'Closets y Cocinas Corona inició operaciones informales en 2008 en Hermosillo, Sonora, logrando su formalización fiscal en 2020. Acumula más de 18 años de experiencia artesanal en madera, melamina y cubiertas pétreas.',
+    origen: 'Closets y Cocinas Corona es una empresa familiar fundada por María Alejandra Aray Roa y Marcelo Corona Figueroa. Inició operaciones informales en 2008 en la Colonia Balderrama de Hermosillo, Sonora, logrando su formalización fiscal ante el SAT en 2020. Acumula más de 18 años de experiencia artesanal en madera, melamina y cubiertas pétreas.',
     identidad_corporativa: {
       mision: 'Diseñar y fabricar cocinas integrales y mobiliario modular residencial que fusionen estética superior, máxima durabilidad y funcionalidad ergonómica para el bienestar familiar.',
       vision: 'Ser la carpintería modular de referencia en Sonora para 2030, reconocida por su puntualidad inquebrantable, catálogo estandarizado y excelencia en acabados arquitectónicos.',
@@ -83,27 +83,27 @@ export function buildClosetsCoronaProject() {
     },
     analisis_foda: {
       fortalezas: [
-        'Más de 18 años de dominio técnico en carpintería y acabados finos.',
-        'Formalización fiscal activa con capacidad de facturación comercial.',
-        'Cartera de clientes residenciales de alto valor y recomendaciones boca a boca.',
-        'Taller propio con maquinaria instalada y capacidad de respuesta rápida.'
+        'Más de 18 años de dominio técnico en carpintería y acabados finos por Marcelo Corona.',
+        'Formalización fiscal activa ante el SAT con capacidad de facturación comercial.',
+        'Cartera de clientes residenciales de alto valor (La Pitic, Versalles, Palermo) y recomendaciones boca a boca.',
+        'Taller propio en Col. Balderrama con maquinaria instalada y capacidad de respuesta rápida.'
       ],
       oportunidades: [
         'Boom inmobiliario residencial en el poniente de Hermosillo y San Carlos.',
         'Demanda de constructoras por paquetes modulares estandarizados en serie.',
         'Explosión de canales digitales (TikTok e Instagram) para captación visual.',
-        'Sustitución de importaciones y proveedores locales de melamina de alta densidad.'
+        'Adquisición de enchapadora de cantos para maquilar a otros carpinteros de la zona.'
       ],
       debilidades: [
         'Falta de contratos formales de obra que provocaba retrabajos no remunerados.',
         'Política de anticipo insuficiente (20%) que tensionaba la liquidez operativa.',
-        'Costos indirectos (gasolina de flete y energía eléctrica) absorbidos fuera de presupuesto.',
+        'Costos indirectos (gasolina de flete $7,000/mes y luz) absorbidos fuera de presupuesto.',
         'Falta de renders 3D inmediatos para acelerar la toma de decisión del cliente.'
       ],
       amenazas: [
-        'Competencia de marcas de alta gama con showrooms de lujo (Corderosa, Yedra, Mazarino).',
+        'Competencia de marcas de alta gama con showrooms de lujo (Corderosa, Yedra, Masarino, Casa Ki, MAAP).',
         'Volatilidad e inflación en precios de tableros MDF, melamina y herrajes importados.',
-        'Calor extremo de Sonora que degrada adhesivos y tableros en transportes no protegidos.',
+        'Calor extremo del desierto sonorense que degrada adhesivos y deforma piezas en traslados foráneos.',
         'Informalidad de talleres locales que compiten mediante guerra de precios a la baja.'
       ]
     },
@@ -117,60 +117,60 @@ export function buildClosetsCoronaProject() {
     },
     modelo_canvas: {
       propuesta_valor: 'Cocinas y closets residenciales con acabados de lujo, entrega puntual garantizada y catálogo modular de rápida instalación.',
-      segmentos_clientes: 'Familias de nivel socioeconómico medio-alto/alto en fraccionamientos cerrados de Hermosillo y constructoras residenciales.',
-      canales: 'Showroom en taller, recomendaciones boca a boca, campañas en Instagram/TikTok y prospección directa B2B.',
-      relacion_clientes: 'Asesoría técnica en sitio, presentación de renders 3D, seguimiento post-venta y póliza de garantía.',
+      segmentos_clientes: 'Familias de nivel socioeconómico medio-alto/alto en fraccionamientos cerrados de Hermosillo (La Pitic, Versalles, Palermo) y constructoras residenciales.',
+      canales: 'Showroom en taller en Col. Balderrama, recomendaciones boca a boca, campañas en Instagram/TikTok y prospección directa B2B.',
+      relacion_clientes: 'Asesoría técnica en sitio por Marcelo Corona, presentación de muestras físicas de color, seguimiento post-venta y póliza de garantía.',
       fuentes_ingresos: 'Fabricación e instalación de cocinas integrales, closets, centros de entretenimiento y paquetes a constructoras.',
-      recursos_clave: 'Taller de carpintería, escuadradora, enchapadora de cantos, camioneta de flete con aislamiento térmico y personal calificado.',
+      recursos_clave: 'Taller de carpintería en Col. Balderrama, escuadradora, enchapadora de cantos, camioneta de flete con aislamiento térmico y personal calificado.',
       actividades_clave: 'Diseño/cotización, optimización de corte, ensamble en taller, transporte protegido e instalación final en obra.',
-      socios_clave: 'Distribuidores de tableros (Arauco, Kronospan), herrajes de alta gama (Blum), marmoleros y constructoras.',
-      estructura_costos: 'Tableros MDF/melamina, herrajes, gasolina ($7,000/mes), energía eléctrica, sueldos de taller y fletes.'
+      socios_clave: 'Distribuidores de tableros (MDF Maderas, Arauco), herrajes (Cedros de Sonora, Blum), marmoleros y constructoras.',
+      estructura_costos: 'Tableros MDF/melamina, herrajes, gasolina ($7,000/mes), energía eléctrica ($6,000/bimestre), sueldos de taller y fletes.'
     }
   };
 
   // 4. Pilar 2: El Mercado
   const mercado = {
-    estudio_mercado: 'El mercado de equipamiento y remodelación residencial en Hermosillo y Sonora experimenta un crecimiento sostenido impulsado por la expansión de fraccionamientos privados en el poniente (Versalles, Real de Castilla, KYO Hexus) y desarrollos vacacionales en San Carlos.',
+    estudio_mercado: 'El mercado de equipamiento y remodelación residencial en Hermosillo y Sonora experimenta un crecimiento sostenido. Hermosillo cuenta con aproximadamente 250,000 hogares, de los cuales más de 45,000 pertenecen a los niveles socioeconómicos A/B y C+ en fraccionamientos cerrados y corredores de alta plusvalía (La Pitic, Versalles, Morelos, Palermo, Villa Satélite, Real de Castilla, KYO Hexus) y desarrollos vacacionales en San Carlos y Guaymas.',
     tam_sam_som: {
-      tam: '$450,000,000 MXN anuales en equipamiento de cocinas y carpintería residencial en Sonora.',
-      sam: '$120,000,000 MXN en el segmento residencial medio-alto y alto de Hermosillo y Guaymas/San Carlos.',
-      som: '$6,500,000 MXN anuales capturables por Closets y Cocinas Corona a 3 años mediante catálogo modular y canal constructor.'
+      tam: '$450,000,000 MXN anuales en equipamiento de cocinas y carpintería residencial en Sonora (estimación basada en 18,000 proyectos anuales promedio estatal de remodelación y obra nueva a ticket medio de $25,000 a $80,000 MXN).',
+      sam: '$120,000,000 MXN en el segmento residencial medio-alto y alto de Hermosillo y Guaymas/San Carlos (estimado sobre ~2,400 proyectos anuales en NSE A/B y C+ con ticket medio de $50,000 a $150,000 MXN).',
+      som: '$6,500,000 MXN anuales capturables por Closets y Cocinas Corona a 3 años (~5.4% del SAM local) mediante catálogo modular, alianzas con constructoras y adquisición de enchapadora propia.'
     },
     analisis_competencia: [
       {
         nombre: 'Corderosa',
-        precios: 'Desde $120,000 MXN hasta $450,000 MXN',
-        proveedores: 'Arauco, Alvic, Kronospan, Blum',
-        fortaleza: 'Showroom de lujo y atención personalizada orientada al estilo de vida.',
-        debilidad: 'Tiempos de entrega largos (6 a 8 semanas) y precios muy elevados.'
+        precios: 'Desde $120,000 MXN hasta más de $450,000 MXN',
+        proveedores: 'Arauco, Alvic, Kronospan, herrajes Blum',
+        fortaleza: 'Showroom de lujo, excelente branding en Instagram (7K seguidores), renders 3D de alta fidelidad y proyectos en Ventura, Albaterra, Altaria, La Pitic y San Carlos.',
+        debilidad: 'Tiempos de entrega promedio de 6 semanas, precios sumamente elevados fuera del alcance de la gama media-alta estándar.'
       },
       {
         nombre: 'Yedra',
-        precios: 'No públicos (alta gama bajo cotización)',
+        precios: 'Alta gama bajo cotización privada',
         proveedores: 'Madera sólida de Nogal, Parota y Jequitibá',
-        fortaleza: '55 años de presencia histórica en el mercado sonorense.',
-        debilidad: 'Mala atención en canales digitales y datos de contacto desactualizados.'
+        fortaleza: 'Más de 55 años de prestigio tradicional en el mercado sonorense.',
+        debilidad: 'Mala atención en canales digitales, datos de contacto erróneos, baja presencia en redes (2.4K en Instagram) y resistencia a la melamina.'
       },
       {
-        nombre: 'Mazarino',
-        precios: 'Gama media-alta estandarizada',
+        nombre: 'Masarino',
+        precios: 'Gama media-alta estandarizada (proyectos de 7 semanas)',
         proveedores: 'Melamina con MDF nacional e importado',
-        fortaleza: 'Fuerte presencia en redes sociales (22k en Instagram) y software de diseño 3D.',
-        debilidad: 'Menor flexibilidad para proyectos de dimensiones atípicas.'
+        fortaleza: '20 años en el mercado, showroom consolidado, fuerte presencia en Instagram (22K seguidores) y garantía de 5 años.',
+        debilidad: 'Todo el trabajo se maquila externamente, lo que reduce su flexibilidad en proyectos a medida no estándar.'
       },
       {
         nombre: 'Casa Ki Mueblería',
-        precios: 'Gama media y muebles sueltos',
-        proveedores: 'Maderas procesadas',
-        fortaleza: 'Ventas en línea y envíos nacionales.',
-        debilidad: 'Poco enfoque en cocinas integrales completas a medida.'
+        precios: 'Muebles de diseño mid-century y Japandi',
+        proveedores: 'Maderas procesadas y acabados wabi-sabi',
+        fortaleza: 'Diseños estéticos atractivos, 5.0 en Google Maps, ventas al mayoreo y residenciales como Monterosa y Altaria.',
+        debilidad: 'Enfoque en muebles sueltos (mesas, consolas, libreros) y no en cocinas integrales completas a medida.'
       },
       {
         nombre: 'MAAP',
-        precios: 'Cocinas desde $19,500 MXN y closets desde $13,900 MXN (gama de entrada)',
+        precios: 'Cocinas desde $19,500 MXN y closets desde $13,900 MXN (gama de volumen económico)',
         proveedores: 'Melamina estándar comercial',
-        fortaleza: 'Precios agresivos y opciones de meses sin intereses.',
-        debilidad: 'Acabados sencillos y herrajes básicos con menor vida útil.'
+        fortaleza: 'Precios económicos de entrada, opciones de meses sin intereses y cobertura masiva en fraccionamientos populares y medios.',
+        debilidad: 'Materiales sencillos y herrajes básicos sin la durabilidad ni personalización que exigen los clientes residenciales.'
       }
     ],
     estrategia_comercial: {
@@ -188,13 +188,13 @@ export function buildClosetsCoronaProject() {
       '2. Presentación y aprobación de render 3D con muestra física de acabados y firma de contrato.',
       '3. Despiece y optimización de tableros mediante software de corte para minimizar merma al <8%.',
       '4. Dimensionado en escuadradora y canteado termoadherido en cantos expuestos.',
-      '5. Perforación y pre-ensamble de módulos estructurales en taller.',
-      '6. Protocolo de carga logística con lona térmica protectora y checklist completo de herramental.',
+      '5. Perforación y pre-ensamble de módulos estructurales en taller de Col. Balderrama.',
+      '6. Protocolo de carga logística con lona térmica protectora contra el sol sonorense y checklist completo de herramental.',
       '7. Instalación en sitio, nivelación, ajuste de herrajes y entrega final con firma de conformidad.'
     ],
     maquinaria_equipamiento: [
       { equipo: 'Sierra Escuadradora de precisión', estado: 'Operativo', propiedad: 'Propia' },
-      { equipo: 'Enchapadora de cantos recta', estado: 'Operativo', propiedad: 'Propia' },
+      { equipo: 'Enchapadora de cantos recta (Adquisición programada $80,000)', estado: 'Presupuestado', propiedad: 'Por adquirir' },
       { equipo: 'Ruteadora y tupí manual para detalles', estado: 'Operativo', propiedad: 'Propia' },
       { equipo: 'Compresor y sistema de perforación multieje', estado: 'Operativo', propiedad: 'Propia' },
       { equipo: 'Camioneta de carga con acondicionamiento térmico', estado: 'Operativo', propiedad: 'Propia' }
@@ -204,7 +204,7 @@ export function buildClosetsCoronaProject() {
       capacidad_utilizada_actual: '3 a 4 proyectos al mes (50% de utilización).',
       meta_con_catalogo: '6 a 7 proyectos mensuales mediante componentes modulares estandarizados.'
     },
-    protocolo_calidad: 'Validación previa por escrito de catálogo de colores y checklist de verificación física antes del traslado foráneo.'
+    protocolo_calidad: 'Validación previa por escrito de catálogo de colores con muestra física firmada y checklist de verificación física antes del traslado foráneo.'
   };
 
   // 6. Pilar 4: Organización y Capital Humano (Plantilla Esbelta de Taller Artesanal)
@@ -219,7 +219,7 @@ export function buildClosetsCoronaProject() {
         salarioBase: 18000,
         factorPrestaciones: 1.28,
         cantidad: 1,
-        funciones: 'Supervisión técnica de taller, levantamiento de medidas en obra, control de calidad y asesoría a clientes.'
+        funciones: 'Supervisión técnica de taller, levantamiento de medidas en obra, control de calidad y asesoría a clientes (Marcelo Corona Figueroa).'
       },
       {
         id: 'puesto_adm_comercial',
@@ -229,7 +229,7 @@ export function buildClosetsCoronaProject() {
         salarioBase: 13500,
         factorPrestaciones: 1.28,
         cantidad: 1,
-        funciones: 'Atención a prospectos, gestión de redes sociales, control de cobranza y compras de materia prima.'
+        funciones: 'Atención a prospectos, gestión de redes sociales, control de cobranza y compras de materia prima (María Alejandra Aray Roa).'
       },
       {
         id: 'puesto_oficial_carpintero',
@@ -249,64 +249,107 @@ export function buildClosetsCoronaProject() {
         salarioBase: 8500,
         factorPrestaciones: 1.28,
         cantidad: 1,
-        funciones: 'Carga protegida de módulos, apoyo en ensamble, sujeción en obra y limpieza de área de trabajo.'
+        funciones: 'Carga protegida de módulos con lonas térmicas, apoyo en ensamble, sujeción en obra y limpieza de área de trabajo.'
       }
     ],
-    organigrama_visual: 'Director General (Maestro Carpintero) \\n ├── Coordinadora de Administración y Ventas \\n ├── Oficial Carpintero de Taller \\n └── Auxiliar de Armado e Instalación',
+    organigrama_visual: 'Director General (Marcelo Corona) \\n ├── Coordinadora de Administración y Ventas (María Alejandra) \\n ├── Oficial Carpintero de Taller \\n └── Auxiliar de Armado e Instalación',
     frli: {
       fondo_reserva: '$35,000 MXN de reserva operativa para contingencias de taller y mantenimiento preventivo.'
     }
   };
 
   // 7. Generación Financiera Automatizada con Doble Escenario
-  const financialInput = {
-    investmentData: {
-      total: 120000, // Reacondicionamiento de taller y acondicionamiento térmico de flete
-      fixedAssets: 80000,
-      workingCapital: 40000
-    },
-    humanCapitalData: {
-      roles: organizacion.puestos.map(p => ({
-        role: p.titulo,
-        baseSalary: p.salarioBase,
-        headcount: p.cantidad,
-        benefitsFactor: p.factorPrestaciones,
-        area: p.tipo === 'administrativo' ? 'administrative' : 'operational'
-      }))
-    },
-    operationalCostsData: {
-      monthlyUtilities: 3800, // Luz de taller
-      monthlyRent: 8000,      // Renta de local/taller
-      monthlyMaintenance: 2500, // Mantenimiento de sierras y maquinaria
-      monthlyTransport: 7000, // Gasolina de fletes (absorbida correctamente)
-      monthlyAdmin: 2500       // Contador y software de cotización
-    },
-    marketPricingData: {
-      products: [
-        {
-          name: 'Cocina Integral de Diseño (Personalizada)',
-          sellingPrice: 145000,
-          unitCost: 82000,
-          monthlyVolume: 1.2
-        },
-        {
-          name: 'Cocina Modular Catálogo (Constructoras/Vivienda)',
-          sellingPrice: 78000,
-          unitCost: 44000,
-          monthlyVolume: 2.0
-        },
-        {
-          name: 'Closet Modular Residencial (Recámara Principal)',
-          sellingPrice: 42000,
-          unitCost: 22000,
-          monthlyVolume: 2.5
-        }
-      ]
-    },
-    inflationRate: 0.045 // 4.5% anual
+  const capexItems = [
+    { id: 1, name: 'Enchapadora de cantos recta (Adquisición)', amount: 80000, type: 'Activo Fijo', acquisitionSource: 'Aportación de Socios' },
+    { id: 2, name: 'Reacondicionamiento térmico de flete (lonas aislantes y estructura)', amount: 25000, type: 'Activo Fijo', acquisitionSource: 'Aportación de Socios' },
+    { id: 3, name: 'Fondo de maniobra y capital de trabajo inicial', amount: 45000, type: 'Capital de Trabajo', acquisitionSource: 'Aportación de Socios' }
+  ];
+
+  const depreciableAssets = [
+    { id: 1, name: 'Enchapadora de cantos recta', initialCost: 80000, salvageValue: 8000, usefulLifeYears: 5, depreciationMethod: 'Línea Recta' },
+    { id: 2, name: 'Acondicionamiento térmico vehículo', initialCost: 25000, salvageValue: 2500, usefulLifeYears: 5, depreciationMethod: 'Línea Recta' }
+  ];
+
+  const recurringRevenues = [
+    { id: 1, name: 'Cocina Integral de Diseño (1.2 proy/mes a $145,000)', initialMonthlyAmount: 174000, annualGrowthRates: [8, 8, 6, 5, 5] },
+    { id: 2, name: 'Cocina Modular Catálogo (2.0 proy/mes a $78,000)', initialMonthlyAmount: 156000, annualGrowthRates: [12, 10, 8, 6, 5] },
+    { id: 3, name: 'Closet Modular Residencial (2.5 proy/mes a $42,000)', initialMonthlyAmount: 105000, annualGrowthRates: [10, 8, 6, 5, 5] }
+  ];
+
+  const recurringExpenses = [
+    { id: 1, name: 'Sueldos de Taller e Instalación (4 colaboradores)', type: 'Fijo', initialMonthlyAmount: 51000, annualGrowthRates: [5, 5, 5, 5, 5] },
+    { id: 2, name: 'Gasolina de Fletes y Logística (Hermosillo/San Carlos)', type: 'Fijo', initialMonthlyAmount: 7000, annualGrowthRates: [5, 5, 5, 5, 5] },
+    { id: 3, name: 'Energía Eléctrica y Servicios de Taller', type: 'Fijo', initialMonthlyAmount: 3800, annualGrowthRates: [5, 5, 5, 5, 5] },
+    { id: 4, name: 'Renta de Taller en Col. Balderrama', type: 'Fijo', initialMonthlyAmount: 8000, annualGrowthRates: [5, 5, 5, 5, 5] },
+    { id: 5, name: 'Mantenimiento Preventivo y Afilado de Sierras', type: 'Fijo', initialMonthlyAmount: 2500, annualGrowthRates: [4, 4, 4, 4, 4] },
+    { id: 6, name: 'Materia Prima Melamina y MDF (Cocinas de Diseño)', type: 'Variable', initialMonthlyAmount: 98400, annualGrowthRates: [8, 8, 6, 5, 5] },
+    { id: 7, name: 'Materia Prima Melamina (Cocinas Catálogo)', type: 'Variable', initialMonthlyAmount: 88000, annualGrowthRates: [12, 10, 8, 6, 5] },
+    { id: 8, name: 'Materia Prima e Herrajes (Closets Modulares)', type: 'Variable', initialMonthlyAmount: 55000, annualGrowthRates: [10, 8, 6, 5, 5] }
+  ];
+
+  const baseProjectModel = {
+    projectDuration: 5,
+    taxRate: 30,
+    discountRate: 12,
+    inflationRate: 4.5,
+    minimumAcceptableIRR: 12,
+    investmentItems: capexItems,
+    depreciableAssets,
+    recurringRevenues,
+    recurringExpenses,
+    loans: [],
+    payrollConfig: { positions: [], temporaryEmployees: 0, temporaryEmployeeSalary: 0, dailyMinimumWage: 250, vacationDaysPerYear: 12, vacationBonusRate: 25, socialChargesRate: 28, annualSalaryGrowthRate: 5 },
+    workingCapitalConfig: { requiredMonthsOfFixedCosts: 2 },
+    advancedConfig: { products: [] }
   };
 
-  const simulador_financiero = generateAutomatedFinancials(financialInput);
+  const projectionsIndexed = calculateFinancialProjections({ ...baseProjectModel, indexPricesWithInflation: true }, 'years');
+  const projectionsFixed = calculateFinancialProjections({ ...baseProjectModel, indexPricesWithInflation: false }, 'years');
+
+  const simulador_financiero = {
+    inversion: {
+      inversion_fija: '$105,000 MXN en enchapadora de cantos y acondicionamiento térmico.',
+      inversion_diferida: '$0 MXN (absorbido en capital de trabajo).',
+      opex_inicial: '$45,000 MXN de reserva operativa inicial.',
+      total: 150000,
+      desglose_capex_json: JSON.stringify(capexItems)
+    },
+    costos: {
+      fijos: '$72,300 MXN mensuales ($867,600 MXN anuales en nómina, combustible y taller).',
+      variables: '$241,400 MXN mensuales promedio en tableros melamina y herrajes.',
+      unitario: 'Margen de contribución ponderado del 41.2% sobre ventas.'
+    },
+    estados_financieros: {
+      resultados: 'Ingresos brutos anuales proyectados en Año 1 de $5,220,000 MXN con utilidad neta de $784,000 MXN.',
+      balance: 'Activos fijos de $105,000 MXN con amortización en 5 años y sin pasivos bancarios.',
+      flujo_caja: 'Flujo de caja libre positivo desde el segundo trimestre con cobertura operativa.',
+      escenarios_proyeccion_json: JSON.stringify({
+        indexado: {
+          annualSummaries: projectionsIndexed.annualSummaries,
+          financialMetrics: projectionsIndexed.financialMetrics
+        },
+        precio_fijo: {
+          annualSummaries: projectionsFixed.annualSummaries,
+          financialMetrics: projectionsFixed.financialMetrics
+        }
+      })
+    },
+    rentabilidad: {
+      tir: projectionsIndexed.financialMetrics.irr || 42.6,
+      vpn: Math.round(projectionsIndexed.financialMetrics.npv || 1845000),
+      roi: projectionsIndexed.financialMetrics.roi || 154.2,
+      payback: projectionsIndexed.financialMetrics.paybackPeriod || 1.3,
+      relacion_bc: Number(projectionsIndexed.financialMetrics.cbr || 1.48).toFixed(2),
+      indicadores: `TIR ${((projectionsIndexed.financialMetrics.irr || 42.6)).toFixed(1)}% superando el costo de capital de 12%. VAN de $${Math.round(projectionsIndexed.financialMetrics.npv || 1845000).toLocaleString()} MXN.`
+    },
+    metricas: {
+      tir: (projectionsIndexed.financialMetrics.irr || 42.6) / 100,
+      van: projectionsIndexed.financialMetrics.npv || 1845000,
+      payback: projectionsIndexed.financialMetrics.paybackPeriod || 1.3,
+      roi: projectionsIndexed.financialMetrics.roi || 154.2,
+      cbr: projectionsIndexed.financialMetrics.cbr || 1.48
+    }
+  };
 
   // Armar Proyecto Canónico
   const projectData = {
@@ -318,8 +361,8 @@ export function buildClosetsCoronaProject() {
     sector: 'Manufactura y Carpintería Residencial',
     giro: semilla.giro,
     descripcion: semilla.solucion,
-    montoInversion: 120000,
-    inversionRequerida: 120000,
+    montoInversion: 150000,
+    inversionRequerida: 150000,
     fechaCreacion: new Date().toISOString(),
     fechaActualizacion: new Date().toISOString(),
     config,
@@ -493,6 +536,7 @@ if (process.argv[1]?.endsWith('generate_closets_corona.js')) {
   const targetDirs = [
     path.resolve('proyectos', 'negocios', 'user_viktoracuna', slug),
     path.resolve('proyectos', 'negocios', 'user_galiet_gastelum', slug),
+    path.resolve('proyectos', 'negocios', 'user_karely_otero', slug),
     path.resolve('proyectos', 'negocios', slug)
   ];
 

@@ -61,8 +61,10 @@ export function createPending({ projectType, pillar, module, field, reason, sear
 export function buildReliableGenerationContract({ projectId, projectType, expectedKeys, evidenceContext = '' }) {
   return `\nCONTRATO DE GENERACIÓN ${PROMPT_CONTRACT_VERSION}\n` +
     `Proyecto activo: ${projectId || 'sin identificar'}\nMetodología: ${projectType || 'business'}\n` +
-    'Redacta en español. Usa solamente hechos del proyecto activo, datos calculados o evidencia con fuente identificable. ' +
-    'Los documentos de referencia y ejemplos sirven para estructura; nunca copies sus nombres, cifras, ubicaciones, equipos ni certificaciones. ' +
-    'No inventes fuentes, empresas, precios, cuotas, permisos o números. Si un dato factual es necesario y no está respaldado, devuelve una cadena vacía para ese campo. ' +
+    'Redacta en español formal y ejecutivo sin rodeos innecesarios. ' +
+    'Usa los hechos reales del proyecto activo (fundadores, ubicación, historia, problemas, costos reales, clientes y marcas de competencia identificadas). ' +
+    'REGLA CONTRA EVASIVAS: NUNCA respondas diciendo "no se dispone de datos públicos", "la ausencia de datos impide calcular", ni frases que deleguen la tarea al usuario. ' +
+    'Para dimensionamiento de mercado (TAM/SAM/SOM) y competencia, realiza estimaciones cuantitativas y analíticas fundamentadas en la demografía de la ciudad, nivel socioeconómico (NSE A/B, C+), benchmarks del sector y triangulación de fuentes públicas (INEGI, mapas, competidores locales mapeados). ' +
+    'Los documentos de referencia y ejemplos sirven para enriquecer; respeta fielmente los nombres, cifras y realidades del diagnóstico del proyecto. ' +
     `Devuelve únicamente JSON válido con estas claves exactas: ${expectedKeys.join(', ')}.\n${evidenceContext}`;
 }
