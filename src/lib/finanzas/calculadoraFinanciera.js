@@ -494,7 +494,21 @@ export async function generateAutomatedFinancials(planData) {
   projectData.discountRate = wacc;
   projectData.minimumAcceptableIRR = wacc;
 
-  const projections = calculateFinancialProjections(projectData, 'years');
+  // Calculamos ambos escenarios:
+  // Escenario A: Precio Constante (Absorción de costos por inflación)
+  const projectionsFixedPrice = calculateFinancialProjections({
+    ...projectData,
+    indexPricesWithInflation: false
+  }, 'years');
+
+  // Escenario B: Precios y Ticket Indexados anualmente a la Inflación (Recomendado)
+  const projectionsIndexedPrice = calculateFinancialProjections({
+    ...projectData,
+    indexPricesWithInflation: true
+  }, 'years');
+
+  // Tomamos como proyección base para indicadores la proyección indexada (financieramente viable a largo plazo)
+  const projections = projectionsIndexedPrice;
 
   const {
     netInitialInvestment,
@@ -549,6 +563,12 @@ export async function generateAutomatedFinancials(planData) {
     anual: item.initialMonthlyAmount * 12
   }));
 
+  const formatSummaryList = (summaries) => 
+    summaries.map(s => `Año ${s.year}: Ventas ${mxn(s.incomeStatement.sales)}, Costos Variables ${mxn(s.incomeStatement.variableCosts)}, Costos Fijos ${mxn(s.incomeStatement.fixedCosts)}, Utilidad Neta ${mxn(s.incomeStatement.netIncome)}.`).join('\n');
+
+  const resultadosEscenarioIndexado = formatSummaryList(projectionsIndexedPrice.annualSummaries);
+  const resultadosEscenarioFijo = formatSummaryList(projectionsFixedPrice.annualSummaries);
+
   const summary = {
     capex: `La inversión inicial calculada es de ${mxn(netInitialInvestment)}, que servirá para cubrir el equipo de producción, adecuaciones sanitarias y capital de trabajo inicial.`,
     inversionDiferida: `Costos pre-operativos, trámites sanitarios y registros por ${mxn(projectData.investmentItems.filter(i => i.type === 'Activo Diferido').reduce((acc, i) => acc + i.amount, 0) || (netInitialInvestment * 0.10))}.`,
@@ -557,9 +577,9 @@ export async function generateAutomatedFinancials(planData) {
     fijos: `Los costos fijos anuales proyectados son ${mxn(firstYear.incomeStatement.fixedCosts)} (${mxn(Math.round(firstYear.incomeStatement.fixedCosts / 12))} mensuales).`,
     variables: `Los costos variables del Año 1 proyectados son ${mxn(firstYear.incomeStatement.variableCosts)} (${mxn(Math.round(firstYear.incomeStatement.variableCosts / 12))} mensuales).`,
     unitario: `Punto de equilibrio anual estimado: ${mxn(firstYear.breakEven.bepAmount)} (${Number(firstYear.breakEven.bepPercentage || 0).toFixed(1)}% de la capacidad operativa).`,
-    resultados: annualSummaries.map(s => `Año ${s.year}: Ventas ${mxn(s.incomeStatement.sales)}, Costos Variables ${mxn(s.incomeStatement.variableCosts)}, Costos Fijos ${mxn(s.incomeStatement.fixedCosts)}, Utilidad Neta ${mxn(s.incomeStatement.netIncome)}.`).join('\n'),
+    resultados: `### Escenario A: Indexación con Inflación (Recomendado - Precios y Ticket Ajustados)\n${resultadosEscenarioIndexado}\n\n### Escenario B: Precio Constante (Absorción de Inflación en Márgenes)\n${resultadosEscenarioFijo}`,
     balance: `Balance General Pro-Forma Año 1:\n- Activo Total Estimado: ${mxn(netInitialInvestment + (firstYear.incomeStatement.netIncome || 0))}\n- Pasivo Total: $0 MXN (100% Capital Propio y Flujos Reinvertidos)\n- Capital Social y Utilidades Acumuladas: ${mxn(netInitialInvestment + (firstYear.incomeStatement.netIncome || 0))}`,
-    flujo_caja: annualSummaries.map(s => `Año ${s.year}: Flujo Neto ${mxn(s.cashFlow.netCashFlow)}.`).join('\n'),
+    flujo_caja: `### Flujo Neto Proyectado (Escenario Indexado):\n${projectionsIndexedPrice.annualSummaries.map(s => `Año ${s.year}: Flujo Neto ${mxn(s.cashFlow.netCashFlow)}.`).join('\n')}\n\n### Flujo Neto Proyectado (Escenario Precio Constante):\n${projectionsFixedPrice.annualSummaries.map(s => `Año ${s.year}: Flujo Neto ${mxn(s.cashFlow.netCashFlow)}.`).join('\n')}`,
     punto_equilibrio: `Para el Año 1, se requiere vender ${mxn(firstYear.breakEven.bepAmount)} anuales (${mxn(Math.round(firstYear.breakEven.bepAmount / 12))} mensuales) para alcanzar el punto de equilibrio (${Number(firstYear.breakEven.bepPercentage || 0).toFixed(1)}% de la capacidad operativa).`,
     indicadores: `VPN: ${mxn(financialMetrics.npv)}\nTIR: ${Number(tirMostrada).toFixed(1)}%\nB/C: ${Number(financialMetrics.cbr || 1.25).toFixed(2)}\nPayback: ${formattedPayback}\nROI: ${Math.min(180, Math.round(financialMetrics.roi || 95))}%`,
   };
@@ -583,9 +603,19 @@ export async function generateAutomatedFinancials(planData) {
       balance: summary.balance,
       flujo_caja: summary.flujo_caja,
       amortizacion_creditos: "El proyecto opera al 100% con capital propio y reinversión de utilidades sin pasivos financieros externos.",
-      memorias_calculo: "Cálculos matemáticos pro-forma basados en costos unitarios validados y proyección escalonada a 5 años.",
+      memorias_calculo: "Cálculos matemáticos pro-forma basados en costos unitarios validados y proyección escalonada a 5 años considerando escenario de indexación inflacionaria y absorción.",
       ingresos_json: JSON.stringify(revRows),
-      corrida_automatica: JSON.stringify(projections)
+      corrida_automatica: JSON.stringify(projections),
+      escenarios_proyeccion_json: JSON.stringify({
+        indexado: {
+          annualSummaries: projectionsIndexedPrice.annualSummaries,
+          financialMetrics: projectionsIndexedPrice.financialMetrics
+        },
+        precio_fijo: {
+          annualSummaries: projectionsFixedPrice.annualSummaries,
+          financialMetrics: projectionsFixedPrice.financialMetrics
+        }
+      })
     },
     rentabilidad: {
       punto_equilibrio: summary.punto_equilibrio,

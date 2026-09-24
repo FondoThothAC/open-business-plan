@@ -1689,6 +1689,15 @@ function recordTokenTelemetry(provider, totalTokens, model = null, promptTokens 
       }
     }
 
+    let currentUsername = 'anon';
+    try {
+      const stored = localStorage.getItem('obp_auth_user');
+      if (stored) {
+        const u = JSON.parse(stored);
+        if (u?.username) currentUsername = u.username;
+      }
+    } catch {}
+
     const apiBase = getApiBase();
     const projectId = activeTrace.projectId || 'general';
     const projectType = activeTrace.projectType || 'negocios';
@@ -1698,7 +1707,14 @@ function recordTokenTelemetry(provider, totalTokens, model = null, promptTokens 
     fetch(`${apiBase}/api/telemetry/tokens`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ provider, tokens: totalTokens, projectId, projectType, module: moduleName })
+      body: JSON.stringify({ 
+        provider, 
+        tokens: totalTokens, 
+        projectId, 
+        projectType, 
+        module: moduleName,
+        username: currentUsername
+      })
     }).catch(() => {});
 
     // 2. Log detallado de llamadas para la sección de Trazabilidad
@@ -1715,7 +1731,8 @@ function recordTokenTelemetry(provider, totalTokens, model = null, promptTokens 
         status: 'success',
         projectId,
         projectType,
-        module: moduleName
+        module: moduleName,
+        username: currentUsername
       })
     }).catch(() => {});
   } catch {

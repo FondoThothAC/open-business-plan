@@ -3,7 +3,8 @@
  * @description Panel integral de Administración de Usuarios, Auditoría y Proyectos para Open Business Plan.
  * Permite al superadmin crear usuarios, asignar rol (superadmin, revisor, user),
  * cambiar estados (activo, pendiente, desactivado), restablecer contraseñas,
- * auditar la actividad del sistema y examinar el estado de avance de los proyectos por usuario.
+ * auditar la actividad del sistema, examinar el estado de avance de los proyectos por usuario,
+ * y auditar el consumo y cuotas de tokens de IA por usuario.
  * 
  * [CDD] Componente modal autocontenido y reutilizable con pestañas especializadas.
  * [UXDD] Diseño glassmorphism premium con estados visuales claros, badges y animaciones fluidas.
@@ -14,14 +15,14 @@ import React, { useState, useEffect } from 'react';
 import { 
   Users, CheckCircle, XCircle, Trash2, Shield, UserCheck, UserX, 
   Clock, AlertTriangle, RefreshCw, X, Key, FolderGit2, History, Plus, 
-  Search, ArrowRight, FileText, Check, Lock
+  Search, ArrowRight, FileText, Check, Lock, Zap, Activity, Cpu, Database
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { getApiBase } from '../config/apiConfig';
 
 export default function AdminUsersPanel({ isOpen, onClose, onOpenProject }) {
   const { isAdmin, authFetch } = useAuth();
-  const [activeTab, setActiveTab] = useState('usuarios'); // 'usuarios' | 'proyectos' | 'auditoria'
+  const [activeTab, setActiveTab] = useState('usuarios'); // 'usuarios' | 'proyectos' | 'auditoria' | 'tokens'
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [actionLoading, setActionLoading] = useState(null);
@@ -52,6 +53,10 @@ export default function AdminUsersPanel({ isOpen, onClose, onOpenProject }) {
   const [auditLogs, setAuditLogs] = useState([]);
   const [loadingAudit, setLoadingAudit] = useState(false);
   const [auditFilter, setAuditFilter] = useState('');
+
+  // Estados para telemetría de tokens
+  const [tokenTelemetry, setTokenTelemetry] = useState(null);
+  const [loadingTokens, setLoadingTokens] = useState(false);
 
   const apiBase = getApiBase();
 
@@ -91,6 +96,22 @@ export default function AdminUsersPanel({ isOpen, onClose, onOpenProject }) {
     }
   };
 
+  const cargarTelemetriaTokens = async () => {
+    if (!isAdmin) return;
+    setLoadingTokens(true);
+    try {
+      const res = await authFetch(`${apiBase}/api/telemetry/tokens`);
+      if (res.ok) {
+        const data = await res.json();
+        setTokenTelemetry(data);
+      }
+    } catch (err) {
+      console.error('[Admin] Error cargando telemetría de tokens:', err.message);
+    } finally {
+      setLoadingTokens(false);
+    }
+  };
+
   const cargarProyectosUsuario = async (userId) => {
     setLoadingProjects(true);
     setError(null);
@@ -114,6 +135,7 @@ export default function AdminUsersPanel({ isOpen, onClose, onOpenProject }) {
     if (isOpen && isAdmin) {
       cargarUsuarios();
       if (activeTab === 'auditoria') cargarAuditoria();
+      if (activeTab === 'tokens') cargarTelemetriaTokens();
     }
   }, [isOpen, isAdmin, activeTab]);
 
@@ -294,6 +316,29 @@ export default function AdminUsersPanel({ isOpen, onClose, onOpenProject }) {
 
   if (!isOpen || !isAdmin) return null;
 
+  // Cálculos para la vista de Telemetría
+  const accTokens = tokenTelemetry?._accumulated || {};
+  const usersTelemetry = tokenTelemetry?._byUser || {};
+  const globalTotalTokens = Object.values(accTokens).reduce((sum, val) => sum + (typeof val === 'number' ? val : 0), 0);
+
+  const providerColors = {
+    ollama: '#10b981',
+    ollama_cloud: '#6366f1',
+    groq: '#f59e0b',
+    gemini: '#38bdf8',
+    openai: '#10b981',
+    claude: '#d97706',
+    nvidia: '#22d3ee',
+    mistral: '#ec4899',
+    openrouter: '#f59e0b',
+    tokenrouter: '#10b981',
+    opencode: '#a78bfa',
+    orcarouter: '#f97316',
+    minimax: '#fbbf24',
+    deepseek: '#3b82f6',
+    bai: '#06b6d4',
+  };
+
   return (
     <div 
       style={{
@@ -331,7 +376,7 @@ export default function AdminUsersPanel({ isOpen, onClose, onOpenProject }) {
                 Consola Central de Administración
               </h2>
               <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary, #94a3b8)', margin: '3px 0 0 0' }}>
-                Gestión de privilegios RBAC, proyectos por usuario y bitácora de auditoría inmutable.
+                Gestión de privilegios RBAC, proyectos por usuario, bitácora y auditoría de tokens por usuario.
               </p>
             </div>
           </div>
@@ -374,6 +419,17 @@ export default function AdminUsersPanel({ isOpen, onClose, onOpenProject }) {
                 }}
               >
                 <History size={14} /> Auditoría
+              </button>
+              <button
+                onClick={() => { setActiveTab('tokens'); cargarTelemetriaTokens(); }}
+                style={{
+                  padding: '6px 14px', borderRadius: '6px', fontSize: '0.78rem', fontWeight: 700,
+                  border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px',
+                  background: activeTab === 'tokens' ? 'rgba(16, 185, 129, 0.2)' : 'transparent',
+                  color: activeTab === 'tokens' ? '#10b981' : 'rgba(255, 255, 255, 0.6)'
+                }}
+              >
+                <Zap size={14} /> Consumo de Tokens
               </button>
             </div>
 
@@ -450,142 +506,103 @@ export default function AdminUsersPanel({ isOpen, onClose, onOpenProject }) {
                         <div>Cargando directorio de usuarios...</div>
                       </td>
                     </tr>
-                  ) : users.map(u => {
-                    const isSuperadmin = u.role === 'superadmin';
-                    const isPending = u.status === 'pending';
-                    const isActive = u.status === 'active';
-                    const isBusy = actionLoading?.includes(u.id);
-
-                    return (
-                      <tr key={u.id} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.05)', background: isPending ? 'rgba(245, 158, 11, 0.04)' : 'transparent' }}>
-                        <td style={{ padding: '0.75rem 1rem', fontWeight: 600, color: '#f8fafc' }}>
-                          <div style={{ display: 'flex', flexDirection: 'column' }}>
-                            <span>{u.displayName || u.username}</span>
-                            <span style={{ fontSize: '0.68rem', color: '#94a3b8' }}>@{u.username}</span>
-                          </div>
+                  ) : users.length === 0 ? (
+                    <tr>
+                      <td colSpan="7" style={{ padding: '2rem', textAlign: 'center', color: '#94a3b8' }}>
+                        No se encontraron usuarios registrados.
+                      </td>
+                    </tr>
+                  ) : (
+                    users.map(u => (
+                      <tr key={u.id} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.05)', transition: 'background 0.2s' }}>
+                        <td style={{ padding: '0.75rem 1rem' }}>
+                          <div style={{ fontWeight: 600, color: '#f8fafc' }}>{u.displayName || u.username}</div>
+                          <div style={{ fontSize: '0.7rem', color: '#64748b' }}>@{u.username}</div>
                         </td>
-                        <td style={{ padding: '0.75rem 1rem', color: '#94a3b8' }}>
-                          {u.email || '—'}
-                        </td>
+                        <td style={{ padding: '0.75rem 1rem', color: '#cbd5e1' }}>{u.email}</td>
                         <td style={{ padding: '0.75rem 1rem' }}>
                           <select
                             value={u.role}
-                            disabled={isSuperadmin && users.filter(usr => usr.role === 'superadmin').length <= 1}
                             onChange={(e) => handleCambiarRol(u.id, e.target.value)}
+                            disabled={actionLoading === `rol_${u.id}`}
                             style={{
-                              background: 'rgba(255, 255, 255, 0.06)', border: '1px solid rgba(255, 255, 255, 0.15)',
-                              borderRadius: '6px', color: u.role === 'superadmin' ? '#f87171' : (u.role === 'revisor' ? '#38bdf8' : '#a855f7'),
-                              padding: '3px 8px', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer'
+                              background: '#1e293b', color: u.role === 'superadmin' ? '#f87171' : (u.role === 'revisor' ? '#38bdf8' : '#e2e8f0'),
+                              border: '1px solid rgba(255, 255, 255, 0.15)', borderRadius: '6px', padding: '4px 8px', fontSize: '0.75rem', fontWeight: 600
                             }}
                           >
-                            <option value="user" style={{ background: '#1e293b', color: '#fff' }}>Usuario</option>
-                            <option value="revisor" style={{ background: '#1e293b', color: '#fff' }}>Revisor</option>
-                            <option value="superadmin" style={{ background: '#1e293b', color: '#fff' }}>Superadmin</option>
+                            <option value="user">user (Estándar)</option>
+                            <option value="revisor">revisor (Auditor)</option>
+                            <option value="superadmin">superadmin (Control Total)</option>
                           </select>
                         </td>
                         <td style={{ padding: '0.75rem 1rem' }}>
-                          {isActive && (
-                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: '#10b981', fontSize: '0.72rem', fontWeight: 700 }}>
-                              <CheckCircle size={13} /> Activo
-                            </span>
-                          )}
-                          {isPending && (
-                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: '#f59e0b', fontSize: '0.72rem', fontWeight: 700 }}>
-                              <Clock size={13} /> Pendiente
-                            </span>
-                          )}
-                          {u.status === 'disabled' && (
-                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: '#6b7280', fontSize: '0.72rem', fontWeight: 700 }}>
-                              <XCircle size={13} /> Desactivado
-                            </span>
-                          )}
+                          <span style={{
+                            padding: '3px 8px', borderRadius: '12px', fontSize: '0.7rem', fontWeight: 700,
+                            background: u.status === 'active' ? 'rgba(16, 185, 129, 0.15)' : (u.status === 'pending' ? 'rgba(245, 158, 11, 0.15)' : 'rgba(239, 68, 68, 0.15)'),
+                            color: u.status === 'active' ? '#34d399' : (u.status === 'pending' ? '#fbbf24' : '#f87171')
+                          }}>
+                            {u.status === 'active' ? 'Activo' : (u.status === 'pending' ? 'Pendiente' : 'Desactivado')}
+                          </span>
                         </td>
                         <td style={{ padding: '0.75rem 1rem' }}>
-                          {isSuperadmin ? (
-                            <span style={{ color: '#64748b', fontSize: '0.7rem' }}>Propias</span>
-                          ) : (
-                            <button
-                              onClick={() => handleSharedApiAccess(u.id, !u.sharedApiAccess?.active)}
-                              disabled={isBusy || !isActive}
-                              style={{
-                                padding: '3px 8px', fontSize: '0.68rem', borderRadius: '6px', cursor: isActive ? 'pointer' : 'not-allowed',
-                                background: u.sharedApiAccess?.active ? 'rgba(16,185,129,0.14)' : 'rgba(100,116,139,0.12)',
-                                color: u.sharedApiAccess?.active ? '#10b981' : '#94a3b8',
-                                border: `1px solid ${u.sharedApiAccess?.active ? 'rgba(16,185,129,0.3)' : 'rgba(100,116,139,0.25)'}`
-                              }}
-                              title={u.sharedApiAccess?.active && u.sharedApiAccess?.expiresAt
-                                ? `Vence ${new Date(u.sharedApiAccess.expiresAt).toLocaleDateString('es-MX')}`
-                                : 'Habilitar acceso por 30 días'}
-                            >
-                              <Lock size={11} style={{ marginRight: '3px' }} />
-                              {u.sharedApiAccess?.active ? 'Compartidas ✓' : 'Sin acceso'}
-                            </button>
-                          )}
+                          <button
+                            onClick={() => handleSharedApiAccess(u.id, !u.sharedApiAccessEnabled)}
+                            disabled={actionLoading === `apis_${u.id}`}
+                            style={{
+                              padding: '3px 8px', borderRadius: '6px', fontSize: '0.7rem', fontWeight: 600, border: 'none', cursor: 'pointer',
+                              background: u.sharedApiAccessEnabled ? 'rgba(56, 189, 248, 0.2)' : 'rgba(255, 255, 255, 0.05)',
+                              color: u.sharedApiAccessEnabled ? '#38bdf8' : 'rgba(255, 255, 255, 0.4)'
+                            }}
+                          >
+                            {u.sharedApiAccessEnabled ? 'Habilitado (30d)' : 'Deshabilitado'}
+                          </button>
                         </td>
-                        <td style={{ padding: '0.75rem 1rem', color: '#94a3b8', fontSize: '0.72rem' }}>
-                          {u.lastLogin ? new Date(u.lastLogin).toLocaleString('es-MX', { dateStyle: 'short', timeStyle: 'short' }) : 'Nunca'}
+                        <td style={{ padding: '0.75rem 1rem', color: '#94a3b8', fontSize: '0.75rem' }}>
+                          {u.lastLogin ? new Date(u.lastLogin).toLocaleDateString('es-MX', { hour: '2-digit', minute: '2-digit' }) : 'Nunca'}
                         </td>
                         <td style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>
-                          <div style={{ display: 'inline-flex', gap: '0.35rem', alignItems: 'center' }}>
-                            <button
-                              onClick={() => {
-                                setSelectedUserForProjects(u);
-                                setActiveTab('proyectos');
-                                cargarProyectosUsuario(u.id);
-                              }}
-                              className="btn btn-secondary"
-                              style={{ padding: '3px 8px', fontSize: '0.68rem', borderRadius: '6px', background: 'rgba(56, 189, 248, 0.1)', color: '#38bdf8', border: '1px solid rgba(56, 189, 248, 0.2)' }}
-                              title="Ver proyectos de este usuario"
-                            >
-                              <FolderGit2 size={12} style={{ marginRight: '3px' }} /> Proyectos
-                            </button>
-
-                            <button
-                              onClick={() => setPasswordResetUser(u)}
-                              className="btn btn-secondary"
-                              style={{ padding: '3px 7px', fontSize: '0.68rem', borderRadius: '6px', background: 'rgba(255, 255, 255, 0.05)', color: '#e2e8f0', border: '1px solid rgba(255, 255, 255, 0.1)' }}
-                              title="Restablecer contraseña"
-                            >
-                              <Key size={12} />
-                            </button>
-
-                            {!isSuperadmin && (
-                              <>
-                                {u.status !== 'active' ? (
-                                  <button
-                                    onClick={() => handleActivar(u.id)}
-                                    disabled={isBusy}
-                                    style={{ padding: '3px 8px', fontSize: '0.68rem', borderRadius: '6px', background: 'rgba(16, 185, 129, 0.15)', color: '#10b981', border: '1px solid rgba(16, 185, 129, 0.3)', cursor: 'pointer' }}
-                                    title="Activar cuenta"
-                                  >
-                                    <UserCheck size={12} style={{ marginRight: '2px' }} /> Activar
-                                  </button>
-                                ) : (
-                                  <button
-                                    onClick={() => handleDesactivar(u.id)}
-                                    disabled={isBusy}
-                                    style={{ padding: '3px 8px', fontSize: '0.68rem', borderRadius: '6px', background: 'rgba(245, 158, 11, 0.12)', color: '#f59e0b', border: '1px solid rgba(245, 158, 11, 0.3)', cursor: 'pointer' }}
-                                    title="Desactivar temporalmente"
-                                  >
-                                    <UserX size={12} style={{ marginRight: '2px' }} /> Desactivar
-                                  </button>
-                                )}
-
-                                <button
-                                  onClick={() => handleEliminar(u.id, u.username)}
-                                  disabled={isBusy}
-                                  style={{ padding: '3px 6px', fontSize: '0.68rem', borderRadius: '6px', background: 'rgba(239, 68, 68, 0.12)', color: '#ef4444', border: '1px solid rgba(239, 68, 68, 0.3)', cursor: 'pointer' }}
-                                  title="Eliminar permanentemente"
-                                >
-                                  <Trash2 size={12} />
-                                </button>
-                              </>
+                          <div style={{ display: 'flex', gap: '0.4rem', justifyContent: 'flex-end' }}>
+                            {u.status !== 'active' ? (
+                              <button
+                                onClick={() => handleActivar(u.id)}
+                                disabled={actionLoading === `act_${u.id}`}
+                                title="Activar cuenta"
+                                style={{ background: 'rgba(16, 185, 129, 0.2)', color: '#34d399', border: 'none', borderRadius: '6px', padding: '5px', cursor: 'pointer' }}
+                              >
+                                <UserCheck size={14} />
+                              </button>
+                            ) : (
+                              <button
+                                onClick={() => handleDesactivar(u.id)}
+                                disabled={actionLoading === `des_${u.id}`}
+                                title="Desactivar cuenta"
+                                style={{ background: 'rgba(245, 158, 11, 0.2)', color: '#fbbf24', border: 'none', borderRadius: '6px', padding: '5px', cursor: 'pointer' }}
+                              >
+                                <UserX size={14} />
+                              </button>
                             )}
+
+                            <button
+                              onClick={() => { setPasswordResetUser(u); setNewPasswordValue(''); }}
+                              title="Restablecer Contraseña"
+                              style={{ background: 'rgba(56, 189, 248, 0.2)', color: '#38bdf8', border: 'none', borderRadius: '6px', padding: '5px', cursor: 'pointer' }}
+                            >
+                              <Key size={14} />
+                            </button>
+
+                            <button
+                              onClick={() => handleEliminar(u.id, u.username)}
+                              disabled={actionLoading === `del_${u.id}`}
+                              title="Eliminar permanentemente"
+                              style={{ background: 'rgba(239, 68, 68, 0.2)', color: '#f87171', border: 'none', borderRadius: '6px', padding: '5px', cursor: 'pointer' }}
+                            >
+                              <Trash2 size={14} />
+                            </button>
                           </div>
                         </td>
                       </tr>
-                    );
-                  })}
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
@@ -594,115 +611,141 @@ export default function AdminUsersPanel({ isOpen, onClose, onOpenProject }) {
 
         {/* PESTAÑA 2: PROYECTOS POR USUARIO */}
         {activeTab === 'proyectos' && (
-          <div style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden', gap: '1rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', background: 'rgba(255, 255, 255, 0.03)', padding: '0.75rem 1rem', borderRadius: '10px' }}>
-              <span style={{ fontSize: '0.82rem', color: '#94a3b8' }}>Filtrar por usuario:</span>
-              <select
-                value={selectedUserForProjects?.id || ''}
-                onChange={(e) => {
-                  const sel = users.find(u => u.id === e.target.value);
-                  setSelectedUserForProjects(sel);
-                  if (sel) cargarProyectosUsuario(sel.id);
-                }}
-                style={{
-                  background: 'rgba(20, 27, 45, 0.9)', border: '1px solid rgba(255, 255, 255, 0.2)',
-                  borderRadius: '6px', color: '#fff', padding: '6px 12px', fontSize: '0.85rem'
-                }}
-              >
-                {users.map(u => (
-                  <option key={u.id} value={u.id}>{u.displayName || u.username} (@{u.username})</option>
-                ))}
-              </select>
-              <button
-                onClick={() => selectedUserForProjects && cargarProyectosUsuario(selectedUserForProjects.id)}
-                className="btn btn-secondary"
-                style={{ padding: '6px 12px', fontSize: '0.78rem' }}
-              >
-                <RefreshCw size={13} className={loadingProjects ? 'animate-spin' : ''} />
-              </button>
+          <div style={{ display: 'flex', flex: 1, gap: '1.25rem', overflow: 'hidden' }}>
+            {/* Lista de Usuarios a la Izquierda */}
+            <div style={{ width: '280px', borderRight: '1px solid rgba(255, 255, 255, 0.08)', paddingRight: '1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                Seleccionar Usuario
+              </div>
+              <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                {users.map(u => {
+                  const isSelected = selectedUserForProjects?.id === u.id;
+                  return (
+                    <button
+                      key={u.id}
+                      onClick={() => {
+                        setSelectedUserForProjects(u);
+                        cargarProyectosUsuario(u.id);
+                      }}
+                      style={{
+                        textAlign: 'left', padding: '8px 12px', borderRadius: '8px', border: 'none', cursor: 'pointer',
+                        background: isSelected ? 'rgba(56, 189, 248, 0.15)' : 'rgba(255, 255, 255, 0.03)',
+                        color: isSelected ? '#38bdf8' : '#e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center'
+                      }}
+                    >
+                      <div>
+                        <div style={{ fontWeight: 600, fontSize: '0.8rem' }}>{u.displayName || u.username}</div>
+                        <div style={{ fontSize: '0.7rem', color: '#64748b' }}>@{u.username} • {u.role}</div>
+                      </div>
+                      <ArrowRight size={14} opacity={isSelected ? 1 : 0.4} />
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
-            <div style={{ flex: 1, overflowY: 'auto', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '10px' }}>
-              {loadingProjects ? (
-                <div style={{ padding: '3rem', textAlign: 'center', color: '#94a3b8' }}>
-                  <RefreshCw size={24} className="animate-spin" style={{ margin: '0 auto 0.5rem' }} />
-                  <div>Cargando proyectos del usuario...</div>
-                </div>
-              ) : userProjects.length === 0 ? (
-                <div style={{ padding: '3rem', textAlign: 'center', color: '#94a3b8' }}>
-                  El usuario no cuenta con proyectos registrados en esta categoría.
-                </div>
-              ) : (
-                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.8rem' }}>
-                  <thead>
-                    <tr style={{ background: 'rgba(255, 255, 255, 0.03)', borderBottom: '1px solid rgba(255, 255, 255, 0.08)' }}>
-                      <th style={{ padding: '0.75rem 1rem', color: '#94a3b8' }}>Proyecto</th>
-                      <th style={{ padding: '0.75rem 1rem', color: '#94a3b8' }}>Tipo</th>
-                      <th style={{ padding: '0.75rem 1rem', color: '#94a3b8' }}>Avance Sustantivo</th>
-                      <th style={{ padding: '0.75rem 1rem', color: '#94a3b8' }}>Estado Editorial</th>
-                      <th style={{ padding: '0.75rem 1rem', color: '#94a3b8' }}>Siguiente Acción</th>
-                      <th style={{ padding: '0.75rem 1rem', color: '#94a3b8', textAlign: 'right' }}>Abrir</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {userProjects.map(proj => (
-                      <tr key={proj.id} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.05)' }}>
-                        <td style={{ padding: '0.75rem 1rem', fontWeight: 600, color: '#f8fafc' }}>
-                          <div>{proj.name}</div>
-                          <div style={{ fontSize: '0.68rem', color: '#94a3b8' }}>{proj.id}</div>
-                        </td>
-                        <td style={{ padding: '0.75rem 1rem', color: '#94a3b8' }}>
-                          {proj.type}
-                        </td>
-                        <td style={{ padding: '0.75rem 1rem' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <div style={{ flex: 1, height: '6px', background: 'rgba(255, 255, 255, 0.1)', borderRadius: '3px', overflow: 'hidden', minWidth: '60px' }}>
-                              <div style={{ height: '100%', width: `${proj.completion}%`, background: proj.completion >= 80 ? '#10b981' : (proj.completion >= 40 ? '#f59e0b' : '#38bdf8') }} />
+            {/* Panel de Proyectos del Usuario Seleccionado */}
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.75rem', overflow: 'hidden' }}>
+              {selectedUserForProjects ? (
+                <>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div>
+                      <h4 style={{ margin: 0, fontSize: '0.95rem', color: '#fff' }}>
+                        Planes de Negocio de {selectedUserForProjects.displayName || selectedUserForProjects.username}
+                      </h4>
+                      <span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>
+                        Total registrados: {userProjects.length} proyectos
+                      </span>
+                    </div>
+                    <button
+                      onClick={() => cargarProyectosUsuario(selectedUserForProjects.id)}
+                      className="btn btn-secondary"
+                      style={{ padding: '4px 10px', fontSize: '0.75rem' }}
+                    >
+                      <RefreshCw size={12} className={loadingProjects ? 'animate-spin' : ''} /> Refrescar
+                    </button>
+                  </div>
+
+                  <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                    {loadingProjects ? (
+                      <div style={{ padding: '2rem', textAlign: 'center', color: '#94a3b8' }}>
+                        <RefreshCw size={20} className="animate-spin" style={{ margin: '0 auto 0.5rem' }} />
+                        <div>Consultando proyectos en base de datos...</div>
+                      </div>
+                    ) : userProjects.length === 0 ? (
+                      <div style={{ padding: '2rem', textAlign: 'center', color: '#64748b', background: 'rgba(255, 255, 255, 0.02)', borderRadius: '10px' }}>
+                        Este usuario no tiene ningún plan de negocio creado aún.
+                      </div>
+                    ) : (
+                      userProjects.map(proj => (
+                        <div 
+                          key={proj.slug || proj.id}
+                          style={{
+                            padding: '1rem', borderRadius: '10px', background: 'rgba(255, 255, 255, 0.03)',
+                            border: '1px solid rgba(255, 255, 255, 0.06)', display: 'flex', justifyContent: 'space-between', alignItems: 'center'
+                          }}
+                        >
+                          <div>
+                            <div style={{ fontWeight: 700, color: '#f8fafc', fontSize: '0.9rem' }}>
+                              {proj.nombre || proj.title || proj.slug}
                             </div>
-                            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#fff' }}>{proj.completion}%</span>
+                            <div style={{ fontSize: '0.72rem', color: '#94a3b8', marginTop: '2px' }}>
+                              Slug: <code style={{ color: '#38bdf8' }}>{proj.slug}</code> • Modificado: {proj.updatedAt ? new Date(proj.updatedAt).toLocaleDateString() : 'N/A'}
+                            </div>
+                            {proj.progreso !== undefined && (
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '6px' }}>
+                                <div style={{ width: '120px', height: '6px', background: 'rgba(255,255,255,0.1)', borderRadius: '3px', overflow: 'hidden' }}>
+                                  <div style={{ width: `${proj.progreso}%`, height: '100%', background: '#38bdf8', borderRadius: '3px' }} />
+                                </div>
+                                <span style={{ fontSize: '0.7rem', color: '#38bdf8', fontWeight: 600 }}>{proj.progreso}% completado</span>
+                              </div>
+                            )}
                           </div>
-                        </td>
-                        <td style={{ padding: '0.75rem 1rem' }}>
-                          <span style={{
-                            padding: '2px 8px', borderRadius: '12px', fontSize: '0.7rem', fontWeight: 700,
-                            background: proj.workflowStatus === 'Aprobado' ? 'rgba(16, 185, 129, 0.15)' : (proj.workflowStatus === 'En revisión' ? 'rgba(245, 158, 11, 0.15)' : 'rgba(56, 189, 248, 0.15)'),
-                            color: proj.workflowStatus === 'Aprobado' ? '#10b981' : (proj.workflowStatus === 'En revisión' ? '#f59e0b' : '#38bdf8'),
-                            border: `1px solid ${proj.workflowStatus === 'Aprobado' ? 'rgba(16, 185, 129, 0.3)' : (proj.workflowStatus === 'En revisión' ? 'rgba(245, 158, 11, 0.3)' : 'rgba(56, 189, 248, 0.3)')}`
-                          }}>
-                            {proj.workflowStatus}
-                          </span>
-                        </td>
-                        <td style={{ padding: '0.75rem 1rem', color: '#94a3b8', fontSize: '0.74rem' }}>
-                          {proj.nextAction}
-                        </td>
-                        <td style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>
-                          {onOpenProject ? (
-                            <button
-                              onClick={() => onOpenProject(proj.id, proj.type)}
-                              className="btn btn-secondary"
-                              style={{ padding: '4px 10px', fontSize: '0.72rem', background: 'rgba(56, 189, 248, 0.15)', color: '#38bdf8', border: '1px solid rgba(56, 189, 248, 0.3)', borderRadius: '6px' }}
-                            >
-                              Abrir <ArrowRight size={12} style={{ marginLeft: '3px' }} />
-                            </button>
-                          ) : (
-                            <span style={{ color: '#64748b', fontSize: '0.7rem' }}>—</span>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+
+                          <div style={{ display: 'flex', gap: '0.5rem' }}>
+                            {onOpenProject && (
+                              <button
+                                onClick={() => {
+                                  onOpenProject(proj.slug);
+                                  onClose();
+                                }}
+                                className="btn btn-ia"
+                                style={{ padding: '6px 12px', fontSize: '0.75rem', background: 'rgba(56, 189, 248, 0.15)', color: '#38bdf8', border: '1px solid rgba(56, 189, 248, 0.3)' }}
+                              >
+                                Inspeccionar Plan
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </>
+              ) : (
+                <div style={{ padding: '3rem', textAlign: 'center', color: '#64748b' }}>
+                  Selecciona un usuario de la lista izquierda para auditar sus proyectos.
+                </div>
               )}
             </div>
           </div>
         )}
 
-        {/* PESTAÑA 3: AUDITORÍA */}
+        {/* PESTAÑA 3: BITÁCORA DE AUDITORÍA */}
         {activeTab === 'auditoria' && (
           <div style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden', gap: '1rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div style={{ fontSize: '0.82rem', color: '#94a3b8' }}>
-                Registro inmutable de actividades administrativas, aprobaciones y accesos a proyectos ajenos.
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flex: 1, maxWidth: '400px' }}>
+                <Search size={16} color="#94a3b8" />
+                <input
+                  type="text"
+                  placeholder="Filtrar bitácora por actor, acción o proyecto..."
+                  value={auditFilter}
+                  onChange={e => setAuditFilter(e.target.value)}
+                  style={{
+                    width: '100%', padding: '6px 10px', background: 'rgba(255, 255, 255, 0.05)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '6px', color: '#fff', fontSize: '0.8rem'
+                  }}
+                />
               </div>
               <button
                 onClick={cargarAuditoria}
@@ -731,7 +774,17 @@ export default function AdminUsersPanel({ isOpen, onClose, onOpenProject }) {
                         No hay eventos registrados en la bitácora aún.
                       </td>
                     </tr>
-                  ) : auditLogs.map(item => (
+                  ) : auditLogs
+                    .filter(item => {
+                      if (!auditFilter) return true;
+                      const q = auditFilter.toLowerCase();
+                      return (
+                        (item.actorUsername || '').toLowerCase().includes(q) ||
+                        (item.action || '').toLowerCase().includes(q) ||
+                        (item.targetId || '').toLowerCase().includes(q)
+                      );
+                    })
+                    .map(item => (
                     <tr key={item.id} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.04)' }}>
                       <td style={{ padding: '0.6rem 0.8rem', color: '#cbd5e1' }}>
                         {new Date(item.timestamp).toLocaleString('es-MX', { dateStyle: 'short', timeStyle: 'medium' })}
@@ -756,6 +809,147 @@ export default function AdminUsersPanel({ isOpen, onClose, onOpenProject }) {
                       </td>
                     </tr>
                   ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* PESTAÑA 4: AUDITORÍA Y CONSUMO DE TOKENS POR USUARIO */}
+        {activeTab === 'tokens' && (
+          <div style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden', gap: '1rem' }}>
+            {/* Tarjetas resumen */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.75rem' }}>
+              <div style={{ padding: '0.85rem 1rem', background: 'rgba(16, 185, 129, 0.08)', borderRadius: '10px', border: '1px solid rgba(16, 185, 129, 0.2)' }}>
+                <div style={{ fontSize: '0.7rem', color: '#86efac', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <Zap size={14} /> Total Tokens Sistema
+                </div>
+                <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#10b981', marginTop: '4px' }}>
+                  {globalTotalTokens >= 1000000 ? `${(globalTotalTokens / 1000000).toFixed(2)}M` : globalTotalTokens >= 1000 ? `${(globalTotalTokens / 1000).toFixed(1)}k` : globalTotalTokens.toLocaleString()}
+                </div>
+                <div style={{ fontSize: '0.68rem', color: '#94a3b8', marginTop: '2px' }}>Acumulado histórico</div>
+              </div>
+
+              <div style={{ padding: '0.85rem 1rem', background: 'rgba(56, 189, 248, 0.08)', borderRadius: '10px', border: '1px solid rgba(56, 189, 248, 0.2)' }}>
+                <div style={{ fontSize: '0.7rem', color: '#7dd3fc', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <Users size={14} /> Usuarios Auditados
+                </div>
+                <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#38bdf8', marginTop: '4px' }}>
+                  {Object.keys(usersTelemetry).length || users.length}
+                </div>
+                <div style={{ fontSize: '0.68rem', color: '#94a3b8', marginTop: '2px' }}>Con actividad registrada</div>
+              </div>
+
+              <div style={{ padding: '0.85rem 1rem', background: 'rgba(99, 102, 241, 0.08)', borderRadius: '10px', border: '1px solid rgba(99, 102, 241, 0.2)' }}>
+                <div style={{ fontSize: '0.7rem', color: '#a5b4fc', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <Cpu size={14} /> Proveedor Principal
+                </div>
+                <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#818cf8', marginTop: '4px', textTransform: 'capitalize' }}>
+                  {Object.entries(accTokens).sort((a,b) => b[1]-a[1])[0]?.[0]?.replace('_', ' ') || 'Ollama Cloud'}
+                </div>
+                <div style={{ fontSize: '0.68rem', color: '#94a3b8', marginTop: '2px' }}>Mayor volumen de inferencia</div>
+              </div>
+
+              <div style={{ padding: '0.85rem 1rem', background: 'rgba(245, 158, 11, 0.08)', borderRadius: '10px', border: '1px solid rgba(245, 158, 11, 0.2)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                <div>
+                  <div style={{ fontSize: '0.7rem', color: '#fde68a', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <Activity size={14} /> Actualización
+                  </div>
+                  <div style={{ fontSize: '0.75rem', color: '#cbd5e1', marginTop: '4px' }}>
+                    En vivo desde backend
+                  </div>
+                </div>
+                <button
+                  onClick={cargarTelemetriaTokens}
+                  disabled={loadingTokens}
+                  className="btn btn-secondary"
+                  style={{ padding: '4px 8px', fontSize: '0.7rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}
+                >
+                  <RefreshCw size={11} className={loadingTokens ? 'animate-spin' : ''} /> Refrescar Métricas
+                </button>
+              </div>
+            </div>
+
+            {/* Tabla de Consumo por Usuario */}
+            <div style={{ flex: 1, overflowY: 'auto', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '10px' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.78rem' }}>
+                <thead>
+                  <tr style={{ background: 'rgba(255, 255, 255, 0.03)', borderBottom: '1px solid rgba(255, 255, 255, 0.08)' }}>
+                    <th style={{ padding: '0.75rem 1rem', color: '#94a3b8' }}>Usuario</th>
+                    <th style={{ padding: '0.75rem 1rem', color: '#94a3b8' }}>Rol</th>
+                    <th style={{ padding: '0.75rem 1rem', color: '#94a3b8' }}>Tokens Totales</th>
+                    <th style={{ padding: '0.75rem 1rem', color: '#94a3b8' }}>% Consumo</th>
+                    <th style={{ padding: '0.75rem 1rem', color: '#94a3b8' }}>Desglose por Proveedor</th>
+                    <th style={{ padding: '0.75rem 1rem', color: '#94a3b8' }}>Última Llamada IA</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {loadingTokens && !tokenTelemetry ? (
+                    <tr>
+                      <td colSpan="6" style={{ padding: '3rem', textAlign: 'center', color: '#94a3b8' }}>
+                        <RefreshCw size={24} className="animate-spin" style={{ margin: '0 auto 0.5rem' }} />
+                        <div>Cargando telemetría de tokens por usuario...</div>
+                      </td>
+                    </tr>
+                  ) : users.map(user => {
+                    const userTel = usersTelemetry[user.username] || { totalTokens: 0, byProvider: {}, lastCall: null };
+                    const userTokens = userTel.totalTokens || 0;
+                    const pct = globalTotalTokens > 0 ? ((userTokens / globalTotalTokens) * 100).toFixed(1) : 0;
+                    const byProv = userTel.byProvider || {};
+
+                    return (
+                      <tr key={user.id} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.04)' }}>
+                        <td style={{ padding: '0.75rem 1rem' }}>
+                          <div style={{ fontWeight: 600, color: '#f8fafc' }}>{user.displayName || user.username}</div>
+                          <div style={{ fontSize: '0.7rem', color: '#64748b' }}>@{user.username}</div>
+                        </td>
+                        <td style={{ padding: '0.75rem 1rem' }}>
+                          <span style={{
+                            padding: '2px 6px', borderRadius: '4px', fontSize: '0.68rem', fontWeight: 700,
+                            background: user.role === 'superadmin' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(56, 189, 248, 0.15)',
+                            color: user.role === 'superadmin' ? '#f87171' : '#38bdf8'
+                          }}>
+                            {user.role}
+                          </span>
+                        </td>
+                        <td style={{ padding: '0.75rem 1rem', fontWeight: 700, color: userTokens > 0 ? '#10b981' : '#64748b' }}>
+                          {userTokens.toLocaleString()} tokens
+                        </td>
+                        <td style={{ padding: '0.75rem 1rem' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <div style={{ width: '60px', height: '6px', background: 'rgba(255,255,255,0.1)', borderRadius: '3px', overflow: 'hidden' }}>
+                              <div style={{ width: `${Math.min(pct, 100)}%`, height: '100%', background: '#10b981', borderRadius: '3px' }} />
+                            </div>
+                            <span style={{ fontSize: '0.7rem', color: '#cbd5e1' }}>{pct}%</span>
+                          </div>
+                        </td>
+                        <td style={{ padding: '0.75rem 1rem' }}>
+                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                            {Object.keys(byProv).length === 0 ? (
+                              <span style={{ color: '#64748b', fontSize: '0.7rem' }}>Sin llamadas</span>
+                            ) : (
+                              Object.entries(byProv).map(([prov, tokens]) => (
+                                <span 
+                                  key={prov}
+                                  style={{
+                                    fontSize: '0.68rem', padding: '1px 6px', borderRadius: '4px',
+                                    background: `${providerColors[prov] || '#64748b'}22`,
+                                    color: providerColors[prov] || '#94a3b8',
+                                    border: `1px solid ${providerColors[prov] || '#64748b'}44`
+                                  }}
+                                >
+                                  {prov}: {tokens >= 1000 ? `${(tokens/1000).toFixed(1)}k` : tokens}
+                                </span>
+                              ))
+                            )}
+                          </div>
+                        </td>
+                        <td style={{ padding: '0.75rem 1rem', color: '#94a3b8', fontSize: '0.72rem' }}>
+                          {userTel.lastCall ? new Date(userTel.lastCall).toLocaleString('es-MX', { dateStyle: 'short', timeStyle: 'short' }) : 'Sin registro'}
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>

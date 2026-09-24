@@ -3841,18 +3841,22 @@ export default function VistaPrevia() {
                   return null;
                 }).filter(Boolean);
 
-                if (exportScope === 'executive' || !boxes.length) return null;
-
                 const moduleBoxData = planData?.[mod.pillarKey]?.[mod.key] || {};
+                const visibleBoxes = boxes.filter(boxDef => {
+                  const boxData = moduleBoxData[boxDef.id] || {};
+                  return boxData._includeInPreview !== false;
+                });
+
+                if (exportScope === 'executive' || !visibleBoxes.length) return null;
                 
                 return (
                   <div style={{ marginTop: '2rem', paddingTop: '1.5rem', borderTop: '1px solid var(--border-color)' }}>
                     <h4 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--accent-color)', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                       <Layout className="w-5 h-5" />
-                      Metodologías y Herramientas Analíticas ({boxes.length} disponibles)
+                      Metodologías y Herramientas Analíticas ({visibleBoxes.length} seleccionadas)
                     </h4>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                      {boxes.map((boxDef) => {
+                      {visibleBoxes.map((boxDef) => {
                         const boxValues = {
                           ...(moduleBoxData[boxDef.id] || {}),
                           planData,

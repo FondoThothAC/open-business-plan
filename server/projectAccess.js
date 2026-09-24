@@ -140,6 +140,36 @@ export function resolveReadableProject(type, id, user) {
     }
   }
 
+  // 4. Si el usuario es colaborador registrado en el proyecto de otro usuario
+  if (user?.username) {
+    try {
+      const entries = fs.readdirSync(root, { withFileTypes: true });
+      for (const entry of entries) {
+        if (entry.isDirectory() && entry.name.startsWith('user_') && entry.name !== userFolder(user)) {
+          const candidate = path.join(root, entry.name, id, `${id}.json`);
+          if (fs.existsSync(candidate)) {
+            try {
+              const projectJson = JSON.parse(fs.readFileSync(candidate, 'utf8'));
+              const collabs = projectJson.config?.collaborators || projectJson.collaborators || [];
+              if (Array.isArray(collabs) && collabs.includes(user.username)) {
+                const ownerName = entry.name.replace(/^user_/, '');
+                return {
+                  path: candidate,
+                  owner: ownerName,
+                  kind: 'collaborator'
+                };
+              }
+            } catch {
+              // Ignorar errores de parseo
+            }
+          }
+        }
+      }
+    } catch {
+      // Ignorar errores de lectura en directorios
+    }
+  }
+
   return null;
 }
 
@@ -164,8 +194,8 @@ export function resolveWritableProject(type, id, user) {
     return result;
   }
 
-  // El usuario regular solo puede modificar proyectos propios
-  if (result.kind === 'owned') {
+  // El usuario regular puede modificar proyectos propios o donde es colaborador autorizado
+  if (result.kind === 'owned' || result.kind === 'collaborator') {
     return result;
   }
 

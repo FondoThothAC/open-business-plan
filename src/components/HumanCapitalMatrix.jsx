@@ -1,26 +1,121 @@
 import { useState } from 'react';
-import { Plus, Trash2, Edit2, Check, Briefcase, Network } from 'lucide-react';
+import { Plus, Trash2, Edit2, Check, Briefcase, Network, Code2 } from 'lucide-react';
+import MermaidViewer from './MermaidViewer';
+
+// Estructura esbelta por defecto para Microempresas y Emprendimientos Locales
+const DEFAULT_MICRO_PUESTOS = [
+  { 
+    id: "1", 
+    puesto: "Director General / Emprendedor Operador", 
+    area: "Dirección", 
+    nivel: "Directivo", 
+    sueldoBase: 14000, 
+    cargaSocialPct: 32, 
+    funciones: "Gestión estratégica, compras de insumos, control financiero y comercialización en puntos de venta.", 
+    perfil: "Emprendedor con liderazgo comercial y gestión operativa básica." 
+  },
+  { 
+    id: "2", 
+    puesto: "Encargado de Producción y Horneado", 
+    area: "Operaciones", 
+    nivel: "Operativo", 
+    sueldoBase: 9500, 
+    cargaSocialPct: 32, 
+    funciones: "Preparación de masa, formulación de recetas, horneado, control de mermas y empaque primario.", 
+    perfil: "Técnico o auxiliar con experiencia en panadería/repostería artesanal y normas sanitarias." 
+  },
+  { 
+    id: "3", 
+    puesto: "Auxiliar de Ventas, Mostrador y Reparto", 
+    area: "Ventas", 
+    nivel: "Operativo", 
+    sueldoBase: 8000, 
+    cargaSocialPct: 32, 
+    funciones: "Atención a clientes, despacho de pedidos, entregas locales y cobranza en mostrador.", 
+    perfil: "Auxiliar de ventas y atención al cliente con orientación a servicio." 
+  }
+];
+
+// Estructura industrial por defecto para Empresas Grandes / Medianas
+const DEFAULT_INDUSTRIAL_PUESTOS = [
+  { id: "1", puesto: "Director General (CEO / Socio Operativo)", area: "Dirección", nivel: "Directivo", sueldoBase: 75000, cargaSocialPct: 32, funciones: "Estrategia macro, relaciones institucionales, alianzas B2B y gobernanza corporativa.", perfil: "Ing. Industrial / MBA con experiencia directiva." },
+  { id: "2", puesto: "Gerente de Operaciones y Calidad", area: "Operaciones", nivel: "Gerencia", sueldoBase: 50000, cargaSocialPct: 32, funciones: "Gestión técnica de la planta/taller, SLAs y control de calidad.", perfil: "Ing. Mecánico/Industrial con 8+ años en gestión de operaciones." },
+  { id: "3", puesto: "Gerente Comercial y Desarrollo B2B", area: "Ventas", nivel: "Gerencia", sueldoBase: 45000, cargaSocialPct: 32, funciones: "Prospección de contratos corporativos y convenios.", perfil: "Lic. Comercial / Ingeniero con cartera en el sector." },
+  { id: "4", puesto: "Gerente de Administración y Finanzas (CFO)", area: "Finanzas", nivel: "Gerencia", sueldoBase: 45000, cargaSocialPct: 32, funciones: "Tesorería, control presupuestal y cumplimiento fiscal.", perfil: "C.P. / Maestría en Finanzas." },
+  { id: "5", puesto: "Supervisor de Operaciones y Mantenimiento", area: "Operaciones", nivel: "Mando Medio", sueldoBase: 30000, cargaSocialPct: 32, funciones: "Supervisión diaria de línea productiva y mantenimiento preventivo.", perfil: "Ing. Técnico con especialidad en planta." },
+  { id: "6", puesto: "Técnico Especialista de Producción", area: "Operaciones", nivel: "Técnico", sueldoBase: 22000, cargaSocialPct: 32, funciones: "Operación de maquinaria de precisión y pruebas de calidad.", perfil: "Técnico especialista certificado." },
+  { id: "7", puesto: "Auxiliar Administrativo y Logística", area: "Finanzas", nivel: "Operativo", sueldoBase: 16000, cargaSocialPct: 32, funciones: "Facturación, inventarios y atención a proveedores.", perfil: "Técnico en administración." }
+];
+
+function generateMermaidFromPuestos(list) {
+  if (!Array.isArray(list) || list.length === 0) return 'graph TD\n  Inicio["Sin puestos definidos"]';
+  let mermaid = 'graph TD\n';
+  const directivos = list.filter(p => p.nivel === 'Directivo' || p.area === 'Dirección');
+  const gerencias = list.filter(p => p.nivel === 'Gerencia');
+  const mandos = list.filter(p => p.nivel === 'Mando Medio');
+  const operativos = list.filter(p => !['Directivo', 'Gerencia', 'Mando Medio'].includes(p.nivel) && p.area !== 'Dirección');
+
+  const rootId = directivos[0]?.id || list[0]?.id || '1';
+
+  list.forEach(p => {
+    const sueldo = (Number(p.sueldoBase) || 0).toLocaleString('es-MX');
+    mermaid += `  N_${p.id}["<b>${p.puesto}</b><br/><small>${p.area} • $${sueldo} MXN</small>"]\n`;
+  });
+
+  if (gerencias.length > 0) {
+    gerencias.forEach(g => {
+      mermaid += `  N_${rootId} --> N_${g.id}\n`;
+    });
+    if (mandos.length > 0) {
+      mandos.forEach((m, idx) => {
+        const parentGer = gerencias[idx % gerencias.length];
+        mermaid += `  N_${parentGer.id} --> N_${m.id}\n`;
+      });
+      operativos.forEach((o, idx) => {
+        const parent = mandos[idx % mandos.length];
+        mermaid += `  N_${parent.id} --> N_${o.id}\n`;
+      });
+    } else {
+      operativos.forEach((o, idx) => {
+        const parent = gerencias[idx % gerencias.length];
+        mermaid += `  N_${parent.id} --> N_${o.id}\n`;
+      });
+    }
+  } else if (mandos.length > 0) {
+    mandos.forEach(m => {
+      mermaid += `  N_${rootId} --> N_${m.id}\n`;
+    });
+    operativos.forEach((o, idx) => {
+      const parent = mandos[idx % mandos.length];
+      mermaid += `  N_${parent.id} --> N_${o.id}\n`;
+    });
+  } else {
+    // Estructura plana de microempresa: del Director a los operativos
+    operativos.forEach(o => {
+      if (o.id !== rootId) {
+        mermaid += `  N_${rootId} --> N_${o.id}\n`;
+      }
+    });
+  }
+
+  return mermaid;
+}
 
 export default function HumanCapitalMatrix({ data, onChange, readOnly = false }) {
+  // Detección de escala para seleccionar plantilla de arranque adecuada
+  const detectIsMicro = () => {
+    const fullText = JSON.stringify(data || '').toLowerCase();
+    const isExplicitLarge = /minería|hidráulic|tier-1|tornero|clean room|sapi de cv|parque industrial/i.test(fullText);
+    if (isExplicitLarge) return false;
+    return true; // Predeterminado a estructura esbelta microempresa
+  };
+
+  const initialFallback = detectIsMicro() ? DEFAULT_MICRO_PUESTOS : DEFAULT_INDUSTRIAL_PUESTOS;
+
   // Obtener lista estructurada o inicializar desde fallback
   const puestosList = Array.isArray(data?.puestos_lista) && data.puestos_lista.length > 0 
     ? data.puestos_lista 
-    : [
-        { id: "1", puesto: "Director General (CEO / Socio Operativo)", area: "Dirección", nivel: "Directivo", sueldoBase: 75000, cargaSocialPct: 32, funciones: "Estrategia macro, relaciones gubernamentales, alianzas con mineras Tier-1 y gobernanza corporativa.", perfil: "Ing. Industrial / MBA con 15+ años de experiencia en minería." },
-        { id: "2", puesto: "Gerente de Operaciones (COO / Gerente Técnico)", area: "Operaciones", nivel: "Gerencia", sueldoBase: 50000, cargaSocialPct: 32, funciones: "Gestión técnica del taller multiactivo, control de calidad ISO 9001/4406 y cumplimiento de SLAs.", perfil: "Ing. Mecánico/Mecatrónico con 10+ años en sistemas oleohidráulicos." },
-        { id: "3", puesto: "Gerente Comercial y Desarrollo B2B", area: "Ventas", nivel: "Gerencia", sueldoBase: 45000, cargaSocialPct: 32, funciones: "Licitaciones mineras, prospección de contratos marco MaaS y convenios corporativos.", perfil: "Lic. Comercial / Ingeniero con cartera en sector minero." },
-        { id: "4", puesto: "Gerente de Administración y Finanzas (CFO)", area: "Finanzas", nivel: "Gerencia", sueldoBase: 45000, cargaSocialPct: 32, funciones: "Tesorería, control de cobranza a 90 días, gestión de fideicomiso y cumplimiento fiscal.", perfil: "C.P. / Maestría en Finanzas con experiencia en crédito corporativo." },
-        { id: "5", puesto: "Gerente de Calidad, IoT y Predictivo", area: "Calidad", nivel: "Gerencia", sueldoBase: 42000, cargaSocialPct: 32, funciones: "Gestión de telemetría Parker SensoNODE, plataforma cloud VOM y certificaciones de fluidos ISO 4406.", perfil: "Ing. Electrónico / Sistemas / Mecatrónica." },
-        { id: "6", puesto: "Supervisor de Taller y Metrología Láser", area: "Operaciones", nivel: "Mando Medio", sueldoBase: 32000, cargaSocialPct: 32, funciones: "Inspección dimensional de vástagos/camisas y supervisión de pruebas hidrostáticas.", perfil: "Ing. Técnico Mecánico con especialidad en metrología." },
-        { id: "7", puesto: "Líder de Servicio en Campo y Grúas Móviles", area: "Campo", nivel: "Mando Medio", sueldoBase: 30000, cargaSocialPct: 32, funciones: "Diagnóstico in situ en tajos mineros y montaje de kits de sensores IoT.", perfil: "Técnico Especialista en Grúas y Maquinaria Pesada." },
-        { id: "8", puesto: "Tornero Industrial Especialista A (Bancada 6m)", area: "Operaciones", nivel: "Técnico", sueldoBase: 26000, cargaSocialPct: 32, funciones: "Mecanizado de precisión en cilindros y vástagos de gran escala (<0.02 mm).", perfil: "Técnico Tornero Industrial con 8+ años de experiencia." },
-        { id: "9", puesto: "Tornero Industrial B (Piezas Secundarias)", area: "Operaciones", nivel: "Operativo", sueldoBase: 20000, cargaSocialPct: 32, funciones: "Fabricación y rectificado de tapas, émbolos, bujes y sellos mecánicos.", perfil: "Técnico Tornero con 4+ años en torno convencional." },
-        { id: "10", puesto: "Operador / Programador Fresadora CNC", area: "Operaciones", nivel: "Técnico", sueldoBase: 22000, cargaSocialPct: 32, funciones: "Rectificado de manifolds hidráulicos y bloques de válvulas en centro CNC.", perfil: "Técnico en Programación y Operación CNC." },
-        { id: "11", puesto: "Técnico Especialista en Clean Room ISO 4406", area: "Calidad", nivel: "Técnico", sueldoBase: 20000, cargaSocialPct: 32, funciones: "Ensamble en atmósfera limpia, sellado Parker y conteo de partículas de fluidos.", perfil: "Técnico en Control de Contaminación de Fluidos." },
-        { id: "12", puesto: "Técnico de Banco de Pruebas 5,000 PSI", area: "Operaciones", nivel: "Técnico", sueldoBase: 20000, cargaSocialPct: 32, funciones: "Certificación de estanqueidad y pruebas de carga hidrostática certificada.", perfil: "Técnico Hidráulico con certificación en seguridad de alta presión." },
-        { id: "13", puesto: "Ejecutivo de Cuentas Mineras B2B", area: "Ventas", nivel: "Operativo", sueldoBase: 22000, cargaSocialPct: 32, funciones: "Atención técnica y seguimiento a superintendentes de Grupo México, Fresnillo y Peñoles.", perfil: "Lic. Mercadotecnia / Ventas Técnicas Industriales." },
-        { id: "14", puesto: "Jefe de Nómina, CxC y Crédito Minero", area: "Finanzas", nivel: "Administrativo", sueldoBase: 20000, cargaSocialPct: 32, funciones: "Facturación electrónica CFDI, administración de factoraje y conciliaciones bancarias.", perfil: "Lic. en Contabilidad / Administración." }
-      ];
+    : initialFallback;
 
   const [editingId, setEditingId] = useState(null);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -129,14 +224,14 @@ export default function HumanCapitalMatrix({ data, onChange, readOnly = false })
 
       {/* Controles de vista */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
-        <div style={{ display: 'flex', gap: '0.5rem' }}>
+        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
           <button 
             type="button"
             className={`btn ${viewMode === 'cards' ? 'btn-primary' : 'btn-ghost'}`}
             onClick={() => setViewMode('cards')}
             style={{ fontSize: '0.8rem', padding: '0.4rem 0.8rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
           >
-            <span>📇</span> Fichas de Puesto (14 Roles)
+            <span>📇</span> Fichas de Puesto ({puestosList.length})
           </button>
           <button 
             type="button"
@@ -145,6 +240,14 @@ export default function HumanCapitalMatrix({ data, onChange, readOnly = false })
             style={{ fontSize: '0.8rem', padding: '0.4rem 0.8rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
           >
             <Network style={{ width: '14px', height: '14px' }} /> Organigrama Jerárquico
+          </button>
+          <button 
+            type="button"
+            className={`btn ${viewMode === 'mermaid' ? 'btn-primary' : 'btn-ghost'}`}
+            onClick={() => setViewMode('mermaid')}
+            style={{ fontSize: '0.8rem', padding: '0.4rem 0.8rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+          >
+            <Code2 style={{ width: '14px', height: '14px' }} /> Diagrama Mermaid
           </button>
           <button 
             type="button"
@@ -353,6 +456,7 @@ export default function HumanCapitalMatrix({ data, onChange, readOnly = false })
           })}
         </div>
       ) : viewMode === 'organigram' ? (
+        /* Vista 2: Organigrama Jerárquico Visual */
         <div style={{
           padding: '1.75rem',
           background: 'var(--bg-card)',
@@ -361,52 +465,62 @@ export default function HumanCapitalMatrix({ data, onChange, readOnly = false })
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          gap: '1.75rem',
+          gap: '1.5rem',
           overflowX: 'auto'
         }}>
           {/* Nivel 1: Dirección */}
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
-            {directivos.map(p => (
-              <div key={p.id} style={{
-                padding: '0.85rem 1.25rem',
-                background: 'linear-gradient(135deg, #4f46e5 0%, #3730a3 100%)',
-                color: '#ffffff',
-                borderRadius: '12px',
-                textAlign: 'center',
-                boxShadow: '0 4px 12px rgba(79, 70, 229, 0.3)',
-                minWidth: '220px',
-                border: '1px solid rgba(255, 255, 255, 0.2)'
-              }}>
-                <div style={{ fontSize: '0.7rem', opacity: 0.85, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{p.area} • Directivo</div>
-                <div style={{ fontSize: '1rem', fontWeight: 800, marginTop: '2px' }}>{p.puesto}</div>
-                <div style={{ fontSize: '0.8rem', opacity: 0.9, marginTop: '4px' }}>${(Number(p.sueldoBase) || 0).toLocaleString('es-MX')} MXN/mes</div>
-              </div>
-            ))}
-          </div>
+          {directivos.length > 0 && (
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+              {directivos.map(p => (
+                <div key={p.id} style={{
+                  padding: '0.85rem 1.25rem',
+                  background: 'linear-gradient(135deg, #4f46e5 0%, #3730a3 100%)',
+                  color: '#ffffff',
+                  borderRadius: '12px',
+                  textAlign: 'center',
+                  boxShadow: '0 4px 12px rgba(79, 70, 229, 0.3)',
+                  minWidth: '220px',
+                  border: '1px solid rgba(255, 255, 255, 0.2)'
+                }}>
+                  <div style={{ fontSize: '0.7rem', opacity: 0.85, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{p.area} • Directivo</div>
+                  <div style={{ fontSize: '1rem', fontWeight: 800, marginTop: '2px' }}>{p.puesto}</div>
+                  <div style={{ fontSize: '0.8rem', opacity: 0.9, marginTop: '4px' }}>${(Number(p.sueldoBase) || 0).toLocaleString('es-MX')} MXN/mes</div>
+                </div>
+              ))}
+            </div>
+          )}
 
-          <div style={{ width: '2px', height: '20px', background: 'var(--border-color)' }} />
+          {/* Conector si hay niveles inferiores */}
+          {(gerencias.length > 0 || mandosMedios.length > 0 || operativos.length > 0) && (
+            <div style={{ width: '2px', height: '20px', background: 'var(--border-color)' }} />
+          )}
 
           {/* Nivel 2: Gerencias */}
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
-            {gerencias.map(p => (
-              <div key={p.id} style={{
-                padding: '0.75rem 1rem',
-                background: 'var(--bg-dark)',
-                color: 'var(--text-primary)',
-                borderRadius: '10px',
-                textAlign: 'center',
-                border: '1px solid rgba(99, 102, 241, 0.4)',
-                minWidth: '180px',
-                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
-              }}>
-                <div style={{ fontSize: '0.65rem', color: '#818cf8', fontWeight: 600, textTransform: 'uppercase' }}>{p.area}</div>
-                <div style={{ fontSize: '0.85rem', fontWeight: 700, marginTop: '2px' }}>{p.puesto}</div>
-                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '2px' }}>${(Number(p.sueldoBase) || 0).toLocaleString('es-MX')} MXN</div>
+          {gerencias.length > 0 && (
+            <>
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+                {gerencias.map(p => (
+                  <div key={p.id} style={{
+                    padding: '0.75rem 1rem',
+                    background: 'var(--bg-dark)',
+                    color: 'var(--text-primary)',
+                    borderRadius: '10px',
+                    textAlign: 'center',
+                    border: '1px solid rgba(99, 102, 241, 0.4)',
+                    minWidth: '180px',
+                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
+                  }}>
+                    <div style={{ fontSize: '0.65rem', color: '#818cf8', fontWeight: 600, textTransform: 'uppercase' }}>{p.area}</div>
+                    <div style={{ fontSize: '0.85rem', fontWeight: 700, marginTop: '2px' }}>{p.puesto}</div>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '2px' }}>${(Number(p.sueldoBase) || 0).toLocaleString('es-MX')} MXN</div>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-
-          <div style={{ width: '2px', height: '20px', background: 'var(--border-color)' }} />
+              {(mandosMedios.length > 0 || operativos.length > 0) && (
+                <div style={{ width: '2px', height: '20px', background: 'var(--border-color)' }} />
+              )}
+            </>
+          )}
 
           {/* Nivel 3: Mandos Medios */}
           {mandosMedios.length > 0 && (
@@ -428,31 +542,59 @@ export default function HumanCapitalMatrix({ data, onChange, readOnly = false })
                   </div>
                 ))}
               </div>
-              <div style={{ width: '2px', height: '20px', background: 'var(--border-color)' }} />
+              {operativos.length > 0 && (
+                <div style={{ width: '2px', height: '20px', background: 'var(--border-color)' }} />
+              )}
             </>
           )}
 
           {/* Nivel 4: Técnicos y Operativos */}
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '0.6rem', flexWrap: 'wrap', maxWidth: '1000px' }}>
-            {operativos.map(p => (
-              <div key={p.id} style={{
-                padding: '0.5rem 0.75rem',
-                background: 'var(--bg-dark)',
-                color: 'var(--text-secondary)',
-                borderRadius: '8px',
-                textAlign: 'center',
-                border: '1px solid var(--border-color)',
-                minWidth: '140px',
-                fontSize: '0.75rem'
-              }}>
-                <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{p.puesto}</div>
-                <div style={{ fontSize: '0.65rem', marginTop: '2px' }}>{p.area} • ${(Number(p.sueldoBase) || 0).toLocaleString('es-MX')}</div>
-              </div>
-            ))}
+          {operativos.length > 0 && (
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '0.75rem', flexWrap: 'wrap', maxWidth: '1000px' }}>
+              {operativos.map(p => (
+                <div key={p.id} style={{
+                  padding: '0.65rem 0.95rem',
+                  background: 'var(--bg-dark)',
+                  color: 'var(--text-secondary)',
+                  borderRadius: '10px',
+                  textAlign: 'center',
+                  border: '1px solid var(--border-color)',
+                  minWidth: '160px',
+                  fontSize: '0.75rem',
+                  boxShadow: '0 2px 6px rgba(0,0,0,0.05)'
+                }}>
+                  <div style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '0.82rem' }}>{p.puesto}</div>
+                  <div style={{ fontSize: '0.68rem', marginTop: '2px', color: '#10b981' }}>{p.area} • ${(Number(p.sueldoBase) || 0).toLocaleString('es-MX')} MXN</div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      ) : viewMode === 'mermaid' ? (
+        /* Vista 3: Diagrama Mermaid Renderizado */
+        <div style={{
+          padding: '1.5rem',
+          background: 'var(--bg-card)',
+          border: '1px solid var(--border-color)',
+          borderRadius: '16px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '1rem'
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+              Organigrama Funcional en Formato Mermaid.js
+            </span>
+            <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', background: 'var(--bg-panel-hover)', padding: '2px 8px', borderRadius: '8px' }}>
+              Sintaxis graph TD
+            </span>
+          </div>
+          <div style={{ background: '#ffffff', borderRadius: '12px', padding: '1rem', border: '1px solid var(--border-color)' }}>
+            <MermaidViewer chart={mermaidChartSource} theme="light" />
           </div>
         </div>
       ) : (
-        /* Vista de Tabla Detallada */
+        /* Vista 4: Tabla Detallada */
         <div style={{ overflowX: 'auto', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem', textAlign: 'left' }}>
             <thead>
@@ -511,7 +653,7 @@ export default function HumanCapitalMatrix({ data, onChange, readOnly = false })
                           className="form-control" 
                           style={{ fontSize: '0.75rem', padding: '2px 6px', textAlign: 'right', width: '90px' }}
                         />
-                      ) : `$${base.toLocaleString('es-MX')}`}
+                      ) : `$${Math.round(base).toLocaleString('es-MX')}`}
                     </td>
                     <td style={{ padding: '0.75rem', textAlign: 'right', color: '#f59e0b' }}>
                       ${Math.round(carga).toLocaleString('es-MX')} <span style={{ fontSize: '0.65rem', opacity: 0.8 }}>({p.cargaSocialPct || 32}%)</span>
@@ -558,10 +700,18 @@ export default function HumanCapitalMatrix({ data, onChange, readOnly = false })
             </tbody>
             <tfoot>
               <tr style={{ background: 'var(--bg-dark)', borderTop: '2px solid var(--border-color)', fontWeight: 800 }}>
-                <td colSpan={4} style={{ padding: '0.85rem', color: 'var(--text-primary)' }}>TOTALES NÓMINA INTEGRADA (14 PUESTOS)</td>
-                <td style={{ padding: '0.85rem', textAlign: 'right', color: 'var(--text-primary)' }}>${totalSueldoBase.toLocaleString('es-MX')}</td>
-                <td style={{ padding: '0.85rem', textAlign: 'right', color: '#f59e0b' }}>${Math.round(totalCargaSocial).toLocaleString('es-MX')}</td>
-                <td style={{ padding: '0.85rem', textAlign: 'right', color: '#10b981', fontSize: '0.9rem' }}>${Math.round(totalMensualIntegrado).toLocaleString('es-MX')}</td>
+                <td colSpan={4} style={{ padding: '0.85rem', color: 'var(--text-primary)' }}>
+                  TOTALES NÓMINA INTEGRADA ({puestosList.length} PUESTOS)
+                </td>
+                <td style={{ padding: '0.85rem', textAlign: 'right', color: 'var(--text-primary)' }}>
+                  ${Math.round(totalSueldoBase).toLocaleString('es-MX')}
+                </td>
+                <td style={{ padding: '0.85rem', textAlign: 'right', color: '#f59e0b' }}>
+                  ${Math.round(totalCargaSocial).toLocaleString('es-MX')}
+                </td>
+                <td style={{ padding: '0.85rem', textAlign: 'right', color: '#10b981', fontSize: '0.9rem' }}>
+                  ${Math.round(totalMensualIntegrado).toLocaleString('es-MX')}
+                </td>
                 <td colSpan={readOnly ? 1 : 2} style={{ padding: '0.85rem', color: 'var(--text-secondary)', fontSize: '0.75rem' }}>
                   Anual: ${Math.round(totalAnualIntegrado).toLocaleString('es-MX')} MXN
                 </td>

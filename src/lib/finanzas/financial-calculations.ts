@@ -205,9 +205,10 @@ export const calculateFinancialProjections = (
 
         // --- Revenues from derived list ---
         let monthlySales = 0;
+        const priceInflationFactor = projectData.indexPricesWithInflation ? inflationMultiplier : 1;
         derivedRevenues.forEach(rev => {
             if (year === 1 && rev.monthlyOverrides && rev.monthlyOverrides.length === 12) {
-                monthlySales += rev.monthlyOverrides[monthIndex];
+                monthlySales += rev.monthlyOverrides[monthIndex] * priceInflationFactor;
             } else {
                 let baseAmount = rev.initialMonthlyAmount;
                 // If Y1 had overrides, subsequent years grow from the Y1 average.
@@ -215,7 +216,7 @@ export const calculateFinancialProjections = (
                     baseAmount = rev.monthlyOverrides.reduce((a, b) => a + b, 0) / 12;
                 }
                 const annualGrowthMultiplier = revenueMultipliers[rev.id][yearIndex] || 1;
-                monthlySales += baseAmount * annualGrowthMultiplier;
+                monthlySales += baseAmount * annualGrowthMultiplier * priceInflationFactor;
             }
         });
         currentMonthData.sales = monthlySales;

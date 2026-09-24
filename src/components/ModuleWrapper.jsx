@@ -681,19 +681,44 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
                 </h4>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                   {boxes.map((boxDef) => {
+                    const boxData = moduleBoxData[boxDef.id] || {};
+                    const isIncluded = boxData._includeInPreview !== false;
                     const boxValues = {
-                      ...(moduleBoxData[boxDef.id] || {}),
+                      ...boxData,
                       planData
                     };
                     return (
-                      <RenderBox
-                        key={boxDef.id}
-                        definition={boxDef}
-                        values={boxValues}
-                        onChange={(newVal) => {
-                          handleChange(boxDef.id, newVal);
-                        }}
-                      />
+                      <div key={boxDef.id} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', background: 'var(--bg-panel-hover)', borderRadius: '16px', padding: '1.25rem', border: '1px solid var(--border-color)' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem', paddingBottom: '0.6rem', borderBottom: '1px solid var(--border-color)' }}>
+                          <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-secondary)' }}>
+                            Herramienta Analítica: <strong style={{ color: 'var(--text-primary)' }}>{boxDef.title || boxDef.id}</strong>
+                          </span>
+                          <label style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', cursor: 'pointer', fontSize: '0.75rem', fontWeight: 600, color: isIncluded ? '#10b981' : 'var(--text-secondary)', background: isIncluded ? 'rgba(16,185,129,0.1)' : 'rgba(148,163,184,0.1)', padding: '3px 8px', borderRadius: '8px', border: `1px solid ${isIncluded ? 'rgba(16,185,129,0.2)' : 'rgba(148,163,184,0.2)'}` }}>
+                            <input
+                              type="checkbox"
+                              checked={isIncluded}
+                              onChange={(e) => {
+                                handleChange(boxDef.id, {
+                                  ...boxData,
+                                  _includeInPreview: e.target.checked
+                                });
+                              }}
+                              style={{ cursor: 'pointer', accentColor: '#10b981' }}
+                            />
+                            {isIncluded ? '👁️ En Vista Previa' : '🚫 Oculto en Vista Previa'}
+                          </label>
+                        </div>
+                        <RenderBox
+                          definition={boxDef}
+                          values={boxValues}
+                          onChange={(newVal) => {
+                            handleChange(boxDef.id, {
+                              ...newVal,
+                              _includeInPreview: isIncluded
+                            });
+                          }}
+                        />
+                      </div>
                     );
                   })}
                 </div>

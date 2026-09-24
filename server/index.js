@@ -970,76 +970,93 @@ app.get('/api/projects', (req, res) => {
         if (!fs.existsSync(targetDir)) return;
         const entries = fs.readdirSync(targetDir, { withFileTypes: true });
         for (const entry of entries) {
-           if (entry.isDirectory()) {
-              if (entry.name === '.archive' || entry.name === 'node_modules') {
-                continue;
+          if (entry.isDirectory()) {
+            if (entry.name === '.archive' || entry.name === 'node_modules') {
+              continue;
+            }
+            if (entry.name.startsWith('user_')) {
+              if (isTargetAdmin || isRevisor) {
+                scanDir(path.join(targetDir, entry.name), entry.name);
+              } else if (reqUserId && entry.name === `user_${reqUserId.replace(/[^a-z0-9]/gi, '_').toLowerCase()}`) {
+                scanDir(path.join(targetDir, entry.name), entry.name);
+              } else if (reqUserId) {
+                // Escaneo condicional para proyectos compartidos como colaborador
+                scanDir(path.join(targetDir, entry.name), entry.name);
               }
-              if (entry.name.startsWith('user_')) {
-                if (isTargetAdmin || isRevisor) {
-                  scanDir(path.join(targetDir, entry.name), entry.name);
-                } else if (reqUserId && entry.name === `user_${reqUserId.replace(/[^a-z0-9]/gi, '_').toLowerCase()}`) {
-                  scanDir(path.join(targetDir, entry.name), entry.name);
+              continue;
+            }
+
+            // Comercio Cuántico TR es privado exclusivo del superadmin
+            if (PRIVATE_ADMIN_IDS.has(entry.name) && !isTargetAdmin) {
+              continue;
+            }
+
+            // Si está en la carpeta raíz (sin userFolder)
+            const isExample = EXAMPLE_PROJECT_IDS.has(entry.name);
+            const isPrivate = PRIVATE_ADMIN_IDS.has(entry.name);
+
+            // Si no es admin ni revisor y está en la raíz, solo permitir ejemplos
+            if (!isTargetAdmin && !isRevisor && !targetUserFolder && !isExample) {
+              continue;
+            }
+
+            const jsonPath = path.join(targetDir, entry.name, `${entry.name}.json`);
+            if (fs.existsSync(jsonPath)) {
+              let isCollaborator = false;
+              let isOwner = false;
+              let completion = 0;
+              let missingModules = [];
+              let workflowStatus = 'Borrador';
+              let projectType = type === 'social' ? 'social_bid' : 'business';
+              let projectName = entry.name.replace(/_/g, ' ');
+              let userOwner = targetUserFolder ? targetUserFolder.replace(/^user_/, '') : 'ejemplo';
+
+              try {
+                const data = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+                completion = calculateCompletion(data);
+                missingModules = calculateMissingModules(data);
+                workflowStatus = data.config?.workflowStatus || 'Borrador';
+                projectType = data.config?.projectType || projectType;
+                projectName = data.config?.brandKit?.companyName || data.semilla?.nombre_proyecto || data.semilla?.negocio?.nombre_marca || projectName;
+                userOwner = data.config?.userOwner || userOwner;
+
+                if (reqUserId) {
+                  isOwner = (userOwner === reqUserId);
+                  const collabs = data.config?.collaborators || data.collaborators || [];
+                  isCollaborator = Array.isArray(collabs) && collabs.includes(reqUserId);
                 }
+              } catch {}
+
+              // Si el usuario regular no es dueño ni colaborador ni es ejemplo/admin, ignorar
+              if (!isTargetAdmin && !isRevisor && !isExample && reqUserId && !isOwner && !isCollaborator) {
                 continue;
               }
 
-              // Comercio Cuántico TR es privado exclusivo del superadmin
-              if (PRIVATE_ADMIN_IDS.has(entry.name) && !isTargetAdmin) {
-                continue;
-              }
+              const stats = fs.statSync(jsonPath);
+              const nextAction = missingModules.length > 0 
+                ? `Completar ${missingModules[0].moduleTitle}` 
+                : (workflowStatus === 'Borrador' ? 'Enviar a revisión' : (workflowStatus === 'En revisión' ? 'Dictamen editorial pendiente' : 'Aprobado para inversión'));
 
-              // Si está en la carpeta raíz (sin userFolder)
-              const isExample = EXAMPLE_PROJECT_IDS.has(entry.name);
-              const isPrivate = PRIVATE_ADMIN_IDS.has(entry.name);
-
-              // Si no es admin ni revisor y está en la raíz, solo permitir ejemplos
-              if (!isTargetAdmin && !isRevisor && !targetUserFolder && !isExample) {
-                continue;
-              }
-
-              const jsonPath = path.join(targetDir, entry.name, `${entry.name}.json`);
-              if (fs.existsSync(jsonPath)) {
-                 const stats = fs.statSync(jsonPath);
-                 let completion = 0;
-                 let missingModules = [];
-                 let workflowStatus = 'Borrador';
-                 let projectType = type === 'social' ? 'social_bid' : 'business';
-                 let projectName = entry.name.replace(/_/g, ' ');
-                 let userOwner = targetUserFolder ? targetUserFolder.replace(/^user_/, '') : 'ejemplo';
-
-                 try {
-                   const data = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
-                   completion = calculateCompletion(data);
-                   missingModules = calculateMissingModules(data);
-                   workflowStatus = data.config?.workflowStatus || 'Borrador';
-                   projectType = data.config?.projectType || projectType;
-                   projectName = data.config?.brandKit?.companyName || data.semilla?.nombre_proyecto || data.semilla?.negocio?.nombre_marca || projectName;
-                   userOwner = data.config?.userOwner || userOwner;
-                 } catch {}
-
-                 const nextAction = missingModules.length > 0 
-                   ? `Completar ${missingModules[0].moduleTitle}` 
-                   : (workflowStatus === 'Borrador' ? 'Enviar a revisión' : (workflowStatus === 'En revisión' ? 'Dictamen editorial pendiente' : 'Aprobado para inversión'));
-
-                 projects.push({
-                   id: entry.name,
-                   name: projectName,
-                   file: `${entry.name}.json`,
-                   mtime: stats.mtime,
-                   size: stats.size,
-                   completion,
-                   workflowStatus,
-                   missingModules,
-                   nextAction,
-                   responsible: userOwner,
-                   lastEdited: stats.mtime,
-                   projectType,
-                   userOwner,
-                   isExample: isExample || (!targetUserFolder && !isPrivate),
-                   isPrivateAdmin: isPrivate
-                 });
-              }
-           }
+              projects.push({
+                id: entry.name,
+                name: projectName,
+                file: `${entry.name}.json`,
+                mtime: stats.mtime,
+                size: stats.size,
+                completion,
+                workflowStatus,
+                missingModules,
+                nextAction,
+                responsible: userOwner,
+                lastEdited: stats.mtime,
+                projectType,
+                userOwner,
+                isCollaborator,
+                isExample: isExample || (!targetUserFolder && !isPrivate),
+                isPrivateAdmin: isPrivate
+              });
+            }
+          }
         }
       };
 
@@ -3909,7 +3926,15 @@ app.post('/api/telemetry/log', (req, res) => {
 // Telemetry para tokens
 app.post('/api/telemetry/tokens', (req, res) => {
   try {
-    const { provider, tokens, projectId = 'general', projectType = 'negocios', module: planModule = 'general' } = req.body;
+    const { 
+      provider, 
+      tokens, 
+      projectId = 'general', 
+      projectType = 'negocios', 
+      module: planModule = 'general',
+      username = 'anon'
+    } = req.body;
+
     if (!provider || typeof tokens !== 'number') {
       return res.status(400).json({ success: false, error: 'Datos inválidos' });
     }
@@ -3934,6 +3959,7 @@ app.post('/api/telemetry/tokens', (req, res) => {
       accumulated: {},
       daily: {},
       byProject: {},
+      byUser: {},
       lastUpdated: new Date().toISOString()
     };
 
@@ -3941,6 +3967,7 @@ app.post('/api/telemetry/tokens', (req, res) => {
       store.accumulated = raw.accumulated;
       store.daily = raw.daily || {};
       store.byProject = raw.byProject || {};
+      store.byUser = raw.byUser || {};
     } else {
       // Estructura heredada
       store.accumulated = { ...raw };
@@ -3957,10 +3984,22 @@ app.post('/api/telemetry/tokens', (req, res) => {
       store.byProject[projectId] = { totalTokens: 0, byProvider: {}, projectType };
     }
 
+    // Inicializar desglose por usuario
+    if (!store.byUser) store.byUser = {};
+    const effectiveUser = String(req.user?.username || username || 'anon').trim();
+    if (!store.byUser[effectiveUser]) {
+      store.byUser[effectiveUser] = { totalTokens: 0, byProvider: {}, lastCall: new Date().toISOString() };
+    }
+
     store.accumulated[provider] = (store.accumulated[provider] || 0) + tokens;
     store.daily[todayDate][provider] = (store.daily[todayDate][provider] || 0) + tokens;
     store.byProject[projectId].totalTokens = (store.byProject[projectId].totalTokens || 0) + tokens;
     store.byProject[projectId].byProvider[provider] = (store.byProject[projectId].byProvider[provider] || 0) + tokens;
+    
+    store.byUser[effectiveUser].totalTokens = (store.byUser[effectiveUser].totalTokens || 0) + tokens;
+    store.byUser[effectiveUser].byProvider[provider] = (store.byUser[effectiveUser].byProvider[provider] || 0) + tokens;
+    store.byUser[effectiveUser].lastCall = new Date().toISOString();
+
     store.lastUpdated = new Date().toISOString();
 
     // Mantener solo los últimos 7 días en store.daily para evitar crecimiento desmedido
@@ -3980,7 +4019,8 @@ app.post('/api/telemetry/tokens', (req, res) => {
       _daily: store.daily,
       _today: todayUsage,
       _todayDate: todayDate,
-      _byProject: store.byProject
+      _byProject: store.byProject,
+      _byUser: store.byUser
     });
   } catch (error) {
     console.error('[Telemetry] Error guardando tokens:', error);
@@ -4002,12 +4042,16 @@ app.get('/api/telemetry/tokens', (req, res) => {
 
     let store = {
       accumulated: {},
-      daily: {}
+      daily: {},
+      byProject: {},
+      byUser: {}
     };
 
     if (raw.accumulated && typeof raw.accumulated === 'object') {
       store.accumulated = raw.accumulated;
       store.daily = raw.daily || {};
+      store.byProject = raw.byProject || {};
+      store.byUser = raw.byUser || {};
     } else {
       store.accumulated = { ...raw };
     }
@@ -4015,12 +4059,14 @@ app.get('/api/telemetry/tokens', (req, res) => {
     const todayUsage = store.daily[todayDate] || {};
 
     // Devolvemos compatibilidad directa: claves en la raíz para no romper código existente,
-    // y metadatos _accumulated y _today para clientes modernos
+    // y metadatos _accumulated, _today, _byProject y _byUser para clientes modernos
     res.json({
       ...store.accumulated,
       _accumulated: store.accumulated,
       _today: todayUsage,
-      _todayDate: todayDate
+      _todayDate: todayDate,
+      _byProject: store.byProject || {},
+      _byUser: store.byUser || {}
     });
   } catch (error) {
     console.error('[Telemetry] Error leyendo tokens:', error);

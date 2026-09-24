@@ -144,6 +144,7 @@ export interface ProjectData {
   workingCapitalConfig: WorkingCapitalConfig;
   advancedConfig: AdvancedConfig;
   notes?: string;
+  indexPricesWithInflation?: boolean;
 }
 
 export interface SavedProject {
