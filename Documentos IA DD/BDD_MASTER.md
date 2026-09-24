@@ -182,3 +182,11 @@ Escenario: Corrección de un Box analítico específico desde el chat de BOB y a
 ```
 
 
+
+### Escenario 14: Detección Integral de Proyectos de Estudiantes y Preservación de Colaboraciones (v2.6.26.8.18)
+* **Dado** que un estudiante (ej. Edwin Domínguez `@yocine`, Raúl Gutiérrez `@ragv`, Edgar Pérez `@edgarpzcz`, Viktor Acuña `@viktoracuna`) cuenta con proyectos propios (ej. *Pizzería Siglo XXI*, *AgroRío Capital*, *Sové*, *Ferretería Kino*),
+* **Y** que además participa como colaborador en otro proyecto del equipo (ej. *Closets y Cocinas Corona* con `@viktoracuna`, `@galiet_gastelum`, `@karely_otero`),
+* **Cuando** el Superadministrador abre la Consola Central de Administración e inspecciona los proyectos del usuario,
+* **Entonces** el sistema lista la totalidad de los proyectos asociados sin omitir ninguno, especificando claramente la insignia de rol (`Propietario` o `Colaborador`), el porcentaje de avance y el botón directo `[Abrir Plan]` para inspeccionarlo.
+* **Y cuando** el estudiante inicia sesión en la plataforma web,
+* **Entonces** el selector de proyectos en la cabecera muestra tanto sus proyectos personales como los proyectos en los que colabora, permitiéndole alternar fluidamente entre ellos sin pérdida de datos.

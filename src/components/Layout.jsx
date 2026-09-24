@@ -80,7 +80,7 @@ export default function Layout() {
     generationStatus, _generationProgress, startIndustrialization, _pauseIndustrialization, _stopIndustrialization, getProjectCompletion
   } = usePlan();
   
-  const { user, logout, isAdmin, isRevisor } = useAuth();
+  const { user, logout, isAdmin, isRevisor, authFetch } = useAuth();
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [showAdminPanel, setShowAdminPanel] = useState(false);
   const [cloningProjectId, setCloningProjectId] = useState(null);
@@ -328,7 +328,8 @@ export default function Layout() {
   useEffect(() => {
     const fetchProjects = () => {
       const apiBase = getApiBase();
-      fetch(`${apiBase}/api/projects`)
+      const doFetch = authFetch || fetch;
+      doFetch(`${apiBase}/api/projects`, { credentials: 'include' })
         .then(res => res.json())
         .then(data => {
           if (data && typeof data === 'object') {
@@ -338,7 +339,7 @@ export default function Layout() {
         .catch(err => console.error('Error fetching saved projects:', err));
     };
     fetchProjects();
-  }, [showLoadModal, saveStatus, isDropdownOpen, planData?.config?.projectId]);
+  }, [showLoadModal, saveStatus, isDropdownOpen, planData?.config?.projectId, user?.username]);
 
   const togglePillar = (id) => {
     setExpandedPillars(prev => 

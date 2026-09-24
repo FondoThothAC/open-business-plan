@@ -40,6 +40,7 @@ import {
   actualizarUsuarioAdmin,
   resetearPasswordAdmin,
   buscarPorId,
+  buscarPorUsername,
   obtenerEstadoApisCompartidas
 } from './auth.js';
 import { authGuard, soloAdmin, soloRevisorOSuperAdmin, prohibirRevisorMutacion } from './middleware/authGuard.js';
@@ -487,53 +488,86 @@ app.post('/api/admin/users/:id/password-reset', soloAdmin, (req, res) => {
 });
 
 app.get('/api/admin/users/:id/projects', soloAdmin, (req, res) => {
-  const targetUser = buscarPorId(req.params.id);
+  const targetUser = buscarPorId(req.params.id) || buscarPorUsername(req.params.id);
   if (!targetUser) return res.status(404).json({ error: 'Usuario no encontrado.' });
 
   const baseDir = path.resolve('proyectos');
-  const userProjects = [];
-  const targetUsername = targetUser.username.toLowerCase();
+  const userProjectsMap = new Map();
+  const targetUsername = String(targetUser.username || '').toLowerCase();
+  const targetEmail = String(targetUser.email || '').toLowerCase();
   const folderCandidate = `user_${targetUsername.replace(/[^a-z0-9]/gi, '_')}`;
 
   ['negocios', 'social'].forEach(type => {
     const dir = path.join(baseDir, type);
     if (!fs.existsSync(dir)) return;
 
-    const scanUserDir = (d) => {
-      if (!fs.existsSync(d)) return;
-      const entries = fs.readdirSync(d, { withFileTypes: true });
-      for (const entry of entries) {
-        if (!entry.isDirectory()) continue;
-        if (entry.name === '.archive' || entry.name === 'node_modules') continue;
+    const processProjectJson = (jsonFile, projId, isDirectUserDir) => {
+      if (!fs.existsSync(jsonFile)) return;
+      try {
+        const stats = fs.statSync(jsonFile);
+        const data = JSON.parse(fs.readFileSync(jsonFile, 'utf8'));
+        const owner = String(data.config?.userOwner || '').toLowerCase();
+        const rawCollabs = (data.config?.collaborators || data.collaborators || []);
+        const collabs = (Array.isArray(rawCollabs) ? rawCollabs : []).map(c => String(c).toLowerCase());
+        
+        const isOwner = (owner === targetUsername || isDirectUserDir);
+        const isCollaborator = collabs.includes(targetUsername) || (targetEmail && collabs.includes(targetEmail));
 
-        const jsonFile = path.join(d, entry.name, `${entry.name}.json`);
-        if (fs.existsSync(jsonFile)) {
-          try {
-            const stats = fs.statSync(jsonFile);
-            const data = JSON.parse(fs.readFileSync(jsonFile, 'utf8'));
-            const owner = String(data.config?.userOwner || '').toLowerCase();
-            if (owner === targetUsername || d.includes(folderCandidate)) {
-              const comp = calculateCompletion(data);
-              const missing = calculateMissingModules(data);
-              userProjects.push({
-                id: entry.name,
-                name: data.config?.brandKit?.companyName || data.semilla?.nombre_proyecto || entry.name,
-                type,
-                completion: comp,
-                workflowStatus: data.config?.workflowStatus || 'Borrador',
-                missingModules: missing,
-                nextAction: missing.length > 0 ? `Completar ${missing[0].moduleTitle}` : 'Listo para revisión',
-                lastEdited: data.config?.fechaActualizacion || stats.mtime,
-                size: stats.size
-              });
-            }
-          } catch {}
+        if (isOwner || isCollaborator) {
+          const comp = calculateCompletion(data);
+          const missing = calculateMissingModules(data);
+          const projectEntry = {
+            id: projId,
+            name: data.config?.brandKit?.companyName || data.semilla?.nombre_proyecto || data.semilla?.negocio?.nombre_marca || projId,
+            type,
+            roleInProject: isOwner ? 'Propietario' : 'Colaborador',
+            isCollaborator: !isOwner && isCollaborator,
+            completion: comp,
+            workflowStatus: data.config?.workflowStatus || 'Borrador',
+            missingModules: missing,
+            nextAction: missing.length > 0 ? `Completar ${missing[0].moduleTitle}` : 'Listo para revisión',
+            lastEdited: data.config?.fechaActualizacion || stats.mtime,
+            size: stats.size
+          };
+
+          if (!userProjectsMap.has(projId) || isOwner) {
+            userProjectsMap.set(projId, projectEntry);
+          }
         }
-      }
+      } catch {}
     };
 
-    // Escanear carpeta propia del usuario si existe
-    scanUserDir(path.join(dir, folderCandidate));
+    // 1. Escaneo exhaustivo de la carpeta específica del usuario si existe
+    const userDirPath = path.join(dir, folderCandidate);
+    if (fs.existsSync(userDirPath)) {
+      const userEntries = fs.readdirSync(userDirPath, { withFileTypes: true });
+      for (const ent of userEntries) {
+        if (!ent.isDirectory() || ent.name === '.archive' || ent.name === 'node_modules') continue;
+        const candidateJson = path.join(userDirPath, ent.name, `${ent.name}.json`);
+        processProjectJson(candidateJson, ent.name, true);
+      }
+    }
+
+    // 2. Escaneo de proyectos en la raíz y en otras carpetas para colaboraciones
+    const rootEntries = fs.readdirSync(dir, { withFileTypes: true });
+    for (const ent of rootEntries) {
+      if (!ent.isDirectory() || ent.name === '.archive' || ent.name === 'node_modules') continue;
+      
+      if (ent.name.startsWith('user_')) {
+        if (ent.name !== folderCandidate) {
+          const otherUserPath = path.join(dir, ent.name);
+          const subEntries = fs.readdirSync(otherUserPath, { withFileTypes: true });
+          for (const sub of subEntries) {
+            if (!sub.isDirectory() || sub.name === '.archive' || sub.name === 'node_modules') continue;
+            const subJson = path.join(otherUserPath, sub.name, `${sub.name}.json`);
+            processProjectJson(subJson, sub.name, false);
+          }
+        }
+      } else {
+        const rootJson = path.join(dir, ent.name, `${ent.name}.json`);
+        processProjectJson(rootJson, ent.name, false);
+      }
+    }
   });
 
   res.json({
@@ -545,7 +579,7 @@ app.get('/api/admin/users/:id/projects', soloAdmin, (req, res) => {
       role: targetUser.role,
       status: targetUser.status
     },
-    projects: userProjects
+    projects: Array.from(userProjectsMap.values())
   });
 });
 

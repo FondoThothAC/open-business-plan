@@ -353,7 +353,7 @@ export default function AdminUsersPanel({ isOpen, onClose, onOpenProject }) {
         className="glass-panel"
         style={{
           width: '1050px', maxWidth: '96vw', maxHeight: '90vh',
-          background: 'var(--bg-panel, #0f172a)',
+          background: '#0f172a', color: '#f8fafc',
           borderRadius: '16px', border: '1px solid rgba(255, 255, 255, 0.1)',
           boxShadow: '0 25px 60px rgba(0,0,0,0.6)',
           display: 'flex', flexDirection: 'column', gap: '1.25rem',
@@ -470,7 +470,7 @@ export default function AdminUsersPanel({ isOpen, onClose, onOpenProject }) {
         {activeTab === 'usuarios' && (
           <div style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden', gap: '1rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div style={{ fontSize: '0.85rem', color: 'rgba(255, 255, 255, 0.7)' }}>
+              <div style={{ fontSize: '0.85rem', color: '#cbd5e1' }}>
                 Total: <strong>{users.length}</strong> usuarios | Pendientes de aprobación: <strong style={{ color: '#f59e0b' }}>{users.filter(u => u.status === 'pending').length}</strong>
               </div>
               <button
@@ -583,6 +583,14 @@ export default function AdminUsersPanel({ isOpen, onClose, onOpenProject }) {
                             )}
 
                             <button
+                              onClick={() => { setSelectedUserForProjects(u); setActiveTab('proyectos'); cargarProyectosUsuario(u.id); }}
+                              title="Ver planes de negocio de este usuario"
+                              style={{ background: 'rgba(56, 189, 248, 0.2)', color: '#38bdf8', border: 'none', borderRadius: '6px', padding: '5px', cursor: 'pointer' }}
+                            >
+                              <FolderGit2 size={14} />
+                            </button>
+
+                            <button
                               onClick={() => { setPasswordResetUser(u); setNewPasswordValue(''); }}
                               title="Restablecer Contraseña"
                               style={{ background: 'rgba(56, 189, 248, 0.2)', color: '#38bdf8', border: 'none', borderRadius: '6px', padding: '5px', cursor: 'pointer' }}
@@ -679,25 +687,44 @@ export default function AdminUsersPanel({ isOpen, onClose, onOpenProject }) {
                     ) : (
                       userProjects.map(proj => (
                         <div 
-                          key={proj.slug || proj.id}
+                          key={proj.id}
                           style={{
-                            padding: '1rem', borderRadius: '10px', background: 'rgba(255, 255, 255, 0.03)',
-                            border: '1px solid rgba(255, 255, 255, 0.06)', display: 'flex', justifyContent: 'space-between', alignItems: 'center'
+                            padding: '1rem', borderRadius: '10px', background: 'rgba(255, 255, 255, 0.04)',
+                            border: '1px solid rgba(255, 255, 255, 0.08)', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                            gap: '1rem'
                           }}
                         >
-                          <div>
-                            <div style={{ fontWeight: 700, color: '#f8fafc', fontSize: '0.9rem' }}>
-                              {proj.nombre || proj.title || proj.slug}
+                          <div style={{ flex: 1 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                              <span style={{ fontWeight: 700, color: '#f8fafc', fontSize: '0.92rem' }}>
+                                {proj.name || proj.id}
+                              </span>
+                              <span style={{
+                                padding: '2px 7px', borderRadius: '10px', fontSize: '0.68rem', fontWeight: 700,
+                                background: proj.roleInProject === 'Propietario' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(168, 85, 247, 0.2)',
+                                color: proj.roleInProject === 'Propietario' ? '#34d399' : '#c084fc',
+                                border: `1px solid ${proj.roleInProject === 'Propietario' ? 'rgba(16, 185, 129, 0.4)' : 'rgba(168, 85, 247, 0.4)'}`
+                              }}>
+                                {proj.roleInProject || 'Propietario'}
+                              </span>
+                              <span style={{
+                                padding: '2px 7px', borderRadius: '10px', fontSize: '0.68rem', fontWeight: 600,
+                                background: 'rgba(255, 255, 255, 0.08)', color: '#cbd5e1'
+                              }}>
+                                {proj.workflowStatus || 'Borrador'}
+                              </span>
                             </div>
-                            <div style={{ fontSize: '0.72rem', color: '#94a3b8', marginTop: '2px' }}>
-                              Slug: <code style={{ color: '#38bdf8' }}>{proj.slug}</code> • Modificado: {proj.updatedAt ? new Date(proj.updatedAt).toLocaleDateString() : 'N/A'}
+
+                            <div style={{ fontSize: '0.72rem', color: '#94a3b8', marginTop: '4px' }}>
+                              ID: <code style={{ color: '#38bdf8' }}>{proj.id}</code> • Tipo: {proj.type} • {proj.nextAction}
                             </div>
-                            {proj.progreso !== undefined && (
+
+                            {proj.completion !== undefined && (
                               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '6px' }}>
-                                <div style={{ width: '120px', height: '6px', background: 'rgba(255,255,255,0.1)', borderRadius: '3px', overflow: 'hidden' }}>
-                                  <div style={{ width: `${proj.progreso}%`, height: '100%', background: '#38bdf8', borderRadius: '3px' }} />
+                                <div style={{ width: '130px', height: '6px', background: 'rgba(255,255,255,0.1)', borderRadius: '3px', overflow: 'hidden' }}>
+                                  <div style={{ width: `${proj.completion}%`, height: '100%', background: '#38bdf8', borderRadius: '3px' }} />
                                 </div>
-                                <span style={{ fontSize: '0.7rem', color: '#38bdf8', fontWeight: 600 }}>{proj.progreso}% completado</span>
+                                <span style={{ fontSize: '0.7rem', color: '#38bdf8', fontWeight: 600 }}>{proj.completion}% completado</span>
                               </div>
                             )}
                           </div>
@@ -706,13 +733,17 @@ export default function AdminUsersPanel({ isOpen, onClose, onOpenProject }) {
                             {onOpenProject && (
                               <button
                                 onClick={() => {
-                                  onOpenProject(proj.slug);
+                                  onOpenProject(proj.id, proj.type);
                                   onClose();
                                 }}
                                 className="btn btn-ia"
-                                style={{ padding: '6px 12px', fontSize: '0.75rem', background: 'rgba(56, 189, 248, 0.15)', color: '#38bdf8', border: '1px solid rgba(56, 189, 248, 0.3)' }}
+                                style={{
+                                  padding: '6px 14px', fontSize: '0.75rem', fontWeight: 700,
+                                  background: 'linear-gradient(135deg, #38bdf8, #818cf8)', color: '#fff',
+                                  border: 'none', borderRadius: '8px', cursor: 'pointer'
+                                }}
                               >
-                                Inspeccionar Plan
+                                Abrir Plan
                               </button>
                             )}
                           </div>

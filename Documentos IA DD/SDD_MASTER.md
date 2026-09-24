@@ -487,3 +487,22 @@ Con base en el Plan de Saneamiento y Endurecimiento formalizado en `docs/archite
   * Al corregir un box desde el chat o formulario, el hecho real expresado por el usuario se guarda en el documento sintético `Hechos y Restricciones Validadas del Proyecto`.
   * Este documento se inyecta en el System Prompt de cualquier regeneración posterior como una restricción dura inviolable, garantizando que futuras generaciones de la IA nunca contradigan las correcciones del usuario.
 
+
+## 13. Arquitectura de Proyectos Multi-Usuario, Planes de Alumnos y Consola RBAC (v2.6.26.8.18)
+* **Gestión de Planes de Alumnos en Servidor y Local:**
+  * **Pizzería Siglo XXI (`pizzeria_siglo_21`):** Asignada a Edwin Domínguez (`yocine` / `a219212538@unison.mx`) y su equipo (Carlos Robledo, Oscar Villanueva). Plan inclusivo con personas con síndrome de Down.
+  * **Restaurant Marisco Isla (`mariscos_isla`):** Gastronomía ribereña en Bahía del Tobari con pescadores locales.
+  * **Cositas Technologies (`cositas_technologies`):** Marketplace hiperlocal para MiPymes (Búho Innova-T).
+  * **AgroRío Capital (`agrorio_capital`):** Asignado a Raúl Gutiérrez (`ragv` / `rg597816@gmail.com`). Crowdfunding e inversión rural en Sonora.
+  * **Sové (`sove`):** Repostería creativa asignada a Edgar Pérez (`edgarpzcz` / `perezmexa3@gmail.com`).
+  * **Closets y Cocinas Corona (`closets_y_cocinas_corona`):** Proyecto colaborativo compartido entre Viktor Acuña (`viktoracuna`), Alisson Gastélum (`galiet_gastelum`), Karely Otero (`karely_otero`) y Roberto Celis (`roberto`).
+  * **Ferretería y Suministros Kino (`ferreteria_y_suministros_kino`):** Proyecto de Viktor Acuña preservado independientemente de la colaboración en Closets Corona.
+* **Escaneo Exhaustivo en `/api/admin/users/:id/projects`:**
+  * Búsqueda por ID y por Username.
+  * Detección cruzada de carpetas de usuario (`user_<username>`), proyectos en raíz y colaboraciones (`collaborators`).
+  * Clasificación explícita de rol en el proyecto: `Propietario` vs `Colaborador`.
+* **Sincronización Autenticada en `Layout.jsx`:**
+  * El hook de listado de proyectos usa `authFetch` con `credentials: "include"` y token JWT, garantizando que cada estudiante vea todos los proyectos de los que es dueño o colaborador sin perder ninguno al cambiar de vista.
+* **Consola Central de Administración Blindada (`AdminUsersPanel.jsx`):**
+  * Fondo oscuro explícito `#0f172a` y paleta de alto contraste para evitar textos invisibles en cualquier tema.
+  * Botón directo de inspección de proyectos por fila de usuario y navegación inmediata entre gestión de usuarios y proyectos.
