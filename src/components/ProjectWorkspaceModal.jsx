@@ -2,10 +2,11 @@ import { useState, useEffect, useMemo } from 'react';
 import { 
   X, Folder, FileText, BarChart2, Activity, Play, Bot, RotateCcw, 
   Clock, Trash2, Cpu, Copy, Archive, ArchiveRestore, Search, 
-  AlertCircle, CheckCircle2, ArrowRight, UserCheck, Shield, ChevronDown, ChevronUp
+  AlertCircle, CheckCircle2, ArrowRight, UserCheck, Shield, ChevronDown, ChevronUp, Users
 } from 'lucide-react';
 import { getApiBase } from '../config/apiConfig';
 import { useAuth } from '../contexts/AuthContext';
+import CollaboratorsModal from './CollaboratorsModal';
 
 /**
  * Gestor Central de Proyectos y Workspace
@@ -20,6 +21,7 @@ export default function ProjectWorkspaceModal({ isOpen, onClose, onLoadProject, 
   const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [trajectories, setTrajectories] = useState([]);
   const [expandedMissingProjectId, setExpandedMissingProjectId] = useState(null);
+  const [managingCollabsProject, setManagingCollabsProject] = useState(null);
 
   // Filtros de búsqueda
   const [searchQuery, setSearchQuery] = useState('');
@@ -436,6 +438,18 @@ export default function ProjectWorkspaceModal({ isOpen, onClose, onLoadProject, 
                           <Copy size={16} />
                         </button>
 
+                        {/* Colaboradores */}
+                        <button 
+                          onClick={() => setManagingCollabsProject(proj)}
+                          style={{
+                            padding: '0.55rem', background: 'rgba(168, 85, 247, 0.1)', color: '#a855f7',
+                            border: '1px solid rgba(168, 85, 247, 0.25)', borderRadius: '10px', cursor: 'pointer'
+                          }}
+                          title="Gestionar Equipo y Colaboradores"
+                        >
+                          <Users size={16} />
+                        </button>
+
                         {/* Trazabilidad IA */}
                         <button 
                           onClick={() => loadAiHistory(proj.id)}
@@ -639,6 +653,19 @@ export default function ProjectWorkspaceModal({ isOpen, onClose, onLoadProject, 
             </div>
           </div>
         </div>
+      )}
+      {/* Modal de Gestión de Colaboradores */}
+      {managingCollabsProject && (
+        <CollaboratorsModal
+          isOpen={Boolean(managingCollabsProject)}
+          onClose={() => {
+            setManagingCollabsProject(null);
+            fetchProjects();
+          }}
+          projectId={managingCollabsProject.id}
+          projectType={managingCollabsProject.category || managingCollabsProject.projectType || 'negocios'}
+          isOwner={managingCollabsProject.roleInProject === 'Propietario' || isAdmin}
+        />
       )}
     </div>
   );

@@ -21,6 +21,9 @@
 | `project_status_changed` | `server/index.js` (Proyectos) | `{ projectId, oldStatus, newStatus, changedBy, timestamp }` | Auditoría inmutable, `ProjectWorkspaceModal` |
 | `project_auto_reverted_to_review` | `server/index.js` (Guardado) | `{ projectId, previousStatus: 'Aprobado', newStatus: 'En revisión', reason }` | Auditoría inmutable, `ProjectWorkspaceModal` |
 | `project_comment_added` | `server/index.js` (Revisiones) | `{ projectId, commentId, author, role, text, timestamp }` | `ProjectWorkspaceModal`, Historial editorial |
+| `project_collaborator_added` | `server/index.js` | `{ projectId, addedCollaborator, actor, timestamp }` | Auditoría inmutable, `CollaboratorsModal` |
+| `project_collaborator_removed` | `server/index.js` | `{ projectId, removedCollaborator, actor, timestamp }` | Auditoría inmutable, `CollaboratorsModal` |
+| `presence_heartbeat` | `ModuleWrapper` / `presenceTracker` | `{ projectId, username, moduleKey, timestamp }` | `ModuleWrapper.jsx` (Badge suave de presencia) |
 | `audit_event_logged` | `server/auditLogger.js` | `{ id, timestamp, actor, action, target, metadata, ip }` | `server/data/audit_log.json`, `AdminUsersPanel` |
 | `session_expired` | `server/middleware/authGuard.js` | `{ reason: 'invalid_or_expired_cookie', redirect: '/login' }` | `AuthContext.jsx`, `LoginScreen.jsx` |
 | `success` | Orquestador de Fase | `{ type: 'success', message: '✓ Completado', provider }` | Barra de Progreso Global |

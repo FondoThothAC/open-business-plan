@@ -506,3 +506,20 @@ Con base en el Plan de Saneamiento y Endurecimiento formalizado en `docs/archite
 * **Consola Central de Administración Blindada (`AdminUsersPanel.jsx`):**
   * Fondo oscuro explícito `#0f172a` y paleta de alto contraste para evitar textos invisibles en cualquier tema.
   * Botón directo de inspección de proyectos por fila de usuario y navegación inmediata entre gestión de usuarios y proyectos.
+
+## 14. Subsistema de Colaboración Multi-Usuario Simétrica y Presencia en Tiempo Real
+* **Modelo de Permisos Simétrico:**
+  * Todo usuario colaborador autorizado cuenta con permisos plenos de edición sobre el plan de negocio (formular campos, invocar IA con la Mesa de Expertos, modificar datos financieros y estructurar módulos).
+  * Regla de Invarianza: La eliminación física o archivado del proyecto queda restringida exclusivamente al Propietario Principal o al Superadministrador.
+* **Contratos de API REST:**
+  * `GET /api/projects/:type/:id/collaborators`: Consulta la lista de colaboradores, el propietario principal y el listado de usuarios con presencia activa.
+  * `POST /api/projects/:type/:id/collaborators`: Vincula un colaborador identificándolo por su `@username` o su correo electrónico registrado.
+  * `DELETE /api/projects/:type/:id/collaborators/:identifier`: Revoca el acceso de colaboración a un usuario del proyecto.
+  * `POST /api/projects/:type/:id/presence`: Registra el heartbeat del usuario en el proyecto especificando el `moduleKey` en el que se encuentra enfocado.
+  * `POST /api/projects/:type/:id/presence/leave`: Libera la presencia al salir del proyecto o cambiar de sesión.
+* **Gestor de Presencia y Bloqueo Suave (`server/presenceTracker.js`):**
+  * Mantiene una estructura en memoria TTL (60s) con heartbeat cíclico cada 10s desde el cliente.
+  * Muestra indicadores visuales de presencia activa (*"Editando ahora por @usuario"*) en el encabezado de cada módulo (`ModuleWrapper.jsx`).
+* **Puntos de Entrada Visuales (Doble Vía):**
+  * Modal autónomo `CollaboratorsModal.jsx` accesible desde el botón *Colaboradores* en la barra superior de `Layout.jsx` y desde las tarjetas de proyecto de `ProjectWorkspaceModal.jsx`.
+  * Acción de asignación y gestión directa de colaboradores en cada proyecto desde la pestaña *Proyectos por Usuario* de `AdminUsersPanel.jsx`.

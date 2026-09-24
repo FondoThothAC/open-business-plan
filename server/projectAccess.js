@@ -150,14 +150,22 @@ export function resolveReadableProject(type, id, user) {
           if (fs.existsSync(candidate)) {
             try {
               const projectJson = JSON.parse(fs.readFileSync(candidate, 'utf8'));
-              const collabs = projectJson.config?.collaborators || projectJson.collaborators || [];
-              if (Array.isArray(collabs) && collabs.includes(user.username)) {
-                const ownerName = entry.name.replace(/^user_/, '');
-                return {
-                  path: candidate,
-                  owner: ownerName,
-                  kind: 'collaborator'
-                };
+              const collabs = (projectJson.config?.collaborators || projectJson.collaborators || []);
+              if (Array.isArray(collabs)) {
+                const targetUname = String(user.username || '').toLowerCase();
+                const targetEmail = String(user.email || '').toLowerCase();
+                const isMatch = collabs.some(c => {
+                  const normalized = String(c || '').toLowerCase();
+                  return normalized === targetUname || (targetEmail && normalized === targetEmail);
+                });
+                if (isMatch) {
+                  const ownerName = entry.name.replace(/^user_/, '');
+                  return {
+                    path: candidate,
+                    owner: ownerName,
+                    kind: 'collaborator'
+                  };
+                }
               }
             } catch {
               // Ignorar errores de parseo

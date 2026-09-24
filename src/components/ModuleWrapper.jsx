@@ -25,6 +25,8 @@ import PromptEditor from './PromptEditor';
 import { buildExternalPrompt, copyPromptToClipboard } from '../lib/promptExporter';
 import BoxTrajectoryModal from './BoxTrajectoryModal';
 import { getBoxBadgeLabel, appendBoxVersion, recordValidatedFactAsEvidence } from '../lib/boxIdManager';
+import { getApiBase } from '../config/apiConfig';
+import { Users } from 'lucide-react';
 
 export default function ModuleWrapper({ pillar, moduleKey, title, description, fields, extraAction }) {
   const { planData, updateSection, updateConfig, toggleLock, toggleModuleVisibility, addComment, deleteComment, addPendingItems, resolvePending } = usePlan();
@@ -46,6 +48,41 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
   const [activePromptField, setActivePromptField] = useState(null);
   const [copiedField, setCopiedField] = useState(null);
   const [activeBoxForTrajectory, setActiveBoxForTrajectory] = useState(null);
+  const [activeCollaborators, setActiveCollaborators] = useState([]);
+
+  // Heartbeat y Detección de Colaboradores en este Módulo
+  useEffect(() => {
+    const projId = planData.config?.projectId;
+    const projType = planData.config?.projectType === 'social_bid' ? 'social' : 'negocios';
+    if (!projId) return;
+
+    let isMounted = true;
+    const sendPresencePing = async () => {
+      try {
+        const apiBase = getApiBase();
+        const res = await fetch(`${apiBase}/api/projects/${projType}/${projId}/presence`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ moduleKey })
+        });
+        if (res.ok && isMounted) {
+          const data = await res.json();
+          // Filtrar otros colaboradores activos en este mismo módulo
+          const others = (data.activePresence || []).filter(p => p.moduleKey === moduleKey);
+          setActiveCollaborators(others);
+        }
+      } catch {}
+    };
+
+    sendPresencePing();
+    const interval = setInterval(sendPresencePing, 10000);
+
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
+  }, [moduleKey, planData.config?.projectId, planData.config?.projectType]);
   
   const isLocked = (fieldKey) => planData.config.locks?.[`${pillar}.${moduleKey}.${fieldKey}`];
   const isModuleVisible = planData.config?.visibility?.[`${pillar}.${moduleKey}`] !== false;
@@ -240,7 +277,21 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
       )}
       <div className="view-header" style={{ marginBottom: '2rem' }}>
         <div>
-          <h1 className="view-title" style={{ fontSize: '2.25rem', fontWeight: 800 }}>{title}</h1>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+            <h1 className="view-title" style={{ fontSize: '2.25rem', fontWeight: 800, margin: 0 }}>{title}</h1>
+            {activeCollaborators.length > 0 && (
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: '0.4rem',
+                padding: '4px 10px', borderRadius: '20px',
+                background: 'rgba(56, 189, 248, 0.15)', border: '1px solid rgba(56, 189, 248, 0.35)',
+                color: '#38bdf8', fontSize: '0.75rem', fontWeight: 600
+              }}>
+                <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#34d399', animation: 'pulse 1.5s infinite' }} />
+                <Users size={13} />
+                <span>Editando ahora por {activeCollaborators.map(c => `@${c.username}`).join(', ')}</span>
+              </div>
+            )}
+          </div>
           <p className="text-secondary mt-1" style={{ fontSize: '1rem' }}>{description}</p>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.75rem' }}>

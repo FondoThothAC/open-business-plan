@@ -15,10 +15,11 @@ import React, { useState, useEffect } from 'react';
 import { 
   Users, CheckCircle, XCircle, Trash2, Shield, UserCheck, UserX, 
   Clock, AlertTriangle, RefreshCw, X, Key, FolderGit2, History, Plus, 
-  Search, ArrowRight, FileText, Check, Lock, Zap, Activity, Cpu, Database
+  Search, ArrowRight, FileText, Check, Lock, Zap, Activity, Cpu, Database, UserPlus
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { getApiBase } from '../config/apiConfig';
+import CollaboratorsModal from './CollaboratorsModal';
 
 export default function AdminUsersPanel({ isOpen, onClose, onOpenProject }) {
   const { isAdmin, authFetch } = useAuth();
@@ -48,6 +49,7 @@ export default function AdminUsersPanel({ isOpen, onClose, onOpenProject }) {
   const [selectedUserForProjects, setSelectedUserForProjects] = useState(null);
   const [userProjects, setUserProjects] = useState([]);
   const [loadingProjects, setLoadingProjects] = useState(false);
+  const [managingCollaboratorsProject, setManagingCollaboratorsProject] = useState(null);
 
   // Estados para auditoría
   const [auditLogs, setAuditLogs] = useState([]);
@@ -730,6 +732,20 @@ export default function AdminUsersPanel({ isOpen, onClose, onOpenProject }) {
                           </div>
 
                           <div style={{ display: 'flex', gap: '0.5rem' }}>
+                            <button
+                              onClick={() => setManagingCollaboratorsProject(proj)}
+                              title="Gestionar y Vincular Colaboradores"
+                              style={{
+                                padding: '6px 12px', fontSize: '0.75rem', fontWeight: 600,
+                                background: 'rgba(56, 189, 248, 0.12)', color: '#38bdf8',
+                                border: '1px solid rgba(56, 189, 248, 0.25)', borderRadius: '8px', cursor: 'pointer',
+                                display: 'flex', alignItems: 'center', gap: '0.35rem'
+                              }}
+                            >
+                              <UserPlus size={14} />
+                              <span>Colaboradores</span>
+                            </button>
+
                             {onOpenProject && (
                               <button
                                 onClick={() => {
@@ -1139,6 +1155,22 @@ export default function AdminUsersPanel({ isOpen, onClose, onOpenProject }) {
               </div>
             </form>
           </div>
+        )}
+
+        {/* Modal de Gestión de Colaboradores para el Proyecto */}
+        {managingCollaboratorsProject && (
+          <CollaboratorsModal
+            isOpen={Boolean(managingCollaboratorsProject)}
+            onClose={() => {
+              setManagingCollaboratorsProject(null);
+              if (selectedUserForProjects?.id) {
+                cargarProyectosUsuario(selectedUserForProjects.id);
+              }
+            }}
+            projectId={managingCollaboratorsProject.id}
+            projectType={managingCollaboratorsProject.type || 'negocios'}
+            isOwner={true}
+          />
         )}
 
         {/* Pie del Panel */}

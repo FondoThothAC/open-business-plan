@@ -16,6 +16,7 @@
 * **SLI-09 (Durabilidad e Integridad de Auditoría):** Porcentaje de operaciones administrativas y editoriales asentadas exitosamente en `audit_log.json` (Target: 100.0%).
 * **SLI-10 (Latencia de Entrega en Revisión Externa):** Tiempo de resolución y entrega de documento sanitizado vía `/api/review/:token` (Target: < 150ms en p95).
 * **SLI-11 (Efectividad de Revocación de Sesión):** Tiempo de bloqueo de JWT ante incremento de `sessionVersion` (Target: 0ms, efectivo en la primera petición posterior).
+* **SLI-12 (Latencia de Refresco de Presencia Colaborativa):** Tiempo de propagación del heartbeat de presencia entre colaboradores activos (Target: < 250ms en p95).
 
 ---
 
@@ -31,6 +32,7 @@
 * **SLO-08:** 0 filtraciones de API keys, hashes o secretos del proyecto en el endpoint `/api/review/:token` servido a revisores externos.
 * **SLO-09:** 100% de coherencia en revocación inmediata de sesiones activas al cambiar/restablecer credenciales o alterar roles de usuario.
 * **SLO-10:** 100% de persistencia inmutable en RAG de correcciones directas por Box ID (Feedback Loop Correction-as-Evidence) sin degradación de módulos no afectados.
+* **SLO-11:** 100% de consistencia de permisos de colaboración (cero permisos de eliminación para colaboradores no dueños; guardado simétrico garantizado en la carpeta del propietario).
 * **SLI-10 (Latencia de Corrección Atómica):** Tiempo de respuesta de BOB al comando "el box <id> está mal" < 1,500 ms para actualización local y registro de hecho.
 
 ---

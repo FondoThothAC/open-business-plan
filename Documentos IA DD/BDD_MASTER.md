@@ -190,3 +190,17 @@ Escenario: Corrección de un Box analítico específico desde el chat de BOB y a
 * **Entonces** el sistema lista la totalidad de los proyectos asociados sin omitir ninguno, especificando claramente la insignia de rol (`Propietario` o `Colaborador`), el porcentaje de avance y el botón directo `[Abrir Plan]` para inspeccionarlo.
 * **Y cuando** el estudiante inicia sesión en la plataforma web,
 * **Entonces** el selector de proyectos en la cabecera muestra tanto sus proyectos personales como los proyectos en los que colabora, permitiéndole alternar fluidamente entre ellos sin pérdida de datos.
+
+## Escenario 18: Vinculación de Colaboradores en Tiempo Real y Bloqueo Suave
+```gherkin
+Escenario: Dos o más usuarios colaboran simultáneamente en un plan de negocios
+  Dado que el usuario "@roberto" es dueño del proyecto "closets_y_cocinas_corona"
+  Cuando abre el modal "Colaboradores" e ingresa el usuario o email de "@yocine"
+  Entonces el sistema valida la existencia del usuario y lo vincula con rol "Editor"
+  Y "@yocine" visualiza de inmediato el proyecto en su panel y menú superior
+  Y cuando ambos usuarios ingresan al módulo de "Mercado",
+  Entonces el sistema emite el heartbeat de presencia
+  Y muestra un indicador visual en vivo: "Editando ahora por @yocine"
+  Y las modificaciones guardadas por cualquier colaborador se persisten en la carpeta original del dueño
+  Pero si un colaborador intenta eliminar el proyecto, la acción es denegada protegiendo la titularidad del dueño.
+```

@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FileSpreadsheet, LineChart, PieChart, Settings, Eye, BrainCircuit, ChevronDown, ChevronRight, ChevronLeft, Save, FilePlus, Folder, FolderOpen, Check, Image as ImageIcon, Sprout, Copy, Star, Briefcase, Zap, Globe, Cpu, ShoppingBag, Landmark, ListChecks, Compass, Target, Layers, Share2, Factory, UploadCloud, Bell, Terminal, User, LogOut, Shield } from 'lucide-react';
+import { LayoutDashboard, FileSpreadsheet, LineChart, PieChart, Settings, Eye, BrainCircuit, ChevronDown, ChevronRight, ChevronLeft, Save, FilePlus, Folder, FolderOpen, Check, Image as ImageIcon, Sprout, Copy, Star, Briefcase, Zap, Globe, Cpu, ShoppingBag, Landmark, ListChecks, Compass, Target, Layers, Share2, Factory, UploadCloud, Bell, Terminal, User, LogOut, Shield, Users } from 'lucide-react';
 import { usePlan } from '../context/PlanContext';
 import { useAuth } from '../contexts/AuthContext';
 import { PROJECT_EXAMPLES } from '../lib/projects_db';
@@ -15,6 +15,7 @@ import TouchBarBridge from './TouchBarBridge';
 import ServerHealthBanner from './ServerHealthBanner';
 import WordDocumentCenterModal from './WordDocumentCenterModal';
 import ProjectWorkspaceModal from './ProjectWorkspaceModal';
+import CollaboratorsModal from './CollaboratorsModal';
 import DocumentUploader from './DocumentUploader';
 import TerminalDrawer from './TerminalDrawer';
 import AdminUsersPanel from './AdminUsersPanel';
@@ -113,6 +114,8 @@ export default function Layout() {
   const [isBobOpen, setIsBobOpen] = useState(false);
   const [showWorkspaceModal, setShowWorkspaceModal] = useState(false);
   const [showProjectsModal, setShowProjectsModal] = useState(false);
+  const [showCollaboratorsModal, setShowCollaboratorsModal] = useState(false);
+  const [activePresenceList, setActivePresenceList] = useState([]);
   const [showRagModal, setShowRagModal] = useState(false);
   const [activeGrillMePrompt, setActiveGrillMePrompt] = useState(null);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => {
@@ -844,6 +847,28 @@ export default function Layout() {
                   title="Centro de Documentos estilo Word con Versiones y Trazabilidad"
                 >
                   <Briefcase size={16} /> <span>Documentos (Word)</span>
+                </button>
+
+                <button
+                  onClick={() => setShowCollaboratorsModal(true)}
+                  style={{
+                    padding: '0.6rem 1.1rem',
+                    background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.15), rgba(147, 51, 234, 0.25))',
+                    color: '#c084fc',
+                    border: '1px solid rgba(168, 85, 247, 0.3)',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    fontWeight: 700,
+                    fontSize: '0.85rem',
+                    transition: 'all 0.2s',
+                    boxShadow: '0 2px 8px rgba(168, 85, 247, 0.15)'
+                  }}
+                  title="Gestionar Colaboradores del Proyecto en Tiempo Real"
+                >
+                  <Users size={16} /> <span>Colaboradores</span>
                 </button>
 
                 <div style={{ position: 'relative' }}>
@@ -1951,6 +1976,15 @@ export default function Layout() {
         isOpen={showAdminPanel}
         onClose={() => setShowAdminPanel(false)}
         onOpenProject={openAdminProject}
+      />
+
+      {/* Modal de Gestión de Colaboradores del Proyecto Activo */}
+      <CollaboratorsModal
+        isOpen={showCollaboratorsModal}
+        onClose={() => setShowCollaboratorsModal(false)}
+        projectId={planData?.config?.projectId || currentProjectSlug}
+        projectType={planData?.config?.projectType === 'social_bid' ? 'social' : 'negocios'}
+        isOwner={true}
       />
 
       {/* Modal de Perfil de Usuario y API Keys Personales */}

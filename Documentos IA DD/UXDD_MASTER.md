@@ -44,6 +44,11 @@ journey
       Generación de Enlace Temporal en Vista Previa: 5: Usuario
       Acceso Anónimo Sanitizado (/review/token): 5: Revisor Externo
       Comentarios Anclados a Módulos/Bloques: 4: Revisor Externo
+    section Colaboración Multi-Usuario & Presencia
+      Invitación por Username/Email: 5: Propietario / Admin
+      Doble vía (TopBar y Consola Admin): 5: Usuario
+      Indicador Suave 'Editando ahora por @user': 5: Colaborador
+      Guardado Simétrico en Carpeta del Dueño: 5: Sistema
     section Salida Ejecutiva
       Vista Previa Ejecutiva (20 Páginas): 5: Usuario
       Exportación Paritaria DOCX / PDF: 5: Usuario

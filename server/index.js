@@ -20,6 +20,7 @@ import { generateLogoVariants } from '../src/lib/logoGenerator.js';
 import { checkSearchQuota, incrementSearchQuota, getSearchQuotaStats } from './quotaTracker.js';
 import { saveWithVersioning } from '../src/lib/serverUtils/saveVersioning.js';
 import { acquireGenerationLock, releaseGenerationLock, getGenerationLockStatus } from '../src/lib/serverUtils/generationLock.js';
+import { recordPresence, getActivePresence, clearPresence } from './presenceTracker.js';
 import { renameProject } from '../src/lib/serverUtils/projectRename.js';
 import { sanitizeProjectConfig } from '../src/lib/serverUtils/sanitizeProjectConfig.js';
 import marketCascadeRouter from './routes/marketCascade.js';
@@ -603,6 +604,179 @@ app.delete('/api/projects/:type/:id/review-invites/:inviteId', prohibirRevisorMu
   res.json({ success: true });
 });
 
+// ==========================================
+// COLABORADORES MULTI-USUARIO & PRESENCIA
+// ==========================================
+
+// Obtener lista de colaboradores del proyecto
+app.get('/api/projects/:type/:id/collaborators', (req, res) => {
+  try {
+    const { type, id } = req.params;
+    const project = resolveReadableProject(type, id, req.user);
+    if (!project) return res.status(404).json({ error: 'Proyecto no encontrado.' });
+
+    const raw = fs.readFileSync(project.path, 'utf8');
+    const data = JSON.parse(raw);
+    const owner = data.config?.userOwner || project.owner || 'admin';
+    const collabs = data.config?.collaborators || data.collaborators || [];
+    const activePresence = getActivePresence(id);
+
+    // Obtener detalles enriquecidos de usuarios colaboradores si existen
+    const allUsers = listarUsuarios(req.user) || [];
+    const enrichedCollabs = collabs.map(identifier => {
+      const normalized = String(identifier).toLowerCase();
+      const matched = allUsers.find(u => 
+        String(u.username).toLowerCase() === normalized || 
+        String(u.email).toLowerCase() === normalized
+      );
+      return {
+        identifier,
+        username: matched ? matched.username : identifier,
+        displayName: matched ? (matched.displayName || matched.username) : identifier,
+        email: matched ? matched.email : null,
+        role: matched ? matched.role : 'user'
+      };
+    });
+
+    res.json({
+      success: true,
+      owner,
+      isOwner: req.user.username === owner || req.user.role === 'superadmin',
+      collaborators: enrichedCollabs,
+      activePresence
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Agregar colaborador a un proyecto (Dueño o Superadmin)
+app.post('/api/projects/:type/:id/collaborators', prohibirRevisorMutacion, (req, res) => {
+  try {
+    const { type, id } = req.params;
+    const { identifier } = req.body || {};
+    if (!identifier || !String(identifier).trim()) {
+      return res.status(400).json({ error: 'Debes proporcionar un nombre de usuario o correo electrónico.' });
+    }
+
+    const cleanIdentifier = String(identifier).trim().toLowerCase();
+    const project = resolveReadableProject(type, id, req.user);
+    if (!project) return res.status(404).json({ error: 'Proyecto no encontrado.' });
+
+    // Verificar permisos: sólo el dueño o superadmin puede invitar colaboradores
+    const isSuperadmin = req.user.role === 'superadmin';
+    const isOwner = project.owner === req.user.username;
+    if (!isSuperadmin && !isOwner) {
+      return res.status(403).json({ error: 'Solo el propietario o un administrador puede agregar colaboradores a este proyecto.' });
+    }
+
+    const raw = fs.readFileSync(project.path, 'utf8');
+    const data = JSON.parse(raw);
+    data.config = data.config || {};
+    data.config.collaborators = Array.isArray(data.config.collaborators) ? data.config.collaborators : [];
+
+    // Validar si el usuario existe en el sistema
+    const allUsers = listarUsuarios(req.user) || [];
+    const targetUser = allUsers.find(u => 
+      String(u.username).toLowerCase() === cleanIdentifier || 
+      String(u.email).toLowerCase() === cleanIdentifier
+    );
+    const finalIdentifier = targetUser ? targetUser.username : cleanIdentifier;
+
+    if (data.config.collaborators.map(c => String(c).toLowerCase()).includes(finalIdentifier.toLowerCase())) {
+      return res.status(409).json({ error: 'El usuario ya es colaborador en este proyecto.' });
+    }
+
+    data.config.collaborators.push(finalIdentifier);
+    data.config.fechaActualizacion = new Date().toISOString();
+    fs.writeFileSync(project.path, JSON.stringify(data, null, 2), 'utf8');
+
+    registrarAuditoria({
+      actorId: req.user.id,
+      actorUsername: req.user.username,
+      actorRole: req.user.role,
+      action: 'PROJECT_COLLABORATOR_ADDED',
+      targetType: 'project',
+      targetId: id,
+      details: { addedCollaborator: finalIdentifier }
+    });
+
+    res.status(201).json({
+      success: true,
+      message: `Colaborador @${finalIdentifier} vinculado exitosamente al proyecto.`,
+      collaborators: data.config.collaborators
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Remover colaborador de un proyecto (Dueño o Superadmin)
+app.delete('/api/projects/:type/:id/collaborators/:identifier', prohibirRevisorMutacion, (req, res) => {
+  try {
+    const { type, id, identifier } = req.params;
+    const project = resolveReadableProject(type, id, req.user);
+    if (!project) return res.status(404).json({ error: 'Proyecto no encontrado.' });
+
+    const isSuperadmin = req.user.role === 'superadmin';
+    const isOwner = project.owner === req.user.username;
+    if (!isSuperadmin && !isOwner) {
+      return res.status(403).json({ error: 'Solo el propietario o un administrador puede remover colaboradores de este proyecto.' });
+    }
+
+    const raw = fs.readFileSync(project.path, 'utf8');
+    const data = JSON.parse(raw);
+    data.config = data.config || {};
+    const collabs = Array.isArray(data.config.collaborators) ? data.config.collaborators : [];
+    const targetNormalized = String(identifier).toLowerCase();
+
+    data.config.collaborators = collabs.filter(c => String(c).toLowerCase() !== targetNormalized);
+    data.config.fechaActualizacion = new Date().toISOString();
+    fs.writeFileSync(project.path, JSON.stringify(data, null, 2), 'utf8');
+
+    registrarAuditoria({
+      actorId: req.user.id,
+      actorUsername: req.user.username,
+      actorRole: req.user.role,
+      action: 'PROJECT_COLLABORATOR_REMOVED',
+      targetType: 'project',
+      targetId: id,
+      details: { removedCollaborator: identifier }
+    });
+
+    res.json({
+      success: true,
+      message: `Colaborador @${identifier} removido del proyecto.`,
+      collaborators: data.config.collaborators
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Heartbeat de Presencia y Foco Suave en Módulos
+app.post('/api/projects/:type/:id/presence', (req, res) => {
+  try {
+    const { id } = req.params;
+    const { moduleKey, fieldKey } = req.body || {};
+    const active = recordPresence(id, req.user, { moduleKey, fieldKey });
+    res.json({ success: true, activePresence: active });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Liberar Presencia
+app.post('/api/projects/:type/:id/presence/leave', (req, res) => {
+  try {
+    const { id } = req.params;
+    clearPresence(id, req.user.username);
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 app.post('/api/auth/users/:id/activate', soloAdmin, (req, res) => {
   const resultado = activarUsuario(req.params.id, req.user);
   if (!resultado.success) return res.status(400).json({ error: resultado.error });
@@ -796,9 +970,13 @@ app.post('/api/save', prohibirRevisorMutacion, (req, res) => {
     let userId = req.user.username;
     let ownerFolder = userFolder(req.user);
 
-    // Verificar si el proyecto ya existía en otra carpeta
+    // Verificar si el proyecto ya existía en otra carpeta (administrado por superadmin o donde req.user es colaborador)
     const existingReadable = resolveReadableProject(projectType, persistentId, req.user);
     if (existingReadable && existingReadable.kind === 'administered' && req.user.role === 'superadmin') {
+      userId = existingReadable.owner;
+      ownerFolder = `user_${String(userId).replace(/[^a-z0-9]/gi, '_').toLowerCase()}`;
+    } else if (existingReadable && existingReadable.kind === 'collaborator') {
+      // Si quien guarda es colaborador, se guarda en la carpeta del propietario del proyecto
       userId = existingReadable.owner;
       ownerFolder = `user_${String(userId).replace(/[^a-z0-9]/gi, '_').toLowerCase()}`;
     }
