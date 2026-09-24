@@ -10,17 +10,21 @@ import ReactFlow, {
   Position
 } from 'reactflow';
 import dagre from 'dagre';
-import { Plus, HelpCircle } from 'lucide-react';
+import { Plus, HelpCircle, X } from 'lucide-react';
 import 'reactflow/dist/style.css';
 
-// Custom Node component with custom handles and glassmorphism styling
-const CustomNode = ({ data }) => {
+// Custom Node component with custom handles, glassmorphism styling, and delete button
+const CustomNode = ({ id, data }) => {
   const isLR = data.direction === 'LR';
+  const [hovered, setHovered] = useState(false);
+
   return (
     <div 
       className="glass-panel" 
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
       style={{
-        padding: '12px 18px',
+        padding: '12px 24px 12px 18px',
         borderRadius: '12px',
         fontSize: '0.85rem',
         fontWeight: '600',
@@ -31,9 +35,44 @@ const CustomNode = ({ data }) => {
         minWidth: '150px',
         boxShadow: '0 4px 15px rgba(99, 102, 241, 0.15)',
         position: 'relative',
-        transition: 'border-color 0.2s'
+        transition: 'all 0.2s ease'
       }}
     >
+      {/* Botón visual para eliminar nodo sin requerir presionar Delete */}
+      <button
+        type="button"
+        title="Quitar nodo"
+        aria-label="Quitar nodo"
+        onClick={(e) => {
+          e.stopPropagation();
+          if (data.onDeleteNode) {
+            data.onDeleteNode(id);
+          }
+        }}
+        style={{
+          position: 'absolute',
+          top: '-8px',
+          right: '-8px',
+          width: '20px',
+          height: '20px',
+          borderRadius: '50%',
+          background: '#ef4444',
+          color: '#ffffff',
+          border: '2px solid var(--bg-panel, #0f172a)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          cursor: 'pointer',
+          boxShadow: '0 2px 6px rgba(239, 68, 68, 0.4)',
+          opacity: hovered ? 1 : 0.7,
+          transition: 'transform 0.15s, opacity 0.15s',
+          transform: hovered ? 'scale(1.1)' : 'scale(1)',
+          zIndex: 10
+        }}
+      >
+        <X style={{ width: '11px', height: '11px', strokeWidth: 3 }} />
+      </button>
+
       <Handle 
         type="target" 
         position={isLR ? Position.Left : Position.Top} 
@@ -86,7 +125,7 @@ const getLayoutedElements = (nodes, edges, direction = 'TB') => {
 };
 
 // Parser to convert Mermaid syntax to React Flow Nodes/Edges
-function parseMermaid(chartText) {
+function parseMermaid(chartText, onDeleteNode) {
   const safeChart = typeof chartText === 'string' ? chartText : (chartText && typeof chartText === 'object' ? JSON.stringify(chartText) : String(chartText || ''));
   
   // Normalize arrows and spacing
@@ -164,7 +203,7 @@ function parseMermaid(chartText) {
     nodes.push({
       id: val.id,
       type: 'custom',
-      data: { label: val.label, direction },
+      data: { label: val.label, direction, onDeleteNode },
       position: { x: 0, y: 0 }
     });
   });
@@ -195,6 +234,21 @@ export default function FlowDiagramViewer({ chart, onChange, theme = 'light' }) 
     }
   };
 
+  // Callback para eliminar un nodo directamente desde el botón en la tarjeta
+  const handleDeleteNode = useCallback((nodeIdToDelete) => {
+    setNodes((prevNodes) => {
+      const updatedNodes = prevNodes.filter((n) => n.id !== nodeIdToDelete);
+      setEdges((prevEdges) => {
+        const updatedEdges = prevEdges.filter(
+          (e) => e.source !== nodeIdToDelete && e.target !== nodeIdToDelete
+        );
+        syncToParent(updatedNodes, updatedEdges);
+        return updatedEdges;
+      });
+      return updatedNodes;
+    });
+  }, [setNodes, setEdges]);
+
   // Re-parse chart when it changes externally
   useEffect(() => {
     if (skipNextParseRef.current) {
@@ -203,13 +257,13 @@ export default function FlowDiagramViewer({ chart, onChange, theme = 'light' }) 
     }
     
     if (chart) {
-      const parsed = parseMermaid(chart);
+      const parsed = parseMermaid(chart, handleDeleteNode);
       directionRef.current = parsed.direction;
       const layouted = getLayoutedElements(parsed.nodes, parsed.edges, parsed.direction);
       setNodes(layouted.nodes);
       setEdges(layouted.edges);
     }
-  }, [chart, setNodes, setEdges]);
+  }, [chart, handleDeleteNode, setNodes, setEdges]);
 
   // Connect two nodes
   const onConnect = useCallback((params) => {
@@ -236,6 +290,23 @@ export default function FlowDiagramViewer({ chart, onChange, theme = 'light' }) 
     });
   }, [nodes, setEdges]);
 
+  // Handle deletion of nodes via keyboard (Delete/Backspace)
+  const onNodesDelete = useCallback((nodesToDelete) => {
+    setNodes((currentNodes) => {
+      const remainingNodes = currentNodes.filter(
+        (n) => !nodesToDelete.some((del) => del.id === n.id)
+      );
+      setEdges((currentEdges) => {
+        const remainingEdges = currentEdges.filter(
+          (e) => !nodesToDelete.some((del) => del.id === e.source || del.id === e.target)
+        );
+        syncToParent(remainingNodes, remainingEdges);
+        return remainingEdges;
+      });
+      return remainingNodes;
+    });
+  }, [setNodes, setEdges]);
+
   // Handle addition of a new node
   const addNode = () => {
     if (!newNodeLabel.trim()) return;
@@ -243,7 +314,7 @@ export default function FlowDiagramViewer({ chart, onChange, theme = 'light' }) 
     const n = {
       id,
       type: 'custom',
-      data: { label: newNodeLabel, direction: directionRef.current },
+      data: { label: newNodeLabel, direction: directionRef.current, onDeleteNode: handleDeleteNode },
       position: { x: 150, y: 150 }
     };
     
@@ -307,6 +378,7 @@ export default function FlowDiagramViewer({ chart, onChange, theme = 'light' }) 
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
+          onNodesDelete={onNodesDelete}
           onEdgesDelete={onEdgesDelete}
           nodeTypes={nodeTypes}
           fitView
@@ -345,7 +417,7 @@ export default function FlowDiagramViewer({ chart, onChange, theme = 'light' }) 
           }}
         >
           <HelpCircle className="w-3 h-3 text-indigo-400" />
-          <span>Arrastra nodos • Conecta círculos • Selecciona y borra enlaces</span>
+          <span>Haz clic en la ✕ roja o presiona Supr/Delete para quitar nodos</span>
         </div>
       </div>
     </div>
