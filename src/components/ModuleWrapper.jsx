@@ -23,6 +23,8 @@ import { getBoxIdsForModule } from '../config/moduleBoxMap';
 import { RenderBox } from '../components/boxes';
 import PromptEditor from './PromptEditor';
 import { buildExternalPrompt, copyPromptToClipboard } from '../lib/promptExporter';
+import BoxTrajectoryModal from './BoxTrajectoryModal';
+import { getBoxBadgeLabel, appendBoxVersion, recordValidatedFactAsEvidence } from '../lib/boxIdManager';
 
 export default function ModuleWrapper({ pillar, moduleKey, title, description, fields, extraAction }) {
   const { planData, updateSection, updateConfig, toggleLock, toggleModuleVisibility, addComment, deleteComment, addPendingItems, resolvePending } = usePlan();
@@ -43,6 +45,7 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
   const [showTelemetryModal, setShowTelemetryModal] = useState(false);
   const [activePromptField, setActivePromptField] = useState(null);
   const [copiedField, setCopiedField] = useState(null);
+  const [activeBoxForTrajectory, setActiveBoxForTrajectory] = useState(null);
   
   const isLocked = (fieldKey) => planData.config.locks?.[`${pillar}.${moduleKey}.${fieldKey}`];
   const isModuleVisible = planData.config?.visibility?.[`${pillar}.${moduleKey}`] !== false;
@@ -689,24 +692,90 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
                     };
                     return (
                       <div key={boxDef.id} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', background: 'var(--bg-panel-hover)', borderRadius: '16px', padding: '1.25rem', border: '1px solid var(--border-color)' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem', paddingBottom: '0.6rem', borderBottom: '1px solid var(--border-color)' }}>
-                          <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-secondary)' }}>
-                            Herramienta Analítica: <strong style={{ color: 'var(--text-primary)' }}>{boxDef.title || boxDef.id}</strong>
-                          </span>
-                          <label style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', cursor: 'pointer', fontSize: '0.75rem', fontWeight: 600, color: isIncluded ? '#10b981' : 'var(--text-secondary)', background: isIncluded ? 'rgba(16,185,129,0.1)' : 'rgba(148,163,184,0.1)', padding: '3px 8px', borderRadius: '8px', border: `1px solid ${isIncluded ? 'rgba(16,185,129,0.2)' : 'rgba(148,163,184,0.2)'}` }}>
-                            <input
-                              type="checkbox"
-                              checked={isIncluded}
-                              onChange={(e) => {
-                                handleChange(boxDef.id, {
-                                  ...boxData,
-                                  _includeInPreview: e.target.checked
-                                });
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.6rem', paddingBottom: '0.6rem', borderBottom: '1px solid var(--border-color)' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                            <span style={{
+                              background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)',
+                              color: 'white',
+                              fontSize: '0.72rem',
+                              fontWeight: 800,
+                              padding: '2px 7px',
+                              borderRadius: '6px',
+                              letterSpacing: '0.5px',
+                              boxShadow: '0 2px 6px rgba(99, 102, 241, 0.3)'
+                            }}>
+                              {getBoxBadgeLabel(boxDef.id)}
+                            </span>
+                            <span style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-secondary)' }}>
+                              Herramienta Analítica: <strong style={{ color: 'var(--text-primary)' }}>{boxDef.title || boxDef.id}</strong>
+                            </span>
+                          </div>
+
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                            <button
+                              type="button"
+                              onClick={() => setActiveBoxForTrajectory({ boxDef, boxData })}
+                              title="Inspeccionar Prompt del Harness DeepSeek, RAG Context y Auditoría de este Box"
+                              style={{
+                                padding: '3px 8px',
+                                borderRadius: '8px',
+                                border: '1px solid rgba(99, 102, 241, 0.3)',
+                                background: 'rgba(99, 102, 241, 0.1)',
+                                color: '#818cf8',
+                                fontSize: '0.75rem',
+                                fontWeight: 600,
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.35rem'
                               }}
-                              style={{ cursor: 'pointer', accentColor: '#10b981' }}
-                            />
-                            {isIncluded ? '👁️ En Vista Previa' : '🚫 Oculto en Vista Previa'}
-                          </label>
+                            >
+                              <span>🔍</span>
+                              <span>Trazabilidad</span>
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const badge = getBoxBadgeLabel(boxDef.id);
+                                window.dispatchEvent(new CustomEvent('open-bob-chat', {
+                                  detail: { initialPrompt: `el ${badge} (${boxDef.title || boxDef.id}) está mal: ` }
+                                }));
+                              }}
+                              title="Abrir BOB para corregir este Box y blindar el hecho en el RAG"
+                              style={{
+                                padding: '3px 8px',
+                                borderRadius: '8px',
+                                border: '1px solid rgba(16, 185, 129, 0.3)',
+                                background: 'rgba(16, 185, 129, 0.1)',
+                                color: '#34d399',
+                                fontSize: '0.75rem',
+                                fontWeight: 600,
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.35rem'
+                              }}
+                            >
+                              <span>✏️</span>
+                              <span>Corregir con BOB</span>
+                            </button>
+
+                            <label style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', cursor: 'pointer', fontSize: '0.75rem', fontWeight: 600, color: isIncluded ? '#10b981' : 'var(--text-secondary)', background: isIncluded ? 'rgba(16,185,129,0.1)' : 'rgba(148,163,184,0.1)', padding: '3px 8px', borderRadius: '8px', border: `1px solid ${isIncluded ? 'rgba(16,185,129,0.2)' : 'rgba(148,163,184,0.2)'}` }}>
+                              <input
+                                type="checkbox"
+                                checked={isIncluded}
+                                onChange={(e) => {
+                                  handleChange(boxDef.id, {
+                                    ...boxData,
+                                    _includeInPreview: e.target.checked
+                                  });
+                                }}
+                                style={{ cursor: 'pointer', accentColor: '#10b981' }}
+                              />
+                              {isIncluded ? '👁️ En Vista Previa' : '🚫 Oculto en Vista Previa'}
+                            </label>
+                          </div>
                         </div>
                         <RenderBox
                           definition={boxDef}
@@ -870,6 +939,37 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
           </div>
         </div>
       )}
+
+      {/* Modal de Trazabilidad del Harness DeepSeek, Auditoría y Corrección de Boxes */}
+      <BoxTrajectoryModal
+        isOpen={!!activeBoxForTrajectory}
+        onClose={() => setActiveBoxForTrajectory(null)}
+        boxDef={activeBoxForTrajectory?.boxDef}
+        boxData={activeBoxForTrajectory?.boxData}
+        planData={planData}
+        onSendToBob={(text) => {
+          window.dispatchEvent(new CustomEvent('open-bob-chat', { detail: { initialPrompt: text } }));
+        }}
+        onApplyManualCorrection={(boxId, instruction) => {
+          const userRole = planData.config?.currentAuthor || 'consultor';
+          appendBoxVersion(planData, {
+            boxKey: boxId,
+            previousValue: activeBoxForTrajectory?.boxData,
+            newValue: { instruction, appliedAt: new Date().toISOString() },
+            author: userRole,
+            isAi: false,
+            promptUsed: instruction,
+            changeReason: 'Corrección manual directa desde Modal de Trazabilidad'
+          });
+          recordValidatedFactAsEvidence(planData, {
+            fact: instruction,
+            boxKey: boxId,
+            author: userRole
+          });
+          updateConfig('boxHistory', '', planData.config.boxHistory);
+          updateConfig('documents', '', planData.config.documents);
+        }}
+      />
     </div>
   );
 }

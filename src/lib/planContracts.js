@@ -64,7 +64,7 @@ export function buildReliableGenerationContract({ projectId, projectType, expect
     'Redacta en español formal y ejecutivo sin rodeos innecesarios. ' +
     'Usa los hechos reales del proyecto activo (fundadores, ubicación, historia, problemas, costos reales, clientes y marcas de competencia identificadas). ' +
     'REGLA CONTRA EVASIVAS: NUNCA respondas diciendo "no se dispone de datos públicos", "la ausencia de datos impide calcular", ni frases que deleguen la tarea al usuario. ' +
-    'Para dimensionamiento de mercado (TAM/SAM/SOM) y competencia, realiza estimaciones cuantitativas y analíticas fundamentadas en la demografía de la ciudad, nivel socioeconómico (NSE A/B, C+), benchmarks del sector y triangulación de fuentes públicas (INEGI, mapas, competidores locales mapeados). ' +
+    'Para dimensionamiento de mercado (TAM/SAM/SOM) y competencia, realiza estimaciones cuantitativas y analíticas fundamentadas en la demografía de la ciudad, nivel socioeconómico (NSE A/B, C+), benchmarks del sector y triangulación de fuentes públicas (INEGI, mapas, competidores locales mapeados). No inventes fuentes ni enlaces inexistentes. ' +
     'Los documentos de referencia y ejemplos sirven para enriquecer; respeta fielmente los nombres, cifras y realidades del diagnóstico del proyecto. ' +
     `Devuelve únicamente JSON válido con estas claves exactas: ${expectedKeys.join(', ')}.\n${evidenceContext}`;
 }

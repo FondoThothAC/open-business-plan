@@ -44,7 +44,7 @@ export default function DocumentUploader({ compact = false, onClose = null }) {
         });
         newDocs.push({
           ...parsedDoc,
-          classification: 'method_reference',
+          classification: 'project_evidence',
           ownerProjectId: planData.config?.projectId || '',
           retrievedAt: new Date().toISOString()
         });

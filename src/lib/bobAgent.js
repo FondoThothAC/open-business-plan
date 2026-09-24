@@ -144,6 +144,29 @@ export const BOB_TOOLS_SCHEMA = [
         reason: { type: 'string', description: 'Razón de la re-industrialización (ej. cambio de sector a Mantenimiento Hidráulico, actualización de inversión a 20 MDP)' }
       }
     }
+  },
+  {
+    name: 'correct_box_content',
+    description: 'Corrige un Box o herramienta analítica específica mediante su ID numérico o semántico (ej. "512", "box 512", "box_layout_industrial", "tam_sam_som"), actualiza sus datos, lo registra en el historial de versiones y guarda el hecho inmutablemente en el RAG.',
+    parameters: {
+      type: 'object',
+      properties: {
+        boxIdentifier: { type: 'string', description: 'Número o clave del Box (ej. "512", "box 512", "box_layout_industrial", "tam_sam_som")' },
+        correctionInstruction: { type: 'string', description: 'El hecho real o directiva corregida que debe aplicarse' }
+      },
+      required: ['boxIdentifier', 'correctionInstruction']
+    }
+  },
+  {
+    name: 'explain_box_trajectory',
+    description: 'Explica la trayectoria de generación del Harness DeepSeek para un Box específico (revela qué prompt, qué modelo y qué fragmentos de evidencia RAG se utilizaron para fundamentar la respuesta).',
+    parameters: {
+      type: 'object',
+      properties: {
+        boxIdentifier: { type: 'string', description: 'Número o clave del Box (ej. "512", "box 512", "layout industrial")' }
+      },
+      required: ['boxIdentifier']
+    }
   }
 ];
 
@@ -182,6 +205,12 @@ TUS CAPACIDADES COMO AGENTE MCP:
 7. Si el usuario consulta sobre quiebra, pérdidas consecutivas, flujo negativo o cuándo cerrar el negocio:
    - Explica el **Fondo de Reserva de Liquidación Intocable (FRLI)** según la Ley Federal del Trabajo y ejecuta "analyze_liquidation_runway".
 8. Si detectas que el fundador hace todo él mismo, advierte sobre la "fusión atómica" y sugiere delegación según la metodología de Fondo Thoth AC.
+9. CORRECCIÓN ATÓMICA DE BOXES Y HERRAMIENTAS ANALÍTICAS (Feedback Loop):
+   - Si el usuario menciona que un Box está mal, contiene un error o requiere ajuste (ej. "el box 512 está mal: la residencia está arriba y la carpintería abajo, pagan CFE juntos", "en el box de layout pon ...", "corregir box 101"):
+     * Ejecuta INMEDIATAMENTE "correct_box_content" con el número/clave del Box y la instrucción corregida.
+     * Explícale al usuario que has corregido el Box de forma atómica y que has blindado ese hecho en el almacén de RAG del proyecto ("Hechos y Restricciones Validadas") para que ninguna generación futura lo contradiga.
+   - Si el usuario pregunta "¿por qué pusiste esto en el box 512?" o pide ver la trazabilidad de un Box:
+     * Ejecuta "explain_box_trajectory" y desglosa los fragmentos de la entrevista o documentos RAG que fundamentaron esa decisión.
 
 FORMATO DE RESPUESTA:
 - Responde siempre en español premium, empático, conciso y profesional.

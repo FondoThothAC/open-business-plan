@@ -462,3 +462,28 @@ Con base en el Plan de Saneamiento y Endurecimiento formalizado en `docs/archite
   * Cobertura completa en todas las rutas de INEGI: `/api/inegi/denue`, `/api/inegi/denue/ficha/:id`, `/api/inegi/denue/nombre`, `/api/inegi/denue/entidad`, `/api/inegi/denue/area`, `/api/inegi/denue/cuantificar`, `/api/inegi/indicadores`, `/api/mercado` y `/api/test/inegi`.
   * Eliminación de términos hardcodeados en `autonomousResearchEngine.js` (sustituyendo `/carne/` por el giro y keywords dinámicas del proyecto).
   * Verificación en vivo: 105 establecimientos comerciales recuperados exitosamente en tiempo real desde la API oficial de INEGI.
+
+### 5.19 Arquitectura de Corrección Atómica por Box ID, Trazabilidad DeepSeek Harness y RAG de Entrevistas Diarizadas
+* **Diarización y Normalización Semántica del Audio de Entrevistas (`Vic/entrevista_estructurada_rag.md`, `scripts/structure_interview_audio.js`):**
+  * Procesa la transcripción continua de audio clasificando las participaciones entre `[Pregunta Consultores: Viktor/Karely/Alisson]` y `[Hecho Real / Respuesta: María Alejandra Aray Roa]`.
+  * Organiza la información en 6 núcleos temáticos inmutables:
+    1. Historia y Fundación (Col. Balderrama, inicio 2008 informal, SAT en 2020).
+    2. Segmentación y Clientes (San Carlos, colonias de alto valor en Hermosillo, cero showrooms, referidos y WhatsApp).
+    3. Operaciones y Ubicación Física (Taller en planta baja, residencia arriba, consumo CFE conjunto de $6,000 MXN).
+    4. Modelo de Ingresos y Cobranza (50% anticipo y saldo semanal por hito, eliminación de retrabajos no cobrados).
+    5. Herramental e Inversión (Enchapadora de cantos $80k para evitar cuellos de botella por maquila externa, $25k aislamiento, $45k capital de trabajo).
+    6. Análisis Competitivo (Corderosa: renders y gama alta; Masarino: maquila y sala de exhibición).
+  * Inyección en `planData.config.documents` con metadatos de máxima prioridad: `{ classification: "project_evidence", status: "processed", isImmutableConstraint: true }`.
+* **Identificación Unívoca de Boxes (`src/lib/boxIdManager.js`):**
+  * Cada herramienta analítica y bloque matricial cuenta con un ID correlativo visible `#BOX-XXX` (ej. `#BOX-512` para Layout Industrial) mapeado a su clave canónica de registro (`box_layout_industrial`).
+  * Los comandos de BOB aceptan tanto identificadores numéricos como semánticos (`el box 512 está mal`, `en el box de layout industrial`).
+* **Trazabilidad del Harness DeepSeek por Box (`src/components/BoxTrajectoryModal.jsx`, `ModuleWrapper.jsx`):**
+  * Inspección en vivo del System Prompt, RAG Context inyectado, fuentes verificadas y árbol de razonamiento ReAct para cada box.
+  * Botón directo `[🔍 Ver Trazabilidad]` en el encabezado de cada herramienta analítica.
+* **Control de Versiones y Auditoría por Box (`planData.config.boxHistory`):**
+  * Registro de cada mutación: autor (`viktoracuna`, `karely_otero`, `galiet_gastelum`), origen (`AI` o `Manual`), marca temporal, diff de cambios y justificación.
+  * Acordeón colapsable en la interfaz de usuario para inspeccionar versiones pasadas y restaurar estados previos.
+* **Feedback Loop "Correction-as-Evidence" (`src/lib/bobAgent.js`, `src/lib/evidenceContext.js`):**
+  * Al corregir un box desde el chat o formulario, el hecho real expresado por el usuario se guarda en el documento sintético `Hechos y Restricciones Validadas del Proyecto`.
+  * Este documento se inyecta en el System Prompt de cualquier regeneración posterior como una restricción dura inviolable, garantizando que futuras generaciones de la IA nunca contradigan las correcciones del usuario.
+

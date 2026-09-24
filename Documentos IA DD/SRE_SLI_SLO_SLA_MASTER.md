@@ -30,6 +30,8 @@
 * **SLO-07:** 0 discrepancias de cifras financieras clave entre Vista Previa, DOCX y PDF para el caso canónico VCV (Inversión $4M / $16.8M, Ventas $59.9M, Utilidad $12.7M, Margen 31.13%, BEP 781.87 kg/mes).
 * **SLO-08:** 0 filtraciones de API keys, hashes o secretos del proyecto en el endpoint `/api/review/:token` servido a revisores externos.
 * **SLO-09:** 100% de coherencia en revocación inmediata de sesiones activas al cambiar/restablecer credenciales o alterar roles de usuario.
+* **SLO-10:** 100% de persistencia inmutable en RAG de correcciones directas por Box ID (Feedback Loop Correction-as-Evidence) sin degradación de módulos no afectados.
+* **SLI-10 (Latencia de Corrección Atómica):** Tiempo de respuesta de BOB al comando "el box <id> está mal" < 1,500 ms para actualización local y registro de hecho.
 
 ---
 
@@ -39,3 +41,5 @@
 * **Resiliencia ante caídas de proveedores cloud:** Conmutación automática a través de hasta 6 capas de respaldo (Minimax Cloud ➔ Groq ➔ Gemini ➔ OpenRouter ➔ NVIDIA ➔ Ollama Local).
 * **Aislamiento de infraestructura:** 100% de garantía de no impacto sobre el sitio web principal de Fondo Thoth (`https://fondothoth.com`) durante compilaciones, actualizaciones de dependencias o reinicios de PM2.
 * **Protección de Datos y Privacidad:** Las claves de API personales (Tavily, Brave, INEGI) se almacenan localmente y cifradas; ninguna clave personal es compartida entre cuentas de usuario.
+* **Integridad de Hechos de Negocio:** 0% de regresiones o contradicciones en regeneraciones de IA posteriores a una corrección validada por el usuario en cualquier Box.
+

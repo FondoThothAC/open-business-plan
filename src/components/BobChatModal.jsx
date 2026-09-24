@@ -102,6 +102,17 @@ export default function BobChatModal({ isOpen, onClose, planData, onExecuteComma
     };
   }, []);
 
+  // Escuchar solicitudes externas para abrir chat de BOB con prompt precargado
+  useEffect(() => {
+    const handleExternalOpen = (e) => {
+      if (e.detail?.initialPrompt) {
+        setInputText(e.detail.initialPrompt);
+      }
+    };
+    window.addEventListener('open-bob-chat', handleExternalOpen);
+    return () => window.removeEventListener('open-bob-chat', handleExternalOpen);
+  }, []);
+
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isLoading]);
@@ -218,6 +229,28 @@ export default function BobChatModal({ isOpen, onClose, planData, onExecuteComma
       return `Industrialización global de módulos disparada automáticamente con el motor agéntico.`;
     }
 
+    if (toolName === 'correct_box_content') {
+      if (onExecuteCommand) {
+        onExecuteCommand({
+          action: 'CORRECT_BOX',
+          tool: 'correct_box_content',
+          parameters: params
+        });
+      }
+      return `Box ${params.boxIdentifier} corregido con éxito. El nuevo hecho ha sido registrado en el RAG inmutable del proyecto.`;
+    }
+
+    if (toolName === 'explain_box_trajectory') {
+      if (onExecuteCommand) {
+        onExecuteCommand({
+          action: 'EXPLAIN_BOX',
+          tool: 'explain_box_trajectory',
+          parameters: params
+        });
+      }
+      return `Trayectoria y RAG fundamentados para el Box ${params.boxIdentifier}.`;
+    }
+
     return null;
   };
 
@@ -255,7 +288,31 @@ export default function BobChatModal({ isOpen, onClose, planData, onExecuteComma
         }
       }
 
-      // 2. Ejecución a través del motor de agente BOB MCP
+      // 2. Detección rápida de corrección directa por Box ID (ej. "el box 512 está mal: ...", "corregir box 512: ...")
+      const boxCorrectionRegex = /(?:el\s+)?box\s*([#\w-]+)\s*(?:est[aá]\s+mal|corregir)?[:\-–—]\s*(.+)/i;
+      const boxMatch = query.match(boxCorrectionRegex) || query.match(/corregir\s+box\s*([#\w-]+)[:\-–—]?\s*(.+)/i);
+      
+      if (boxMatch && onExecuteCommand) {
+        const boxIdent = boxMatch[1].trim();
+        const instruction = boxMatch[2].trim();
+        
+        await handleToolExecution('correct_box_content', {
+          boxIdentifier: boxIdent,
+          correctionInstruction: instruction
+        });
+
+        setMessages(prev => [...prev, {
+          id: `bob_${Date.now()}`,
+          sender: 'bob',
+          text: `🎯 **Corrección Aplicada al Box [${boxIdent.toUpperCase()}]:**\n\n1. ✅ Se actualizó el contenido del Box con la directiva: *"${instruction}"*.\n2. 🛡️ **Feedback Loop RAG Activo:** El hecho se ha registrado con prioridad máxima en *"Hechos y Restricciones Validadas del Proyecto"*.\n3. 📜 Se creó una nueva versión de cambio en el Historial de Auditoría con tu usuario. Ninguna regeneración posterior contradecirá este dato.`,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          toolsExecuted: ['correct_box_content']
+        }]);
+        setIsLoading(false);
+        return;
+      }
+
+      // 3. Ejecución a través del motor de agente BOB MCP
       const result = await sendBobMessage({
         userMessage: query,
         history: messages,

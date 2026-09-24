@@ -167,3 +167,18 @@ Escenario: Compartición de anteproyecto con clientes externos y protección ant
   Entonces el backend incrementa sessionVersion y todas las sesiones previas activas son revocadas de inmediato.
 ```
 
+## Escenario 17: Corrección Atómica por Box ID, Trazabilidad de Harness y RAG de Entrevistas Diarizadas
+```gherkin
+Escenario: Corrección de un Box analítico específico desde el chat de BOB y actualización del RAG
+  Dado un plan de negocios con herramientas analíticas visibles (ej. BoxLayoutIndustrial con ID "#BOX-512")
+  Cuando el usuario escribe a BOB en el chat: "el box 512 está mal: el taller está en planta baja y la residencia en planta alta, pagan CFE juntos de $6,000"
+  Entonces BOB reconoce el identificador "#BOX-512" y resuelve la clave canónica "box_layout_industrial"
+  Y BOB regenera de forma atómica y aislada únicamente el contenido del box 512 sin corromper el resto de los módulos
+  Y el sistema guarda una nueva versión en el historial de cambios del Box registrando autor, timestamp, modo IA y diff
+  Y el nuevo hecho corregido se inyecta en el documento vivo "Hechos y Restricciones Validadas del Proyecto" con clasificación "project_evidence"
+  Y futuras consultas o regeneraciones de módulos respetan este hecho como restricción inviolable en el System Prompt
+  Y cuando el usuario pulsa el botón "🔍 Ver Trazabilidad" en la cabecera del box 512
+  Entonces se despliega el modal de trazabilidad con el System Prompt inyectado, fragmentos de la entrevista estructurada y el árbol de razonamiento del Harness.
+```
+
+

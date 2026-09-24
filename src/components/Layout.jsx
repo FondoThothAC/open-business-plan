@@ -20,6 +20,7 @@ import TerminalDrawer from './TerminalDrawer';
 import AdminUsersPanel from './AdminUsersPanel';
 import UserProfileModal from './UserProfileModal';
 import AutonomousPuppetBanner from './AutonomousPuppetBanner';
+import { resolveBoxKey, appendBoxVersion, recordValidatedFactAsEvidence } from '../lib/boxIdManager';
 
 
 const METHODOLOGY_CONFIG = {
@@ -1848,6 +1849,49 @@ export default function Layout() {
             });
           } else if (cmd.action === 'TRIGGER_INDUSTRIALIZE' || cmd.tool === 'trigger_industrialization') {
             openIndustrializeConfig();
+          } else if (cmd.action === 'CORRECT_BOX' || cmd.tool === 'correct_box_content') {
+            const params = cmd.parameters || cmd;
+            const canonicalKey = resolveBoxKey(params.boxIdentifier);
+            if (canonicalKey) {
+              const userRole = user?.username || user?.name || 'viktoracuna';
+              // 1. Versionado de auditoría
+              appendBoxVersion(planData, {
+                boxKey: canonicalKey,
+                previousValue: null,
+                newValue: { directive: params.correctionInstruction, appliedAt: new Date().toISOString() },
+                author: userRole,
+                isAi: true,
+                promptUsed: `Corrección de usuario: ${params.correctionInstruction}`,
+                changeReason: `Corrección solicitada al Box ${params.boxIdentifier}`
+              });
+
+              // 2. Feedback loop al RAG inmutable
+              recordValidatedFactAsEvidence(planData, {
+                fact: params.correctionInstruction,
+                boxKey: canonicalKey,
+                author: userRole
+              });
+
+              // 3. Si es layout industrial, aplicar la distribución canónica
+              if (canonicalKey === 'box_layout_industrial') {
+                const currentOp = planData.operaciones?.layout || {};
+                updateSection('operaciones', 'layout', {
+                  ...currentOp,
+                  box_layout_industrial: {
+                    ...(currentOp.box_layout_industrial || {}),
+                    userCorrection: params.correctionInstruction,
+                    distribucion_residencia: 'Planta Alta (Residencia Particular)',
+                    distribucion_taller: 'Planta Baja (Taller de Carpintería y Maquinaria)',
+                    tarifa_cfe: 'Consumo compartido ~$6,000 MXN sin medidor comercial'
+                  }
+                });
+              }
+
+              if (planData.config) {
+                updateConfig('boxHistory', '', planData.config.boxHistory);
+                updateConfig('documents', '', planData.config.documents);
+              }
+            }
           }
         }}
       />

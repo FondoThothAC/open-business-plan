@@ -7,7 +7,17 @@ import { Factory, Grid, Maximize2, Shield, Layers, Plus, Trash2 } from 'lucide-r
  * Totalmente adaptado al tema claro/oscuro del sistema
  */
 export function BoxLayoutIndustrial({ definition = {}, values = {}, onChange = () => {} }) {
-  const defaultZones = values.zones || [
+  const isWoodworking = /cocina|closet|carpinter|muebl/i.test(
+    values.planData?.semilla?.nombre_proyecto || values.planData?.semilla?.sector || ''
+  );
+
+  const fallbackZones = isWoodworking ? [
+    { id: 'taller_corte', name: 'Planta Baja: Taller de Corte y Escuadradora', m2: 85, color: '#3b82f6', tipo: 'Producción', equipo: 'Sierra escuadradora industrial, banco de trabajo, aspirador de viruta' },
+    { id: 'enchapado_cantos', name: 'Planta Baja: Área de Enchapadora de Cantos ($80,000 MXN)', m2: 35, color: '#10b981', tipo: 'Acabados', equipo: 'Enchapadora de cantos automática propia para melamina, racks verticales' },
+    { id: 'almacen_melamina', name: 'Planta Baja: Almacén de Melamina y Herrajes', m2: 50, color: '#f59e0b', tipo: 'Almacenamiento', equipo: 'Estantería horizontal para melaminas 16mm, correderas y bisagras' },
+    { id: 'ensamble_embalaje', name: 'Planta Baja: Ensamble y Despacho a Flete', m2: 40, color: '#06b6d4', tipo: 'Logística', equipo: 'Banco de ensamble modular, aislamiento térmico, zona de carga a batanga' },
+    { id: 'residencia_oficina', name: 'Planta Alta: Residencia Familiar y Oficina Administrativa', m2: 110, color: '#8b5cf6', tipo: 'Residencia / Admin', equipo: 'Casa habitación de los socios, facturación SAT (Consumo CFE compartido ~$6,000 MXN sin medidor comercial)' }
+  ] : [
     { id: 'almacen_mp', name: 'Almacén de Materia Prima & Mangueras', m2: 250, color: '#3b82f6', tipo: 'Almacenamiento', equipo: 'Racks industriales cantilever, montacargas 3T' },
     { id: 'banco_pruebas', name: 'Área de Ensamble y Banco de Pruebas 40k PSI', m2: 320, color: '#10b981', tipo: 'Producción', equipo: 'Banco de pruebas computarizado, prensas hidráulicas Finn-Power' },
     { id: 'maquinado', name: 'Taller de Maquinado y Torno CNC', m2: 180, color: '#8b5cf6', tipo: 'Producción', equipo: 'Tornos CNC, rectificadoras de cilindros, soldadura TIG' },
@@ -15,6 +25,8 @@ export function BoxLayoutIndustrial({ definition = {}, values = {}, onChange = (
     { id: 'almacen_pt', name: 'Almacén de Producto Terminado & Despacho', m2: 200, color: '#06b6d4', tipo: 'Logística', equipo: 'Área de embalaje, zona de estiba para despacho a mina' },
     { id: 'oficinas', name: 'Oficinas Técnicas, Ventas & Sala de Juntas', m2: 160, color: '#ec4899', tipo: 'Administración', equipo: 'Estaciones de trabajo CAD/CAM, servidores locales, sala técnica' }
   ];
+
+  const defaultZones = values.zones || fallbackZones;
 
   const [zones, setZones] = useState(defaultZones);
   const [activeZone, setActiveZone] = useState(null);
@@ -56,6 +68,27 @@ export function BoxLayoutIndustrial({ definition = {}, values = {}, onChange = (
       margin: '20px 0',
       boxShadow: '0 4px 20px rgba(0,0,0,0.06)'
     }}>
+      {/* Banner de Hecho Validado por el Usuario si existe corrección */}
+      {(values.userCorrection || values.distribucion_residencia) && (
+        <div style={{
+          background: 'rgba(16, 185, 129, 0.1)',
+          border: '1px solid rgba(16, 185, 129, 0.3)',
+          borderRadius: '10px',
+          padding: '0.75rem 1rem',
+          marginBottom: '1.25rem',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.6rem',
+          fontSize: '0.82rem',
+          color: '#34d399'
+        }}>
+          <Shield size={18} />
+          <span>
+            <strong>Distribución Validada por el Usuario:</strong> {values.userCorrection || `${values.distribucion_residencia} y ${values.distribucion_taller} (${values.tarifa_cfe})`}
+          </span>
+        </div>
+      )}
+
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>

@@ -52,5 +52,13 @@ journey
       Presentación no invasiva (Tema Oscuro): 5: UI
       Navegación contextual a Semilla (/obp/semilla): 5: Usuario
       Recarga limpia de bundle no cacheado: 5: Usuario
+    section Corrección Atómica por Box ID y Trazabilidad
+      Badge visible de Box (#BOX-512): 5: UI
+      Inspección de Trayectoria del Harness: 5: Usuario
+      Modal Trazabilidad & Fragmentos RAG: 5: DeepSeek
+      Comando en Chat "el box 512 está mal": 5: Usuario
+      Regeneración Atómica y Feedback a RAG: 5: BOB Agent
+      Historial de Versiones & Audit Trail: 5: UI
 ```
+
 
