@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FileSpreadsheet, LineChart, PieChart, Settings, Eye, BrainCircuit, ChevronDown, ChevronRight, ChevronLeft, Save, FilePlus, Folder, FolderOpen, Check, Image as ImageIcon, Sprout, Copy, Star, Briefcase, Zap, Globe, Cpu, ShoppingBag, Landmark, ListChecks, Compass, Target, Layers, Share2, Factory, UploadCloud, Bell, Terminal, User, LogOut, Shield, Users } from 'lucide-react';
+import { LayoutDashboard, FileSpreadsheet, LineChart, PieChart, Settings, Eye, BrainCircuit, ChevronDown, ChevronRight, ChevronLeft, Save, FilePlus, Folder, FolderOpen, Check, Image as ImageIcon, Sprout, Copy, Star, Briefcase, Zap, Globe, Cpu, ShoppingBag, Landmark, ListChecks, Compass, Target, Layers, Share2, Factory, UploadCloud, Bell, Terminal, User, LogOut, Shield, Users, FolderGit2 } from 'lucide-react';
 import { usePlan } from '../context/PlanContext';
 import { useAuth } from '../contexts/AuthContext';
 import { PROJECT_EXAMPLES } from '../lib/projects_db';
@@ -16,6 +16,7 @@ import ServerHealthBanner from './ServerHealthBanner';
 import WordDocumentCenterModal from './WordDocumentCenterModal';
 import ProjectWorkspaceModal from './ProjectWorkspaceModal';
 import CollaboratorsModal from './CollaboratorsModal';
+import ProjectCatalogModal from './ProjectCatalogModal';
 import DocumentUploader from './DocumentUploader';
 import TerminalDrawer from './TerminalDrawer';
 import AdminUsersPanel from './AdminUsersPanel';
@@ -115,6 +116,7 @@ export default function Layout() {
   const [showWorkspaceModal, setShowWorkspaceModal] = useState(false);
   const [showProjectsModal, setShowProjectsModal] = useState(false);
   const [showCollaboratorsModal, setShowCollaboratorsModal] = useState(false);
+  const [showCatalogModal, setShowCatalogModal] = useState(false);
   const [activePresenceList, setActivePresenceList] = useState([]);
   const [showRagModal, setShowRagModal] = useState(false);
   const [activeGrillMePrompt, setActiveGrillMePrompt] = useState(null);
@@ -869,6 +871,28 @@ export default function Layout() {
                   title="Gestionar Colaboradores del Proyecto en Tiempo Real"
                 >
                   <Users size={16} /> <span>Colaboradores</span>
+                </button>
+
+                <button
+                  onClick={() => setShowCatalogModal(true)}
+                  style={{
+                    padding: '0.6rem 1.1rem',
+                    background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(217, 119, 6, 0.25))',
+                    color: '#f59e0b',
+                    border: '1px solid rgba(245, 158, 11, 0.3)',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    fontWeight: 700,
+                    fontSize: '0.85rem',
+                    transition: 'all 0.2s',
+                    boxShadow: '0 2px 8px rgba(245, 158, 11, 0.15)'
+                  }}
+                  title="Catálogo Comunitario: Explorar Proyectos de Compañeros y Conexión de Equipos"
+                >
+                  <FolderGit2 size={16} /> <span>Equipos</span>
                 </button>
 
                 <div style={{ position: 'relative' }}>
@@ -1985,6 +2009,15 @@ export default function Layout() {
         projectId={planData?.config?.projectId || currentProjectSlug}
         projectType={planData?.config?.projectType === 'social_bid' ? 'social' : 'negocios'}
         isOwner={true}
+      />
+
+      {/* Modal de Catálogo Comunitario de Equipos y Proyectos Estudiantiles */}
+      <ProjectCatalogModal
+        isOpen={showCatalogModal}
+        onClose={() => setShowCatalogModal(false)}
+        onProjectJoined={(joinedId, joinedType) => {
+          loadSavedProject(joinedType || 'negocios', joinedId);
+        }}
       />
 
       {/* Modal de Perfil de Usuario y API Keys Personales */}

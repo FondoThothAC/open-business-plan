@@ -523,3 +523,29 @@ Con base en el Plan de Saneamiento y Endurecimiento formalizado en `docs/archite
 * **Puntos de Entrada Visuales (Doble Vía):**
   * Modal autónomo `CollaboratorsModal.jsx` accesible desde el botón *Colaboradores* en la barra superior de `Layout.jsx` y desde las tarjetas de proyecto de `ProjectWorkspaceModal.jsx`.
   * Acción de asignación y gestión directa de colaboradores en cada proyecto desde la pestaña *Proyectos por Usuario* de `AdminUsersPanel.jsx`.
+
+## 15. Arquitectura de Equipos Multialumno, Reasignación Docente, Bloqueo de Módulos y Telemetría de Prompts (Harness) (v3.2.0)
+* **Objetivo de Dominio:**
+  * Facilitar la formación de equipos de 2 a 3 estudiantes por proyecto con solicitudes explícitas de ingreso y códigos de invitación eficientes.
+  * Dotar al docente/administrador de la capacidad de reasignar la titularidad (ownership) de proyectos preservando al autor original como colaborador.
+  * Proteger el trabajo consolidado de los alumnos mediante congelamiento/bloqueo de módulos con bitácora de justificación estructurada.
+  * Alimentar el harness de calibración de prompts de IA registrando motivos estructurados de fallo (*"No calculó bien el CAC"*, *"Población mal definida"*, *"Texto demasiado largo"*, etc.).
+* **Contratos de API REST Incorporados:**
+  * `GET /api/projects/explore`: Catálogo público de proyectos estudiantiles con detección de estado de membresía (`owner`, `collaborator`, `pending`, `none`).
+  * `POST /api/projects/:type/:id/join-requests`: Emisión de solicitud de colaboración con nota opcional.
+  * `GET /api/projects/:type/:id/join-requests`: Listado de solicitudes pendientes del proyecto.
+  * `PATCH /api/projects/:type/:id/join-requests/:requestId`: Aprobación o rechazo de solicitud con incorporación automática a `project.json` en aprobación.
+  * `POST /api/projects/join-by-code`: Incorporación instantánea a un equipo mediante código alfa-numérico `EQUIPO-XXXX-YYYY`.
+  * `POST /api/projects/:type/:id/transfer-owner`: Reasignación de titularidad de proyecto por administrador con migración atómica de carpetas de almacenamiento (`user_<prev>` a `user_<target>`).
+  * `PATCH /api/projects/:type/:id/modules/:moduleKey/lock`: Bloqueo/desbloqueo de módulo con motivo, autor y estampa de tiempo.
+  * `POST /api/projects/:type/:id/modules/:moduleKey/versions`: Creación de versiones históricas del módulo con motivo de cambio tipificado.
+  * `GET /api/projects/:type/:id/modules/:moduleKey/versions`: Historial de versiones del módulo.
+  * `POST /api/telemetry/prompt-feedback`: Registro en el almacén de feedback de prompts para el harness de ingeniería de prompts.
+  * `GET /api/telemetry/prompt-feedback`: Consulta de telemetría de calibración de prompts filtrable por módulo y tipo de error.
+* **Componentes de Interfaz Integrados:**
+  * `ProjectCatalogModal.jsx`: Explorador comunitario con búsqueda en vivo, modal de solicitud y canje de código de equipo.
+  * `ChangeReasonModal.jsx`: Selector de motivos predeterminados de modificación con entrada de comentarios para calibración de IA.
+  * `ModuleLockBadge.jsx`: Indicador interactivo de bloqueo en el encabezado de cada módulo.
+  * `ModuleHistoryDrawer.jsx`: Drawer lateral con historial de versiones, diff notes, autoría y restauración inmediata.
+  * `AdminUsersPanel.jsx` (Pestaña "Calibración IA (Harness)"): Panel administrativo para inspección de métricas de calidad de prompts y motivos de corrección de alumnos.
+

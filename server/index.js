@@ -46,7 +46,8 @@ import {
 } from './auth.js';
 import { authGuard, soloAdmin, soloRevisorOSuperAdmin, prohibirRevisorMutacion } from './middleware/authGuard.js';
 import { registrarAuditoria, obtenerAuditoria } from './auditLogger.js';
-import { EXAMPLE_PROJECT_IDS, PRIVATE_ADMIN_IDS, assertSafeProjectSegment, resolveReadableProject, resolveWritableProject, resolveCloneSource, userFolder } from './projectAccess.js';
+import { EXAMPLE_PROJECT_IDS, PRIVATE_ADMIN_IDS, assertSafeProjectSegment, resolveReadableProject, resolveWritableProject, resolveCloneSource, userFolder, transferProjectOwnership } from './projectAccess.js';
+import { recordPromptFeedback, getPromptFeedback, createTeamJoinRequest, getTeamJoinRequests, resolveTeamJoinRequest } from './promptFeedbackStore.js';
 import { createReviewInvite, getReviewInvite, addReviewComment, listReviewComments, revokeReviewInvite } from './reviewStore.js';
 
 function documentForExternalReview(data) {
@@ -608,7 +609,7 @@ app.delete('/api/projects/:type/:id/review-invites/:inviteId', prohibirRevisorMu
 // COLABORADORES MULTI-USUARIO & PRESENCIA
 // ==========================================
 
-// Obtener lista de colaboradores del proyecto
+// Obtener lista de colaboradores del proyecto, código de equipo y solicitudes pendientes
 app.get('/api/projects/:type/:id/collaborators', (req, res) => {
   try {
     const { type, id } = req.params;
@@ -617,9 +618,21 @@ app.get('/api/projects/:type/:id/collaborators', (req, res) => {
 
     const raw = fs.readFileSync(project.path, 'utf8');
     const data = JSON.parse(raw);
-    const owner = data.config?.userOwner || project.owner || 'admin';
-    const collabs = data.config?.collaborators || data.collaborators || [];
+    data.config = data.config || {};
+    const owner = data.config.userOwner || project.owner || 'admin';
+    const collabs = data.config.collaborators || data.collaborators || [];
     const activePresence = getActivePresence(id);
+
+    // Asegurar código de invitación estable para el equipo
+    if (!data.config.inviteCode) {
+      const codeSuffix = Math.random().toString(36).substring(2, 6).toUpperCase();
+      data.config.inviteCode = `EQUIPO-${String(id).replace(/[^a-zA-Z0-9]/g, '').substring(0, 4).toUpperCase()}-${codeSuffix}`;
+      try {
+        fs.writeFileSync(project.path, JSON.stringify(data, null, 2), 'utf8');
+      } catch (saveErr) {
+        console.warn('[Collaborators] No se pudo guardar inviteCode generado:', saveErr.message);
+      }
+    }
 
     // Obtener detalles enriquecidos de usuarios colaboradores si existen
     const allUsers = listarUsuarios(req.user) || [];
@@ -638,12 +651,17 @@ app.get('/api/projects/:type/:id/collaborators', (req, res) => {
       };
     });
 
+    const isOwner = req.user.username === owner || req.user.role === 'superadmin';
+    const pendingRequests = isOwner ? getTeamJoinRequests({ projectId: id, status: 'pending' }) : [];
+
     res.json({
       success: true,
       owner,
-      isOwner: req.user.username === owner || req.user.role === 'superadmin',
+      isOwner,
+      inviteCode: data.config.inviteCode,
       collaborators: enrichedCollabs,
-      activePresence
+      activePresence,
+      pendingRequests
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -772,6 +790,481 @@ app.post('/api/projects/:type/:id/presence/leave', (req, res) => {
     const { id } = req.params;
     clearPresence(id, req.user.username);
     res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// =========================================================================
+// CATÁLOGO DE PROYECTOS ESTUDIANTILES & SOLICITUDES DE UNIÓN (EQUIPOS)
+// =========================================================================
+
+// Explorar catálogo comunitario de proyectos de alumnos
+app.get('/api/projects/explore', (req, res) => {
+  try {
+    const results = [];
+    const types = ['negocios', 'social'];
+    const currentUsername = String(req.user.username || '').toLowerCase();
+
+    for (const pType of types) {
+      const root = path.resolve('proyectos', pType);
+      if (!fs.existsSync(root)) continue;
+
+      const entries = fs.readdirSync(root, { withFileTypes: true });
+      for (const entry of entries) {
+        let candidateDir = null;
+        let ownerFolderUser = null;
+
+        if (entry.isDirectory() && entry.name.startsWith('user_')) {
+          ownerFolderUser = entry.name.replace(/^user_/, '');
+          const userSubEntries = fs.readdirSync(path.join(root, entry.name), { withFileTypes: true });
+          for (const sub of userSubEntries) {
+            if (sub.isDirectory()) {
+              const jsonFile = path.join(root, entry.name, sub.name, `${sub.name}.json`);
+              if (fs.existsSync(jsonFile)) {
+                try {
+                  const data = JSON.parse(fs.readFileSync(jsonFile, 'utf8'));
+                  const pId = sub.name;
+                  if (PRIVATE_ADMIN_IDS.has(pId)) continue;
+
+                  const owner = data.config?.userOwner || ownerFolderUser || 'alumno';
+                  const collabs = (data.config?.collaborators || []).map(c => String(c).toLowerCase());
+                  const pendingReqs = getTeamJoinRequests({ projectId: pId, status: 'pending' });
+                  const userHasPending = pendingReqs.some(r => r.requesterUsername.toLowerCase() === currentUsername);
+
+                  let relationship = 'none';
+                  if (owner.toLowerCase() === currentUsername) {
+                    relationship = 'owner';
+                  } else if (collabs.includes(currentUsername)) {
+                    relationship = 'collaborator';
+                  } else if (userHasPending) {
+                    relationship = 'pending';
+                  }
+
+                  results.push({
+                    id: pId,
+                    type: pType,
+                    name: data.config?.brandKit?.companyName || data.semilla?.nombre_proyecto || pId,
+                    owner,
+                    collaboratorsCount: collabs.length,
+                    workflowStatus: data.config?.workflowStatus || 'Borrador',
+                    inviteCode: data.config?.inviteCode || null,
+                    relationship,
+                    fechaActualizacion: data.config?.fechaActualizacion || null
+                  });
+                } catch {}
+              }
+            }
+          }
+        }
+      }
+    }
+
+    res.json({ success: true, projects: results });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Solicitar unirse a un proyecto de compañeros
+app.post('/api/projects/:type/:id/join-requests', (req, res) => {
+  try {
+    const { type, id } = req.params;
+    const { note } = req.body || {};
+    const project = resolveReadableProject(type, id, req.user);
+    if (!project) return res.status(404).json({ error: 'Proyecto no encontrado.' });
+
+    const raw = fs.readFileSync(project.path, 'utf8');
+    const data = JSON.parse(raw);
+    const owner = data.config?.userOwner || project.owner;
+    const collabs = (data.config?.collaborators || []).map(c => String(c).toLowerCase());
+    const myUname = String(req.user.username).toLowerCase();
+
+    if (owner.toLowerCase() === myUname) {
+      return res.status(400).json({ error: 'Ya eres el propietario de este proyecto.' });
+    }
+    if (collabs.includes(myUname)) {
+      return res.status(400).json({ error: 'Ya eres colaborador de este proyecto.' });
+    }
+
+    const request = createTeamJoinRequest({
+      projectId: id,
+      projectType: type,
+      projectOwner: owner,
+      requesterUsername: req.user.username,
+      requesterDisplayName: req.user.displayName || req.user.username,
+      note: String(note || '')
+    });
+
+    registrarAuditoria({
+      actorId: req.user.id,
+      actorUsername: req.user.username,
+      actorRole: req.user.role,
+      action: 'TEAM_JOIN_REQUEST_CREATED',
+      targetType: 'project',
+      targetId: id,
+      details: { projectOwner: owner, note }
+    });
+
+    res.status(201).json({ success: true, message: 'Solicitud enviada al equipo.', request });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Consultar solicitudes de unión para un proyecto
+app.get('/api/projects/:type/:id/join-requests', (req, res) => {
+  try {
+    const { type, id } = req.params;
+    const project = resolveReadableProject(type, id, req.user);
+    if (!project) return res.status(404).json({ error: 'Proyecto no encontrado.' });
+
+    const isSuperadmin = req.user.role === 'superadmin';
+    const isOwner = project.owner.toLowerCase() === String(req.user.username).toLowerCase();
+
+    if (!isSuperadmin && !isOwner) {
+      return res.status(403).json({ error: 'Solo el propietario o un administrador pueden ver las solicitudes de este proyecto.' });
+    }
+
+    const requests = getTeamJoinRequests({ projectId: id });
+    res.json({ success: true, requests });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Aprobar o rechazar solicitud de unión (Dueño o Superadmin)
+app.patch('/api/projects/:type/:id/join-requests/:requestId', prohibirRevisorMutacion, (req, res) => {
+  try {
+    const { type, id, requestId } = req.params;
+    const { status } = req.body || {};
+
+    if (!['approved', 'rejected'].includes(status)) {
+      return res.status(400).json({ error: 'El estado debe ser "approved" o "rejected".' });
+    }
+
+    const project = resolveReadableProject(type, id, req.user);
+    if (!project) return res.status(404).json({ error: 'Proyecto no encontrado.' });
+
+    const isSuperadmin = req.user.role === 'superadmin';
+    const isOwner = project.owner.toLowerCase() === String(req.user.username).toLowerCase();
+
+    if (!isSuperadmin && !isOwner) {
+      return res.status(403).json({ error: 'Solo el propietario o un administrador pueden autorizar o rechazar solicitudes.' });
+    }
+
+    const resolved = resolveTeamJoinRequest(requestId, status, req.user.username);
+    if (!resolved) {
+      return res.status(404).json({ error: 'Solicitud no encontrada.' });
+    }
+
+    // Si se aprobó, añadir al solicitante a los colaboradores del proyecto
+    if (status === 'approved') {
+      const raw = fs.readFileSync(project.path, 'utf8');
+      const data = JSON.parse(raw);
+      data.config = data.config || {};
+      data.config.collaborators = Array.isArray(data.config.collaborators) ? data.config.collaborators : [];
+
+      const targetUname = resolved.requesterUsername;
+      const collabsLower = data.config.collaborators.map(c => String(c).toLowerCase());
+
+      if (!collabsLower.includes(targetUname.toLowerCase())) {
+        data.config.collaborators.push(targetUname);
+        data.config.fechaActualizacion = new Date().toISOString();
+        fs.writeFileSync(project.path, JSON.stringify(data, null, 2), 'utf8');
+      }
+
+      registrarAuditoria({
+        actorId: req.user.id,
+        actorUsername: req.user.username,
+        actorRole: req.user.role,
+        action: 'TEAM_JOIN_REQUEST_APPROVED',
+        targetType: 'project',
+        targetId: id,
+        details: { newMember: targetUname, requestId }
+      });
+    }
+
+    res.json({ success: true, message: `Solicitud ${status === 'approved' ? 'aprobada' : 'rechazada'} exitosamente.`, request: resolved });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Unirse a un proyecto usando código de equipo
+app.post('/api/projects/join-by-code', prohibirRevisorMutacion, (req, res) => {
+  try {
+    const { code } = req.body || {};
+    if (!code || !String(code).trim()) {
+      return res.status(400).json({ error: 'Debes proporcionar un código de invitación de equipo.' });
+    }
+
+    const cleanCode = String(code).trim().toUpperCase();
+    const myUname = String(req.user.username).toLowerCase();
+    const types = ['negocios', 'social'];
+    let targetProject = null;
+    let targetData = null;
+    let targetPath = null;
+    let targetType = null;
+    let targetId = null;
+
+    for (const pType of types) {
+      const root = path.resolve('proyectos', pType);
+      if (!fs.existsSync(root)) continue;
+
+      const entries = fs.readdirSync(root, { withFileTypes: true });
+      for (const entry of entries) {
+        if (entry.isDirectory() && entry.name.startsWith('user_')) {
+          const userSubEntries = fs.readdirSync(path.join(root, entry.name), { withFileTypes: true });
+          for (const sub of userSubEntries) {
+            if (sub.isDirectory()) {
+              const jsonFile = path.join(root, entry.name, sub.name, `${sub.name}.json`);
+              if (fs.existsSync(jsonFile)) {
+                try {
+                  const data = JSON.parse(fs.readFileSync(jsonFile, 'utf8'));
+                  const projCode = String(data.config?.inviteCode || '').toUpperCase();
+                  if (projCode === cleanCode) {
+                    targetProject = data;
+                    targetData = data;
+                    targetPath = jsonFile;
+                    targetType = pType;
+                    targetId = sub.name;
+                    break;
+                  }
+                } catch {}
+              }
+            }
+          }
+        }
+        if (targetProject) break;
+      }
+      if (targetProject) break;
+    }
+
+    if (!targetProject) {
+      return res.status(404).json({ error: 'No se encontró ningún proyecto con ese código de equipo.' });
+    }
+
+    const owner = String(targetData.config?.userOwner || '').toLowerCase();
+    if (owner === myUname) {
+      return res.json({ success: true, message: 'Ya eres el propietario de este proyecto.', projectId: targetId, projectType: targetType });
+    }
+
+    targetData.config = targetData.config || {};
+    targetData.config.collaborators = Array.isArray(targetData.config.collaborators) ? targetData.config.collaborators : [];
+    const collabsLower = targetData.config.collaborators.map(c => String(c).toLowerCase());
+
+    if (!collabsLower.includes(myUname)) {
+      targetData.config.collaborators.push(req.user.username);
+      targetData.config.fechaActualizacion = new Date().toISOString();
+      fs.writeFileSync(targetPath, JSON.stringify(targetData, null, 2), 'utf8');
+
+      registrarAuditoria({
+        actorId: req.user.id,
+        actorUsername: req.user.username,
+        actorRole: req.user.role,
+        action: 'PROJECT_JOINED_VIA_CODE',
+        targetType: 'project',
+        targetId: targetId,
+        details: { code: cleanCode }
+      });
+    }
+
+    res.json({
+      success: true,
+      message: `¡Te has unido exitosamente al proyecto "${targetData.config?.brandKit?.companyName || targetId}"!`,
+      projectId: targetId,
+      projectType: targetType
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Reasignar titularidad de un proyecto a otro alumno (Exclusivo Administrador/Docente)
+app.post('/api/projects/:type/:id/transfer-owner', soloAdmin, (req, res) => {
+  try {
+    const { type, id } = req.params;
+    const { targetUserId, targetUsername } = req.body || {};
+
+    if (!targetUsername && !targetUserId) {
+      return res.status(400).json({ error: 'Debes especificar el usuario destinatario para transferir la titularidad.' });
+    }
+
+    const targetUser = { id: targetUserId, username: targetUsername };
+    const result = transferProjectOwnership({
+      type,
+      id,
+      targetUser,
+      currentUser: req.user
+    });
+
+    registrarAuditoria({
+      actorId: req.user.id,
+      actorUsername: req.user.username,
+      actorRole: req.user.role,
+      action: 'PROJECT_OWNERSHIP_TRANSFERRED',
+      targetType: 'project',
+      targetId: id,
+      details: { from: result.previousOwner, to: result.newOwner }
+    });
+
+    res.json({
+      success: true,
+      message: `Titularidad del proyecto transferida exitosamente a @${result.newOwner}.`,
+      ...result
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// =========================================================================
+// BLOQUEO DE MÓDULOS, HISTORIAL DE VERSIONES Y HARNESS DE PROMPT TUNING
+// =========================================================================
+
+// Bloquear o desbloquear un módulo de proyecto
+app.patch('/api/projects/:type/:id/modules/:moduleKey/lock', prohibirRevisorMutacion, (req, res) => {
+  try {
+    const { type, id, moduleKey } = req.params;
+    const { locked, reason = '' } = req.body || {};
+
+    const project = resolveWritableProject(type, id, req.user);
+    if (!project) return res.status(403).json({ error: 'No tienes permiso para modificar este proyecto.' });
+
+    const raw = fs.readFileSync(project.path, 'utf8');
+    const data = JSON.parse(raw);
+    data.config = data.config || {};
+    data.config.moduleLocks = data.config.moduleLocks || {};
+
+    data.config.moduleLocks[moduleKey] = {
+      locked: !!locked,
+      lockedBy: req.user.username,
+      lockedAt: new Date().toISOString(),
+      reason: String(reason || '').trim()
+    };
+    data.config.fechaActualizacion = new Date().toISOString();
+
+    fs.writeFileSync(project.path, JSON.stringify(data, null, 2), 'utf8');
+
+    registrarAuditoria({
+      actorId: req.user.id,
+      actorUsername: req.user.username,
+      actorRole: req.user.role,
+      action: locked ? 'MODULE_LOCKED' : 'MODULE_UNLOCKED',
+      targetType: 'module',
+      targetId: `${id}:${moduleKey}`,
+      details: { locked: !!locked, reason }
+    });
+
+    res.json({
+      success: true,
+      message: locked ? `Módulo ${moduleKey} bloqueado y protegido.` : `Módulo ${moduleKey} desbloqueado.`,
+      lockState: data.config.moduleLocks[moduleKey]
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Archivar una versión de módulo con razón de cambio para calibración de IA
+app.post('/api/projects/:type/:id/modules/:moduleKey/versions', prohibirRevisorMutacion, (req, res) => {
+  try {
+    const { type, id, moduleKey } = req.params;
+    const { reasonTag, userComment, snapshot, provider, model } = req.body || {};
+
+    const project = resolveWritableProject(type, id, req.user);
+    if (!project) return res.status(403).json({ error: 'No tienes permiso para modificar este proyecto.' });
+
+    const raw = fs.readFileSync(project.path, 'utf8');
+    const data = JSON.parse(raw);
+    data.config = data.config || {};
+    data.config.moduleVersions = data.config.moduleVersions || {};
+    data.config.moduleVersions[moduleKey] = Array.isArray(data.config.moduleVersions[moduleKey]) ? data.config.moduleVersions[moduleKey] : [];
+
+    const versionEntry = {
+      versionId: `v_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+      timestamp: new Date().toISOString(),
+      author: req.user.username,
+      authorRole: req.user.role,
+      reasonTag: String(reasonTag || 'modificacion_manual'),
+      userComment: String(userComment || '').trim(),
+      snapshot: snapshot || null
+    };
+
+    data.config.moduleVersions[moduleKey].unshift(versionEntry);
+    // Conservar máximo 15 versiones por módulo
+    if (data.config.moduleVersions[moduleKey].length > 15) {
+      data.config.moduleVersions[moduleKey].length = 15;
+    }
+
+    fs.writeFileSync(project.path, JSON.stringify(data, null, 2), 'utf8');
+
+    // Registrar en almacén de telemetría de IA para afinar prompts y harness
+    if (reasonTag) {
+      recordPromptFeedback({
+        projectId: id,
+        moduleKey,
+        reasonTag,
+        userComment,
+        username: req.user.username,
+        userRole: req.user.role,
+        metadata: { provider, model }
+      });
+    }
+
+    res.status(201).json({
+      success: true,
+      message: 'Versión archivada en el historial del módulo.',
+      version: versionEntry
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Consultar historial de versiones de un módulo
+app.get('/api/projects/:type/:id/modules/:moduleKey/versions', (req, res) => {
+  try {
+    const { type, id, moduleKey } = req.params;
+    const project = resolveReadableProject(type, id, req.user);
+    if (!project) return res.status(404).json({ error: 'Proyecto no encontrado.' });
+
+    const raw = fs.readFileSync(project.path, 'utf8');
+    const data = JSON.parse(raw);
+    const versions = data.config?.moduleVersions?.[moduleKey] || [];
+    const lockState = data.config?.moduleLocks?.[moduleKey] || { locked: false };
+
+    res.json({ success: true, versions, lockState });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Registrar señal de retroalimentación de IA directa
+app.post('/api/telemetry/prompt-feedback', (req, res) => {
+  try {
+    const { projectId, moduleKey, reasonTag, userComment, metadata } = req.body || {};
+    const entry = recordPromptFeedback({
+      projectId,
+      moduleKey,
+      reasonTag,
+      userComment,
+      username: req.user?.username || 'anon',
+      userRole: req.user?.role || 'user',
+      metadata
+    });
+    res.status(201).json({ success: true, feedback: entry });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Consultar señales de retroalimentación acumuladas (Admin y Docentes)
+app.get('/api/telemetry/prompt-feedback', soloAdmin, (req, res) => {
+  try {
+    const list = getPromptFeedback(req.query);
+    res.json({ success: true, feedback: list });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

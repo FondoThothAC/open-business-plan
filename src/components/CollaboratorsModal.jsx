@@ -16,9 +16,12 @@ export default function CollaboratorsModal({ isOpen, onClose, projectId, project
   const [collaborators, setCollaborators] = useState([]);
   const [activePresence, setActivePresence] = useState([]);
   const [projectOwner, setProjectOwner] = useState('');
+  const [inviteCode, setInviteCode] = useState('');
+  const [pendingRequests, setPendingRequests] = useState([]);
   const [newIdentifier, setNewIdentifier] = useState('');
   const [loading, setLoading] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
+  const [copiedCode, setCopiedCode] = useState(false);
   const [error, setError] = useState(null);
   const [successMsg, setSuccessMsg] = useState(null);
 
@@ -36,6 +39,8 @@ export default function CollaboratorsModal({ isOpen, onClose, projectId, project
         setCollaborators(data.collaborators || []);
         setActivePresence(data.activePresence || []);
         setProjectOwner(data.owner || '');
+        setInviteCode(data.inviteCode || '');
+        setPendingRequests(data.pendingRequests || []);
       } else {
         const errData = await res.json().catch(() => ({}));
         setError(errData.error || 'Error al obtener colaboradores.');
@@ -117,6 +122,41 @@ export default function CollaboratorsModal({ isOpen, onClose, projectId, project
     }
   };
 
+  const handleResolveRequest = async (requestId, status) => {
+    setActionLoading(true);
+    setError(null);
+    setSuccessMsg(null);
+
+    try {
+      const apiBase = getApiBase();
+      const res = await fetch(`${apiBase}/api/projects/${projectType}/${projectId}/join-requests/${requestId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ status })
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        setSuccessMsg(data.message || `Solicitud ${status === 'approved' ? 'aprobada' : 'rechazada'}.`);
+        fetchCollaborators();
+      } else {
+        setError(data.error || 'Error al resolver la solicitud.');
+      }
+    } catch (err) {
+      setError(`Error de red: ${err.message}`);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleCopyInviteCode = () => {
+    if (!inviteCode) return;
+    navigator.clipboard.writeText(inviteCode);
+    setCopiedCode(true);
+    setTimeout(() => setCopiedCode(false), 2500);
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -138,7 +178,7 @@ export default function CollaboratorsModal({ isOpen, onClose, projectId, project
         className="glass-panel"
         style={{
           width: '100%',
-          maxWidth: '560px',
+          maxWidth: '600px',
           maxHeight: '90vh',
           background: '#0f172a',
           border: '1px solid rgba(56, 189, 248, 0.25)',
@@ -173,7 +213,7 @@ export default function CollaboratorsModal({ isOpen, onClose, projectId, project
             </div>
             <div>
               <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: '#f8fafc', letterSpacing: '-0.02em' }}>
-                Equipo y Colaboradores
+                Equipo y Colaboradores (2-3 Alumnos)
               </h3>
               <p style={{ margin: 0, fontSize: '0.75rem', color: '#94a3b8', marginTop: '2px' }}>
                 Proyecto: <span style={{ color: '#38bdf8', fontWeight: 600 }}>{projectId}</span>
@@ -241,13 +281,133 @@ export default function CollaboratorsModal({ isOpen, onClose, projectId, project
         )}
 
         {/* Cuerpo */}
-        <div style={{ padding: '1.5rem', overflowY: 'auto', flex: 1, display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+        <div style={{ padding: '1.25rem 1.5rem', overflowY: 'auto', flex: 1, display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
           
-          {/* Formulario de Invitación */}
+          {/* Bloque Código de Invitación Rápida */}
+          {inviteCode && (
+            <div style={{
+              padding: '0.85rem 1rem',
+              borderRadius: '12px',
+              background: 'linear-gradient(135deg, rgba(129, 140, 248, 0.1), rgba(56, 189, 248, 0.05))',
+              border: '1px solid rgba(129, 140, 248, 0.25)',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              gap: '1rem'
+            }}>
+              <div>
+                <div style={{ fontSize: '0.74rem', color: '#94a3b8', fontWeight: 600 }}>
+                  Código de Invitación de Equipo:
+                </div>
+                <div style={{ fontSize: '1rem', fontWeight: 800, color: '#38bdf8', letterSpacing: '0.5px', marginTop: '2px' }}>
+                  {inviteCode}
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={handleCopyInviteCode}
+                style={{
+                  padding: '6px 12px',
+                  borderRadius: '8px',
+                  background: copiedCode ? 'rgba(16, 185, 129, 0.2)' : 'rgba(56, 189, 248, 0.15)',
+                  border: `1px solid ${copiedCode ? 'rgba(16, 185, 129, 0.4)' : 'rgba(56, 189, 248, 0.3)'}`,
+                  color: copiedCode ? '#34d399' : '#38bdf8',
+                  fontSize: '0.76rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px'
+                }}
+              >
+                {copiedCode ? '¡Copiado!' : 'Copiar Código'}
+              </button>
+            </div>
+          )}
+
+          {/* Solicitudes Pendientes de Aprobación */}
+          {pendingRequests.length > 0 && (
+            <div style={{
+              padding: '1rem',
+              borderRadius: '12px',
+              background: 'rgba(245, 158, 11, 0.08)',
+              border: '1px solid rgba(245, 158, 11, 0.25)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.75rem'
+            }}>
+              <div style={{ fontSize: '0.78rem', fontWeight: 800, color: '#fbbf24', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <AlertCircle size={15} /> Solicitudes Pendientes ({pendingRequests.length})
+              </div>
+
+              {pendingRequests.map(req => (
+                <div 
+                  key={req.id}
+                  style={{
+                    padding: '0.65rem 0.85rem',
+                    borderRadius: '8px',
+                    background: 'rgba(0, 0, 0, 0.3)',
+                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    gap: '0.75rem'
+                  }}
+                >
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontWeight: 700, color: '#f8fafc', fontSize: '0.82rem' }}>
+                      @{req.requesterUsername} <span style={{ color: '#94a3b8', fontWeight: 400 }}>({req.requesterDisplayName})</span>
+                    </div>
+                    {req.note && (
+                      <div style={{ fontSize: '0.74rem', color: '#cbd5e1', marginTop: '2px' }}>
+                        "{req.note}"
+                      </div>
+                    )}
+                  </div>
+
+                  <div style={{ display: 'flex', gap: '0.4rem' }}>
+                    <button
+                      onClick={() => handleResolveRequest(req.id, 'approved')}
+                      disabled={actionLoading}
+                      style={{
+                        padding: '4px 10px',
+                        borderRadius: '6px',
+                        background: 'rgba(16, 185, 129, 0.2)',
+                        border: '1px solid rgba(16, 185, 129, 0.4)',
+                        color: '#34d399',
+                        fontSize: '0.72rem',
+                        fontWeight: 700,
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Aprobar
+                    </button>
+                    <button
+                      onClick={() => handleResolveRequest(req.id, 'rejected')}
+                      disabled={actionLoading}
+                      style={{
+                        padding: '4px 8px',
+                        borderRadius: '6px',
+                        background: 'rgba(239, 68, 68, 0.15)',
+                        border: '1px solid rgba(239, 68, 68, 0.3)',
+                        color: '#f87171',
+                        fontSize: '0.72rem',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Rechazar
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Formulario de Invitación Directa por Username */}
           <form onSubmit={handleAddCollaborator} style={{ display: 'flex', gap: '0.6rem' }}>
             <input
               type="text"
-              placeholder="Username o email del colaborador..."
+              placeholder="Username o email de tu compañero de equipo..."
               value={newIdentifier}
               onChange={e => setNewIdentifier(e.target.value)}
               disabled={actionLoading}
@@ -286,23 +446,10 @@ export default function CollaboratorsModal({ isOpen, onClose, projectId, project
             </button>
           </form>
 
-          {/* Banner de Información de Permisos */}
-          <div style={{
-            padding: '0.75rem 1rem',
-            background: 'rgba(56, 189, 248, 0.06)',
-            border: '1px solid rgba(56, 189, 248, 0.15)',
-            borderRadius: '10px',
-            fontSize: '0.75rem',
-            color: '#cbd5e1',
-            lineHeight: 1.4
-          }}>
-            <span style={{ fontWeight: 700, color: '#38bdf8' }}>Colaboración Simétrica:</span> Los colaboradores vinculados pueden formular campos, ejecutar la mesa de expertos con IA y guardar cambios directamente. Solo el dueño o administrador puede borrar el proyecto.
-          </div>
-
           {/* Lista de Miembros */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
             <div style={{ fontSize: '0.72rem', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              Miembros con Acceso ({collaborators.length + 1})
+              Miembros del Equipo ({collaborators.length + 1})
             </div>
 
             {loading ? (
@@ -341,7 +488,7 @@ export default function CollaboratorsModal({ isOpen, onClose, projectId, project
                       <div style={{ fontWeight: 700, color: '#f8fafc', fontSize: '0.85rem' }}>
                         @{projectOwner || 'admin'}
                       </div>
-                      <div style={{ fontSize: '0.7rem', color: '#94a3b8' }}>Propietario Principal</div>
+                      <div style={{ fontSize: '0.7rem', color: '#94a3b8' }}>Propietario Titular</div>
                     </div>
                   </div>
                   <span style={{
@@ -353,7 +500,7 @@ export default function CollaboratorsModal({ isOpen, onClose, projectId, project
                     color: '#facc15',
                     border: '1px solid rgba(234, 179, 8, 0.3)'
                   }}>
-                    Dueño
+                    Titular
                   </span>
                 </div>
 
@@ -410,7 +557,7 @@ export default function CollaboratorsModal({ isOpen, onClose, projectId, project
                             {c.email && <span style={{ fontSize: '0.7rem', color: '#64748b' }}>({c.email})</span>}
                           </div>
                           <div style={{ fontSize: '0.7rem', color: '#94a3b8', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                            <span>Colaborador Autorizado</span>
+                            <span>Coautor / Colaborador</span>
                             {isUserActive && activeSession?.moduleKey && (
                               <span style={{ color: '#34d399', fontWeight: 600 }}>
                                 • Editando {activeSession.moduleKey}
@@ -458,7 +605,7 @@ export default function CollaboratorsModal({ isOpen, onClose, projectId, project
 
                 {collaborators.length === 0 && (
                   <div style={{ padding: '1.25rem', textAlign: 'center', color: '#64748b', fontSize: '0.8rem', background: 'rgba(255,255,255,0.01)', borderRadius: '8px' }}>
-                    No hay colaboradores adicionales vinculados a este plan de negocio.
+                    No hay colaboradores adicionales vinculados a este plan de negocio. Comparte el código de invitación superior con tus compañeros.
                   </div>
                 )}
               </div>

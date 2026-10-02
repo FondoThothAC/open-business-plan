@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { usePlan } from '../context/PlanContext';
-import { Sparkles, Loader2, Brain, CheckCircle2, Lock, Unlock, Map as MapIcon, Network, Eye, EyeOff, HelpCircle, Edit3, Layout, ArrowRight, MessageSquare, Check, X, Activity, BadgeDollarSign, Compass, Globe, ShieldCheck, AlertTriangle, Copy } from 'lucide-react';
+import { Sparkles, Loader2, Brain, CheckCircle2, Lock, Unlock, Map as MapIcon, Network, Eye, EyeOff, HelpCircle, Edit3, Layout, ArrowRight, MessageSquare, Check, X, Activity, BadgeDollarSign, Compass, Globe, ShieldCheck, AlertTriangle, Copy, Users, History } from 'lucide-react';
+import ModuleLockBadge from './ModuleLockBadge';
+import ModuleHistoryDrawer from './ModuleHistoryDrawer';
 import { generateModuleContent } from '../lib/ai';
 import { runAgenticModuleGeneration, getSavedTrajectories } from '../lib/agenticEngine';
 import AgentTrajectoryViewer from './AgentTrajectoryViewer';
@@ -26,7 +28,6 @@ import { buildExternalPrompt, copyPromptToClipboard } from '../lib/promptExporte
 import BoxTrajectoryModal from './BoxTrajectoryModal';
 import { getBoxBadgeLabel, appendBoxVersion, recordValidatedFactAsEvidence } from '../lib/boxIdManager';
 import { getApiBase } from '../config/apiConfig';
-import { Users } from 'lucide-react';
 
 export default function ModuleWrapper({ pillar, moduleKey, title, description, fields, extraAction }) {
   const { planData, updateSection, updateConfig, toggleLock, toggleModuleVisibility, addComment, deleteComment, addPendingItems, resolvePending } = usePlan();
@@ -49,6 +50,60 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
   const [copiedField, setCopiedField] = useState(null);
   const [activeBoxForTrajectory, setActiveBoxForTrajectory] = useState(null);
   const [activeCollaborators, setActiveCollaborators] = useState([]);
+  const [showHistoryDrawer, setShowHistoryDrawer] = useState(false);
+
+  const moduleLockState = planData.config?.moduleLocks?.[moduleKey] || { locked: false };
+  const isModuleLocked = Boolean(moduleLockState?.locked);
+
+  const handleToggleModuleLock = async (modKey, willLock, reason = '') => {
+    const projId = planData.config?.projectId;
+    const projType = planData.config?.projectType === 'social_bid' ? 'social' : 'negocios';
+    const currentLocks = planData.config?.moduleLocks || {};
+    const updatedLock = {
+      locked: willLock,
+      lockedBy: planData.config?.coverDesign?.creatorName || 'usuario',
+      lockedAt: new Date().toISOString(),
+      reason
+    };
+    
+    // Actualizar estado reactivo local
+    updateConfig('moduleLocks', { ...currentLocks, [modKey]: updatedLock });
+
+    if (projId) {
+      try {
+        const apiBase = getApiBase();
+        await fetch(`${apiBase}/api/projects/${projType}/${projId}/modules/${modKey}/lock`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ locked: willLock, reason })
+        });
+
+        // Crear snapshot de versión al bloquear para tener respaldo
+        const currentData = planData[pillar]?.[modKey] || {};
+        await fetch(`${apiBase}/api/projects/${projType}/${projId}/modules/${modKey}/versions`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({
+            reasonTag: willLock ? 'modulo_bloqueado' : 'modulo_desbloqueado',
+            userComment: reason || (willLock ? 'Módulo bloqueado por el equipo' : 'Módulo desbloqueado'),
+            snapshot: currentData
+          })
+        });
+      } catch (err) {
+        console.warn('[ModuleWrapper] Error sincronizando bloqueo de módulo con servidor:', err);
+      }
+    }
+  };
+
+  const handleRestoreSnapshot = (modKey, snapshot) => {
+    if (!snapshot || typeof snapshot !== 'object') return;
+    Object.keys(snapshot).forEach(field => {
+      updateSection(pillar, modKey, field, snapshot[field]);
+    });
+    alert(`Versión previa restaurada exitosamente para el módulo "${title}".`);
+  };
 
   // Heartbeat y Detección de Colaboradores en este Módulo
   useEffect(() => {
@@ -120,11 +175,15 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
   };
 
   const handleChange = (fieldKey, value) => {
-    if (isLocked(fieldKey)) return;
+    if (isModuleLocked || isLocked(fieldKey)) return;
     updateSection(pillar, moduleKey, fieldKey, value);
   };
 
   const handleAiGenerate = async (options = {}) => {
+    if (isModuleLocked) {
+      alert(`El módulo "${title}" se encuentra bloqueado para proteger el trabajo del equipo. Desbloquéalo primero para poder regenerar con IA.`);
+      return;
+    }
     const isDeep = Boolean(options.useDeepResearch);
     const rawAi = planData?.config?.ai || {};
     const hasAnyKey = rawAi.apiKey || rawAi.groqKey || rawAi.openrouterKey || rawAi.nvidiaKey || rawAi.mistralKey || rawAi.minimaxKey || rawAi.baiKey;
@@ -279,6 +338,31 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
             <h1 className="view-title" style={{ fontSize: '2.25rem', fontWeight: 800, margin: 0 }}>{title}</h1>
+            <ModuleLockBadge 
+              lockState={moduleLockState} 
+              moduleKey={moduleKey} 
+              moduleName={title} 
+              onToggleLock={handleToggleModuleLock} 
+            />
+            <button
+              type="button"
+              onClick={() => setShowHistoryDrawer(true)}
+              className="btn btn-secondary"
+              style={{
+                padding: '4px 10px',
+                borderRadius: '20px',
+                fontSize: '0.74rem',
+                fontWeight: 700,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '5px',
+                cursor: 'pointer'
+              }}
+              title="Consultar Historial de Versiones y Notas de Calibración de IA"
+            >
+              <History size={13} />
+              <span>Historial & Notas</span>
+            </button>
             {activeCollaborators.length > 0 && (
               <div style={{
                 display: 'flex', alignItems: 'center', gap: '0.4rem',
@@ -399,13 +483,13 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
             <button 
               className="btn" 
               onClick={() => handleAiGenerate({ useDeepResearch: true })}
-              disabled={loading}
-              title="Investigación profunda online multi-hop (Fila 1 Freemium / Fila 2 Premium) con fuentes verificadas"
+              disabled={loading || isModuleLocked}
+              title={isModuleLocked ? "Módulo bloqueado para proteger el contenido. Desbloquéalo primero para usar Deep Research." : "Investigación profunda online multi-hop (Fila 1 Freemium / Fila 2 Premium) con fuentes verificadas"}
               style={{ 
                 padding: '0.5rem 1.1rem',
                 fontSize: '0.85rem',
-                opacity: loading ? 0.7 : 1, 
-                cursor: loading ? 'not-allowed' : 'pointer',
+                opacity: (loading || isModuleLocked) ? 0.5 : 1, 
+                cursor: (loading || isModuleLocked) ? 'not-allowed' : 'pointer',
                 background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(6, 182, 212, 0.15) 100%)',
                 border: '1px solid rgba(16, 185, 129, 0.4)',
                 color: '#34d399',
@@ -422,17 +506,18 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
             <button 
               className="btn btn-ia" 
               onClick={() => handleAiGenerate({ useDeepResearch: false })}
-              disabled={loading}
+              disabled={loading || isModuleLocked}
+              title={isModuleLocked ? "Módulo bloqueado para proteger el contenido. Desbloquéalo primero para regenerar con IA." : "Generar con IA"}
               style={{ 
                 padding: '0.5rem 1.25rem',
                 fontSize: '0.85rem',
-                opacity: loading ? 0.7 : 1, 
-                cursor: loading ? 'not-allowed' : 'pointer',
+                opacity: (loading || isModuleLocked) ? 0.5 : 1, 
+                cursor: (loading || isModuleLocked) ? 'not-allowed' : 'pointer',
                 minWidth: '130px'
               }}
             >
               {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
-              <span>{loading ? 'IA Generando...' : 'Generar con IA'}</span>
+              <span>{loading ? 'IA Generando...' : (isModuleLocked ? 'Módulo Bloqueado' : 'Generar con IA')}</span>
             </button>
             
             {isAiCompleted && (
@@ -1019,6 +1104,19 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
           });
           updateConfig('boxHistory', '', planData.config.boxHistory);
           updateConfig('documents', '', planData.config.documents);
+        }}
+      />
+
+      <ModuleHistoryDrawer
+        isOpen={showHistoryDrawer}
+        onClose={() => setShowHistoryDrawer(false)}
+        moduleKey={moduleKey}
+        moduleTitle={title}
+        currentContent={planData[pillar]?.[moduleKey]}
+        onRestoreVersion={(restoredContent) => {
+          if (restoredContent) {
+            updateSection(pillar, moduleKey, restoredContent);
+          }
         }}
       />
     </div>

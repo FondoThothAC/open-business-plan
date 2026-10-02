@@ -233,3 +233,125 @@ export function resolveCloneSource(type, id, user) {
 
   return null;
 }
+
+/**
+ * Transfiere la titularidad de un proyecto de un usuario a otro de forma atómica.
+ * Exclusivo para gestión docente y superadministración.
+ * Preserva al dueño anterior como colaborador para evitar pérdida de trabajo en equipo.
+ * 
+ * @param {Object} params
+ * @param {string} params.type Tipo de proyecto ('negocios'|'social')
+ * @param {string} params.id ID del proyecto
+ * @param {Object} params.targetUser Usuario destino que será el nuevo propietario
+ * @param {Object} params.currentUser Usuario autenticado que realiza la acción (debe ser superadmin)
+ * @returns {{ success: boolean, newPath: string, previousOwner: string, newOwner: string }}
+ */
+export function transferProjectOwnership({ type, id, targetUser, currentUser }) {
+  assertSafeProjectSegment(type, 'tipo');
+  assertSafeProjectSegment(id, 'id_proyecto');
+
+  if (currentUser?.role !== 'superadmin') {
+    throw new Error('Solo un administrador o profesor puede reasignar la titularidad del proyecto.');
+  }
+
+  if (!targetUser || (!targetUser.username && !targetUser.id)) {
+    throw new Error('Usuario destinatario inválido para reasignación.');
+  }
+
+  const project = resolveReadableProject(type, id, currentUser);
+  if (!project) {
+    throw new Error(`Proyecto ${id} no encontrado.`);
+  }
+
+  const previousOwner = project.owner;
+  const targetFolder = userFolder(targetUser);
+  const root = path.resolve('proyectos', type);
+  const targetProjectDir = path.join(root, targetFolder, id);
+  const targetJsonPath = path.join(targetProjectDir, `${id}.json`);
+
+  const currentProjectDir = path.dirname(project.path);
+
+  // Si ya pertenece a ese usuario, no es necesario mover directorios
+  if (path.resolve(currentProjectDir) === path.resolve(targetProjectDir)) {
+    return {
+      success: true,
+      newPath: project.path,
+      previousOwner,
+      newOwner: targetUser.username || targetUser.id
+    };
+  }
+
+  // Crear directorio destino si no existe
+  if (!fs.existsSync(targetProjectDir)) {
+    fs.mkdirSync(targetProjectDir, { recursive: true });
+  }
+
+  // Leer y actualizar el contenido del proyecto
+  const raw = fs.readFileSync(project.path, 'utf8');
+  const data = JSON.parse(raw);
+  data.config = data.config || {};
+  const prevOwnerUsername = data.config.userOwner || previousOwner;
+  const newOwnerUsername = targetUser.username || targetUser.id;
+
+  data.config.userOwner = newOwnerUsername;
+  data.config.fechaActualizacion = new Date().toISOString();
+
+  // Asegurar que el dueño anterior permanezca como colaborador si no era admin
+  data.config.collaborators = Array.isArray(data.config.collaborators) ? data.config.collaborators : [];
+  if (prevOwnerUsername && prevOwnerUsername !== 'admin' && prevOwnerUsername !== newOwnerUsername) {
+    const collabsLower = data.config.collaborators.map(c => String(c).toLowerCase());
+    if (!collabsLower.includes(prevOwnerUsername.toLowerCase())) {
+      data.config.collaborators.push(prevOwnerUsername);
+    }
+  }
+  // Remover al nuevo dueño de la lista de colaboradores si estaba en ella
+  data.config.collaborators = data.config.collaborators.filter(c => String(c).toLowerCase() !== newOwnerUsername.toLowerCase());
+
+  // Agregar registro en el historial de revisiones
+  data.config.reviewHistory = Array.isArray(data.config.reviewHistory) ? data.config.reviewHistory : [];
+  data.config.reviewHistory.push({
+    timestamp: new Date().toISOString(),
+    event: 'OWNERSHIP_TRANSFERRED',
+    from: prevOwnerUsername,
+    to: newOwnerUsername,
+    by: currentUser.username,
+    role: currentUser.role
+  });
+
+  // Guardar archivo JSON actualizado en el destino
+  fs.writeFileSync(targetJsonPath, JSON.stringify(data, null, 2), 'utf8');
+
+  // Copiar archivos adicionales (documentos, md, etc.) si existen
+  try {
+    const entries = fs.readdirSync(currentProjectDir, { withFileTypes: true });
+    for (const entry of entries) {
+      if (entry.name !== `${id}.json`) {
+        const srcPath = path.join(currentProjectDir, entry.name);
+        const destPath = path.join(targetProjectDir, entry.name);
+        if (entry.isDirectory()) {
+          fs.cpSync(srcPath, destPath, { recursive: true });
+        } else {
+          fs.copyFileSync(srcPath, destPath);
+        }
+      }
+    }
+  } catch (copyErr) {
+    console.warn('[ProjectAccess] Advertencia al migrar anexos de proyecto:', copyErr.message);
+  }
+
+  // Eliminar directorio anterior de forma segura una vez verificado el nuevo
+  if (fs.existsSync(targetJsonPath)) {
+    try {
+      fs.rmSync(currentProjectDir, { recursive: true, force: true });
+    } catch (rmErr) {
+      console.warn('[ProjectAccess] No se pudo eliminar directorio origen tras migrar:', rmErr.message);
+    }
+  }
+
+  return {
+    success: true,
+    newPath: targetJsonPath,
+    previousOwner: prevOwnerUsername,
+    newOwner: newOwnerUsername
+  };
+}

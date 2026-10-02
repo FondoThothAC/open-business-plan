@@ -203,4 +203,32 @@ Escenario: Dos o más usuarios colaboran simultáneamente en un plan de negocios
   Y muestra un indicador visual en vivo: "Editando ahora por @yocine"
   Y las modificaciones guardadas por cualquier colaborador se persisten en la carpeta original del dueño
   Pero si un colaborador intenta eliminar el proyecto, la acción es denegada protegiendo la titularidad del dueño.
+
+## Escenario 19: Catálogo Comunitario, Solicitud de Unión y Código de Equipo
+```gherkin
+Escenario: Un estudiante solicita unirse a un proyecto de compañeros o usa un código de equipo
+  Dado que un estudiante navega en el sistema y pulsa el botón "Equipos" en la barra superior
+  Cuando visualiza el catálogo de proyectos de la comunidad estudiantil
+  Entonces puede buscar por título o propietario y ver su estado de relación ("Propietario", "Colaborador", "Pendiente" o "Disponible")
+  Y cuando pulsa "Solicitar Unirme" e introduce una nota explicativa de sus habilidades
+  Entonces el sistema emite una solicitud con estado "pending" hacia el dueño del proyecto
+  Y cuando el dueño abre su panel de colaboradores, observa la solicitud y pulsa "Aceptar"
+  Entonces el estudiante es incorporado como colaborador oficial con acceso completo de edición
+  O si el estudiante recibe un código tipo "EQUIPO-PROJ-9481" de sus compañeros
+  Cuando lo introduce en la pestaña "Unirme por Código"
+  Entonces queda vinculado inmediatamente al equipo sin requerir aprobación manual previa.
 ```
+
+## Escenario 20: Congelamiento de Módulos, Versionado y Calibración de Prompts (Harness)
+```gherkin
+Escenario: Un equipo congela un módulo aprobado y documenta motivos de corrección de IA
+  Dado que un equipo finalizó la formulación del módulo "Estudio de Mercado"
+  Cuando pulsa el botón "Bloquear Módulo" en el encabezado
+  Entonces se despliega el modal solicitando el motivo ("Aprobado por el profesor", "Listo para entrega final")
+  Y el módulo queda congelado: los campos se tornan de solo lectura y se deshabilitan las acciones de regeneración con IA
+  Y cuando un alumno detecta un error de IA y decide registrar una nueva versión manual
+  Entonces selecciona un motivo estructurado (ej. "cac_incorrecto", "poblacion_mal_definida", "texto_extenso")
+  Y el sistema almacena la versión histórica y envía la telemetría al almacén del Harness de IA
+  Y el administrador o docente puede consultar en la pestaña "Calibración IA (Harness)" la frecuencia de errores para afinar las directivas del sistema.
+```
+

@@ -15,7 +15,8 @@ import React, { useState, useEffect } from 'react';
 import { 
   Users, CheckCircle, XCircle, Trash2, Shield, UserCheck, UserX, 
   Clock, AlertTriangle, RefreshCw, X, Key, FolderGit2, History, Plus, 
-  Search, ArrowRight, FileText, Check, Lock, Zap, Activity, Cpu, Database, UserPlus
+  Search, ArrowRight, FileText, Check, Lock, Zap, Activity, Cpu, Database, UserPlus,
+  Crown, Sparkles
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { getApiBase } from '../config/apiConfig';
@@ -50,15 +51,19 @@ export default function AdminUsersPanel({ isOpen, onClose, onOpenProject }) {
   const [userProjects, setUserProjects] = useState([]);
   const [loadingProjects, setLoadingProjects] = useState(false);
   const [managingCollaboratorsProject, setManagingCollaboratorsProject] = useState(null);
+  const [reassigningProject, setReassigningProject] = useState(null);
+  const [targetReassignUser, setTargetReassignUser] = useState('');
 
   // Estados para auditoría
   const [auditLogs, setAuditLogs] = useState([]);
   const [loadingAudit, setLoadingAudit] = useState(false);
   const [auditFilter, setAuditFilter] = useState('');
 
-  // Estados para telemetría de tokens
+  // Estados para telemetría de tokens y calibración de IA
   const [tokenTelemetry, setTokenTelemetry] = useState(null);
   const [loadingTokens, setLoadingTokens] = useState(false);
+  const [promptFeedback, setPromptFeedback] = useState([]);
+  const [loadingPromptFeedback, setLoadingPromptFeedback] = useState(false);
 
   const apiBase = getApiBase();
 
@@ -133,11 +138,64 @@ export default function AdminUsersPanel({ isOpen, onClose, onOpenProject }) {
     }
   };
 
+  const cargarPromptFeedback = async () => {
+    if (!isAdmin) return;
+    setLoadingPromptFeedback(true);
+    try {
+      const res = await authFetch(`${apiBase}/api/telemetry/prompt-feedback`);
+      if (res.ok) {
+        const data = await res.json();
+        setPromptFeedback(data.feedback || []);
+      }
+    } catch (err) {
+      console.error('[Admin] Error cargando feedback de prompts:', err.message);
+    } finally {
+      setLoadingPromptFeedback(false);
+    }
+  };
+
+  const handleReassignProject = async (e) => {
+    e.preventDefault();
+    if (!reassigningProject || !targetReassignUser) return;
+    const target = users.find(u => u.id === targetReassignUser || u.username === targetReassignUser);
+    if (!target) return;
+
+    setActionLoading(`reassign_${reassigningProject.id}`);
+    setError(null);
+    setSuccessMessage(null);
+    try {
+      const res = await authFetch(`${apiBase}/api/projects/${reassigningProject.type}/${reassigningProject.id}/transfer-owner`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          targetUserId: target.id,
+          targetUsername: target.username
+        })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setSuccessMessage(`Titularidad del proyecto "${reassigningProject.name || reassigningProject.id}" transferida exitosamente a @${target.username}.`);
+        setReassigningProject(null);
+        setTargetReassignUser('');
+        if (selectedUserForProjects) {
+          cargarProyectosUsuario(selectedUserForProjects.id);
+        }
+      } else {
+        setError(data.error || 'Error al transferir titularidad.');
+      }
+    } catch (err) {
+      setError(`Error: ${err.message}`);
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
   useEffect(() => {
     if (isOpen && isAdmin) {
       cargarUsuarios();
       if (activeTab === 'auditoria') cargarAuditoria();
       if (activeTab === 'tokens') cargarTelemetriaTokens();
+      if (activeTab === 'harness') cargarPromptFeedback();
     }
   }, [isOpen, isAdmin, activeTab]);
 
@@ -432,6 +490,17 @@ export default function AdminUsersPanel({ isOpen, onClose, onOpenProject }) {
                 }}
               >
                 <Zap size={14} /> Consumo de Tokens
+              </button>
+              <button
+                onClick={() => { setActiveTab('harness'); cargarPromptFeedback(); }}
+                style={{
+                  padding: '6px 14px', borderRadius: '6px', fontSize: '0.78rem', fontWeight: 700,
+                  border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px',
+                  background: activeTab === 'harness' ? 'rgba(168, 85, 247, 0.2)' : 'transparent',
+                  color: activeTab === 'harness' ? '#c084fc' : 'rgba(255, 255, 255, 0.6)'
+                }}
+              >
+                <Sparkles size={14} /> Calibración IA ({promptFeedback.length})
               </button>
             </div>
 
@@ -733,6 +802,20 @@ export default function AdminUsersPanel({ isOpen, onClose, onOpenProject }) {
 
                           <div style={{ display: 'flex', gap: '0.5rem' }}>
                             <button
+                              onClick={() => { setReassigningProject(proj); setTargetReassignUser(''); }}
+                              title="Reasignar Titularidad del Proyecto a otro alumno"
+                              style={{
+                                padding: '6px 12px', fontSize: '0.75rem', fontWeight: 600,
+                                background: 'rgba(234, 179, 8, 0.12)', color: '#facc15',
+                                border: '1px solid rgba(234, 179, 8, 0.25)', borderRadius: '8px', cursor: 'pointer',
+                                display: 'flex', alignItems: 'center', gap: '0.35rem'
+                              }}
+                            >
+                              <Crown size={14} />
+                              <span>Reasignar</span>
+                            </button>
+
+                            <button
                               onClick={() => setManagingCollaboratorsProject(proj)}
                               title="Gestionar y Vincular Colaboradores"
                               style={{
@@ -1003,6 +1086,87 @@ export default function AdminUsersPanel({ isOpen, onClose, onOpenProject }) {
           </div>
         )}
 
+        {/* PESTAÑA 5: CALIBRACIÓN DE IA Y HARNESS */}
+        {activeTab === 'harness' && (
+          <div style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden', gap: '1rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <h4 style={{ margin: 0, fontSize: '0.98rem', color: '#fff' }}>
+                  Bitácora de Calibración de Prompts e IA (Harness)
+                </h4>
+                <p style={{ margin: '2px 0 0', fontSize: '0.74rem', color: '#94a3b8' }}>
+                  Retroalimentación y motivos de ajuste documentados por alumnos y docentes al modificar o regenerar módulos.
+                </p>
+              </div>
+              <button
+                onClick={cargarPromptFeedback}
+                className="btn btn-secondary"
+                style={{ padding: '4px 10px', fontSize: '0.75rem' }}
+              >
+                <RefreshCw size={12} className={loadingPromptFeedback ? 'animate-spin' : ''} /> Refrescar
+              </button>
+            </div>
+
+            <div style={{ flex: 1, overflowY: 'auto', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '10px' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.8rem' }}>
+                <thead>
+                  <tr style={{ background: 'rgba(255, 255, 255, 0.03)', borderBottom: '1px solid rgba(255, 255, 255, 0.08)' }}>
+                    <th style={{ padding: '0.75rem 1rem', color: '#94a3b8' }}>Fecha</th>
+                    <th style={{ padding: '0.75rem 1rem', color: '#94a3b8' }}>Proyecto / Módulo</th>
+                    <th style={{ padding: '0.75rem 1rem', color: '#94a3b8' }}>Motivo Reportado</th>
+                    <th style={{ padding: '0.75rem 1rem', color: '#94a3b8' }}>Usuario</th>
+                    <th style={{ padding: '0.75rem 1rem', color: '#94a3b8' }}>Detalle / Explicación del Alumno o Docente</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {loadingPromptFeedback && promptFeedback.length === 0 ? (
+                    <tr>
+                      <td colSpan="5" style={{ padding: '3rem', textAlign: 'center', color: '#94a3b8' }}>
+                        <RefreshCw size={24} className="animate-spin" style={{ margin: '0 auto 0.5rem' }} />
+                        <div>Consultando señales de retroalimentación...</div>
+                      </td>
+                    </tr>
+                  ) : promptFeedback.length === 0 ? (
+                    <tr>
+                      <td colSpan="5" style={{ padding: '3rem', textAlign: 'center', color: '#64748b' }}>
+                        Aún no se han registrado señales de retroalimentación de prompts en el harness.
+                      </td>
+                    </tr>
+                  ) : (
+                    promptFeedback.map((fb, idx) => (
+                      <tr key={fb.id || idx} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.05)' }}>
+                        <td style={{ padding: '0.75rem 1rem', color: '#94a3b8', fontSize: '0.72rem', whiteSpace: 'nowrap' }}>
+                          {fb.timestamp ? new Date(fb.timestamp).toLocaleString('es-MX', { dateStyle: 'short', timeStyle: 'short' }) : '-'}
+                        </td>
+                        <td style={{ padding: '0.75rem 1rem' }}>
+                          <div style={{ fontWeight: 600, color: '#f8fafc' }}>{fb.projectId}</div>
+                          <div style={{ fontSize: '0.72rem', color: '#38bdf8' }}>módulo: {fb.moduleKey}</div>
+                        </td>
+                        <td style={{ padding: '0.75rem 1rem' }}>
+                          <span style={{
+                            padding: '3px 8px', borderRadius: '6px', fontSize: '0.7rem', fontWeight: 700,
+                            background: fb.reasonTag === 'cac_incorrecto' ? 'rgba(245, 158, 11, 0.15)' : 'rgba(129, 140, 248, 0.15)',
+                            color: fb.reasonTag === 'cac_incorrecto' ? '#fbbf24' : '#818cf8',
+                            border: `1px solid ${fb.reasonTag === 'cac_incorrecto' ? 'rgba(245, 158, 11, 0.3)' : 'rgba(129, 140, 248, 0.3)'}`
+                          }}>
+                            {fb.reasonTag}
+                          </span>
+                        </td>
+                        <td style={{ padding: '0.75rem 1rem', color: '#cbd5e1', fontSize: '0.75rem' }}>
+                          @{fb.username} <span style={{ opacity: 0.6 }}>({fb.userRole || 'user'})</span>
+                        </td>
+                        <td style={{ padding: '0.75rem 1rem', color: '#cbd5e1', fontSize: '0.78rem' }}>
+                          {fb.userComment ? `"${fb.userComment}"` : <span style={{ color: '#64748b' }}>Sin comentario adicional</span>}
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
         {/* MODAL CREAR USUARIO DIRECTO */}
         {showCreateModal && (
           <div style={{
@@ -1171,6 +1335,96 @@ export default function AdminUsersPanel({ isOpen, onClose, onOpenProject }) {
             projectType={managingCollaboratorsProject.type || 'negocios'}
             isOwner={true}
           />
+        )}
+
+        {/* Modal Reasignar Titularidad del Proyecto */}
+        {reassigningProject && (
+          <div style={{
+            position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+            background: 'rgba(0, 0, 0, 0.75)', backdropFilter: 'blur(6px)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10005
+          }}>
+            <form onSubmit={handleReassignProject} style={{
+              background: '#1e293b', border: '1px solid rgba(234, 179, 8, 0.3)', borderRadius: '14px',
+              padding: '1.75rem', width: '460px', display: 'flex', flexDirection: 'column', gap: '1rem',
+              boxShadow: '0 20px 50px rgba(0,0,0,0.7), 0 0 30px rgba(234, 179, 8, 0.15)'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <div style={{
+                  width: '38px', height: '38px', borderRadius: '10px',
+                  background: 'rgba(234, 179, 8, 0.15)', color: '#facc15',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center'
+                }}>
+                  <Crown size={20} />
+                </div>
+                <div>
+                  <h3 style={{ margin: 0, color: '#fff', fontSize: '1.05rem', fontWeight: 700 }}>
+                    Reasignar Titular de Proyecto
+                  </h3>
+                  <p style={{ margin: '2px 0 0', fontSize: '0.75rem', color: '#94a3b8' }}>
+                    Proyecto: <strong style={{ color: '#38bdf8' }}>{reassigningProject.name || reassigningProject.id}</strong>
+                  </p>
+                </div>
+              </div>
+
+              <div style={{
+                padding: '0.75rem', borderRadius: '8px',
+                background: 'rgba(234, 179, 8, 0.08)', border: '1px solid rgba(234, 179, 8, 0.2)',
+                fontSize: '0.76rem', color: '#fde68a', lineHeight: 1.4
+              }}>
+                El proyecto se transferirá al directorio del alumno seleccionado. El titular anterior se conservará automáticamente como coautor/colaborador para no perder el trabajo en equipo.
+              </div>
+
+              <div>
+                <label style={{ fontSize: '0.76rem', fontWeight: 600, color: '#cbd5e1', display: 'block', marginBottom: '0.4rem' }}>
+                  Seleccionar Nuevo Alumno Titular:
+                </label>
+                <select
+                  required
+                  value={targetReassignUser}
+                  onChange={e => setTargetReassignUser(e.target.value)}
+                  style={{
+                    width: '100%', padding: '8px 10px',
+                    background: 'rgba(0, 0, 0, 0.3)', border: '1px solid rgba(255, 255, 255, 0.15)',
+                    color: '#fff', borderRadius: '8px', fontSize: '0.82rem', outline: 'none'
+                  }}
+                >
+                  <option value="">-- Selecciona un usuario --</option>
+                  {users.filter(u => u.status === 'active' && u.username !== (reassigningProject.owner || selectedUserForProjects?.username)).map(u => (
+                    <option key={u.id} value={u.id}>
+                      {u.displayName || u.username} (@{u.username}) - {u.role}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.6rem', marginTop: '0.5rem' }}>
+                <button
+                  type="button"
+                  onClick={() => { setReassigningProject(null); setTargetReassignUser(''); }}
+                  style={{
+                    padding: '7px 14px', borderRadius: '8px',
+                    background: 'rgba(255, 255, 255, 0.06)', border: '1px solid rgba(255, 255, 255, 0.12)',
+                    color: '#cbd5e1', fontSize: '0.8rem', cursor: 'pointer'
+                  }}
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  disabled={!targetReassignUser || actionLoading === `reassign_${reassigningProject.id}`}
+                  style={{
+                    padding: '7px 18px', borderRadius: '8px',
+                    background: !targetReassignUser ? 'rgba(234, 179, 8, 0.2)' : 'linear-gradient(135deg, #f59e0b, #d97706)',
+                    border: 'none', color: '#fff', fontSize: '0.8rem', fontWeight: 700,
+                    cursor: !targetReassignUser ? 'not-allowed' : 'pointer'
+                  }}
+                >
+                  {actionLoading === `reassign_${reassigningProject.id}` ? 'Transfiriendo...' : 'Confirmar Reasignación'}
+                </button>
+              </div>
+            </form>
+          </div>
         )}
 
         {/* Pie del Panel */}

@@ -52,6 +52,7 @@
 | **TDD-41** | `ReviewWorkflow & SessionRevocation Suite` | Integración / API & Seguridad | Valida creación de enlaces temporales (`/review/:token`), expiración, revocación de tokens, sanitización de datos (cero exposición de API keys), captura y listado de comentarios anclados, y revocación instantánea de JWTs obsoletos vía `sessionVersion`. |
 | **TDD-42** | `React Error #300 Hooks Compliance & RAG Financial Engine` | Integración / React & Finanzas | Elimina violaciones de reglas de Hooks en componentes modales (`AgentTrajectoryViewer`, `BobChatModal`, `GrillMePromptModal`), implementa extracción inteligente de costos RAG por fila/concepto e infiere proyecciones financieras realistas sin mensajes abortivos. |
 | **TDD-43** | `CollaboratorPresence & SoftLock Suite` | Unitaria / Concurrencia | Valida el ciclo de vida del gestor de presencia en memoria (`recordPresence`, `getActivePresence`, `clearPresence`), filtrado por módulo y expiración de heartbeat tras TTL. |
+| **TDD-44** | `TeamCollaboration & PromptHarness Suite` | Unitaria / Integración | Valida registro en almacén de telemetría de feedback de prompts (`promptFeedbackStore.js`), ciclo de vida de solicitudes de unión de equipos (`createTeamJoinRequest`, `resolveTeamJoinRequest`), y transferencia atómica de titularidad de proyectos por administrador (`transferProjectOwnership`) preservando carpetas de usuario y colaboradores. |
 
 **Estado de Ejecución:** Suite de pruebas en verde (100% aprobada).
 

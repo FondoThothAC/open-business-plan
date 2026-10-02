@@ -71,7 +71,18 @@ classDiagram
 
     Usuario "1" *-- "0..*" PlanNegocios : Propietario
     PlanNegocios *-- Modulo
+    PlanNegocios "1" *-- "0..*" SolicitudUnion : Recibe
+    Modulo "1" *-- "0..*" VersionModulo : Historial
+    VersionModulo ..> TelemetriaPromptFeedback : Alimenta Harness
     PlanNegocios ..> AuditoriaLog : Emite eventos
     Usuario ..> AuditoriaLog : Emite eventos
 ```
+
+## 5. Entidades y Agregados del Subsistema de Equipos y Calibración IA (v3.2.0)
+* **SolicitudUnion (JoinRequest):** Agregado que representa el deseo de un alumno de sumarse a un proyecto. Atributos: `id`, `projectId`, `projectType`, `ownerUser`, `applicantUser`, `note`, `status` (`pending`, `approved`, `rejected`), `createdAt`, `resolvedAt`.
+* **CodigoInvitacion (TeamInviteCode):** Token determinista canjeable (`EQUIPO-XXXX-YYYY`) para adhesión directa al equipo sin intermediación.
+* **BloqueoModulo (ModuleLock):** Objeto de valor que congela las ediciones y la generación por IA de un módulo. Atributos: `locked` (boolean), `lockedBy`, `lockedAt`, `lockReason`.
+* **VersionModulo (ModuleVersion):** Instantánea inmutable del contenido de un módulo asociada a un motivo de cambio (`changeReason`), autor y notas de diferencias (`diffNotes`).
+* **TelemetriaPromptFeedback:** Evento/Entidad de observabilidad que nutre el harness de calibración de prompts. Atributos: `id`, `timestamp`, `projectId`, `moduleKey`, `reasonKey`, `comment`, `user`, `promptUsed`.
+
 
