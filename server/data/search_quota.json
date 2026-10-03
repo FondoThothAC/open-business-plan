@@ -16,5 +16,23 @@
       "count": 0,
       "limit": 10000
     }
+  },
+  "2026-10": {
+    "tavily": {
+      "count": 0,
+      "limit": 950
+    },
+    "brave": {
+      "count": 0,
+      "limit": 1000
+    },
+    "serper": {
+      "count": 0,
+      "limit": 2500
+    },
+    "duckduckgo": {
+      "count": 0,
+      "limit": 10000
+    }
   }
 }

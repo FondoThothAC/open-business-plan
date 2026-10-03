@@ -87,14 +87,84 @@ export function resolveCanonicalCapex(planData = {}, seed = {}) {
     }
   }
 
-  // 3. Suma de desgloses de inversión en planData.organizacion.inversion
+  // 3. Raíz del plan (montoInversion o inversionRequerida)
+  const rootMonto = planData?.inversionRequerida || planData?.montoInversion;
+  if (rootMonto !== undefined && rootMonto !== null && rootMonto !== '') {
+    const parsed = parseCurrencyNumber(rootMonto);
+    if (parsed > 0) {
+      return {
+        capex: parsed,
+        source: 'planData.inversionRequerida',
+        status: 'resolved'
+      };
+    }
+  }
+
+  // 4. Métricas clave en semilla (capitalTrabajo / inversion)
+  if (seed?.metricasClave?.capitalTrabajo) {
+    const parsed = parseCurrencyNumber(seed.metricasClave.capitalTrabajo);
+    if (parsed > 0) {
+      return {
+        capex: parsed,
+        source: 'seed.metricasClave.capitalTrabajo',
+        status: 'resolved'
+      };
+    }
+  }
+
+  // 5. Documentos RAG de evidencia explícita (ej. Núcleo 6 en Closets Corona: $150,000 MXN)
+  if (Array.isArray(planData?.config?.documents)) {
+    for (const doc of planData.config.documents) {
+      const docText = String(doc.content || doc.text || '');
+      const matchCapexRag = docText.match(/CAPEX\s+REAL[^\d$]*\$?\s*([0-9,]+)/i) || docText.match(/inversi[oó]n\s+inicial[^\d$]*\$?\s*([0-9,]+)/i);
+      if (matchCapexRag) {
+        const parsed = parseCurrencyNumber(matchCapexRag[1]);
+        if (parsed > 0) {
+          return {
+            capex: parsed,
+            source: `rag.${doc.name || 'documento'}`,
+            status: 'resolved'
+          };
+        }
+      }
+    }
+  }
+
+  // 6. Desgloses de inversión en planData.organizacion.inversion
   const inv = planData?.organizacion?.inversion;
   if (inv && typeof inv === 'object') {
+    // Si hay desglose capex json ya estructurado
+    try {
+      const rawCapex = inv.desglose_capex_json;
+      if (rawCapex) {
+        const parsed = typeof rawCapex === 'string' ? JSON.parse(rawCapex) : rawCapex;
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const sumRows = parsed.reduce((sum, item) => sum + parseCurrencyNumber(item.monto || item.amount), 0);
+          if (sumRows > 0) {
+            return {
+              capex: sumRows,
+              source: 'planData.organizacion.inversion.desglose_capex_json',
+              status: 'resolved'
+            };
+          }
+        }
+      }
+    } catch {}
+
     const fija = parseCurrencyNumber(inv.inversion_fija);
     const diferida = parseCurrencyNumber(inv.inversion_diferida);
     const opex = parseCurrencyNumber(inv.opex_inicial);
-    const suma = fija + diferida + opex;
 
+    // Evitar sumar duplicados exactos si inversion_fija e inversion_diferida tienen el mismo texto
+    if (fija > 0 && fija === diferida) {
+      return {
+        capex: fija,
+        source: 'planData.organizacion.inversion.inversion_fija',
+        status: 'resolved'
+      };
+    }
+
+    const suma = fija + (diferida !== fija ? diferida : 0) + opex;
     if (suma > 0) {
       return {
         capex: suma,
@@ -103,7 +173,6 @@ export function resolveCanonicalCapex(planData = {}, seed = {}) {
       };
     }
 
-    // 4. planData.organizacion.inversion.monto_inversion
     if (inv.monto_inversion !== undefined && inv.monto_inversion !== null && inv.monto_inversion !== '') {
       const parsedMonto = parseCurrencyNumber(inv.monto_inversion);
       if (parsedMonto > 0) {
@@ -116,7 +185,7 @@ export function resolveCanonicalCapex(planData = {}, seed = {}) {
     }
   }
 
-  // 5. Fallback o Error en Modo Strict
+  // 7. Fallback o Error en Modo Strict
   if (isStrict) {
     throw new Error(
       'INVERSION_CANONICA_NO_ENCONTRADA: El proyecto no cuenta con una cifra de inversión inicial declarada en la semilla ni en el desglose de inversión.'
