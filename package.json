@@ -1,7 +1,7 @@
 {
   "name": "openplan",
   "private": true,
-  "version": "2.6.26.8.17",
+  "version": "2.6.26.8.18",
   "type": "module",
   "main": "electron/main.cjs",
   "scripts": {
