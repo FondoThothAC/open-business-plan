@@ -81,6 +81,29 @@ export function extractDriversFromPlan(planData = {}) {
     }
   }
 
+  // 0.1 Si config.fichaDrivers tiene valores directos canónicos
+  const directFicha = planData?.config?.fichaDrivers;
+  if (directFicha && typeof directFicha === 'object') {
+    if (!ficha.drivers.capex_total?.valor && directFicha.capexTotal > 0) {
+      ficha.drivers.capex_total.valor = directFicha.capexTotal;
+      ficha.drivers.capex_total.estado = 'aprobado';
+      ficha.drivers.capex_total.procedencia = 'user_provided';
+      ficha.drivers.capex_total.confianza = 'alta';
+    }
+    if (!ficha.drivers.precio_unitario_o_ticket?.valor && directFicha.ticketPromedio > 0) {
+      ficha.drivers.precio_unitario_o_ticket.valor = directFicha.ticketPromedio;
+      ficha.drivers.precio_unitario_o_ticket.estado = 'aprobado';
+      ficha.drivers.precio_unitario_o_ticket.procedencia = 'user_provided';
+      ficha.drivers.precio_unitario_o_ticket.confianza = 'alta';
+      if (!ficha.drivers.volumen_mensual_ventas?.valor) {
+        ficha.drivers.volumen_mensual_ventas.valor = 1;
+        ficha.drivers.volumen_mensual_ventas.estado = 'aprobado';
+        ficha.drivers.volumen_mensual_ventas.procedencia = 'user_provided';
+        ficha.drivers.volumen_mensual_ventas.confianza = 'alta';
+      }
+    }
+  }
+
   // 1. Concepto de producto
   if (!ficha.drivers.concepto_producto?.valor) {
     const concepto = inferConceptoProducto(planData);
