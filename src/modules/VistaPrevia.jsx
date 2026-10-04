@@ -34,6 +34,8 @@ import { BoxBenchmark } from '../components/boxes/BoxBenchmark';
 import { CroquisPreviewWidget } from '../components/MicroCroquisEditor';
 import { useAuth } from '../contexts/AuthContext';
 import { getApiBase } from '../config/apiConfig';
+import InvestorDossierPanel from '../components/InvestorDossierPanel';
+import PptxExportButton from '../components/PptxExportButton';
 
 function readJson(raw, fallback) {
   if (!raw || typeof raw !== 'string') return fallback;
@@ -3135,6 +3137,8 @@ export default function VistaPrevia() {
 
           <DocxExportButton planData={planData} scope={exportScope} />
 
+          <PptxExportButton planData={planData} />
+
           <button className="btn btn-primary" onClick={() => window.print()} style={{ height: '42px' }}>
             <Printer className="w-4 h-4" />
             <span>Imprimir / PDF</span>
@@ -3325,6 +3329,9 @@ export default function VistaPrevia() {
 
             {/* Dashboard Financiero Ejecutivo con datos canónicos */}
             <ExecutiveFinancialDashboard planData={planData} financialData={previewFinancialData} />
+
+            {/* Dossier de Inversionistas, Estructuras de Capital E1/E2/E3 y Auditoría Numérica LMV */}
+            <InvestorDossierPanel planData={planData} financialData={previewFinancialData} />
 
             {/* Benchmarks Operativos y Comerciales Consolidados (exclusivos de Documento Maestro) */}
             {exportScope !== 'executive' && (
