@@ -13,6 +13,7 @@
 import fs from 'fs';
 import path from 'path';
 import { saveWithVersioning } from './saveVersioning.js';
+import { identitySlug, variantasDeResolucion } from './projectIdentity.js';
 
 /**
  * Convierte un objeto planData en representación Markdown legible.
@@ -87,22 +88,37 @@ export function renameProject({
     throw new Error('PROJECT_ID_REQUIRED: Se requieren currentId y newId');
   }
 
-  const safeOldId = currentId.replace(/[^a-z0-9]/gi, '_').toLowerCase();
-  const safeNewId = newId.replace(/[^a-z0-9]/gi, '_').toLowerCase();
-
-  // Construir rutas
+  // [C2] La identidad NUEVA sale de la unica funcion canonica del repo. La bodega se
+  // localiza de forma tolerante, probando las grafias historicamente escritas
+  // (guiones de urlRouting, mangling caracter-por-caracter de este archivo), porque si
+  // no los proyectos ya guardados como 'ferreter_a_...' o 'br_jula_...' quedarian
+  // inalcanzables al renombrarlos.
   const typeDir = userFolder ? path.join(baseDir, type, userFolder) : path.join(baseDir, type);
-  const oldProjDir = path.join(typeDir, safeOldId);
-  const oldJsonPath = path.join(oldProjDir, `${safeOldId}.json`);
 
-  // 1. Validar que el proyecto de origen exista
-  if (!fs.existsSync(oldJsonPath)) {
-    throw new Error(`PROJECT_NOT_FOUND: El proyecto ${currentId} no existe en ${oldProjDir}`);
+  let safeOldId = null;
+  let oldJsonPath = null;
+  for (const variante of variantasDeResolucion(currentId)) {
+    const candidatoDir = path.join(typeDir, variante);
+    const candidatoJson = path.join(candidatoDir, `${variante}.json`);
+    if (fs.existsSync(candidatoJson)) { safeOldId = variante; oldJsonPath = candidatoJson; break; }
+  }
+  if (!safeOldId) {
+    throw new Error(`PROJECT_NOT_FOUND: El proyecto ${currentId} no existe en ${typeDir} (probadas las grafias conocidas)`);
+  }
+
+  const safeNewId = identitySlug(newId);
+  if (!safeNewId) {
+    throw new Error('PROJECT_ID_INVALID: El nuevo identificador no produce un nombre de carpeta valido');
   }
 
   // 2. Validar que el destino no exista previamente
+  const oldProjDir = path.join(typeDir, safeOldId);
   const newProjDir = path.join(typeDir, safeNewId);
-  if (fs.existsSync(newProjDir) && !allowOverwrite) {
+  // [C2] Renombrar "a si mismo" es el caso normal cuando lo que cambia es solo el nombre
+  // comercial: la carpeta y el id se conservan (la identidad ya no persigue al nombre).
+  // Antes eso disparaba PROJECT_ALREADY_EXISTS porque destino == origen.
+  const esMismoDirectorio = path.resolve(newProjDir) === path.resolve(oldProjDir);
+  if (fs.existsSync(newProjDir) && !esMismoDirectorio && !allowOverwrite) {
     throw new Error(`PROJECT_ALREADY_EXISTS: Ya existe un proyecto con el identificador ${safeNewId}`);
   }
 
