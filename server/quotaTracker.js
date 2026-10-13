@@ -1,4 +1,5 @@
 // ═══════════════════════════════════════════════════════════════════════════
+import { writeJsonAtomic } from '../src/lib/serverUtils/atomicJson.js';
 //  Gestor de Cuotas Persistidas de Búsqueda Web (Fila 1 Freemium / Fila 2)
 //  Persistencia mensual en server/data/search_quota.json
 // ═══════════════════════════════════════════════════════════════════════════
@@ -69,7 +70,12 @@ export function checkSearchQuota(provider = 'duckduckgo', allowPaidTier = false)
   const currentCount = monthData[normProvider]?.count || 0;
   const limit = monthData[normProvider]?.limit || DEFAULT_QUOTA_LIMITS[normProvider] || 1000;
 
-  const isExceeded = currentCount >= limit;
+  // [B3] Las reservas en vuelo cuentan como usadas: es lo que impide que N requests
+  // concurrentes pasen el mismo chequeo antes de que nadie incremente.
+  const pendientes = normProvider === 'duckduckgo' ? 0 : pendientesDe(claveReserva(normProvider));
+  const usado = currentCount + pendientes;
+
+  const isExceeded = usado >= limit;
 
   if (isExceeded && !allowPaidTier) {
     return {
@@ -77,23 +83,76 @@ export function checkSearchQuota(provider = 'duckduckgo', allowPaidTier = false)
       quotaExceeded: true,
       requiresAuthorization: true,
       provider: normProvider,
-      count: currentCount,
+      count: usado,
       limit,
       remaining: 0,
       message: `Cuota mensual de ${limit} consultas para ${normProvider} alcanzada. Requiere autorización para activar Fila 2 de pago.`
     };
   }
 
-  return {
+  const estado = {
     allowed: true,
     quotaExceeded: isExceeded,
     requiresAuthorization: false,
     paidTierActive: isExceeded && allowPaidTier,
     provider: normProvider,
-    count: currentCount,
+    count: usado,
     limit,
-    remaining: Math.max(0, limit - currentCount)
+    // [B3] check-and-reserve: si se autoriza, se aparta el cupo en memoria. Se libera con
+    // devolverCuota() al incrementar, o por expiración si la rama no usa este proveedor.
+    remaining: Math.max(0, limit - usado - 1)
   };
+  agregarReserva(claveReserva(normProvider));
+  return estado;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+//  [B3] Reserva de cuota: cierra el TOCTOU real del cascade de búsqueda.
+//  En /api/search se hace checkSearchQuota() -> await safeDdgSearch() -> increment, así
+//  que N requests concurrentes pasaban el chequeo juntos y sobrepasaban el tope mensual.
+//  La reserva vive DENTRO de checkSearchQuota (check-and-reserve en un paso síncrono)
+//  para no reescribir los 13 puntos de incremento del cascade. Con instances:1 y código
+//  síncrono, el par check→reserve es indivisible dentro del tick, así que el contador en
+//  memoria es autoritativo mientras dura la llamada de red.
+//  Las reservas expiran a los 5 minutos: si una rama de fallback no termina usando ese
+//  proveedor, el cupo se libera solo y no se fuga capacidad de forma permanente.
+// ─────────────────────────────────────────────────────────────────────────────
+const reservasPendientes = new Map();
+const VIDA_RESERVA_MS = 5 * 60 * 1000;
+
+function claveReserva(provider) {
+  return `${getCurrentMonthKey()}:${String(provider).toLowerCase()}`;
+}
+
+function pendientesDe(key, ahora = Date.now()) {
+  const lista = reservasPendientes.get(key);
+  if (!lista || lista.length === 0) return 0;
+  const vivas = lista.filter(t => ahora - t < VIDA_RESERVA_MS);
+  if (vivas.length === 0) reservasPendientes.delete(key);
+  else reservasPendientes.set(key, vivas);
+  return vivas.length;
+}
+
+function agregarReserva(key) {
+  if (!reservasPendientes.has(key)) reservasPendientes.set(key, []);
+  reservasPendientes.get(key).push(Date.now());
+}
+
+/**
+ * Libera una reserva al consumir la cuota (o al descartarla explícitamente).
+ * @param {string} provider nombre del proveedor
+ */
+export function devolverCuota(provider = 'duckduckgo') {
+  const key = claveReserva(provider);
+  const lista = reservasPendientes.get(key);
+  if (!lista || lista.length === 0) return;
+  lista.shift();
+  if (lista.length === 0) reservasPendientes.delete(key);
+}
+
+/** Número de reservas vivas de un proveedor (expuesto para pruebas de regresión). */
+export function reservasVivas(provider = 'duckduckgo') {
+  return pendientesDe(claveReserva(provider));
 }
 
 export function incrementSearchQuota(provider = 'duckduckgo') {
@@ -114,6 +173,7 @@ export function incrementSearchQuota(provider = 'duckduckgo') {
 
   allData[monthKey][normProvider].count += 1;
   saveQuotaData(allData);
+  devolverCuota(normProvider);   // [B3] la reserva en vuelo ya se materializó en el conteo
   return allData[monthKey][normProvider].count;
 }
 

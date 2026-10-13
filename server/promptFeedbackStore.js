@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { writeJsonAtomic } from '../src/lib/serverUtils/atomicJson.js';
 
 /**
  * @file promptFeedbackStore.js
@@ -26,10 +27,10 @@ function ensureDataStore() {
     fs.mkdirSync(DATA_DIR, { recursive: true });
   }
   if (!fs.existsSync(FEEDBACK_FILE)) {
-    fs.writeFileSync(FEEDBACK_FILE, JSON.stringify([], null, 2), 'utf8');
+    writeJsonAtomic(FEEDBACK_FILE, []);   // [B3]
   }
   if (!fs.existsSync(JOIN_REQUESTS_FILE)) {
-    fs.writeFileSync(JOIN_REQUESTS_FILE, JSON.stringify([], null, 2), 'utf8');
+    writeJsonAtomic(JOIN_REQUESTS_FILE, []);   // [B3]
   }
 }
 
@@ -75,7 +76,7 @@ export function recordPromptFeedback({
     if (list.length > 2000) {
       list.length = 2000;
     }
-    fs.writeFileSync(FEEDBACK_FILE, JSON.stringify(list, null, 2), 'utf8');
+    writeJsonAtomic(FEEDBACK_FILE, list);   // [B3]
     return entry;
   } catch (error) {
     console.error('[PromptFeedback] Error al guardar señal de retroalimentación:', error);
@@ -155,7 +156,7 @@ export function createTeamJoinRequest({
     }
 
     requests.unshift(newReq);
-    fs.writeFileSync(JOIN_REQUESTS_FILE, JSON.stringify(requests, null, 2), 'utf8');
+    writeJsonAtomic(JOIN_REQUESTS_FILE, requests);   // [B3]
     return newReq;
   } catch (error) {
     console.error('[TeamJoinRequests] Error al crear solicitud de unión:', error);
@@ -210,7 +211,7 @@ export function resolveTeamJoinRequest(requestId, status, resolvedBy) {
     target.resolvedAt = new Date().toISOString();
     target.resolvedBy = resolvedBy;
 
-    fs.writeFileSync(JOIN_REQUESTS_FILE, JSON.stringify(requests, null, 2), 'utf8');
+    writeJsonAtomic(JOIN_REQUESTS_FILE, requests);   // [B3]
     return target;
   } catch (error) {
     console.error('[TeamJoinRequests] Error al resolver solicitud de unión:', error);
