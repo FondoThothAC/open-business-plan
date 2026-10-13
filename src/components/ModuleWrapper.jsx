@@ -14,6 +14,7 @@ import HeatmapEditor from './HeatmapEditor';
 import ExpertPanel from './ExpertPanel';
 import FodaMatrix from './FodaMatrix';
 import PestelAnalysis from './PestelAnalysis';
+import { deriveDimensionTexts } from '../lib/pestelMatrix';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import DiffViewer from './DiffViewer';
@@ -596,7 +597,19 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
           {moduleKey === 'foda' && !fodaEditMode ? (
             <FodaMatrix data={moduleData} />
           ) : moduleKey === 'pestel' && !pestelEditMode ? (
-            <PestelAnalysis data={moduleData} />
+            <PestelAnalysis
+              data={moduleData}
+              config={planData?.config}
+              empresa={planData?.nombre || planData?.companyName}
+              giro={planData?.giro || planData?.sector}
+              onActualizar={(nuevaMatriz) => {
+                // La matriz es la fuente de verdad: los seis textos se regeneran desde ella.
+                updateSection(pillar, moduleKey, 'matriz', nuevaMatriz);
+                for (const [campo, valor] of Object.entries(deriveDimensionTexts(nuevaMatriz))) {
+                  updateSection(pillar, moduleKey, campo, valor);
+                }
+              }}
+            />
           ) : (moduleKey === 'estructura' || moduleKey === 'recursos_humanos') && !puestosEditMode ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
               <HumanCapitalMatrix 

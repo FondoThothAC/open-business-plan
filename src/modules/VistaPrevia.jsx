@@ -21,6 +21,7 @@ import remarkGfm from 'remark-gfm';
 import { safeStr } from '../utils/formatters';
 import { FRAMEWORKS } from '../config/frameworks';
 import { calculateFinancialProjections } from '../lib/finanzas/financial-calculations';
+import { hasMatrix } from '../lib/pestelMatrix';
 import DiffReviewModal from '../components/DiffReviewModal';
 import ArbolProblemasObjetivos from '../components/ArbolProblemasObjetivos';
 import XMatrixHoshinKanri from '../components/XMatrixHoshinKanri';
@@ -2104,7 +2105,10 @@ export default function VistaPrevia() {
         pageNumbers[mod.key] = currentPage;
         
         let density = 0.45;
-        if (mod.key === 'estados_financieros' || mod.key === 'pestel' || mod.key === 'foda' || mod.key === 'segmentacion') {
+        if (mod.key === 'pestel') {
+          // Un PESTEL con matriz calificada imprime tarjetas + tabla + top-3 + conclusión + fuentes.
+          density = hasMatrix(planData?.naturaleza?.pestel) ? 3.4 : 0.8;
+        } else if (mod.key === 'estados_financieros' || mod.key === 'foda' || mod.key === 'segmentacion') {
           density = 0.8;
         }
         accumPages += density;
@@ -2127,6 +2131,8 @@ export default function VistaPrevia() {
           estimatedPages = 2; // Presupuesto + Balance General
         } else if (mod.key === 'segmentacion') {
           estimatedPages = 2; // TAM/SAM/SOM + Buyer Persona
+        } else if (mod.key === 'pestel' && hasMatrix(planData?.naturaleza?.pestel)) {
+          estimatedPages = 3; // Matriz calificada, priorización, conclusión y fuentes
         }
         currentPage += estimatedPages;
       });

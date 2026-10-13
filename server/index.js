@@ -2315,6 +2315,7 @@ app.post('/api/search', async (req, res) => {
           title: r.title,
           url: r.url,
           snippet: r.content,
+          publishedDate: r.published_date || null,
           provider: 'tavily',
           provenance: 'real'
         }));
@@ -2374,6 +2375,7 @@ app.post('/api/search', async (req, res) => {
           title: r.title,
           url: r.url,
           snippet: r.description || '',
+          publishedDate: r.page_age || r.time || null,
           provider: 'brave',
           provenance: 'real'
         }));
@@ -2438,6 +2440,7 @@ app.post('/api/search', async (req, res) => {
           title: r.title,
           url: r.link,
           snippet: r.snippet || '',
+          publishedDate: r.date || null,
           provider: 'serper',
           provenance: 'real'
         }));
