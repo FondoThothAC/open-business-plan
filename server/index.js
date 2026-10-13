@@ -18,6 +18,7 @@ import { swarmOrchestrator } from './swarm/SwarmOrchestrator.js';
 import { agentStore } from './swarm/AgentStore.js';
 import { generateLogoVariants } from '../src/lib/logoGenerator.js';
 import { checkSearchQuota, incrementSearchQuota, getSearchQuotaStats } from './quotaTracker.js';
+import { createRateLimiter } from './rateLimiter.js';
 import { saveWithVersioning } from '../src/lib/serverUtils/saveVersioning.js';
 import { acquireGenerationLock, releaseGenerationLock, getGenerationLockStatus } from '../src/lib/serverUtils/generationLock.js';
 import { recordPresence, getActivePresence, clearPresence } from './presenceTracker.js';
@@ -152,11 +153,15 @@ app.use(cookieParser());
 // data:image embebido ~137 KB. Nginx ya permite 50M (deploy/nginx-obp.conf:122).
 const jsonLimiteGrande = express.json({ limit: '8mb' });
 const jsonLimiteMediano = express.json({ limit: '4mb' });
+// [C1] authGuard va ANTES del parser: una request sin sesión valida recibe 401 sin que el
+// servidor bufferee hasta 8 MB. Ninguna de estas rutas es pública, y authGuard es
+// idempotente, así que volver a ejecutarse más abajo en app.use('/api', authGuard) no
+// cambia el resultado. cookieParser (L139) ya corrió y es lo que authGuard necesita.
 for (const ruta of ['/api/save', '/api/logo/save', '/api/ai/proxy', '/api/ai/bob-chat', '/api/ai/account-chat']) {
-  app.use(ruta, jsonLimiteGrande);
+  app.use(ruta, authGuard, jsonLimiteGrande);
 }
 for (const ruta of ['/api/logo/generate', '/api/market/competitors', '/api/market/enrich', '/api/market/viability', '/api/research/start']) {
-  app.use(ruta, jsonLimiteMediano);
+  app.use(ruta, authGuard, jsonLimiteMediano);
 }
 
 app.use(express.json({ limit: '1mb' }));
@@ -187,12 +192,40 @@ app.use((req, res, next) => {
 // ─────────────────────────────────────────────────────────
 //  Rutas de Autenticación (PÚBLICAS — sin authGuard)
 // ─────────────────────────────────────────────────────────
+// [C1] Límite de intentos. Solo cuentan los FALLOS: un login correcto no consume cupo y
+// resetea el contador de ese usuario. Dos llaves: por IP+usuario (frena fuerza bruta contra
+// una cuenta) y por IP (frena el barrido de muchos usuarios desde un mismo origen).
+// `trust proxy` = 1 (L92), así que req.ip es la IP real detrás de Nginx.
+const LOGIN_VENTANA_MS = 15 * 60 * 1000;
+const loginPorUsuarioLimiter = createRateLimiter({ windowMs: LOGIN_VENTANA_MS, max: 8 });
+const loginPorIpLimiter = createRateLimiter({ windowMs: LOGIN_VENTANA_MS, max: 40 });
+const registroPorIpLimiter = createRateLimiter({ windowMs: 60 * 60 * 1000, max: 10 });
+
+function responderLimitado(res, estado, mensaje) {
+  res.set('Retry-After', String(estado.retryAfterSec));
+  return res.status(429).json({ error: mensaje, code: 'RATE_LIMITED', retryAfterSec: estado.retryAfterSec });
+}
+
 app.post('/api/auth/login', (req, res) => {
   const { username, password, rememberMe } = req.body || {};
+  const ip = req.ip || 'desconocida';
+  const claveUsuario = `${ip}|${String(username || '').toLowerCase().slice(0, 64)}`;
+
+  // Se consulta ANTES de verificar la contraseña: durante el bloqueo ni la correcta pasa.
+  const estadoUsuario = loginPorUsuarioLimiter.check(claveUsuario);
+  const estadoIp = loginPorIpLimiter.check(ip);
+  if (!estadoUsuario.allowed || !estadoIp.allowed) {
+    const espera = !estadoUsuario.allowed ? estadoUsuario : estadoIp;
+    return responderLimitado(res, espera, 'Demasiados intentos fallidos. Espera unos minutos antes de volver a intentar.');
+  }
+
   const resultado = loginUsuario({ username, password, rememberMe });
   if (!resultado.success) {
+    loginPorUsuarioLimiter.hit(claveUsuario);
+    loginPorIpLimiter.hit(ip);
     return res.status(401).json({ error: resultado.error });
   }
+  loginPorUsuarioLimiter.reset(claveUsuario);
 
   // Establecer cookie HttpOnly segura
   const cookieOptions = {
@@ -220,6 +253,14 @@ app.post('/api/auth/logout', (req, res) => {
 });
 
 app.post('/api/auth/register', (req, res) => {
+  // [C1] Cada intento de registro cuenta (éxito o fallo): evita el alta masiva de cuentas
+  // 'pending' que ensucian el store de usuarios y el panel de aprobación.
+  const estadoRegistro = registroPorIpLimiter.check(req.ip || 'desconocida');
+  if (!estadoRegistro.allowed) {
+    return responderLimitado(res, estadoRegistro, 'Demasiados registros desde este origen. Intenta más tarde.');
+  }
+  registroPorIpLimiter.hit(req.ip || 'desconocida');
+
   const { username, email, password, displayName } = req.body || {};
   const resultado = registrarUsuario({ username, email, password, displayName });
   if (!resultado.success) {
