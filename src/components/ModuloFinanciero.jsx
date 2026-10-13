@@ -302,7 +302,16 @@ export default function ModuloFinanciero({ title, description, moduleKey, pillar
   }, [activeCorridaRaw]);
 
   const handleDataChange = (field, value) => {
-    setFinanceData((prev) => ({ ...prev, [field]: Number(value) }));
+    // [B5] Number('') es 0: borrar un campo dejaba un 0 que entraba en los calculos y se
+    // persistia en el plan via updateSection. Se conserva la entrada sin parsear como null
+    // en el estado local (los calculos ya tratan null/0 como cero sin escribirlo).
+    const texto = String(value ?? '').trim();
+    if (texto === '') {
+      setFinanceData((prev) => ({ ...prev, [field]: '' }));
+      return;
+    }
+    const numero = parseNum(texto);
+    setFinanceData((prev) => ({ ...prev, [field]: Number.isFinite(numero) ? numero : texto }));
   };
 
   // [B4] Los calculos y su persistencia leian financeData/planData del cierre del render

@@ -53,7 +53,10 @@ export default function ModuleHistoryDrawer({
   useEffect(() => {
     if (isOpen && projectId && moduleKey) {
       fetchVersions();
-      setSelectedVersion(null);
+      // [B5] setSelectedVersion referenciaba un state que nunca se declaro en el archivo:
+      // ReferenceError cada vez que se abria el drawer de historial. La restauracion se hace
+      // por fila con handleRestore(ver), sin seleccion previa, asi que se retira la llamada
+      // en lugar de inventar un state que la UI no consume.
     }
   }, [isOpen, projectId, moduleKey]);
 

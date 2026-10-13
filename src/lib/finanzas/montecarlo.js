@@ -120,21 +120,28 @@ export function runMonteCarloSimulation(
   const binWidth = (maxNPV - minNPV) / binCount || 1;
   const histogram = [];
 
+  // [B5] Los bins se llenan por INDICE, no comparando rangos por valor. La version
+  // anterior sumaba un parche `v === maxNPV` al ultimo bin: por error de flotante el
+  // maximo ya podia estar contado en su rango y se duplicaba (reproducido: 5001 sobre
+  // 5000 iteraciones; y con el rango inclusivo por comparacion seguia habiendo traslape
+  // entre binMax del bin previo y binMin del ultimo). Con indices la suma de los bins es
+  // identica al numero de iteraciones por construcción.
+  const conteos = new Array(binCount).fill(0);
+  for (const v of allNPVs) {
+    let indice = Math.floor((v - minNPV) / binWidth);
+    if (!Number.isFinite(indice)) indice = 0;
+    if (indice < 0) indice = 0;
+    if (indice >= binCount) indice = binCount - 1;   // el maximo y los rebases de flotante entran al ultimo
+    conteos[indice] += 1;
+  }
+
   for (let b = 0; b < binCount; b++) {
     const binMin = minNPV + b * binWidth;
-    const binMax = binMin + binWidth;
     const midPoint = binMin + binWidth / 2;
-
-    // Filtramos las iteraciones que entran en el rango de este bin
-    let count = allNPVs.filter(v => v >= binMin && v < binMax).length;
-    if (b === binCount - 1) {
-      // Incluir el valor máximo en el último contenedor
-      count += allNPVs.filter(v => v === maxNPV).length;
-    }
 
     histogram.push({
       midPoint,
-      count,
+      count: conteos[b],
       isPositive: midPoint > 0
     });
   }

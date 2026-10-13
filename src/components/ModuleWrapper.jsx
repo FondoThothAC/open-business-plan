@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { usePlan } from '../context/PlanContext';
 import { Sparkles, Loader2, Brain, CheckCircle2, Lock, Unlock, Map as MapIcon, Network, Eye, EyeOff, HelpCircle, Edit3, Layout, ArrowRight, MessageSquare, Check, X, Activity, BadgeDollarSign, Compass, Globe, ShieldCheck, AlertTriangle, Copy, Users, History } from 'lucide-react';
@@ -42,6 +42,13 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
   const [pestelEditMode, setPestelEditMode] = useState(false);
   const [puestosEditMode, setPuestosEditMode] = useState(false);
   const [isAiCompleted, setIsAiCompleted] = useState(false);
+  // [B5] Id del typewriter en un ref para poder limpiarlo tambien al desmontar: antes el
+  // intervalo solo se cancelaba al terminar el tipeo, asi que navegar antes de que
+  // terminara dejaba llamando setDraftValues/setStage sobre un componente desmontado.
+  const intervalTypewriterRef = useRef(null);
+  useEffect(() => () => {
+    if (intervalTypewriterRef.current) clearInterval(intervalTypewriterRef.current);
+  }, []);
   const [draftValues, setDraftValues] = useState({});
   const [showComments, setShowComments] = useState({});
   const [activeTrajectory, setActiveTrajectory] = useState(null);
@@ -259,7 +266,11 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
       const maxLength = Math.max(0, ...Object.values(newDrafts).map(v => typeof v === 'string' ? v.length : 0));
       
       if (maxLength > 0) {
-        const typeInterval = setInterval(() => {
+        // [B5] El id del intervalo era local al handler async y solo se limpiaba al terminar
+        // el tipeo: si el usuario navegaba antes, el intervalo seguia llamando setDraftValues/
+        // setStage sobre un componente desmontado. Se guarda en un ref y se limpia tambien en
+        // el desmontaje (el mismo archivo ya hace eso con el ping de presencia en la linea 135).
+        intervalTypewriterRef.current = setInterval(() => {
           currentLength += 45; // Velocidad de tipeo en vivo por frame
           let isFinished = true;
           
@@ -277,7 +288,8 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
           });
 
           if (isFinished) {
-            clearInterval(typeInterval);
+            clearInterval(intervalTypewriterRef.current);
+            intervalTypewriterRef.current = null;
             setIsAiCompleted(true);
             setLoading(false);
             setStage('Borrador generado con trazabilidad. Revisa y acepta los cambios.');
