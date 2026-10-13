@@ -46,7 +46,7 @@ import {
 } from './auth.js';
 import { authGuard, soloAdmin, soloRevisorOSuperAdmin, prohibirRevisorMutacion } from './middleware/authGuard.js';
 import { registrarAuditoria, obtenerAuditoria } from './auditLogger.js';
-import { EXAMPLE_PROJECT_IDS, PRIVATE_ADMIN_IDS, assertSafeProjectSegment, resolveReadableProject, resolveWritableProject, resolveCloneSource, userFolder, transferProjectOwnership } from './projectAccess.js';
+import { EXAMPLE_PROJECT_IDS, PRIVATE_ADMIN_IDS, PROJECT_TYPES, assertSafeProjectSegment, assertSafeProjectType, resolveWithinProjects, resolveReadableProject, resolveWritableProject, resolveCloneSource, userFolder, transferProjectOwnership } from './projectAccess.js';
 import { recordPromptFeedback, getPromptFeedback, createTeamJoinRequest, getTeamJoinRequests, resolveTeamJoinRequest } from './promptFeedbackStore.js';
 import { createReviewInvite, getReviewInvite, addReviewComment, listReviewComments, revokeReviewInvite } from './reviewStore.js';
 
@@ -3657,14 +3657,35 @@ app.post('/api/logo/generate', async (req, res) => {
 });
 
 app.post('/api/logo/save', async (req, res) => {
-  try {
-    const { projectId, projectType = 'negocios', dataUrl } = req.body;
-    if (!projectId || !dataUrl) {
-      return res.status(400).json({ success: false, error: 'projectId y dataUrl son requeridos' });
-    }
+  const { projectId, projectType = 'negocios', dataUrl } = req.body || {};
+  if (!projectId || !dataUrl) {
+    return res.status(400).json({ success: false, error: 'projectId y dataUrl son requeridos' });
+  }
 
-    const safeName = projectId.replace(/[^a-z0-9]/gi, '_').toLowerCase();
-    const dirPath = path.resolve('proyectos', projectType, safeName);
+  // [B1] Validar ANTES de entrar al try: los helpers de projectAccess lanzan y el catch
+  // genérico de abajo convertiría un traversal en 500 en vez del 400 correspondiente.
+  let safeType, safeId;
+  try {
+    safeType = assertSafeProjectType(projectType);
+    safeId = assertSafeProjectSegment(projectId, 'id de proyecto');
+  } catch (validationError) {
+    return res.status(400).json({ success: false, error: validationError.message, code: 'INVALID_PROJECT_REF' });
+  }
+
+  if (!/^data:image\/(png|jpe?g|svg\+xml);base64,[A-Za-z0-9+/=]{1,3000000}$/.test(String(dataUrl))) {
+    return res.status(400).json({ success: false, error: 'dataUrl debe ser una imagen base64 (png, jpg o svg).' });
+  }
+
+  try {
+    // [B1] El directorio se deriva del proyecto resuelto CON permisos, no de un
+    // path.resolve('proyectos', projectType, safeName) a ciegas. Si el proyecto aún no
+    // existe en disco (borrador antes del primer guardado) o es de ejemplo para un
+    // usuario regular, se cae a la carpeta PROPIA del usuario dentro de proyectos/<tipo>/,
+    // verificado contra la raíz. Nunca se escribe en una carpeta ajena ni fuera de proyectos/.
+    const writable = resolveWritableProject(safeType, safeId, req.user);
+    const dirPath = writable
+      ? path.dirname(writable.path)
+      : resolveWithinProjects(safeType, userFolder(req.user), safeId);
     if (!fs.existsSync(dirPath)) {
       fs.mkdirSync(dirPath, { recursive: true });
     }
@@ -3681,7 +3702,9 @@ app.post('/api/logo/save', async (req, res) => {
     }
 
     // Actualizar también el JSON del proyecto si existe
-    const jsonPath = path.join(dirPath, `${safeName}.json`);
+    const jsonPath = writable
+      ? writable.path
+      : path.join(dirPath, `${safeId}.json`);
     if (fs.existsSync(jsonPath)) {
       try {
         const pData = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
@@ -3716,13 +3739,26 @@ app.post('/api/log', (req, res) => {
   broadcast(logEntry);
   
   if (projectId && projectType) {
-    try {
-      const reqUserId = req.headers['x-user-id'] || req.query.userId || '';
-      const userFolder = reqUserId ? `user_${reqUserId.replace(/[^a-z0-9]/gi, '_').toLowerCase()}` : '';
+    // [B1] Identidad solo de la sesión (req.user la inyecta authGuard desde la cookie
+    // HttpOnly o el Bearer). Se retira req.query.userId: era un fallback controlado por
+    // el cliente. authGuard.js ya fija x-user-id con el username autenticado.
+    const reqUserId = req.user?.username || req.headers['x-user-id'] || '';
+    const folderUsuario = reqUserId ? userFolder(req.user || { username: reqUserId }) : '';
 
-      const dirParts = ['proyectos', projectType];
-      if (userFolder) dirParts.push(userFolder);
-      const dirPath = path.resolve(...dirParts);
+    // [B1] Validación ANTES del try de escritura: los helpers lanzan.
+    // El cortocircuito exterior (if (projectId && projectType)) se conserva: la Semilla
+    // loguea con projectId vacío y sin projectType (src/lib/ai.js:2210) y hoy no persiste.
+    try {
+      assertSafeProjectType(projectType);
+      assertSafeProjectSegment(projectId, 'id de proyecto');
+    } catch (validationError) {
+      return res.status(400).json({ ok: false, error: validationError.message, code: 'INVALID_PROJECT_REF' });
+    }
+
+    try {
+      const dirPath = folderUsuario
+        ? resolveWithinProjects(projectType, folderUsuario)
+        : resolveWithinProjects(projectType);
 
       if (!fs.existsSync(dirPath)) {
         fs.mkdirSync(dirPath, { recursive: true });
@@ -3750,38 +3786,52 @@ app.post('/api/log', (req, res) => {
   res.json({ ok: true });
 });
 
-app.get('/api/projects/:type/:id/logs', (req, res) => {
-  const { type, id } = req.params;
-  const reqUserId = req.headers['x-user-id'] || req.query.userId || '';
-  const isTargetAdmin = reqUserId === 'admin' || reqUserId === 'roberto';
+// [B1] Única resolución de la ruta de logs de un proyecto, usada por GET y DELETE.
+// Antes filePath se INICIALIZABA en la raíz compartida y solo se reemplazaba si existía
+// el archivo del usuario: cualquier autenticado podía leer o borrar logs ajenos al no
+// existir el suyo. Ahora un usuario normal solo alcanza su propia carpeta, y la raíz
+// compartida queda reservada al superadmin (rol, no username).
+// Lanza en input inválido: los handlers lo traducen a 400.
+function resolveProjectLogsPath(type, id, user) {
+  assertSafeProjectType(type);
+  assertSafeProjectSegment(id, 'id_proyecto');
 
-  let filePath = path.resolve('proyectos', type, `${id}_logs.json`);
+  const esSuperAdmin = user?.role === 'superadmin';
+  const ownPath = resolveWithinProjects(type, userFolder(user), `${id}_logs.json`);
 
-  if (reqUserId && !isTargetAdmin) {
-    const userFolder = `user_${reqUserId.replace(/[^a-z0-9]/gi, '_').toLowerCase()}`;
-    const userSpecificPath = path.resolve('proyectos', type, userFolder, `${id}_logs.json`);
-    if (fs.existsSync(userSpecificPath)) {
-      filePath = userSpecificPath;
-    }
-  } else if (isTargetAdmin) {
-    if (!fs.existsSync(filePath)) {
-      const typeDir = path.resolve('proyectos', type);
-      if (fs.existsSync(typeDir)) {
-        const entries = fs.readdirSync(typeDir, { withFileTypes: true });
-        for (const entry of entries) {
-          if (entry.isDirectory() && entry.name.startsWith('user_')) {
-            const potentialPath = path.join(typeDir, entry.name, `${id}_logs.json`);
-            if (fs.existsSync(potentialPath)) {
-              filePath = potentialPath;
-              break;
-            }
-          }
-        }
+  if (!esSuperAdmin) {
+    return fs.existsSync(ownPath) ? ownPath : null;
+  }
+
+  if (fs.existsSync(ownPath)) return ownPath;
+
+  const sharedPath = resolveWithinProjects(type, `${id}_logs.json`);
+  if (fs.existsSync(sharedPath)) return sharedPath;
+
+  const typeDir = resolveWithinProjects(type);
+  if (fs.existsSync(typeDir)) {
+    const entries = fs.readdirSync(typeDir, { withFileTypes: true });
+    for (const entry of entries) {
+      if (entry.isDirectory() && entry.name.startsWith('user_')) {
+        const candidate = resolveWithinProjects(type, entry.name, `${id}_logs.json`);
+        if (fs.existsSync(candidate)) return candidate;
       }
     }
   }
+  return null;
+}
 
-  if (fs.existsSync(filePath)) {
+app.get('/api/projects/:type/:id/logs', (req, res) => {
+  const { type, id } = req.params;
+
+  let filePath;
+  try {
+    filePath = resolveProjectLogsPath(type, id, req.user);
+  } catch (validationError) {
+    return res.status(400).json({ error: validationError.message, code: 'INVALID_PROJECT_REF' });
+  }
+
+  if (filePath && fs.existsSync(filePath)) {
     try {
       const data = fs.readFileSync(filePath, 'utf8');
       res.json(JSON.parse(data));
@@ -3795,36 +3845,15 @@ app.get('/api/projects/:type/:id/logs', (req, res) => {
 
 app.delete('/api/projects/:type/:id/logs', (req, res) => {
   const { type, id } = req.params;
-  const reqUserId = req.headers['x-user-id'] || req.query.userId || '';
-  const isTargetAdmin = reqUserId === 'admin' || reqUserId === 'roberto';
 
-  let filePath = path.resolve('proyectos', type, `${id}_logs.json`);
-
-  if (reqUserId && !isTargetAdmin) {
-    const userFolder = `user_${reqUserId.replace(/[^a-z0-9]/gi, '_').toLowerCase()}`;
-    const userSpecificPath = path.resolve('proyectos', type, userFolder, `${id}_logs.json`);
-    if (fs.existsSync(userSpecificPath)) {
-      filePath = userSpecificPath;
-    }
-  } else if (isTargetAdmin) {
-    if (!fs.existsSync(filePath)) {
-      const typeDir = path.resolve('proyectos', type);
-      if (fs.existsSync(typeDir)) {
-        const entries = fs.readdirSync(typeDir, { withFileTypes: true });
-        for (const entry of entries) {
-          if (entry.isDirectory() && entry.name.startsWith('user_')) {
-            const potentialPath = path.join(typeDir, entry.name, `${id}_logs.json`);
-            if (fs.existsSync(potentialPath)) {
-              filePath = potentialPath;
-              break;
-            }
-          }
-        }
-      }
-    }
+  let filePath;
+  try {
+    filePath = resolveProjectLogsPath(type, id, req.user);
+  } catch (validationError) {
+    return res.status(400).json({ error: validationError.message, code: 'INVALID_PROJECT_REF' });
   }
 
-  if (fs.existsSync(filePath)) {
+  if (filePath && fs.existsSync(filePath)) {
     try {
       fs.unlinkSync(filePath);
       res.json({ success: true, message: 'Historial de logs eliminado' });
@@ -5416,6 +5445,24 @@ if (fs.existsSync(distPath)) {
     res.sendFile(path.join(distPath, 'index.html'));
   });
 }
+
+// [B1] Middleware terminal de errores. El server no tenía ninguno, así que los throw de
+// los validadores de projectAccess.js (assertSafeProjectSegment / assertSafeProjectType)
+// producían un 500 por defecto en vez del 400 que corresponde. Solo se traducen estos dos
+// casos; todo lo demás se entrega a next(err) para que finalhandler reproduzca el 500 actual
+// y no cambiar el comportamiento de las otras ~130 rutas.
+// Nota: el 413 pasa de HTML a JSON. deploy.sh:82 solo hace grep de /api/health, así que
+// el pipeline de despliegue no se ve afectado.
+app.use((err, req, res, next) => {
+  const mensaje = String(err?.message || '');
+  if (/inválido\.$/.test(mensaje)) {
+    return res.status(400).json({ error: mensaje, code: 'INVALID_PROJECT_REF' });
+  }
+  if (err?.type === 'entity.too.large') {
+    return res.status(413).json({ error: 'El cuerpo de la petición excede el límite permitido.', code: 'PAYLOAD_TOO_LARGE' });
+  }
+  return next(err);
+});
 
 // En producción, PM2 pasa HOST=127.0.0.1 vía ecosystem.config.cjs
 // para que solo Nginx pueda alcanzar a Express.

@@ -44,6 +44,45 @@ export function assertSafeProjectSegment(value, label = 'identificador') {
 }
 
 /**
+ * Tipos de proyecto admitidos como segmento de ruta bajo proyectos/.
+ * Fuente única de verdad: antes estaba duplicado como literales ['negocios','social']
+ * en server/index.js y en el cliente.
+ * OJO: 'telemetry' y 'research' quedan FUERA a propósito — son rutas que el server
+ * usa con literales fijos (proyectos/telemetry/master_trace.jsonl, etc.), nunca input
+ * de usuario, y admitirlas aquí solo ampliaría la superficie de escritura.
+ */
+export const PROJECT_TYPES = Object.freeze(new Set(['negocios', 'social']));
+
+/**
+ * Valida que un tipo de proyecto esté en la whitelist y sea un segmento seguro.
+ * @param {string} type
+ * @returns {string}
+ */
+export function assertSafeProjectType(type) {
+  const value = String(type || '');
+  if (!PROJECT_TYPES.has(value)) {
+    throw new Error('tipo de proyecto inválido.');
+  }
+  assertSafeProjectSegment(value, 'tipo de proyecto');
+  return value;
+}
+
+/**
+ * Devuelve la ruta absoluta solo si queda dentro de proyectos/ (defensa en profundidad
+ * contra traversal aunque el segmento ya haya pasado los validadores anteriores).
+ * @param {...string} segments
+ * @returns {string}
+ */
+export function resolveWithinProjects(...segments) {
+  const projectsRoot = path.resolve('proyectos');
+  const target = path.resolve(projectsRoot, ...segments);
+  if (target !== projectsRoot && !target.startsWith(projectsRoot + path.sep)) {
+    throw new Error('ruta de proyecto inválida.');
+  }
+  return target;
+}
+
+/**
  * Determina el nombre de carpeta para un usuario, garantizando retrocompatibilidad con carpetas existentes.
  * @param {Object} user
  * @returns {string}
