@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { usePlan } from '../context/PlanContext';
 import { calculateFinancialProjections } from '../lib/finanzas/financial-calculations';
 import { Calculator, Settings, RefreshCw, BarChart, TrendingUp, Wallet, FileText, CheckCircle2 } from 'lucide-react';
@@ -305,6 +305,18 @@ export default function ModuloFinanciero({ title, description, moduleKey, pillar
     setFinanceData((prev) => ({ ...prev, [field]: Number(value) }));
   };
 
+  // [B4] Los calculos y su persistencia leian financeData/planData del cierre del render
+  // en que se definieron, mientras los efectos que los disparan tienen deps estrechas
+  // ([moduleKey, activeCorridaRaw] y [activeCorrida]). Resultado: se persistian
+  // proyecciones calculadas con parametros anteriores. Se leen del ref, que siempre apunta
+  // al ultimo render. Se eligio el ref y NO un useCallback con deps amplias a proposito:
+  // anadir runCalculations a las deps del efecto haria bucle infinito, porque
+  // persistProjection -> updateSection cambia planData, lo que regenera la callback.
+  const datosRecientes = useRef({ financeData, planData, activeCorrida, pillarId, moduleKey, isEstados, updateSection });
+  useEffect(() => {
+    datosRecientes.current = { financeData, planData, activeCorrida, pillarId, moduleKey, isEstados, updateSection };
+  });
+
   const persistProjection = (proj) => {
     const payload = {
       generatedAt: new Date().toISOString(),
@@ -321,6 +333,8 @@ export default function ModuloFinanciero({ title, description, moduleKey, pillar
       loanSchedules: proj.loanSchedules || {},
       netInitialInvestment: proj.netInitialInvestment,
     };
+
+    const { pillarId, moduleKey, isEstados, updateSection } = datosRecientes.current;
 
     updateSection(pillarId, moduleKey, 'corrida_automatica', JSON.stringify(payload));
     if (pillarId === 'organizacion' && moduleKey !== 'estados_financieros') {
@@ -341,6 +355,7 @@ export default function ModuloFinanciero({ title, description, moduleKey, pillar
 
   const runCalculations = (corridaOverride = activeCorrida) => {
     try {
+      const { financeData, planData } = datosRecientes.current;   // [B4] valores del ultimo render
       const proj = corridaOverride
         ? buildProjectionFromCorrida(corridaOverride)
         : calculateFinancialProjections(buildManualProjectData(financeData, planData), 'years');
@@ -356,33 +371,70 @@ export default function ModuloFinanciero({ title, description, moduleKey, pillar
     runCalculations(activeCorrida);
   }, [moduleKey, activeCorridaRaw]);
 
-  // Listen for simulator exports to update the plan dynamically from the embedded iframe
-  useEffect(() => {
-    const handleMessage = (event) => {
-      if (event.data && event.data.type === 'SIMULATOR_EXPORT') {
-        const payload = event.data.payload;
-        const indicatorsText = `Resultados Simulador Avanzado FAPPA (${payload.scenarioName}):\n- TIR: ${(payload.tir * 100).toFixed(2)}%\n- VAN: ${formatCurrency(payload.van)}\n- Relación B/C: ${payload.benefitCostRatio.toFixed(2)}\n- Payback: ${payload.payback.toFixed(1)} años.`;
-        
-        updateSection('organizacion', 'rentabilidad', 'indicadores', indicatorsText);
-        updateSection('organizacion', 'inversion', 'capex', `Inversión total requerida (calculada por simulador): ${formatCurrency(payload.totalInvestment)}.`);
-        
-        if (payload.programInvestment !== undefined && payload.partnersInvestment !== undefined) {
-          const financiamientoText = `Estructura de financiamiento recomendada:\n- Subsidio Gubernamental (FAPPA): ${formatCurrency(payload.programInvestment)} (${(payload.programInvestment / payload.totalInvestment * 100).toFixed(1)}%)\n- Aportación de Socios: ${formatCurrency(payload.partnersInvestment)} (${(payload.partnersInvestment / payload.totalInvestment * 100).toFixed(1)}%)`;
-          updateSection('organizacion', 'inversion', 'financiamiento', financiamientoText);
-        }
-        
-        if (payload.breakevenAmount !== undefined && payload.breakevenPercentage !== undefined) {
-          const ptoEquilibrioText = `Punto de equilibrio operativo (Año 1): Facturación anual mínima requerida de ${formatCurrency(payload.breakevenAmount)} (equivalente al ${(payload.breakevenPercentage * 100).toFixed(1)}% de la capacidad operativa estimada) para cubrir los gastos fijos y evitar pérdidas.`;
-          updateSection('organizacion', 'rentabilidad', 'punto_equilibrio', ptoEquilibrioText);
-        }
-        
-        alert('¡Datos del simulador exportados e integrados con éxito en tu plan de negocios!');
-        runCalculations(activeCorrida);
+  // [B4] Listener de exportaciones del simulador embebido. Tres cambios: se valida el
+  // origin (es same-origin por diseño), se protege el cuerpo con try/catch y se verifica
+  // el TIPO de cada campo antes de usarlo. Antes un SIMULATOR_EXPORT incompleto lanzaba
+  // TypeError desde el listener (el try/catch interno de runCalculations no cubria estas
+  // lineas) y el texto con "Infinity%"/"NaN%" se persistia como string via updateSection,
+  // o sea que quedaba guardado en el plan del usuario sin ningun error visible.
+  const handleMessage = useCallback((event) => {
+    if (event.origin !== window.location.origin) return;      // el simulador es same-origin
+    const datos = event.data;
+    if (!datos || datos.type !== 'SIMULATOR_EXPORT') return;
+
+    const payload = datos.payload || {};
+    const esNumero = (v) => typeof v === 'number' && Number.isFinite(v);
+
+    try {
+      const faltantes = ['tir', 'van', 'benefitCostRatio', 'payback', 'totalInvestment'].filter((c) => !esNumero(payload[c]));
+      if (faltantes.length > 0 || typeof payload.scenarioName !== 'string') {
+        console.warn('[ModuloFinanciero] SIMULATOR_EXPORT incompleto, se ignora. Faltan:', faltantes.join(', ') || '(escenario)');
+        return;
       }
-    };
-    window.addEventListener('message', handleMessage);
-    return () => window.removeEventListener('message', handleMessage);
-  }, [activeCorrida]);
+
+      const indicatorsText = `Resultados Simulador Avanzado FAPPA (${payload.scenarioName}):\n- TIR: ${(payload.tir * 100).toFixed(2)}%\n- VAN: ${formatCurrency(payload.van)}\n- Relación B/C: ${payload.benefitCostRatio.toFixed(2)}\n- Payback: ${payload.payback.toFixed(1)} años.`;
+      const { updateSection } = datosRecientes.current;
+
+      updateSection('organizacion', 'rentabilidad', 'indicadores', indicatorsText);
+      updateSection('organizacion', 'inversion', 'capex', `Inversión total requerida (calculada por simulador): ${formatCurrency(payload.totalInvestment)}.`);
+
+      // [B4] Solo se persiste si la division da un numero finito: con totalInvestment en 0
+      // el resultado era Infinity y quedaba escrito en el plan.
+      if (esNumero(payload.programInvestment) && esNumero(payload.partnersInvestment) && payload.totalInvestment !== 0) {
+        const pctPrograma = (payload.programInvestment / payload.totalInvestment) * 100;
+        const pctSocios = (payload.partnersInvestment / payload.totalInvestment) * 100;
+        if (Number.isFinite(pctPrograma) && Number.isFinite(pctSocios)) {
+          const financiamientoText = `Estructura de financiamiento recomendada:\n- Subsidio Gubernamental (FAPPA): ${formatCurrency(payload.programInvestment)} (${pctPrograma.toFixed(1)}%)\n- Aportación de Socios: ${formatCurrency(payload.partnersInvestment)} (${pctSocios.toFixed(1)}%)`;
+          updateSection('organizacion', 'inversion', 'financiamiento', financiamientoText);
+        } else {
+          console.warn('[ModuloFinanciero] porcentajes de financiamiento no finitos, se omite esa sección');
+        }
+      }
+
+      if (esNumero(payload.breakevenAmount) && esNumero(payload.breakevenPercentage)) {
+        const ptoEquilibrioText = `Punto de equilibrio operativo (Año 1): Facturación anual mínima requerida de ${formatCurrency(payload.breakevenAmount)} (equivalente al ${(payload.breakevenPercentage * 100).toFixed(1)}% de la capacidad operativa estimada) para cubrir los gastos fijos y evitar pérdidas.`;
+        updateSection('organizacion', 'rentabilidad', 'punto_equilibrio', ptoEquilibrioText);
+      }
+
+      alert('¡Datos del simulador exportados e integrados con éxito en tu plan de negocios!');
+      runCalculations(datosRecientes.current.activeCorrida);
+    } catch (error) {
+      console.error('[ModuloFinanciero] no se pudo integrar el export del simulador:', error);
+    }
+  }, [runCalculations]);
+
+  // El alta/baja del listener va en su propio efecto: asi no se desregistra en cada
+  // calculo, y always enlazara la ultima version del handler.
+  const handlerRef = useRef(handleMessage);
+  useEffect(() => {
+    handlerRef.current = handleMessage;
+  }, [handleMessage]);
+
+  useEffect(() => {
+    const escucha = (event) => handlerRef.current(event);
+    window.addEventListener('message', escucha);
+    return () => window.removeEventListener('message', escucha);
+  }, []);
 
   const chartData = useMemo(() => {
     if (!results || !Array.isArray(results.annualCashFlowData)) return [];
