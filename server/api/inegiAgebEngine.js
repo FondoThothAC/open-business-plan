@@ -1,10 +1,11 @@
 import { httpProviderStatus } from './providerStatus.js';
 import fetch from 'node-fetch';
+import { inegiToken } from '../inegiCredentials.js';
 
 /** DENUE describes establishments. It must never be used to infer household income. */
 export class InegiAgebEngine {
-  constructor(token = (process.env.DENUE_KEY || process.env.INEGI_KEY || process.env.VITE_DENUE_KEY || '1b9e230f-2ae0-48db-bd20-8810b1db575e')) {
-    this.token = token !== undefined ? token : (process.env.DENUE_KEY || process.env.INEGI_KEY || process.env.VITE_DENUE_KEY || '1b9e230f-2ae0-48db-bd20-8810b1db575e');
+  constructor(token = inegiToken()) {
+    this.token = token !== undefined ? token : inegiToken();
   }
 
   async extractDemographicProfile(lat, lng, radius = 3000, { scian = 'todos' } = {}) {

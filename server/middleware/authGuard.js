@@ -19,15 +19,14 @@ const RUTAS_PUBLICAS = [
   '/health',
   '/api/auth/login',
   '/api/auth/register',
-  '/api/health',
-  '/ai/account-chat',
-  '/api/ai/account-chat',
-  '/swarm/interview',
-  '/swarm/stream',
-  '/swarm/industrialize',
-  '/api/swarm/interview',
-  '/api/swarm/stream',
-  '/api/swarm/industrialize'
+  '/api/health'
+  // [B2] Las rutas de IA y swarm se retiran de la lista publica: sin sesion ya no
+  // pueden hacer gastar las credenciales del servidor (OLLAMA/BAI/GROQ) ni lanzar
+  // orquestaciones multi-agente. El frontend ya manda cookie HttpOnly o Bearer en
+  // todas ellas (src/main.jsx inyecta Authorization; ai.js:985 y Anteproyecto.jsx:287/339
+  // usan credentials:'include'), asi que ningun usuario autenticado se ve afectado.
+  // Quitar '/api/swarm/stream' cierra tambien GET /api/swarm/stream/:sessionId, que el
+  // matching por startsWith de abajo mantenia publica con Access-Control-Allow-Origin: *.
 ];
 
 /**

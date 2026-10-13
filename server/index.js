@@ -49,6 +49,8 @@ import { registrarAuditoria, obtenerAuditoria } from './auditLogger.js';
 import { EXAMPLE_PROJECT_IDS, PRIVATE_ADMIN_IDS, PROJECT_TYPES, assertSafeProjectSegment, assertSafeProjectType, resolveWithinProjects, resolveReadableProject, resolveWritableProject, resolveCloneSource, userFolder, transferProjectOwnership } from './projectAccess.js';
 import { recordPromptFeedback, getPromptFeedback, createTeamJoinRequest, getTeamJoinRequests, resolveTeamJoinRequest } from './promptFeedbackStore.js';
 import { createReviewInvite, getReviewInvite, addReviewComment, listReviewComments, revokeReviewInvite } from './reviewStore.js';
+import { inegiToken, respondeSiSinToken } from './inegiCredentials.js';
+import { AI_PROVIDER_HOSTS } from './aiEndpointAllowlist.js';
 
 function documentForExternalReview(data) {
   const copy = JSON.parse(JSON.stringify(data || {}));
@@ -112,10 +114,7 @@ function resolveInegiToken(req) {
     req?.query?.token ||
     req?.body?.token ||
     sharedApiKey(req, 'DENUE_KEY', 'INEGI_KEY', 'VITE_DENUE_KEY', 'VITE_INEGI_KEY') ||
-    process.env.DENUE_KEY ||
-    process.env.INEGI_KEY ||
-    process.env.VITE_DENUE_KEY ||
-    '1b9e230f-2ae0-48db-bd20-8810b1db575e'
+    inegiToken()
   ).trim();
 }
 
@@ -144,8 +143,30 @@ app.use(cors({
   credentials: true
 }));
 app.use(cookieParser());
-app.use(express.json({ limit: '100mb' }));
-app.use(express.urlencoded({ extended: true, limit: '100mb' }));
+// [B2] Antes el límite global era 100mb en TODAS las rutas y se aplicaba antes de
+// authGuard (linea ~241), así que cualquiera podía hacer bufferear 100 MB sin sesiion:
+// agotamiento de memoria trivial. Se baja a 1mb y solo las rutas que de verdad cargan
+// payloads grandes reciben un parser propio, montado ANTES del global.
+//
+// Por que app.use(<prefijo>, parser) y no app.post(<ruta>, parser, handler): registrar
+// la ruta completa arriba de authGuard la dejaria sin autenticar (Express ejecuta las
+// capas en orden de registro). app.use con prefijo solo ejecuta el parser, y authGuard
+// sigue aplicando al handler registrado mas abajo. body-parser hace cortocircuito si
+// req._body ya esta puesto, asi que el parser global no duplica el trabajo.
+//
+// Medidas reales en el repo: el plan JSON mas grande en disco ~320 KB y el mayor
+// data:image embebido ~137 KB. Nginx ya permite 50M (deploy/nginx-obp.conf:122).
+const jsonLimiteGrande = express.json({ limit: '8mb' });
+const jsonLimiteMediano = express.json({ limit: '4mb' });
+for (const ruta of ['/api/save', '/api/logo/save', '/api/ai/proxy', '/api/ai/bob-chat', '/api/ai/account-chat']) {
+  app.use(ruta, jsonLimiteGrande);
+}
+for (const ruta of ['/api/logo/generate', '/api/market/competitors', '/api/market/enrich', '/api/market/viability', '/api/research/start']) {
+  app.use(ruta, jsonLimiteMediano);
+}
+
+app.use(express.json({ limit: '1mb' }));
+app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 
 // CSRF de origen para mutaciones autenticadas. SameSite=Lax protege navegadores
 // modernos; esta comprobación cubre clientes que envían cookies explícitamente.
@@ -403,7 +424,11 @@ app.post('/api/ai/account-chat', async (req, res) => {
                     (requestedProvider === 'ollamaCloud' ? (userKeys.ollama || userKeys.ollama_cloud || userKeys.ollamaCloud) : null) ||
                     apiKey || 
                     ollamaKey ||
-                    (requestedProvider === 'ollamaCloud' ? process.env.OLLAMA_KEY : null);
+                    // [B2] La clave del servidor solo para autenticados con las APIs
+                    // compartidas habilitadas (mismo gate que sharedApiKey usa en el
+                    // resto de proveedores). Antes caia a process.env.OLLAMA_KEY sin
+                    // importar la sesion, porque la ruta era publica.
+                    (requestedProvider === 'ollamaCloud' ? sharedApiKey(req, 'OLLAMA_KEY', 'VITE_OLLAMA_KEY') : null);
 
   if (!resolvedKey) {
     return res.status(409).json({ 
@@ -412,17 +437,15 @@ app.post('/api/ai/account-chat', async (req, res) => {
     });
   }
 
-  // Si el usuario está autenticado y envió la key en la petición, persistirla en su perfil automáticamente
-  if (userId && (apiKey || ollamaKey) && !userKeys[requestedProvider]) {
-    try {
-      actualizarApiKeys(userId, { [requestedProvider]: (apiKey || ollamaKey) });
-    } catch (e) {
-      console.warn('[account-chat] No se pudo auto-persistir API key en perfil:', e.message);
-    }
-  }
+  // [B2] Se retira la auto-persistencia de la key que llega en el body hacia el perfil
+  // del usuario: guardar credenciales debe ser una accion explicita del dueno de la
+  // cuenta a traves de su ruta de API keys, no un efecto secundario de una llamada de IA.
 
   try {
-    const safeMaxTokens = Math.max(64, Math.min(Number(maxTokens) || 4096, 16384));
+    // [B2] Techo bajado de 16384 a 8192: el unico caller real manda 8192 o 4096
+    // (src/lib/ai.js:993), asi que no se pierde capacidad y se limita el coste maximo
+    // invocable por request.
+    const safeMaxTokens = Math.max(64, Math.min(Number(maxTokens) || 4096, 8192));
     // Normalizar modelo si viene abreviado o genérico
     let targetModel = model;
     if (requestedProvider === 'ollamaCloud') {
@@ -2858,6 +2881,7 @@ function setToMemoryCache(key, data, ttl = CACHE_DEFAULT_TTL) {
 
 app.get('/api/inegi/denue', async (req, res) => {
   const token = resolveInegiToken(req);
+  if (respondeSiSinToken(res, token)) return;
   const lat = Number(req.query.lat);
   const lng = Number(req.query.lng);
   const radius = Number(req.query.radius || 2500);
@@ -3006,6 +3030,7 @@ app.get('/api/inegi/denue', async (req, res) => {
 // ─────────────────────────────────────────────────────────
 app.get('/api/inegi/denue/ficha/:id', async (req, res) => {
   const token = resolveInegiToken(req);
+  if (respondeSiSinToken(res, token)) return;
   const id = String(req.params.id || '').trim();
 
   if (!token) return res.status(400).json({ success: false, error: 'Token DENUE requerido' });
@@ -3055,6 +3080,7 @@ app.get('/api/inegi/denue/ficha/:id', async (req, res) => {
 // ─────────────────────────────────────────────────────────
 app.get('/api/inegi/denue/nombre', async (req, res) => {
   const token = resolveInegiToken(req);
+  if (respondeSiSinToken(res, token)) return;
   const nombre = String(req.query.nombre || '').trim();
   const entidad = String(req.query.entidad || '00').trim();
   const inicio = String(req.query.inicio || '1').trim();
@@ -3100,6 +3126,7 @@ app.get('/api/inegi/denue/nombre', async (req, res) => {
 // ─────────────────────────────────────────────────────────
 app.get('/api/inegi/denue/entidad', async (req, res) => {
   const token = resolveInegiToken(req);
+  if (respondeSiSinToken(res, token)) return;
   const condicion = String(req.query.condicion || 'todos').trim();
   const entidad = String(req.query.entidad || '00').trim();
   const inicio = String(req.query.inicio || '1').trim();
@@ -3140,6 +3167,7 @@ app.get('/api/inegi/denue/entidad', async (req, res) => {
 // ─────────────────────────────────────────────────────────
 app.get('/api/inegi/denue/area', async (req, res) => {
   const token = resolveInegiToken(req);
+  if (respondeSiSinToken(res, token)) return;
   const entidad = String(req.query.entidad || '00').trim();
   const municipio = String(req.query.municipio || '0').trim();
   const localidad = String(req.query.localidad || '0').trim();
@@ -3200,6 +3228,7 @@ app.get('/api/inegi/denue/area', async (req, res) => {
 // ─────────────────────────────────────────────────────────
 app.get('/api/inegi/denue/cuantificar', async (req, res) => {
   const token = resolveInegiToken(req);
+  if (respondeSiSinToken(res, token)) return;
   const actividad = String(req.query.actividad || '0').trim();
   const area = String(req.query.area || '0').trim();
   const estrato = String(req.query.estrato || '0').trim();
@@ -3234,6 +3263,7 @@ app.get('/api/inegi/denue/cuantificar', async (req, res) => {
 // ─────────────────────────────────────────────────────────
 app.get('/api/inegi/indicadores', async (req, res) => {
   const token = resolveInegiToken(req);
+  if (respondeSiSinToken(res, token)) return;
   const ids = String(req.query.ids || '').trim();
   const area = String(req.query.area || '0700').trim();
   const ultimo = req.query.ultimo === 'true' || req.query.ultimo === '1';
@@ -3524,12 +3554,8 @@ app.post('/api/ai/proxy', async (req, res) => {
   let { url, method = 'POST', headers = {}, body } = req.body;
   try {
     const parsedTarget = new URL(url);
-    const allowedHosts = new Set([
-      'api.b.ai', 'api.groq.com', 'generativelanguage.googleapis.com', 'api.openai.com',
-      'api.mistral.ai', 'integrate.api.nvidia.com', 'openrouter.ai', 'api.together.xyz',
-      'api.perplexity.ai', 'api.ollama.com', 'ollama.com'
-    ]);
-    if (!allowedHosts.has(parsedTarget.hostname) || !['POST', 'GET'].includes(method.toUpperCase())) {
+    // [B2] Lista movida a server/aiEndpointAllowlist.js para compartirla con el enjambre.
+    if (!AI_PROVIDER_HOSTS.has(parsedTarget.hostname) || !['POST', 'GET'].includes(method.toUpperCase())) {
       return res.status(400).json({ error: 'Proveedor o método no permitido por el proxy.' });
     }
     const finalHeaders = { 'Content-Type': 'application/json', ...headers };
@@ -3995,6 +4021,7 @@ app.post('/api/test/search', async (req, res) => {
 
 app.post('/api/test/inegi', async (req, res) => {
   const token = resolveInegiToken(req);
+  if (respondeSiSinToken(res, token)) return;
   if (!token) {
     return res.status(400).json({ success: false, error: 'Token/API Key de INEGI no proporcionado' });
   }
@@ -4529,6 +4556,8 @@ app.get('/api/banxico/indicators', async (req, res) => {
 app.post('/api/swarm/interview', async (req, res) => {
   try {
     const { ideaText } = req.body;
+    // [B2] La ruta ya exige sesión; se registra el autor para la telemetría del enjambre.
+    console.log(`[swarm] interview usuario=${req.user?.username || 'anon'} longitud=${String(ideaText || '').length}`);
     const result = await swarmOrchestrator.runInterview(ideaText || '');
     return res.json({ success: true, ...result });
   } catch (error) {
@@ -4538,12 +4567,38 @@ app.post('/api/swarm/interview', async (req, res) => {
 });
 
 // 2. Transmisión SSE de eventos del enjambre por sesión
+// [B2] Reclamo de sesión por inquilino. El cliente ABRE el EventSource antes de
+// industrializar (src/components/Anteproyecto.jsx:287 vs :339), así que el dueño de un
+// sessionId se registra en el primer contacto (stream o industrialize), no solo en uno.
+// Nota de alcance: el mapa vive en memoria; tras un reinicio de PM2 el reclamo se pierde
+// y la primera sesión en volver a tocar ese sessionId lo reclama de nuevo. Se acepta así
+// a propósito: persistirlo en disco daría una falsa sensación de aislamiento y el
+// sessionId lo genera el propio cliente.
+const swarmSessionOwners = new Map();
+
+function reclamarSesionSwarm(sessionId, user) {
+  const duenio = userFolder(user);
+  const previo = swarmSessionOwners.get(sessionId);
+  if (previo && previo !== duenio) return { permitido: false, duenio };
+  swarmSessionOwners.set(sessionId, duenio);
+  return { permitido: true, duenio };
+}
+
 app.get('/api/swarm/stream/:sessionId', (req, res) => {
   const { sessionId } = req.params;
+
+  // [B2] Sin sesión ya no se llega aquí (authGuard), pero el reclamo sí aplica: antes
+  // cualquier sessionId era transmisible a quien lo pidiera.
+  const reclamo = reclamarSesionSwarm(sessionId, req.user);
+  if (!reclamo.permitido) {
+    return res.status(403).json({ error: 'Esa sesión de enjambre pertenece a otro usuario.', code: 'SWARM_SESSION_FOREIGN' });
+  }
+
   res.setHeader('Content-Type', 'text/event-stream');
   res.setHeader('Cache-Control', 'no-cache');
   res.setHeader('Connection', 'keep-alive');
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  // [B2] Se retira Access-Control-Allow-Origin: '*': era una ruta publica y ahora es de
+  // sesion; cors() (index.js:138) ya ecosistema el origin permitido con credenciales.
   res.flushHeaders();
 
   swarmOrchestrator.registerSessionStream(sessionId, res);
@@ -4560,6 +4615,13 @@ app.post('/api/swarm/industrialize', async (req, res) => {
     if (!sessionId) {
       return res.status(400).json({ success: false, error: 'sessionId es requerido' });
     }
+
+    // [B2] Reclamo de sesión y trazabilidad por usuario autenticado
+    const reclamo = reclamarSesionSwarm(String(sessionId), req.user);
+    if (!reclamo.permitido) {
+      return res.status(403).json({ success: false, error: 'Esa sesión de enjambre pertenece a otro usuario.', code: 'SWARM_SESSION_FOREIGN' });
+    }
+    console.log(`[swarm] industrialize sessionId=${sessionId} usuario=${req.user?.username || 'anon'}`);
 
     const finalContext = context || { frameworkId, answers, ideaText, aiConfig };
 
