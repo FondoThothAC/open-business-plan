@@ -1,4 +1,5 @@
 import './loadEnvironment.js';
+import { writeJsonAtomic, limpiarTemps } from '../src/lib/serverUtils/atomicJson.js';
 /**
  * @file auth.js
  * @description Sistema de autenticación para Open Business Plan.
@@ -129,9 +130,9 @@ function guardarUsuarios(data) {
   if (!fs.existsSync(dirPath)) {
     fs.mkdirSync(dirPath, { recursive: true });
   }
-  const tempFile = USERS_FILE + '.tmp.' + Date.now();
-  fs.writeFileSync(tempFile, JSON.stringify(data, null, 2), 'utf8');
-  fs.renameSync(tempFile, USERS_FILE);
+  // [B3] tmp con pid + contador + aleatorio y fsync antes del rename: dos escrituras en
+  // el mismo milisegundo ya no chocan por nombre, y el archivo final nunca queda truncado.
+  writeJsonAtomic(USERS_FILE, data);
 }
 
 function encryptionKey() {
@@ -187,8 +188,10 @@ function migrateApiKeys(data) {
  * @returns {Object|null}
  */
 export function buscarPorUsername(username) {
+  // [B3] Este camino solia ESCRIBIR (migrateApiKeys + guardarUsuarios) y authGuard lo
+  // ejecuta en CADA request autenticado. La migracion se hace ahora al cargar el modulo y
+  // dentro de los mutadores, asi que leer vuelve a ser solo leer.
   const data = cargarUsuarios();
-  if (migrateApiKeys(data)) guardarUsuarios(data);
   return data.users.find(u => u.username.toLowerCase() === username.toLowerCase()) || null;
 }
 
@@ -199,7 +202,6 @@ export function buscarPorUsername(username) {
  */
 export function buscarPorId(id) {
   const data = cargarUsuarios();
-  if (migrateApiKeys(data)) guardarUsuarios(data);
   return data.users.find(u => u.id === id) || null;
 }
 
@@ -696,5 +698,23 @@ export function sanitizarUsuario(usuario) {
     apiKeys: Object.fromEntries(Object.entries(apiKeys || {}).map(([name, value]) => [name, maskApiKey(value)]))
   };
 }
+
+// [B3] La migración de API keys a formato cifrado se hacía dentro de buscarPorUsername/
+// buscarPorId, que authGuard ejecuta en cada request autenticado: leer el store podía
+// escribirlo. Se hace una sola vez al cargar el módulo, y actualizarApiKeys (que es el
+// unico camino que agrega keys nuevas) ya llama a migrateApiKeys antes de guardar.
+function migrarSiNecesario() {
+  try {
+    const data = cargarUsuarios();
+    if (migrateApiKeys(data)) {
+      guardarUsuarios(data);
+      console.log('[auth] API keys migradas a formato cifrado enc:v1');
+    }
+    limpiarTemps(path.dirname(USERS_FILE));
+  } catch (error) {
+    console.warn('[auth] no se pudo ejecutar la migración de arranque:', error.message);
+  }
+}
+migrarSiNecesario();
 
 export { JWT_SECRET };

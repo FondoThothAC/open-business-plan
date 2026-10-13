@@ -1,4 +1,5 @@
 import fs from 'fs';
+import { writeJsonAtomic } from '../src/lib/serverUtils/atomicJson.js';
 import path from 'path';
 import crypto from 'crypto';
 
@@ -47,9 +48,7 @@ export function guardarAuditoria(entradas) {
     if (!fs.existsSync(dirPath)) {
       fs.mkdirSync(dirPath, { recursive: true });
     }
-    const tempFile = `${AUDIT_FILE}.tmp.${Date.now()}`;
-    fs.writeFileSync(tempFile, JSON.stringify(entradas, null, 2), 'utf8');
-    fs.renameSync(tempFile, AUDIT_FILE);
+    writeJsonAtomic(AUDIT_FILE, entradas);   // [B3] tmp unico + fsync + rename
   } catch (error) {
     console.error('[Audit] Error al guardar la bitácora de auditoría:', error.message);
   }

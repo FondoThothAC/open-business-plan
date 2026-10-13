@@ -8,6 +8,7 @@ import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
 import { parseCurrencyNumber } from '../finanzas/canonicalCapex.js';
+import { writeJsonAtomic, writeTextAtomic } from './atomicJson.js';
 
 /**
  * Cuenta la cantidad de módulos canónicos que contienen datos válidos en un plan.
@@ -108,7 +109,7 @@ export function saveWithVersioning({ dirPath, safeName, planData, allowRegressio
   const isoDate = new Date().toISOString().replace(/[:.]/g, '-');
   const versionFileName = `${isoDate}-${shortHash}.json`;
   const versionFilePath = path.join(versionsDir, versionFileName);
-  fs.writeFileSync(versionFilePath, rawString);
+  writeTextAtomic(versionFilePath, rawString);   // [B3] fsync + rename
 
   // Extraer inversión canónica de referencia
   const invTotal = parseCurrencyNumber(
@@ -139,11 +140,11 @@ export function saveWithVersioning({ dirPath, safeName, planData, allowRegressio
     });
   }
 
-  fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
+  writeJsonAtomic(manifestPath, manifest);   // [B3]
 
   // Escribir el archivo principal
   const mainJsonPath = path.join(dirPath, `${safeName}.json`);
-  fs.writeFileSync(mainJsonPath, rawString);
+  writeTextAtomic(mainJsonPath, rawString);   // [B3] el plan del usuario ya no puede quedar truncado
 
   return {
     success: true,

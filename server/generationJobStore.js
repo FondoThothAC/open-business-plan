@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
+import { writeJsonAtomic } from '../src/lib/serverUtils/atomicJson.js';
 
 /** Persistencia ligera de trabajos. Se puede migrar a SQLite sin cambiar las rutas HTTP. */
 export class GenerationJobStore {
@@ -14,10 +15,9 @@ export class GenerationJobStore {
   }
 
   persist() {
-    fs.mkdirSync(path.dirname(this.filePath), { recursive: true });
-    const temporary = `${this.filePath}.tmp`;
-    fs.writeFileSync(temporary, JSON.stringify(this.jobs, null, 2));
-    fs.renameSync(temporary, this.filePath);
+    // [B3] El temp tenia nombre FIJO (${filePath}.tmp): dos persists concurrentes
+    // chocaban escribiendo el mismo archivo antes del rename.
+    writeJsonAtomic(this.filePath, this.jobs);
   }
 
   create({ projectId, ownerId = 'local-admin', items = [], baseRevision = 0 }) {

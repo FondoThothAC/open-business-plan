@@ -51,6 +51,7 @@ import { recordPromptFeedback, getPromptFeedback, createTeamJoinRequest, getTeam
 import { createReviewInvite, getReviewInvite, addReviewComment, listReviewComments, revokeReviewInvite } from './reviewStore.js';
 import { inegiToken, respondeSiSinToken } from './inegiCredentials.js';
 import { AI_PROVIDER_HOSTS } from './aiEndpointAllowlist.js';
+import { writeJsonAtomic } from '../src/lib/serverUtils/atomicJson.js';
 
 function documentForExternalReview(data) {
   const copy = JSON.parse(JSON.stringify(data || {}));
@@ -1512,10 +1513,26 @@ app.post('/api/save', prohibirRevisorMutacion, (req, res) => {
       if (ownerFolder) oldDraftParts.push(ownerFolder);
       oldDraftParts.push('draft_activo');
       const oldDraftDir = path.resolve(...oldDraftParts);
-      if (fs.existsSync(oldDraftDir) && oldDraftDir !== dirPath) {
+      // [B3] ownerFolder puede quedar re-punteado a la carpeta del DUEÑO del proyecto
+      // cuando quien guarda es superadmin (kind 'administered') o un colaborador
+      // registrado. En ese caso el borrado destruía el draft_activo de OTRA persona, con
+      // su carpeta documentos/, usando rmSync({recursive, force}) sin avisar y con el
+      // error tragado por un catch vacío. Ahora:
+      //  1) solo se actúa sobre el borrador de la carpeta de quien guarda, y
+      //  2) se ARCHIVA en proyectos/.archive/drafts/ en lugar de destruirlo.
+      const esCarpetaPropia = ownerFolder === userFolder(req.user);
+      if (fs.existsSync(oldDraftDir) && oldDraftDir !== dirPath && esCarpetaPropia) {
+        const marca = new Date().toISOString().replace(/[:.]/g, '-');
+        const archiveDraft = path.resolve('proyectos', '.archive', 'drafts', `${marca}-${ownerFolder}-${projectType}`);
         try {
-          fs.rmSync(oldDraftDir, { recursive: true, force: true });
-        } catch {}
+          fs.mkdirSync(path.dirname(archiveDraft), { recursive: true });
+          fs.renameSync(oldDraftDir, archiveDraft);
+          console.log(`[save] borrador huérfano archivado en ${archiveDraft}`);
+        } catch (error) {
+          console.warn(`[save] no se pudo archivar el borrador huérfano ${oldDraftDir}:`, error.message);
+        }
+      } else if (fs.existsSync(oldDraftDir) && oldDraftDir !== dirPath && !esCarpetaPropia) {
+        console.warn(`[save] se omitió retirar el borrador ${oldDraftDir}: pertenece a otra carpeta de usuario`);
       }
     }
     
@@ -1526,6 +1543,10 @@ app.post('/api/save', prohibirRevisorMutacion, (req, res) => {
 
     const allowRegression = req.query.allowRegression === 'true' || req.body.allowRegression === true;
     const baseRevision = Number(req.headers['if-match-revision'] || req.body.baseRevision);
+    // [B3] La revisión base la fija el servidor. Se declara aquí, y no dentro del bloque
+    // if (fs.existsSync(...)), porque el guardado nuevo (proyecto que aún no está en
+    // disco) también necesita el valor para escribir revision + 1.
+    let revisionBase = 0;
     const existingPath = path.join(dirPath, `${safeName}.json`);
     let existingStatus = 'Borrador';
 
@@ -1533,6 +1554,7 @@ app.post('/api/save', prohibirRevisorMutacion, (req, res) => {
       try {
         const existing = JSON.parse(fs.readFileSync(existingPath, 'utf8'));
         const currentRevision = Number(existing.config?.revision || 0);
+        revisionBase = currentRevision;   // [B3] base autoritativa para la escritura final
         existingStatus = existing.config?.workflowStatus || 'Borrador';
         if (Number.isFinite(baseRevision) && currentRevision !== baseRevision) {
           return res.status(409).json({ success: false, code: 'REVISION_CONFLICT', currentRevision, message: 'El proyecto cambió en otra sesión. Recarga o revisa la comparación antes de guardar.' });
@@ -1565,7 +1587,12 @@ app.post('/api/save', prohibirRevisorMutacion, (req, res) => {
       workflowStatus: targetWorkflowStatus,
       reviewHistory,
       fechaActualizacion: new Date().toISOString(),
-      revision: Number(planData.config?.revision || 0) + 1 
+      // [B3] La revisión la fija el servidor desde lo que hay en disco, no desde el valor
+      // que trajo el cliente: antes se incrementaba planData.config.revision, así que un
+      // cliente con un número inventado o desfasado definía la versión siguiente.
+      // Invariante: no debe haber ningún await entre la lectura de revisionBase (más
+      // arriba) y esta escritura. Si esto se vuelve async, hará falta un mutex.
+      revision: revisionBase + 1 
     };
 
     // Guardado versionado inmutable con control anti-regresión
@@ -4807,7 +4834,7 @@ app.post('/api/telemetry/tokens', (req, res) => {
       days.slice(0, days.length - 7).forEach(d => delete store.daily[d]);
     }
 
-    fs.writeFileSync(tokenFilePath, JSON.stringify(store, null, 2), 'utf8');
+    writeJsonAtomic(tokenFilePath, store);   // [B3] tokens_usage.json deja de escribirse a cielo abierto
 
     // Estructurar respuesta compatible tanto con formato plano como enriquecido
     const todayUsage = store.daily[todayDate] || {};
@@ -5426,7 +5453,7 @@ app.post('/api/telemetry/call-log', (req, res) => {
     store.byProject[projectId].byProvider[provider] = (store.byProject[projectId].byProvider[provider] || 0) + totalTokens;
     store.lastUpdated = new Date().toISOString();
 
-    fs.writeFileSync(tokenFilePath, JSON.stringify(store, null, 2), 'utf8');
+    writeJsonAtomic(tokenFilePath, store);   // [B3]
 
     res.json({ success: true, entry: logEntry });
   } catch (error) {
