@@ -10,6 +10,7 @@
  */
 
 import { summarizeProvenance, buildSearchApiKeys } from '../src/lib/tools/provenance.js';
+import { inegiToken } from './inegiCredentials.js';
 
 export const CATEGORIAS_ESTRATEGICAS = {
   AMENAZA_DIRECTA: 'AMENAZA_DIRECTA',
@@ -162,7 +163,7 @@ export class AutonomousResearchEngine {
     const lat = 29.0948;
     const lng = -110.9692;
     const radius = 5000;
-    const effectiveToken = String(tokenDenue || process.env.DENUE_KEY || process.env.VITE_DENUE_KEY || process.env.INEGI_KEY || '1b9e230f-2ae0-48db-bd20-8810b1db575e').trim();
+    const effectiveToken = String(tokenDenue || inegiToken()).trim();
 
     let competidoresCrudos = [];
 

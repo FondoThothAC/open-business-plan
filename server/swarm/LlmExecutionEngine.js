@@ -7,6 +7,8 @@
  * garantizando cero caídas del sistema.
  */
 
+import { esEndpointDeProveedorPermitido } from '../aiEndpointAllowlist.js';
+
 export class LlmExecutionEngine {
   constructor() {
     this.providers = ['ollama', 'gemini', 'groq', 'openai', 'kimi', 'bai'];
@@ -134,11 +136,21 @@ export class LlmExecutionEngine {
     }
 
     // Intentar llamada a Ollama local si está disponible (con timeout corto de 800ms)
+    // [B2] aiConfig.endpoint llega del body del request (Anteproyecto.jsx manda
+    // planData.config.ai), así que antes podía apuntar a cualquier host interno usando
+    // las credenciales del servidor mientras la ruta era pública. Solo se navega a
+    // destinos permitidos; el loopback de Ollama sigue válido porque el motor lo usa
+    // por defecto, y a propósito NO se le aplica el bloqueador de IPs privadas de B6.
     try {
-      const ollamaRes = await this.tryOllama(systemPrompt, userPrompt, aiConfig.endpoint);
-      if (ollamaRes) {
-        onThought('Respuesta sintetizada exitosamente con motor Local (Ollama).');
-        return ollamaRes;
+      const endpointOllama = aiConfig.endpoint || 'http://localhost:11434';
+      if (esEndpointDeProveedorPermitido(endpointOllama)) {
+        const ollamaRes = await this.tryOllama(systemPrompt, userPrompt, endpointOllama);
+        if (ollamaRes) {
+          onThought('Respuesta sintetizada exitosamente con motor Local (Ollama).');
+          return ollamaRes;
+        }
+      } else {
+        console.warn(`[LlmExecutionEngine] endpoint de Ollama rechazado por la allowlist: ${endpointOllama}`);
       }
     } catch {}
 

@@ -9,6 +9,8 @@
  * 5. Códigos de color por fuente para el mapa
  */
 
+import { inegiToken } from './inegiCredentials.js';
+
 // ─────────────────────────────────────────────────────────
 //  Configuración de fuentes y colores para el frontend
 // ─────────────────────────────────────────────────────────
@@ -134,7 +136,7 @@ async function sleep(ms) {
 //  Fuente 1: DENUE (INEGI) — Con peticiones concéntricas
 // ─────────────────────────────────────────────────────────
 async function buscarDENUE(lat, lng, query, radius, token) {
-  const effectiveToken = String(token || process.env.DENUE_KEY || process.env.INEGI_KEY || '1b9e230f-2ae0-48db-bd20-8810b1db575e').trim();
+  const effectiveToken = String(token || inegiToken()).trim();
   if (!effectiveToken) {
     console.log('[CompetitorEngine] Sin token DENUE, omitiendo fuente INEGI.');
     return [];
@@ -505,7 +507,7 @@ function cruzarResultados(resultadosPorFuente) {
  * @returns {Promise<Object>} Resultados fusionados con metadata
  */
 export async function busquedaMultiFuente({ lat, lng, query, radius = 2000, denueToken, googleApiKey, bingApiKey, allowSynthetic = false }) {
-  const effectiveDenueToken = String(denueToken || process.env.DENUE_KEY || process.env.INEGI_KEY || '1b9e230f-2ae0-48db-bd20-8810b1db575e').trim();
+  const effectiveDenueToken = String(denueToken || inegiToken()).trim();
 
   console.log(`\n${'═'.repeat(60)}`);
   console.log(`  🕵️  AGENTE DE INVESTIGACIÓN DE MERCADO`);

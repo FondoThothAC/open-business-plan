@@ -8,7 +8,13 @@ test('TDD: Seguridad y Ausencia de API Keys Hardcodeadas', async (t) => {
   const sensitiveRegexes = [
     /sk-[a-zA-Z0-9_-]{20,}/g,
     /tvly-[a-zA-Z0-9_-]{20,}/g,
-    /BSA[a-zA-Z0-9_-]{20,}/g
+    /BSA[a-zA-Z0-9_-]{20,}/g,
+    // [B2] Las regexes de arriba no detectaban credenciales formato UUID (así se fugó la
+    // del DENUE/INEGI en server/index.js, competitorEngine.js, inegiAgebEngine.js,
+    // autonomousResearchEngine.js y encrypt_keys.cjs). Se ancla al contexto — clave/token/
+    // secret/denue/inegi antes del valor — para no marcar los UUID que son ids de proyecto
+    // o rutas de trabajo en scripts/.
+    /(?:key|token|secret|denue|inegi)["'\s:=]{1,4}["']?[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi
   ];
 
   const foundViolations = [];
