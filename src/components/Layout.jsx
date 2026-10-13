@@ -335,13 +335,23 @@ export default function Layout() {
       const apiBase = getApiBase();
       const doFetch = authFetch || fetch;
       doFetch(`${apiBase}/api/projects`, { credentials: 'include' })
-        .then(res => res.json())
+        // [B4] Faltaba res.ok: un 401/500 con body JSON {error} se asignaba igual a
+        // savedProjects y el fallo solo se veia en consola. GET /api/projects devuelve un
+        // OBJETO {negocios, social}, no un arreglo, asi que el guard de forma que ya existe
+        // (typeof data === 'object') se conserva: un Array.isArray aqui vaciaria la lista.
+        .then(res => {
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          return res.json();
+        })
         .then(data => {
           if (data && typeof data === 'object') {
             setSavedProjects(data);
           }
         })
-        .catch(err => console.error('Error fetching saved projects:', err));
+        .catch(err => {
+          console.error('Error fetching saved projects:', err);
+          alert('No se pudo cargar la lista de proyectos guardados. Revisa tu sesión o intenta de nuevo.');
+        });
     };
     fetchProjects();
   }, [showLoadModal, saveStatus, isDropdownOpen, planData?.config?.projectId, user?.username]);
@@ -1457,6 +1467,9 @@ export default function Layout() {
                                     method: 'POST',
                                     headers: { 'Content-Type': 'application/json' }
                                   });
+                                  // [B4] res.ok antes de leer el body, para dar un mensaje
+                                  // útil en 401/403/500 en vez de 'No se pudo clonar'.
+                                  if (!res.ok) throw new Error(`HTTP ${res.status}`);
                                   const data = await res.json();
                                   if (data.success && data.project) {
                                     alert(`¡Proyecto clonado exitosamente!\nSe ha creado "${data.project.name}" en tu espacio.`);
