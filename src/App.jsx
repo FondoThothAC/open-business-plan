@@ -12,7 +12,7 @@ import Configuracion from './modules/Configuracion';
 import Anexos from './modules/Anexos';
 import LeanCanvas from './modules/LeanCanvas';
 import PitchDeck from './modules/PitchDeck';
-import WikiKnowledgeCenter from './modules/WikiKnowledgeCenter';
+import WikiShell from './modules/wiki/WikiShell';
 import Anteproyecto from './components/Anteproyecto';
 import DynamicModule from './components/DynamicModule';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -47,6 +47,12 @@ function AppContent() {
       {showWizard && <SetupWizard onComplete={handleWizardComplete} />}
       <Routes>
         <Route path="review/:token" element={<ReviewPageRoute />} />
+
+        {/* Wiki de Software OBP: pantalla completa autónoma fuera del Layout */}
+        <Route path="wiki" element={<WikiShell />} />
+        <Route path="wiki/:pageId" element={<WikiShell />} />
+        <Route path="wiki/*" element={<WikiShell />} />
+
         <Route path="/" element={<Layout />}>
           <Route index element={<Navigate to="/semilla" replace />} />
 
@@ -59,8 +65,11 @@ function AppContent() {
           <Route path=":tipoDoc/lean-canvas" element={<LeanCanvas />} />
           <Route path=":tipoDoc/pitch-deck/:slug" element={<PitchDeck />} />
           <Route path=":tipoDoc/pitch-deck" element={<PitchDeck />} />
-          <Route path=":tipoDoc/wiki/:slug" element={<WikiKnowledgeCenter />} />
-          <Route path=":tipoDoc/wiki" element={<WikiKnowledgeCenter />} />
+
+          {/* Redirecciones de seguridad: evitar colisiones entre :tipoDoc/wiki y :tipoDoc/:moduleId */}
+          <Route path=":tipoDoc/wiki/:slug" element={<Navigate to="/wiki" replace />} />
+          <Route path=":tipoDoc/wiki" element={<Navigate to="/wiki" replace />} />
+
           <Route path=":tipoDoc/anexos/:slug" element={<Anexos />} />
           <Route path=":tipoDoc/anexos" element={<Anexos />} />
           <Route path=":tipoDoc/configuracion/:slug" element={<Configuracion />} />
@@ -77,7 +86,6 @@ function AppContent() {
           <Route path="preview" element={<Navigate to="/vista-previa" replace />} />
           <Route path="lean-canvas" element={<LeanCanvas />} />
           <Route path="pitch-deck" element={<PitchDeck />} />
-          <Route path="wiki" element={<WikiKnowledgeCenter />} />
           <Route path="semilla" element={<Anteproyecto />} />
           <Route path="anexos" element={<Anexos />} />
           <Route path="configuracion" element={<Configuracion />} />

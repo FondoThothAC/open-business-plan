@@ -689,15 +689,15 @@ export default function Layout() {
               {!isSidebarCollapsed && <span>Anexos y Evidencia</span>}
             </NavLink>
             <NavLink 
-              to={buildSemanticUrl({ projectType: planData?.config?.projectType, section: 'wiki', slug: currentProjectSlug })} 
+              to="/wiki" 
               className="nav-item" 
-              title="Wiki Knowledge Center (Metodologías y Fórmulas)" 
+              title="Wiki de Software OBP (Modelos, Prompts y Referencia)" 
               style={isSidebarCollapsed ? { justifyContent: 'center' } : {}}
             >
               <div className="nav-icon-box" style={{ color: '#8b5cf6' }}><BookOpen size={18} /></div>
               {!isSidebarCollapsed && (
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-                  <span>Wiki Knowledge</span>
+                  <span>Wiki Software</span>
                   <span style={{ fontSize: '0.62rem', padding: '1px 5px', borderRadius: '4px', background: 'rgba(139, 92, 246, 0.15)', color: '#8b5cf6', fontWeight: 800 }}>
                     WIKI
                   </span>

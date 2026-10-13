@@ -1668,3 +1668,63 @@ textarea.form-control {
   white-space: normal;
   word-break: break-word;
 }
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   WIKI DE SOFTWARE OBP — ESTILOS INSTITUCIONALES (DOCUSAURUS)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.wiki-shell {
+  --wiki-sidebar-width: 320px;
+  --wiki-toc-width: 240px;
+}
+
+.wiki-tree-item:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+}
+
+.wiki-tree-item.active {
+  background: rgba(99, 102, 241, 0.15) !important;
+}
+
+.wiki-table th,
+.wiki-table td {
+  padding: 0.6rem 0.85rem;
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+  font-size: 0.84rem;
+}
+
+.wiki-table th {
+  background: rgba(255, 255, 255, 0.04);
+  font-weight: 600;
+  text-align: left;
+}
+
+.wiki-table tr:hover td {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+@media (max-width: 1024px) {
+  .wiki-sidebar-right {
+    display: none !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .wiki-mobile-toggle {
+    display: inline-flex !important;
+  }
+
+  .wiki-sidebar-left {
+    position: absolute !important;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 50;
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.5);
+    transform: translateX(-100%);
+    transition: transform 0.25s ease-in-out;
+  }
+
+  .wiki-sidebar-left.open {
+    transform: translateX(0) !important;
+  }
+}

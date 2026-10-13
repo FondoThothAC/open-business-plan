@@ -26,6 +26,7 @@ import { recordPresence, getActivePresence, clearPresence } from './presenceTrac
 import { renameProject } from '../src/lib/serverUtils/projectRename.js';
 import { sanitizeProjectConfig } from '../src/lib/serverUtils/sanitizeProjectConfig.js';
 import marketCascadeRouter from './routes/marketCascade.js';
+import wikiRouter from './routes/wikiRouter.js';
 import { GenerationJobStore } from './generationJobStore.js';
 import cookieParser from 'cookie-parser';
 import { 
@@ -579,6 +580,7 @@ Instrucciones de Respuesta:
 };
 
 app.post('/api/wiki/ask', handleWikiAsk);
+app.use('/api/wiki', wikiRouter);
 
 app.get('/api/wiki/articles', (req, res) => {
   try {
