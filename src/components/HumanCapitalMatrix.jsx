@@ -117,6 +117,11 @@ export default function HumanCapitalMatrix({ data, onChange, readOnly = false })
     ? data.puestos_lista 
     : initialFallback;
 
+  // [B5] Vista 3 renderizaba <MermaidViewer chart={mermaidChartSource} .../> sin que esa
+  // variable existiera en el alcance: ReferenceError al abrir "Diagrama Mermaid" y el
+  // helper generateMermaidFromPuestos (linea 50) no se llamaba en ningun punto del archivo.
+  const mermaidChartSource = generateMermaidFromPuestos(puestosList);
+
   const [editingId, setEditingId] = useState(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [viewMode, setViewMode] = useState("cards");

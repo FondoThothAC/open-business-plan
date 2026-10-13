@@ -21,7 +21,7 @@ const calculateIRR = (cashflows, maxIterations = 200, tolerance = 1e-7) => {
     return null;
   }
   if (npvAtLower * npvAtUpper > 0) return null;
-  let midRate = 0;
+  let midRate;
   for (let i = 0; i < maxIterations; i++) {
     midRate = (lowerBound + upperBound) / 2;
     if (Math.abs(upperBound - lowerBound) < tolerance) {
@@ -31,10 +31,17 @@ const calculateIRR = (cashflows, maxIterations = 200, tolerance = 1e-7) => {
     if (Math.abs(npvAtMid) < tolerance) {
       return midRate * 100;
     }
+    // [B5] El extremo que se mueve tenia que recalcular su NPV. npvAtLower se calculaba
+    // una sola vez para -0.99 y nunca se actualizaba, asi que desde la segunda iteracion
+    // la comparacion de signos usaba un extremo obsoleto: la biseccion convergia al
+    // intervalo equivocado (TIR incorrecta o null en casos con solucion valida).
     if (npvAtLower * npvAtMid < 0) {
       upperBound = midRate;
+      // npvAtUpper no se recalcula: el test de signos de esta linea solo consulta
+      // npvAtLower, y cerrar el intervalo por arriba tampoco exige su NPV.
     } else {
       lowerBound = midRate;
+      npvAtLower = npvAtMid;   // [B5] aqui estaba el bug: este extremo se movia sin actualizar su NPV
     }
   }
   return null;
@@ -180,7 +187,7 @@ const calculateFinancialProjections = (projectData, durationUnit, incrementalAna
     });
     currentMonthData.sales = monthlySales;
     derivedExpenses.forEach((exp) => {
-      let amount = 0;
+      let amount;
       if (year === 1 && exp.monthlyOverrides && exp.monthlyOverrides.length === 12) {
         amount = exp.monthlyOverrides[monthIndex];
       } else {
@@ -188,7 +195,7 @@ const calculateFinancialProjections = (projectData, durationUnit, incrementalAna
         if (exp.monthlyOverrides && exp.monthlyOverrides.length === 12) {
           baseAmount = exp.monthlyOverrides.reduce((a, b) => a + b, 0) / 12;
         }
-        let specificGrowthMultiplier = 1;
+        let specificGrowthMultiplier;
         if (exp.growthType === "monthly") {
           specificGrowthMultiplier = Math.pow(1 + (exp.monthlyGrowthRate || 0) / 100, i);
         } else {
@@ -377,5 +384,8 @@ const calculateFinancialProjections = (projectData, durationUnit, incrementalAna
   };
 };
 export {
-  calculateFinancialProjections
+  // [B5] calculateIRR se exporta ademas de calculateFinancialProjections para poder
+  // cubrirla con pruebas de valor conocido: hoy ningun test del repo llega a ella.
+  calculateFinancialProjections,
+  calculateIRR
 };

@@ -13,7 +13,7 @@ const calculateSingleBomItemCost = (item: BOMItem, dailyMinimumWage: number): nu
     return 0;
 };
 
-const calculateIRR = (cashflows: number[], maxIterations = 200, tolerance = 1e-7): number | null => {
+export const calculateIRR = (cashflows: number[], maxIterations = 200, tolerance = 1e-7): number | null => {
     if (cashflows.length === 0 || cashflows[0] >= 0) return null;
     let lowerBound = -0.99, upperBound = 5.0;
     const npv = (rate: number) => cashflows.reduce((acc, val, i) => acc + val / Math.pow(1 + rate, i), 0);
@@ -29,7 +29,7 @@ const calculateIRR = (cashflows: number[], maxIterations = 200, tolerance = 1e-7
 
     if (npvAtLower * npvAtUpper > 0) return null; // No single root in this range
 
-    let midRate = 0;
+    let midRate;
     for (let i = 0; i < maxIterations; i++) {
         midRate = (lowerBound + upperBound) / 2;
         if (Math.abs(upperBound - lowerBound) < tolerance) {
@@ -39,10 +39,14 @@ const calculateIRR = (cashflows: number[], maxIterations = 200, tolerance = 1e-7
         if (Math.abs(npvAtMid) < tolerance) {
             return midRate * 100;
         }
+        // [B5] Mismo fix que en el .js: el gemelo TypeScript esta vivo solo para
+        // scripts/generate_closets_corona.js (Vite resuelve .js para la app), asi que se
+        // parchean los dos para que no diverjan.
         if (npvAtLower * npvAtMid < 0) {
             upperBound = midRate;
         } else {
             lowerBound = midRate;
+            npvAtLower = npvAtMid;
         }
     }
     return null; // Failed to converge

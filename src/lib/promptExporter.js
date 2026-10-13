@@ -49,7 +49,7 @@ export function buildExternalPrompt({
   const isUltra = isUltraConciseModule(moduleKey);
   const fieldGuidance = getFieldFormatGuidance(field, verbosity, moduleKey);
 
-  let directivaFormato = '';
+  let directivaFormato;   // [B5] se asigna en ambas ramas antes de su unica lectura (linea ~105): inicializador inutil, no un bug
   if (isUltra || verbosity === 'conciso') {
     directivaFormato = `1. Formato Ultra-Conciso Obligatorio: Redacta ÚNICAMENTE de 3 a 5 viñetas (bullet points) concretas.
 2. Cada viñeta debe ser una oración corta, directa al grano y de alto impacto (máximo 15 a 25 palabras por viñeta).

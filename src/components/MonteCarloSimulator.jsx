@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useDeferredValue } from 'react';
 import { runMonteCarloSimulation } from '../lib/finanzas/montecarlo';
 import { 
   TrendingUp, 
@@ -43,19 +43,31 @@ export default function MonteCarloSimulator({
     setSimWacc(wacc);
   }, [initialInvestment, baseRevenue, baseCost, wacc]);
 
-  // Ejecutamos la simulación reactivamente cada vez que cambian los parámetros
+  // Ejecutamos la simulación reactivamente cada vez que cambian los parámetros.
+  // [B5] Con 5,000-10,000 iteraciones (y un sort por año dentro del motor) el useMemo se
+  // re-ejecutaba en CADA tick de slider y congelaba la UI. useDeferredValue deja pintar el
+  // slider de inmediato y correr la simulación del valor diferido: sin dependencias nuevas,
+  // sin temporizadores y sin worker. Mover a Worker queda como mejora futura anotada.
+  const parametros = { simRevenue, simCost, simWacc, simCapex, years, iterations, revenueVol, costVol };
+  const parametrosDiferidos = useDeferredValue(parametros);
+  const simulando = useMemo(
+    () => JSON.stringify(parametros) !== JSON.stringify(parametrosDiferidos),
+    [parametros, parametrosDiferidos]
+  );
+
   const simulationResults = useMemo(() => {
+    const p = parametrosDiferidos;
     return runMonteCarloSimulation(
-      simRevenue,
-      simCost,
-      simWacc,
-      simCapex,
-      years,
-      iterations,
-      revenueVol,
-      costVol
+      p.simRevenue,
+      p.simCost,
+      p.simWacc,
+      p.simCapex,
+      p.years,
+      p.iterations,
+      p.revenueVol,
+      p.costVol
     );
-  }, [simRevenue, simCost, simWacc, simCapex, years, iterations, revenueVol, costVol]);
+  }, [parametrosDiferidos]);
 
   const [hoveredBin, setHoveredBin] = useState(null);
   const [hoveredTrajectoryYear, setHoveredTrajectoryYear] = useState(null);
@@ -158,6 +170,12 @@ export default function MonteCarloSimulator({
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+      {/* [B5] La simulacion diferida puede ir unos frames por detras del slider. */}
+      {simulando && (
+        <div role="status" style={{ background: 'rgba(59,130,246,0.14)', color: '#93c5fd', padding: '6px 12px', borderRadius: 8, fontSize: '0.78rem' }}>
+          Calculando simulación…
+        </div>
+      )}
       {/* Sección de KPI e Introducción */}
       <div className="glass-panel" style={{ padding: '1.5rem', background: 'rgba(99, 102, 241, 0.02)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
