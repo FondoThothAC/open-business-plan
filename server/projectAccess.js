@@ -101,7 +101,11 @@ export function userFolder(user) {
  * @returns {{ root: string, own: string, shared: string }}
  */
 export function projectPaths(type, id, user) {
-  assertSafeProjectSegment(type, 'tipo');
+  // [B1/B6] La whitelist se aplica AQUI, no solo en los 4 handlers de logo/logs: asi la
+  // heredan de una vez las ~25 rutas /api/projects/:type/... que pasan por los resolvers.
+  // Sin esto, PROJECT_TYPES era importado pero inexistente para el resto del server y un
+  // tipo sintacticamente valido pero no previsto (p. ej. 'telemetry') seguia resolviendo.
+  assertSafeProjectType(type);
   assertSafeProjectSegment(id, 'id_proyecto');
   const root = path.resolve('proyectos', type);
   const own = path.join(root, userFolder(user), id, `${id}.json`);
@@ -117,7 +121,7 @@ export function projectPaths(type, id, user) {
  * @returns {{ path: string, owner: string, kind: string }|null}
  */
 export function resolveReadableProject(type, id, user) {
-  assertSafeProjectSegment(type, 'tipo');
+  assertSafeProjectType(type);   // [B6] whitelist en el resolver compartido (ver projectPaths)
   assertSafeProjectSegment(id, 'id_proyecto');
 
   const root = path.resolve('proyectos', type);

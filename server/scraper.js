@@ -32,7 +32,7 @@ const addHumanNoise = async (page) => {
  * @returns {Promise<Object>} lo que devuelva trabajo(), o { success:false, error } sin
  *   cambiar la forma que ya consumian los llamadores
  */
-async function conPagina(url, trabajo) {
+async function conPagina(url, trabajo, { interceptar = false } = {}) {
     try {
         // Se valida ANTES de lanzar Chromium: fallo rapido y sin proceso.
         await assertSafeExternalUrl(url);
@@ -46,21 +46,31 @@ async function conPagina(url, trabajo) {
         const page = await browser.newPage();
         await page.setViewport({ width: 1366, height: 768 });
 
-        // [B6] Puppeteer sigue redirecciones, asi que la validacion previa no cubre un
-        // 302 hacia un host interno. Se revalida cada navegacion. Alcance conocido: aqui no
-        // se resuelve DNS (el listener no puede aguardar), se chequean esquema, puerto,
-        // userinfo, IP literal y nombres internos; queda la ventana de DNS rebinding. Para
-        // cerrarla del todo habria que fijar --host-resolver-rules, que romperiria el uso
-        // legitimo de dominios con múltiples IPs, asi que se documenta en lugar de hacerse.
-        await page.setRequestInterception(true);
-        page.on('request', (req) => {
-            const tipo = req.resourceType();
-            if (['main', 'sub_frame', 'xhr', 'fetch'].includes(tipo) && !isSafeUrlShapeSync(req.url())) {
-                req.abort().catch(() => {});
-            } else {
-                req.continue().catch(() => {});
-            }
-        });
+        // [B6] Puppeteer sigue redirecciones, así que la validación previa no cubre un
+        // 302 hacia un host interno. Se revalida cada request http(s), SIN lista de tipos:
+        // la primera versión filtraba por ['main','sub_frame'], que son nombres de
+        // Playwright; resourceType() de Puppeteer devuelve el enum Network.ResourceType de
+        // CDP en minúsculas ('document','xhr','fetch',…), así que la request de navegación
+        // y cualquier redirección interna caían siempre en continue(): el guardia no hacía
+        // nada justo en el caso que motivó el paso. Bloquear solo http(s) deja pasar
+        // data:/blob: y los subrecursos de sitios públicos siguen pasando, así que no
+        // degrada el scraping legítimo.
+        // Solo se intercepta cuando la URL viene del usuario: los dos scrapers por keyword
+        // navegan a dominios fijos, y la intercepción deshabilita la cache HTTP y cambia las
+        // señales anti-bot. Alcance conocido y documentado: aquí no se resuelve DNS (el
+        // listener es sincrónico), queda la ventana de DNS rebinding; cerrarla con
+        // --host-resolver-rules rompería dominios legítimos con múltiples IPs.
+        if (interceptar) {
+            await page.setRequestInterception(true);
+            page.on('request', (req) => {
+                const destino = req.url();
+                if (/^https?:/i.test(destino) && !isSafeUrlShapeSync(destino)) {
+                    req.abort().catch(() => {});
+                } else {
+                    req.continue().catch(() => {});
+                }
+            });
+        }
 
         await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 20000 });
         return await trabajo(page);
@@ -110,7 +120,7 @@ export const scrapeSocialFollowers = async (url) => {
         }
 
         return { success: true, followers, rating, metadata, url };
-    });
+    }, { interceptar: true });
 };
 
 // Scraper de Uber Eats / Rappi (Delivery de Comida)
@@ -147,7 +157,7 @@ export const scrapeUberEatsRappi = async (url) => {
         }
 
         return { success: true, platform: url.includes('ubereats.com') ? 'Uber Eats' : 'Rappi', rating, reviewsCount, priceRange, url };
-    });
+    }, { interceptar: true });
 };
 
 // Scraper de Airbnb / TripAdvisor
@@ -171,7 +181,7 @@ export const scrapeAirbnbTripAdvisor = async (url) => {
         }
 
         return { success: true, platform: url.includes('airbnb.com') ? 'Airbnb' : 'TripAdvisor', rating, pricePerNight, reviews, url };
-    });
+    }, { interceptar: true });
 };
 
 // Scraper de MercadoLibre (E-commerce / Retail)

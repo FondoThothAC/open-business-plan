@@ -53,7 +53,7 @@ import { inegiToken, respondeSiSinToken } from './inegiCredentials.js';
 import { AI_PROVIDER_HOSTS } from './aiEndpointAllowlist.js';
 import { writeJsonAtomic } from '../src/lib/serverUtils/atomicJson.js';
 import { assertSafeExternalUrl, perteneceADominio } from './urlSafety.js';
-import { createThrottledQueue } from './serialQueue.js';
+import { crearBuscadorSeguro } from './ddgLimiter.js';
 
 function documentForExternalReview(data) {
   const copy = JSON.parse(JSON.stringify(data || {}));
@@ -71,33 +71,21 @@ function documentForExternalReview(data) {
 // ─────────────────────────────────────────────────────────
 //  Helper Seguro para Búsqueda DuckDuckGo (Control de Tasa y Backoff)
 // ─────────────────────────────────────────────────────────
-// [B6] ultimaPeticionDdg se jubila: el espaciamiento lo administra la cola serial.
-const INTERVALO_MINIMO_DDG_MS = 1200;
-const colaDdg = createThrottledQueue({ intervalMs: INTERVALO_MINIMO_DDG_MS });
+// [B6] ultimaPeticionDdg se jubila: el espaciamiento lo administra la cola serial de
 
-export async function safeDdgSearch(query, reintentos = 2) {
-  // El guard anterior media Date.now() - ultimaPeticionDdg y dormia la diferencia, pero K
-  // llamadas concurrentes leian el mismo timestamp, dormian lo mismo, despertaban juntas y
-  // las K estampaban la hora: solo espaciaba llamadas SECUEnciales (ojo: la ficha decia que
-  // el timestamp se asignaba despues del await, y no era asi: se asignaba antes). La cola
-  // reserva el turno por encadenamiento de promesas. Se conserva firma y contrato: devuelve
-  // un ARREGLO (respuesta.results || []), con su retry ante "too quickly", porque tiene 10
-  // call sites (2242, 2283, 2326, 2345, 2385, 2404, 2449, 2464, 2579, 3358 y enrich).
-  return colaDdg.run(async () => {
-    try {
-      const respuesta = await ddgSearch(query);
-      return respuesta.results || [];
-    } catch (error) {
-      if (reintentos > 0 && error.message?.includes('too quickly')) {
-        console.warn(`[DDG Seguro] L\u00edmite de tasa detectado para "${query}". Pausando 2500ms... (${reintentos} reintentos restantes)`);
-        await new Promise(resolve => setTimeout(resolve, 2500));
-        return safeDdgSearch(query, reintentos - 1);
-      }
-      console.warn(`[DDG Seguro] B\u00fasqueda no disponible para "${query}":`, error.message);
-      return [];
-    }
-  });
-}
+const INTERVALO_MINIMO_DDG_MS = 1200;
+
+// El reintento y el espaciamiento viven en server/ddgLimiter.js para poder probarse con un
+// buscador inyectado: importar index.js levantaria el servidor, y la red real no puede ser
+// requisito del suite. Se conserva firma y contrato (devuelve ARREGLO) porque safeDdgSearch
+// tiene 10 call sites y test_ddg.js la importa por nombre.
+export const safeDdgSearch = crearBuscadorSeguro({
+  buscar: ddgSearch,
+  intervalMs: INTERVALO_MINIMO_DDG_MS,
+  reintentosPorDefecto: 2,
+  esperaReintentoMs: 2500,
+  etiqueta: 'DDG Seguro'
+});
 
 const app = express();
 app.set('trust proxy', 1);
@@ -3615,7 +3603,10 @@ app.post('/api/ai/proxy', async (req, res) => {
   try {
     const parsedTarget = new URL(url);
     // [B2] Lista movida a server/aiEndpointAllowlist.js para compartirla con el enjambre.
-    if (!AI_PROVIDER_HOSTS.has(parsedTarget.hostname) || !['POST', 'GET'].includes(method.toUpperCase())) {
+    // [B6] Ademas del hostname en la allowlist se exige https y la peticion no sigue
+    // redirecciones: sin eso, un proveedor de la lista que respondiera 302 a una direccion
+    // interna convertia la allowlist en decoracion.
+    if (parsedTarget.protocol !== 'https:' || !AI_PROVIDER_HOSTS.has(parsedTarget.hostname) || !['POST', 'GET'].includes(method.toUpperCase())) {
       return res.status(400).json({ error: 'Proveedor o método no permitido por el proxy.' });
     }
     const finalHeaders = { 'Content-Type': 'application/json', ...headers };
@@ -3664,7 +3655,10 @@ app.post('/api/ai/proxy', async (req, res) => {
       method,
       headers: finalHeaders,
       body: body ? JSON.stringify(body) : undefined,
-      signal: AbortSignal.timeout(180000)
+      signal: AbortSignal.timeout(180000),
+      // [B6] La allowlist es de hostnames; si el proveedor respondiera 302 a una direccion
+      // interna, seguirla la esquivaria por completo. Se exige ademas https arriba.
+      redirect: 'error'
     });
     const data = await response.json();
     return res.status(response.status).json(data);

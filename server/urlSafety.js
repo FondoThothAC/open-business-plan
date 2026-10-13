@@ -80,6 +80,12 @@ export function esIpPrivada(ip) {
     if (/^fe[89ab][0-9a-f]:/.test(texto)) return true;   // fe80::/10 link-local
     if (/^ff/.test(texto)) return true;                  // ff00::/8 multicast
     if (/^2001:db8:/.test(texto)) return true;           // documentacion
+    // Túneles y formas de IPv6 que pueden acabar apuntando a una red interna. Un scraper
+    // no tiene ningún motivo legítimo para alcanzarlos, así que se rechazan en bloque
+    // (fallo cerrado) en lugar de intentar decodificar la v4 encapsulada:
+    //   2002::/16 6to4, 2001::/32 Teredo, 64:ff9b::/96 NAT64, 100::/64 discard-only,
+    //   2001:10::/28 ORCHID e interfaces de enlace.
+    if (/^(2002:|2001:0|2001::|64:ff9b:|100:|2001:20|2620:108)/.test(texto)) return true;
     return false;
   }
 
@@ -122,7 +128,7 @@ export function isSafeUrlShapeSync(raw) {
  * @param {string} raw
  * @returns {Promise<{ url: URL, ips: string[] }>}
  */
-export async function assertSafeExternalUrl(raw) {
+export async function assertSafeExternalUrl(raw, { resolver = PROMESA_DNS.lookup } = {}) {
   if (!isSafeUrlShapeSync(raw)) throw new UrlNoPermitida();
   const url = new URL(String(raw));
   const host = url.hostname.replace(/^\[|\]$/g, '');
@@ -132,7 +138,9 @@ export async function assertSafeExternalUrl(raw) {
 
   let registros;
   try {
-    registros = await PROMESA_DNS.lookup(host, { all: true, verbatim: true });
+    // El resolvedor se puede inyectar para probar la revalidacion de DNS sin red real:
+    // el suite no puede depender de que google.com resuelva ni de que un .invalid no.
+    registros = await resolver(host, { all: true, verbatim: true });
   } catch {
     throw new UrlNoPermitida();   // no se revela si el fallo fue "no existe" o "es privado"
   }

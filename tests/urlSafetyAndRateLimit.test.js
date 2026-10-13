@@ -78,10 +78,27 @@ test('[B6] assertSafeExternalUrl rechaza antes de navegar y no revela el motivo'
       return true;
     }, `debería rechazar ${u}`);
   }
-  await assert.rejects(() => assertSafeExternalUrl('host-inexistente-obp-b6.invalid/x'), undefined, 'host que no resuelve debe rechazarse');
-  const ok = await assertSafeExternalUrl('https://www.google.com/');
-  assert.equal(ok.url.hostname, 'www.google.com');
-  assert.ok(ok.ips.length > 0 && !ok.ips.some(esIpPrivada), 'un host público resuelve a IPs públicas');
+  // Sin red real (lo exigía el brief): la revalidación de DNS se prueba inyectando el
+  // resolvedor. Un nombre que resuelve a loopback debe rechazarse aunque su nombre sea
+  // inocuo, y basta una sola respuesta privada para tumbar el conjunto.
+  const resolverPrivado = async () => [{ address: '127.0.0.1', family: 4 }];
+  await assert.rejects(
+    () => assertSafeExternalUrl('https://api.example-scf-test.com/v1', { resolver: resolverPrivado }),
+    'un nombre que resuelve a loopback debe rechazarse'
+  );
+  const resolverMixto = async () => [{ address: '93.184.216.34', family: 4 }, { address: '::1', family: 6 }];
+  await assert.rejects(
+    () => assertSafeExternalUrl('https://api.example-scf-test.com/v1', { resolver: resolverMixto }),
+    'basta una sola respuesta privada para rechazar'
+  );
+  const resolverPublico = async () => [{ address: '93.184.216.34', family: 4 }];
+  const ok = await assertSafeExternalUrl('https://example-scf-test.com/', { resolver: resolverPublico });
+  assert.equal(ok.url.hostname, 'example-scf-test.com');
+  assert.deepEqual(ok.ips, ['93.184.216.34']);
+  await assert.rejects(
+    () => assertSafeExternalUrl('https://no-resuelve.example-scf-test.com/', { resolver: async () => { throw new Error('ENOTFOUND'); } }),
+    'un host que no resuelve se rechaza'
+  );
 });
 
 test('[B6] el filtro por hostname mata el payload ?x=facebook.com', () => {
@@ -176,4 +193,41 @@ test('[B6] /api/scrape/social responde 400 sin lanzar Chromium', { timeout: 9000
     method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify({})
   });
   assert.equal(sinUrl.status, 400, 'URL requerida sigue devolviendo 400');
+});
+
+test('[B6] el buscador seguro reintenta DENTRO del turno y no deadlockea', { timeout: 30000 }, async () => {
+  // Regresion del bloqueador que encontro la revision de codigo: la primera version de
+  // safeDdgSearch reintentaba volviendo a entrar en la cola, cuya siguiente posicion se
+  // encadenaba sobre el turno que aun no habia resuelto, de modo que un "too quickly" de
+  // DuckDuckgo colgaba /api/search y /api/market/enrich para siempre (hasta reiniciar PM2).
+  // Acá el reintento es un bucle dentro del mismo turno. Se prueba con un buscador inyectado:
+  // importar server/index.js levantaria el servidor y la red real no puede ser requisito.
+  const { crearBuscadorSeguro } = await import(path.join(REPO, 'server/ddgLimiter.js'));
+  let llamadas = 0;
+  const buscar = async () => {
+    llamadas += 1;
+    if (llamadas === 1) throw new Error('DDG rate limited: too quickly');
+    return { results: [{ title: 'x', url: 'https://ejemplo.com/a' }] };
+  };
+  const buscador = crearBuscadorSeguro({ buscar, intervalMs: 20, reintentosPorDefecto: 2, esperaReintentoMs: 20 });
+  const r = await Promise.race([
+    buscador('prueba'),
+    new Promise((_, rej) => setTimeout(() => rej(new Error('DEADLOCK: la promesa nunca resuelve')), 5000))
+  ]);
+  assert.ok(Array.isArray(r), 'debe devolver un ARREGLO: es el contrato de sus 10 call sites');
+  assert.equal(r.length, 1);
+  assert.equal(llamadas, 2, 'debe reintentar dentro del mismo turno, sin re-entrar en la cola');
+
+  // el espaciamiento serial sigue aplicando con concurrencia real
+  const marcas = [];
+  const buscador2 = crearBuscadorSeguro({ buscar: async () => { marcas.push(Date.now()); return { results: [] }; }, intervalMs: 120 });
+  await Promise.all([buscador2('a'), buscador2('b'), buscador2('c')]);
+  const gaps = marcas.slice(1).map((m, i) => m - marcas[i]);
+  assert.ok(gaps.every((g) => g >= 100), `las 3 llamadas deben salir espaciadas; gaps=${gaps.join(',')}`);
+
+  // un fallo que no es limite de tasa no reintenta y conserva el retorno [] anterior
+  let n = 0;
+  const buscador3 = crearBuscadorSeguro({ buscar: async () => { n += 1; throw new Error('red caida'); }, intervalMs: 5 });
+  assert.deepEqual(await buscador3('z'), [], 'un fallo de red devuelve [] como antes');
+  assert.equal(n, 1, 'no se reintenta lo que no es limite de tasa');
 });

@@ -48,7 +48,7 @@ export function esEndpointDeProveedorPermitido(rawEndpoint) {
     } catch { /* tunel mal formado: se ignora */ }
   }
 
-  if (url.protocol === 'http:' && HOSTS_OLLAMA_LOCAL.has(url.hostname)) {
+  if (url.protocol === 'http:' && HOSTS_OLLAMA_LOCAL.has(url.hostname.replace(/^\[|\]$/g, ''))) {
     const puerto = url.port || (url.protocol === 'http:' ? '80' : '443');
     return PUERTOS_OLLAMA_LOCAL.has(puerto);
   }
