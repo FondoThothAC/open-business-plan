@@ -63,8 +63,14 @@ test('[B3] writeJsonAtomic no deja temporales y nunca deja JSON truncado', async
 
 // ── reserva de cuota ─────────────────────────────────────────────────────────
 test('[B3] checkSearchQuota reserva: N chequeos concurrentes no superan el tope', async () => {
+  // [revisor] sin QUOTA_FILE, quotaTracker resuelve su archivo por __dirname y el test
+  // escribia el search_quota.json REAL del repositorio (de hecho lo dejo commiteado en B3).
+  // Ahora se apunta a un archivo temporal y se verifica explicitamente que el del repo no cambia.
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'obp-quota-'));
+  const cuotaRepo = path.join(REPO, 'server/data/search_quota.json');
+  const antesRepo = fs.existsSync(cuotaRepo) ? fs.readFileSync(cuotaRepo, 'utf8') : null;
   const previo = process.env.QUOTA_FILE;
+  process.env.QUOTA_FILE = path.join(dir, 'search_quota.json');
   try {
     const { checkSearchQuota, incrementSearchQuota, reservasVivas, devolverCuota } = await import(path.join(REPO, 'server/quotaTracker.js'));
     // DDG no se mide: nunca reserva
@@ -92,6 +98,8 @@ test('[B3] checkSearchQuota reserva: N chequeos concurrentes no superan el tope'
     assert.equal(reservasVivas(proveedor), vivasAntes - 2);
   } finally {
     if (previo === undefined) delete process.env.QUOTA_FILE; else process.env.QUOTA_FILE = previo;
+    const despuesRepo = fs.existsSync(cuotaRepo) ? fs.readFileSync(cuotaRepo, 'utf8') : null;
+    assert.equal(despuesRepo, antesRepo, 'el test no debe escribir el search_quota.json del repositorio');
     fs.rmSync(dir, { recursive: true, force: true });
   }
 });

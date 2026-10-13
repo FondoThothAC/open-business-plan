@@ -52,6 +52,8 @@ import { createReviewInvite, getReviewInvite, addReviewComment, listReviewCommen
 import { inegiToken, respondeSiSinToken } from './inegiCredentials.js';
 import { AI_PROVIDER_HOSTS } from './aiEndpointAllowlist.js';
 import { writeJsonAtomic } from '../src/lib/serverUtils/atomicJson.js';
+import { assertSafeExternalUrl, perteneceADominio } from './urlSafety.js';
+import { crearBuscadorSeguro } from './ddgLimiter.js';
 
 function documentForExternalReview(data) {
   const copy = JSON.parse(JSON.stringify(data || {}));
@@ -69,31 +71,21 @@ function documentForExternalReview(data) {
 // ─────────────────────────────────────────────────────────
 //  Helper Seguro para Búsqueda DuckDuckGo (Control de Tasa y Backoff)
 // ─────────────────────────────────────────────────────────
-let ultimaPeticionDdg = 0;
+// [B6] ultimaPeticionDdg se jubila: el espaciamiento lo administra la cola serial de
+
 const INTERVALO_MINIMO_DDG_MS = 1200;
 
-export async function safeDdgSearch(query, reintentos = 2) {
-  const ahora = Date.now();
-  const tiempoDesdeUltima = ahora - ultimaPeticionDdg;
-  if (tiempoDesdeUltima < INTERVALO_MINIMO_DDG_MS) {
-    await new Promise(resolve => setTimeout(resolve, INTERVALO_MINIMO_DDG_MS - tiempoDesdeUltima));
-  }
-  ultimaPeticionDdg = Date.now();
-
-  try {
-    const respuesta = await ddgSearch(query);
-    return respuesta.results || [];
-  } catch (error) {
-    if (reintentos > 0 && error.message?.includes('too quickly')) {
-      console.warn(`[DDG Seguro] Límite de tasa detectado para "${query}". Pausando 2500ms... (${reintentos} reintentos restantes)`);
-      await new Promise(resolve => setTimeout(resolve, 2500));
-      ultimaPeticionDdg = Date.now();
-      return safeDdgSearch(query, reintentos - 1);
-    }
-    console.warn(`[DDG Seguro] Búsqueda no disponible para "${query}":`, error.message);
-    return [];
-  }
-}
+// El reintento y el espaciamiento viven en server/ddgLimiter.js para poder probarse con un
+// buscador inyectado: importar index.js levantaria el servidor, y la red real no puede ser
+// requisito del suite. Se conserva firma y contrato (devuelve ARREGLO) porque safeDdgSearch
+// tiene 10 call sites y test_ddg.js la importa por nombre.
+export const safeDdgSearch = crearBuscadorSeguro({
+  buscar: ddgSearch,
+  intervalMs: INTERVALO_MINIMO_DDG_MS,
+  reintentosPorDefecto: 2,
+  esperaReintentoMs: 2500,
+  etiqueta: 'DDG Seguro'
+});
 
 const app = express();
 app.set('trust proxy', 1);
@@ -2764,6 +2756,15 @@ app.all('/api/market/suppliers', async (req, res) => {
 app.post('/api/scrape/social', async (req, res) => {
   const { url } = req.body;
   if (!url) return res.status(400).json({ success: false, error: 'URL requerida' });
+  // [B6] Validacion en la entrada de la ruta: 400 rapido SIN lanzar Chromium. Antes la URL
+  // del body iba directo a page.goto(), asi que file:///etc/passwd, el propio panel
+  // (127.0.0.1:3001), el DevTools (9229) o la metadata de la nube (169.254.169.254) eran
+  // alcanzables. scraper.js vuelve a validar por dentro para los demas llamadores.
+  try {
+    await assertSafeExternalUrl(url);
+  } catch (error) {
+    return res.status(400).json({ success: false, error: 'URL no permitida.', code: 'URL_NOT_ALLOWED' });
+  }
   try {
     const result = await scrapeSocialFollowers(url);
     res.json(result);
@@ -3432,16 +3433,36 @@ app.post('/api/market/enrich', async (req, res) => {
     };
 
     // Mapear los resultados de búsqueda a los perfiles correspondientes
+    // [B6] Se comparan HOSTNAMES exactos o subdominios, no substrings del URL. Con
+    // includes() bastaba un resultado como https://127.0.0.1:9229/?x=facebook.com para que
+    // el perfil 'facebook' quedara poblado con una direccion interna que despues se pasaba
+    // a page.goto. Ademas solo se aceptan esquemas http/https.
+    const DOMINIOS_PERFIL = {
+      facebook: 'facebook.com',
+      instagram: 'instagram.com',
+      ubereats: 'ubereats.com',
+      rappi: 'rappi.com',
+      airbnb: 'airbnb.com',
+      tripadvisor: 'tripadvisor.com',
+      linkedin: 'linkedin.com',
+      mercadolibre: 'mercadolibre.com.mx'
+    };
     for (const item of searchResults) {
-      const url = (item.url || '').toLowerCase();
-      if (url.includes('facebook.com') && !profiles.facebook) profiles.facebook = item.url;
-      else if (url.includes('instagram.com') && !profiles.instagram) profiles.instagram = item.url;
-      else if (url.includes('ubereats.com') && !profiles.ubereats) profiles.ubereats = item.url;
-      else if (url.includes('rappi.com') && !profiles.rappi) profiles.rappi = item.url;
-      else if (url.includes('airbnb.com') && !profiles.airbnb) profiles.airbnb = item.url;
-      else if (url.includes('tripadvisor.com') && !profiles.tripadvisor) profiles.tripadvisor = item.url;
-      else if (url.includes('linkedin.com') && !profiles.linkedin) profiles.linkedin = item.url;
-      else if (url.includes('mercadolibre.com.mx') && !profiles.mercadolibre) profiles.mercadolibre = item.url;
+      const destino = (item.url || '').toString();
+      let host;
+      try {
+        const u = new URL(destino);
+        if (u.protocol !== 'http:' && u.protocol !== 'https:') continue;
+        host = u.hostname.toLowerCase();
+      } catch {
+        continue;
+      }
+      for (const [perfil, dominio] of Object.entries(DOMINIOS_PERFIL)) {
+        if (!profiles[perfil] && perteneceADominio(host, dominio)) {
+          profiles[perfil] = destino;
+          break;
+        }
+      }
     }
 
     console.log('[Enrich] Perfiles identificados:', profiles);
@@ -3582,7 +3603,10 @@ app.post('/api/ai/proxy', async (req, res) => {
   try {
     const parsedTarget = new URL(url);
     // [B2] Lista movida a server/aiEndpointAllowlist.js para compartirla con el enjambre.
-    if (!AI_PROVIDER_HOSTS.has(parsedTarget.hostname) || !['POST', 'GET'].includes(method.toUpperCase())) {
+    // [B6] Ademas del hostname en la allowlist se exige https y la peticion no sigue
+    // redirecciones: sin eso, un proveedor de la lista que respondiera 302 a una direccion
+    // interna convertia la allowlist en decoracion.
+    if (parsedTarget.protocol !== 'https:' || !AI_PROVIDER_HOSTS.has(parsedTarget.hostname) || !['POST', 'GET'].includes(method.toUpperCase())) {
       return res.status(400).json({ error: 'Proveedor o método no permitido por el proxy.' });
     }
     const finalHeaders = { 'Content-Type': 'application/json', ...headers };
@@ -3631,7 +3655,10 @@ app.post('/api/ai/proxy', async (req, res) => {
       method,
       headers: finalHeaders,
       body: body ? JSON.stringify(body) : undefined,
-      signal: AbortSignal.timeout(180000)
+      signal: AbortSignal.timeout(180000),
+      // [B6] La allowlist es de hostnames; si el proveedor respondiera 302 a una direccion
+      // interna, seguirla la esquivaria por completo. Se exige ademas https arriba.
+      redirect: 'error'
     });
     const data = await response.json();
     return res.status(response.status).json(data);

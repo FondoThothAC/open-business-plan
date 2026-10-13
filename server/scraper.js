@@ -1,5 +1,20 @@
+/**
+ * Scrapers headless con Puppeteer.
+ *
+ * [B6] Reestructurado sobre un helper comun `conPagina` porque los 5 exports repetian el
+ * mismo patron defectuoso:
+ *  - puppeteer.launch() estaba FUERA del try, asi que si el launch fallaba no habia nada
+ *    que limpiar y si el catch cerraba sin guard, un close() fallido reemplazaba el error
+ *    original (la funcion rechazaba y se perdia la causa real) o dejaba Chromium huerfano.
+ *  - page.goto() recibia sin validar URLs que en /api/scrape/social vienen del body del
+ *    request: SSRF directo (file://, 127.0.0.1:9229, 169.254.169.254).
+ * Ahora: validacion antes de lanzar el navegador, launch dentro del try, cierre en finally
+ * y revalidacion de cada request principal/subframe/xhr porque Puppeteer sigue
+ * redirecciones por su cuenta.
+ */
 import puppeteer from 'puppeteer-extra';
 import StealthPlugin from 'puppeteer-extra-plugin-stealth';
+import { assertSafeExternalUrl, isSafeUrlShapeSync } from './urlSafety.js';
 
 puppeteer.use(StealthPlugin());
 
@@ -9,13 +24,68 @@ const addHumanNoise = async (page) => {
     await new Promise(r => setTimeout(r, Math.floor(Math.random() * 1500) + 500));
 };
 
-// Scraper de Redes Sociales
-export const scrapeSocialFollowers = async (url) => {
-    const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+/**
+ * Ejecuta `trabajo(page)` sobre una página con `url` ya validada. El navegador se crea
+ * dentro del try y SIEMPRE se cierra en el finally sin enmascarar el error original.
+ * @param {string} url
+ * @param {(page: import('puppeteer').Page) => Promise<Object>} trabajo
+ * @returns {Promise<Object>} lo que devuelva trabajo(), o { success:false, error } sin
+ *   cambiar la forma que ya consumian los llamadores
+ */
+async function conPagina(url, trabajo, { interceptar = false } = {}) {
     try {
+        // Se valida ANTES de lanzar Chromium: fallo rapido y sin proceso.
+        await assertSafeExternalUrl(url);
+    } catch (error) {
+        return { success: false, error: error.message, code: 'URL_NOT_ALLOWED' };
+    }
+
+    let browser;
+    try {
+        browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox', '--disable-setuid-sandbox'] });
         const page = await browser.newPage();
         await page.setViewport({ width: 1366, height: 768 });
+
+        // [B6] Puppeteer sigue redirecciones, así que la validación previa no cubre un
+        // 302 hacia un host interno. Se revalida cada request http(s), SIN lista de tipos:
+        // la primera versión filtraba por ['main','sub_frame'], que son nombres de
+        // Playwright; resourceType() de Puppeteer devuelve el enum Network.ResourceType de
+        // CDP en minúsculas ('document','xhr','fetch',…), así que la request de navegación
+        // y cualquier redirección interna caían siempre en continue(): el guardia no hacía
+        // nada justo en el caso que motivó el paso. Bloquear solo http(s) deja pasar
+        // data:/blob: y los subrecursos de sitios públicos siguen pasando, así que no
+        // degrada el scraping legítimo.
+        // Solo se intercepta cuando la URL viene del usuario: los dos scrapers por keyword
+        // navegan a dominios fijos, y la intercepción deshabilita la cache HTTP y cambia las
+        // señales anti-bot. Alcance conocido y documentado: aquí no se resuelve DNS (el
+        // listener es sincrónico), queda la ventana de DNS rebinding; cerrarla con
+        // --host-resolver-rules rompería dominios legítimos con múltiples IPs.
+        if (interceptar) {
+            await page.setRequestInterception(true);
+            page.on('request', (req) => {
+                const destino = req.url();
+                if (/^https?:/i.test(destino) && !isSafeUrlShapeSync(destino)) {
+                    req.abort().catch(() => {});
+                } else {
+                    req.continue().catch(() => {});
+                }
+            });
+        }
+
         await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 20000 });
+        return await trabajo(page);
+    } catch (e) {
+        // Se preserva el error original (antes se reconstruia desde e.message dentro del
+        // catch y un close() fallido lo reemplazaba por otro).
+        return { success: false, error: e.message };
+    } finally {
+        if (browser) await browser.close().catch(() => {});
+    }
+}
+
+// Scraper de Redes Sociales
+export const scrapeSocialFollowers = async (url) => {
+    return conPagina(url, async (page) => {
         await addHumanNoise(page);
 
         let followers = 'No detectado';
@@ -49,21 +119,13 @@ export const scrapeSocialFollowers = async (url) => {
             followers = 'Ver perfil público';
         }
 
-        await browser.close();
         return { success: true, followers, rating, metadata, url };
-    } catch (e) {
-        await browser.close();
-        return { success: false, error: e.message };
-    }
+    }, { interceptar: true });
 };
 
 // Scraper de Uber Eats / Rappi (Delivery de Comida)
 export const scrapeUberEatsRappi = async (url) => {
-    const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox', '--disable-setuid-sandbox'] });
-    try {
-        const page = await browser.newPage();
-        await page.setViewport({ width: 1366, height: 768 });
-        await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 20000 });
+    return conPagina(url, async (page) => {
         await addHumanNoise(page);
 
         let rating = 'N/D';
@@ -94,21 +156,13 @@ export const scrapeUberEatsRappi = async (url) => {
             }).catch(() => 'N/D');
         }
 
-        await browser.close();
         return { success: true, platform: url.includes('ubereats.com') ? 'Uber Eats' : 'Rappi', rating, reviewsCount, priceRange, url };
-    } catch (e) {
-        await browser.close();
-        return { success: false, error: e.message };
-    }
+    }, { interceptar: true });
 };
 
 // Scraper de Airbnb / TripAdvisor
 export const scrapeAirbnbTripAdvisor = async (url) => {
-    const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox', '--disable-setuid-sandbox'] });
-    try {
-        const page = await browser.newPage();
-        await page.setViewport({ width: 1366, height: 768 });
-        await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 20000 });
+    return conPagina(url, async (page) => {
         await addHumanNoise(page);
 
         let rating = 'N/D';
@@ -126,23 +180,14 @@ export const scrapeAirbnbTripAdvisor = async (url) => {
             reviews = await page.$eval('.reviewCount', el => el.innerText).catch(() => 'N/D');
         }
 
-        await browser.close();
         return { success: true, platform: url.includes('airbnb.com') ? 'Airbnb' : 'TripAdvisor', rating, pricePerNight, reviews, url };
-    } catch (e) {
-        await browser.close();
-        return { success: false, error: e.message };
-    }
+    }, { interceptar: true });
 };
 
 // Scraper de MercadoLibre (E-commerce / Retail)
 export const scrapeMercadoLibre = async (keyword) => {
-    const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox', '--disable-setuid-sandbox'] });
-    try {
-        const page = await browser.newPage();
-        await page.setViewport({ width: 1366, height: 768 });
-        
-        const searchUrl = `https://listado.mercadolibre.com.mx/${encodeURIComponent(keyword)}`;
-        await page.goto(searchUrl, { waitUntil: 'domcontentloaded', timeout: 20000 });
+    const searchUrl = `https://listado.mercadolibre.com.mx/${encodeURIComponent(keyword)}`;
+    return conPagina(searchUrl, async (page) => {
         await addHumanNoise(page);
 
         const products = await page.evaluate(() => {
@@ -155,23 +200,14 @@ export const scrapeMercadoLibre = async (keyword) => {
             });
         });
 
-        await browser.close();
         return { success: true, platform: 'MercadoLibre MX', keyword, products };
-    } catch (e) {
-        await browser.close();
-        return { success: false, error: e.message };
-    }
+    });
 };
 
 // Scraper de Amazon (E-commerce / Retail)
 export const scrapeEcommercePrices = async (keyword) => {
-    const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox', '--disable-setuid-sandbox'] });
-    try {
-        const page = await browser.newPage();
-        await page.setViewport({ width: 1366, height: 768 });
-        
-        const searchUrl = `https://www.amazon.com.mx/s?k=${encodeURIComponent(keyword)}`;
-        await page.goto(searchUrl, { waitUntil: 'domcontentloaded', timeout: 20000 });
+    const searchUrl = `https://www.amazon.com.mx/s?k=${encodeURIComponent(keyword)}`;
+    return conPagina(searchUrl, async (page) => {
         await addHumanNoise(page);
 
         const products = await page.$$eval('[data-component-type="s-search-result"]', items => {
@@ -183,10 +219,6 @@ export const scrapeEcommercePrices = async (keyword) => {
             });
         });
 
-        await browser.close();
         return { success: true, platform: 'Amazon MX', keyword, products };
-    } catch (e) {
-        await browser.close();
-        return { success: false, error: e.message };
-    }
+    });
 };

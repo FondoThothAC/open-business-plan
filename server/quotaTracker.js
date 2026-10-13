@@ -10,7 +10,10 @@ import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const QUOTA_FILE = path.join(__dirname, 'data', 'search_quota.json');
+// [B6] La ruta se puede fijar con QUOTA_FILE: sin esto, cualquier test que invoque
+// checkSearchQuota/incrementSearchQuota escribe el search_quota.json REAL del repositorio
+// (y asi ensucia datos compartidos entre sesiones concurrentes).
+const QUOTA_FILE = process.env.QUOTA_FILE || path.join(__dirname, 'data', 'search_quota.json');
 
 // Límites por defecto de cortesía antes de pausar y solicitar autorización
 export const DEFAULT_QUOTA_LIMITS = {
@@ -45,7 +48,7 @@ export function saveQuotaData(data) {
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
-    fs.writeFileSync(QUOTA_FILE, JSON.stringify(data, null, 2), 'utf-8');
+    writeJsonAtomic(QUOTA_FILE, data);   // [B3] adoptado ahora: tmp unico + fsync + rename
   } catch (err) {
     console.error('[QuotaTracker] No se pudo guardar archivo de cuotas:', err.message);
   }
