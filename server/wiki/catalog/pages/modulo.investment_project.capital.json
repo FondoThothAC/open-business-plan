@@ -1,0 +1,64 @@
+{
+  "id": "modulo.investment_project.capital",
+  "title": "Costo de Capital (WACC)",
+  "summary": "Cálculo del Costo Promedio Ponderado de Capital.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "investment_project",
+  "moduleKey": "capital",
+  "pillarKey": "estructura_capital",
+  "openUrl": "/investment_project/capital",
+  "fields": [
+    {
+      "key": "wacc",
+      "type": "text",
+      "address": "investment_project.estructura_capital.capital.wacc",
+      "prompt": "Cálculo del Costo Promedio Ponderado de Capital (WACC / CPPC).",
+      "ejemplo": "Ej (Estilo BlackRock): \"WACC del 11.5% asumiendo 40% Equity (costo 15%) y 60% Deuda (costo 9.1%).\"",
+      "benchmark": "Costo Promedio Ponderado de Capital (WACC) estimado entre 10% y 16% anual en México.",
+      "cita": "The Nature of Value (Ch. 5, p. 105)",
+      "placeholder": "Tasa de descuento ponderando costo de la deuda (Kd) y del capital (Ke)..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_wacc_van_tir",
+      "title": "box_wacc_van_tir",
+      "type": "desconocido",
+      "description": "",
+      "source": ""
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Cálculo del Costo Promedio Ponderado de Capital.\n\n**Cómo se usa.** Está en el pilar **Estructura de Capital** del modelo *Proyecto de Inversión (Ingeniería y Finanzas)*. Se abre en `/investment_project/capital`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 1 campo: `wacc`.\n\n**Herramientas del módulo.** 1 caja(s): `box_wacc_van_tir`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `wacc`\n\n**El prompt que usa:** Cálculo del Costo Promedio Ponderado de Capital (WACC / CPPC).\n\n**Ejemplo que muestra la guía:** Ej (Estilo BlackRock): \"WACC del 11.5% asumiendo 40% Equity (costo 15%) y 60% Deuda (costo 9.1%).\"\n\n**Benchmark / criterio de calidad:** Costo Promedio Ponderado de Capital (WACC) estimado entre 10% y 16% anual en México.\n\n**De dónde viene la guía:** The Nature of Value (Ch. 5, p. 105)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### box_wacc_van_tir\n\n`box_wacc_van_tir` · tipo **desconocido**\n\n"
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Estructura de Capital** de *Proyecto de Inversión (Ingeniería y Finanzas)*. La justificación metodológica completa está en la página del modelo y en `docs/investment_project.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `investment_project.estructura_capital.capital.wacc` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `investment_project:capital`): `box_wacc_van_tir`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

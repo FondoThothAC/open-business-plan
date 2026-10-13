@@ -1,0 +1,84 @@
+{
+  "id": "modulo.guanxi_plan.gift_giving_renqing",
+  "title": "Protocolo de Obsequios",
+  "summary": "Normas culturales sobre regalos adecuados, momentos idóneos y valor simbólico.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "guanxi_plan",
+  "moduleKey": "gift_giving_renqing",
+  "pillarKey": "manejo_conflictos",
+  "openUrl": "/guanxi_plan/gift_giving_renqing",
+  "fields": [
+    {
+      "key": "protocolo_obsequios_renqing",
+      "type": "text",
+      "address": "guanxi_plan.manejo_conflictos.gift_giving_renqing.protocolo_obsequios_renqing",
+      "prompt": "Reglas de cortesía sobre obsequios empresariales: selección de objetos representativos, presentación formal con dos manos y evitar tabúes culturales.",
+      "ejemplo": "Ej: Obsequio de artesanía regional mexicana de plata de alta gama entregada al líder de la delegación en privado al término del viaje.",
+      "benchmark": "Estricto respeto a la legalidad y normas de hospitalidad empresarial sin cruzar líneas de soborno.",
+      "cita": "Negotiating South-South Regional Trade Agreements (UNCTAD Ch. 3 p. 48)",
+      "placeholder": "Tipo de obsequio protocolario, momento de entrega y simbolismo cultural..."
+    },
+    {
+      "key": "registro_favores_intercambio",
+      "type": "text",
+      "address": "guanxi_plan.manejo_conflictos.gift_giving_renqing.registro_favores_intercambio",
+      "prompt": "Renqing (Deuda de afecto y favor): Libro de reciprocidad relacional para registrar gestiones, contactos facilitados y compromisos éticos mutuos.",
+      "ejemplo": "Ej: Gestión facilitada para homologación aduanal en Manzanillo correspondida con introducción directa a compradores en Shanghái.",
+      "benchmark": "Equilibrio a largo plazo en la balanza de consideraciones y favores profesionales.",
+      "cita": "Negotiating South-South Regional Trade Agreements (Ch. 3 p. 50)",
+      "placeholder": "Favores facilitados, apoyos recibidos y compromisos morales de reciprocidad..."
+    },
+    {
+      "key": "temporalidad_reciprocidad",
+      "type": "text",
+      "address": "guanxi_plan.manejo_conflictos.gift_giving_renqing.temporalidad_reciprocidad",
+      "prompt": "Comprensión del tiempo en el Guanxi: la devolución inmediata de un favor se percibe como frialdad; debe cultivarse con paciencia a lo largo de los años.",
+      "ejemplo": "Ej: Acompañamiento a la contraparte china durante 18 meses de intercambio técnico antes de formalizar la primera orden de compra.",
+      "benchmark": "Horizonte temporal multianual en negociaciones de cooperación económica internacional.",
+      "cita": "Negotiating South-South Regional Trade Agreements (Ch. 3 p. 51)",
+      "placeholder": "Plan de cultivo relacional continuo y visión a largo plazo..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_gift_giving_mat",
+      "title": "Matriz de Cortesía y Regalos Estratégicos (Renqing)",
+      "type": "checklist",
+      "description": "Checklist de obsequios ceremoniales, tabúes culturales chinos y balance del libro mayor de favores.",
+      "source": "Negotiating South-South Regional Agreements — Ch. 3 p. 48"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Normas culturales sobre regalos adecuados, momentos idóneos y valor simbólico.\n\n**Cómo se usa.** Está en el pilar **Reciprocidad y Capital Social** del modelo *Metodología Guanxi (China - Redes de Relaciones)*. Se abre en `/guanxi_plan/gift_giving_renqing`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 3 campos: `protocolo_obsequios_renqing`, `registro_favores_intercambio`, `temporalidad_reciprocidad`.\n\n**Herramientas del módulo.** 1 caja(s): `box_gift_giving_mat`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `protocolo_obsequios_renqing`\n\n**El prompt que usa:** Reglas de cortesía sobre obsequios empresariales: selección de objetos representativos, presentación formal con dos manos y evitar tabúes culturales.\n\n**Ejemplo que muestra la guía:** Ej: Obsequio de artesanía regional mexicana de plata de alta gama entregada al líder de la delegación en privado al término del viaje.\n\n**Benchmark / criterio de calidad:** Estricto respeto a la legalidad y normas de hospitalidad empresarial sin cruzar líneas de soborno.\n\n**De dónde viene la guía:** Negotiating South-South Regional Trade Agreements (UNCTAD Ch. 3 p. 48)\n\n### `registro_favores_intercambio`\n\n**El prompt que usa:** Renqing (Deuda de afecto y favor): Libro de reciprocidad relacional para registrar gestiones, contactos facilitados y compromisos éticos mutuos.\n\n**Ejemplo que muestra la guía:** Ej: Gestión facilitada para homologación aduanal en Manzanillo correspondida con introducción directa a compradores en Shanghái.\n\n**Benchmark / criterio de calidad:** Equilibrio a largo plazo en la balanza de consideraciones y favores profesionales.\n\n**De dónde viene la guía:** Negotiating South-South Regional Trade Agreements (Ch. 3 p. 50)\n\n### `temporalidad_reciprocidad`\n\n**El prompt que usa:** Comprensión del tiempo en el Guanxi: la devolución inmediata de un favor se percibe como frialdad; debe cultivarse con paciencia a lo largo de los años.\n\n**Ejemplo que muestra la guía:** Ej: Acompañamiento a la contraparte china durante 18 meses de intercambio técnico antes de formalizar la primera orden de compra.\n\n**Benchmark / criterio de calidad:** Horizonte temporal multianual en negociaciones de cooperación económica internacional.\n\n**De dónde viene la guía:** Negotiating South-South Regional Trade Agreements (Ch. 3 p. 51)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Matriz de Cortesía y Regalos Estratégicos (Renqing)\n\n`box_gift_giving_mat` · tipo **checklist** · fuente: Negotiating South-South Regional Agreements — Ch. 3 p. 48\n\nChecklist de obsequios ceremoniales, tabúes culturales chinos y balance del libro mayor de favores."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Reciprocidad y Capital Social** de *Metodología Guanxi (China - Redes de Relaciones)*. La justificación metodológica completa está en la página del modelo y en `docs/guanxi_plan.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `guanxi_plan.manejo_conflictos.gift_giving_renqing.protocolo_obsequios_renqing` → tipo `text`\n- `guanxi_plan.manejo_conflictos.gift_giving_renqing.registro_favores_intercambio` → tipo `text`\n- `guanxi_plan.manejo_conflictos.gift_giving_renqing.temporalidad_reciprocidad` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `guanxi_plan:gift_giving_renqing`): `box_gift_giving_mat`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

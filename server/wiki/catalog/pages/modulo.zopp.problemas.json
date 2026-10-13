@@ -1,0 +1,64 @@
+{
+  "id": "modulo.zopp.problemas",
+  "title": "Árbol de Problemas",
+  "summary": "Análisis causal de causas directas, indirectas y efectos.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "zopp",
+  "moduleKey": "problemas",
+  "pillarKey": "analisis_situacion",
+  "openUrl": "/zopp/problemas",
+  "fields": [
+    {
+      "key": "analisis_problemas",
+      "type": "text",
+      "address": "zopp.analisis_situacion.problemas.analisis_problemas",
+      "prompt": "Árbol de problemas causa-efecto identificando el problema central focalizado y sus causas raíz.",
+      "ejemplo": "Ej: Problema central: Elevada merma y bajo margen de ganancia de carnicerías locales frente a monopolios.",
+      "benchmark": "Causa raíz validada empíricamente sin confundir causas con síntomas.",
+      "cita": "Metodología ZOPP GTZ (p. 42) & Manual de Proyectos Panamá",
+      "placeholder": "Problema central, causas directas/indirectas y efectos acumulados..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_zopp_mpp_4x4",
+      "title": "Matriz de Planificación de Proyectos (MPP ZOPP 4x4)",
+      "type": "matrix",
+      "description": "Estructura alemana de objetivos, indicadores, medios de verificación y supuestos.",
+      "source": "Manual ZOPP GTZ — p. 28"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Análisis causal de causas directas, indirectas y efectos.\n\n**Cómo se usa.** Está en el pilar **Análisis de la Situación** del modelo *ZOPP / Marco Lógico (Enfoque Alemán-BID)*. Se abre en `/zopp/problemas`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 1 campo: `analisis_problemas`.\n\n**Herramientas del módulo.** 1 caja(s): `box_zopp_mpp_4x4`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `analisis_problemas`\n\n**El prompt que usa:** Árbol de problemas causa-efecto identificando el problema central focalizado y sus causas raíz.\n\n**Ejemplo que muestra la guía:** Ej: Problema central: Elevada merma y bajo margen de ganancia de carnicerías locales frente a monopolios.\n\n**Benchmark / criterio de calidad:** Causa raíz validada empíricamente sin confundir causas con síntomas.\n\n**De dónde viene la guía:** Metodología ZOPP GTZ (p. 42) & Manual de Proyectos Panamá"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Matriz de Planificación de Proyectos (MPP ZOPP 4x4)\n\n`box_zopp_mpp_4x4` · tipo **matrix** · fuente: Manual ZOPP GTZ — p. 28\n\nEstructura alemana de objetivos, indicadores, medios de verificación y supuestos."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Análisis de la Situación** de *ZOPP / Marco Lógico (Enfoque Alemán-BID)*. La justificación metodológica completa está en la página del modelo y en `docs/zopp.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `zopp.analisis_situacion.problemas.analisis_problemas` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `zopp:problemas`): `box_zopp_mpp_4x4`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

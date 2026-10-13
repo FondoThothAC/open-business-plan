@@ -1,0 +1,86 @@
+{
+  "id": "modulo.social_bid.fin_proposito",
+  "title": "Fin y Propósito",
+  "summary": "Impacto a largo plazo y objetivo específico del proyecto.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "social_bid",
+  "moduleKey": "fin_proposito",
+  "pillarKey": "diseno",
+  "openUrl": "/social_bid/fin_proposito",
+  "fields": [
+    {
+      "key": "fin",
+      "type": "text",
+      "address": "social_bid.diseno.fin_proposito.fin",
+      "prompt": "Impacto a largo plazo al que el proyecto contribuye.",
+      "ejemplo": "Ej: Contribuir a la reducción de la pobreza y marginación urbana en 5 años.",
+      "benchmark": "Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.",
+      "cita": "Metodología del Marco Lógico (BID / CEPAL / PM4R)",
+      "placeholder": "Define el componente del proyecto social (fin)..."
+    },
+    {
+      "key": "proposito",
+      "type": "text",
+      "address": "social_bid.diseno.fin_proposito.proposito",
+      "prompt": "El objetivo específico que el proyecto logrará (el objetivo central).",
+      "ejemplo": "Ej: Jóvenes de 15-18 años completan capacitación técnica y se insertan laboralmente.",
+      "benchmark": "Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.",
+      "cita": "Metodología del Marco Lógico (BID / CEPAL / PM4R)",
+      "placeholder": "Define el componente del proyecto social (proposito)..."
+    },
+    {
+      "key": "indicadores_fin",
+      "type": "text",
+      "address": "social_bid.diseno.fin_proposito.indicadores_fin",
+      "prompt": "Cómo se medirá el impacto a largo plazo.",
+      "ejemplo": "Ej: % de reducción de pobreza en la colonia en 5 años (Fuente: CONEVAL).",
+      "benchmark": "Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.",
+      "cita": "Metodología del Marco Lógico (BID / CEPAL / PM4R)",
+      "placeholder": "Define el componente del proyecto social (indicadores_fin)..."
+    },
+    {
+      "key": "indicadores_proposito",
+      "type": "text",
+      "address": "social_bid.diseno.fin_proposito.indicadores_proposito",
+      "prompt": "Cómo se medirá el éxito inmediato del proyecto.",
+      "ejemplo": "Ej: Al menos 300 jóvenes graduados en 12 meses, 40% con empleo a los 6 meses.",
+      "benchmark": "Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.",
+      "cita": "Metodología del Marco Lógico (BID / CEPAL / PM4R)",
+      "placeholder": "Define el componente del proyecto social (indicadores_proposito)..."
+    }
+  ],
+  "boxes": [],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Impacto a largo plazo y objetivo específico del proyecto.\n\n**Cómo se usa.** Está en el pilar **Diseño del Proyecto (MML)** del modelo *Proyecto Social (Metodología BID)*. Se abre en `/social_bid/fin_proposito`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 4 campos: `fin`, `proposito`, `indicadores_fin`, `indicadores_proposito`.\n\n**Herramientas del módulo.** Ninguna específica: se apoya en los campos de texto."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `fin`\n\n**El prompt que usa:** Impacto a largo plazo al que el proyecto contribuye.\n\n**Ejemplo que muestra la guía:** Ej: Contribuir a la reducción de la pobreza y marginación urbana en 5 años.\n\n**Benchmark / criterio de calidad:** Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.\n\n**De dónde viene la guía:** Metodología del Marco Lógico (BID / CEPAL / PM4R)\n\n### `proposito`\n\n**El prompt que usa:** El objetivo específico que el proyecto logrará (el objetivo central).\n\n**Ejemplo que muestra la guía:** Ej: Jóvenes de 15-18 años completan capacitación técnica y se insertan laboralmente.\n\n**Benchmark / criterio de calidad:** Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.\n\n**De dónde viene la guía:** Metodología del Marco Lógico (BID / CEPAL / PM4R)\n\n### `indicadores_fin`\n\n**El prompt que usa:** Cómo se medirá el impacto a largo plazo.\n\n**Ejemplo que muestra la guía:** Ej: % de reducción de pobreza en la colonia en 5 años (Fuente: CONEVAL).\n\n**Benchmark / criterio de calidad:** Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.\n\n**De dónde viene la guía:** Metodología del Marco Lógico (BID / CEPAL / PM4R)\n\n### `indicadores_proposito`\n\n**El prompt que usa:** Cómo se medirá el éxito inmediato del proyecto.\n\n**Ejemplo que muestra la guía:** Ej: Al menos 300 jóvenes graduados en 12 meses, 40% con empleo a los 6 meses.\n\n**Benchmark / criterio de calidad:** Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.\n\n**De dónde viene la guía:** Metodología del Marco Lógico (BID / CEPAL / PM4R)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "Sin cajas asociadas."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Diseño del Proyecto (MML)** de *Proyecto Social (Metodología BID)*. La justificación metodológica completa está en la página del modelo y en `docs/social_bid.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `social_bid.diseno.fin_proposito.fin` → tipo `text`\n- `social_bid.diseno.fin_proposito.proposito` → tipo `text`\n- `social_bid.diseno.fin_proposito.indicadores_fin` → tipo `text`\n- `social_bid.diseno.fin_proposito.indicadores_proposito` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas:** `src/config/moduleBoxMap.js` no declara cajas para `social_bid:fin_proposito`; la pantalla muestra solo los campos de texto.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

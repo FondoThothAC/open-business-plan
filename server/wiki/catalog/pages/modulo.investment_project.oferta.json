@@ -1,0 +1,56 @@
+{
+  "id": "modulo.investment_project.oferta",
+  "title": "Proyección de Oferta",
+  "summary": "Modelos de proyección para oferta, déficit y demanda futura.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "investment_project",
+  "moduleKey": "oferta",
+  "pillarKey": "mercado_cuantitativo",
+  "openUrl": "/investment_project/oferta",
+  "fields": [
+    {
+      "key": "proyeccion_oferta",
+      "type": "text",
+      "address": "investment_project.mercado_cuantitativo.oferta.proyeccion_oferta",
+      "prompt": "Modelo econométrico de cómo se comportará la oferta y demanda en los próximos 10-20 años.",
+      "ejemplo": "Ej: \"Se proyecta un déficit de 1,200 MW para 2030 debido al retiro de plantas de carbón.\"",
+      "benchmark": "TIR > WACC + 4% con análisis probabilístico Monte Carlo al 95% de confianza.",
+      "cita": "The Nature of Value (Ch. 5 WACC/CAPM) & CSI MasterFormat",
+      "placeholder": "Memoria de cálculo y parámetros cuantitativos para (proyeccion_oferta)..."
+    }
+  ],
+  "boxes": [],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Modelos de proyección para oferta, déficit y demanda futura.\n\n**Cómo se usa.** Está en el pilar **Estudio de Mercado Cuantitativo** del modelo *Proyecto de Inversión (Ingeniería y Finanzas)*. Se abre en `/investment_project/oferta`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 1 campo: `proyeccion_oferta`.\n\n**Herramientas del módulo.** Ninguna específica: se apoya en los campos de texto."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `proyeccion_oferta`\n\n**El prompt que usa:** Modelo econométrico de cómo se comportará la oferta y demanda en los próximos 10-20 años.\n\n**Ejemplo que muestra la guía:** Ej: \"Se proyecta un déficit de 1,200 MW para 2030 debido al retiro de plantas de carbón.\"\n\n**Benchmark / criterio de calidad:** TIR > WACC + 4% con análisis probabilístico Monte Carlo al 95% de confianza.\n\n**De dónde viene la guía:** The Nature of Value (Ch. 5 WACC/CAPM) & CSI MasterFormat"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "Sin cajas asociadas."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Estudio de Mercado Cuantitativo** de *Proyecto de Inversión (Ingeniería y Finanzas)*. La justificación metodológica completa está en la página del modelo y en `docs/investment_project.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `investment_project.mercado_cuantitativo.oferta.proyeccion_oferta` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas:** `src/config/moduleBoxMap.js` no declara cajas para `investment_project:oferta`; la pantalla muestra solo los campos de texto.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

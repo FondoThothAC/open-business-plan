@@ -1,0 +1,101 @@
+{
+  "id": "modulo.business.ventas",
+  "title": "Plan de Ventas y Precios",
+  "summary": "Estrategia de pricing y proyecciones de volumen.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "business",
+  "moduleKey": "ventas",
+  "pillarKey": "mercado",
+  "openUrl": "/business/ventas",
+  "fields": [
+    {
+      "key": "precios",
+      "type": "text",
+      "address": "business.mercado.ventas.precios",
+      "prompt": "Estrategia de fijación de precios. Método usado (costo+margen, competencia, valor percibido).",
+      "ejemplo": "Ej: \"Plan Básico: $500/mes. Plan Pro: $1,500/mes. Plan VIP: $3,500/mes. Basado en valor percibido con margen del 65%.\"",
+      "benchmark": "Estrategia de fijación basada en valor percibido con margen bruto mínimo del 40%.",
+      "cita": "Starting a Business QuickStart Guide (Ch. 7, p. 150)",
+      "placeholder": "Estructura de precios, políticas de descuento y modelo de cobro..."
+    },
+    {
+      "key": "estrategia",
+      "type": "text",
+      "address": "business.mercado.ventas.estrategia",
+      "prompt": "Tácticas de venta: embudo, ciclo de venta, guiones, CRM, seguimiento post-venta.",
+      "ejemplo": "Ej: \"Embudo: Contenido orgánico → Webinar gratuito → Consulta 1:1 → Cierre. Ciclo promedio: 14 días. CRM: HubSpot Free.\"",
+      "benchmark": "Tasa de conversión de embudo de ventas (lead a cliente) > 3%.",
+      "cita": "Creating a Business Plan For Dummies (Ch. 7, p. 145)",
+      "placeholder": "Etapas del embudo de ventas, guiones comerciales y política de seguimiento..."
+    },
+    {
+      "key": "proyeccion_volumen",
+      "type": "text",
+      "address": "business.mercado.ventas.proyeccion_volumen",
+      "prompt": "Estimación de unidades vendidas por mes/trimestre/año. Base el cálculo en datos reales.",
+      "ejemplo": "Ej: \"Mes 1-3: 15 clientes/mes. Mes 4-6: 30/mes. Mes 7-12: 50/mes. Año 2: 80/mes. Total año 1: 350 clientes.\"",
+      "benchmark": "Proyección de ventas a 3 años respaldada por capacidad operativa máxima instalada.",
+      "cita": "Linda Pinson — Anatomy of a Business Plan (Ch. 7, p. 180)",
+      "placeholder": "Estimación mensual y anual de unidades/contratos colocados..."
+    },
+    {
+      "key": "tacticas_precio",
+      "type": "text",
+      "address": "business.mercado.ventas.tacticas_precio",
+      "prompt": "Estrategias de pricing dinámico, descuentos por pronto pago o paquetes escalonados.",
+      "ejemplo": "Ej: 5% descuento por pago anual anticipado en contratos de mantenimiento.",
+      "benchmark": "Optimización de flujo de caja.",
+      "cita": "The Lean Startup (p. 98)",
+      "placeholder": "Descuentos, paquetes y términos..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_unit_economics",
+      "title": "Unit Economics y Ratio CAC / LTV",
+      "type": "benchmark",
+      "description": "Métricas unitarias con regla dorada LTV >= 3x CAC.",
+      "source": "The Lean Startup — Ch. 6"
+    },
+    {
+      "id": "box_benchmark_cac_ltv",
+      "title": "Benchmark Sectorial CAC / LTV / Churn Rate",
+      "type": "benchmark",
+      "description": "Evaluación de eficiencia comercial contra estándares de la industria.",
+      "source": "Starting a Business QuickStart Guide — p. 112"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Estrategia de pricing y proyecciones de volumen.\n\n**Cómo se usa.** Está en el pilar **El Mercado** del modelo *Plan de Negocios Comercial*. Se abre en `/business/ventas`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 4 campos: `precios`, `estrategia`, `proyeccion_volumen`, `tacticas_precio`.\n\n**Herramientas del módulo.** 2 caja(s): `box_unit_economics`, `box_benchmark_cac_ltv`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `precios`\n\n**El prompt que usa:** Estrategia de fijación de precios. Método usado (costo+margen, competencia, valor percibido).\n\n**Ejemplo que muestra la guía:** Ej: \"Plan Básico: $500/mes. Plan Pro: $1,500/mes. Plan VIP: $3,500/mes. Basado en valor percibido con margen del 65%.\"\n\n**Benchmark / criterio de calidad:** Estrategia de fijación basada en valor percibido con margen bruto mínimo del 40%.\n\n**De dónde viene la guía:** Starting a Business QuickStart Guide (Ch. 7, p. 150)\n\n### `estrategia`\n\n**El prompt que usa:** Tácticas de venta: embudo, ciclo de venta, guiones, CRM, seguimiento post-venta.\n\n**Ejemplo que muestra la guía:** Ej: \"Embudo: Contenido orgánico → Webinar gratuito → Consulta 1:1 → Cierre. Ciclo promedio: 14 días. CRM: HubSpot Free.\"\n\n**Benchmark / criterio de calidad:** Tasa de conversión de embudo de ventas (lead a cliente) > 3%.\n\n**De dónde viene la guía:** Creating a Business Plan For Dummies (Ch. 7, p. 145)\n\n### `proyeccion_volumen`\n\n**El prompt que usa:** Estimación de unidades vendidas por mes/trimestre/año. Base el cálculo en datos reales.\n\n**Ejemplo que muestra la guía:** Ej: \"Mes 1-3: 15 clientes/mes. Mes 4-6: 30/mes. Mes 7-12: 50/mes. Año 2: 80/mes. Total año 1: 350 clientes.\"\n\n**Benchmark / criterio de calidad:** Proyección de ventas a 3 años respaldada por capacidad operativa máxima instalada.\n\n**De dónde viene la guía:** Linda Pinson — Anatomy of a Business Plan (Ch. 7, p. 180)\n\n### `tacticas_precio`\n\n**El prompt que usa:** Estrategias de pricing dinámico, descuentos por pronto pago o paquetes escalonados.\n\n**Ejemplo que muestra la guía:** Ej: 5% descuento por pago anual anticipado en contratos de mantenimiento.\n\n**Benchmark / criterio de calidad:** Optimización de flujo de caja.\n\n**De dónde viene la guía:** The Lean Startup (p. 98)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Unit Economics y Ratio CAC / LTV\n\n`box_unit_economics` · tipo **benchmark** · fuente: The Lean Startup — Ch. 6\n\nMétricas unitarias con regla dorada LTV >= 3x CAC.\n\n### Benchmark Sectorial CAC / LTV / Churn Rate\n\n`box_benchmark_cac_ltv` · tipo **benchmark** · fuente: Starting a Business QuickStart Guide — p. 112\n\nEvaluación de eficiencia comercial contra estándares de la industria."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **El Mercado** de *Plan de Negocios Comercial*. La justificación metodológica completa está en la página del modelo y en `docs/business.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `business.mercado.ventas.precios` → tipo `text`\n- `business.mercado.ventas.estrategia` → tipo `text`\n- `business.mercado.ventas.proyeccion_volumen` → tipo `text`\n- `business.mercado.ventas.tacticas_precio` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `business:ventas`): `box_unit_economics`, `box_benchmark_cac_ltv`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

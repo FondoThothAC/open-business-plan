@@ -1,0 +1,84 @@
+{
+  "id": "modulo.agile_startup.pilot_results",
+  "title": "Resultados del Piloto",
+  "summary": "Resultados cuantitativos y cualitativos obtenidos durante las pruebas con clientes reales.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "agile_startup",
+  "moduleKey": "pilot_results",
+  "pillarKey": "aprendizaje",
+  "openUrl": "/agile_startup/pilot_results",
+  "fields": [
+    {
+      "key": "datos_traccion",
+      "type": "text",
+      "address": "agile_startup.aprendizaje.pilot_results.datos_traccion",
+      "prompt": "Resumen de métricas reales de clientes, ventas o registros obtenidos.",
+      "ejemplo": "Ej: 24 clientes pagaron la suscripción en la preventa, logrando $28,800 MXN en ventas brutas en 14 días.",
+      "benchmark": "Ciclo Construir-Medir-Aprender validado en < 2 semanas con métricas AARRR.",
+      "cita": "Eric Ries — El Método Lean Startup & Ash Maurya Running Lean",
+      "placeholder": "Documenta la hipótesis o métrica ágil para (datos_traccion)..."
+    },
+    {
+      "key": "comentarios_early_adopters",
+      "type": "text",
+      "address": "agile_startup.aprendizaje.pilot_results.comentarios_early_adopters",
+      "prompt": "Retroalimentación directa de los primeros usuarios de tu MVP.",
+      "ejemplo": "Ej: \"La comida es deliciosa y el empaque térmico es excelente, pero me gustaría poder elegir opciones sin gluten\".",
+      "benchmark": "Ciclo Construir-Medir-Aprender validado en < 2 semanas con métricas AARRR.",
+      "cita": "Eric Ries — El Método Lean Startup & Ash Maurya Running Lean",
+      "placeholder": "Documenta la hipótesis o métrica ágil para (comentarios_early_adopters)..."
+    },
+    {
+      "key": "aprendizajes_clave",
+      "type": "text",
+      "address": "agile_startup.aprendizaje.pilot_results.aprendizajes_clave",
+      "prompt": "Conclusiones principales que obtuviste del piloto práctico.",
+      "ejemplo": "Ej: Validamos que hay intención de pago inmediata. Sin embargo, la logística de reparto requiere optimizar zonas.",
+      "benchmark": "Ciclo Construir-Medir-Aprender validado en < 2 semanas con métricas AARRR.",
+      "cita": "Eric Ries — El Método Lean Startup & Ash Maurya Running Lean",
+      "placeholder": "Documenta la hipótesis o métrica ágil para (aprendizajes_clave)..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_burn_runway",
+      "title": "Burn Rate & Runway de Supervivencia",
+      "type": "benchmark",
+      "description": "Monitoreo de meses de pista financiera con alerta de Kill Switch.",
+      "source": "Starting a Business QuickStart Guide — Ch. 9"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Resultados cuantitativos y cualitativos obtenidos durante las pruebas con clientes reales.\n\n**Cómo se usa.** Está en el pilar **Tracción y Aprendizaje** del modelo *Agile Startup (Lean MVP)*. Se abre en `/agile_startup/pilot_results`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 3 campos: `datos_traccion`, `comentarios_early_adopters`, `aprendizajes_clave`.\n\n**Herramientas del módulo.** 1 caja(s): `box_burn_runway`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `datos_traccion`\n\n**El prompt que usa:** Resumen de métricas reales de clientes, ventas o registros obtenidos.\n\n**Ejemplo que muestra la guía:** Ej: 24 clientes pagaron la suscripción en la preventa, logrando $28,800 MXN en ventas brutas en 14 días.\n\n**Benchmark / criterio de calidad:** Ciclo Construir-Medir-Aprender validado en < 2 semanas con métricas AARRR.\n\n**De dónde viene la guía:** Eric Ries — El Método Lean Startup & Ash Maurya Running Lean\n\n### `comentarios_early_adopters`\n\n**El prompt que usa:** Retroalimentación directa de los primeros usuarios de tu MVP.\n\n**Ejemplo que muestra la guía:** Ej: \"La comida es deliciosa y el empaque térmico es excelente, pero me gustaría poder elegir opciones sin gluten\".\n\n**Benchmark / criterio de calidad:** Ciclo Construir-Medir-Aprender validado en < 2 semanas con métricas AARRR.\n\n**De dónde viene la guía:** Eric Ries — El Método Lean Startup & Ash Maurya Running Lean\n\n### `aprendizajes_clave`\n\n**El prompt que usa:** Conclusiones principales que obtuviste del piloto práctico.\n\n**Ejemplo que muestra la guía:** Ej: Validamos que hay intención de pago inmediata. Sin embargo, la logística de reparto requiere optimizar zonas.\n\n**Benchmark / criterio de calidad:** Ciclo Construir-Medir-Aprender validado en < 2 semanas con métricas AARRR.\n\n**De dónde viene la guía:** Eric Ries — El Método Lean Startup & Ash Maurya Running Lean"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Burn Rate & Runway de Supervivencia\n\n`box_burn_runway` · tipo **benchmark** · fuente: Starting a Business QuickStart Guide — Ch. 9\n\nMonitoreo de meses de pista financiera con alerta de Kill Switch."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Tracción y Aprendizaje** de *Agile Startup (Lean MVP)*. La justificación metodológica completa está en la página del modelo y en `docs/agile_startup.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `agile_startup.aprendizaje.pilot_results.datos_traccion` → tipo `text`\n- `agile_startup.aprendizaje.pilot_results.comentarios_early_adopters` → tipo `text`\n- `agile_startup.aprendizaje.pilot_results.aprendizajes_clave` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `agile_startup:pilot_results`): `box_burn_runway`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

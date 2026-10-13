@@ -1,0 +1,104 @@
+{
+  "id": "modulo.business.operacion",
+  "title": "Operación y Procesos",
+  "summary": "Diagrama de flujo de operaciones y tecnología.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "business",
+  "moduleKey": "operacion",
+  "pillarKey": "tecnico",
+  "openUrl": "/business/operacion",
+  "fields": [
+    {
+      "key": "proceso",
+      "type": "text",
+      "address": "business.tecnico.operacion.proceso",
+      "prompt": "Explicación paso a paso de cómo se entrega el servicio o se fabrica el producto.",
+      "ejemplo": "Ej: \"1. Cliente agenda cita (app). 2. Diagnóstico financiero (1hr). 3. Diseño de portafolio (48hrs). 4. Presentación y firma. 5. Monitoreo mensual.\"",
+      "benchmark": "Tiempo de ciclo operativo (Takt Time) optimizado bajo metodología Lean Manufacturing.",
+      "cita": "Plan de Negocios VF (p. 82)",
+      "placeholder": "Flujo secuencial desde la recepción de insumos hasta la entrega final..."
+    },
+    {
+      "key": "diagrama",
+      "type": "text",
+      "address": "business.tecnico.operacion.diagrama",
+      "prompt": "Flujograma del proceso principal en formato Mermaid.js. Debe mostrar inicio, etapas y fin.",
+      "ejemplo": "Ej: \"graph TD → A[Prospecto] → B[Diagnóstico] → C[Propuesta] → D[Firma contrato] → E[Implementación] → F[Seguimiento]\"",
+      "benchmark": "Diagrama de flujo estándar en formato Mermaid.js con decisiones y responsables.",
+      "cita": "Ken Colwell — Starting a Business QuickStart Guide (Ch. 6, p. 140)",
+      "placeholder": "Código Mermaid (graph TD) que represente el proceso de punta a punta..."
+    },
+    {
+      "key": "tecnologia",
+      "type": "text",
+      "address": "business.tecnico.operacion.tecnologia",
+      "prompt": "Detalla el paquete tecnológico, software de control, hardware especializado y nivel de automatización que sustentan la ventaja operativa.",
+      "ejemplo": "Ej: Banco de pruebas de 300 HP con telemetría digital en tiempo real y software SCADA para diagnóstico de bombas hidráulicas.",
+      "benchmark": "Nivel de madurez tecnológica TRL >= 7.",
+      "cita": "The Innovator's Dilemma (Christensen, Ch. 1) & Operations Management (Slack, p. 140)",
+      "placeholder": "Tecnología, software, patentes y automatización..."
+    },
+    {
+      "key": "economias_escala",
+      "type": "text",
+      "address": "business.tecnico.operacion.economias_escala",
+      "prompt": "Explica cómo los costos unitarios decrecen a medida que aumenta el volumen de producción.",
+      "ejemplo": "Ej: Compra de refacciones por contenedor reduce costo unitario en un 22%.",
+      "benchmark": "Reducción de costo marginal comprobable.",
+      "cita": "Competitive Strategy (Porter, p. 7)",
+      "placeholder": "Curva de aprendizaje y escala..."
+    },
+    {
+      "key": "tipo_proceso",
+      "type": "text",
+      "address": "business.tecnico.operacion.tipo_proceso",
+      "prompt": "Clasifica el tipo de manufactura o servicio (por proyecto, por lote, flujo continuo o células).",
+      "ejemplo": "Ej: Producción híbrida: células de trabajo para diagnóstico y línea continua para maquinado.",
+      "benchmark": "Eficiencia OEE >= 85%.",
+      "cita": "Operations Management (Slack, p. 92)",
+      "placeholder": "Por lotes, continuo, proyecto..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_kpi_otd_dso_dio_ccc",
+      "title": "Indicadores de Eficiencia Operativa (OTD, DSO, DPO, CCC)",
+      "type": "benchmark",
+      "description": "Métricas de cadena de suministro y ciclo de conversión de efectivo.",
+      "source": "Operations Management (Slack) — p. 210"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Diagrama de flujo de operaciones y tecnología.\n\n**Cómo se usa.** Está en el pilar **Estudio Técnico de Producción** del modelo *Plan de Negocios Comercial*. Se abre en `/business/operacion`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 5 campos: `proceso`, `diagrama`, `tecnologia`, `economias_escala`, `tipo_proceso`.\n\n**Herramientas del módulo.** 1 caja(s): `box_kpi_otd_dso_dio_ccc`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `proceso`\n\n**El prompt que usa:** Explicación paso a paso de cómo se entrega el servicio o se fabrica el producto.\n\n**Ejemplo que muestra la guía:** Ej: \"1. Cliente agenda cita (app). 2. Diagnóstico financiero (1hr). 3. Diseño de portafolio (48hrs). 4. Presentación y firma. 5. Monitoreo mensual.\"\n\n**Benchmark / criterio de calidad:** Tiempo de ciclo operativo (Takt Time) optimizado bajo metodología Lean Manufacturing.\n\n**De dónde viene la guía:** Plan de Negocios VF (p. 82)\n\n### `diagrama`\n\n**El prompt que usa:** Flujograma del proceso principal en formato Mermaid.js. Debe mostrar inicio, etapas y fin.\n\n**Ejemplo que muestra la guía:** Ej: \"graph TD → A[Prospecto] → B[Diagnóstico] → C[Propuesta] → D[Firma contrato] → E[Implementación] → F[Seguimiento]\"\n\n**Benchmark / criterio de calidad:** Diagrama de flujo estándar en formato Mermaid.js con decisiones y responsables.\n\n**De dónde viene la guía:** Ken Colwell — Starting a Business QuickStart Guide (Ch. 6, p. 140)\n\n### `tecnologia`\n\n**El prompt que usa:** Detalla el paquete tecnológico, software de control, hardware especializado y nivel de automatización que sustentan la ventaja operativa.\n\n**Ejemplo que muestra la guía:** Ej: Banco de pruebas de 300 HP con telemetría digital en tiempo real y software SCADA para diagnóstico de bombas hidráulicas.\n\n**Benchmark / criterio de calidad:** Nivel de madurez tecnológica TRL >= 7.\n\n**De dónde viene la guía:** The Innovator's Dilemma (Christensen, Ch. 1) & Operations Management (Slack, p. 140)\n\n### `economias_escala`\n\n**El prompt que usa:** Explica cómo los costos unitarios decrecen a medida que aumenta el volumen de producción.\n\n**Ejemplo que muestra la guía:** Ej: Compra de refacciones por contenedor reduce costo unitario en un 22%.\n\n**Benchmark / criterio de calidad:** Reducción de costo marginal comprobable.\n\n**De dónde viene la guía:** Competitive Strategy (Porter, p. 7)\n\n### `tipo_proceso`\n\n**El prompt que usa:** Clasifica el tipo de manufactura o servicio (por proyecto, por lote, flujo continuo o células).\n\n**Ejemplo que muestra la guía:** Ej: Producción híbrida: células de trabajo para diagnóstico y línea continua para maquinado.\n\n**Benchmark / criterio de calidad:** Eficiencia OEE >= 85%.\n\n**De dónde viene la guía:** Operations Management (Slack, p. 92)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Indicadores de Eficiencia Operativa (OTD, DSO, DPO, CCC)\n\n`box_kpi_otd_dso_dio_ccc` · tipo **benchmark** · fuente: Operations Management (Slack) — p. 210\n\nMétricas de cadena de suministro y ciclo de conversión de efectivo."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Estudio Técnico de Producción** de *Plan de Negocios Comercial*. La justificación metodológica completa está en la página del modelo y en `docs/business.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `business.tecnico.operacion.proceso` → tipo `text`\n- `business.tecnico.operacion.diagrama` → tipo `text`\n- `business.tecnico.operacion.tecnologia` → tipo `text`\n- `business.tecnico.operacion.economias_escala` → tipo `text`\n- `business.tecnico.operacion.tipo_proceso` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `business:operacion`): `box_kpi_otd_dso_dio_ccc`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

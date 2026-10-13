@@ -1,0 +1,76 @@
+{
+  "id": "modulo.business.recursos",
+  "title": "Maquinaria y Tecnología",
+  "summary": "Equipamiento, hardware y herramientas necesarias.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "business",
+  "moduleKey": "recursos",
+  "pillarKey": "tecnico",
+  "openUrl": "/business/recursos",
+  "fields": [
+    {
+      "key": "maquinaria",
+      "type": "text",
+      "address": "business.tecnico.recursos.maquinaria",
+      "prompt": "Listado de equipo especializado con marca, modelo, costo y vida útil estimada.",
+      "ejemplo": "Ej: \"2 MacBook Pro M3 ($45K c/u). 1 Servidor NAS Synology ($18K). Monitor 4K Dell ($12K). Total: $120K.\"",
+      "benchmark": "Inversión en maquinaria con cálculo de depreciación acelerada y mantenimiento preventivo.",
+      "cita": "Linda Pinson — Anatomy of a Business Plan (Ch. 5, p. 122)",
+      "placeholder": "Inventario de maquinaria pesada/especializada, marcas, capacidades y costos..."
+    },
+    {
+      "key": "equipo",
+      "type": "text",
+      "address": "business.tecnico.recursos.equipo",
+      "prompt": "Mobiliario de oficina, vehículos y equipo de cómputo general.",
+      "ejemplo": "Ej: \"4 escritorios ejecutivos ($8K c/u). 6 sillas ergonómicas ($5K c/u). Proyector Epson ($15K). Total: $77K.\"",
+      "benchmark": "Mobiliario y equipo auxiliar con vida útil estimada > 5 años.",
+      "cita": "Plan de Negocios VF (p. 88)",
+      "placeholder": "Listado de equipo de cómputo, transporte, herramientas y mobiliario..."
+    },
+    {
+      "key": "herramientas",
+      "type": "text",
+      "address": "business.tecnico.recursos.herramientas",
+      "prompt": "Software, licencias, suscripciones y herramientas digitales necesarias.",
+      "ejemplo": "Ej: \"HubSpot CRM ($0). Suite Adobe ($600/mes). Zoom Pro ($250/mes). Dominio + hosting ($2K/año). Bloomberg Terminal ($24K/año).\"",
+      "benchmark": "Software y herramental con soporte técnico activo y póliza de actualización.",
+      "cita": "Starting a Business QuickStart Guide (Ch. 6, p. 144)",
+      "placeholder": "Software especializado, licencias, instrumental y herramientas menores..."
+    }
+  ],
+  "boxes": [],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Equipamiento, hardware y herramientas necesarias.\n\n**Cómo se usa.** Está en el pilar **Estudio Técnico de Producción** del modelo *Plan de Negocios Comercial*. Se abre en `/business/recursos`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 3 campos: `maquinaria`, `equipo`, `herramientas`.\n\n**Herramientas del módulo.** Ninguna específica: se apoya en los campos de texto."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `maquinaria`\n\n**El prompt que usa:** Listado de equipo especializado con marca, modelo, costo y vida útil estimada.\n\n**Ejemplo que muestra la guía:** Ej: \"2 MacBook Pro M3 ($45K c/u). 1 Servidor NAS Synology ($18K). Monitor 4K Dell ($12K). Total: $120K.\"\n\n**Benchmark / criterio de calidad:** Inversión en maquinaria con cálculo de depreciación acelerada y mantenimiento preventivo.\n\n**De dónde viene la guía:** Linda Pinson — Anatomy of a Business Plan (Ch. 5, p. 122)\n\n### `equipo`\n\n**El prompt que usa:** Mobiliario de oficina, vehículos y equipo de cómputo general.\n\n**Ejemplo que muestra la guía:** Ej: \"4 escritorios ejecutivos ($8K c/u). 6 sillas ergonómicas ($5K c/u). Proyector Epson ($15K). Total: $77K.\"\n\n**Benchmark / criterio de calidad:** Mobiliario y equipo auxiliar con vida útil estimada > 5 años.\n\n**De dónde viene la guía:** Plan de Negocios VF (p. 88)\n\n### `herramientas`\n\n**El prompt que usa:** Software, licencias, suscripciones y herramientas digitales necesarias.\n\n**Ejemplo que muestra la guía:** Ej: \"HubSpot CRM ($0). Suite Adobe ($600/mes). Zoom Pro ($250/mes). Dominio + hosting ($2K/año). Bloomberg Terminal ($24K/año).\"\n\n**Benchmark / criterio de calidad:** Software y herramental con soporte técnico activo y póliza de actualización.\n\n**De dónde viene la guía:** Starting a Business QuickStart Guide (Ch. 6, p. 144)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "Sin cajas asociadas."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Estudio Técnico de Producción** de *Plan de Negocios Comercial*. La justificación metodológica completa está en la página del modelo y en `docs/business.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `business.tecnico.recursos.maquinaria` → tipo `text`\n- `business.tecnico.recursos.equipo` → tipo `text`\n- `business.tecnico.recursos.herramientas` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas:** `src/config/moduleBoxMap.js` no declara cajas para `business:recursos`; la pantalla muestra solo los campos de texto.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

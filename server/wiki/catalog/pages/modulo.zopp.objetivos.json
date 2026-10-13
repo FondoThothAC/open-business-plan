@@ -1,0 +1,64 @@
+{
+  "id": "modulo.zopp.objetivos",
+  "title": "Árbol de Objetivos",
+  "summary": "Conversión de problemas a soluciones, medios y fines.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "zopp",
+  "moduleKey": "objetivos",
+  "pillarKey": "planificacion_mpp",
+  "openUrl": "/zopp/objetivos",
+  "fields": [
+    {
+      "key": "analisis_objetivos",
+      "type": "text",
+      "address": "zopp.planificacion_mpp.objetivos.analisis_objetivos",
+      "prompt": "Árbol de objetivos convirtiendo los estados negativos del problema en estados positivos alcanzables.",
+      "ejemplo": "Ej: Objetivo central: Incrementar la rentabilidad de las carnicerías eliminando el 30% de merma de cocción.",
+      "benchmark": "Relación unívoca medio-fin congruente con el árbol de problemas.",
+      "cita": "Metodología ZOPP GTZ (p. 48)",
+      "placeholder": "Objetivo central, medios de solución y fines trascendentes..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_zopp_mpp_4x4",
+      "title": "Matriz de Planificación de Proyectos (MPP ZOPP 4x4)",
+      "type": "matrix",
+      "description": "Estructura alemana de objetivos, indicadores, medios de verificación y supuestos.",
+      "source": "Manual ZOPP GTZ — p. 28"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Conversión de problemas a soluciones, medios y fines.\n\n**Cómo se usa.** Está en el pilar **Planificación Estratégica (MPP)** del modelo *ZOPP / Marco Lógico (Enfoque Alemán-BID)*. Se abre en `/zopp/objetivos`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 1 campo: `analisis_objetivos`.\n\n**Herramientas del módulo.** 1 caja(s): `box_zopp_mpp_4x4`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `analisis_objetivos`\n\n**El prompt que usa:** Árbol de objetivos convirtiendo los estados negativos del problema en estados positivos alcanzables.\n\n**Ejemplo que muestra la guía:** Ej: Objetivo central: Incrementar la rentabilidad de las carnicerías eliminando el 30% de merma de cocción.\n\n**Benchmark / criterio de calidad:** Relación unívoca medio-fin congruente con el árbol de problemas.\n\n**De dónde viene la guía:** Metodología ZOPP GTZ (p. 48)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Matriz de Planificación de Proyectos (MPP ZOPP 4x4)\n\n`box_zopp_mpp_4x4` · tipo **matrix** · fuente: Manual ZOPP GTZ — p. 28\n\nEstructura alemana de objetivos, indicadores, medios de verificación y supuestos."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Planificación Estratégica (MPP)** de *ZOPP / Marco Lógico (Enfoque Alemán-BID)*. La justificación metodológica completa está en la página del modelo y en `docs/zopp.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `zopp.planificacion_mpp.objetivos.analisis_objetivos` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `zopp:objetivos`): `box_zopp_mpp_4x4`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

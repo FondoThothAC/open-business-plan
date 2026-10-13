@@ -1,0 +1,84 @@
+{
+  "id": "modulo.horizon_europe.presupuesto_eu_microsoft",
+  "title": "Presupuesto UE por Categorías",
+  "summary": "Costes de personal, equipamiento, subcontratación y 25% flat indirecto.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "horizon_europe",
+  "moduleKey": "presupuesto_eu_microsoft",
+  "pillarKey": "implementacion_trabajo",
+  "openUrl": "/horizon_europe/presupuesto_eu_microsoft",
+  "fields": [
+    {
+      "key": "costes_personal_wp",
+      "type": "text",
+      "address": "horizon_europe.implementacion_trabajo.presupuesto_eu_microsoft.costes_personal_wp",
+      "prompt": "Presupuesto de meses-persona (Person-Months) valorados según tarifas horarias institucionales auditadas.",
+      "ejemplo": "Ej: 140 Person-Months totales distribuidos entre 6 socios: €980,000 EUR en personal investigador y técnico.",
+      "benchmark": "Tarifas por día-persona conformes a baremos de la UE (150 a 450 EUR/día).",
+      "cita": "Horizon Europe Annotated Grant Agreement (AGA)",
+      "placeholder": "Meses-persona totales, coste por WP y tarifas horarias justificadas..."
+    },
+    {
+      "key": "subcontratacion_equipo",
+      "type": "text",
+      "address": "horizon_europe.implementacion_trabajo.presupuesto_eu_microsoft.subcontratacion_equipo",
+      "prompt": "Costes de adquisición y depreciación de equipamiento científico especializado y tareas menores subcontratadas.",
+      "ejemplo": "Ej: Depreciación de cromatógrafo de gases (€45,000 EUR) + Subcontratación de secuenciación genética (€30,000 EUR).",
+      "benchmark": "Subcontratación < 15% del presupuesto total para preservar la capacidad del consorcio.",
+      "cita": "Horizon Europe Annotated Grant Agreement (AGA)",
+      "placeholder": "Depreciación de equipos, consumibles de laboratorio y tareas externas..."
+    },
+    {
+      "key": "gastos_indirectos_flat25",
+      "type": "text",
+      "address": "horizon_europe.implementacion_trabajo.presupuesto_eu_microsoft.gastos_indirectos_flat25",
+      "prompt": "Cálculo automático de costes indirectos (overhead) como tasa fija del 25% sobre los costes directos elegibles.",
+      "ejemplo": "Ej: Costes directos elegibles: €1,200,000 EUR -> 25% Flat Indirect Costs: €300,000 EUR. Total: €1,500,000 EUR.",
+      "benchmark": "Tasa plana obligatoria del 25% aplicable en todas las subvenciones de Horizon Europe.",
+      "cita": "Horizon Europe Financial Guidelines (Flat Rate 25%)",
+      "placeholder": "Cálculo del 25% flat overhead sobre costes directos elegibles..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_presupuesto_eu_categorias",
+      "title": "Presupuesto por Categorías de Coste Horizon Europe",
+      "type": "table",
+      "description": "Desglose oficial: Costes de personal, subcontratación, compras, costes indirectos (25% flat rate) y contribución comunitaria.",
+      "source": "The Role of Corporate Sustainability in Asian Development — p. 118"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Costes de personal, equipamiento, subcontratación y 25% flat indirecto.\n\n**Cómo se usa.** Está en el pilar **Implementación y Presupuesto EU** del modelo *Horizon Europe (Unión Europea)*. Se abre en `/horizon_europe/presupuesto_eu_microsoft`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 3 campos: `costes_personal_wp`, `subcontratacion_equipo`, `gastos_indirectos_flat25`.\n\n**Herramientas del módulo.** 1 caja(s): `box_presupuesto_eu_categorias`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `costes_personal_wp`\n\n**El prompt que usa:** Presupuesto de meses-persona (Person-Months) valorados según tarifas horarias institucionales auditadas.\n\n**Ejemplo que muestra la guía:** Ej: 140 Person-Months totales distribuidos entre 6 socios: €980,000 EUR en personal investigador y técnico.\n\n**Benchmark / criterio de calidad:** Tarifas por día-persona conformes a baremos de la UE (150 a 450 EUR/día).\n\n**De dónde viene la guía:** Horizon Europe Annotated Grant Agreement (AGA)\n\n### `subcontratacion_equipo`\n\n**El prompt que usa:** Costes de adquisición y depreciación de equipamiento científico especializado y tareas menores subcontratadas.\n\n**Ejemplo que muestra la guía:** Ej: Depreciación de cromatógrafo de gases (€45,000 EUR) + Subcontratación de secuenciación genética (€30,000 EUR).\n\n**Benchmark / criterio de calidad:** Subcontratación < 15% del presupuesto total para preservar la capacidad del consorcio.\n\n**De dónde viene la guía:** Horizon Europe Annotated Grant Agreement (AGA)\n\n### `gastos_indirectos_flat25`\n\n**El prompt que usa:** Cálculo automático de costes indirectos (overhead) como tasa fija del 25% sobre los costes directos elegibles.\n\n**Ejemplo que muestra la guía:** Ej: Costes directos elegibles: €1,200,000 EUR -> 25% Flat Indirect Costs: €300,000 EUR. Total: €1,500,000 EUR.\n\n**Benchmark / criterio de calidad:** Tasa plana obligatoria del 25% aplicable en todas las subvenciones de Horizon Europe.\n\n**De dónde viene la guía:** Horizon Europe Financial Guidelines (Flat Rate 25%)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Presupuesto por Categorías de Coste Horizon Europe\n\n`box_presupuesto_eu_categorias` · tipo **table** · fuente: The Role of Corporate Sustainability in Asian Development — p. 118\n\nDesglose oficial: Costes de personal, subcontratación, compras, costes indirectos (25% flat rate) y contribución comunitaria."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Implementación y Presupuesto EU** de *Horizon Europe (Unión Europea)*. La justificación metodológica completa está en la página del modelo y en `docs/horizon_europe.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `horizon_europe.implementacion_trabajo.presupuesto_eu_microsoft.costes_personal_wp` → tipo `text`\n- `horizon_europe.implementacion_trabajo.presupuesto_eu_microsoft.subcontratacion_equipo` → tipo `text`\n- `horizon_europe.implementacion_trabajo.presupuesto_eu_microsoft.gastos_indirectos_flat25` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `horizon_europe:presupuesto_eu_microsoft`): `box_presupuesto_eu_categorias`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

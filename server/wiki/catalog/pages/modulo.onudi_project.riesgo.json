@@ -1,0 +1,64 @@
+{
+  "id": "modulo.onudi_project.riesgo",
+  "title": "Análisis de Sensibilidad Tornado",
+  "summary": "Sensibilidad combinada precio-volumen y punto de quiebre industrial.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "onudi_project",
+  "moduleKey": "riesgo",
+  "pillarKey": "financiamiento_global",
+  "openUrl": "/onudi_project/riesgo",
+  "fields": [
+    {
+      "key": "sensibilidad_riesgo",
+      "type": "text",
+      "address": "onudi_project.financiamiento_global.riesgo.sensibilidad_riesgo",
+      "prompt": "Análisis de sensibilidad multivariable Tornado sobre variables críticas industriales (precio, volumen, CAPEX, costo de insumos).",
+      "ejemplo": "Ej: El VAN resiste caídas de hasta -18% en el precio de venta mayorista y alzas del +22% en el costo de materia prima cárnica.",
+      "benchmark": "Rango de variación de ±15% a ±25% evaluando el punto de quiebre (break-even) del proyecto.",
+      "cita": "Manual de Viabilidad Industrial ONUDI & The Nature of Value Ch. 6",
+      "placeholder": "Variables críticas, porcentajes de oscilación y elasticidad del VAN..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_fcff_onudi_model",
+      "title": "Flujo de Caja Libre para la Firma (FCFF ONUDI)",
+      "type": "formula",
+      "description": "Evaluación industrial con WACC internacional y sensibilidad.",
+      "source": "ONUDI Manual Industrial — Ch. 6"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Sensibilidad combinada precio-volumen y punto de quiebre industrial.\n\n**Cómo se usa.** Está en el pilar **Evaluación Financiera Global (COMFAR)** del modelo *Estudio de Factibilidad ONUDI (Industrial Global)*. Se abre en `/onudi_project/riesgo`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 1 campo: `sensibilidad_riesgo`.\n\n**Herramientas del módulo.** 1 caja(s): `box_fcff_onudi_model`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `sensibilidad_riesgo`\n\n**El prompt que usa:** Análisis de sensibilidad multivariable Tornado sobre variables críticas industriales (precio, volumen, CAPEX, costo de insumos).\n\n**Ejemplo que muestra la guía:** Ej: El VAN resiste caídas de hasta -18% en el precio de venta mayorista y alzas del +22% en el costo de materia prima cárnica.\n\n**Benchmark / criterio de calidad:** Rango de variación de ±15% a ±25% evaluando el punto de quiebre (break-even) del proyecto.\n\n**De dónde viene la guía:** Manual de Viabilidad Industrial ONUDI & The Nature of Value Ch. 6"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Flujo de Caja Libre para la Firma (FCFF ONUDI)\n\n`box_fcff_onudi_model` · tipo **formula** · fuente: ONUDI Manual Industrial — Ch. 6\n\nEvaluación industrial con WACC internacional y sensibilidad."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Evaluación Financiera Global (COMFAR)** de *Estudio de Factibilidad ONUDI (Industrial Global)*. La justificación metodológica completa está en la página del modelo y en `docs/onudi_project.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `onudi_project.financiamiento_global.riesgo.sensibilidad_riesgo` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `onudi_project:riesgo`): `box_fcff_onudi_model`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

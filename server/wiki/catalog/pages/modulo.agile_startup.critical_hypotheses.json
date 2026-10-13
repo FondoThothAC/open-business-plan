@@ -1,0 +1,94 @@
+{
+  "id": "modulo.agile_startup.critical_hypotheses",
+  "title": "Hipótesis y Métricas",
+  "summary": "Identificación de las dos hipótesis más críticas de valor y crecimiento, y sus métricas.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "agile_startup",
+  "moduleKey": "critical_hypotheses",
+  "pillarKey": "experimento",
+  "openUrl": "/agile_startup/critical_hypotheses",
+  "fields": [
+    {
+      "key": "hipotesis_valor",
+      "type": "text",
+      "address": "agile_startup.experimento.critical_hypotheses.hipotesis_valor",
+      "prompt": "La suposición crítica de por qué los clientes valorarán y usarán tu producto.",
+      "ejemplo": "Ej: Los profesionistas están dispuestos a pagar una suscripción de $1,200/semana por no tener que planificar su comida.",
+      "benchmark": "Ciclo Construir-Medir-Aprender validado en < 2 semanas con métricas AARRR.",
+      "cita": "Eric Ries — El Método Lean Startup & Ash Maurya Running Lean",
+      "placeholder": "Documenta la hipótesis o métrica ágil para (hipotesis_valor)..."
+    },
+    {
+      "key": "hipotesis_crecimiento",
+      "type": "text",
+      "address": "agile_startup.experimento.critical_hypotheses.hipotesis_crecimiento",
+      "prompt": "La suposición crítica de cómo adquirirás clientes recurrentes a bajo costo.",
+      "ejemplo": "Ej: Cada cliente activo recomendará el servicio a al menos 1 colega de su misma oficina en el primer mes.",
+      "benchmark": "Ciclo Construir-Medir-Aprender validado en < 2 semanas con métricas AARRR.",
+      "cita": "Eric Ries — El Método Lean Startup & Ash Maurya Running Lean",
+      "placeholder": "Documenta la hipótesis o métrica ágil para (hipotesis_crecimiento)..."
+    },
+    {
+      "key": "metrica_exito",
+      "type": "text",
+      "address": "agile_startup.experimento.critical_hypotheses.metrica_exito",
+      "prompt": "Números específicos que validarán las hipótesis del experimento.",
+      "ejemplo": "Ej: Conseguir 20 suscriptores de pago en las primeras 2 semanas de la preventa.",
+      "benchmark": "Ciclo Construir-Medir-Aprender validado en < 2 semanas con métricas AARRR.",
+      "cita": "Eric Ries — El Método Lean Startup & Ash Maurya Running Lean",
+      "placeholder": "Documenta la hipótesis o métrica ágil para (metrica_exito)..."
+    },
+    {
+      "key": "canal_validacion",
+      "type": "text",
+      "address": "agile_startup.experimento.critical_hypotheses.canal_validacion",
+      "prompt": "Dónde o cómo pondrás a prueba el experimento de tracción.",
+      "ejemplo": "Ej: Publicaciones orgánicas en grupos locales de LinkedIn y distribución de flyers físicos en 3 torres corporativas.",
+      "benchmark": "Ciclo Construir-Medir-Aprender validado en < 2 semanas con métricas AARRR.",
+      "cita": "Eric Ries — El Método Lean Startup & Ash Maurya Running Lean",
+      "placeholder": "Documenta la hipótesis o métrica ágil para (canal_validacion)..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_mvp_protocol",
+      "title": "Protocolo de Validación de MVP (Concierge / Wizard of Oz)",
+      "type": "checklist",
+      "description": "Checklist de hipótesis de valor y crecimiento antes del desarrollo.",
+      "source": "The Lean Startup — p. 114"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Identificación de las dos hipótesis más críticas de valor y crecimiento, y sus métricas.\n\n**Cómo se usa.** Está en el pilar **Diseño de Experimentos y MVP** del modelo *Agile Startup (Lean MVP)*. Se abre en `/agile_startup/critical_hypotheses`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 4 campos: `hipotesis_valor`, `hipotesis_crecimiento`, `metrica_exito`, `canal_validacion`.\n\n**Herramientas del módulo.** 1 caja(s): `box_mvp_protocol`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `hipotesis_valor`\n\n**El prompt que usa:** La suposición crítica de por qué los clientes valorarán y usarán tu producto.\n\n**Ejemplo que muestra la guía:** Ej: Los profesionistas están dispuestos a pagar una suscripción de $1,200/semana por no tener que planificar su comida.\n\n**Benchmark / criterio de calidad:** Ciclo Construir-Medir-Aprender validado en < 2 semanas con métricas AARRR.\n\n**De dónde viene la guía:** Eric Ries — El Método Lean Startup & Ash Maurya Running Lean\n\n### `hipotesis_crecimiento`\n\n**El prompt que usa:** La suposición crítica de cómo adquirirás clientes recurrentes a bajo costo.\n\n**Ejemplo que muestra la guía:** Ej: Cada cliente activo recomendará el servicio a al menos 1 colega de su misma oficina en el primer mes.\n\n**Benchmark / criterio de calidad:** Ciclo Construir-Medir-Aprender validado en < 2 semanas con métricas AARRR.\n\n**De dónde viene la guía:** Eric Ries — El Método Lean Startup & Ash Maurya Running Lean\n\n### `metrica_exito`\n\n**El prompt que usa:** Números específicos que validarán las hipótesis del experimento.\n\n**Ejemplo que muestra la guía:** Ej: Conseguir 20 suscriptores de pago en las primeras 2 semanas de la preventa.\n\n**Benchmark / criterio de calidad:** Ciclo Construir-Medir-Aprender validado en < 2 semanas con métricas AARRR.\n\n**De dónde viene la guía:** Eric Ries — El Método Lean Startup & Ash Maurya Running Lean\n\n### `canal_validacion`\n\n**El prompt que usa:** Dónde o cómo pondrás a prueba el experimento de tracción.\n\n**Ejemplo que muestra la guía:** Ej: Publicaciones orgánicas en grupos locales de LinkedIn y distribución de flyers físicos en 3 torres corporativas.\n\n**Benchmark / criterio de calidad:** Ciclo Construir-Medir-Aprender validado en < 2 semanas con métricas AARRR.\n\n**De dónde viene la guía:** Eric Ries — El Método Lean Startup & Ash Maurya Running Lean"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Protocolo de Validación de MVP (Concierge / Wizard of Oz)\n\n`box_mvp_protocol` · tipo **checklist** · fuente: The Lean Startup — p. 114\n\nChecklist de hipótesis de valor y crecimiento antes del desarrollo."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Diseño de Experimentos y MVP** de *Agile Startup (Lean MVP)*. La justificación metodológica completa está en la página del modelo y en `docs/agile_startup.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `agile_startup.experimento.critical_hypotheses.hipotesis_valor` → tipo `text`\n- `agile_startup.experimento.critical_hypotheses.hipotesis_crecimiento` → tipo `text`\n- `agile_startup.experimento.critical_hypotheses.metrica_exito` → tipo `text`\n- `agile_startup.experimento.critical_hypotheses.canal_validacion` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `agile_startup:critical_hypotheses`): `box_mvp_protocol`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

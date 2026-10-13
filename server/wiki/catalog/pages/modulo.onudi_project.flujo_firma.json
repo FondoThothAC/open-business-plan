@@ -1,0 +1,64 @@
+{
+  "id": "modulo.onudi_project.flujo_firma",
+  "title": "Flujo de Caja Libre (FCFF)",
+  "summary": "Flujo de caja para la firma antes de financiamiento y valor terminal.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "onudi_project",
+  "moduleKey": "flujo_firma",
+  "pillarKey": "financiamiento_global",
+  "openUrl": "/onudi_project/flujo_firma",
+  "fields": [
+    {
+      "key": "fcff",
+      "type": "text",
+      "address": "onudi_project.financiamiento_global.flujo_firma.fcff",
+      "prompt": "Proyección del Flujo de Caja Libre para la Firma (FCFF = EBIT*(1-t) + D&A - CAPEX - Delta NWC) conforme al estándar COMFAR de ONUDI.",
+      "ejemplo": "Ej: FCFF Año 1: $1,420,000 MXN; Año 2: $2,850,000 MXN; Año 3: $3,600,000 MXN a capacidad estabilizada.",
+      "benchmark": "Proyección a 5-10 años con cálculo explícito de valor terminal a perpetuidad.",
+      "cita": "Manual de Estudios de Viabilidad Industrial ONUDI (Behrens & Hawranek, Cap. 6)",
+      "placeholder": "Memoria de cálculo del Flujo de Caja Libre para la Firma..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_fcff_onudi_model",
+      "title": "Flujo de Caja Libre para la Firma (FCFF ONUDI)",
+      "type": "formula",
+      "description": "Evaluación industrial con WACC internacional y sensibilidad.",
+      "source": "ONUDI Manual Industrial — Ch. 6"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Flujo de caja para la firma antes de financiamiento y valor terminal.\n\n**Cómo se usa.** Está en el pilar **Evaluación Financiera Global (COMFAR)** del modelo *Estudio de Factibilidad ONUDI (Industrial Global)*. Se abre en `/onudi_project/flujo_firma`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 1 campo: `fcff`.\n\n**Herramientas del módulo.** 1 caja(s): `box_fcff_onudi_model`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `fcff`\n\n**El prompt que usa:** Proyección del Flujo de Caja Libre para la Firma (FCFF = EBIT*(1-t) + D&A - CAPEX - Delta NWC) conforme al estándar COMFAR de ONUDI.\n\n**Ejemplo que muestra la guía:** Ej: FCFF Año 1: $1,420,000 MXN; Año 2: $2,850,000 MXN; Año 3: $3,600,000 MXN a capacidad estabilizada.\n\n**Benchmark / criterio de calidad:** Proyección a 5-10 años con cálculo explícito de valor terminal a perpetuidad.\n\n**De dónde viene la guía:** Manual de Estudios de Viabilidad Industrial ONUDI (Behrens & Hawranek, Cap. 6)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Flujo de Caja Libre para la Firma (FCFF ONUDI)\n\n`box_fcff_onudi_model` · tipo **formula** · fuente: ONUDI Manual Industrial — Ch. 6\n\nEvaluación industrial con WACC internacional y sensibilidad."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Evaluación Financiera Global (COMFAR)** de *Estudio de Factibilidad ONUDI (Industrial Global)*. La justificación metodológica completa está en la página del modelo y en `docs/onudi_project.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `onudi_project.financiamiento_global.flujo_firma.fcff` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `onudi_project:flujo_firma`): `box_fcff_onudi_model`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "id": "modulo.horizon_europe.consorcio",
+  "title": "Consorcio Transnacional",
+  "summary": "Estructura internacional de socios, capacidades y gobernanza.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "horizon_europe",
+  "moduleKey": "consorcio",
+  "pillarKey": "excelencia_cientifica",
+  "openUrl": "/horizon_europe/consorcio",
+  "fields": [
+    {
+      "key": "consorcio_multinacional",
+      "type": "text",
+      "address": "horizon_europe.excelencia_cientifica.consorcio.consorcio_multinacional",
+      "prompt": "Estructura de partners internacionales y división de roles científicos.",
+      "ejemplo": "Ej (Estilo Airbus/BioNTech): Instituto Fraunhofer (Líder WP1-I+D), SAP (WP2-Software).",
+      "benchmark": "Cumplimiento estricto de Do No Significant Harm (DNSH) en los 6 objetivos ambientales y FAIR Data.",
+      "cita": "Horizon Europe Programme Guide (Comisión Europea) & Principio DNSH",
+      "placeholder": "Criterios de excelencia e impacto europeo para (consorcio_multinacional)..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_dnsh_ue_6",
+      "title": "Principio DNSH de la UE (6 Objetivos Medioambientales)",
+      "type": "checklist",
+      "description": "Do No Significant Harm: Clima, agua, economía circular, contaminación, biodiversidad.",
+      "source": "The Role of Corporate Sustainability in Asian Development — p. 89"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Estructura internacional de socios, capacidades y gobernanza.\n\n**Cómo se usa.** Está en el pilar **Excelencia y Ciencia Abierta** del modelo *Horizon Europe (Unión Europea)*. Se abre en `/horizon_europe/consorcio`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 1 campo: `consorcio_multinacional`.\n\n**Herramientas del módulo.** 1 caja(s): `box_dnsh_ue_6`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `consorcio_multinacional`\n\n**El prompt que usa:** Estructura de partners internacionales y división de roles científicos.\n\n**Ejemplo que muestra la guía:** Ej (Estilo Airbus/BioNTech): Instituto Fraunhofer (Líder WP1-I+D), SAP (WP2-Software).\n\n**Benchmark / criterio de calidad:** Cumplimiento estricto de Do No Significant Harm (DNSH) en los 6 objetivos ambientales y FAIR Data.\n\n**De dónde viene la guía:** Horizon Europe Programme Guide (Comisión Europea) & Principio DNSH"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Principio DNSH de la UE (6 Objetivos Medioambientales)\n\n`box_dnsh_ue_6` · tipo **checklist** · fuente: The Role of Corporate Sustainability in Asian Development — p. 89\n\nDo No Significant Harm: Clima, agua, economía circular, contaminación, biodiversidad."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Excelencia y Ciencia Abierta** de *Horizon Europe (Unión Europea)*. La justificación metodológica completa está en la página del modelo y en `docs/horizon_europe.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `horizon_europe.excelencia_cientifica.consorcio.consorcio_multinacional` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `horizon_europe:consorcio`): `box_dnsh_ue_6`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

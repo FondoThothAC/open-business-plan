@@ -1,0 +1,64 @@
+{
+  "id": "modulo.hoshin_kanri.norte_verdadero",
+  "title": "True North (Norte Verdadero)",
+  "summary": "Visión de propósito inmutable a 5-10 años.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "hoshin_kanri",
+  "moduleKey": "norte_verdadero",
+  "pillarKey": "vision_largo_plazo",
+  "openUrl": "/hoshin-kanri/norte_verdadero",
+  "fields": [
+    {
+      "key": "true_north",
+      "type": "text",
+      "address": "hoshin_kanri.vision_largo_plazo.norte_verdadero.true_north",
+      "prompt": "Visión a 10 años. El propósito inalterable de la organización.",
+      "ejemplo": "Ej (Estilo Toyota/Honda): \"Cero emisiones y cero colisiones para 2040\".",
+      "benchmark": "Alineación de objetivos de ruptura (Breakthroughs) en Matriz X con revisiones Catchball periódicas.",
+      "cita": "Yoji Akao — Hoshin Kanri: Policy Deployment & Toyota Production System",
+      "placeholder": "Despliegue estratégico Hoshin para (true_north)..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_matriz_x_hoshin",
+      "title": "Matriz X Hoshin Kanri (4 Cuadrantes)",
+      "type": "matrix",
+      "description": "Alineación de Norte Verdadero, objetivos anuales, prioridades y métricas.",
+      "source": "Creating a Business Plan For Dummies (Hoshin Edition) — Ch. 8"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Visión de propósito inmutable a 5-10 años.\n\n**Cómo se usa.** Está en el pilar **Visión y Breakthroughs** del modelo *Hoshin Kanri (Japón - Planificación Estratégica)*. Se abre en `/hoshin-kanri/norte_verdadero`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 1 campo: `true_north`.\n\n**Herramientas del módulo.** 1 caja(s): `box_matriz_x_hoshin`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `true_north`\n\n**El prompt que usa:** Visión a 10 años. El propósito inalterable de la organización.\n\n**Ejemplo que muestra la guía:** Ej (Estilo Toyota/Honda): \"Cero emisiones y cero colisiones para 2040\".\n\n**Benchmark / criterio de calidad:** Alineación de objetivos de ruptura (Breakthroughs) en Matriz X con revisiones Catchball periódicas.\n\n**De dónde viene la guía:** Yoji Akao — Hoshin Kanri: Policy Deployment & Toyota Production System"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Matriz X Hoshin Kanri (4 Cuadrantes)\n\n`box_matriz_x_hoshin` · tipo **matrix** · fuente: Creating a Business Plan For Dummies (Hoshin Edition) — Ch. 8\n\nAlineación de Norte Verdadero, objetivos anuales, prioridades y métricas."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Visión y Breakthroughs** de *Hoshin Kanri (Japón - Planificación Estratégica)*. La justificación metodológica completa está en la página del modelo y en `docs/hoshin_kanri.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `hoshin_kanri.vision_largo_plazo.norte_verdadero.true_north` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `hoshin_kanri:norte_verdadero`): `box_matriz_x_hoshin`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

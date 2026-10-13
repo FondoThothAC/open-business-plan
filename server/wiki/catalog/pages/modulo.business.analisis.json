@@ -1,0 +1,94 @@
+{
+  "id": "modulo.business.analisis",
+  "title": "Análisis de Producto y Valor",
+  "summary": "Descripción detallada del producto y beneficios.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "business",
+  "moduleKey": "analisis",
+  "pillarKey": "mercado",
+  "openUrl": "/business/analisis",
+  "fields": [
+    {
+      "key": "producto",
+      "type": "text",
+      "address": "business.mercado.analisis.producto",
+      "prompt": "Descripción técnica y funcional de tu producto o servicio. ¿Qué entregas exactamente?",
+      "ejemplo": "Ej: \"Plan patrimonial personalizado que incluye: diagnóstico financiero, portafolio de inversión y seguro de vida.\"",
+      "benchmark": "Ficha técnica completa con especificaciones de entrega y niveles de servicio (SLA).",
+      "cita": "Linda Pinson — Anatomy of a Business Plan (Ch. 4, p. 82)",
+      "placeholder": "Descripción funcional detallada del producto o catálogo de servicios..."
+    },
+    {
+      "key": "valor",
+      "type": "text",
+      "address": "business.mercado.analisis.valor",
+      "prompt": "Tu promesa única al cliente. ¿Por qué te elegirían sobre la competencia?",
+      "ejemplo": "Ej: \"Asesoría sin conflicto de interés: cobramos honorarios fijos, no comisiones por producto vendido.\"",
+      "benchmark": "Retorno de inversión para el cliente (ROI cliente) cuantificable > 2x su gasto.",
+      "cita": "Alexander Osterwalder — Value Proposition Design (p. 48)",
+      "placeholder": "Razón incontrovertible por la que el cliente elegirá tu solución..."
+    },
+    {
+      "key": "demanda",
+      "type": "text",
+      "address": "business.mercado.analisis.demanda",
+      "prompt": "Evidencia de que existe un mercado real dispuesto a pagar. Datos duros, encuestas, tendencias.",
+      "ejemplo": "Ej: \"Según AMAFORE, solo 22% de trabajadores en Sonora tiene un plan de retiro privado. Encuesta propia: 78% de 200 encuestados pagaría por asesoría.\"",
+      "benchmark": "Datos de intención de compra respaldados por cartas de intención o registros DENUE/INEGI.",
+      "cita": "Plan de Negocios VF (Metodología Hispana, p. 52)",
+      "placeholder": "Evidencia estadística y cualitativa de que existe un mercado comprador..."
+    },
+    {
+      "key": "ventaja_diferencial",
+      "type": "text",
+      "address": "business.mercado.analisis.ventaja_diferencial",
+      "prompt": "Define la ventaja competitiva sostenible y diferenciador clave que hace que tu producto o servicio sea difícilmente imitable por los competidores.",
+      "ejemplo": "Ej: \"Algoritmo de matching predictivo propietario con 40% menor latencia y convenios de exclusividad regional con proveedores clave.\"",
+      "benchmark": "Barrera de entrada medible (patente, costo de cambio > 30%, o efecto de red).",
+      "cita": "Michael Porter — Competitive Advantage (Ch. 1, p. 15)",
+      "placeholder": "Describe el factor que protege tus márgenes y te diferencia radicalmente..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_tam_sam_som",
+      "title": "Mercado Total, Alcanzable y Obtenible (TAM/SAM/SOM)",
+      "type": "formula",
+      "description": "Cálculo de dimensionamiento de mercado con 3 metodologías.",
+      "source": "Anatomy of a Business Plan — p. 78"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Descripción detallada del producto y beneficios.\n\n**Cómo se usa.** Está en el pilar **El Mercado** del modelo *Plan de Negocios Comercial*. Se abre en `/business/analisis`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 4 campos: `producto`, `valor`, `demanda`, `ventaja_diferencial`.\n\n**Herramientas del módulo.** 1 caja(s): `box_tam_sam_som`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `producto`\n\n**El prompt que usa:** Descripción técnica y funcional de tu producto o servicio. ¿Qué entregas exactamente?\n\n**Ejemplo que muestra la guía:** Ej: \"Plan patrimonial personalizado que incluye: diagnóstico financiero, portafolio de inversión y seguro de vida.\"\n\n**Benchmark / criterio de calidad:** Ficha técnica completa con especificaciones de entrega y niveles de servicio (SLA).\n\n**De dónde viene la guía:** Linda Pinson — Anatomy of a Business Plan (Ch. 4, p. 82)\n\n### `valor`\n\n**El prompt que usa:** Tu promesa única al cliente. ¿Por qué te elegirían sobre la competencia?\n\n**Ejemplo que muestra la guía:** Ej: \"Asesoría sin conflicto de interés: cobramos honorarios fijos, no comisiones por producto vendido.\"\n\n**Benchmark / criterio de calidad:** Retorno de inversión para el cliente (ROI cliente) cuantificable > 2x su gasto.\n\n**De dónde viene la guía:** Alexander Osterwalder — Value Proposition Design (p. 48)\n\n### `demanda`\n\n**El prompt que usa:** Evidencia de que existe un mercado real dispuesto a pagar. Datos duros, encuestas, tendencias.\n\n**Ejemplo que muestra la guía:** Ej: \"Según AMAFORE, solo 22% de trabajadores en Sonora tiene un plan de retiro privado. Encuesta propia: 78% de 200 encuestados pagaría por asesoría.\"\n\n**Benchmark / criterio de calidad:** Datos de intención de compra respaldados por cartas de intención o registros DENUE/INEGI.\n\n**De dónde viene la guía:** Plan de Negocios VF (Metodología Hispana, p. 52)\n\n### `ventaja_diferencial`\n\n**El prompt que usa:** Define la ventaja competitiva sostenible y diferenciador clave que hace que tu producto o servicio sea difícilmente imitable por los competidores.\n\n**Ejemplo que muestra la guía:** Ej: \"Algoritmo de matching predictivo propietario con 40% menor latencia y convenios de exclusividad regional con proveedores clave.\"\n\n**Benchmark / criterio de calidad:** Barrera de entrada medible (patente, costo de cambio > 30%, o efecto de red).\n\n**De dónde viene la guía:** Michael Porter — Competitive Advantage (Ch. 1, p. 15)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Mercado Total, Alcanzable y Obtenible (TAM/SAM/SOM)\n\n`box_tam_sam_som` · tipo **formula** · fuente: Anatomy of a Business Plan — p. 78\n\nCálculo de dimensionamiento de mercado con 3 metodologías."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **El Mercado** de *Plan de Negocios Comercial*. La justificación metodológica completa está en la página del modelo y en `docs/business.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `business.mercado.analisis.producto` → tipo `text`\n- `business.mercado.analisis.valor` → tipo `text`\n- `business.mercado.analisis.demanda` → tipo `text`\n- `business.mercado.analisis.ventaja_diferencial` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `business:analisis`): `box_tam_sam_som`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

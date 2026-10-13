@@ -1,0 +1,116 @@
+{
+  "id": "modulo.agile_startup.buyer_persona",
+  "title": "Cliente y Empatía",
+  "summary": "Creación detallada del Buyer Persona o avatar de cliente y su mapa de empatía.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "agile_startup",
+  "moduleKey": "buyer_persona",
+  "pillarKey": "validacion",
+  "openUrl": "/agile_startup/buyer_persona",
+  "fields": [
+    {
+      "key": "avatar_cliente",
+      "type": "text",
+      "address": "agile_startup.validacion.buyer_persona.avatar_cliente",
+      "prompt": "Detalla el perfil del Buyer Persona: edad, ocupación, metas e intereses.",
+      "ejemplo": "Ej: Sandra, 32 años, gerente de marketing, soltera, apasionada del fitness pero trabaja 10 horas diarias.",
+      "benchmark": "Ciclo Construir-Medir-Aprender validado en < 2 semanas con métricas AARRR.",
+      "cita": "Eric Ries — El Método Lean Startup & Ash Maurya Running Lean",
+      "placeholder": "Documenta la hipótesis o métrica ágil para (avatar_cliente)..."
+    },
+    {
+      "key": "que_piensa",
+      "type": "text",
+      "address": "agile_startup.validacion.buyer_persona.que_piensa",
+      "prompt": "¿Qué pasa por la mente del cliente ideal? Sus deseos, preocupaciones y aspiraciones financieras/personales.",
+      "ejemplo": "Ej: Piensa que debería comer mejor para cuidar su salud, pero le aburre preparar comida y le da pereza lavar platos.",
+      "benchmark": "Ciclo Construir-Medir-Aprender validado en < 2 semanas con métricas AARRR.",
+      "cita": "Eric Ries — El Método Lean Startup & Ash Maurya Running Lean",
+      "placeholder": "Documenta la hipótesis o métrica ágil para (que_piensa)..."
+    },
+    {
+      "key": "que_ve",
+      "type": "text",
+      "address": "agile_startup.validacion.buyer_persona.que_ve",
+      "prompt": "¿Qué observa en su entorno diario? Ofertas de la competencia, comportamiento de amigos, etc.",
+      "ejemplo": "Ej: Ve que sus compañeros de oficina piden pizzas o comida rápida grasosa por falta de opciones saludables cerca.",
+      "benchmark": "Ciclo Construir-Medir-Aprender validado en < 2 semanas con métricas AARRR.",
+      "cita": "Eric Ries — El Método Lean Startup & Ash Maurya Running Lean",
+      "placeholder": "Documenta la hipótesis o métrica ágil para (que_ve)..."
+    },
+    {
+      "key": "que_oye",
+      "type": "text",
+      "address": "agile_startup.validacion.buyer_persona.que_oye",
+      "prompt": "¿Qué le dicen sus amigos, familia o influenciadores que afecta su decisión?",
+      "ejemplo": "Ej: Oye constantemente en podcasts de bienestar la importancia de la nutrición, y de sus amigas que preparar ensaladas toma mucho tiempo.",
+      "benchmark": "Ciclo Construir-Medir-Aprender validado en < 2 semanas con métricas AARRR.",
+      "cita": "Eric Ries — El Método Lean Startup & Ash Maurya Running Lean",
+      "placeholder": "Documenta la hipótesis o métrica ágil para (que_oye)..."
+    },
+    {
+      "key": "que_dice_hace",
+      "type": "text",
+      "address": "agile_startup.validacion.buyer_persona.que_dice_hace",
+      "prompt": "¿Cómo se comporta y qué expresa en público el cliente?",
+      "ejemplo": "Ej: Dice que quiere empezar la dieta el lunes, pero termina pidiendo comida rápida el miércoles debido a juntas de última hora.",
+      "benchmark": "Ciclo Construir-Medir-Aprender validado en < 2 semanas con métricas AARRR.",
+      "cita": "Eric Ries — El Método Lean Startup & Ash Maurya Running Lean",
+      "placeholder": "Documenta la hipótesis o métrica ágil para (que_dice_hace)..."
+    },
+    {
+      "key": "dolores",
+      "type": "text",
+      "address": "agile_startup.validacion.buyer_persona.dolores",
+      "prompt": "Frustraciones, obstáculos y miedos del cliente.",
+      "ejemplo": "Ej: Miedo a ganar peso, frustración de gastar demasiado en apps de delivery tradicionales con comida fría.",
+      "benchmark": "Ciclo Construir-Medir-Aprender validado en < 2 semanas con métricas AARRR.",
+      "cita": "Eric Ries — El Método Lean Startup & Ash Maurya Running Lean",
+      "placeholder": "Documenta la hipótesis o métrica ágil para (dolores)..."
+    },
+    {
+      "key": "necesidades",
+      "type": "text",
+      "address": "agile_startup.validacion.buyer_persona.necesidades",
+      "prompt": "Lo que realmente desea conseguir o lograr el cliente.",
+      "ejemplo": "Ej: Conveniencia extrema: comida rica, saludable, que llegue caliente y a un precio predecible.",
+      "benchmark": "Ciclo Construir-Medir-Aprender validado en < 2 semanas con métricas AARRR.",
+      "cita": "Eric Ries — El Método Lean Startup & Ash Maurya Running Lean",
+      "placeholder": "Documenta la hipótesis o métrica ágil para (necesidades)..."
+    }
+  ],
+  "boxes": [],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Creación detallada del Buyer Persona o avatar de cliente y su mapa de empatía.\n\n**Cómo se usa.** Está en el pilar **Validación y Lienzo (Lean Canvas)** del modelo *Agile Startup (Lean MVP)*. Se abre en `/agile_startup/buyer_persona`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 7 campos: `avatar_cliente`, `que_piensa`, `que_ve`, `que_oye`, `que_dice_hace`, `dolores`, `necesidades`.\n\n**Herramientas del módulo.** Ninguna específica: se apoya en los campos de texto."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `avatar_cliente`\n\n**El prompt que usa:** Detalla el perfil del Buyer Persona: edad, ocupación, metas e intereses.\n\n**Ejemplo que muestra la guía:** Ej: Sandra, 32 años, gerente de marketing, soltera, apasionada del fitness pero trabaja 10 horas diarias.\n\n**Benchmark / criterio de calidad:** Ciclo Construir-Medir-Aprender validado en < 2 semanas con métricas AARRR.\n\n**De dónde viene la guía:** Eric Ries — El Método Lean Startup & Ash Maurya Running Lean\n\n### `que_piensa`\n\n**El prompt que usa:** ¿Qué pasa por la mente del cliente ideal? Sus deseos, preocupaciones y aspiraciones financieras/personales.\n\n**Ejemplo que muestra la guía:** Ej: Piensa que debería comer mejor para cuidar su salud, pero le aburre preparar comida y le da pereza lavar platos.\n\n**Benchmark / criterio de calidad:** Ciclo Construir-Medir-Aprender validado en < 2 semanas con métricas AARRR.\n\n**De dónde viene la guía:** Eric Ries — El Método Lean Startup & Ash Maurya Running Lean\n\n### `que_ve`\n\n**El prompt que usa:** ¿Qué observa en su entorno diario? Ofertas de la competencia, comportamiento de amigos, etc.\n\n**Ejemplo que muestra la guía:** Ej: Ve que sus compañeros de oficina piden pizzas o comida rápida grasosa por falta de opciones saludables cerca.\n\n**Benchmark / criterio de calidad:** Ciclo Construir-Medir-Aprender validado en < 2 semanas con métricas AARRR.\n\n**De dónde viene la guía:** Eric Ries — El Método Lean Startup & Ash Maurya Running Lean\n\n### `que_oye`\n\n**El prompt que usa:** ¿Qué le dicen sus amigos, familia o influenciadores que afecta su decisión?\n\n**Ejemplo que muestra la guía:** Ej: Oye constantemente en podcasts de bienestar la importancia de la nutrición, y de sus amigas que preparar ensaladas toma mucho tiempo.\n\n**Benchmark / criterio de calidad:** Ciclo Construir-Medir-Aprender validado en < 2 semanas con métricas AARRR.\n\n**De dónde viene la guía:** Eric Ries — El Método Lean Startup & Ash Maurya Running Lean\n\n### `que_dice_hace`\n\n**El prompt que usa:** ¿Cómo se comporta y qué expresa en público el cliente?\n\n**Ejemplo que muestra la guía:** Ej: Dice que quiere empezar la dieta el lunes, pero termina pidiendo comida rápida el miércoles debido a juntas de última hora.\n\n**Benchmark / criterio de calidad:** Ciclo Construir-Medir-Aprender validado en < 2 semanas con métricas AARRR.\n\n**De dónde viene la guía:** Eric Ries — El Método Lean Startup & Ash Maurya Running Lean\n\n### `dolores`\n\n**El prompt que usa:** Frustraciones, obstáculos y miedos del cliente.\n\n**Ejemplo que muestra la guía:** Ej: Miedo a ganar peso, frustración de gastar demasiado en apps de delivery tradicionales con comida fría.\n\n**Benchmark / criterio de calidad:** Ciclo Construir-Medir-Aprender validado en < 2 semanas con métricas AARRR.\n\n**De dónde viene la guía:** Eric Ries — El Método Lean Startup & Ash Maurya Running Lean\n\n### `necesidades`\n\n**El prompt que usa:** Lo que realmente desea conseguir o lograr el cliente.\n\n**Ejemplo que muestra la guía:** Ej: Conveniencia extrema: comida rica, saludable, que llegue caliente y a un precio predecible.\n\n**Benchmark / criterio de calidad:** Ciclo Construir-Medir-Aprender validado en < 2 semanas con métricas AARRR.\n\n**De dónde viene la guía:** Eric Ries — El Método Lean Startup & Ash Maurya Running Lean"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "Sin cajas asociadas."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Validación y Lienzo (Lean Canvas)** de *Agile Startup (Lean MVP)*. La justificación metodológica completa está en la página del modelo y en `docs/agile_startup.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `agile_startup.validacion.buyer_persona.avatar_cliente` → tipo `text`\n- `agile_startup.validacion.buyer_persona.que_piensa` → tipo `text`\n- `agile_startup.validacion.buyer_persona.que_ve` → tipo `text`\n- `agile_startup.validacion.buyer_persona.que_oye` → tipo `text`\n- `agile_startup.validacion.buyer_persona.que_dice_hace` → tipo `text`\n- `agile_startup.validacion.buyer_persona.dolores` → tipo `text`\n- `agile_startup.validacion.buyer_persona.necesidades` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas:** `src/config/moduleBoxMap.js` no declara cajas para `agile_startup:buyer_persona`; la pantalla muestra solo los campos de texto.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

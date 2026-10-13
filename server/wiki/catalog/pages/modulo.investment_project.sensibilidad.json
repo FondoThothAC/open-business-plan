@@ -1,0 +1,74 @@
+{
+  "id": "modulo.investment_project.sensibilidad",
+  "title": "Análisis de Sensibilidad",
+  "summary": "Sensibilidad unidimensional y multivariable.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "investment_project",
+  "moduleKey": "sensibilidad",
+  "pillarKey": "riesgo_matematico",
+  "openUrl": "/investment_project/sensibilidad",
+  "fields": [
+    {
+      "key": "sensibilidad_unidimensional",
+      "type": "text",
+      "address": "investment_project.riesgo_matematico.sensibilidad.sensibilidad_unidimensional",
+      "prompt": "Tornado de sensibilidad: cómo cambia la TIR si se altera una sola variable crítica (ej. CAPEX o Precio).",
+      "ejemplo": "Ej: \"Si el costo del acero sube 20%, la TIR del proyecto baja de 14.5% a 12.1%.\"",
+      "benchmark": "TIR > WACC + 4% con análisis probabilístico Monte Carlo al 95% de confianza.",
+      "cita": "The Nature of Value (Ch. 5 WACC/CAPM) & CSI MasterFormat",
+      "placeholder": "Memoria de cálculo y parámetros para sensibilidad unidimensional..."
+    },
+    {
+      "key": "escenarios",
+      "type": "text",
+      "address": "investment_project.riesgo_matematico.sensibilidad.escenarios",
+      "prompt": "Análisis de escenarios consolidados: Caso Base, Caso Pesimista y Caso Optimista.",
+      "ejemplo": "Ej: \"Caso Pesimista (Retraso de obra de 6 meses + inflación 8%): El proyecto mantiene VAN positivo.\"",
+      "benchmark": "TIR > WACC + 4% con análisis probabilístico Monte Carlo al 95% de confianza.",
+      "cita": "The Nature of Value (Ch. 5 WACC/CAPM) & CSI MasterFormat",
+      "placeholder": "Memoria de cálculo y parámetros cuantitativos para (escenarios)..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_tornado_sensibilidad",
+      "title": "Análisis de Sensibilidad Tornado (1 Variable)",
+      "type": "formula",
+      "description": "Impacto en el VAN ante oscilaciones de ±25% en precio, volumen y CAPEX.",
+      "source": "The Nature of Value — Ch. 6"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Sensibilidad unidimensional y multivariable.\n\n**Cómo se usa.** Está en el pilar **Riesgo Matemático y Sensibilidad** del modelo *Proyecto de Inversión (Ingeniería y Finanzas)*. Se abre en `/investment_project/sensibilidad`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 2 campos: `sensibilidad_unidimensional`, `escenarios`.\n\n**Herramientas del módulo.** 1 caja(s): `box_tornado_sensibilidad`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `sensibilidad_unidimensional`\n\n**El prompt que usa:** Tornado de sensibilidad: cómo cambia la TIR si se altera una sola variable crítica (ej. CAPEX o Precio).\n\n**Ejemplo que muestra la guía:** Ej: \"Si el costo del acero sube 20%, la TIR del proyecto baja de 14.5% a 12.1%.\"\n\n**Benchmark / criterio de calidad:** TIR > WACC + 4% con análisis probabilístico Monte Carlo al 95% de confianza.\n\n**De dónde viene la guía:** The Nature of Value (Ch. 5 WACC/CAPM) & CSI MasterFormat\n\n### `escenarios`\n\n**El prompt que usa:** Análisis de escenarios consolidados: Caso Base, Caso Pesimista y Caso Optimista.\n\n**Ejemplo que muestra la guía:** Ej: \"Caso Pesimista (Retraso de obra de 6 meses + inflación 8%): El proyecto mantiene VAN positivo.\"\n\n**Benchmark / criterio de calidad:** TIR > WACC + 4% con análisis probabilístico Monte Carlo al 95% de confianza.\n\n**De dónde viene la guía:** The Nature of Value (Ch. 5 WACC/CAPM) & CSI MasterFormat"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Análisis de Sensibilidad Tornado (1 Variable)\n\n`box_tornado_sensibilidad` · tipo **formula** · fuente: The Nature of Value — Ch. 6\n\nImpacto en el VAN ante oscilaciones de ±25% en precio, volumen y CAPEX."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Riesgo Matemático y Sensibilidad** de *Proyecto de Inversión (Ingeniería y Finanzas)*. La justificación metodológica completa está en la página del modelo y en `docs/investment_project.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `investment_project.riesgo_matematico.sensibilidad.sensibilidad_unidimensional` → tipo `text`\n- `investment_project.riesgo_matematico.sensibilidad.escenarios` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `investment_project:sensibilidad`): `box_tornado_sensibilidad`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

@@ -1,0 +1,76 @@
+{
+  "id": "modulo.business.ambiental",
+  "title": "Impacto Ambiental",
+  "summary": "Sostenibilidad, manejo de residuos y normatividad.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "business",
+  "moduleKey": "ambiental",
+  "pillarKey": "tecnico",
+  "openUrl": "/business/ambiental",
+  "fields": [
+    {
+      "key": "impacto",
+      "type": "text",
+      "address": "business.tecnico.ambiental.impacto",
+      "prompt": "Efectos de tu operación en el medio ambiente. Consumo energético, residuos, emisiones.",
+      "ejemplo": "Ej: \"Oficina consume 450 kWh/mes. Operación digital reduce 80% de papel vs firma tradicional. Huella: 2.3 ton CO₂/año.\"",
+      "benchmark": "Matriz de impacto ambiental con emisiones, vertidos y residuos cuantificados.",
+      "cita": "Corporate Sustainability in Asian Development (p. 78)",
+      "placeholder": "Diagnóstico de efectos directos e indirectos en el medio ambiente..."
+    },
+    {
+      "key": "mitigacion",
+      "type": "text",
+      "address": "business.tecnico.ambiental.mitigacion",
+      "prompt": "Acciones concretas para reducir tu impacto ambiental. Metas y plazos.",
+      "ejemplo": "Ej: \"Meta 2025: 100% firmas digitales. 2026: Energía solar en oficina (-60% consumo). Reciclaje de e-waste con certificado.\"",
+      "benchmark": "Plan de mitigación con metas concretas de reducción de consumo de agua y energía.",
+      "cita": "Corporate Sustainability in Asian Development (p. 82)",
+      "placeholder": "Acciones técnicas para neutralizar o minimizar los impactos ambientales..."
+    },
+    {
+      "key": "normatividad",
+      "type": "text",
+      "address": "business.tecnico.ambiental.normatividad",
+      "prompt": "Leyes ambientales aplicables y tu nivel de cumplimiento actual.",
+      "ejemplo": "Ej: \"Cumplimos NOM-161-SEMARNAT (residuos electrónicos). Exentos de Licencia Ambiental por ser servicio de bajo impacto.\"",
+      "benchmark": "Checklist de cumplimiento de Normas Oficiales Mexicanas (NOMs) aplicables.",
+      "cita": "Plan de Negocios VF (p. 102)",
+      "placeholder": "Leyes ambientales, permisos SEMARNAT/PROFEPA y certificaciones ecológicas..."
+    }
+  ],
+  "boxes": [],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Sostenibilidad, manejo de residuos y normatividad.\n\n**Cómo se usa.** Está en el pilar **Estudio Técnico de Producción** del modelo *Plan de Negocios Comercial*. Se abre en `/business/ambiental`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 3 campos: `impacto`, `mitigacion`, `normatividad`.\n\n**Herramientas del módulo.** Ninguna específica: se apoya en los campos de texto."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `impacto`\n\n**El prompt que usa:** Efectos de tu operación en el medio ambiente. Consumo energético, residuos, emisiones.\n\n**Ejemplo que muestra la guía:** Ej: \"Oficina consume 450 kWh/mes. Operación digital reduce 80% de papel vs firma tradicional. Huella: 2.3 ton CO₂/año.\"\n\n**Benchmark / criterio de calidad:** Matriz de impacto ambiental con emisiones, vertidos y residuos cuantificados.\n\n**De dónde viene la guía:** Corporate Sustainability in Asian Development (p. 78)\n\n### `mitigacion`\n\n**El prompt que usa:** Acciones concretas para reducir tu impacto ambiental. Metas y plazos.\n\n**Ejemplo que muestra la guía:** Ej: \"Meta 2025: 100% firmas digitales. 2026: Energía solar en oficina (-60% consumo). Reciclaje de e-waste con certificado.\"\n\n**Benchmark / criterio de calidad:** Plan de mitigación con metas concretas de reducción de consumo de agua y energía.\n\n**De dónde viene la guía:** Corporate Sustainability in Asian Development (p. 82)\n\n### `normatividad`\n\n**El prompt que usa:** Leyes ambientales aplicables y tu nivel de cumplimiento actual.\n\n**Ejemplo que muestra la guía:** Ej: \"Cumplimos NOM-161-SEMARNAT (residuos electrónicos). Exentos de Licencia Ambiental por ser servicio de bajo impacto.\"\n\n**Benchmark / criterio de calidad:** Checklist de cumplimiento de Normas Oficiales Mexicanas (NOMs) aplicables.\n\n**De dónde viene la guía:** Plan de Negocios VF (p. 102)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "Sin cajas asociadas."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Estudio Técnico de Producción** de *Plan de Negocios Comercial*. La justificación metodológica completa está en la página del modelo y en `docs/business.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `business.tecnico.ambiental.impacto` → tipo `text`\n- `business.tecnico.ambiental.mitigacion` → tipo `text`\n- `business.tecnico.ambiental.normatividad` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas:** `src/config/moduleBoxMap.js` no declara cajas para `business:ambiental`; la pantalla muestra solo los campos de texto.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

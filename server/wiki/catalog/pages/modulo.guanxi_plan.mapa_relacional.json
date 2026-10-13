@@ -1,0 +1,64 @@
+{
+  "id": "modulo.guanxi_plan.mapa_relacional",
+  "title": "Mapa Relacional Guanxi",
+  "summary": "Clasificación de círculos de confianza: familia, amigos, intermediarios y autoridades.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "guanxi_plan",
+  "moduleKey": "mapa_relacional",
+  "pillarKey": "redes_estado",
+  "openUrl": "/guanxi_plan/mapa_relacional",
+  "fields": [
+    {
+      "key": "mapa_relaciones",
+      "type": "text",
+      "address": "guanxi_plan.redes_estado.mapa_relacional.mapa_relaciones",
+      "prompt": "Mapeo de conexiones estratégicas con el Estado y otros partners clave.",
+      "ejemplo": "Ej (Estilo Tencent/Baidu): Alianza estratégica con el Ministerio de Tecnología Provincial y Universidades Estatales.",
+      "benchmark": "Matriz relacional de reciprocidad (Bao) y preservación de reputación (Mianzi) con alineación institucional.",
+      "cita": "Negotiating South-South Regional Trade Agreements (UNCTAD) & Ética Comercial China",
+      "placeholder": "Estrategia de confianza y redes relacionales para (mapa_relaciones)..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_mapa_guanxi_mianzi",
+      "title": "Mapa de Relaciones Guanxi y Preservación de Mianzi",
+      "type": "checklist",
+      "description": "Estrategia de reciprocidad a largo plazo y alineación gubernamental.",
+      "source": "Negotiating South-South Trade Agreements — Ch. 3"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Clasificación de círculos de confianza: familia, amigos, intermediarios y autoridades.\n\n**Cómo se usa.** Está en el pilar **Conexiones y Alineación Estratégica** del modelo *Metodología Guanxi (China - Redes de Relaciones)*. Se abre en `/guanxi_plan/mapa_relacional`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 1 campo: `mapa_relaciones`.\n\n**Herramientas del módulo.** 1 caja(s): `box_mapa_guanxi_mianzi`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `mapa_relaciones`\n\n**El prompt que usa:** Mapeo de conexiones estratégicas con el Estado y otros partners clave.\n\n**Ejemplo que muestra la guía:** Ej (Estilo Tencent/Baidu): Alianza estratégica con el Ministerio de Tecnología Provincial y Universidades Estatales.\n\n**Benchmark / criterio de calidad:** Matriz relacional de reciprocidad (Bao) y preservación de reputación (Mianzi) con alineación institucional.\n\n**De dónde viene la guía:** Negotiating South-South Regional Trade Agreements (UNCTAD) & Ética Comercial China"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Mapa de Relaciones Guanxi y Preservación de Mianzi\n\n`box_mapa_guanxi_mianzi` · tipo **checklist** · fuente: Negotiating South-South Trade Agreements — Ch. 3\n\nEstrategia de reciprocidad a largo plazo y alineación gubernamental."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Conexiones y Alineación Estratégica** de *Metodología Guanxi (China - Redes de Relaciones)*. La justificación metodológica completa está en la página del modelo y en `docs/guanxi_plan.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `guanxi_plan.redes_estado.mapa_relacional.mapa_relaciones` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `guanxi_plan:mapa_relacional`): `box_mapa_guanxi_mianzi`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

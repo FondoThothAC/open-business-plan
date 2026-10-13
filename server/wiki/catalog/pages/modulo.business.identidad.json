@@ -1,0 +1,94 @@
+{
+  "id": "modulo.business.identidad",
+  "title": "Identidad Corporativa",
+  "summary": "Misión, Visión, Valores y concepto de marca.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "business",
+  "moduleKey": "identidad",
+  "pillarKey": "naturaleza",
+  "openUrl": "/business/identidad",
+  "fields": [
+    {
+      "key": "mision",
+      "type": "text",
+      "address": "business.naturaleza.identidad.mision",
+      "prompt": "Propósito fundamental de la empresa. ¿Para qué existes HOY? Debe ser concreta y orientada a la acción.",
+      "ejemplo": "Ej (Estilo Google): \"Democratizar la asesoría patrimonial en el noroeste de México mediante herramientas accesibles.\"",
+      "benchmark": "1 sola oración de impacto centrada en el valor entregado HOY.",
+      "cita": "Alexander Osterwalder — Business Model Generation (p. 28)",
+      "placeholder": "Propósito fundamental presente y compromiso diario con el cliente..."
+    },
+    {
+      "key": "vision",
+      "type": "text",
+      "address": "business.naturaleza.identidad.vision",
+      "prompt": "Aspiración a futuro (3-5 años). ¿Qué quieres lograr? Debe ser ambiciosa pero alcanzable.",
+      "ejemplo": "Ej (Estilo Tesla): \"Ser la firma de consultoría patrimonial #1 en Sonora para 2028, con más de 5,000 clientes activos.\"",
+      "benchmark": "Meta a 3-5 años con indicador numérico auditable (clientes, ingresos o cuota).",
+      "cita": "Linda Pinson — Anatomy of a Business Plan (Ch. 3, p. 55)",
+      "placeholder": "Dónde estará posicionada la empresa en los próximos 3 a 5 años..."
+    },
+    {
+      "key": "valores",
+      "type": "text",
+      "address": "business.naturaleza.identidad.valores",
+      "prompt": "Principios éticos que guían las decisiones del equipo. Lista 3-5 valores con una breve explicación de cada uno.",
+      "ejemplo": "Ej (Estilo Netflix): \"Transparencia: Cero comisiones ocultas. Accesibilidad: Planes desde $500/mes.\"",
+      "benchmark": "3 a 5 principios rectores no negociables que definen la cultura operativa.",
+      "cita": "Plan de Negocios VF (Metodología Hispana, p. 32)",
+      "placeholder": "Lista 3-5 valores éticos y cómo se reflejan en la toma de decisiones..."
+    },
+    {
+      "key": "imagen",
+      "type": "text",
+      "address": "business.naturaleza.identidad.imagen",
+      "prompt": "Define el concepto de marca, personalidad visual y percepción deseada.",
+      "ejemplo": "Ej: Marca con enfoque industrial, tecnológico y de máxima confiabilidad.",
+      "benchmark": "Coherencia estética B2B.",
+      "cita": "Brand Positioning (Keller, p. 95)",
+      "placeholder": "Tono, personalidad y valores visuales..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_resumen_ejecutivo_1p",
+      "title": "Resumen Ejecutivo de 1 Página",
+      "type": "table",
+      "description": "Estructura compacta: Problema, Solución, Mercado, Tracción, Ask.",
+      "source": "Anatomy of a Business Plan — p. 12"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Misión, Visión, Valores y concepto de marca.\n\n**Cómo se usa.** Está en el pilar **Naturaleza del Proyecto** del modelo *Plan de Negocios Comercial*. Se abre en `/business/identidad`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 4 campos: `mision`, `vision`, `valores`, `imagen`.\n\n**Herramientas del módulo.** 1 caja(s): `box_resumen_ejecutivo_1p`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `mision`\n\n**El prompt que usa:** Propósito fundamental de la empresa. ¿Para qué existes HOY? Debe ser concreta y orientada a la acción.\n\n**Ejemplo que muestra la guía:** Ej (Estilo Google): \"Democratizar la asesoría patrimonial en el noroeste de México mediante herramientas accesibles.\"\n\n**Benchmark / criterio de calidad:** 1 sola oración de impacto centrada en el valor entregado HOY.\n\n**De dónde viene la guía:** Alexander Osterwalder — Business Model Generation (p. 28)\n\n### `vision`\n\n**El prompt que usa:** Aspiración a futuro (3-5 años). ¿Qué quieres lograr? Debe ser ambiciosa pero alcanzable.\n\n**Ejemplo que muestra la guía:** Ej (Estilo Tesla): \"Ser la firma de consultoría patrimonial #1 en Sonora para 2028, con más de 5,000 clientes activos.\"\n\n**Benchmark / criterio de calidad:** Meta a 3-5 años con indicador numérico auditable (clientes, ingresos o cuota).\n\n**De dónde viene la guía:** Linda Pinson — Anatomy of a Business Plan (Ch. 3, p. 55)\n\n### `valores`\n\n**El prompt que usa:** Principios éticos que guían las decisiones del equipo. Lista 3-5 valores con una breve explicación de cada uno.\n\n**Ejemplo que muestra la guía:** Ej (Estilo Netflix): \"Transparencia: Cero comisiones ocultas. Accesibilidad: Planes desde $500/mes.\"\n\n**Benchmark / criterio de calidad:** 3 a 5 principios rectores no negociables que definen la cultura operativa.\n\n**De dónde viene la guía:** Plan de Negocios VF (Metodología Hispana, p. 32)\n\n### `imagen`\n\n**El prompt que usa:** Define el concepto de marca, personalidad visual y percepción deseada.\n\n**Ejemplo que muestra la guía:** Ej: Marca con enfoque industrial, tecnológico y de máxima confiabilidad.\n\n**Benchmark / criterio de calidad:** Coherencia estética B2B.\n\n**De dónde viene la guía:** Brand Positioning (Keller, p. 95)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Resumen Ejecutivo de 1 Página\n\n`box_resumen_ejecutivo_1p` · tipo **table** · fuente: Anatomy of a Business Plan — p. 12\n\nEstructura compacta: Problema, Solución, Mercado, Tracción, Ask."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Naturaleza del Proyecto** de *Plan de Negocios Comercial*. La justificación metodológica completa está en la página del modelo y en `docs/business.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `business.naturaleza.identidad.mision` → tipo `text`\n- `business.naturaleza.identidad.vision` → tipo `text`\n- `business.naturaleza.identidad.valores` → tipo `text`\n- `business.naturaleza.identidad.imagen` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `business:identidad`): `box_resumen_ejecutivo_1p`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

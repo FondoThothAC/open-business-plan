@@ -1,0 +1,76 @@
+{
+  "id": "modulo.social_bid.presupuesto_detallado",
+  "title": "Presupuesto por Componentes",
+  "summary": "Costo total desglosado por actividad y componente.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "social_bid",
+  "moduleKey": "presupuesto_detallado",
+  "pillarKey": "presupuesto",
+  "openUrl": "/social_bid/presupuesto_detallado",
+  "fields": [
+    {
+      "key": "costos_directos",
+      "type": "text",
+      "address": "social_bid.presupuesto.presupuesto_detallado.costos_directos",
+      "prompt": "Dinero gastado directamente en la intervención social.",
+      "ejemplo": "Ej: Pago a instructores ($150k), Computadoras ($200k), Materiales ($50k).",
+      "benchmark": "Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.",
+      "cita": "Metodología del Marco Lógico (BID / CEPAL / PM4R)",
+      "placeholder": "Define el componente del proyecto social (costos_directos)..."
+    },
+    {
+      "key": "costos_indirectos",
+      "type": "text",
+      "address": "social_bid.presupuesto.presupuesto_detallado.costos_indirectos",
+      "prompt": "Gastos de administración y logística (overhead).",
+      "ejemplo": "Ej: Sueldo del director ($50k), Papelería de oficina ($10k), Contador ($15k).",
+      "benchmark": "Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.",
+      "cita": "Metodología del Marco Lógico (BID / CEPAL / PM4R)",
+      "placeholder": "Define el componente del proyecto social (costos_indirectos)..."
+    },
+    {
+      "key": "fuentes_financiamiento",
+      "type": "text",
+      "address": "social_bid.presupuesto.presupuesto_detallado.fuentes_financiamiento",
+      "prompt": "Quién aporta el dinero (donantes, contrapartida local, etc.).",
+      "ejemplo": "Ej: BID aporta 70% ($350k). Contrapartida local en especie (local prestado) 30%.",
+      "benchmark": "Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.",
+      "cita": "Metodología del Marco Lógico (BID / CEPAL / PM4R)",
+      "placeholder": "Define el componente del proyecto social (fuentes_financiamiento)..."
+    }
+  ],
+  "boxes": [],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Costo total desglosado por actividad y componente.\n\n**Cómo se usa.** Está en el pilar **Presupuesto y Evaluación** del modelo *Proyecto Social (Metodología BID)*. Se abre en `/social_bid/presupuesto_detallado`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 3 campos: `costos_directos`, `costos_indirectos`, `fuentes_financiamiento`.\n\n**Herramientas del módulo.** Ninguna específica: se apoya en los campos de texto."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `costos_directos`\n\n**El prompt que usa:** Dinero gastado directamente en la intervención social.\n\n**Ejemplo que muestra la guía:** Ej: Pago a instructores ($150k), Computadoras ($200k), Materiales ($50k).\n\n**Benchmark / criterio de calidad:** Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.\n\n**De dónde viene la guía:** Metodología del Marco Lógico (BID / CEPAL / PM4R)\n\n### `costos_indirectos`\n\n**El prompt que usa:** Gastos de administración y logística (overhead).\n\n**Ejemplo que muestra la guía:** Ej: Sueldo del director ($50k), Papelería de oficina ($10k), Contador ($15k).\n\n**Benchmark / criterio de calidad:** Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.\n\n**De dónde viene la guía:** Metodología del Marco Lógico (BID / CEPAL / PM4R)\n\n### `fuentes_financiamiento`\n\n**El prompt que usa:** Quién aporta el dinero (donantes, contrapartida local, etc.).\n\n**Ejemplo que muestra la guía:** Ej: BID aporta 70% ($350k). Contrapartida local en especie (local prestado) 30%.\n\n**Benchmark / criterio de calidad:** Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.\n\n**De dónde viene la guía:** Metodología del Marco Lógico (BID / CEPAL / PM4R)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "Sin cajas asociadas."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Presupuesto y Evaluación** de *Proyecto Social (Metodología BID)*. La justificación metodológica completa está en la página del modelo y en `docs/social_bid.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `social_bid.presupuesto.presupuesto_detallado.costos_directos` → tipo `text`\n- `social_bid.presupuesto.presupuesto_detallado.costos_indirectos` → tipo `text`\n- `social_bid.presupuesto.presupuesto_detallado.fuentes_financiamiento` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas:** `src/config/moduleBoxMap.js` no declara cajas para `social_bid:presupuesto_detallado`; la pantalla muestra solo los campos de texto.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

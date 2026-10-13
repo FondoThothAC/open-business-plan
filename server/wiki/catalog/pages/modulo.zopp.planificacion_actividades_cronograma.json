@@ -1,0 +1,84 @@
+{
+  "id": "modulo.zopp.planificacion_actividades_cronograma",
+  "title": "Plan de Actividades (Gantt)",
+  "summary": "Desglose de paquetes de trabajo, hitos y ruta crítica.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "zopp",
+  "moduleKey": "planificacion_actividades_cronograma",
+  "pillarKey": "cronograma_presupuesto",
+  "openUrl": "/zopp/planificacion_actividades_cronograma",
+  "fields": [
+    {
+      "key": "paquetes_actividades",
+      "type": "text",
+      "address": "zopp.cronograma_presupuesto.planificacion_actividades_cronograma.paquetes_actividades",
+      "prompt": "Desglose estructurado de actividades requeridas para producir cada uno de los componentes.",
+      "ejemplo": "Ej: Actividad 1.1: Instalación y comisionamiento del horno industrial. Actividad 1.2: Calibración térmica NOM-251.",
+      "benchmark": "Estructura WBS/EDT sin traslapes con responsables claros.",
+      "cita": "Metodología ZOPP GTZ (p. 56)",
+      "placeholder": "Lista cronológica de actividades por componente..."
+    },
+    {
+      "key": "ruta_critica_gantt",
+      "type": "text",
+      "address": "zopp.cronograma_presupuesto.planificacion_actividades_cronograma.ruta_critica_gantt",
+      "prompt": "Cronograma de ejecución identificando la secuencia de tareas críticas que determinan la duración total.",
+      "ejemplo": "Ej: Ruta crítica: Obtención de licencia sanitaria COFEPRIS (mes 2) -> Llegada de horno (mes 3) -> Prueba piloto.",
+      "benchmark": "Holgura cero en tareas críticas y cronograma en semanas/meses.",
+      "cita": "Metodología ZOPP GTZ (p. 60)",
+      "placeholder": "Hitos secuenciales, dependencias y duración de la ruta crítica..."
+    },
+    {
+      "key": "responsables_hitos",
+      "type": "text",
+      "address": "zopp.cronograma_presupuesto.planificacion_actividades_cronograma.responsables_hitos",
+      "prompt": "Asignación unívoca de responsabilidades de gestión y auditoría para cada hito clave.",
+      "ejemplo": "Ej: Hito 1 (Auditoría sanitaria): Director de Inocuidad. Hito 2 (Contratos HORECA): Gerente Comercial.",
+      "benchmark": "Matriz RACI para evitar omisiones operativas.",
+      "cita": "Metodología ZOPP GTZ (p. 64)",
+      "placeholder": "Responsable, cuenta y fecha de entrega de cada hito..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_gantt_actividades_zopp",
+      "title": "Cronograma de Actividades e Hitos ZOPP (EDT / Gantt)",
+      "type": "canvas",
+      "description": "Estructura de Desglose de Trabajo vinculada a responsables, duración e hitos verificables.",
+      "source": "Manual ZOPP GTZ — p. 56"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Desglose de paquetes de trabajo, hitos y ruta crítica.\n\n**Cómo se usa.** Está en el pilar **Operación y Recursos** del modelo *ZOPP / Marco Lógico (Enfoque Alemán-BID)*. Se abre en `/zopp/planificacion_actividades_cronograma`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 3 campos: `paquetes_actividades`, `ruta_critica_gantt`, `responsables_hitos`.\n\n**Herramientas del módulo.** 1 caja(s): `box_gantt_actividades_zopp`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `paquetes_actividades`\n\n**El prompt que usa:** Desglose estructurado de actividades requeridas para producir cada uno de los componentes.\n\n**Ejemplo que muestra la guía:** Ej: Actividad 1.1: Instalación y comisionamiento del horno industrial. Actividad 1.2: Calibración térmica NOM-251.\n\n**Benchmark / criterio de calidad:** Estructura WBS/EDT sin traslapes con responsables claros.\n\n**De dónde viene la guía:** Metodología ZOPP GTZ (p. 56)\n\n### `ruta_critica_gantt`\n\n**El prompt que usa:** Cronograma de ejecución identificando la secuencia de tareas críticas que determinan la duración total.\n\n**Ejemplo que muestra la guía:** Ej: Ruta crítica: Obtención de licencia sanitaria COFEPRIS (mes 2) -> Llegada de horno (mes 3) -> Prueba piloto.\n\n**Benchmark / criterio de calidad:** Holgura cero en tareas críticas y cronograma en semanas/meses.\n\n**De dónde viene la guía:** Metodología ZOPP GTZ (p. 60)\n\n### `responsables_hitos`\n\n**El prompt que usa:** Asignación unívoca de responsabilidades de gestión y auditoría para cada hito clave.\n\n**Ejemplo que muestra la guía:** Ej: Hito 1 (Auditoría sanitaria): Director de Inocuidad. Hito 2 (Contratos HORECA): Gerente Comercial.\n\n**Benchmark / criterio de calidad:** Matriz RACI para evitar omisiones operativas.\n\n**De dónde viene la guía:** Metodología ZOPP GTZ (p. 64)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Cronograma de Actividades e Hitos ZOPP (EDT / Gantt)\n\n`box_gantt_actividades_zopp` · tipo **canvas** · fuente: Manual ZOPP GTZ — p. 56\n\nEstructura de Desglose de Trabajo vinculada a responsables, duración e hitos verificables."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Operación y Recursos** de *ZOPP / Marco Lógico (Enfoque Alemán-BID)*. La justificación metodológica completa está en la página del modelo y en `docs/zopp.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `zopp.cronograma_presupuesto.planificacion_actividades_cronograma.paquetes_actividades` → tipo `text`\n- `zopp.cronograma_presupuesto.planificacion_actividades_cronograma.ruta_critica_gantt` → tipo `text`\n- `zopp.cronograma_presupuesto.planificacion_actividades_cronograma.responsables_hitos` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `zopp:planificacion_actividades_cronograma`): `box_gantt_actividades_zopp`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

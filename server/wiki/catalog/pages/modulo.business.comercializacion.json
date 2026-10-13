@@ -1,0 +1,86 @@
+{
+  "id": "modulo.business.comercializacion",
+  "title": "Estrategia de Comercialización",
+  "summary": "Canales de distribución, marketing e identidad de ventas.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "business",
+  "moduleKey": "comercializacion",
+  "pillarKey": "mercado",
+  "openUrl": "/business/comercializacion",
+  "fields": [
+    {
+      "key": "distribucion",
+      "type": "text",
+      "address": "business.mercado.comercializacion.distribucion",
+      "prompt": "Cómo llega tu producto al cliente. Canales físicos, digitales, directos o intermediarios.",
+      "ejemplo": "Ej: \"Canal 1: App móvil propia (60%). Canal 2: Referidos de despachos contables (25%). Canal 3: Eventos empresariales (15%).\"",
+      "benchmark": "Tiempos de entrega < 48 horas en digital o < 5 días en físico con costo logístico < 12%.",
+      "cita": "Linda Pinson — Anatomy of a Business Plan (Ch. 4, p. 92)",
+      "placeholder": "Logística de distribución, canales directos e intermediarios..."
+    },
+    {
+      "key": "promocion",
+      "type": "text",
+      "address": "business.mercado.comercializacion.promocion",
+      "prompt": "Estrategia de comunicación para atraer clientes. Medios, presupuesto, frecuencia y métricas.",
+      "ejemplo": "Ej: \"Instagram Ads: $8K/mes, CTR esperado 2.5%. Webinars mensuales gratuitos. Programa de referidos: $500 por cliente nuevo.\"",
+      "benchmark": "Ratio LTV/CAC > 3:1 y coste por lead calificado (CPL) medible.",
+      "cita": "Eric Ries — El Método Lean Startup (p. 142)",
+      "placeholder": "Estrategia de marketing digital, pauta publicitaria, eventos y alianzas..."
+    },
+    {
+      "key": "identidad",
+      "type": "text",
+      "address": "business.mercado.comercializacion.identidad",
+      "prompt": "Elementos visuales de la marca: logo, paleta de colores, tipografía, tono de comunicación.",
+      "ejemplo": "Ej: \"Logo: Escudo dorado minimalista. Colores: Azul marino (#1e3a5f) + dorado (#d4a543). Tono: Profesional pero cercano.\"",
+      "benchmark": "Objetivo de cumplimiento > 90% respecto al benchmark de industria.",
+      "cita": "Linda Pinson — Anatomy of a Business Plan (Ch. 2-7)",
+      "placeholder": "Ingresa los detalles metodológicos de (identidad)..."
+    },
+    {
+      "key": "canales_intermediarios",
+      "type": "text",
+      "address": "business.mercado.comercializacion.canales_intermediarios",
+      "prompt": "Detalla acuerdos comerciales con distribuidores, comisionistas o integradores.",
+      "ejemplo": "Ej: Comisión del 8% a distribuidores autorizados de equipo por referir contratos MaaS.",
+      "benchmark": "Comisión < 12% del margen bruto.",
+      "cita": "Anatomy of a Business Plan (Ch. 4)",
+      "placeholder": "Comisiones y acuerdos de canal..."
+    }
+  ],
+  "boxes": [],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Canales de distribución, marketing e identidad de ventas.\n\n**Cómo se usa.** Está en el pilar **El Mercado** del modelo *Plan de Negocios Comercial*. Se abre en `/business/comercializacion`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 4 campos: `distribucion`, `promocion`, `identidad`, `canales_intermediarios`.\n\n**Herramientas del módulo.** Ninguna específica: se apoya en los campos de texto."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `distribucion`\n\n**El prompt que usa:** Cómo llega tu producto al cliente. Canales físicos, digitales, directos o intermediarios.\n\n**Ejemplo que muestra la guía:** Ej: \"Canal 1: App móvil propia (60%). Canal 2: Referidos de despachos contables (25%). Canal 3: Eventos empresariales (15%).\"\n\n**Benchmark / criterio de calidad:** Tiempos de entrega < 48 horas en digital o < 5 días en físico con costo logístico < 12%.\n\n**De dónde viene la guía:** Linda Pinson — Anatomy of a Business Plan (Ch. 4, p. 92)\n\n### `promocion`\n\n**El prompt que usa:** Estrategia de comunicación para atraer clientes. Medios, presupuesto, frecuencia y métricas.\n\n**Ejemplo que muestra la guía:** Ej: \"Instagram Ads: $8K/mes, CTR esperado 2.5%. Webinars mensuales gratuitos. Programa de referidos: $500 por cliente nuevo.\"\n\n**Benchmark / criterio de calidad:** Ratio LTV/CAC > 3:1 y coste por lead calificado (CPL) medible.\n\n**De dónde viene la guía:** Eric Ries — El Método Lean Startup (p. 142)\n\n### `identidad`\n\n**El prompt que usa:** Elementos visuales de la marca: logo, paleta de colores, tipografía, tono de comunicación.\n\n**Ejemplo que muestra la guía:** Ej: \"Logo: Escudo dorado minimalista. Colores: Azul marino (#1e3a5f) + dorado (#d4a543). Tono: Profesional pero cercano.\"\n\n**Benchmark / criterio de calidad:** Objetivo de cumplimiento > 90% respecto al benchmark de industria.\n\n**De dónde viene la guía:** Linda Pinson — Anatomy of a Business Plan (Ch. 2-7)\n\n### `canales_intermediarios`\n\n**El prompt que usa:** Detalla acuerdos comerciales con distribuidores, comisionistas o integradores.\n\n**Ejemplo que muestra la guía:** Ej: Comisión del 8% a distribuidores autorizados de equipo por referir contratos MaaS.\n\n**Benchmark / criterio de calidad:** Comisión < 12% del margen bruto.\n\n**De dónde viene la guía:** Anatomy of a Business Plan (Ch. 4)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "Sin cajas asociadas."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **El Mercado** de *Plan de Negocios Comercial*. La justificación metodológica completa está en la página del modelo y en `docs/business.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `business.mercado.comercializacion.distribucion` → tipo `text`\n- `business.mercado.comercializacion.promocion` → tipo `text`\n- `business.mercado.comercializacion.identidad` → tipo `text`\n- `business.mercado.comercializacion.canales_intermediarios` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas:** `src/config/moduleBoxMap.js` no declara cajas para `business:comercializacion`; la pantalla muestra solo los campos de texto.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

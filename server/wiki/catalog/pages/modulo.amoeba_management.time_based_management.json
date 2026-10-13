@@ -1,0 +1,84 @@
+{
+  "id": "modulo.amoeba_management.time_based_management",
+  "title": "Gestión Basada en el Tiempo",
+  "summary": "Eliminación sistemática de tiempos improductivos y maximización de valor/hora.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "amoeba_management",
+  "moduleKey": "time_based_management",
+  "pillarKey": "economia_interna",
+  "openUrl": "/amoeba_management/time_based_management",
+  "fields": [
+    {
+      "key": "control_horas_celula",
+      "type": "text",
+      "address": "amoeba_management.economia_interna.time_based_management.control_horas_celula",
+      "prompt": "Registro estricto y auditoría del total de horas hombre dedicadas a la producción para el denominador de rentabilidad.",
+      "ejemplo": "Ej: 4 operadores x 40 horas/semana = 160 horas semanales registradas por biometría digital sin horas muertas no imputadas.",
+      "benchmark": "Eficiencia de imputación de horas laborales productivas > 90%.",
+      "cita": "Kazuo Inamori — Amoeba Management",
+      "placeholder": "Sistema de registro, control de asistencia y cómputo de horas hombre..."
+    },
+    {
+      "key": "minimizacion_desperdicio_tiempo",
+      "type": "text",
+      "address": "amoeba_management.economia_interna.time_based_management.minimizacion_desperdicio_tiempo",
+      "prompt": "Detección y erradicación de las 7 mudas de tiempo: esperas, traslados innecesarios y retrabajos en la célula.",
+      "ejemplo": "Ej: Reorganización del herramental en células de trabajo en 'U' redujo traslados en 25 minutos por turno.",
+      "benchmark": "Reducción de tiempos muertos en >= 20% para elevar el valor/hora.",
+      "cita": "Kazuo Inamori — Amoeba Management & Toyota TPS",
+      "placeholder": "Acciones concretas para eliminar tiempos improductivos y cuellos de botella..."
+    },
+    {
+      "key": "indicador_valor_agregado_hora",
+      "type": "text",
+      "address": "amoeba_management.economia_interna.time_based_management.indicador_valor_agregado_hora",
+      "prompt": "Métrica maestra de Inamori: Valor Agregado por Hora = (Ventas Netas - Gastos Directos sin nómina) / Total Horas.",
+      "ejemplo": "Ej: ($180,000 MXN ingresos - $60,000 gastos) / 480 horas = $250 MXN de valor neto generado por hora hombre.",
+      "benchmark": "Valor agregado por hora > 3x el costo laboral nominal por hora del equipo.",
+      "cita": "Kazuo Inamori — Amoeba Management (Fórmula Maestra de Productividad)",
+      "placeholder": "Cálculo y tendencia del valor agregado generado por cada hora de trabajo..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_time_based_amoeba",
+      "title": "Gestión Basada en el Tiempo y Valor Agregado Horario",
+      "type": "benchmark",
+      "description": "Monitoreo de horas directas e indirectas para maximizar el margen de valor agregado por persona-hora.",
+      "source": "The Nature of Value (Kyocera Case) — Ch. 4 p. 85"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Eliminación sistemática de tiempos improductivos y maximización de valor/hora.\n\n**Cómo se usa.** Está en el pilar **Economía Interna y Productividad** del modelo *Amoeba Management (Kyocera - Micro-Ganancias)*. Se abre en `/amoeba_management/time_based_management`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 3 campos: `control_horas_celula`, `minimizacion_desperdicio_tiempo`, `indicador_valor_agregado_hora`.\n\n**Herramientas del módulo.** 1 caja(s): `box_time_based_amoeba`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `control_horas_celula`\n\n**El prompt que usa:** Registro estricto y auditoría del total de horas hombre dedicadas a la producción para el denominador de rentabilidad.\n\n**Ejemplo que muestra la guía:** Ej: 4 operadores x 40 horas/semana = 160 horas semanales registradas por biometría digital sin horas muertas no imputadas.\n\n**Benchmark / criterio de calidad:** Eficiencia de imputación de horas laborales productivas > 90%.\n\n**De dónde viene la guía:** Kazuo Inamori — Amoeba Management\n\n### `minimizacion_desperdicio_tiempo`\n\n**El prompt que usa:** Detección y erradicación de las 7 mudas de tiempo: esperas, traslados innecesarios y retrabajos en la célula.\n\n**Ejemplo que muestra la guía:** Ej: Reorganización del herramental en células de trabajo en 'U' redujo traslados en 25 minutos por turno.\n\n**Benchmark / criterio de calidad:** Reducción de tiempos muertos en >= 20% para elevar el valor/hora.\n\n**De dónde viene la guía:** Kazuo Inamori — Amoeba Management & Toyota TPS\n\n### `indicador_valor_agregado_hora`\n\n**El prompt que usa:** Métrica maestra de Inamori: Valor Agregado por Hora = (Ventas Netas - Gastos Directos sin nómina) / Total Horas.\n\n**Ejemplo que muestra la guía:** Ej: ($180,000 MXN ingresos - $60,000 gastos) / 480 horas = $250 MXN de valor neto generado por hora hombre.\n\n**Benchmark / criterio de calidad:** Valor agregado por hora > 3x el costo laboral nominal por hora del equipo.\n\n**De dónde viene la guía:** Kazuo Inamori — Amoeba Management (Fórmula Maestra de Productividad)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Gestión Basada en el Tiempo y Valor Agregado Horario\n\n`box_time_based_amoeba` · tipo **benchmark** · fuente: The Nature of Value (Kyocera Case) — Ch. 4 p. 85\n\nMonitoreo de horas directas e indirectas para maximizar el margen de valor agregado por persona-hora."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Economía Interna y Productividad** de *Amoeba Management (Kyocera - Micro-Ganancias)*. La justificación metodológica completa está en la página del modelo y en `docs/amoeba_management.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `amoeba_management.economia_interna.time_based_management.control_horas_celula` → tipo `text`\n- `amoeba_management.economia_interna.time_based_management.minimizacion_desperdicio_tiempo` → tipo `text`\n- `amoeba_management.economia_interna.time_based_management.indicador_valor_agregado_hora` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `amoeba_management:time_based_management`): `box_time_based_amoeba`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

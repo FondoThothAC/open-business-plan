@@ -1,0 +1,94 @@
+{
+  "id": "modulo.technology_id.tech_invention",
+  "title": "Tecnología e Invención",
+  "summary": "Descripción detallada de la tecnología, su novedad científica y nivel de maduración TRL (Technology Readiness Level).",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "technology_id",
+  "moduleKey": "tech_invention",
+  "pillarKey": "innovacion",
+  "openUrl": "/technology_id/tech_invention",
+  "fields": [
+    {
+      "key": "descripcion_tecnologia",
+      "type": "text",
+      "address": "technology_id.innovacion.tech_invention.descripcion_tecnologia",
+      "prompt": "Explica detalladamente en qué consiste la innovación tecnológica y sus componentes.",
+      "ejemplo": "Ej (Estilo Nvidia/OpenAI): Algoritmo de visión artificial basado en redes neuronales convolucionales para control de calidad en tiempo real.",
+      "benchmark": "Madurez tecnológica validada en escala TRL (1 a 9) y novedad patentable.",
+      "cita": "Clayton Christensen — The Innovator's Dilemma & Manual de Oslo",
+      "placeholder": "Especificaciones técnicas e innovación para (descripcion_tecnologia)..."
+    },
+    {
+      "key": "novedad_cientifica",
+      "type": "text",
+      "address": "technology_id.innovacion.tech_invention.novedad_cientifica",
+      "prompt": "¿Qué descubrimientos científicos, fórmulas o patentes previas sustentan tu desarrollo?",
+      "ejemplo": "Ej: Patrón de optimización matemática patentado que reduce el procesamiento de imágenes en un 35%.",
+      "benchmark": "Madurez tecnológica validada en escala TRL (1 a 9) y novedad patentable.",
+      "cita": "Clayton Christensen — The Innovator's Dilemma & Manual de Oslo",
+      "placeholder": "Especificaciones técnicas e innovación para (novedad_cientifica)..."
+    },
+    {
+      "key": "nivel_trl",
+      "type": "text",
+      "address": "technology_id.innovacion.tech_invention.nivel_trl",
+      "prompt": "Nivel de Maduración Tecnológica (TRL 1 al 9). Clasifica el estado actual de tu desarrollo.",
+      "ejemplo": "Ej: TRL 4: Validación de componentes tecnológicos en entorno de laboratorio.",
+      "benchmark": "Madurez tecnológica validada en escala TRL (1 a 9) y novedad patentable.",
+      "cita": "Clayton Christensen — The Innovator's Dilemma & Manual de Oslo",
+      "placeholder": "Especificaciones técnicas e innovación para (nivel_trl)..."
+    },
+    {
+      "key": "ventaja_tecnologica",
+      "type": "text",
+      "address": "technology_id.innovacion.tech_invention.ventaja_tecnologica",
+      "prompt": "¿Por qué tu tecnología es sustancialmente mejor que las soluciones comerciales existentes?",
+      "ejemplo": "Ej (Estilo Apple Silicon): Opera sin requerir conexión a internet y requiere 70% menos poder de cómputo que el competidor líder.",
+      "benchmark": "Madurez tecnológica validada en escala TRL (1 a 9) y novedad patentable.",
+      "cita": "Clayton Christensen — The Innovator's Dilemma & Manual de Oslo",
+      "placeholder": "Especificaciones técnicas e innovación para (ventaja_tecnologica)..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_trl_assessment",
+      "title": "Evaluación de Nivel de Madurez Tecnológica (TRL 1-9)",
+      "type": "checklist",
+      "description": "Checklist de validación desde principio básico hasta despliegue operativo.",
+      "source": "The Innovator's Dilemma — Ch. 3"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Descripción detallada de la tecnología, su novedad científica y nivel de maduración TRL (Technology Readiness Level).\n\n**Cómo se usa.** Está en el pilar **Innovación y Propiedad Intelectual** del modelo *Plan de Negocios de Base Tecnológica e Innovación (I+D)*. Se abre en `/technology_id/tech_invention`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 4 campos: `descripcion_tecnologia`, `novedad_cientifica`, `nivel_trl`, `ventaja_tecnologica`.\n\n**Herramientas del módulo.** 1 caja(s): `box_trl_assessment`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `descripcion_tecnologia`\n\n**El prompt que usa:** Explica detalladamente en qué consiste la innovación tecnológica y sus componentes.\n\n**Ejemplo que muestra la guía:** Ej (Estilo Nvidia/OpenAI): Algoritmo de visión artificial basado en redes neuronales convolucionales para control de calidad en tiempo real.\n\n**Benchmark / criterio de calidad:** Madurez tecnológica validada en escala TRL (1 a 9) y novedad patentable.\n\n**De dónde viene la guía:** Clayton Christensen — The Innovator's Dilemma & Manual de Oslo\n\n### `novedad_cientifica`\n\n**El prompt que usa:** ¿Qué descubrimientos científicos, fórmulas o patentes previas sustentan tu desarrollo?\n\n**Ejemplo que muestra la guía:** Ej: Patrón de optimización matemática patentado que reduce el procesamiento de imágenes en un 35%.\n\n**Benchmark / criterio de calidad:** Madurez tecnológica validada en escala TRL (1 a 9) y novedad patentable.\n\n**De dónde viene la guía:** Clayton Christensen — The Innovator's Dilemma & Manual de Oslo\n\n### `nivel_trl`\n\n**El prompt que usa:** Nivel de Maduración Tecnológica (TRL 1 al 9). Clasifica el estado actual de tu desarrollo.\n\n**Ejemplo que muestra la guía:** Ej: TRL 4: Validación de componentes tecnológicos en entorno de laboratorio.\n\n**Benchmark / criterio de calidad:** Madurez tecnológica validada en escala TRL (1 a 9) y novedad patentable.\n\n**De dónde viene la guía:** Clayton Christensen — The Innovator's Dilemma & Manual de Oslo\n\n### `ventaja_tecnologica`\n\n**El prompt que usa:** ¿Por qué tu tecnología es sustancialmente mejor que las soluciones comerciales existentes?\n\n**Ejemplo que muestra la guía:** Ej (Estilo Apple Silicon): Opera sin requerir conexión a internet y requiere 70% menos poder de cómputo que el competidor líder.\n\n**Benchmark / criterio de calidad:** Madurez tecnológica validada en escala TRL (1 a 9) y novedad patentable.\n\n**De dónde viene la guía:** Clayton Christensen — The Innovator's Dilemma & Manual de Oslo"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Evaluación de Nivel de Madurez Tecnológica (TRL 1-9)\n\n`box_trl_assessment` · tipo **checklist** · fuente: The Innovator's Dilemma — Ch. 3\n\nChecklist de validación desde principio básico hasta despliegue operativo."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Innovación y Propiedad Intelectual** de *Plan de Negocios de Base Tecnológica e Innovación (I+D)*. La justificación metodológica completa está en la página del modelo y en `docs/technology_id.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `technology_id.innovacion.tech_invention.descripcion_tecnologia` → tipo `text`\n- `technology_id.innovacion.tech_invention.novedad_cientifica` → tipo `text`\n- `technology_id.innovacion.tech_invention.nivel_trl` → tipo `text`\n- `technology_id.innovacion.tech_invention.ventaja_tecnologica` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `technology_id:tech_invention`): `box_trl_assessment`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

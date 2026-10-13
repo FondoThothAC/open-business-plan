@@ -1,0 +1,106 @@
+{
+  "id": "modulo.business.pestel",
+  "title": "Entorno (PESTEL)",
+  "summary": "Factores Políticos, Económicos, Sociales, Tecnológicos, etc.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "business",
+  "moduleKey": "pestel",
+  "pillarKey": "naturaleza",
+  "openUrl": "/business/pestel",
+  "fields": [
+    {
+      "key": "politico",
+      "type": "text",
+      "address": "business.naturaleza.pestel.politico",
+      "prompt": "Leyes, regulaciones, estabilidad gubernamental y políticas fiscales que impactan tu operación.",
+      "ejemplo": "Ej: \"La reforma fiscal 2025 exige facturación 4.0, lo cual beneficia la formalización de servicios de consultoría.\"",
+      "benchmark": "Alineación con políticas públicas, programas sectoriales o incentivos fiscales.",
+      "cita": "Starting a Business QuickStart Guide (Ch. 5, p. 102)",
+      "placeholder": "Políticas gubernamentales, subsidios y estabilidad regulatoria..."
+    },
+    {
+      "key": "economico",
+      "type": "text",
+      "address": "business.naturaleza.pestel.economico",
+      "prompt": "Inflación, tipo de cambio, poder adquisitivo, tasas de interés y ciclo económico actual.",
+      "ejemplo": "Ej: \"Inflación del 4.2% con tasa Banxico al 10.5%. Clase media sonorense con ingreso promedio de $18K mensuales.\"",
+      "benchmark": "Monitoreo de tasa libre de riesgo (Cetes/TIIE), inflación y poder adquisitivo regional.",
+      "cita": "The Nature of Value (Ch. 2, p. 38)",
+      "placeholder": "Inflación proyectada, tasas de interés, tipo de cambio e ingreso disponible..."
+    },
+    {
+      "key": "social",
+      "type": "text",
+      "address": "business.naturaleza.pestel.social",
+      "prompt": "Demografía, tendencias culturales, hábitos de consumo y nivel educativo de tu mercado.",
+      "ejemplo": "Ej: \"Generación millennial (30-40 años) en Hermosillo muestra interés creciente en finanzas personales según encuesta INEGI 2024.\"",
+      "benchmark": "Tendencias demográficas INEGI/CONAPO y evolución de hábitos de consumo.",
+      "cita": "Linda Pinson — Anatomy of a Business Plan (Ch. 4, p. 74)",
+      "placeholder": "Variables demográficas, nivel socioeconómico y cambios culturales del target..."
+    },
+    {
+      "key": "tecnologico",
+      "type": "text",
+      "address": "business.naturaleza.pestel.tecnologico",
+      "prompt": "Infraestructura digital disponible, innovaciones del sector y nivel de adopción tecnológica.",
+      "ejemplo": "Ej: \"Penetración de smartphones del 89% en Sonora. APIs bancarias abiertas permiten integración en tiempo real.\"",
+      "benchmark": "Nivel de digitalización del sector y adopción de herramientas en la nube.",
+      "cita": "The Innovator's Dilemma (Christensen, p. 15)",
+      "placeholder": "Plataformas tecnológicas, conectividad y automatizaciones aplicadas..."
+    },
+    {
+      "key": "ecologico",
+      "type": "text",
+      "address": "business.naturaleza.pestel.ecologico",
+      "prompt": "Impacto ambiental de tu operación y tendencias de sustentabilidad relevantes.",
+      "ejemplo": "Ej: \"Operación 100% digital sin oficina física reduce huella de carbono. Cumplimos NOM-161 de residuos electrónicos.\"",
+      "benchmark": "Cumplimiento de normativas ambientales NOM/SEMARNAT o huella de carbono neutral.",
+      "cita": "Corporate Sustainability in Asian Development (p. 64)",
+      "placeholder": "Gestión de residuos, eficiencia energética y sustentabilidad ambiental..."
+    },
+    {
+      "key": "legal",
+      "type": "text",
+      "address": "business.naturaleza.pestel.legal",
+      "prompt": "Marco jurídico que regula tu industria. Permisos, certificaciones y obligaciones legales.",
+      "ejemplo": "Ej: \"Requiere registro ante CNBV y cumplimiento de la Ley del Mercado de Valores. NDA obligatorio con cada cliente.\"",
+      "benchmark": "Dictamen legal previo y cumplimiento regulatorio del 100% de licencias primarias.",
+      "cita": "Creating a Business Plan For Dummies (Ch. 12, p. 240)",
+      "placeholder": "Marco legal regulatorio, licencias, propiedad intelectual y contratos..."
+    }
+  ],
+  "boxes": [],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Factores Políticos, Económicos, Sociales, Tecnológicos, etc.\n\n**Cómo se usa.** Está en el pilar **Naturaleza del Proyecto** del modelo *Plan de Negocios Comercial*. Se abre en `/business/pestel`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 6 campos: `politico`, `economico`, `social`, `tecnologico`, `ecologico`, `legal`.\n\n**Herramientas del módulo.** Ninguna específica: se apoya en los campos de texto."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `politico`\n\n**El prompt que usa:** Leyes, regulaciones, estabilidad gubernamental y políticas fiscales que impactan tu operación.\n\n**Ejemplo que muestra la guía:** Ej: \"La reforma fiscal 2025 exige facturación 4.0, lo cual beneficia la formalización de servicios de consultoría.\"\n\n**Benchmark / criterio de calidad:** Alineación con políticas públicas, programas sectoriales o incentivos fiscales.\n\n**De dónde viene la guía:** Starting a Business QuickStart Guide (Ch. 5, p. 102)\n\n### `economico`\n\n**El prompt que usa:** Inflación, tipo de cambio, poder adquisitivo, tasas de interés y ciclo económico actual.\n\n**Ejemplo que muestra la guía:** Ej: \"Inflación del 4.2% con tasa Banxico al 10.5%. Clase media sonorense con ingreso promedio de $18K mensuales.\"\n\n**Benchmark / criterio de calidad:** Monitoreo de tasa libre de riesgo (Cetes/TIIE), inflación y poder adquisitivo regional.\n\n**De dónde viene la guía:** The Nature of Value (Ch. 2, p. 38)\n\n### `social`\n\n**El prompt que usa:** Demografía, tendencias culturales, hábitos de consumo y nivel educativo de tu mercado.\n\n**Ejemplo que muestra la guía:** Ej: \"Generación millennial (30-40 años) en Hermosillo muestra interés creciente en finanzas personales según encuesta INEGI 2024.\"\n\n**Benchmark / criterio de calidad:** Tendencias demográficas INEGI/CONAPO y evolución de hábitos de consumo.\n\n**De dónde viene la guía:** Linda Pinson — Anatomy of a Business Plan (Ch. 4, p. 74)\n\n### `tecnologico`\n\n**El prompt que usa:** Infraestructura digital disponible, innovaciones del sector y nivel de adopción tecnológica.\n\n**Ejemplo que muestra la guía:** Ej: \"Penetración de smartphones del 89% en Sonora. APIs bancarias abiertas permiten integración en tiempo real.\"\n\n**Benchmark / criterio de calidad:** Nivel de digitalización del sector y adopción de herramientas en la nube.\n\n**De dónde viene la guía:** The Innovator's Dilemma (Christensen, p. 15)\n\n### `ecologico`\n\n**El prompt que usa:** Impacto ambiental de tu operación y tendencias de sustentabilidad relevantes.\n\n**Ejemplo que muestra la guía:** Ej: \"Operación 100% digital sin oficina física reduce huella de carbono. Cumplimos NOM-161 de residuos electrónicos.\"\n\n**Benchmark / criterio de calidad:** Cumplimiento de normativas ambientales NOM/SEMARNAT o huella de carbono neutral.\n\n**De dónde viene la guía:** Corporate Sustainability in Asian Development (p. 64)\n\n### `legal`\n\n**El prompt que usa:** Marco jurídico que regula tu industria. Permisos, certificaciones y obligaciones legales.\n\n**Ejemplo que muestra la guía:** Ej: \"Requiere registro ante CNBV y cumplimiento de la Ley del Mercado de Valores. NDA obligatorio con cada cliente.\"\n\n**Benchmark / criterio de calidad:** Dictamen legal previo y cumplimiento regulatorio del 100% de licencias primarias.\n\n**De dónde viene la guía:** Creating a Business Plan For Dummies (Ch. 12, p. 240)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "Sin cajas asociadas."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Naturaleza del Proyecto** de *Plan de Negocios Comercial*. La justificación metodológica completa está en la página del modelo y en `docs/business.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `business.naturaleza.pestel.politico` → tipo `text`\n- `business.naturaleza.pestel.economico` → tipo `text`\n- `business.naturaleza.pestel.social` → tipo `text`\n- `business.naturaleza.pestel.tecnologico` → tipo `text`\n- `business.naturaleza.pestel.ecologico` → tipo `text`\n- `business.naturaleza.pestel.legal` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas:** `src/config/moduleBoxMap.js` no declara cajas para `business:pestel`; la pantalla muestra solo los campos de texto.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

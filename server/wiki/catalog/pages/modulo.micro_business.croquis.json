@@ -1,0 +1,74 @@
+{
+  "id": "modulo.micro_business.croquis",
+  "title": "Croquis del Local",
+  "summary": "Distribución física del espacio de trabajo.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "micro_business",
+  "moduleKey": "croquis",
+  "pillarKey": "tecnico",
+  "openUrl": "/micro_business/croquis",
+  "fields": [
+    {
+      "key": "descripcion_espacio",
+      "type": "text",
+      "address": "micro_business.tecnico.croquis.descripcion_espacio",
+      "prompt": "¿Dónde te vas a ubicar y cuánto mide el lugar?",
+      "ejemplo": "Ej: \"En la banqueta de mi casa, ocupando un espacio de 3x4 metros.\"",
+      "benchmark": "Operación simple con punto de equilibrio mensual y presupuesto < 30 días.",
+      "cita": "Manual de Plan de Negocios Panamá & Plan de Negocios VF",
+      "placeholder": "Información básica para arrancar el autoempleo en (descripcion_espacio)..."
+    },
+    {
+      "key": "distribucion_areas",
+      "type": "text",
+      "address": "micro_business.tecnico.croquis.distribucion_areas",
+      "prompt": "¿Cómo acomodarás las cosas?",
+      "ejemplo": "Ej: \"La carreta de frente a la calle, la hielera a un lado del cajero y 4 mesas acomodadas en escuadra.\"",
+      "benchmark": "Operación simple con punto de equilibrio mensual y presupuesto < 30 días.",
+      "cita": "Manual de Plan de Negocios Panamá & Plan de Negocios VF",
+      "placeholder": "Información básica para arrancar el autoempleo en (distribucion_areas)..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_micro_croquis_2d",
+      "title": "Diseñador de Croquis 2D y Distribución con IA",
+      "type": "canvas",
+      "description": "Plano interactivo con bloques de equipamiento comercial y renders arquitectónicos.",
+      "source": "Manual de Plan de Negocios Panamá (Cap. 9) — p. 24"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Distribución física del espacio de trabajo.\n\n**Cómo se usa.** Está en el pilar **Producción y Operaciones** del modelo *Plan para Microempresa y Autoempleo (Simplificado)*. Se abre en `/micro_business/croquis`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 2 campos: `descripcion_espacio`, `distribucion_areas`.\n\n**Herramientas del módulo.** 1 caja(s): `box_micro_croquis_2d`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `descripcion_espacio`\n\n**El prompt que usa:** ¿Dónde te vas a ubicar y cuánto mide el lugar?\n\n**Ejemplo que muestra la guía:** Ej: \"En la banqueta de mi casa, ocupando un espacio de 3x4 metros.\"\n\n**Benchmark / criterio de calidad:** Operación simple con punto de equilibrio mensual y presupuesto < 30 días.\n\n**De dónde viene la guía:** Manual de Plan de Negocios Panamá & Plan de Negocios VF\n\n### `distribucion_areas`\n\n**El prompt que usa:** ¿Cómo acomodarás las cosas?\n\n**Ejemplo que muestra la guía:** Ej: \"La carreta de frente a la calle, la hielera a un lado del cajero y 4 mesas acomodadas en escuadra.\"\n\n**Benchmark / criterio de calidad:** Operación simple con punto de equilibrio mensual y presupuesto < 30 días.\n\n**De dónde viene la guía:** Manual de Plan de Negocios Panamá & Plan de Negocios VF"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Diseñador de Croquis 2D y Distribución con IA\n\n`box_micro_croquis_2d` · tipo **canvas** · fuente: Manual de Plan de Negocios Panamá (Cap. 9) — p. 24\n\nPlano interactivo con bloques de equipamiento comercial y renders arquitectónicos."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Producción y Operaciones** de *Plan para Microempresa y Autoempleo (Simplificado)*. La justificación metodológica completa está en la página del modelo y en `docs/micro_business.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `micro_business.tecnico.croquis.descripcion_espacio` → tipo `text`\n- `micro_business.tecnico.croquis.distribucion_areas` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `micro_business:croquis`): `box_micro_croquis_2d`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

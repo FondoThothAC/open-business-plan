@@ -1,0 +1,56 @@
+{
+  "id": "modulo.business.mapa",
+  "title": "Mapa de Calor y Densidad",
+  "summary": "Visualización geográfica de la demanda y densidad de mercado.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "business",
+  "moduleKey": "mapa",
+  "pillarKey": "mercado",
+  "openUrl": "/business/mapa",
+  "fields": [
+    {
+      "key": "analisis_espacial",
+      "type": "text",
+      "address": "business.mercado.mapa.analisis_espacial",
+      "prompt": "Analiza la concentración territorial de clientes y competidores con datos geoespaciales (DENUE/INEGI).",
+      "ejemplo": "Ej: Concentración del 62% del mercado en el corredor industrial norte de Hermosillo.",
+      "benchmark": "Densidad geográfica validada.",
+      "cita": "INEGI DENUE 2026",
+      "placeholder": "Distribución espacial y densidad..."
+    }
+  ],
+  "boxes": [],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Visualización geográfica de la demanda y densidad de mercado.\n\n**Cómo se usa.** Está en el pilar **El Mercado** del modelo *Plan de Negocios Comercial*. Se abre en `/business/mapa`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 1 campo: `analisis_espacial`.\n\n**Herramientas del módulo.** Ninguna específica: se apoya en los campos de texto."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `analisis_espacial`\n\n**El prompt que usa:** Analiza la concentración territorial de clientes y competidores con datos geoespaciales (DENUE/INEGI).\n\n**Ejemplo que muestra la guía:** Ej: Concentración del 62% del mercado en el corredor industrial norte de Hermosillo.\n\n**Benchmark / criterio de calidad:** Densidad geográfica validada.\n\n**De dónde viene la guía:** INEGI DENUE 2026"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "Sin cajas asociadas."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **El Mercado** de *Plan de Negocios Comercial*. La justificación metodológica completa está en la página del modelo y en `docs/business.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `business.mercado.mapa.analisis_espacial` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas:** `src/config/moduleBoxMap.js` no declara cajas para `business:mapa`; la pantalla muestra solo los campos de texto.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

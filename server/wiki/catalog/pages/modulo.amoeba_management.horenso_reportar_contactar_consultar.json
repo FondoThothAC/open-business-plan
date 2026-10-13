@@ -1,0 +1,84 @@
+{
+  "id": "modulo.amoeba_management.horenso_reportar_contactar_consultar",
+  "title": "Protocolo Ho-Ren-So",
+  "summary": "Reglas de comunicación: Hokoku (Reportar), Renraku (Informar), Sodan (Consultar).",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "amoeba_management",
+  "moduleKey": "horenso_reportar_contactar_consultar",
+  "pillarKey": "operaciones_comunicacion",
+  "openUrl": "/amoeba_management/horenso_reportar_contactar_consultar",
+  "fields": [
+    {
+      "key": "protocolo_hokoku_informe",
+      "type": "text",
+      "address": "amoeba_management.operaciones_comunicacion.horenso_reportar_contactar_consultar.protocolo_hokoku_informe",
+      "prompt": "Hokoku (Informar): Deber inmediato de reportar hechos objetivos, incidentes y avances al superior jerárquico sin demora.",
+      "ejemplo": "Ej: Si un corte sale de temperatura, el operador informa en < 5 minutos al líder de célula antes de continuar la tanda.",
+      "benchmark": "Tiempo de reporte de incidentes críticos < 15 minutos con hechos contrastados.",
+      "cita": "Protocolo Empresarial Japonés Ho-Ren-So & Inamori Kyocera",
+      "placeholder": "Reglas y tiempos para reportar incidentes, anomalías y resultados..."
+    },
+    {
+      "key": "protocolo_renraku_comunicacion",
+      "type": "text",
+      "address": "amoeba_management.operaciones_comunicacion.horenso_reportar_contactar_consultar.protocolo_renraku_comunicacion",
+      "prompt": "Renraku (Contactar/Comunicar): Compartir información relevante y cambios de estatus con los compañeros de célula y áreas adyacentes.",
+      "ejemplo": "Ej: Notificación anticipada a la célula de logística sobre el despacho de 120 cajas para coordinar el camión frigorífico.",
+      "benchmark": "Comunicación horizontal fluida sin islas de información departamentales.",
+      "cita": "Protocolo Empresarial Japonés Ho-Ren-So",
+      "placeholder": "Canales de coordinación horizontal entre células interconectadas..."
+    },
+    {
+      "key": "protocolo_sodan_consulta",
+      "type": "text",
+      "address": "amoeba_management.operaciones_comunicacion.horenso_reportar_contactar_consultar.protocolo_sodan_consulta",
+      "prompt": "Sodan (Consultar): Solicitar asesoría o consejo antes de tomar decisiones dudosas que comprometan recursos o calidad.",
+      "ejemplo": "Ej: Si el proveedor entrega carne con 2°C de variación, se consulta al Director de Calidad antes de rechazar el embarque.",
+      "benchmark": "Cultura de consulta activa que previene errores costosos sin fomentar la indecisión.",
+      "cita": "Protocolo Empresarial Japonés Ho-Ren-So",
+      "placeholder": "Protocolo de consulta anticipada para situaciones ambiguas o de riesgo..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_horenso_protocolo_3pasos",
+      "title": "Protocolo de Comunicación Ho-Ren-So (3 Pasos)",
+      "type": "checklist",
+      "description": "Estandarización de Houkoku (reportar estado), Renraku (comunicar oportunamente) y Soudan (consultar antes de actuar).",
+      "source": "The Nature of Value (Kyocera Case) — Ch. 4 p. 82"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Reglas de comunicación: Hokoku (Reportar), Renraku (Informar), Sodan (Consultar).\n\n**Cómo se usa.** Está en el pilar **Comunicación Operativa** del modelo *Amoeba Management (Kyocera - Micro-Ganancias)*. Se abre en `/amoeba_management/horenso_reportar_contactar_consultar`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 3 campos: `protocolo_hokoku_informe`, `protocolo_renraku_comunicacion`, `protocolo_sodan_consulta`.\n\n**Herramientas del módulo.** 1 caja(s): `box_horenso_protocolo_3pasos`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `protocolo_hokoku_informe`\n\n**El prompt que usa:** Hokoku (Informar): Deber inmediato de reportar hechos objetivos, incidentes y avances al superior jerárquico sin demora.\n\n**Ejemplo que muestra la guía:** Ej: Si un corte sale de temperatura, el operador informa en < 5 minutos al líder de célula antes de continuar la tanda.\n\n**Benchmark / criterio de calidad:** Tiempo de reporte de incidentes críticos < 15 minutos con hechos contrastados.\n\n**De dónde viene la guía:** Protocolo Empresarial Japonés Ho-Ren-So & Inamori Kyocera\n\n### `protocolo_renraku_comunicacion`\n\n**El prompt que usa:** Renraku (Contactar/Comunicar): Compartir información relevante y cambios de estatus con los compañeros de célula y áreas adyacentes.\n\n**Ejemplo que muestra la guía:** Ej: Notificación anticipada a la célula de logística sobre el despacho de 120 cajas para coordinar el camión frigorífico.\n\n**Benchmark / criterio de calidad:** Comunicación horizontal fluida sin islas de información departamentales.\n\n**De dónde viene la guía:** Protocolo Empresarial Japonés Ho-Ren-So\n\n### `protocolo_sodan_consulta`\n\n**El prompt que usa:** Sodan (Consultar): Solicitar asesoría o consejo antes de tomar decisiones dudosas que comprometan recursos o calidad.\n\n**Ejemplo que muestra la guía:** Ej: Si el proveedor entrega carne con 2°C de variación, se consulta al Director de Calidad antes de rechazar el embarque.\n\n**Benchmark / criterio de calidad:** Cultura de consulta activa que previene errores costosos sin fomentar la indecisión.\n\n**De dónde viene la guía:** Protocolo Empresarial Japonés Ho-Ren-So"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Protocolo de Comunicación Ho-Ren-So (3 Pasos)\n\n`box_horenso_protocolo_3pasos` · tipo **checklist** · fuente: The Nature of Value (Kyocera Case) — Ch. 4 p. 82\n\nEstandarización de Houkoku (reportar estado), Renraku (comunicar oportunamente) y Soudan (consultar antes de actuar)."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Comunicación Operativa** de *Amoeba Management (Kyocera - Micro-Ganancias)*. La justificación metodológica completa está en la página del modelo y en `docs/amoeba_management.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `amoeba_management.operaciones_comunicacion.horenso_reportar_contactar_consultar.protocolo_hokoku_informe` → tipo `text`\n- `amoeba_management.operaciones_comunicacion.horenso_reportar_contactar_consultar.protocolo_renraku_comunicacion` → tipo `text`\n- `amoeba_management.operaciones_comunicacion.horenso_reportar_contactar_consultar.protocolo_sodan_consulta` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `amoeba_management:horenso_reportar_contactar_consultar`): `box_horenso_protocolo_3pasos`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

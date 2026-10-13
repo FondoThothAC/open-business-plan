@@ -1,0 +1,104 @@
+{
+  "id": "modulo.social_bid.arbol_problemas",
+  "title": "Árbol de Problemas",
+  "summary": "Identificación del problema central, sus causas (raíces) y efectos (ramas).",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "social_bid",
+  "moduleKey": "arbol_problemas",
+  "pillarKey": "identificacion",
+  "openUrl": "/social_bid/arbol_problemas",
+  "fields": [
+    {
+      "key": "problema_central",
+      "type": "text",
+      "address": "social_bid.identificacion.arbol_problemas.problema_central",
+      "prompt": "El problema público o social que busca resolverse (en negativo).",
+      "ejemplo": "Ej: Alto índice de deserción escolar en educación media superior en la zona sur.",
+      "benchmark": "Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.",
+      "cita": "Metodología del Marco Lógico (BID / CEPAL / PM4R)",
+      "placeholder": "Define el componente del proyecto social (problema_central)..."
+    },
+    {
+      "key": "causas_directas",
+      "type": "text",
+      "address": "social_bid.identificacion.arbol_problemas.causas_directas",
+      "prompt": "Por qué ocurre el problema central de manera inmediata.",
+      "ejemplo": "Ej: 1. Falta de recursos económicos. 2. Desinterés por el currículo tradicional.",
+      "benchmark": "Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.",
+      "cita": "Metodología del Marco Lógico (BID / CEPAL / PM4R)",
+      "placeholder": "Define el componente del proyecto social (causas_directas)..."
+    },
+    {
+      "key": "causas_indirectas",
+      "type": "text",
+      "address": "social_bid.identificacion.arbol_problemas.causas_indirectas",
+      "prompt": "Causas subyacentes o de raíz que generan las causas directas.",
+      "ejemplo": "Ej: Desempleo de los padres, falta de escuelas técnicas cercanas.",
+      "benchmark": "Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.",
+      "cita": "Metodología del Marco Lógico (BID / CEPAL / PM4R)",
+      "placeholder": "Define el componente del proyecto social (causas_indirectas)..."
+    },
+    {
+      "key": "efectos",
+      "type": "text",
+      "address": "social_bid.identificacion.arbol_problemas.efectos",
+      "prompt": "Consecuencias de que el problema no se resuelva.",
+      "ejemplo": "Ej: Aumento de la delincuencia juvenil, empleos precarizados a futuro.",
+      "benchmark": "Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.",
+      "cita": "Metodología del Marco Lógico (BID / CEPAL / PM4R)",
+      "placeholder": "Define el componente del proyecto social (efectos)..."
+    },
+    {
+      "key": "diagrama_visual",
+      "type": "text",
+      "address": "social_bid.identificacion.arbol_problemas.diagrama_visual",
+      "prompt": "Código Mermaid.js para el Árbol de Problemas u Objetivos. Debe conectar causas o medios (abajo) con el problema/objetivo central (centro) y efectos o fines (arriba) usando flechas -->.",
+      "ejemplo": "Ej: \"flowchart TD CI[Causa Indirecta] --> CD[Causa Directa] CD --> PC[Problema Central] PC --> E1[Efecto 1] PC --> E2[Efecto 2]\"",
+      "benchmark": "Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.",
+      "cita": "Metodología del Marco Lógico (BID / CEPAL / PM4R)",
+      "placeholder": "Define el componente del proyecto social (diagrama_visual)..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_arbol_problemas_mml",
+      "title": "Árbol de Problemas y Objetivos (Marco Lógico BID)",
+      "type": "matrix",
+      "description": "Jerarquía causa-efecto y medios-fines visualizada en diagrama.",
+      "source": "Manual BID / PM4R de Proyectos Sociales — p. 34"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Identificación del problema central, sus causas (raíces) y efectos (ramas).\n\n**Cómo se usa.** Está en el pilar **Identificación del Problema** del modelo *Proyecto Social (Metodología BID)*. Se abre en `/social_bid/arbol_problemas`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 5 campos: `problema_central`, `causas_directas`, `causas_indirectas`, `efectos`, `diagrama_visual`.\n\n**Herramientas del módulo.** 1 caja(s): `box_arbol_problemas_mml`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `problema_central`\n\n**El prompt que usa:** El problema público o social que busca resolverse (en negativo).\n\n**Ejemplo que muestra la guía:** Ej: Alto índice de deserción escolar en educación media superior en la zona sur.\n\n**Benchmark / criterio de calidad:** Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.\n\n**De dónde viene la guía:** Metodología del Marco Lógico (BID / CEPAL / PM4R)\n\n### `causas_directas`\n\n**El prompt que usa:** Por qué ocurre el problema central de manera inmediata.\n\n**Ejemplo que muestra la guía:** Ej: 1. Falta de recursos económicos. 2. Desinterés por el currículo tradicional.\n\n**Benchmark / criterio de calidad:** Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.\n\n**De dónde viene la guía:** Metodología del Marco Lógico (BID / CEPAL / PM4R)\n\n### `causas_indirectas`\n\n**El prompt que usa:** Causas subyacentes o de raíz que generan las causas directas.\n\n**Ejemplo que muestra la guía:** Ej: Desempleo de los padres, falta de escuelas técnicas cercanas.\n\n**Benchmark / criterio de calidad:** Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.\n\n**De dónde viene la guía:** Metodología del Marco Lógico (BID / CEPAL / PM4R)\n\n### `efectos`\n\n**El prompt que usa:** Consecuencias de que el problema no se resuelva.\n\n**Ejemplo que muestra la guía:** Ej: Aumento de la delincuencia juvenil, empleos precarizados a futuro.\n\n**Benchmark / criterio de calidad:** Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.\n\n**De dónde viene la guía:** Metodología del Marco Lógico (BID / CEPAL / PM4R)\n\n### `diagrama_visual`\n\n**El prompt que usa:** Código Mermaid.js para el Árbol de Problemas u Objetivos. Debe conectar causas o medios (abajo) con el problema/objetivo central (centro) y efectos o fines (arriba) usando flechas -->.\n\n**Ejemplo que muestra la guía:** Ej: \"flowchart TD CI[Causa Indirecta] --> CD[Causa Directa] CD --> PC[Problema Central] PC --> E1[Efecto 1] PC --> E2[Efecto 2]\"\n\n**Benchmark / criterio de calidad:** Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.\n\n**De dónde viene la guía:** Metodología del Marco Lógico (BID / CEPAL / PM4R)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Árbol de Problemas y Objetivos (Marco Lógico BID)\n\n`box_arbol_problemas_mml` · tipo **matrix** · fuente: Manual BID / PM4R de Proyectos Sociales — p. 34\n\nJerarquía causa-efecto y medios-fines visualizada en diagrama."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Identificación del Problema** de *Proyecto Social (Metodología BID)*. La justificación metodológica completa está en la página del modelo y en `docs/social_bid.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `social_bid.identificacion.arbol_problemas.problema_central` → tipo `text`\n- `social_bid.identificacion.arbol_problemas.causas_directas` → tipo `text`\n- `social_bid.identificacion.arbol_problemas.causas_indirectas` → tipo `text`\n- `social_bid.identificacion.arbol_problemas.efectos` → tipo `text`\n- `social_bid.identificacion.arbol_problemas.diagrama_visual` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `social_bid:arbol_problemas`): `box_arbol_problemas_mml`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

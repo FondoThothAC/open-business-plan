@@ -1,0 +1,104 @@
+{
+  "id": "modulo.micro_business.punto_equilibrio_micro",
+  "title": "Punto de Equilibrio Micro",
+  "summary": "Cálculo exacto de unidades mínimas de venta para cubrir costos fijos y variables.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "micro_business",
+  "moduleKey": "punto_equilibrio_micro",
+  "pillarKey": "organizacion",
+  "openUrl": "/micro_business/punto_equilibrio_micro",
+  "fields": [
+    {
+      "key": "costos_fijos_mensuales",
+      "type": "text",
+      "address": "micro_business.organizacion.punto_equilibrio_micro.costos_fijos_mensuales",
+      "prompt": "Suma total de gastos obligatorios de cada mes que debes pagar vendas o no vendas (renta, luz, gas, permisos).",
+      "ejemplo": "Ej: Total costos fijos: $8,500 MXN mensuales (Renta local $4,500 + Luz y gas $2,500 + Permiso municipal $1,500).",
+      "benchmark": "Costos fijos < 30% de ingresos proyectados para no asfixiar flujo de arranque.",
+      "cita": "Ken Colwell — Starting a Business QuickStart Guide (Ch. 13, p. 270)",
+      "placeholder": "Suma total de gastos fijos mensuales indispensables..."
+    },
+    {
+      "key": "costo_variable_unitario",
+      "type": "text",
+      "address": "micro_business.organizacion.punto_equilibrio_micro.costo_variable_unitario",
+      "prompt": "Costo de materia prima, insumos directos y empaque que cuesta fabricar una sola unidad o atender un cliente.",
+      "ejemplo": "Ej: $18.50 MXN por platillo (carne $12.00, verduras y salsas $4.00, desechables $2.50).",
+      "benchmark": "Costo variable <= 40% del precio final de venta para proteger el margen.",
+      "cita": "Plan de Negocios VF (p. 15) & Ken Colwell Ch. 13",
+      "placeholder": "Costo directo de insumos para producir una unidad..."
+    },
+    {
+      "key": "precio_venta_unitario",
+      "type": "text",
+      "address": "micro_business.organizacion.punto_equilibrio_micro.precio_venta_unitario",
+      "prompt": "Precio al que ofreces cada unidad al cliente final en el mostrador.",
+      "ejemplo": "Ej: Precio de venta al público: $55.00 MXN por platillo.",
+      "benchmark": "Precio competitivo en la zona que garantice margen de contribución > 50%.",
+      "cita": "Manual de Plan de Negocios Panamá (p. 21)",
+      "placeholder": "Precio final de venta por unidad o servicio..."
+    },
+    {
+      "key": "punto_equilibrio_unidades",
+      "type": "text",
+      "address": "micro_business.organizacion.punto_equilibrio_micro.punto_equilibrio_unidades",
+      "prompt": "Cantidad exacta de unidades que debes vender en el mes para quedar 'a mano' (sin ganar ni perder): CF / (P - CVu).",
+      "ejemplo": "Ej: $8,500 / ($55 - $18.50) = 233 unidades al mes (promedio de 8 a 9 platillos diarios de martes a domingo).",
+      "benchmark": "Punto de equilibrio alcanzable operando a menos del 50% de la capacidad máxima instalada.",
+      "cita": "Ken Colwell — Starting a Business QuickStart Guide (Ch. 13, p. 272)",
+      "placeholder": "Fórmula y número de ventas mínimas mensuales y diarias para no perder..."
+    },
+    {
+      "key": "margen_contribucion_ganancia",
+      "type": "text",
+      "address": "micro_business.organizacion.punto_equilibrio_micro.margen_contribucion_ganancia",
+      "prompt": "Ganancia limpia por cada unidad vendida (Precio - Costo Variable) y porcentaje de contribución.",
+      "ejemplo": "Ej: Margen de contribución: $36.50 MXN por unidad (66.4% del precio de venta).",
+      "benchmark": "Margen de contribución > 60% en micronegocios de alimentos y servicios.",
+      "cita": "Manual de Plan de Negocios Panamá (p. 23)",
+      "placeholder": "Ganancia unitaria en pesos y porcentaje de margen de contribución..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_punto_equilibrio_micro",
+      "title": "Punto de Equilibrio y Margen Unitario de Micronegocio",
+      "type": "formula",
+      "description": "Fórmulas directas de unidades mínimas de venta diaria/mensual y margen de contribución para micronegocios locales.",
+      "source": "Starting a Business QuickStart Guide & Manual Panamá — Ch. 13 p. 270; p. 15"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Cálculo exacto de unidades mínimas de venta para cubrir costos fijos y variables.\n\n**Cómo se usa.** Está en el pilar **Plan Financiero Básico** del modelo *Plan para Microempresa y Autoempleo (Simplificado)*. Se abre en `/micro_business/punto_equilibrio_micro`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 5 campos: `costos_fijos_mensuales`, `costo_variable_unitario`, `precio_venta_unitario`, `punto_equilibrio_unidades`, `margen_contribucion_ganancia`.\n\n**Herramientas del módulo.** 1 caja(s): `box_punto_equilibrio_micro`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `costos_fijos_mensuales`\n\n**El prompt que usa:** Suma total de gastos obligatorios de cada mes que debes pagar vendas o no vendas (renta, luz, gas, permisos).\n\n**Ejemplo que muestra la guía:** Ej: Total costos fijos: $8,500 MXN mensuales (Renta local $4,500 + Luz y gas $2,500 + Permiso municipal $1,500).\n\n**Benchmark / criterio de calidad:** Costos fijos < 30% de ingresos proyectados para no asfixiar flujo de arranque.\n\n**De dónde viene la guía:** Ken Colwell — Starting a Business QuickStart Guide (Ch. 13, p. 270)\n\n### `costo_variable_unitario`\n\n**El prompt que usa:** Costo de materia prima, insumos directos y empaque que cuesta fabricar una sola unidad o atender un cliente.\n\n**Ejemplo que muestra la guía:** Ej: $18.50 MXN por platillo (carne $12.00, verduras y salsas $4.00, desechables $2.50).\n\n**Benchmark / criterio de calidad:** Costo variable <= 40% del precio final de venta para proteger el margen.\n\n**De dónde viene la guía:** Plan de Negocios VF (p. 15) & Ken Colwell Ch. 13\n\n### `precio_venta_unitario`\n\n**El prompt que usa:** Precio al que ofreces cada unidad al cliente final en el mostrador.\n\n**Ejemplo que muestra la guía:** Ej: Precio de venta al público: $55.00 MXN por platillo.\n\n**Benchmark / criterio de calidad:** Precio competitivo en la zona que garantice margen de contribución > 50%.\n\n**De dónde viene la guía:** Manual de Plan de Negocios Panamá (p. 21)\n\n### `punto_equilibrio_unidades`\n\n**El prompt que usa:** Cantidad exacta de unidades que debes vender en el mes para quedar 'a mano' (sin ganar ni perder): CF / (P - CVu).\n\n**Ejemplo que muestra la guía:** Ej: $8,500 / ($55 - $18.50) = 233 unidades al mes (promedio de 8 a 9 platillos diarios de martes a domingo).\n\n**Benchmark / criterio de calidad:** Punto de equilibrio alcanzable operando a menos del 50% de la capacidad máxima instalada.\n\n**De dónde viene la guía:** Ken Colwell — Starting a Business QuickStart Guide (Ch. 13, p. 272)\n\n### `margen_contribucion_ganancia`\n\n**El prompt que usa:** Ganancia limpia por cada unidad vendida (Precio - Costo Variable) y porcentaje de contribución.\n\n**Ejemplo que muestra la guía:** Ej: Margen de contribución: $36.50 MXN por unidad (66.4% del precio de venta).\n\n**Benchmark / criterio de calidad:** Margen de contribución > 60% en micronegocios de alimentos y servicios.\n\n**De dónde viene la guía:** Manual de Plan de Negocios Panamá (p. 23)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Punto de Equilibrio y Margen Unitario de Micronegocio\n\n`box_punto_equilibrio_micro` · tipo **formula** · fuente: Starting a Business QuickStart Guide & Manual Panamá — Ch. 13 p. 270; p. 15\n\nFórmulas directas de unidades mínimas de venta diaria/mensual y margen de contribución para micronegocios locales."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Plan Financiero Básico** de *Plan para Microempresa y Autoempleo (Simplificado)*. La justificación metodológica completa está en la página del modelo y en `docs/micro_business.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `micro_business.organizacion.punto_equilibrio_micro.costos_fijos_mensuales` → tipo `text`\n- `micro_business.organizacion.punto_equilibrio_micro.costo_variable_unitario` → tipo `text`\n- `micro_business.organizacion.punto_equilibrio_micro.precio_venta_unitario` → tipo `text`\n- `micro_business.organizacion.punto_equilibrio_micro.punto_equilibrio_unidades` → tipo `text`\n- `micro_business.organizacion.punto_equilibrio_micro.margen_contribucion_ganancia` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `micro_business:punto_equilibrio_micro`): `box_punto_equilibrio_micro`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

@@ -1,0 +1,84 @@
+{
+  "id": "modulo.amoeba_management.principios_inamori_12",
+  "title": "12 Principios de Gestión Inamori",
+  "summary": "Reglas fundamentales: fijar metas elevadas, precio óptimo y transparencia total.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "amoeba_management",
+  "moduleKey": "principios_inamori_12",
+  "pillarKey": "estructuracion_celulas",
+  "openUrl": "/amoeba_management/principios_inamori_12",
+  "fields": [
+    {
+      "key": "doce_principios_gestion",
+      "type": "text",
+      "address": "amoeba_management.estructuracion_celulas.principios_inamori_12.doce_principios_gestion",
+      "prompt": "Implementación de los 12 principios de gestión de Kazuo Inamori (propósito altruista, fijar metas elevadas, ventas máximas con gastos mínimos).",
+      "ejemplo": "Ej: 'Principio 6: La fijación del precio es la gestión directiva (hallar el punto máximo que el cliente pagará gustosamente)'.",
+      "benchmark": "Evaluación mensual del cumplimiento ético y operativo de los principios Inamori.",
+      "cita": "Kazuo Inamori — Amoeba Management (Filosofía Kyocera) & A Passion for Success",
+      "placeholder": "Adopción de los 12 principios de gestión Inamori en la cultura de células..."
+    },
+    {
+      "key": "motivacion_empleados",
+      "type": "text",
+      "address": "amoeba_management.estructuracion_celulas.principios_inamori_12.motivacion_empleados",
+      "prompt": "Estrategias para que cada líder de célula y operador actúe y tome decisiones con mentalidad de dueño y socio.",
+      "ejemplo": "Ej: Reuniones diarias de arranque donde el líder de célula expone los ingresos y costos del día previo a todo el equipo.",
+      "benchmark": "Participación del 100% de los colaboradores en la comprensión de sus números operativos.",
+      "cita": "Kazuo Inamori — Amoeba Management",
+      "placeholder": "Mecanismos de involucramiento y empoderamiento de los miembros de la célula..."
+    },
+    {
+      "key": "gestion_transparente",
+      "type": "text",
+      "address": "amoeba_management.estructuracion_celulas.principios_inamori_12.gestion_transparente",
+      "prompt": "Política de 'vidrio transparente': cuentas contables abiertas y visibles para todos los integrantes de la célula sin secretos.",
+      "ejemplo": "Ej: Pantalla en taller donde se actualizan en tiempo real las horas trabajadas, los insumos consumidos y el margen del día.",
+      "benchmark": "Cero asimetría de información contable entre la dirección y los miembros de las células.",
+      "cita": "Kazuo Inamori — Amoeba Management",
+      "placeholder": "Mecanismos de transparencia contable y tableros abiertos de la célula..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_12_principios_inamori",
+      "title": "Checklist de los 12 Principios de Gestión de Kazuo Inamori",
+      "type": "checklist",
+      "description": "Auditoría de integridad moral, metas transparentes, precios óptimos y optimismo sin límites en la gestión celular.",
+      "source": "The Nature of Value & Inamori Kyocera Management — Ch. 4 p. 76"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Reglas fundamentales: fijar metas elevadas, precio óptimo y transparencia total.\n\n**Cómo se usa.** Está en el pilar **Estructuración y Filosofía** del modelo *Amoeba Management (Kyocera - Micro-Ganancias)*. Se abre en `/amoeba_management/principios_inamori_12`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 3 campos: `doce_principios_gestion`, `motivacion_empleados`, `gestion_transparente`.\n\n**Herramientas del módulo.** 1 caja(s): `box_12_principios_inamori`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `doce_principios_gestion`\n\n**El prompt que usa:** Implementación de los 12 principios de gestión de Kazuo Inamori (propósito altruista, fijar metas elevadas, ventas máximas con gastos mínimos).\n\n**Ejemplo que muestra la guía:** Ej: 'Principio 6: La fijación del precio es la gestión directiva (hallar el punto máximo que el cliente pagará gustosamente)'.\n\n**Benchmark / criterio de calidad:** Evaluación mensual del cumplimiento ético y operativo de los principios Inamori.\n\n**De dónde viene la guía:** Kazuo Inamori — Amoeba Management (Filosofía Kyocera) & A Passion for Success\n\n### `motivacion_empleados`\n\n**El prompt que usa:** Estrategias para que cada líder de célula y operador actúe y tome decisiones con mentalidad de dueño y socio.\n\n**Ejemplo que muestra la guía:** Ej: Reuniones diarias de arranque donde el líder de célula expone los ingresos y costos del día previo a todo el equipo.\n\n**Benchmark / criterio de calidad:** Participación del 100% de los colaboradores en la comprensión de sus números operativos.\n\n**De dónde viene la guía:** Kazuo Inamori — Amoeba Management\n\n### `gestion_transparente`\n\n**El prompt que usa:** Política de 'vidrio transparente': cuentas contables abiertas y visibles para todos los integrantes de la célula sin secretos.\n\n**Ejemplo que muestra la guía:** Ej: Pantalla en taller donde se actualizan en tiempo real las horas trabajadas, los insumos consumidos y el margen del día.\n\n**Benchmark / criterio de calidad:** Cero asimetría de información contable entre la dirección y los miembros de las células.\n\n**De dónde viene la guía:** Kazuo Inamori — Amoeba Management"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Checklist de los 12 Principios de Gestión de Kazuo Inamori\n\n`box_12_principios_inamori` · tipo **checklist** · fuente: The Nature of Value & Inamori Kyocera Management — Ch. 4 p. 76\n\nAuditoría de integridad moral, metas transparentes, precios óptimos y optimismo sin límites en la gestión celular."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Estructuración y Filosofía** de *Amoeba Management (Kyocera - Micro-Ganancias)*. La justificación metodológica completa está en la página del modelo y en `docs/amoeba_management.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `amoeba_management.estructuracion_celulas.principios_inamori_12.doce_principios_gestion` → tipo `text`\n- `amoeba_management.estructuracion_celulas.principios_inamori_12.motivacion_empleados` → tipo `text`\n- `amoeba_management.estructuracion_celulas.principios_inamori_12.gestion_transparente` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `amoeba_management:principios_inamori_12`): `box_12_principios_inamori`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

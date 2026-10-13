@@ -1,0 +1,76 @@
+{
+  "id": "modulo.business.objetivos",
+  "title": "Objetivos y Metas",
+  "summary": "Objetivos SMART a corto, mediano y largo plazo.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "business",
+  "moduleKey": "objetivos",
+  "pillarKey": "naturaleza",
+  "openUrl": "/business/objetivos",
+  "fields": [
+    {
+      "key": "general",
+      "type": "text",
+      "address": "business.naturaleza.objetivos.general",
+      "prompt": "Objetivo macro del proyecto. Debe ser SMART: Específico, Medible, Alcanzable, Relevante, con Tiempo definido.",
+      "ejemplo": "Ej: \"Alcanzar 500 clientes activos y $2M MXN en activos bajo gestión dentro de los primeros 18 meses de operación.\"",
+      "benchmark": "1 objetivo macro SMART con meta financiera o de usuarios y fecha límite.",
+      "cita": "Linda Pinson — Anatomy of a Business Plan (Ch. 3, p. 60)",
+      "placeholder": "Objetivo global del plan con métrica SMART y plazo definido..."
+    },
+    {
+      "key": "especificos",
+      "type": "text",
+      "address": "business.naturaleza.objetivos.especificos",
+      "prompt": "Desglose del objetivo general en 3-5 metas tácticas. Cada una debe tener un indicador claro.",
+      "ejemplo": "Ej: \"1) Lanzar la plataforma digital en Q1. 2) Captar 50 clientes/mes vía redes sociales. 3) Obtener certificación AMIB.\"",
+      "benchmark": "3 a 5 metas departamentales cuantificables que sustentan el objetivo general.",
+      "cita": "Creating a Business Plan For Dummies (Ch. 4, p. 68)",
+      "placeholder": "Desglosa 3 a 5 objetivos tácticos por área clave..."
+    },
+    {
+      "key": "metas",
+      "type": "text",
+      "address": "business.naturaleza.objetivos.metas",
+      "prompt": "Números concretos con fecha. Ventas, clientes, ingresos, participación de mercado, etc.",
+      "ejemplo": "Ej: \"Mes 6: 150 clientes. Mes 12: $800K ingresos. Mes 18: Punto de equilibrio. Mes 24: Expansión a Baja California.\"",
+      "benchmark": "Hitos semestrales o trimestrales con fechas y KPIs de volumen/ingresos.",
+      "cita": "Ken Colwell — Starting a Business QuickStart Guide (Ch. 3, p. 62)",
+      "placeholder": "Cronograma de hitos cuantitativos a 6, 12, 18 y 24 meses..."
+    }
+  ],
+  "boxes": [],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Objetivos SMART a corto, mediano y largo plazo.\n\n**Cómo se usa.** Está en el pilar **Naturaleza del Proyecto** del modelo *Plan de Negocios Comercial*. Se abre en `/business/objetivos`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 3 campos: `general`, `especificos`, `metas`.\n\n**Herramientas del módulo.** Ninguna específica: se apoya en los campos de texto."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `general`\n\n**El prompt que usa:** Objetivo macro del proyecto. Debe ser SMART: Específico, Medible, Alcanzable, Relevante, con Tiempo definido.\n\n**Ejemplo que muestra la guía:** Ej: \"Alcanzar 500 clientes activos y $2M MXN en activos bajo gestión dentro de los primeros 18 meses de operación.\"\n\n**Benchmark / criterio de calidad:** 1 objetivo macro SMART con meta financiera o de usuarios y fecha límite.\n\n**De dónde viene la guía:** Linda Pinson — Anatomy of a Business Plan (Ch. 3, p. 60)\n\n### `especificos`\n\n**El prompt que usa:** Desglose del objetivo general en 3-5 metas tácticas. Cada una debe tener un indicador claro.\n\n**Ejemplo que muestra la guía:** Ej: \"1) Lanzar la plataforma digital en Q1. 2) Captar 50 clientes/mes vía redes sociales. 3) Obtener certificación AMIB.\"\n\n**Benchmark / criterio de calidad:** 3 a 5 metas departamentales cuantificables que sustentan el objetivo general.\n\n**De dónde viene la guía:** Creating a Business Plan For Dummies (Ch. 4, p. 68)\n\n### `metas`\n\n**El prompt que usa:** Números concretos con fecha. Ventas, clientes, ingresos, participación de mercado, etc.\n\n**Ejemplo que muestra la guía:** Ej: \"Mes 6: 150 clientes. Mes 12: $800K ingresos. Mes 18: Punto de equilibrio. Mes 24: Expansión a Baja California.\"\n\n**Benchmark / criterio de calidad:** Hitos semestrales o trimestrales con fechas y KPIs de volumen/ingresos.\n\n**De dónde viene la guía:** Ken Colwell — Starting a Business QuickStart Guide (Ch. 3, p. 62)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "Sin cajas asociadas."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Naturaleza del Proyecto** de *Plan de Negocios Comercial*. La justificación metodológica completa está en la página del modelo y en `docs/business.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `business.naturaleza.objetivos.general` → tipo `text`\n- `business.naturaleza.objetivos.especificos` → tipo `text`\n- `business.naturaleza.objetivos.metas` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas:** `src/config/moduleBoxMap.js` no declara cajas para `business:objetivos`; la pantalla muestra solo los campos de texto.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

@@ -1,0 +1,76 @@
+{
+  "id": "modulo.technology_id.circular_economy",
+  "title": "Economía Circular",
+  "summary": "Ecodiseño, ciclo de vida del producto tecnológico y manejo sostenible de insumos/residuos.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "technology_id",
+  "moduleKey": "circular_economy",
+  "pillarKey": "responsabilidad_social",
+  "openUrl": "/technology_id/circular_economy",
+  "fields": [
+    {
+      "key": "analisis_ciclo_vida",
+      "type": "text",
+      "address": "technology_id.responsabilidad_social.circular_economy.analisis_ciclo_vida",
+      "prompt": "Evaluación del impacto del producto tecnológico desde la obtención de materia prima hasta su desecho final.",
+      "ejemplo": "Ej: Diseño modular de hardware que facilita la sustitución de piezas individuales y reciclaje de baterías de litio.",
+      "benchmark": "Madurez tecnológica validada en escala TRL (1 a 9) y novedad patentable.",
+      "cita": "Clayton Christensen — The Innovator's Dilemma & Manual de Oslo",
+      "placeholder": "Especificaciones técnicas e innovación para (analisis_ciclo_vida)..."
+    },
+    {
+      "key": "estrategia_economia_circular",
+      "type": "text",
+      "address": "technology_id.responsabilidad_social.circular_economy.estrategia_economia_circular",
+      "prompt": "Cómo reintegras materiales, reciclas dispositivos obsoletos o reduces el desperdicio electrónico.",
+      "ejemplo": "Ej: Programa de recolección de sensores viejos a cambio de descuentos en la renovación del plan anual.",
+      "benchmark": "Madurez tecnológica validada en escala TRL (1 a 9) y novedad patentable.",
+      "cita": "Clayton Christensen — The Innovator's Dilemma & Manual de Oslo",
+      "placeholder": "Especificaciones técnicas e innovación para (estrategia_economia_circular)..."
+    },
+    {
+      "key": "sustentabilidad_energetica",
+      "type": "text",
+      "address": "technology_id.responsabilidad_social.circular_economy.sustentabilidad_energetica",
+      "prompt": "Consumo de energía de tus servidores, oficinas y procesos de manufactura, y el uso de fuentes renovables.",
+      "ejemplo": "Ej: 100% de la infraestructura en la nube está alojada en centros de datos con certificación de neutralidad de carbono.",
+      "benchmark": "Madurez tecnológica validada en escala TRL (1 a 9) y novedad patentable.",
+      "cita": "Clayton Christensen — The Innovator's Dilemma & Manual de Oslo",
+      "placeholder": "Especificaciones técnicas e innovación para (sustentabilidad_energetica)..."
+    }
+  ],
+  "boxes": [],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Ecodiseño, ciclo de vida del producto tecnológico y manejo sostenible de insumos/residuos.\n\n**Cómo se usa.** Está en el pilar **Impacto Social y Ecológico (RSE)** del modelo *Plan de Negocios de Base Tecnológica e Innovación (I+D)*. Se abre en `/technology_id/circular_economy`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 3 campos: `analisis_ciclo_vida`, `estrategia_economia_circular`, `sustentabilidad_energetica`.\n\n**Herramientas del módulo.** Ninguna específica: se apoya en los campos de texto."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `analisis_ciclo_vida`\n\n**El prompt que usa:** Evaluación del impacto del producto tecnológico desde la obtención de materia prima hasta su desecho final.\n\n**Ejemplo que muestra la guía:** Ej: Diseño modular de hardware que facilita la sustitución de piezas individuales y reciclaje de baterías de litio.\n\n**Benchmark / criterio de calidad:** Madurez tecnológica validada en escala TRL (1 a 9) y novedad patentable.\n\n**De dónde viene la guía:** Clayton Christensen — The Innovator's Dilemma & Manual de Oslo\n\n### `estrategia_economia_circular`\n\n**El prompt que usa:** Cómo reintegras materiales, reciclas dispositivos obsoletos o reduces el desperdicio electrónico.\n\n**Ejemplo que muestra la guía:** Ej: Programa de recolección de sensores viejos a cambio de descuentos en la renovación del plan anual.\n\n**Benchmark / criterio de calidad:** Madurez tecnológica validada en escala TRL (1 a 9) y novedad patentable.\n\n**De dónde viene la guía:** Clayton Christensen — The Innovator's Dilemma & Manual de Oslo\n\n### `sustentabilidad_energetica`\n\n**El prompt que usa:** Consumo de energía de tus servidores, oficinas y procesos de manufactura, y el uso de fuentes renovables.\n\n**Ejemplo que muestra la guía:** Ej: 100% de la infraestructura en la nube está alojada en centros de datos con certificación de neutralidad de carbono.\n\n**Benchmark / criterio de calidad:** Madurez tecnológica validada en escala TRL (1 a 9) y novedad patentable.\n\n**De dónde viene la guía:** Clayton Christensen — The Innovator's Dilemma & Manual de Oslo"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "Sin cajas asociadas."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Impacto Social y Ecológico (RSE)** de *Plan de Negocios de Base Tecnológica e Innovación (I+D)*. La justificación metodológica completa está en la página del modelo y en `docs/technology_id.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `technology_id.responsabilidad_social.circular_economy.analisis_ciclo_vida` → tipo `text`\n- `technology_id.responsabilidad_social.circular_economy.estrategia_economia_circular` → tipo `text`\n- `technology_id.responsabilidad_social.circular_economy.sustentabilidad_energetica` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas:** `src/config/moduleBoxMap.js` no declara cajas para `technology_id:circular_economy`; la pantalla muestra solo los campos de texto.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

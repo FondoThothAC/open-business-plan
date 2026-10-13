@@ -1,0 +1,104 @@
+{
+  "id": "modulo.investment_project.capex_csi_16",
+  "title": "Desglose CAPEX CSI-16",
+  "summary": "Estructuración según las 16 divisiones estándar CSI de construcción y maquinaria.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "investment_project",
+  "moduleKey": "capex_csi_16",
+  "pillarKey": "presupuesto_obra",
+  "openUrl": "/investment_project/capex_csi_16",
+  "fields": [
+    {
+      "key": "division_csi_codigo",
+      "type": "text",
+      "address": "investment_project.presupuesto_obra.capex_csi_16.division_csi_codigo",
+      "prompt": "Código de división según el estándar CSI MasterFormat de 16 divisiones (ej. Div 02 Sitio, Div 03 Concreto, Div 11 Equipamiento).",
+      "ejemplo": "Ej: 'División 11 - Equipamiento: Hornos ASADHOR, túnel de congelación criogénica y cuartos fríos'.",
+      "benchmark": "Clasificación formal alineada con las 16 divisiones CSI MasterFormat para presupuestos de ingeniería.",
+      "cita": "CSI MasterFormat (16 Divisiones) & Linda Pinson Anatomy of a Business Plan Ch. 7 p. 142",
+      "placeholder": "Código y nombre de la división CSI (01 a 16)..."
+    },
+    {
+      "key": "concepto_obra_maquinaria",
+      "type": "text",
+      "address": "investment_project.presupuesto_obra.capex_csi_16.concepto_obra_maquinaria",
+      "prompt": "Descripción técnica detallada del concepto de obra civil, instalación industrial o maquinaria pesada.",
+      "ejemplo": "Ej: 'Suministro e instalación de túnel criogénico IQF con capacidad de 1,200 kg/hora a -40°C en acero inoxidable 304'.",
+      "benchmark": "Especificación técnica con tolerancias ISO 9001 y capacidades nominales.",
+      "cita": "Anatomy of a Business Plan (Ch. 7, p. 144) & Plan de Negocios VF p. 86",
+      "placeholder": "Descripción técnica del concepto, especificaciones y alcance..."
+    },
+    {
+      "key": "unidad_medida_cantidad",
+      "type": "text",
+      "address": "investment_project.presupuesto_obra.capex_csi_16.unidad_medida_cantidad",
+      "prompt": "Unidad de medida estándar (m², m³, lote, pza, kg) y volumen total cuantificado en proyecto.",
+      "ejemplo": "Ej: '5 piezas de hornos rotativos ASADHOR industriales de 12 niveles'.",
+      "benchmark": "Metrología cerrada en m², kg o unidades con tolerancia <= 2%.",
+      "cita": "CSI MasterFormat & Plan de Negocios VF p. 88",
+      "placeholder": "Unidad de medida (ej. pza, m², lote) y cantidad total..."
+    },
+    {
+      "key": "costo_unitario_importe",
+      "type": "text",
+      "address": "investment_project.presupuesto_obra.capex_csi_16.costo_unitario_importe",
+      "prompt": "Precio unitario antes de impuestos y desglose de mano de obra, equipo e insumos.",
+      "ejemplo": "Ej: '$750,000 MXN precio unitario por horno ASADHOR puesto en planta Hermosillo'.",
+      "benchmark": "Cotizaciones formales con vigencia mínima de 60 días de proveedores industriales autorizados.",
+      "cita": "The Nature of Value (Ch. 6, p. 108)",
+      "placeholder": "Costo unitario desglosado e importe total por renglón..."
+    },
+    {
+      "key": "total_inversion_csi",
+      "type": "text",
+      "address": "investment_project.presupuesto_obra.capex_csi_16.total_inversion_csi",
+      "prompt": "Suma acumulada del CAPEX por cada división CSI y porcentaje de participación sobre la inversión total.",
+      "ejemplo": "Ej: 'División 11 Equipamiento: $8,000,000 MXN representando el 47.6% del CAPEX total'.",
+      "benchmark": "Matriz de CAPEX CSI 16 cerrada al 100% coincidente con el balance.",
+      "cita": "Linda Pinson — Anatomy of a Business Plan (Ch. 7, p. 148)",
+      "placeholder": "Total consolidado de la división CSI y porcentaje del presupuesto..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_capex_csi_table_16div",
+      "title": "Desglose Detallado de CAPEX por Divisiones MasterFormat CSI-16",
+      "type": "table",
+      "description": "Catálogo exhaustivo de conceptos, especificaciones técnicas, unidades y precios unitarios por división CSI.",
+      "source": "Anatomy of a Business Plan & Plan de Negocios VF — Ch. 7 p. 142; p. 86"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Estructuración según las 16 divisiones estándar CSI de construcción y maquinaria.\n\n**Cómo se usa.** Está en el pilar **Presupuesto Base de Obra (CAPEX)** del modelo *Proyecto de Inversión (Ingeniería y Finanzas)*. Se abre en `/investment_project/capex_csi_16`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 5 campos: `division_csi_codigo`, `concepto_obra_maquinaria`, `unidad_medida_cantidad`, `costo_unitario_importe`, `total_inversion_csi`.\n\n**Herramientas del módulo.** 1 caja(s): `box_capex_csi_table_16div`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `division_csi_codigo`\n\n**El prompt que usa:** Código de división según el estándar CSI MasterFormat de 16 divisiones (ej. Div 02 Sitio, Div 03 Concreto, Div 11 Equipamiento).\n\n**Ejemplo que muestra la guía:** Ej: 'División 11 - Equipamiento: Hornos ASADHOR, túnel de congelación criogénica y cuartos fríos'.\n\n**Benchmark / criterio de calidad:** Clasificación formal alineada con las 16 divisiones CSI MasterFormat para presupuestos de ingeniería.\n\n**De dónde viene la guía:** CSI MasterFormat (16 Divisiones) & Linda Pinson Anatomy of a Business Plan Ch. 7 p. 142\n\n### `concepto_obra_maquinaria`\n\n**El prompt que usa:** Descripción técnica detallada del concepto de obra civil, instalación industrial o maquinaria pesada.\n\n**Ejemplo que muestra la guía:** Ej: 'Suministro e instalación de túnel criogénico IQF con capacidad de 1,200 kg/hora a -40°C en acero inoxidable 304'.\n\n**Benchmark / criterio de calidad:** Especificación técnica con tolerancias ISO 9001 y capacidades nominales.\n\n**De dónde viene la guía:** Anatomy of a Business Plan (Ch. 7, p. 144) & Plan de Negocios VF p. 86\n\n### `unidad_medida_cantidad`\n\n**El prompt que usa:** Unidad de medida estándar (m², m³, lote, pza, kg) y volumen total cuantificado en proyecto.\n\n**Ejemplo que muestra la guía:** Ej: '5 piezas de hornos rotativos ASADHOR industriales de 12 niveles'.\n\n**Benchmark / criterio de calidad:** Metrología cerrada en m², kg o unidades con tolerancia <= 2%.\n\n**De dónde viene la guía:** CSI MasterFormat & Plan de Negocios VF p. 88\n\n### `costo_unitario_importe`\n\n**El prompt que usa:** Precio unitario antes de impuestos y desglose de mano de obra, equipo e insumos.\n\n**Ejemplo que muestra la guía:** Ej: '$750,000 MXN precio unitario por horno ASADHOR puesto en planta Hermosillo'.\n\n**Benchmark / criterio de calidad:** Cotizaciones formales con vigencia mínima de 60 días de proveedores industriales autorizados.\n\n**De dónde viene la guía:** The Nature of Value (Ch. 6, p. 108)\n\n### `total_inversion_csi`\n\n**El prompt que usa:** Suma acumulada del CAPEX por cada división CSI y porcentaje de participación sobre la inversión total.\n\n**Ejemplo que muestra la guía:** Ej: 'División 11 Equipamiento: $8,000,000 MXN representando el 47.6% del CAPEX total'.\n\n**Benchmark / criterio de calidad:** Matriz de CAPEX CSI 16 cerrada al 100% coincidente con el balance.\n\n**De dónde viene la guía:** Linda Pinson — Anatomy of a Business Plan (Ch. 7, p. 148)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Desglose Detallado de CAPEX por Divisiones MasterFormat CSI-16\n\n`box_capex_csi_table_16div` · tipo **table** · fuente: Anatomy of a Business Plan & Plan de Negocios VF — Ch. 7 p. 142; p. 86\n\nCatálogo exhaustivo de conceptos, especificaciones técnicas, unidades y precios unitarios por división CSI."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Presupuesto Base de Obra (CAPEX)** de *Proyecto de Inversión (Ingeniería y Finanzas)*. La justificación metodológica completa está en la página del modelo y en `docs/investment_project.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `investment_project.presupuesto_obra.capex_csi_16.division_csi_codigo` → tipo `text`\n- `investment_project.presupuesto_obra.capex_csi_16.concepto_obra_maquinaria` → tipo `text`\n- `investment_project.presupuesto_obra.capex_csi_16.unidad_medida_cantidad` → tipo `text`\n- `investment_project.presupuesto_obra.capex_csi_16.costo_unitario_importe` → tipo `text`\n- `investment_project.presupuesto_obra.capex_csi_16.total_inversion_csi` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `investment_project:capex_csi_16`): `box_capex_csi_table_16div`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

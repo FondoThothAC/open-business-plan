@@ -1,0 +1,111 @@
+{
+  "id": "modulo.investment_project.tornado_sensibilidad",
+  "title": "Diagrama Tornado de Riesgo",
+  "summary": "Variación de variables críticas (precio, volumen, CAPEX) sobre el VAN.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "investment_project",
+  "moduleKey": "tornado_sensibilidad",
+  "pillarKey": "riesgo_matematico",
+  "openUrl": "/investment_project/tornado_sensibilidad",
+  "fields": [
+    {
+      "key": "variable_critica_analizada",
+      "type": "text",
+      "address": "investment_project.riesgo_matematico.tornado_sensibilidad.variable_critica_analizada",
+      "prompt": "Nombre del parámetro operativo o financiero sometido a prueba de sensibilidad extrema en el diagrama Tornado.",
+      "ejemplo": "Ej: 'Precio promedio de venta por kg de corte ($220 MXN base) y costo de carne en canal ($82/kg base)'.",
+      "benchmark": "Identificación de las 5 variables con mayor coeficiente de elasticidad sobre el VAN.",
+      "cita": "The Nature of Value (Ch. 6, p. 110) & Plan de Negocios VF p. 91",
+      "placeholder": "Variable clave sometida a estrés estocástico..."
+    },
+    {
+      "key": "rango_variacion_porcentual",
+      "type": "text",
+      "address": "investment_project.riesgo_matematico.tornado_sensibilidad.rango_variacion_porcentual",
+      "prompt": "Rango de variación estocástica aplicado en el análisis (ej. +/- 10%, +/- 20% o +/- 25%).",
+      "ejemplo": "Ej: 'Variación de +/- 20% sobre el volumen de ventas y +/- 15% en costos de energía eléctrica'.",
+      "benchmark": "Estrés de mercado bidireccional estándar (+/- 20% a 25%).",
+      "cita": "Carl Schramm — Burn the Business Plan (p. 67)",
+      "placeholder": "Rango porcentual de variación evaluado..."
+    },
+    {
+      "key": "van_escenario_pesimista",
+      "type": "text",
+      "address": "investment_project.riesgo_matematico.tornado_sensibilidad.van_escenario_pesimista",
+      "prompt": "Valor Presente Neto resultante cuando la variable se deteriora hasta el límite inferior del rango.",
+      "ejemplo": "Ej: 'Con caída del 20% en volumen, el VAN disminuye de +$12.5M a +$3.8M MXN (se mantiene viable)'.",
+      "benchmark": "VAN pesimista > 0 con estrés de ingresos -20% o costos +20%.",
+      "cita": "The Nature of Value (Ch. 6, p. 112)",
+      "placeholder": "VAN resultante en el peor escenario modelado..."
+    },
+    {
+      "key": "van_escenario_optimista",
+      "type": "text",
+      "address": "investment_project.riesgo_matematico.tornado_sensibilidad.van_escenario_optimista",
+      "prompt": "Valor Presente Neto proyectado cuando la variable alcanza el límite superior favorable.",
+      "ejemplo": "Ej: 'Con incremento del 20% en demanda y captura de nicho premium, el VAN escala a +$21.4M MXN'.",
+      "benchmark": "Proyección con techo al 100% de capacidad instalada máxima.",
+      "cita": "The Nature of Value (Ch. 6, p. 114)",
+      "placeholder": "VAN en escenario óptimo y captura de upside..."
+    },
+    {
+      "key": "umbral_tolerancia_riesgo",
+      "type": "text",
+      "address": "investment_project.riesgo_matematico.tornado_sensibilidad.umbral_tolerancia_riesgo",
+      "prompt": "Caída máxima porcentual que resiste el proyecto antes de que el VAN se vuelva cero (punto de quiebre financiero).",
+      "ejemplo": "Ej: 'El proyecto resiste una caída de hasta 28.5% en el precio de venta antes de entrar en zona de destrucción de valor'.",
+      "benchmark": "Margen de seguridad financiero mínimo del 15% frente a variaciones de precios.",
+      "cita": "Linda Pinson — Anatomy of a Business Plan (Ch. 7, p. 152)",
+      "placeholder": "Porcentaje de amortiguamiento máximo antes de que el VAN sea cero..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_tornado_chart",
+      "title": "Gráfica de Tornado de Sensibilidad Multivariable",
+      "type": "formula",
+      "description": "Jerarquización de impacto en el VAN ante desviaciones pesimistas y optimistas de las variables críticas.",
+      "source": "The Nature of Value & Plan de Negocios VF — Ch. 6 p. 108; p. 91"
+    },
+    {
+      "id": "box_tornado_sensibilidad",
+      "title": "Análisis de Sensibilidad Tornado (1 Variable)",
+      "type": "formula",
+      "description": "Impacto en el VAN ante oscilaciones de ±25% en precio, volumen y CAPEX.",
+      "source": "The Nature of Value — Ch. 6"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Variación de variables críticas (precio, volumen, CAPEX) sobre el VAN.\n\n**Cómo se usa.** Está en el pilar **Riesgo Matemático y Sensibilidad** del modelo *Proyecto de Inversión (Ingeniería y Finanzas)*. Se abre en `/investment_project/tornado_sensibilidad`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 5 campos: `variable_critica_analizada`, `rango_variacion_porcentual`, `van_escenario_pesimista`, `van_escenario_optimista`, `umbral_tolerancia_riesgo`.\n\n**Herramientas del módulo.** 2 caja(s): `box_tornado_chart`, `box_tornado_sensibilidad`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `variable_critica_analizada`\n\n**El prompt que usa:** Nombre del parámetro operativo o financiero sometido a prueba de sensibilidad extrema en el diagrama Tornado.\n\n**Ejemplo que muestra la guía:** Ej: 'Precio promedio de venta por kg de corte ($220 MXN base) y costo de carne en canal ($82/kg base)'.\n\n**Benchmark / criterio de calidad:** Identificación de las 5 variables con mayor coeficiente de elasticidad sobre el VAN.\n\n**De dónde viene la guía:** The Nature of Value (Ch. 6, p. 110) & Plan de Negocios VF p. 91\n\n### `rango_variacion_porcentual`\n\n**El prompt que usa:** Rango de variación estocástica aplicado en el análisis (ej. +/- 10%, +/- 20% o +/- 25%).\n\n**Ejemplo que muestra la guía:** Ej: 'Variación de +/- 20% sobre el volumen de ventas y +/- 15% en costos de energía eléctrica'.\n\n**Benchmark / criterio de calidad:** Estrés de mercado bidireccional estándar (+/- 20% a 25%).\n\n**De dónde viene la guía:** Carl Schramm — Burn the Business Plan (p. 67)\n\n### `van_escenario_pesimista`\n\n**El prompt que usa:** Valor Presente Neto resultante cuando la variable se deteriora hasta el límite inferior del rango.\n\n**Ejemplo que muestra la guía:** Ej: 'Con caída del 20% en volumen, el VAN disminuye de +$12.5M a +$3.8M MXN (se mantiene viable)'.\n\n**Benchmark / criterio de calidad:** VAN pesimista > 0 con estrés de ingresos -20% o costos +20%.\n\n**De dónde viene la guía:** The Nature of Value (Ch. 6, p. 112)\n\n### `van_escenario_optimista`\n\n**El prompt que usa:** Valor Presente Neto proyectado cuando la variable alcanza el límite superior favorable.\n\n**Ejemplo que muestra la guía:** Ej: 'Con incremento del 20% en demanda y captura de nicho premium, el VAN escala a +$21.4M MXN'.\n\n**Benchmark / criterio de calidad:** Proyección con techo al 100% de capacidad instalada máxima.\n\n**De dónde viene la guía:** The Nature of Value (Ch. 6, p. 114)\n\n### `umbral_tolerancia_riesgo`\n\n**El prompt que usa:** Caída máxima porcentual que resiste el proyecto antes de que el VAN se vuelva cero (punto de quiebre financiero).\n\n**Ejemplo que muestra la guía:** Ej: 'El proyecto resiste una caída de hasta 28.5% en el precio de venta antes de entrar en zona de destrucción de valor'.\n\n**Benchmark / criterio de calidad:** Margen de seguridad financiero mínimo del 15% frente a variaciones de precios.\n\n**De dónde viene la guía:** Linda Pinson — Anatomy of a Business Plan (Ch. 7, p. 152)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Gráfica de Tornado de Sensibilidad Multivariable\n\n`box_tornado_chart` · tipo **formula** · fuente: The Nature of Value & Plan de Negocios VF — Ch. 6 p. 108; p. 91\n\nJerarquización de impacto en el VAN ante desviaciones pesimistas y optimistas de las variables críticas.\n\n### Análisis de Sensibilidad Tornado (1 Variable)\n\n`box_tornado_sensibilidad` · tipo **formula** · fuente: The Nature of Value — Ch. 6\n\nImpacto en el VAN ante oscilaciones de ±25% en precio, volumen y CAPEX."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Riesgo Matemático y Sensibilidad** de *Proyecto de Inversión (Ingeniería y Finanzas)*. La justificación metodológica completa está en la página del modelo y en `docs/investment_project.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `investment_project.riesgo_matematico.tornado_sensibilidad.variable_critica_analizada` → tipo `text`\n- `investment_project.riesgo_matematico.tornado_sensibilidad.rango_variacion_porcentual` → tipo `text`\n- `investment_project.riesgo_matematico.tornado_sensibilidad.van_escenario_pesimista` → tipo `text`\n- `investment_project.riesgo_matematico.tornado_sensibilidad.van_escenario_optimista` → tipo `text`\n- `investment_project.riesgo_matematico.tornado_sensibilidad.umbral_tolerancia_riesgo` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `investment_project:tornado_sensibilidad`): `box_tornado_chart`, `box_tornado_sensibilidad`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

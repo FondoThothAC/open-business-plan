@@ -1,0 +1,84 @@
+{
+  "id": "modulo.hoshin_kanri.okrs_alineados",
+  "title": "OKRs Alineados a la Matriz X",
+  "summary": "Objetivos trimestrales y resultados clave de equipos operativos.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "hoshin_kanri",
+  "moduleKey": "okrs_alineados",
+  "pillarKey": "seguimiento_mejora",
+  "openUrl": "/hoshin-kanri/okrs_alineados",
+  "fields": [
+    {
+      "key": "objetivos_trimestrales_okr",
+      "type": "text",
+      "address": "hoshin_kanri.seguimiento_mejora.okrs_alineados.objetivos_trimestrales_okr",
+      "prompt": "Objetivos cualitativos ambiciosos y motivadores (Objectives) fijados para un horizonte de 90 días.",
+      "ejemplo": "Ej: 'Convertir la planta en el referente de inocuidad del noroeste de México durante el Q4'.",
+      "benchmark": "3 a 5 objetivos cualitativos de alto impacto trimestrales por célula o departamento.",
+      "cita": "John Doerr — Measure What Matters & Colwell QuickStart Ch. 7 p. 142",
+      "placeholder": "Objetivo inspirador y ambicioso para el trimestre..."
+    },
+    {
+      "key": "resultados_clave_medibles",
+      "type": "text",
+      "address": "hoshin_kanri.seguimiento_mejora.okrs_alineados.resultados_clave_medibles",
+      "prompt": "Resultados clave cuantitativos (Key Results) que miden si el objetivo fue alcanzado de forma inequívoca.",
+      "ejemplo": "Ej: 'KR1: 0 hallazgos en auditoría COFEPRIS. KR2: 100% lotes con trazabilidad QR. KR3: OTD >= 98%'.",
+      "benchmark": "3 a 4 KRs estrictamente numéricos con fecha límite por cada objetivo.",
+      "cita": "John Doerr — Measure What Matters",
+      "placeholder": "KRs numéricos con línea base y meta final de trimestre..."
+    },
+    {
+      "key": "scorecard_cumplimiento",
+      "type": "text",
+      "address": "hoshin_kanri.seguimiento_mejora.okrs_alineados.scorecard_cumplimiento",
+      "prompt": "Tablero de evaluación final del trimestre con calificación del 0.0 al 1.0 por resultado clave.",
+      "ejemplo": "Ej: 'Calificación promedio Q4: 0.82 (Verde / Éxito sobresaliente según escala OKR de Google)'.",
+      "benchmark": "Zona de éxito óptimo entre 0.6 y 0.7 (siempre 1.0 indica que los objetivos fueron poco ambiciosos).",
+      "cita": "John Doerr — Measure What Matters",
+      "placeholder": "Puntaje alcanzado por KR y balance general del trimestre..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_okr_scorecard",
+      "title": "Scorecard de Alineación OKR y Bowler Semáforo",
+      "type": "benchmark",
+      "description": "Tablero de seguimiento de Objetivos y Resultados Clave con bandas semafóricas mensuales de cumplimiento.",
+      "source": "Starting a Business QuickStart Guide — Ch. 7 p. 142"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Objetivos trimestrales y resultados clave de equipos operativos.\n\n**Cómo se usa.** Está en el pilar **Seguimiento y Control Continuo** del modelo *Hoshin Kanri (Japón - Planificación Estratégica)*. Se abre en `/hoshin-kanri/okrs_alineados`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 3 campos: `objetivos_trimestrales_okr`, `resultados_clave_medibles`, `scorecard_cumplimiento`.\n\n**Herramientas del módulo.** 1 caja(s): `box_okr_scorecard`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `objetivos_trimestrales_okr`\n\n**El prompt que usa:** Objetivos cualitativos ambiciosos y motivadores (Objectives) fijados para un horizonte de 90 días.\n\n**Ejemplo que muestra la guía:** Ej: 'Convertir la planta en el referente de inocuidad del noroeste de México durante el Q4'.\n\n**Benchmark / criterio de calidad:** 3 a 5 objetivos cualitativos de alto impacto trimestrales por célula o departamento.\n\n**De dónde viene la guía:** John Doerr — Measure What Matters & Colwell QuickStart Ch. 7 p. 142\n\n### `resultados_clave_medibles`\n\n**El prompt que usa:** Resultados clave cuantitativos (Key Results) que miden si el objetivo fue alcanzado de forma inequívoca.\n\n**Ejemplo que muestra la guía:** Ej: 'KR1: 0 hallazgos en auditoría COFEPRIS. KR2: 100% lotes con trazabilidad QR. KR3: OTD >= 98%'.\n\n**Benchmark / criterio de calidad:** 3 a 4 KRs estrictamente numéricos con fecha límite por cada objetivo.\n\n**De dónde viene la guía:** John Doerr — Measure What Matters\n\n### `scorecard_cumplimiento`\n\n**El prompt que usa:** Tablero de evaluación final del trimestre con calificación del 0.0 al 1.0 por resultado clave.\n\n**Ejemplo que muestra la guía:** Ej: 'Calificación promedio Q4: 0.82 (Verde / Éxito sobresaliente según escala OKR de Google)'.\n\n**Benchmark / criterio de calidad:** Zona de éxito óptimo entre 0.6 y 0.7 (siempre 1.0 indica que los objetivos fueron poco ambiciosos).\n\n**De dónde viene la guía:** John Doerr — Measure What Matters"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Scorecard de Alineación OKR y Bowler Semáforo\n\n`box_okr_scorecard` · tipo **benchmark** · fuente: Starting a Business QuickStart Guide — Ch. 7 p. 142\n\nTablero de seguimiento de Objetivos y Resultados Clave con bandas semafóricas mensuales de cumplimiento."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Seguimiento y Control Continuo** de *Hoshin Kanri (Japón - Planificación Estratégica)*. La justificación metodológica completa está en la página del modelo y en `docs/hoshin_kanri.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `hoshin_kanri.seguimiento_mejora.okrs_alineados.objetivos_trimestrales_okr` → tipo `text`\n- `hoshin_kanri.seguimiento_mejora.okrs_alineados.resultados_clave_medibles` → tipo `text`\n- `hoshin_kanri.seguimiento_mejora.okrs_alineados.scorecard_cumplimiento` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `hoshin_kanri:okrs_alineados`): `box_okr_scorecard`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

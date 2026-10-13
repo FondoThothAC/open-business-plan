@@ -1,0 +1,76 @@
+{
+  "id": "modulo.social_bid.comunicaciones",
+  "title": "Plan de Comunicaciones",
+  "summary": "Estrategia para mantener informados a los stakeholders.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "social_bid",
+  "moduleKey": "comunicaciones",
+  "pillarKey": "ejecucion",
+  "openUrl": "/social_bid/comunicaciones",
+  "fields": [
+    {
+      "key": "audiencias",
+      "type": "text",
+      "address": "social_bid.ejecucion.comunicaciones.audiencias",
+      "prompt": "Grupos clave que deben recibir información del avance.",
+      "ejemplo": "Ej: Donantes (BID), Padres de familia, Autoridades educativas.",
+      "benchmark": "Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.",
+      "cita": "Metodología del Marco Lógico (BID / CEPAL / PM4R)",
+      "placeholder": "Define el componente del proyecto social (audiencias)..."
+    },
+    {
+      "key": "canales",
+      "type": "text",
+      "address": "social_bid.ejecucion.comunicaciones.canales",
+      "prompt": "Medios a través de los cuales se enviará la información.",
+      "ejemplo": "Ej: Reporte trimestral PDF para BID. Grupo de WhatsApp para padres.",
+      "benchmark": "Estrategia omnicanal con margen de contribución directo > 50%.",
+      "cita": "Alexander Osterwalder — Business Model Generation (p. 30)",
+      "placeholder": "Puntos de contacto para comunicación, distribución y postventa..."
+    },
+    {
+      "key": "mensajes_clave",
+      "type": "text",
+      "address": "social_bid.ejecucion.comunicaciones.mensajes_clave",
+      "prompt": "Lo que se quiere comunicar a cada audiencia.",
+      "ejemplo": "Ej: A los padres: \"Su hijo está adquiriendo habilidades para el futuro\".",
+      "benchmark": "Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.",
+      "cita": "Metodología del Marco Lógico (BID / CEPAL / PM4R)",
+      "placeholder": "Define el componente del proyecto social (mensajes_clave)..."
+    }
+  ],
+  "boxes": [],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Estrategia para mantener informados a los stakeholders.\n\n**Cómo se usa.** Está en el pilar **Ejecución y Gobernanza (PM4R)** del modelo *Proyecto Social (Metodología BID)*. Se abre en `/social_bid/comunicaciones`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 3 campos: `audiencias`, `canales`, `mensajes_clave`.\n\n**Herramientas del módulo.** Ninguna específica: se apoya en los campos de texto."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `audiencias`\n\n**El prompt que usa:** Grupos clave que deben recibir información del avance.\n\n**Ejemplo que muestra la guía:** Ej: Donantes (BID), Padres de familia, Autoridades educativas.\n\n**Benchmark / criterio de calidad:** Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.\n\n**De dónde viene la guía:** Metodología del Marco Lógico (BID / CEPAL / PM4R)\n\n### `canales`\n\n**El prompt que usa:** Medios a través de los cuales se enviará la información.\n\n**Ejemplo que muestra la guía:** Ej: Reporte trimestral PDF para BID. Grupo de WhatsApp para padres.\n\n**Benchmark / criterio de calidad:** Estrategia omnicanal con margen de contribución directo > 50%.\n\n**De dónde viene la guía:** Alexander Osterwalder — Business Model Generation (p. 30)\n\n### `mensajes_clave`\n\n**El prompt que usa:** Lo que se quiere comunicar a cada audiencia.\n\n**Ejemplo que muestra la guía:** Ej: A los padres: \"Su hijo está adquiriendo habilidades para el futuro\".\n\n**Benchmark / criterio de calidad:** Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.\n\n**De dónde viene la guía:** Metodología del Marco Lógico (BID / CEPAL / PM4R)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "Sin cajas asociadas."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Ejecución y Gobernanza (PM4R)** de *Proyecto Social (Metodología BID)*. La justificación metodológica completa está en la página del modelo y en `docs/social_bid.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `social_bid.ejecucion.comunicaciones.audiencias` → tipo `text`\n- `social_bid.ejecucion.comunicaciones.canales` → tipo `text`\n- `social_bid.ejecucion.comunicaciones.mensajes_clave` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas:** `src/config/moduleBoxMap.js` no declara cajas para `social_bid:comunicaciones`; la pantalla muestra solo los campos de texto.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

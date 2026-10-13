@@ -1,0 +1,84 @@
+{
+  "id": "modulo.onudi_project.localizacion_industrial",
+  "title": "Matriz de Localización ONUDI",
+  "summary": "Evaluación multicriterio ponderada: materias primas, energía, agua y logística.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "onudi_project",
+  "moduleKey": "localizacion_industrial",
+  "pillarKey": "ingenieria_industrial",
+  "openUrl": "/onudi_project/localizacion_industrial",
+  "fields": [
+    {
+      "key": "matriz_localizacion_ponderada",
+      "type": "text",
+      "address": "onudi_project.ingenieria_industrial.localizacion_industrial.matriz_localizacion_ponderada",
+      "prompt": "Evaluación multicriterio formal de localización industrial ONUDI: ponderación de materia prima, energía, agua, mano de obra y logística.",
+      "ejemplo": "Ej: Opción Parque Industrial Hermosillo Norte (Puntaje 88.5/100) seleccionada frente a Guaymas (74.2/100) por cercanía a gasoducto y agua tratada.",
+      "benchmark": "Matriz de localización cuantitativa con factores críticos ponderados de 1 a 10.",
+      "cita": "Manual de Estudios de Viabilidad Industrial ONUDI (Behrens & Hawranek) & Anatomy Ch. 7",
+      "placeholder": "Criterios de localización, ponderación de factores y emplazamiento óptimo..."
+    },
+    {
+      "key": "disponibilidad_energia_agua",
+      "type": "text",
+      "address": "onudi_project.ingenieria_industrial.localizacion_industrial.disponibilidad_energia_agua",
+      "prompt": "Factibilidad de suministro de servicios industriales: demanda máxima en KVA, presión de gas natural y caudal de agua en litros/segundo.",
+      "ejemplo": "Ej: Factibilidad CFE de 750 KVA en media tensión y contrato con Organismo Operador de Agua por 2.5 lps de agua industrial.",
+      "benchmark": "Cartas oficiales de factibilidad de las empresas suministradoras de servicios públicos.",
+      "cita": "Manual de Viabilidad Industrial ONUDI (COMFAR Módulo 2)",
+      "placeholder": "Capacidades aseguradas de suministro eléctrico, agua, gas y drenaje..."
+    },
+    {
+      "key": "logistica_corredores_transporte",
+      "type": "text",
+      "address": "onudi_project.ingenieria_industrial.localizacion_industrial.logistica_corredores_transporte",
+      "prompt": "Conectividad con corredores multimodales de transporte: carreteras federales, espuelas de ferrocarril, puertos y aduanas fronterizas.",
+      "ejemplo": "Ej: Acceso inmediato a Carretera Federal 15 México-Nogales (a 260 km de la frontera con EE.UU.) y a 135 km del Puerto de Guaymas.",
+      "benchmark": "Costo logístico integral < 8% del valor total de la mercancía terminada.",
+      "cita": "Manual de Viabilidad Industrial ONUDI & Anatomy Ch. 7",
+      "placeholder": "Rutas logísticas, tiempos de tránsito y costes de flete a destino..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_matriz_localizacion_onudi",
+      "title": "Matriz Multicriterio de Localización Industrial",
+      "type": "matrix",
+      "description": "Ponderación de factores geográficos, costos logísticos, disponibilidad de energía, agua y mano de obra calificada.",
+      "source": "ONUDI Behrens & Hawranek & Anatomy of a Business Plan — Ch. 7 p. 138"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Evaluación multicriterio ponderada: materias primas, energía, agua y logística.\n\n**Cómo se usa.** Está en el pilar **Ingeniería y Emplazamiento** del modelo *Estudio de Factibilidad ONUDI (Industrial Global)*. Se abre en `/onudi_project/localizacion_industrial`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 3 campos: `matriz_localizacion_ponderada`, `disponibilidad_energia_agua`, `logistica_corredores_transporte`.\n\n**Herramientas del módulo.** 1 caja(s): `box_matriz_localizacion_onudi`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `matriz_localizacion_ponderada`\n\n**El prompt que usa:** Evaluación multicriterio formal de localización industrial ONUDI: ponderación de materia prima, energía, agua, mano de obra y logística.\n\n**Ejemplo que muestra la guía:** Ej: Opción Parque Industrial Hermosillo Norte (Puntaje 88.5/100) seleccionada frente a Guaymas (74.2/100) por cercanía a gasoducto y agua tratada.\n\n**Benchmark / criterio de calidad:** Matriz de localización cuantitativa con factores críticos ponderados de 1 a 10.\n\n**De dónde viene la guía:** Manual de Estudios de Viabilidad Industrial ONUDI (Behrens & Hawranek) & Anatomy Ch. 7\n\n### `disponibilidad_energia_agua`\n\n**El prompt que usa:** Factibilidad de suministro de servicios industriales: demanda máxima en KVA, presión de gas natural y caudal de agua en litros/segundo.\n\n**Ejemplo que muestra la guía:** Ej: Factibilidad CFE de 750 KVA en media tensión y contrato con Organismo Operador de Agua por 2.5 lps de agua industrial.\n\n**Benchmark / criterio de calidad:** Cartas oficiales de factibilidad de las empresas suministradoras de servicios públicos.\n\n**De dónde viene la guía:** Manual de Viabilidad Industrial ONUDI (COMFAR Módulo 2)\n\n### `logistica_corredores_transporte`\n\n**El prompt que usa:** Conectividad con corredores multimodales de transporte: carreteras federales, espuelas de ferrocarril, puertos y aduanas fronterizas.\n\n**Ejemplo que muestra la guía:** Ej: Acceso inmediato a Carretera Federal 15 México-Nogales (a 260 km de la frontera con EE.UU.) y a 135 km del Puerto de Guaymas.\n\n**Benchmark / criterio de calidad:** Costo logístico integral < 8% del valor total de la mercancía terminada.\n\n**De dónde viene la guía:** Manual de Viabilidad Industrial ONUDI & Anatomy Ch. 7"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Matriz Multicriterio de Localización Industrial\n\n`box_matriz_localizacion_onudi` · tipo **matrix** · fuente: ONUDI Behrens & Hawranek & Anatomy of a Business Plan — Ch. 7 p. 138\n\nPonderación de factores geográficos, costos logísticos, disponibilidad de energía, agua y mano de obra calificada."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Ingeniería y Emplazamiento** de *Estudio de Factibilidad ONUDI (Industrial Global)*. La justificación metodológica completa está en la página del modelo y en `docs/onudi_project.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `onudi_project.ingenieria_industrial.localizacion_industrial.matriz_localizacion_ponderada` → tipo `text`\n- `onudi_project.ingenieria_industrial.localizacion_industrial.disponibilidad_energia_agua` → tipo `text`\n- `onudi_project.ingenieria_industrial.localizacion_industrial.logistica_corredores_transporte` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `onudi_project:localizacion_industrial`): `box_matriz_localizacion_onudi`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

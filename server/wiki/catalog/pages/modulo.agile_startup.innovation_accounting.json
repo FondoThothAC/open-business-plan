@@ -1,0 +1,94 @@
+{
+  "id": "modulo.agile_startup.innovation_accounting",
+  "title": "Contabilidad de Innovación",
+  "summary": "Evaluación cuantitativa de hitos: Línea base, optimizaciones y análisis de cohortes.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "agile_startup",
+  "moduleKey": "innovation_accounting",
+  "pillarKey": "aprendizaje",
+  "openUrl": "/agile_startup/innovation_accounting",
+  "fields": [
+    {
+      "key": "metrica_linea_base",
+      "type": "text",
+      "address": "agile_startup.aprendizaje.innovation_accounting.metrica_linea_base",
+      "prompt": "Valor actual inicial del indicador antes de aplicar cualquier optimización (Innovation Accounting).",
+      "ejemplo": "Ej: Conversión actual de visitante a lead del 2.8% con tasa de rebote del 64%.",
+      "benchmark": "Medición empírica objetiva con muestra mínima n >= 100 usuarios.",
+      "cita": "Eric Ries — El Método Lean Startup (Ch. 8, p. 174)",
+      "placeholder": "Métrica base de inicio del motor de crecimiento..."
+    },
+    {
+      "key": "experimento_minimo_viable",
+      "type": "text",
+      "address": "agile_startup.aprendizaje.innovation_accounting.experimento_minimo_viable",
+      "prompt": "Intervención o cambio más pequeño posible implementado para intentar mover la aguja de la métrica.",
+      "ejemplo": "Ej: Lanzamiento de landing page concierge con video explicativo de 45 segundos y checkout en 1 clic.",
+      "benchmark": "Costo de construcción < $5,000 MXN o < 40 horas de desarrollo.",
+      "cita": "Eric Ries — El Método Lean Startup (Ch. 6, p. 120)",
+      "placeholder": "Descripción del experimento mínimo diseñado para mover la línea base..."
+    },
+    {
+      "key": "analisis_cohortes",
+      "type": "text",
+      "address": "agile_startup.aprendizaje.innovation_accounting.analisis_cohortes",
+      "prompt": "Comportamiento del indicador segmentado por grupos de clientes adquiridos en diferentes semanas/meses.",
+      "ejemplo": "Ej: Cohorte semana 1: 18% retención; Cohorte semana 2 (con nuevo onboarding): 31% retención.",
+      "benchmark": "Análisis longitudinal con retención de cohortes a 30 días >= 25%.",
+      "cita": "Eric Ries — El Método Lean Startup (Ch. 8, p. 182)",
+      "placeholder": "Comparativa de rendimiento entre cohortes sucesivas..."
+    },
+    {
+      "key": "umbral_decision_pivote",
+      "type": "text",
+      "address": "agile_startup.aprendizaje.innovation_accounting.umbral_decision_pivote",
+      "prompt": "Criterio estructurado de la junta de decisión para determinar si se pivota el modelo o se escala.",
+      "ejemplo": "Ej: Si tras 3 iteraciones el costo de adquisición supera el 40% del LTV, se pivota de B2C a B2B institucional.",
+      "benchmark": "Reunión de 'Pivote o Perseverar' programada cada 6 a 8 semanas con datos de cohortes.",
+      "cita": "Eric Ries — El Método Lean Startup (Ch. 8, p. 195)",
+      "placeholder": "Condición objetiva que dispara un pivote de canal, tecnología o segmento..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_innovation_accounting_3metrics",
+      "title": "Contabilidad de la Innovación (Innovation Accounting)",
+      "type": "benchmark",
+      "description": "Evaluación de tres niveles: métricas de referencia (Baseline), optimización de motor y decisión de pivote/perseverar.",
+      "source": "The Lean Startup — Ch. 8 p. 174"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Evaluación cuantitativa de hitos: Línea base, optimizaciones y análisis de cohortes.\n\n**Cómo se usa.** Está en el pilar **Tracción y Aprendizaje** del modelo *Agile Startup (Lean MVP)*. Se abre en `/agile_startup/innovation_accounting`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 4 campos: `metrica_linea_base`, `experimento_minimo_viable`, `analisis_cohortes`, `umbral_decision_pivote`.\n\n**Herramientas del módulo.** 1 caja(s): `box_innovation_accounting_3metrics`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `metrica_linea_base`\n\n**El prompt que usa:** Valor actual inicial del indicador antes de aplicar cualquier optimización (Innovation Accounting).\n\n**Ejemplo que muestra la guía:** Ej: Conversión actual de visitante a lead del 2.8% con tasa de rebote del 64%.\n\n**Benchmark / criterio de calidad:** Medición empírica objetiva con muestra mínima n >= 100 usuarios.\n\n**De dónde viene la guía:** Eric Ries — El Método Lean Startup (Ch. 8, p. 174)\n\n### `experimento_minimo_viable`\n\n**El prompt que usa:** Intervención o cambio más pequeño posible implementado para intentar mover la aguja de la métrica.\n\n**Ejemplo que muestra la guía:** Ej: Lanzamiento de landing page concierge con video explicativo de 45 segundos y checkout en 1 clic.\n\n**Benchmark / criterio de calidad:** Costo de construcción < $5,000 MXN o < 40 horas de desarrollo.\n\n**De dónde viene la guía:** Eric Ries — El Método Lean Startup (Ch. 6, p. 120)\n\n### `analisis_cohortes`\n\n**El prompt que usa:** Comportamiento del indicador segmentado por grupos de clientes adquiridos en diferentes semanas/meses.\n\n**Ejemplo que muestra la guía:** Ej: Cohorte semana 1: 18% retención; Cohorte semana 2 (con nuevo onboarding): 31% retención.\n\n**Benchmark / criterio de calidad:** Análisis longitudinal con retención de cohortes a 30 días >= 25%.\n\n**De dónde viene la guía:** Eric Ries — El Método Lean Startup (Ch. 8, p. 182)\n\n### `umbral_decision_pivote`\n\n**El prompt que usa:** Criterio estructurado de la junta de decisión para determinar si se pivota el modelo o se escala.\n\n**Ejemplo que muestra la guía:** Ej: Si tras 3 iteraciones el costo de adquisición supera el 40% del LTV, se pivota de B2C a B2B institucional.\n\n**Benchmark / criterio de calidad:** Reunión de 'Pivote o Perseverar' programada cada 6 a 8 semanas con datos de cohortes.\n\n**De dónde viene la guía:** Eric Ries — El Método Lean Startup (Ch. 8, p. 195)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Contabilidad de la Innovación (Innovation Accounting)\n\n`box_innovation_accounting_3metrics` · tipo **benchmark** · fuente: The Lean Startup — Ch. 8 p. 174\n\nEvaluación de tres niveles: métricas de referencia (Baseline), optimización de motor y decisión de pivote/perseverar."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Tracción y Aprendizaje** de *Agile Startup (Lean MVP)*. La justificación metodológica completa está en la página del modelo y en `docs/agile_startup.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `agile_startup.aprendizaje.innovation_accounting.metrica_linea_base` → tipo `text`\n- `agile_startup.aprendizaje.innovation_accounting.experimento_minimo_viable` → tipo `text`\n- `agile_startup.aprendizaje.innovation_accounting.analisis_cohortes` → tipo `text`\n- `agile_startup.aprendizaje.innovation_accounting.umbral_decision_pivote` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `agile_startup:innovation_accounting`): `box_innovation_accounting_3metrics`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

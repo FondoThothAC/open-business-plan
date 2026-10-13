@@ -1,0 +1,84 @@
+{
+  "id": "modulo.hoshin_kanri.pdca_hoshin",
+  "title": "Ciclo PDCA de Mejora",
+  "summary": "Planear, Hacer, Verificar y Actuar para institucionalizar aprendizajes.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "hoshin_kanri",
+  "moduleKey": "pdca_hoshin",
+  "pillarKey": "seguimiento_mejora",
+  "openUrl": "/hoshin-kanri/pdca_hoshin",
+  "fields": [
+    {
+      "key": "ciclo_planear_hacer",
+      "type": "text",
+      "address": "hoshin_kanri.seguimiento_mejora.pdca_hoshin.ciclo_planear_hacer",
+      "prompt": "Etapas Plan y Do del ciclo Deming: formulación de hipótesis operativas y ejecución piloto controlada.",
+      "ejemplo": "Ej: Plan: Estandarizar receta térmica en horno 1. Do: Procesar 50 lotes piloto registrando tiempos y temperaturas.",
+      "benchmark": "Ejecución piloto en ambiente controlado antes de despliegue general.",
+      "cita": "W. Edwards Deming — Out of the Crisis & Akao Hoshin Kanri",
+      "placeholder": "Plan de intervención operativa y ejecución piloto en piso..."
+    },
+    {
+      "key": "auditoria_verificar",
+      "type": "text",
+      "address": "hoshin_kanri.seguimiento_mejora.pdca_hoshin.auditoria_verificar",
+      "prompt": "Etapa Check: Comparación cuantitativa rigurosa entre el resultado obtenido y el objetivo planeado.",
+      "ejemplo": "Ej: De los 50 lotes, 48 cumplieron la textura deseada (96% de eficacia frente a la meta del 95%).",
+      "benchmark": "Auditorías de proceso periódicas documentadas con gráficos de control.",
+      "cita": "W. Edwards Deming — Out of the Crisis",
+      "placeholder": "Auditoría de resultados vs metas y detección de variaciones..."
+    },
+    {
+      "key": "estandarizacion_actuar",
+      "type": "text",
+      "address": "hoshin_kanri.seguimiento_mejora.pdca_hoshin.estandarizacion_actuar",
+      "prompt": "Etapa Act: Actualización de procedimientos operativos estándar (SOP), manuales de trabajo y capacitación.",
+      "ejemplo": "Ej: Registro del procedimiento SOP-COC-04 y capacitación del 100% de los operadores en el nuevo protocolo térmico.",
+      "benchmark": "Institucionalización del aprendizaje para evitar la reaparición del problema.",
+      "cita": "W. Edwards Deming — Out of the Crisis & Masaaki Imai Kaizen",
+      "placeholder": "Actualización de estándares operativos (SOP) y cierre del ciclo..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_pdca_ciclo_hoshin",
+      "title": "Ciclo de Mejora Continua PDCA Hoshin (Plan-Do-Check-Act)",
+      "type": "checklist",
+      "description": "Supervisión y control trimestral de contramedidas operativas y estandarización de procesos exitosos.",
+      "source": "Creating a Business Plan For Dummies (Hoshin Edition) — Ch. 8"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Planear, Hacer, Verificar y Actuar para institucionalizar aprendizajes.\n\n**Cómo se usa.** Está en el pilar **Seguimiento y Control Continuo** del modelo *Hoshin Kanri (Japón - Planificación Estratégica)*. Se abre en `/hoshin-kanri/pdca_hoshin`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 3 campos: `ciclo_planear_hacer`, `auditoria_verificar`, `estandarizacion_actuar`.\n\n**Herramientas del módulo.** 1 caja(s): `box_pdca_ciclo_hoshin`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `ciclo_planear_hacer`\n\n**El prompt que usa:** Etapas Plan y Do del ciclo Deming: formulación de hipótesis operativas y ejecución piloto controlada.\n\n**Ejemplo que muestra la guía:** Ej: Plan: Estandarizar receta térmica en horno 1. Do: Procesar 50 lotes piloto registrando tiempos y temperaturas.\n\n**Benchmark / criterio de calidad:** Ejecución piloto en ambiente controlado antes de despliegue general.\n\n**De dónde viene la guía:** W. Edwards Deming — Out of the Crisis & Akao Hoshin Kanri\n\n### `auditoria_verificar`\n\n**El prompt que usa:** Etapa Check: Comparación cuantitativa rigurosa entre el resultado obtenido y el objetivo planeado.\n\n**Ejemplo que muestra la guía:** Ej: De los 50 lotes, 48 cumplieron la textura deseada (96% de eficacia frente a la meta del 95%).\n\n**Benchmark / criterio de calidad:** Auditorías de proceso periódicas documentadas con gráficos de control.\n\n**De dónde viene la guía:** W. Edwards Deming — Out of the Crisis\n\n### `estandarizacion_actuar`\n\n**El prompt que usa:** Etapa Act: Actualización de procedimientos operativos estándar (SOP), manuales de trabajo y capacitación.\n\n**Ejemplo que muestra la guía:** Ej: Registro del procedimiento SOP-COC-04 y capacitación del 100% de los operadores en el nuevo protocolo térmico.\n\n**Benchmark / criterio de calidad:** Institucionalización del aprendizaje para evitar la reaparición del problema.\n\n**De dónde viene la guía:** W. Edwards Deming — Out of the Crisis & Masaaki Imai Kaizen"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Ciclo de Mejora Continua PDCA Hoshin (Plan-Do-Check-Act)\n\n`box_pdca_ciclo_hoshin` · tipo **checklist** · fuente: Creating a Business Plan For Dummies (Hoshin Edition) — Ch. 8\n\nSupervisión y control trimestral de contramedidas operativas y estandarización de procesos exitosos."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Seguimiento y Control Continuo** de *Hoshin Kanri (Japón - Planificación Estratégica)*. La justificación metodológica completa está en la página del modelo y en `docs/hoshin_kanri.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `hoshin_kanri.seguimiento_mejora.pdca_hoshin.ciclo_planear_hacer` → tipo `text`\n- `hoshin_kanri.seguimiento_mejora.pdca_hoshin.auditoria_verificar` → tipo `text`\n- `hoshin_kanri.seguimiento_mejora.pdca_hoshin.estandarizacion_actuar` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `hoshin_kanri:pdca_hoshin`): `box_pdca_ciclo_hoshin`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

@@ -1,0 +1,76 @@
+{
+  "id": "modulo.business.costos",
+  "title": "Costos y Gastos (OPEX)",
+  "summary": "Estructura de costos fijos y variables mensuales.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "business",
+  "moduleKey": "costos",
+  "pillarKey": "organizacion",
+  "openUrl": "/business/costos",
+  "fields": [
+    {
+      "key": "fijos",
+      "type": "text",
+      "address": "business.organizacion.costos.fijos",
+      "prompt": "Gastos operativos que no varían con el volumen. Deben guardar congruencia con el tamaño de planta y capital de `semilla.inversion_esperada`.",
+      "ejemplo": "Ej: \"Renta de nave industrial: $85K/mes. Nómina base administrativa: $240K/mes. Telecomunicaciones e IoT: $25K/mes. Total fijos: $350K/mes.\"",
+      "benchmark": "Costos fijos mensuales cubiertos por el margen de contribución del 50% de la capacidad.",
+      "cita": "Starting a Business QuickStart Guide (Ch. 10, p. 215)",
+      "placeholder": "Desglose mensual de rentas, nóminas administrativas, servicios y seguros..."
+    },
+    {
+      "key": "variables",
+      "type": "text",
+      "address": "business.organizacion.costos.variables",
+      "prompt": "Gastos que cambian según el número de clientes, reparaciones o servicios ejecutados.",
+      "ejemplo": "Ej: \"Refacciones y mangueras por servicio: $4,500 MXN. Consumibles y fluidos: $1,200 MXN. Comisión técnica: $1,500 MXN.\"",
+      "benchmark": "Costos variables unitarios perfectamente trazables a cada unidad vendida o servicio.",
+      "cita": "Creating a Business Plan For Dummies (Ch. 10, p. 210)",
+      "placeholder": "Costo por unidad de materia prima, comisiones, empaque y logística directa..."
+    },
+    {
+      "key": "unitario",
+      "type": "text",
+      "address": "business.organizacion.costos.unitario",
+      "prompt": "Cálculo del costo total de prestar una orden de servicio o unidad de producto comercializada.",
+      "ejemplo": "Ej: \"Costo fijo unitario prorrateado: $8,750 MXN. Costo variable directo: $7,200 MXN. Costo total unitario: $15,950 MXN por servicio industrial.\"",
+      "benchmark": "Objetivo de cumplimiento > 90% respecto al benchmark de industria.",
+      "cita": "Linda Pinson — Anatomy of a Business Plan (Ch. 2-7)",
+      "placeholder": "Ingresa los detalles metodológicos de (unitario)..."
+    }
+  ],
+  "boxes": [],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Estructura de costos fijos y variables mensuales.\n\n**Cómo se usa.** Está en el pilar **Organización y Finanzas** del modelo *Plan de Negocios Comercial*. Se abre en `/business/costos`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 3 campos: `fijos`, `variables`, `unitario`.\n\n**Herramientas del módulo.** Ninguna específica: se apoya en los campos de texto."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `fijos`\n\n**El prompt que usa:** Gastos operativos que no varían con el volumen. Deben guardar congruencia con el tamaño de planta y capital de `semilla.inversion_esperada`.\n\n**Ejemplo que muestra la guía:** Ej: \"Renta de nave industrial: $85K/mes. Nómina base administrativa: $240K/mes. Telecomunicaciones e IoT: $25K/mes. Total fijos: $350K/mes.\"\n\n**Benchmark / criterio de calidad:** Costos fijos mensuales cubiertos por el margen de contribución del 50% de la capacidad.\n\n**De dónde viene la guía:** Starting a Business QuickStart Guide (Ch. 10, p. 215)\n\n### `variables`\n\n**El prompt que usa:** Gastos que cambian según el número de clientes, reparaciones o servicios ejecutados.\n\n**Ejemplo que muestra la guía:** Ej: \"Refacciones y mangueras por servicio: $4,500 MXN. Consumibles y fluidos: $1,200 MXN. Comisión técnica: $1,500 MXN.\"\n\n**Benchmark / criterio de calidad:** Costos variables unitarios perfectamente trazables a cada unidad vendida o servicio.\n\n**De dónde viene la guía:** Creating a Business Plan For Dummies (Ch. 10, p. 210)\n\n### `unitario`\n\n**El prompt que usa:** Cálculo del costo total de prestar una orden de servicio o unidad de producto comercializada.\n\n**Ejemplo que muestra la guía:** Ej: \"Costo fijo unitario prorrateado: $8,750 MXN. Costo variable directo: $7,200 MXN. Costo total unitario: $15,950 MXN por servicio industrial.\"\n\n**Benchmark / criterio de calidad:** Objetivo de cumplimiento > 90% respecto al benchmark de industria.\n\n**De dónde viene la guía:** Linda Pinson — Anatomy of a Business Plan (Ch. 2-7)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "Sin cajas asociadas."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Organización y Finanzas** de *Plan de Negocios Comercial*. La justificación metodológica completa está en la página del modelo y en `docs/business.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `business.organizacion.costos.fijos` → tipo `text`\n- `business.organizacion.costos.variables` → tipo `text`\n- `business.organizacion.costos.unitario` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas:** `src/config/moduleBoxMap.js` no declara cajas para `business:costos`; la pantalla muestra solo los campos de texto.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

@@ -1,0 +1,94 @@
+{
+  "id": "modulo.technology_id.disrupcion_sustaining",
+  "title": "Disrupción vs Sostenimiento",
+  "summary": "Evaluación de trayectoria disruptiva (gama baja / nuevo mercado) y marco RPV organizacional.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "technology_id",
+  "moduleKey": "disrupcion_sustaining",
+  "pillarKey": "mercado_tecnologico",
+  "openUrl": "/technology_id/disrupcion_sustaining",
+  "fields": [
+    {
+      "key": "tipo_disrupcion_gama_baja_nuevo_mercado",
+      "type": "text",
+      "address": "technology_id.mercado_tecnologico.disrupcion_sustaining.tipo_disrupcion_gama_baja_nuevo_mercado",
+      "prompt": "Clasificación estratégica: Disrupción de Gama Baja (clientes sobre-servidos) o de Nuevo Mercado (no-consumidores).",
+      "ejemplo": "Ej: Disrupción de Gama Baja ofreciendo servicio MaaS con telemetría un 40% más accesible que los talleres tradicionales.",
+      "benchmark": "Modelo de negocio 'good enough' con estructura de costos significativamente inferior.",
+      "cita": "Clayton Christensen — The Innovator's Dilemma (Ch. 4-5, p. 98)",
+      "placeholder": "Clasifica si atacas a clientes sobre-servidos o atraes a no-consumidores..."
+    },
+    {
+      "key": "evaluacion_rpv_recursos_procesos_valores",
+      "type": "text",
+      "address": "technology_id.mercado_tecnologico.disrupcion_sustaining.evaluacion_rpv_recursos_procesos_valores",
+      "prompt": "Auditoría del marco RPV (Recursos, Procesos y Valores) de la organización frente al vector de innovación.",
+      "ejemplo": "Ej: Recursos: Algoritmos y bancos de prueba. Procesos: Soporte 24/7 en campo. Valores: Prioridad a contratos de servicio recurrente antes que venta única de fierros.",
+      "benchmark": "Alineación de incentivos y procesos con la naturaleza disruptiva del modelo.",
+      "cita": "Clayton Christensen — The Innovator's Dilemma (Ch. 8, p. 185)",
+      "placeholder": "Capacidades y restricciones en Recursos, Procesos y Valores..."
+    },
+    {
+      "key": "traccion_nichos_desatendidos",
+      "type": "text",
+      "address": "technology_id.mercado_tecnologico.disrupcion_sustaining.traccion_nichos_desatendidos",
+      "prompt": "Validación empírica en segmentos iniciales pequeños ignorados por los gigantes de la industria.",
+      "ejemplo": "Ej: 12 mineras medianas en Sonora y Sinaloa operando con el sistema piloto sin competencia directa de OEM globales.",
+      "benchmark": "Crecimiento sostenido en nicho marginal antes de escalar hacia el mercado masivo.",
+      "cita": "Clayton Christensen — The Innovator's Dilemma (Ch. 5, p. 112)",
+      "placeholder": "Métricas de adopción en mercados nicho o periféricos..."
+    },
+    {
+      "key": "defensa_competitiva_incumbentes",
+      "type": "text",
+      "address": "technology_id.mercado_tecnologico.disrupcion_sustaining.defensa_competitiva_incumbentes",
+      "prompt": "Asimetría de motivación: por qué a los líderes tradicionales les conviene ignorar o ceder este mercado.",
+      "ejemplo": "Ej: Los grandes fabricantes prefieren vender maquinaria nueva de $500k USD y descuidan el mantenimiento preventivo descentralizado.",
+      "benchmark": "Asimetría de márgenes que protege al innovador durante la etapa de consolidación.",
+      "cita": "Clayton Christensen — The Innovator's Dilemma (Ch. 4, p. 104)",
+      "placeholder": "Razón por la cual los incumbentes no reaccionarán agresivamente a corto plazo..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_sustaining_vs_disruptive",
+      "title": "Evaluación Disruptiva vs Sostenedora (Modelo RPV)",
+      "type": "checklist",
+      "description": "Checklist de clasificación tecnológica: gama baja (low-end) vs nuevo mercado, evaluando Recursos, Procesos y Valores.",
+      "source": "The Innovator's Dilemma — Ch. 4-5 p. 98"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Evaluación de trayectoria disruptiva (gama baja / nuevo mercado) y marco RPV organizacional.\n\n**Cómo se usa.** Está en el pilar **Mercado Científico y Transferencia** del modelo *Plan de Negocios de Base Tecnológica e Innovación (I+D)*. Se abre en `/technology_id/disrupcion_sustaining`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 4 campos: `tipo_disrupcion_gama_baja_nuevo_mercado`, `evaluacion_rpv_recursos_procesos_valores`, `traccion_nichos_desatendidos`, `defensa_competitiva_incumbentes`.\n\n**Herramientas del módulo.** 1 caja(s): `box_sustaining_vs_disruptive`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `tipo_disrupcion_gama_baja_nuevo_mercado`\n\n**El prompt que usa:** Clasificación estratégica: Disrupción de Gama Baja (clientes sobre-servidos) o de Nuevo Mercado (no-consumidores).\n\n**Ejemplo que muestra la guía:** Ej: Disrupción de Gama Baja ofreciendo servicio MaaS con telemetría un 40% más accesible que los talleres tradicionales.\n\n**Benchmark / criterio de calidad:** Modelo de negocio 'good enough' con estructura de costos significativamente inferior.\n\n**De dónde viene la guía:** Clayton Christensen — The Innovator's Dilemma (Ch. 4-5, p. 98)\n\n### `evaluacion_rpv_recursos_procesos_valores`\n\n**El prompt que usa:** Auditoría del marco RPV (Recursos, Procesos y Valores) de la organización frente al vector de innovación.\n\n**Ejemplo que muestra la guía:** Ej: Recursos: Algoritmos y bancos de prueba. Procesos: Soporte 24/7 en campo. Valores: Prioridad a contratos de servicio recurrente antes que venta única de fierros.\n\n**Benchmark / criterio de calidad:** Alineación de incentivos y procesos con la naturaleza disruptiva del modelo.\n\n**De dónde viene la guía:** Clayton Christensen — The Innovator's Dilemma (Ch. 8, p. 185)\n\n### `traccion_nichos_desatendidos`\n\n**El prompt que usa:** Validación empírica en segmentos iniciales pequeños ignorados por los gigantes de la industria.\n\n**Ejemplo que muestra la guía:** Ej: 12 mineras medianas en Sonora y Sinaloa operando con el sistema piloto sin competencia directa de OEM globales.\n\n**Benchmark / criterio de calidad:** Crecimiento sostenido en nicho marginal antes de escalar hacia el mercado masivo.\n\n**De dónde viene la guía:** Clayton Christensen — The Innovator's Dilemma (Ch. 5, p. 112)\n\n### `defensa_competitiva_incumbentes`\n\n**El prompt que usa:** Asimetría de motivación: por qué a los líderes tradicionales les conviene ignorar o ceder este mercado.\n\n**Ejemplo que muestra la guía:** Ej: Los grandes fabricantes prefieren vender maquinaria nueva de $500k USD y descuidan el mantenimiento preventivo descentralizado.\n\n**Benchmark / criterio de calidad:** Asimetría de márgenes que protege al innovador durante la etapa de consolidación.\n\n**De dónde viene la guía:** Clayton Christensen — The Innovator's Dilemma (Ch. 4, p. 104)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Evaluación Disruptiva vs Sostenedora (Modelo RPV)\n\n`box_sustaining_vs_disruptive` · tipo **checklist** · fuente: The Innovator's Dilemma — Ch. 4-5 p. 98\n\nChecklist de clasificación tecnológica: gama baja (low-end) vs nuevo mercado, evaluando Recursos, Procesos y Valores."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Mercado Científico y Transferencia** de *Plan de Negocios de Base Tecnológica e Innovación (I+D)*. La justificación metodológica completa está en la página del modelo y en `docs/technology_id.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `technology_id.mercado_tecnologico.disrupcion_sustaining.tipo_disrupcion_gama_baja_nuevo_mercado` → tipo `text`\n- `technology_id.mercado_tecnologico.disrupcion_sustaining.evaluacion_rpv_recursos_procesos_valores` → tipo `text`\n- `technology_id.mercado_tecnologico.disrupcion_sustaining.traccion_nichos_desatendidos` → tipo `text`\n- `technology_id.mercado_tecnologico.disrupcion_sustaining.defensa_competitiva_incumbentes` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `technology_id:disrupcion_sustaining`): `box_sustaining_vs_disruptive`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

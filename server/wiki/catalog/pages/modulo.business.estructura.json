@@ -1,0 +1,86 @@
+{
+  "id": "modulo.business.estructura",
+  "title": "Estructura Organizativa",
+  "summary": "Organigrama y descripción de puestos clave.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "business",
+  "moduleKey": "estructura",
+  "pillarKey": "organizacion",
+  "openUrl": "/business/estructura",
+  "fields": [
+    {
+      "key": "organigrama_visual",
+      "type": "text",
+      "address": "business.organizacion.estructura.organigrama_visual",
+      "prompt": "Código Mermaid.js que genera el organigrama del equipo jerárquicamente.",
+      "ejemplo": "Ej: \"graph TD → CEO → Dir. Financiero + Dir. Comercial → cada uno con sus subordinados\"",
+      "benchmark": "Estructura organizacional escalable representada en sintaxis Mermaid.js.",
+      "cita": "Linda Pinson — Anatomy of a Business Plan (Ch. 6, p. 148)",
+      "placeholder": "Código Mermaid (graph TD) con la jerarquía institucional de puestos..."
+    },
+    {
+      "key": "puestos",
+      "type": "text",
+      "address": "business.organizacion.estructura.puestos",
+      "prompt": "Describe los perfiles, responsabilidades críticas, requisitos de experiencia y jerarquía de los puestos clave de la organización.",
+      "ejemplo": "Ej: Gerente Técnico (Ing. Mecatrónico, 8+ años en minería), Técnico Hidráulico Senior (Certificación IFPS), Ejecutivo de Cuenta B2B.",
+      "benchmark": "Modelo Atómico de 3 Áreas de Empresas Cuánticas (Finanzas, Operativo, Administrativo).",
+      "cita": "Empresas Cuánticas (Fondo Thoth AC, Regla 13) & Anatomy of a Business Plan (Ch. 5)",
+      "placeholder": "Perfiles de puesto, responsabilidades y competencias..."
+    },
+    {
+      "key": "funciones",
+      "type": "text",
+      "address": "business.organizacion.estructura.funciones",
+      "prompt": "Tabla de responsabilidades de cada puesto clave. Qué hace, a quién reporta, KPIs.",
+      "ejemplo": "Ej: \"Director Comercial: Captación de clientes, gestión de embudo, reporta a CEO. KPI: 50 clientes nuevos/mes.\"",
+      "benchmark": "Manual de funciones con metas individuales (OKRs) y líneas de reporte claras.",
+      "cita": "Ken Colwell — Starting a Business QuickStart Guide (Ch. 9, p. 190)",
+      "placeholder": "Responsabilidades críticas de cada cargo y entregables esperados..."
+    },
+    {
+      "key": "puestos_lista",
+      "type": "text",
+      "address": "business.organizacion.estructura.puestos_lista",
+      "prompt": "Matriz consolidada de capital humano y costo patronal acorde al tamaño de la organización presupuestada en la semilla.",
+      "ejemplo": "Ej: \"Estructura de 14 especialistas: 1 Gerente General ($65K), 2 Líderes Técnicos ($45K c/u), 6 Técnicos Hidráulicos ($22K c/u), 3 Operadores IoT ($20K c/u), 2 Administrativos ($18K c/u). Costo patronal total: $480K/mes.\"",
+      "benchmark": "Objetivo de cumplimiento > 90% respecto al benchmark de industria.",
+      "cita": "Linda Pinson — Anatomy of a Business Plan (Ch. 2-7)",
+      "placeholder": "Ingresa los detalles metodológicos de (puestos_lista)..."
+    }
+  ],
+  "boxes": [],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Organigrama y descripción de puestos clave.\n\n**Cómo se usa.** Está en el pilar **Organización y Finanzas** del modelo *Plan de Negocios Comercial*. Se abre en `/business/estructura`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 4 campos: `organigrama_visual`, `puestos`, `funciones`, `puestos_lista`.\n\n**Herramientas del módulo.** Ninguna específica: se apoya en los campos de texto."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `organigrama_visual`\n\n**El prompt que usa:** Código Mermaid.js que genera el organigrama del equipo jerárquicamente.\n\n**Ejemplo que muestra la guía:** Ej: \"graph TD → CEO → Dir. Financiero + Dir. Comercial → cada uno con sus subordinados\"\n\n**Benchmark / criterio de calidad:** Estructura organizacional escalable representada en sintaxis Mermaid.js.\n\n**De dónde viene la guía:** Linda Pinson — Anatomy of a Business Plan (Ch. 6, p. 148)\n\n### `puestos`\n\n**El prompt que usa:** Describe los perfiles, responsabilidades críticas, requisitos de experiencia y jerarquía de los puestos clave de la organización.\n\n**Ejemplo que muestra la guía:** Ej: Gerente Técnico (Ing. Mecatrónico, 8+ años en minería), Técnico Hidráulico Senior (Certificación IFPS), Ejecutivo de Cuenta B2B.\n\n**Benchmark / criterio de calidad:** Modelo Atómico de 3 Áreas de Empresas Cuánticas (Finanzas, Operativo, Administrativo).\n\n**De dónde viene la guía:** Empresas Cuánticas (Fondo Thoth AC, Regla 13) & Anatomy of a Business Plan (Ch. 5)\n\n### `funciones`\n\n**El prompt que usa:** Tabla de responsabilidades de cada puesto clave. Qué hace, a quién reporta, KPIs.\n\n**Ejemplo que muestra la guía:** Ej: \"Director Comercial: Captación de clientes, gestión de embudo, reporta a CEO. KPI: 50 clientes nuevos/mes.\"\n\n**Benchmark / criterio de calidad:** Manual de funciones con metas individuales (OKRs) y líneas de reporte claras.\n\n**De dónde viene la guía:** Ken Colwell — Starting a Business QuickStart Guide (Ch. 9, p. 190)\n\n### `puestos_lista`\n\n**El prompt que usa:** Matriz consolidada de capital humano y costo patronal acorde al tamaño de la organización presupuestada en la semilla.\n\n**Ejemplo que muestra la guía:** Ej: \"Estructura de 14 especialistas: 1 Gerente General ($65K), 2 Líderes Técnicos ($45K c/u), 6 Técnicos Hidráulicos ($22K c/u), 3 Operadores IoT ($20K c/u), 2 Administrativos ($18K c/u). Costo patronal total: $480K/mes.\"\n\n**Benchmark / criterio de calidad:** Objetivo de cumplimiento > 90% respecto al benchmark de industria.\n\n**De dónde viene la guía:** Linda Pinson — Anatomy of a Business Plan (Ch. 2-7)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "Sin cajas asociadas."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Organización y Finanzas** de *Plan de Negocios Comercial*. La justificación metodológica completa está en la página del modelo y en `docs/business.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `business.organizacion.estructura.organigrama_visual` → tipo `text`\n- `business.organizacion.estructura.puestos` → tipo `text`\n- `business.organizacion.estructura.funciones` → tipo `text`\n- `business.organizacion.estructura.puestos_lista` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas:** `src/config/moduleBoxMap.js` no declara cajas para `business:estructura`; la pantalla muestra solo los campos de texto.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

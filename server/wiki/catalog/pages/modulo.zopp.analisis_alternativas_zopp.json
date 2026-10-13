@@ -1,0 +1,84 @@
+{
+  "id": "modulo.zopp.analisis_alternativas_zopp",
+  "title": "Análisis de Alternativas",
+  "summary": "Evaluación comparativa de estrategias según viabilidad técnica y financiera.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "zopp",
+  "moduleKey": "analisis_alternativas_zopp",
+  "pillarKey": "planificacion_mpp",
+  "openUrl": "/zopp/analisis_alternativas_zopp",
+  "fields": [
+    {
+      "key": "alternativas_identificadas",
+      "type": "text",
+      "address": "zopp.planificacion_mpp.analisis_alternativas_zopp.alternativas_identificadas",
+      "prompt": "Descripción de las diferentes ramas y opciones de solución derivadas del árbol de objetivos.",
+      "ejemplo": "Ej: Opción 1: Construcción de planta propia; Opción 2: Alianza de maquila TIF; Opción 3: Distribución directa.",
+      "benchmark": "Mínimo 2 a 3 alternativas viables contrastadas con criterios objetivos.",
+      "cita": "Metodología ZOPP GTZ (p. 42)",
+      "placeholder": "Alternativas estratégicas identificadas para el proyecto..."
+    },
+    {
+      "key": "criterios_evaluacion",
+      "type": "text",
+      "address": "zopp.planificacion_mpp.analisis_alternativas_zopp.criterios_evaluacion",
+      "prompt": "Factores de ponderación cuantitativa y cualitativa para evaluar cada alternativa identificada.",
+      "ejemplo": "Ej: Costo financiero (30%), tiempo de implementación (25%), impacto social (25%) y riesgo operativo (20%).",
+      "benchmark": "Escala ponderada multicriterio del 1 al 5 por cada factor clave.",
+      "cita": "Metodología ZOPP GTZ (p. 45)",
+      "placeholder": "Criterios y pesos asignados a cada factor de decisión..."
+    },
+    {
+      "key": "alternativa_seleccionada",
+      "type": "text",
+      "address": "zopp.planificacion_mpp.analisis_alternativas_zopp.alternativa_seleccionada",
+      "prompt": "Fundamentación de la alternativa ganadora seleccionada y justificación de descarte de las demás opciones.",
+      "ejemplo": "Ej: Se selecciona la Opción 2 (Maquila TIF + Marca Propia) por maximizar el VAN y reducir el tiempo de salida al mercado.",
+      "benchmark": "Justificación económica, técnica y ambiental documentada ante el comité evaluador.",
+      "cita": "Metodología ZOPP GTZ (p. 52)",
+      "placeholder": "Fundamentación técnica de la alternativa elegida..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_matriz_alternativas_zopp",
+      "title": "Matriz de Análisis y Selección de Alternativas ZOPP",
+      "type": "matrix",
+      "description": "Evaluación multicriterio para seleccionar la rama óptima del árbol de objetivos antes de la implementación.",
+      "source": "Manual ZOPP GTZ — p. 42"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Evaluación comparativa de estrategias según viabilidad técnica y financiera.\n\n**Cómo se usa.** Está en el pilar **Planificación Estratégica (MPP)** del modelo *ZOPP / Marco Lógico (Enfoque Alemán-BID)*. Se abre en `/zopp/analisis_alternativas_zopp`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 3 campos: `alternativas_identificadas`, `criterios_evaluacion`, `alternativa_seleccionada`.\n\n**Herramientas del módulo.** 1 caja(s): `box_matriz_alternativas_zopp`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `alternativas_identificadas`\n\n**El prompt que usa:** Descripción de las diferentes ramas y opciones de solución derivadas del árbol de objetivos.\n\n**Ejemplo que muestra la guía:** Ej: Opción 1: Construcción de planta propia; Opción 2: Alianza de maquila TIF; Opción 3: Distribución directa.\n\n**Benchmark / criterio de calidad:** Mínimo 2 a 3 alternativas viables contrastadas con criterios objetivos.\n\n**De dónde viene la guía:** Metodología ZOPP GTZ (p. 42)\n\n### `criterios_evaluacion`\n\n**El prompt que usa:** Factores de ponderación cuantitativa y cualitativa para evaluar cada alternativa identificada.\n\n**Ejemplo que muestra la guía:** Ej: Costo financiero (30%), tiempo de implementación (25%), impacto social (25%) y riesgo operativo (20%).\n\n**Benchmark / criterio de calidad:** Escala ponderada multicriterio del 1 al 5 por cada factor clave.\n\n**De dónde viene la guía:** Metodología ZOPP GTZ (p. 45)\n\n### `alternativa_seleccionada`\n\n**El prompt que usa:** Fundamentación de la alternativa ganadora seleccionada y justificación de descarte de las demás opciones.\n\n**Ejemplo que muestra la guía:** Ej: Se selecciona la Opción 2 (Maquila TIF + Marca Propia) por maximizar el VAN y reducir el tiempo de salida al mercado.\n\n**Benchmark / criterio de calidad:** Justificación económica, técnica y ambiental documentada ante el comité evaluador.\n\n**De dónde viene la guía:** Metodología ZOPP GTZ (p. 52)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Matriz de Análisis y Selección de Alternativas ZOPP\n\n`box_matriz_alternativas_zopp` · tipo **matrix** · fuente: Manual ZOPP GTZ — p. 42\n\nEvaluación multicriterio para seleccionar la rama óptima del árbol de objetivos antes de la implementación."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Planificación Estratégica (MPP)** de *ZOPP / Marco Lógico (Enfoque Alemán-BID)*. La justificación metodológica completa está en la página del modelo y en `docs/zopp.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `zopp.planificacion_mpp.analisis_alternativas_zopp.alternativas_identificadas` → tipo `text`\n- `zopp.planificacion_mpp.analisis_alternativas_zopp.criterios_evaluacion` → tipo `text`\n- `zopp.planificacion_mpp.analisis_alternativas_zopp.alternativa_seleccionada` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `zopp:analisis_alternativas_zopp`): `box_matriz_alternativas_zopp`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

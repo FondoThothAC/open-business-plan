@@ -1,0 +1,76 @@
+{
+  "id": "modulo.business.ubicacion",
+  "title": "Localización y Ubicación",
+  "summary": "Macro y micro localización del negocio.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "business",
+  "moduleKey": "ubicacion",
+  "pillarKey": "tecnico",
+  "openUrl": "/business/ubicacion",
+  "fields": [
+    {
+      "key": "macro",
+      "type": "text",
+      "address": "business.tecnico.ubicacion.macro",
+      "prompt": "Análisis de la región, estado o ciudad elegida. Justifica con datos económicos y logísticos.",
+      "ejemplo": "Ej: \"Hermosillo, Sonora: PIB estatal de $430B MXN. Hub de servicios financieros del noroeste. Aeropuerto internacional.\"",
+      "benchmark": "Selección de entidad/ciudad con PIB per cápita superior a la media y estabilidad logística.",
+      "cita": "Linda Pinson — Anatomy of a Business Plan (Ch. 5, p. 115)",
+      "placeholder": "Justificación de ciudad o estado: infraestructura, conectividad y mercado..."
+    },
+    {
+      "key": "micro",
+      "type": "text",
+      "address": "business.tecnico.ubicacion.micro",
+      "prompt": "Ubicación exacta dentro de la ciudad. Colonia, calle, accesibilidad, competencia cercana.",
+      "ejemplo": "Ej: \"Col. Villa de Seris, Blvd. Rosales #245. A 5 min del centro financiero. Renta: $12K/mes. Estacionamiento para 8 autos.\"",
+      "benchmark": "Ubicación con vías de acceso principales, transporte público y servicios garantizados.",
+      "cita": "Starting a Business QuickStart Guide (Ch. 6, p. 132)",
+      "placeholder": "Dirección física, colonia, tipo de zona (industrial/comercial) y acceso..."
+    },
+    {
+      "key": "local",
+      "type": "text",
+      "address": "business.tecnico.ubicacion.local",
+      "prompt": "Distribución física del espacio de trabajo. Metros cuadrados, zonas y mobiliario.",
+      "ejemplo": "Ej: \"Oficina de 80m²: Recepción (15m²), 2 oficinas privadas (12m² c/u), sala de juntas (20m²), coworking (21m²).\"",
+      "benchmark": "Distribución de planta calculada según metros cuadrados requeridos por estación de trabajo.",
+      "cita": "Creating a Business Plan For Dummies (Ch. 8, p. 165)",
+      "placeholder": "Superficie total (m²), áreas de producción, oficinas, almacén y acceso..."
+    }
+  ],
+  "boxes": [],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Macro y micro localización del negocio.\n\n**Cómo se usa.** Está en el pilar **Estudio Técnico de Producción** del modelo *Plan de Negocios Comercial*. Se abre en `/business/ubicacion`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 3 campos: `macro`, `micro`, `local`.\n\n**Herramientas del módulo.** Ninguna específica: se apoya en los campos de texto."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `macro`\n\n**El prompt que usa:** Análisis de la región, estado o ciudad elegida. Justifica con datos económicos y logísticos.\n\n**Ejemplo que muestra la guía:** Ej: \"Hermosillo, Sonora: PIB estatal de $430B MXN. Hub de servicios financieros del noroeste. Aeropuerto internacional.\"\n\n**Benchmark / criterio de calidad:** Selección de entidad/ciudad con PIB per cápita superior a la media y estabilidad logística.\n\n**De dónde viene la guía:** Linda Pinson — Anatomy of a Business Plan (Ch. 5, p. 115)\n\n### `micro`\n\n**El prompt que usa:** Ubicación exacta dentro de la ciudad. Colonia, calle, accesibilidad, competencia cercana.\n\n**Ejemplo que muestra la guía:** Ej: \"Col. Villa de Seris, Blvd. Rosales #245. A 5 min del centro financiero. Renta: $12K/mes. Estacionamiento para 8 autos.\"\n\n**Benchmark / criterio de calidad:** Ubicación con vías de acceso principales, transporte público y servicios garantizados.\n\n**De dónde viene la guía:** Starting a Business QuickStart Guide (Ch. 6, p. 132)\n\n### `local`\n\n**El prompt que usa:** Distribución física del espacio de trabajo. Metros cuadrados, zonas y mobiliario.\n\n**Ejemplo que muestra la guía:** Ej: \"Oficina de 80m²: Recepción (15m²), 2 oficinas privadas (12m² c/u), sala de juntas (20m²), coworking (21m²).\"\n\n**Benchmark / criterio de calidad:** Distribución de planta calculada según metros cuadrados requeridos por estación de trabajo.\n\n**De dónde viene la guía:** Creating a Business Plan For Dummies (Ch. 8, p. 165)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "Sin cajas asociadas."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Estudio Técnico de Producción** de *Plan de Negocios Comercial*. La justificación metodológica completa está en la página del modelo y en `docs/business.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `business.tecnico.ubicacion.macro` → tipo `text`\n- `business.tecnico.ubicacion.micro` → tipo `text`\n- `business.tecnico.ubicacion.local` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas:** `src/config/moduleBoxMap.js` no declara cajas para `business:ubicacion`; la pantalla muestra solo los campos de texto.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

@@ -1,0 +1,96 @@
+{
+  "id": "modulo.business.operativa",
+  "title": "Eficiencia Operativa",
+  "summary": "Métricas de desempeño: OTD, Rotación, DSO, DPO y Ciclo de Efectivo.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "business",
+  "moduleKey": "operativa",
+  "pillarKey": "tecnico",
+  "openUrl": "/business/operativa",
+  "fields": [
+    {
+      "key": "otd",
+      "type": "text",
+      "address": "business.tecnico.operativa.otd",
+      "prompt": "On-Time Delivery: Porcentaje de entregas o servicios ejecutados a tiempo respecto al compromiso.",
+      "ejemplo": "Ej: \"Meta OTD: 98.5% en contratos mineros Tier 1. Monitoreo semanal mediante sistema ERP.\"",
+      "benchmark": "On-Time Delivery (OTD) objetivo > 95% de entregas a tiempo y en forma.",
+      "cita": "Starting a Business QuickStart Guide (Ch. 6, p. 152)",
+      "placeholder": "Métrica de entregas a tiempo y acciones correctivas ante demoras..."
+    },
+    {
+      "key": "rotacion",
+      "type": "text",
+      "address": "business.tecnico.operativa.rotacion",
+      "prompt": "Rotación de Inventarios: Veces que se renueva el stock en un periodo determinado.",
+      "ejemplo": "Ej: \"Rotación objetivo: 6.0 veces al año (60 días de permanencia promedio en almacén).\"",
+      "benchmark": "Rotación de inventarios acorde al sector (alta en perecederos > 24x, manufactura > 6x).",
+      "cita": "Linda Pinson — Anatomy of a Business Plan (Ch. 7, p. 195)",
+      "placeholder": "Frecuencia con la que se renueva el inventario en el periodo..."
+    },
+    {
+      "key": "dso",
+      "type": "text",
+      "address": "business.tecnico.operativa.dso",
+      "prompt": "Days Sales Outstanding: Días promedio de cobro a clientes corporativos.",
+      "ejemplo": "Ej: \"DSO objetivo: 45 días para mineras y 30 días para contratistas locales.\"",
+      "benchmark": "Días de Ventas Pendientes de Cobro (DSO) < 45 días.",
+      "cita": "The Nature of Value (Ch. 4, p. 82)",
+      "placeholder": "Plazo promedio real en el que los clientes pagan sus cuentas por cobrar..."
+    },
+    {
+      "key": "dpo",
+      "type": "text",
+      "address": "business.tecnico.operativa.dpo",
+      "prompt": "Days Payable Outstanding: Días promedio de pago a proveedores clave.",
+      "ejemplo": "Ej: \"DPO negociado: 60 días con fabricantes OEM de mangueras y conexiones.\"",
+      "benchmark": "Días de Cuentas por Pagar a Proveedores (DPO) negociados a > 45 días (DPO >= DSO).",
+      "cita": "The Nature of Value (Ch. 4, p. 85)",
+      "placeholder": "Tiempo promedio otorgado por proveedores para liquidar facturas..."
+    },
+    {
+      "key": "ccc",
+      "type": "text",
+      "address": "business.tecnico.operativa.ccc",
+      "prompt": "Cash Conversion Cycle (Ciclo de Conversión de Efectivo): Días que toma convertir inventario en flujo de caja.",
+      "ejemplo": "Ej: \"CCC = Días Inventario (60) + DSO (45) - DPO (60) = 45 días de requerimiento de capital de trabajo.\"",
+      "benchmark": "Ciclo de Conversión de Efectivo (CCC = Días Inventario + DSO - DPO) < 30 días o negativo.",
+      "cita": "The Nature of Value (Ch. 4, p. 90)",
+      "placeholder": "Tiempo que tarda un peso invertido en producción en regresar como cobro..."
+    }
+  ],
+  "boxes": [],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Métricas de desempeño: OTD, Rotación, DSO, DPO y Ciclo de Efectivo.\n\n**Cómo se usa.** Está en el pilar **Estudio Técnico de Producción** del modelo *Plan de Negocios Comercial*. Se abre en `/business/operativa`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 5 campos: `otd`, `rotacion`, `dso`, `dpo`, `ccc`.\n\n**Herramientas del módulo.** Ninguna específica: se apoya en los campos de texto."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `otd`\n\n**El prompt que usa:** On-Time Delivery: Porcentaje de entregas o servicios ejecutados a tiempo respecto al compromiso.\n\n**Ejemplo que muestra la guía:** Ej: \"Meta OTD: 98.5% en contratos mineros Tier 1. Monitoreo semanal mediante sistema ERP.\"\n\n**Benchmark / criterio de calidad:** On-Time Delivery (OTD) objetivo > 95% de entregas a tiempo y en forma.\n\n**De dónde viene la guía:** Starting a Business QuickStart Guide (Ch. 6, p. 152)\n\n### `rotacion`\n\n**El prompt que usa:** Rotación de Inventarios: Veces que se renueva el stock en un periodo determinado.\n\n**Ejemplo que muestra la guía:** Ej: \"Rotación objetivo: 6.0 veces al año (60 días de permanencia promedio en almacén).\"\n\n**Benchmark / criterio de calidad:** Rotación de inventarios acorde al sector (alta en perecederos > 24x, manufactura > 6x).\n\n**De dónde viene la guía:** Linda Pinson — Anatomy of a Business Plan (Ch. 7, p. 195)\n\n### `dso`\n\n**El prompt que usa:** Days Sales Outstanding: Días promedio de cobro a clientes corporativos.\n\n**Ejemplo que muestra la guía:** Ej: \"DSO objetivo: 45 días para mineras y 30 días para contratistas locales.\"\n\n**Benchmark / criterio de calidad:** Días de Ventas Pendientes de Cobro (DSO) < 45 días.\n\n**De dónde viene la guía:** The Nature of Value (Ch. 4, p. 82)\n\n### `dpo`\n\n**El prompt que usa:** Days Payable Outstanding: Días promedio de pago a proveedores clave.\n\n**Ejemplo que muestra la guía:** Ej: \"DPO negociado: 60 días con fabricantes OEM de mangueras y conexiones.\"\n\n**Benchmark / criterio de calidad:** Días de Cuentas por Pagar a Proveedores (DPO) negociados a > 45 días (DPO >= DSO).\n\n**De dónde viene la guía:** The Nature of Value (Ch. 4, p. 85)\n\n### `ccc`\n\n**El prompt que usa:** Cash Conversion Cycle (Ciclo de Conversión de Efectivo): Días que toma convertir inventario en flujo de caja.\n\n**Ejemplo que muestra la guía:** Ej: \"CCC = Días Inventario (60) + DSO (45) - DPO (60) = 45 días de requerimiento de capital de trabajo.\"\n\n**Benchmark / criterio de calidad:** Ciclo de Conversión de Efectivo (CCC = Días Inventario + DSO - DPO) < 30 días o negativo.\n\n**De dónde viene la guía:** The Nature of Value (Ch. 4, p. 90)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "Sin cajas asociadas."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Estudio Técnico de Producción** de *Plan de Negocios Comercial*. La justificación metodológica completa está en la página del modelo y en `docs/business.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `business.tecnico.operativa.otd` → tipo `text`\n- `business.tecnico.operativa.rotacion` → tipo `text`\n- `business.tecnico.operativa.dso` → tipo `text`\n- `business.tecnico.operativa.dpo` → tipo `text`\n- `business.tecnico.operativa.ccc` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas:** `src/config/moduleBoxMap.js` no declara cajas para `business:operativa`; la pantalla muestra solo los campos de texto.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

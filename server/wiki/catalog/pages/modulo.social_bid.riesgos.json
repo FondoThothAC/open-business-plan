@@ -1,0 +1,84 @@
+{
+  "id": "modulo.social_bid.riesgos",
+  "title": "Matriz de Riesgos",
+  "summary": "Identificación, probabilidad y mitigación de riesgos sociales/ambientales.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "social_bid",
+  "moduleKey": "riesgos",
+  "pillarKey": "ejecucion",
+  "openUrl": "/social_bid/riesgos",
+  "fields": [
+    {
+      "key": "riesgos_identificados",
+      "type": "text",
+      "address": "social_bid.ejecucion.riesgos.riesgos_identificados",
+      "prompt": "Posibles eventos que amenacen el proyecto (Sociales, Políticos, etc.).",
+      "ejemplo": "Ej: Robo de equipo de cómputo en la escuela comunitaria.",
+      "benchmark": "Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.",
+      "cita": "Metodología del Marco Lógico (BID / CEPAL / PM4R)",
+      "placeholder": "Define el componente del proyecto social (riesgos_identificados)..."
+    },
+    {
+      "key": "plan_mitigacion",
+      "type": "text",
+      "address": "social_bid.ejecucion.riesgos.plan_mitigacion",
+      "prompt": "Qué se hará para prevenir o reaccionar a esos riesgos.",
+      "ejemplo": "Ej: Instalar protecciones de herrería y crear comité de vigilancia vecinal.",
+      "benchmark": "Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.",
+      "cita": "Metodología del Marco Lógico (BID / CEPAL / PM4R)",
+      "placeholder": "Define el componente del proyecto social (plan_mitigacion)..."
+    },
+    {
+      "key": "matriz_probabilidad",
+      "type": "text",
+      "address": "social_bid.ejecucion.riesgos.matriz_probabilidad",
+      "prompt": "Clasificación de riesgos (Impacto x Probabilidad).",
+      "ejemplo": "Ej: Robo (Probabilidad Alta, Impacto Alto) -> Prioridad Crítica.",
+      "benchmark": "Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.",
+      "cita": "Metodología del Marco Lógico (BID / CEPAL / PM4R)",
+      "placeholder": "Define el componente del proyecto social (matriz_probabilidad)..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_zopp_mpp_4x4",
+      "title": "Matriz de Marco Lógico 4x4 (BID / ILPES)",
+      "type": "matrix",
+      "description": "Estructura lógica de 16 cuadrantes: Fin, Propósito, Componentes y Actividades con indicadores SMART y supuestos.",
+      "source": "Manual BID / PM4R de Proyectos Sociales — p. 58"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Identificación, probabilidad y mitigación de riesgos sociales/ambientales.\n\n**Cómo se usa.** Está en el pilar **Ejecución y Gobernanza (PM4R)** del modelo *Proyecto Social (Metodología BID)*. Se abre en `/social_bid/riesgos`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 3 campos: `riesgos_identificados`, `plan_mitigacion`, `matriz_probabilidad`.\n\n**Herramientas del módulo.** 1 caja(s): `box_zopp_mpp_4x4`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `riesgos_identificados`\n\n**El prompt que usa:** Posibles eventos que amenacen el proyecto (Sociales, Políticos, etc.).\n\n**Ejemplo que muestra la guía:** Ej: Robo de equipo de cómputo en la escuela comunitaria.\n\n**Benchmark / criterio de calidad:** Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.\n\n**De dónde viene la guía:** Metodología del Marco Lógico (BID / CEPAL / PM4R)\n\n### `plan_mitigacion`\n\n**El prompt que usa:** Qué se hará para prevenir o reaccionar a esos riesgos.\n\n**Ejemplo que muestra la guía:** Ej: Instalar protecciones de herrería y crear comité de vigilancia vecinal.\n\n**Benchmark / criterio de calidad:** Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.\n\n**De dónde viene la guía:** Metodología del Marco Lógico (BID / CEPAL / PM4R)\n\n### `matriz_probabilidad`\n\n**El prompt que usa:** Clasificación de riesgos (Impacto x Probabilidad).\n\n**Ejemplo que muestra la guía:** Ej: Robo (Probabilidad Alta, Impacto Alto) -> Prioridad Crítica.\n\n**Benchmark / criterio de calidad:** Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.\n\n**De dónde viene la guía:** Metodología del Marco Lógico (BID / CEPAL / PM4R)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Matriz de Marco Lógico 4x4 (BID / ILPES)\n\n`box_zopp_mpp_4x4` · tipo **matrix** · fuente: Manual BID / PM4R de Proyectos Sociales — p. 58\n\nEstructura lógica de 16 cuadrantes: Fin, Propósito, Componentes y Actividades con indicadores SMART y supuestos."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Ejecución y Gobernanza (PM4R)** de *Proyecto Social (Metodología BID)*. La justificación metodológica completa está en la página del modelo y en `docs/social_bid.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `social_bid.ejecucion.riesgos.riesgos_identificados` → tipo `text`\n- `social_bid.ejecucion.riesgos.plan_mitigacion` → tipo `text`\n- `social_bid.ejecucion.riesgos.matriz_probabilidad` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `social_bid:riesgos`): `box_zopp_mpp_4x4`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

@@ -45,6 +45,8 @@ function guideFor(projectType, fieldKey) {
 let totalFields = 0;
 let md = `# Tabla Módulo → Textbox → Prompt — 12 Modelos
 
+> ⚠️ **NO EDITAR A MANO.** Este archivo se regenera con \`node scripts/generate-tabla-modulo-prompt.js\`.
+> Cualquier cambio manual se pierde en la siguiente regeneración. La wiki lo consume como anexo.
 > **Generado:** ${new Date().toISOString()} — **Fuente:** \`src/config/frameworks.js\` + \`src/lib/field_guides.js\` + \`src/config/moduleBoxMap.js\`
 > **Textboxes totales:** se calculan abajo · Cada campo ya está **dividido en 5 textboxes** en \`PromptEditor.jsx\` (Instrucción / Ejemplo / Benchmark / Cita / Placeholder) — no es un solo textbox.
 

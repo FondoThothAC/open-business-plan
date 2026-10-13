@@ -1,0 +1,84 @@
+{
+  "id": "modulo.hoshin_kanri.catchball_nemawashi",
+  "title": "Catchball & Nemawashi",
+  "summary": "Proceso bidireccional de consenso y negociación de recursos entre niveles.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "hoshin_kanri",
+  "moduleKey": "catchball_nemawashi",
+  "pillarKey": "alineacion_ejecucion",
+  "openUrl": "/hoshin-kanri/catchball_nemawashi",
+  "fields": [
+    {
+      "key": "proceso_catchball",
+      "type": "text",
+      "address": "hoshin_kanri.alineacion_ejecucion.catchball_nemawashi.proceso_catchball",
+      "prompt": "Mecanismo bidireccional 'lanzar y atrapar la pelota' entre alta dirección y mandos medios para acordar metas y recursos.",
+      "ejemplo": "Ej: Dirección propone reducir mermas 50%; operaciones responde que requiere $400k en mantenimiento para comprometer la meta.",
+      "benchmark": "Negociación participativa de metas antes de congelar el plan anual Hoshin.",
+      "cita": "Yoji Akao — Hoshin Kanri (Ch. 3, p. 55)",
+      "placeholder": "Flujo de propuestas de dirección, retroalimentación de piso y consenso..."
+    },
+    {
+      "key": "acuerdos_nemawashi",
+      "type": "text",
+      "address": "hoshin_kanri.alineacion_ejecucion.catchball_nemawashi.acuerdos_nemawashi",
+      "prompt": "Proceso informal de consulta previa (Nemawashi: 'preparar las raíces') para crear consenso antes de reuniones formales.",
+      "ejemplo": "Ej: Sesiones uno a uno con líderes sindicales y jefes de turno para alinear la implementación de turnos rotativos.",
+      "benchmark": "Cero sorpresas o bloqueos políticos durante la junta general de aprobación.",
+      "cita": "Jeffrey Liker — Las Claves del Éxito de Toyota (TPS)",
+      "placeholder": "Consultas informales previas, inquietudes disipadas y acuerdos preliminares..."
+    },
+    {
+      "key": "retroalimentacion_vertical",
+      "type": "text",
+      "address": "hoshin_kanri.alineacion_ejecucion.catchball_nemawashi.retroalimentacion_vertical",
+      "prompt": "Canal formal para que los colaboradores de primera línea reporten impedimentos del sistema a la dirección.",
+      "ejemplo": "Ej: Sistema diario de paradas Andon y buzón de kaizen donde el 80% de sugerencias se resuelven en < 48 horas.",
+      "benchmark": "Tiempo medio de respuesta de la dirección a reportes de piso < 7 días.",
+      "cita": "Yoji Akao — Hoshin Kanri: Policy Deployment",
+      "placeholder": "Canales de retroalimentación de la base operativa hacia la cúpula directiva..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_catchball_nemawashi",
+      "title": "Protocolo de Negociación Catchball y Consenso Nemawashi",
+      "type": "checklist",
+      "description": "Checklist de diálogo bidireccional y negociación de recursos entre directivos y líderes de equipo.",
+      "source": "Creating a Business Plan For Dummies (Hoshin Edition) — Ch. 8; Akao"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Proceso bidireccional de consenso y negociación de recursos entre niveles.\n\n**Cómo se usa.** Está en el pilar **Alineación Estratégica** del modelo *Hoshin Kanri (Japón - Planificación Estratégica)*. Se abre en `/hoshin-kanri/catchball_nemawashi`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 3 campos: `proceso_catchball`, `acuerdos_nemawashi`, `retroalimentacion_vertical`.\n\n**Herramientas del módulo.** 1 caja(s): `box_catchball_nemawashi`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `proceso_catchball`\n\n**El prompt que usa:** Mecanismo bidireccional 'lanzar y atrapar la pelota' entre alta dirección y mandos medios para acordar metas y recursos.\n\n**Ejemplo que muestra la guía:** Ej: Dirección propone reducir mermas 50%; operaciones responde que requiere $400k en mantenimiento para comprometer la meta.\n\n**Benchmark / criterio de calidad:** Negociación participativa de metas antes de congelar el plan anual Hoshin.\n\n**De dónde viene la guía:** Yoji Akao — Hoshin Kanri (Ch. 3, p. 55)\n\n### `acuerdos_nemawashi`\n\n**El prompt que usa:** Proceso informal de consulta previa (Nemawashi: 'preparar las raíces') para crear consenso antes de reuniones formales.\n\n**Ejemplo que muestra la guía:** Ej: Sesiones uno a uno con líderes sindicales y jefes de turno para alinear la implementación de turnos rotativos.\n\n**Benchmark / criterio de calidad:** Cero sorpresas o bloqueos políticos durante la junta general de aprobación.\n\n**De dónde viene la guía:** Jeffrey Liker — Las Claves del Éxito de Toyota (TPS)\n\n### `retroalimentacion_vertical`\n\n**El prompt que usa:** Canal formal para que los colaboradores de primera línea reporten impedimentos del sistema a la dirección.\n\n**Ejemplo que muestra la guía:** Ej: Sistema diario de paradas Andon y buzón de kaizen donde el 80% de sugerencias se resuelven en < 48 horas.\n\n**Benchmark / criterio de calidad:** Tiempo medio de respuesta de la dirección a reportes de piso < 7 días.\n\n**De dónde viene la guía:** Yoji Akao — Hoshin Kanri: Policy Deployment"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Protocolo de Negociación Catchball y Consenso Nemawashi\n\n`box_catchball_nemawashi` · tipo **checklist** · fuente: Creating a Business Plan For Dummies (Hoshin Edition) — Ch. 8; Akao\n\nChecklist de diálogo bidireccional y negociación de recursos entre directivos y líderes de equipo."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Alineación Estratégica** de *Hoshin Kanri (Japón - Planificación Estratégica)*. La justificación metodológica completa está en la página del modelo y en `docs/hoshin_kanri.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `hoshin_kanri.alineacion_ejecucion.catchball_nemawashi.proceso_catchball` → tipo `text`\n- `hoshin_kanri.alineacion_ejecucion.catchball_nemawashi.acuerdos_nemawashi` → tipo `text`\n- `hoshin_kanri.alineacion_ejecucion.catchball_nemawashi.retroalimentacion_vertical` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `hoshin_kanri:catchball_nemawashi`): `box_catchball_nemawashi`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

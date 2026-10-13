@@ -1,0 +1,94 @@
+{
+  "id": "modulo.agile_startup.experimentos_tdd",
+  "title": "Experimentos Lean TDD",
+  "summary": "Diseño riguroso de pruebas con criterios de falsificación, muestra y duración.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "agile_startup",
+  "moduleKey": "experimentos_tdd",
+  "pillarKey": "experimento",
+  "openUrl": "/agile_startup/experimentos_tdd",
+  "fields": [
+    {
+      "key": "hipotesis_h1_nula",
+      "type": "text",
+      "address": "agile_startup.experimento.experimentos_tdd.hipotesis_h1_nula",
+      "prompt": "Formulación de la hipótesis de valor/crecimiento (H1) frente a la hipótesis nula (H0) de no impacto.",
+      "ejemplo": "Ej: H1: 'Al menos 15 de 50 restaurantes adoptarán el pedido recurrente si ofrecemos 0% merma'. H0: 'Adopción < 5%'.",
+      "benchmark": "Hipótesis refutable con variable independiente y dependiente claramente aisladas.",
+      "cita": "Eric Ries — El Método Lean Startup (Ch. 6, p. 114) & Carl Schramm Burn the Business Plan",
+      "placeholder": "Define H1 (efecto esperado) vs H0 (hipótesis nula a refutar)..."
+    },
+    {
+      "key": "criterio_falsificacion",
+      "type": "text",
+      "address": "agile_startup.experimento.experimentos_tdd.criterio_falsificacion",
+      "prompt": "Umbral cuantitativo que demuestra de forma inequívoca que la hipótesis es falsa.",
+      "ejemplo": "Ej: Si menos del 20% de los usuarios de prueba completan la orden en 7 días, la hipótesis queda descartada.",
+      "benchmark": "Regla de falsificación binaria sin ambigüedades antes de lanzar el experimento.",
+      "cita": "Eric Ries — El Método Lean Startup (Ch. 4, p. 77)",
+      "placeholder": "Porcentaje o métrica exacta que invalida la hipótesis..."
+    },
+    {
+      "key": "tamano_muestra_minima",
+      "type": "text",
+      "address": "agile_startup.experimento.experimentos_tdd.tamano_muestra_minima",
+      "prompt": "Número mínimo de sujetos o clientes necesarios para alcanzar significancia estadística en la prueba.",
+      "ejemplo": "Ej: Muestra mínima de 40 clientes B2B HORECA con poder de decisión de compra.",
+      "benchmark": "Muestra suficiente para descartar sesgos aleatorios (n >= 30 para pruebas cuantitativas).",
+      "cita": "Diferenças entre Plano de Negócio e MVP (Marino, p. 7)",
+      "placeholder": "Número de prospectos, usuarios o transacciones requeridas..."
+    },
+    {
+      "key": "duracion_experimento_dias",
+      "type": "text",
+      "address": "agile_startup.experimento.experimentos_tdd.duracion_experimento_dias",
+      "prompt": "Tiempo límite (timebox) en días asignado para ejecutar la prueba y recopilar datos.",
+      "ejemplo": "Ej: Ciclo estricto de 14 días naturales para medir conversión y activación.",
+      "benchmark": "Experimentos ágiles timeboxed entre 7 y 21 días para evitar el análisis-parálisis.",
+      "cita": "Ash Maurya — Running Lean & Lean Startup Ch. 6",
+      "placeholder": "Número de días de ejecución del experimento..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_experimento_lean_tdd",
+      "title": "Protocolo de Experimento Científico Lean TDD",
+      "type": "checklist",
+      "description": "Diseño riguroso de hipótesis H1/H0, criterio cuantitativo de falsación, tamaño muestral y duración.",
+      "source": "The Lean Startup & Burn the Business Plan — Ch. 6 p. 114; p. 67"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Diseño riguroso de pruebas con criterios de falsificación, muestra y duración.\n\n**Cómo se usa.** Está en el pilar **Diseño de Experimentos y MVP** del modelo *Agile Startup (Lean MVP)*. Se abre en `/agile_startup/experimentos_tdd`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 4 campos: `hipotesis_h1_nula`, `criterio_falsificacion`, `tamano_muestra_minima`, `duracion_experimento_dias`.\n\n**Herramientas del módulo.** 1 caja(s): `box_experimento_lean_tdd`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `hipotesis_h1_nula`\n\n**El prompt que usa:** Formulación de la hipótesis de valor/crecimiento (H1) frente a la hipótesis nula (H0) de no impacto.\n\n**Ejemplo que muestra la guía:** Ej: H1: 'Al menos 15 de 50 restaurantes adoptarán el pedido recurrente si ofrecemos 0% merma'. H0: 'Adopción < 5%'.\n\n**Benchmark / criterio de calidad:** Hipótesis refutable con variable independiente y dependiente claramente aisladas.\n\n**De dónde viene la guía:** Eric Ries — El Método Lean Startup (Ch. 6, p. 114) & Carl Schramm Burn the Business Plan\n\n### `criterio_falsificacion`\n\n**El prompt que usa:** Umbral cuantitativo que demuestra de forma inequívoca que la hipótesis es falsa.\n\n**Ejemplo que muestra la guía:** Ej: Si menos del 20% de los usuarios de prueba completan la orden en 7 días, la hipótesis queda descartada.\n\n**Benchmark / criterio de calidad:** Regla de falsificación binaria sin ambigüedades antes de lanzar el experimento.\n\n**De dónde viene la guía:** Eric Ries — El Método Lean Startup (Ch. 4, p. 77)\n\n### `tamano_muestra_minima`\n\n**El prompt que usa:** Número mínimo de sujetos o clientes necesarios para alcanzar significancia estadística en la prueba.\n\n**Ejemplo que muestra la guía:** Ej: Muestra mínima de 40 clientes B2B HORECA con poder de decisión de compra.\n\n**Benchmark / criterio de calidad:** Muestra suficiente para descartar sesgos aleatorios (n >= 30 para pruebas cuantitativas).\n\n**De dónde viene la guía:** Diferenças entre Plano de Negócio e MVP (Marino, p. 7)\n\n### `duracion_experimento_dias`\n\n**El prompt que usa:** Tiempo límite (timebox) en días asignado para ejecutar la prueba y recopilar datos.\n\n**Ejemplo que muestra la guía:** Ej: Ciclo estricto de 14 días naturales para medir conversión y activación.\n\n**Benchmark / criterio de calidad:** Experimentos ágiles timeboxed entre 7 y 21 días para evitar el análisis-parálisis.\n\n**De dónde viene la guía:** Ash Maurya — Running Lean & Lean Startup Ch. 6"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Protocolo de Experimento Científico Lean TDD\n\n`box_experimento_lean_tdd` · tipo **checklist** · fuente: The Lean Startup & Burn the Business Plan — Ch. 6 p. 114; p. 67\n\nDiseño riguroso de hipótesis H1/H0, criterio cuantitativo de falsación, tamaño muestral y duración."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Diseño de Experimentos y MVP** de *Agile Startup (Lean MVP)*. La justificación metodológica completa está en la página del modelo y en `docs/agile_startup.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `agile_startup.experimento.experimentos_tdd.hipotesis_h1_nula` → tipo `text`\n- `agile_startup.experimento.experimentos_tdd.criterio_falsificacion` → tipo `text`\n- `agile_startup.experimento.experimentos_tdd.tamano_muestra_minima` → tipo `text`\n- `agile_startup.experimento.experimentos_tdd.duracion_experimento_dias` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `agile_startup:experimentos_tdd`): `box_experimento_lean_tdd`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

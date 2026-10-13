@@ -1,0 +1,76 @@
+{
+  "id": "modulo.social_bid.monitoreo",
+  "title": "Sistema de Monitoreo",
+  "summary": "Medios de verificación y línea base.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "social_bid",
+  "moduleKey": "monitoreo",
+  "pillarKey": "diseno",
+  "openUrl": "/social_bid/monitoreo",
+  "fields": [
+    {
+      "key": "medios_verificacion",
+      "type": "text",
+      "address": "social_bid.diseno.monitoreo.medios_verificacion",
+      "prompt": "Dónde se buscarán los datos para comprobar los indicadores.",
+      "ejemplo": "Ej: Listas de asistencia, registros de calificaciones, recibos de compra.",
+      "benchmark": "Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.",
+      "cita": "Metodología del Marco Lógico (BID / CEPAL / PM4R)",
+      "placeholder": "Define el componente del proyecto social (medios_verificacion)..."
+    },
+    {
+      "key": "linea_base",
+      "type": "text",
+      "address": "social_bid.diseno.monitoreo.linea_base",
+      "prompt": "El estado del indicador antes del proyecto.",
+      "ejemplo": "Ej: Actualmente 0 jóvenes capacitados. Deserción actual: 25%.",
+      "benchmark": "Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.",
+      "cita": "Metodología del Marco Lógico (BID / CEPAL / PM4R)",
+      "placeholder": "Define el componente del proyecto social (linea_base)..."
+    },
+    {
+      "key": "frecuencia_medicion",
+      "type": "text",
+      "address": "social_bid.diseno.monitoreo.frecuencia_medicion",
+      "prompt": "Cada cuánto se evaluarán los indicadores.",
+      "ejemplo": "Ej: Asistencia: Semanal. Inserción laboral: Trimestral posterior al egreso.",
+      "benchmark": "Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.",
+      "cita": "Metodología del Marco Lógico (BID / CEPAL / PM4R)",
+      "placeholder": "Define el componente del proyecto social (frecuencia_medicion)..."
+    }
+  ],
+  "boxes": [],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Medios de verificación y línea base.\n\n**Cómo se usa.** Está en el pilar **Diseño del Proyecto (MML)** del modelo *Proyecto Social (Metodología BID)*. Se abre en `/social_bid/monitoreo`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 3 campos: `medios_verificacion`, `linea_base`, `frecuencia_medicion`.\n\n**Herramientas del módulo.** Ninguna específica: se apoya en los campos de texto."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `medios_verificacion`\n\n**El prompt que usa:** Dónde se buscarán los datos para comprobar los indicadores.\n\n**Ejemplo que muestra la guía:** Ej: Listas de asistencia, registros de calificaciones, recibos de compra.\n\n**Benchmark / criterio de calidad:** Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.\n\n**De dónde viene la guía:** Metodología del Marco Lógico (BID / CEPAL / PM4R)\n\n### `linea_base`\n\n**El prompt que usa:** El estado del indicador antes del proyecto.\n\n**Ejemplo que muestra la guía:** Ej: Actualmente 0 jóvenes capacitados. Deserción actual: 25%.\n\n**Benchmark / criterio de calidad:** Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.\n\n**De dónde viene la guía:** Metodología del Marco Lógico (BID / CEPAL / PM4R)\n\n### `frecuencia_medicion`\n\n**El prompt que usa:** Cada cuánto se evaluarán los indicadores.\n\n**Ejemplo que muestra la guía:** Ej: Asistencia: Semanal. Inserción laboral: Trimestral posterior al egreso.\n\n**Benchmark / criterio de calidad:** Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.\n\n**De dónde viene la guía:** Metodología del Marco Lógico (BID / CEPAL / PM4R)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "Sin cajas asociadas."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Diseño del Proyecto (MML)** de *Proyecto Social (Metodología BID)*. La justificación metodológica completa está en la página del modelo y en `docs/social_bid.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `social_bid.diseno.monitoreo.medios_verificacion` → tipo `text`\n- `social_bid.diseno.monitoreo.linea_base` → tipo `text`\n- `social_bid.diseno.monitoreo.frecuencia_medicion` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas:** `src/config/moduleBoxMap.js` no declara cajas para `social_bid:monitoreo`; la pantalla muestra solo los campos de texto.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}
