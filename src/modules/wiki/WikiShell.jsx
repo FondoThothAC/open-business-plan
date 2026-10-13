@@ -7,7 +7,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { ArrowLeft, BookOpen, Menu, X, Sparkles, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, BookOpen, Menu, X, ShieldCheck } from 'lucide-react';
 import { useWikiCatalog } from './useWikiCatalog';
 import WikiTree from './WikiTree';
 import WikiPage from './WikiPage';
@@ -30,7 +30,6 @@ export default function WikiShell() {
 
   const {
     tree,
-    pagesIndex,
     userRole,
     activePageId,
     activePage,
@@ -57,57 +56,45 @@ export default function WikiShell() {
   }, [targetId, activePageId, selectPage]);
 
   return (
-    <div className="wiki-shell" style={{ display: 'flex', flexDirection: 'column', height: '100vh', width: '100vw', overflow: 'hidden', background: 'var(--bg-main, #0f172a)', color: 'var(--text-primary, #f8fafc)' }}>
+    <div className="wiki-shell">
       {/* Barra Superior Institucional */}
-      <header
-        className="wiki-header"
-        style={{
-          height: '56px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '0 1.25rem',
-          borderBottom: '1px solid var(--border-color, rgba(255,255,255,0.08))',
-          background: 'var(--bg-panel, rgba(15, 23, 42, 0.95))',
-          backdropFilter: 'blur(8px)',
-          zIndex: 30
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+      <header className="wiki-header" role="banner">
+        <div className="wiki-header-left" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
           {/* Botón de Menú Móvil */}
           <button
             type="button"
             className="wiki-mobile-toggle"
             onClick={() => setMobileTreeOpen(!mobileTreeOpen)}
-            style={{
-              display: 'none',
-              background: 'none',
-              border: 'none',
-              color: 'inherit',
-              cursor: 'pointer',
-              padding: '0.25rem'
-            }}
-            aria-label="Abrir menú de navegación"
+            aria-label={mobileTreeOpen ? 'Cerrar menú de navegación' : 'Abrir menú de navegación'}
+            aria-expanded={mobileTreeOpen}
           >
             {mobileTreeOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
 
           {/* Logo y Título */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', cursor: 'pointer' }} onClick={() => handleSelectPage('modelo.business')}>
-            <div style={{ width: '28px', height: '28px', borderRadius: '6px', background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <BookOpen size={16} color="#fff" />
+          <div
+            className="wiki-header-brand"
+            role="button"
+            tabIndex={0}
+            onClick={() => handleSelectPage('modelo.business')}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') handleSelectPage('modelo.business');
+            }}
+          >
+            <div className="wiki-brand-icon">
+              <BookOpen size={16} />
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <span style={{ fontSize: '0.92rem', fontWeight: 700, letterSpacing: '-0.01em' }}>Wiki de Software OBP</span>
-              <span style={{ fontSize: '0.68rem', opacity: 0.5 }}>Fondo Thoth AC · Centro de Conocimiento Canónico</span>
+            <div className="wiki-brand-text">
+              <span className="wiki-brand-title">Wiki de Software OBP</span>
+              <span className="wiki-brand-sub">Fondo Thoth AC · Centro de Conocimiento Canónico</span>
             </div>
           </div>
         </div>
 
         {/* Acciones de Cabecera */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+        <div className="wiki-header-actions">
           {userRole === 'superadmin' && (
-            <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.72rem', padding: '3px 8px', borderRadius: '4px', background: 'rgba(16, 185, 129, 0.15)', color: '#34d399', fontWeight: 600 }}>
+            <span className="wiki-badge-admin" title="Visualizando arquitectura técnica completa">
               <ShieldCheck size={12} />
               <span>Modo Superadmin</span>
             </span>
@@ -118,19 +105,7 @@ export default function WikiShell() {
             type="button"
             onClick={() => navigate('/semilla')}
             className="btn btn-secondary"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.4rem',
-              padding: '0.4rem 0.8rem',
-              borderRadius: '6px',
-              border: '1px solid var(--border-color, rgba(255,255,255,0.15))',
-              background: 'rgba(255, 255, 255, 0.05)',
-              color: 'inherit',
-              fontSize: '0.82rem',
-              fontWeight: 500,
-              cursor: 'pointer'
-            }}
+            aria-label="Volver a la edición del plan de negocios"
           >
             <ArrowLeft size={14} />
             <span>Volver al Plan</span>
@@ -139,19 +114,9 @@ export default function WikiShell() {
       </header>
 
       {/* Cuerpo del Layout (3 Columnas) */}
-      <div className="wiki-body" style={{ display: 'flex', flex: 1, overflow: 'hidden', position: 'relative' }}>
+      <div className="wiki-body">
         {/* Columna Izquierda: Árbol de Navegación */}
-        <div
-          className={`wiki-sidebar-left ${mobileTreeOpen ? 'open' : ''}`}
-          style={{
-            width: '320px',
-            borderRight: '1px solid var(--border-color, rgba(255,255,255,0.08))',
-            background: 'var(--bg-panel, rgba(15, 23, 42, 0.6))',
-            display: 'flex',
-            flexDirection: 'column',
-            flexShrink: 0
-          }}
-        >
+        <div className={`wiki-sidebar-left ${mobileTreeOpen ? 'open' : ''}`}>
           {isLoadingTree ? (
             <div style={{ padding: '2rem', textAlign: 'center', opacity: 0.5, fontSize: '0.85rem' }}>
               Cargando árbol de modelos...
@@ -167,14 +132,7 @@ export default function WikiShell() {
         </div>
 
         {/* Columna Central: Contenido de la Ficha Activa */}
-        <main
-          className="wiki-main-content"
-          style={{
-            flex: 1,
-            overflowY: 'auto',
-            background: 'var(--bg-main, #0f172a)'
-          }}
-        >
+        <main className="wiki-main-content" role="main">
           <WikiPage
             page={activePage}
             isLoading={isLoadingPage}
@@ -183,17 +141,7 @@ export default function WikiShell() {
         </main>
 
         {/* Columna Derecha: Tabla de Contenidos (TOC) */}
-        <div
-          className="wiki-sidebar-right"
-          style={{
-            width: '240px',
-            borderLeft: '1px solid var(--border-color, rgba(255,255,255,0.08))',
-            background: 'var(--bg-panel, rgba(15, 23, 42, 0.4))',
-            display: 'flex',
-            flexDirection: 'column',
-            flexShrink: 0
-          }}
-        >
+        <div className="wiki-sidebar-right">
           <WikiToc sections={activePage?.sections || []} />
         </div>
       </div>

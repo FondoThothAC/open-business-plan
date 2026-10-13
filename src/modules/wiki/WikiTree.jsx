@@ -2,7 +2,7 @@
  * @file WikiTree.jsx
  * @description Árbol de navegación jerárquico para el Wiki de Software OBP.
  * Proporciona un único nivel de acordeones colapsables, buscador reactivo en tiempo real
- * y resaltado de la página activa.
+ * y resaltado de la página activa cumpliendo estándares de accesibilidad WCAG.
  */
 
 import React, { useState, useMemo } from 'react';
@@ -32,8 +32,7 @@ export default function WikiTree({ tree = [], activePageId, onSelectPage, userRo
   const [searchTerm, setSearchTerm] = useState('');
   const [expandedNodes, setExpandedNodes] = useState(() => {
     // Expandir el primer modelo por defecto para inicio rápido
-    const initial = new Set(['modelos', 'modelo.business']);
-    return initial;
+    return new Set(['modelos', 'modelo.business']);
   });
 
   const toggleExpand = (nodeId) => {
@@ -104,6 +103,8 @@ export default function WikiTree({ tree = [], activePageId, onSelectPage, userRo
         <div
           role="button"
           tabIndex={0}
+          aria-current={isSelected ? 'page' : undefined}
+          aria-expanded={hasChildren ? isExpanded : undefined}
           onClick={() => {
             if (node.pageId) {
               onSelectPage(node.pageId);
@@ -119,38 +120,17 @@ export default function WikiTree({ tree = [], activePageId, onSelectPage, userRo
             }
           }}
           className={`wiki-tree-item ${isSelected ? 'active' : ''}`}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            padding: '0.4rem 0.6rem',
-            borderRadius: '6px',
-            cursor: 'pointer',
-            fontSize: depth === 0 ? '0.88rem' : '0.82rem',
-            fontWeight: depth === 0 || isSelected ? 600 : 400,
-            color: isSelected ? 'var(--accent-color, #6366f1)' : 'var(--text-primary)',
-            background: isSelected ? 'rgba(99, 102, 241, 0.12)' : 'transparent',
-            transition: 'background 0.15s ease',
-            userSelect: 'none'
-          }}
         >
           {hasChildren ? (
             <button
               type="button"
+              className="wiki-expand-btn"
               onClick={(e) => {
                 e.stopPropagation();
                 toggleExpand(node.id);
               }}
-              style={{
-                background: 'none',
-                border: 'none',
-                padding: 0,
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                color: 'inherit'
-              }}
-              aria-label={isExpanded ? 'Colapsar rama' : 'Expandir rama'}
+              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex', color: 'inherit' }}
+              aria-label={isExpanded ? `Colapsar ${node.title}` : `Expandir ${node.title}`}
             >
               {isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
             </button>
@@ -179,32 +159,23 @@ export default function WikiTree({ tree = [], activePageId, onSelectPage, userRo
   };
 
   return (
-    <aside className="wiki-tree" style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+    <nav className="wiki-tree" aria-label="Navegación de modelos y módulos del plan" style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
       {/* Buscador reactivo */}
-      <div style={{ padding: '0.75rem 1rem', borderBottom: '1px solid var(--border-color, rgba(255,255,255,0.08))' }}>
-        <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-          <Search size={14} style={{ position: 'absolute', left: '0.65rem', opacity: 0.5, pointerEvents: 'none' }} />
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Buscar módulo, modelo o API..."
-            style={{
-              width: '100%',
-              padding: '0.45rem 0.65rem 0.45rem 2rem',
-              borderRadius: '6px',
-              border: '1px solid var(--border-color, rgba(255,255,255,0.15))',
-              background: 'var(--bg-input, rgba(0,0,0,0.2))',
-              color: 'var(--text-primary, #fff)',
-              fontSize: '0.82rem',
-              outline: 'none'
-            }}
-          />
-        </div>
+      <div className="wiki-search-box">
+        <Search size={14} className="wiki-search-icon" />
+        <input
+          id="wiki-search-input"
+          type="text"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          placeholder="Buscar módulo, modelo o API..."
+          className="wiki-search-input"
+          aria-label="Buscar módulo, modelo o API en el catálogo"
+        />
       </div>
 
       {/* Lista del árbol scrollable */}
-      <div style={{ flex: 1, overflowY: 'auto', padding: '0.75rem 0.5rem' }}>
+      <div className="wiki-tree-scroll">
         {filteredTree.length > 0 ? (
           filteredTree.map((rootNode) => renderNode(rootNode, 0))
         ) : (
@@ -215,10 +186,10 @@ export default function WikiTree({ tree = [], activePageId, onSelectPage, userRo
       </div>
 
       {/* Pie del árbol con indicador de rol */}
-      <div style={{ padding: '0.65rem 1rem', borderTop: '1px solid var(--border-color, rgba(255,255,255,0.08))', fontSize: '0.75rem', opacity: 0.7, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <div className="wiki-tree-footer">
         <span>Audiencia: <strong>{userRole === 'superadmin' ? 'Técnico / Admin' : 'Estándar'}</strong></span>
         {userRole === 'superadmin' && <Sparkles size={12} style={{ color: '#10b981' }} />}
       </div>
-    </aside>
+    </nav>
   );
 }

@@ -1,7 +1,8 @@
 /**
  * @file WikiMarkdown.jsx
  * @description Renderizador de Markdown de alto rendimiento para el Wiki de Software OBP.
- * Integra ReactMarkdown con remarkGfm y delega diagramas Mermaid interactivos a MermaidViewer.
+ * Integra ReactMarkdown con remarkGfm, soporte para alertas documentales
+ * y delegación de diagramas Mermaid interactivos a MermaidViewer.
  */
 
 import React from 'react';
@@ -39,11 +40,36 @@ export default function WikiMarkdown({ content, className = '' }) {
               );
             }
 
+            // Si es un bloque de fórmula matemática
+            if (!inline && (language === 'math' || language === 'latex' || language === 'formula')) {
+              return (
+                <div className="wiki-formula-box">
+                  <code>{children}</code>
+                </div>
+              );
+            }
+
             // Bloque de código normal o inline
             return (
               <code className={codeClass} {...props}>
                 {children}
               </code>
+            );
+          },
+          blockquote({ children }) {
+            return (
+              <blockquote
+                className="wiki-alert-box"
+                style={{
+                  borderLeft: '4px solid var(--accent-color, #6366f1)',
+                  background: 'rgba(99, 102, 241, 0.08)',
+                  padding: '0.75rem 1rem',
+                  borderRadius: '0 8px 8px 0',
+                  margin: '1.25rem 0'
+                }}
+              >
+                {children}
+              </blockquote>
             );
           },
           table({ children }) {

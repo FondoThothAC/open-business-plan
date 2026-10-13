@@ -28,7 +28,7 @@ export default function WikiToc({ sections = [], activeSectionId }) {
   };
 
   return (
-    <nav className="wiki-toc" style={{ padding: '1rem', width: '220px', flexShrink: 0, overflowY: 'auto' }}>
+    <nav className="wiki-toc" aria-label="Tabla de contenidos de la página" style={{ padding: '1rem', width: '100%', boxSizing: 'border-box' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', opacity: 0.6, marginBottom: '0.85rem' }}>
         <AlignLeft size={13} />
         <span>En esta página</span>
@@ -42,6 +42,7 @@ export default function WikiToc({ sections = [], activeSectionId }) {
               <button
                 type="button"
                 onClick={() => scrollToSection(sec.id)}
+                aria-label={`Saltar a la sección ${sec.title}`}
                 style={{
                   background: 'none',
                   border: 'none',
