@@ -52,6 +52,8 @@ import { createReviewInvite, getReviewInvite, addReviewComment, listReviewCommen
 import { inegiToken, respondeSiSinToken } from './inegiCredentials.js';
 import { AI_PROVIDER_HOSTS } from './aiEndpointAllowlist.js';
 import { writeJsonAtomic } from '../src/lib/serverUtils/atomicJson.js';
+import { assertSafeExternalUrl, perteneceADominio } from './urlSafety.js';
+import { createThrottledQueue } from './serialQueue.js';
 
 function documentForExternalReview(data) {
   const copy = JSON.parse(JSON.stringify(data || {}));
@@ -69,30 +71,32 @@ function documentForExternalReview(data) {
 // ─────────────────────────────────────────────────────────
 //  Helper Seguro para Búsqueda DuckDuckGo (Control de Tasa y Backoff)
 // ─────────────────────────────────────────────────────────
-let ultimaPeticionDdg = 0;
+// [B6] ultimaPeticionDdg se jubila: el espaciamiento lo administra la cola serial.
 const INTERVALO_MINIMO_DDG_MS = 1200;
+const colaDdg = createThrottledQueue({ intervalMs: INTERVALO_MINIMO_DDG_MS });
 
 export async function safeDdgSearch(query, reintentos = 2) {
-  const ahora = Date.now();
-  const tiempoDesdeUltima = ahora - ultimaPeticionDdg;
-  if (tiempoDesdeUltima < INTERVALO_MINIMO_DDG_MS) {
-    await new Promise(resolve => setTimeout(resolve, INTERVALO_MINIMO_DDG_MS - tiempoDesdeUltima));
-  }
-  ultimaPeticionDdg = Date.now();
-
-  try {
-    const respuesta = await ddgSearch(query);
-    return respuesta.results || [];
-  } catch (error) {
-    if (reintentos > 0 && error.message?.includes('too quickly')) {
-      console.warn(`[DDG Seguro] Límite de tasa detectado para "${query}". Pausando 2500ms... (${reintentos} reintentos restantes)`);
-      await new Promise(resolve => setTimeout(resolve, 2500));
-      ultimaPeticionDdg = Date.now();
-      return safeDdgSearch(query, reintentos - 1);
+  // El guard anterior media Date.now() - ultimaPeticionDdg y dormia la diferencia, pero K
+  // llamadas concurrentes leian el mismo timestamp, dormian lo mismo, despertaban juntas y
+  // las K estampaban la hora: solo espaciaba llamadas SECUEnciales (ojo: la ficha decia que
+  // el timestamp se asignaba despues del await, y no era asi: se asignaba antes). La cola
+  // reserva el turno por encadenamiento de promesas. Se conserva firma y contrato: devuelve
+  // un ARREGLO (respuesta.results || []), con su retry ante "too quickly", porque tiene 10
+  // call sites (2242, 2283, 2326, 2345, 2385, 2404, 2449, 2464, 2579, 3358 y enrich).
+  return colaDdg.run(async () => {
+    try {
+      const respuesta = await ddgSearch(query);
+      return respuesta.results || [];
+    } catch (error) {
+      if (reintentos > 0 && error.message?.includes('too quickly')) {
+        console.warn(`[DDG Seguro] L\u00edmite de tasa detectado para "${query}". Pausando 2500ms... (${reintentos} reintentos restantes)`);
+        await new Promise(resolve => setTimeout(resolve, 2500));
+        return safeDdgSearch(query, reintentos - 1);
+      }
+      console.warn(`[DDG Seguro] B\u00fasqueda no disponible para "${query}":`, error.message);
+      return [];
     }
-    console.warn(`[DDG Seguro] Búsqueda no disponible para "${query}":`, error.message);
-    return [];
-  }
+  });
 }
 
 const app = express();
@@ -2764,6 +2768,15 @@ app.all('/api/market/suppliers', async (req, res) => {
 app.post('/api/scrape/social', async (req, res) => {
   const { url } = req.body;
   if (!url) return res.status(400).json({ success: false, error: 'URL requerida' });
+  // [B6] Validacion en la entrada de la ruta: 400 rapido SIN lanzar Chromium. Antes la URL
+  // del body iba directo a page.goto(), asi que file:///etc/passwd, el propio panel
+  // (127.0.0.1:3001), el DevTools (9229) o la metadata de la nube (169.254.169.254) eran
+  // alcanzables. scraper.js vuelve a validar por dentro para los demas llamadores.
+  try {
+    await assertSafeExternalUrl(url);
+  } catch (error) {
+    return res.status(400).json({ success: false, error: 'URL no permitida.', code: 'URL_NOT_ALLOWED' });
+  }
   try {
     const result = await scrapeSocialFollowers(url);
     res.json(result);
@@ -3432,16 +3445,36 @@ app.post('/api/market/enrich', async (req, res) => {
     };
 
     // Mapear los resultados de búsqueda a los perfiles correspondientes
+    // [B6] Se comparan HOSTNAMES exactos o subdominios, no substrings del URL. Con
+    // includes() bastaba un resultado como https://127.0.0.1:9229/?x=facebook.com para que
+    // el perfil 'facebook' quedara poblado con una direccion interna que despues se pasaba
+    // a page.goto. Ademas solo se aceptan esquemas http/https.
+    const DOMINIOS_PERFIL = {
+      facebook: 'facebook.com',
+      instagram: 'instagram.com',
+      ubereats: 'ubereats.com',
+      rappi: 'rappi.com',
+      airbnb: 'airbnb.com',
+      tripadvisor: 'tripadvisor.com',
+      linkedin: 'linkedin.com',
+      mercadolibre: 'mercadolibre.com.mx'
+    };
     for (const item of searchResults) {
-      const url = (item.url || '').toLowerCase();
-      if (url.includes('facebook.com') && !profiles.facebook) profiles.facebook = item.url;
-      else if (url.includes('instagram.com') && !profiles.instagram) profiles.instagram = item.url;
-      else if (url.includes('ubereats.com') && !profiles.ubereats) profiles.ubereats = item.url;
-      else if (url.includes('rappi.com') && !profiles.rappi) profiles.rappi = item.url;
-      else if (url.includes('airbnb.com') && !profiles.airbnb) profiles.airbnb = item.url;
-      else if (url.includes('tripadvisor.com') && !profiles.tripadvisor) profiles.tripadvisor = item.url;
-      else if (url.includes('linkedin.com') && !profiles.linkedin) profiles.linkedin = item.url;
-      else if (url.includes('mercadolibre.com.mx') && !profiles.mercadolibre) profiles.mercadolibre = item.url;
+      const destino = (item.url || '').toString();
+      let host;
+      try {
+        const u = new URL(destino);
+        if (u.protocol !== 'http:' && u.protocol !== 'https:') continue;
+        host = u.hostname.toLowerCase();
+      } catch {
+        continue;
+      }
+      for (const [perfil, dominio] of Object.entries(DOMINIOS_PERFIL)) {
+        if (!profiles[perfil] && perteneceADominio(host, dominio)) {
+          profiles[perfil] = destino;
+          break;
+        }
+      }
     }
 
     console.log('[Enrich] Perfiles identificados:', profiles);
