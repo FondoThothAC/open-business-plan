@@ -1,0 +1,56 @@
+{
+  "id": "modulo.onudi_project.tecnologia",
+  "title": "Ingeniería Básica y Selección Tecnológica",
+  "summary": "Evaluación de patentes, licencias, rendimientos y capacidad instalada óptima.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "onudi_project",
+  "moduleKey": "tecnologia",
+  "pillarKey": "ingenieria_industrial",
+  "openUrl": "/onudi_project/tecnologia",
+  "fields": [
+    {
+      "key": "ingenieria_base",
+      "type": "text",
+      "address": "onudi_project.ingenieria_industrial.tecnologia.ingenieria_base",
+      "prompt": "Tecnología elegida, origen y pruebas de viabilidad técnica industrial.",
+      "ejemplo": "Ej: Línea de extrusión continua con tecnología alemana, TRL 9.",
+      "benchmark": "Flujo de Caja Libre para la Firma (FCFF) descontado a tasa internacional con viabilidad técnica garantizada.",
+      "cita": "Manual de Estudios de Viabilidad Industrial ONUDI (Behrens & Hawranek)",
+      "placeholder": "Parámetros industriales ONUDI para (ingenieria_base)..."
+    }
+  ],
+  "boxes": [],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Evaluación de patentes, licencias, rendimientos y capacidad instalada óptima.\n\n**Cómo se usa.** Está en el pilar **Ingeniería y Emplazamiento** del modelo *Estudio de Factibilidad ONUDI (Industrial Global)*. Se abre en `/onudi_project/tecnologia`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 1 campo: `ingenieria_base`.\n\n**Herramientas del módulo.** Ninguna específica: se apoya en los campos de texto."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `ingenieria_base`\n\n**El prompt que usa:** Tecnología elegida, origen y pruebas de viabilidad técnica industrial.\n\n**Ejemplo que muestra la guía:** Ej: Línea de extrusión continua con tecnología alemana, TRL 9.\n\n**Benchmark / criterio de calidad:** Flujo de Caja Libre para la Firma (FCFF) descontado a tasa internacional con viabilidad técnica garantizada.\n\n**De dónde viene la guía:** Manual de Estudios de Viabilidad Industrial ONUDI (Behrens & Hawranek)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "Sin cajas asociadas."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Ingeniería y Emplazamiento** de *Estudio de Factibilidad ONUDI (Industrial Global)*. La justificación metodológica completa está en la página del modelo y en `docs/onudi_project.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `onudi_project.ingenieria_industrial.tecnologia.ingenieria_base` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas:** `src/config/moduleBoxMap.js` no declara cajas para `onudi_project:tecnologia`; la pantalla muestra solo los campos de texto.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

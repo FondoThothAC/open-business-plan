@@ -1,0 +1,74 @@
+{
+  "id": "modulo.micro_business.costos",
+  "title": "Gastos de cada mes",
+  "summary": "Lista de pagos fijos como luz, agua, renta y sueldos.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "micro_business",
+  "moduleKey": "costos",
+  "pillarKey": "organizacion",
+  "openUrl": "/micro_business/costos",
+  "fields": [
+    {
+      "key": "lista_gastos_mensuales",
+      "type": "text",
+      "address": "micro_business.organizacion.costos.lista_gastos_mensuales",
+      "prompt": "Pagos fijos mes a mes (renta, luz, ayudante).",
+      "ejemplo": "Ej: \"Pago de luz $500, permiso de piso $1,000, sueldo del ayudante $4,000 al mes.\"",
+      "benchmark": "Operación simple con punto de equilibrio mensual y presupuesto < 30 días.",
+      "cita": "Manual de Plan de Negocios Panamá & Plan de Negocios VF",
+      "placeholder": "Información básica para arrancar el autoempleo en (lista_gastos_mensuales)..."
+    },
+    {
+      "key": "costos_por_producto",
+      "type": "text",
+      "address": "micro_business.organizacion.costos.costos_por_producto",
+      "prompt": "¿Cuánto te cuesta hacer un producto y en cuánto lo vendes?",
+      "ejemplo": "Ej: \"Hacer un taco me cuesta $15 (carne+tortilla+salsa) y lo vendo a $35. Ganancia: $20.\"",
+      "benchmark": "Operación simple con punto de equilibrio mensual y presupuesto < 30 días.",
+      "cita": "Manual de Plan de Negocios Panamá & Plan de Negocios VF",
+      "placeholder": "Información básica para arrancar el autoempleo en (costos_por_producto)..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_micro_canvas_3b",
+      "title": "Micro-Canvas de 3 Bloques (Clientes, Oferta, Finanzas)",
+      "type": "canvas",
+      "description": "Lienzo simplificado para negocios locales de autoempleo.",
+      "source": "Starting a Business QuickStart Guide — Ch. 3"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Lista de pagos fijos como luz, agua, renta y sueldos.\n\n**Cómo se usa.** Está en el pilar **Plan Financiero Básico** del modelo *Plan para Microempresa y Autoempleo (Simplificado)*. Se abre en `/micro_business/costos`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 2 campos: `lista_gastos_mensuales`, `costos_por_producto`.\n\n**Herramientas del módulo.** 1 caja(s): `box_micro_canvas_3b`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `lista_gastos_mensuales`\n\n**El prompt que usa:** Pagos fijos mes a mes (renta, luz, ayudante).\n\n**Ejemplo que muestra la guía:** Ej: \"Pago de luz $500, permiso de piso $1,000, sueldo del ayudante $4,000 al mes.\"\n\n**Benchmark / criterio de calidad:** Operación simple con punto de equilibrio mensual y presupuesto < 30 días.\n\n**De dónde viene la guía:** Manual de Plan de Negocios Panamá & Plan de Negocios VF\n\n### `costos_por_producto`\n\n**El prompt que usa:** ¿Cuánto te cuesta hacer un producto y en cuánto lo vendes?\n\n**Ejemplo que muestra la guía:** Ej: \"Hacer un taco me cuesta $15 (carne+tortilla+salsa) y lo vendo a $35. Ganancia: $20.\"\n\n**Benchmark / criterio de calidad:** Operación simple con punto de equilibrio mensual y presupuesto < 30 días.\n\n**De dónde viene la guía:** Manual de Plan de Negocios Panamá & Plan de Negocios VF"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Micro-Canvas de 3 Bloques (Clientes, Oferta, Finanzas)\n\n`box_micro_canvas_3b` · tipo **canvas** · fuente: Starting a Business QuickStart Guide — Ch. 3\n\nLienzo simplificado para negocios locales de autoempleo."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Plan Financiero Básico** de *Plan para Microempresa y Autoempleo (Simplificado)*. La justificación metodológica completa está en la página del modelo y en `docs/micro_business.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `micro_business.organizacion.costos.lista_gastos_mensuales` → tipo `text`\n- `micro_business.organizacion.costos.costos_por_producto` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `micro_business:costos`): `box_micro_canvas_3b`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

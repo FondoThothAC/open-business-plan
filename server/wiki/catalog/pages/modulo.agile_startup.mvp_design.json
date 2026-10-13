@@ -1,0 +1,84 @@
+{
+  "id": "modulo.agile_startup.mvp_design",
+  "title": "Diseño del MVP",
+  "summary": "Especificación técnica y operativa del Producto Mínimo Viable a construir.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "agile_startup",
+  "moduleKey": "mvp_design",
+  "pillarKey": "experimento",
+  "openUrl": "/agile_startup/mvp_design",
+  "fields": [
+    {
+      "key": "especificacion_mvp",
+      "type": "text",
+      "address": "agile_startup.experimento.mvp_design.especificacion_mvp",
+      "prompt": "Define de forma concreta qué funcionalidades o entregables incluirá la primera versión (MVP).",
+      "ejemplo": "Ej: Una Landing Page sencilla en Webflow con botón de pago de Stripe para pre-vender el plan semanal, sin App móvil aún.",
+      "benchmark": "Ciclo Construir-Medir-Aprender validado en < 2 semanas con métricas AARRR.",
+      "cita": "Eric Ries — El Método Lean Startup & Ash Maurya Running Lean",
+      "placeholder": "Documenta la hipótesis o métrica ágil para (especificacion_mvp)..."
+    },
+    {
+      "key": "recursos_construccion",
+      "type": "text",
+      "address": "agile_startup.experimento.mvp_design.recursos_construccion",
+      "prompt": "Lista de herramientas no-code, software y recursos mínimos requeridos.",
+      "ejemplo": "Ej: Webflow para diseño, Stripe para pagos, Google Sheets para base de datos y un chef de cocina local contratado.",
+      "benchmark": "Ciclo Construir-Medir-Aprender validado en < 2 semanas con métricas AARRR.",
+      "cita": "Eric Ries — El Método Lean Startup & Ash Maurya Running Lean",
+      "placeholder": "Documenta la hipótesis o métrica ágil para (recursos_construccion)..."
+    },
+    {
+      "key": "tiempo_estimado_desarrollo",
+      "type": "text",
+      "address": "agile_startup.experimento.mvp_design.tiempo_estimado_desarrollo",
+      "prompt": "Duración estimada para el lanzamiento del piloto al mercado.",
+      "ejemplo": "Ej: 3 semanas para diseño de Landing Page, pruebas de menú y lanzamiento de pauta en redes.",
+      "benchmark": "Ciclo Construir-Medir-Aprender validado en < 2 semanas con métricas AARRR.",
+      "cita": "Eric Ries — El Método Lean Startup & Ash Maurya Running Lean",
+      "placeholder": "Documenta la hipótesis o métrica ágil para (tiempo_estimado_desarrollo)..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_mvp_protocol",
+      "title": "Protocolo de Validación de MVP (Concierge / Wizard of Oz)",
+      "type": "checklist",
+      "description": "Checklist de hipótesis de valor y crecimiento antes del desarrollo.",
+      "source": "The Lean Startup — p. 114"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Especificación técnica y operativa del Producto Mínimo Viable a construir.\n\n**Cómo se usa.** Está en el pilar **Diseño de Experimentos y MVP** del modelo *Agile Startup (Lean MVP)*. Se abre en `/agile_startup/mvp_design`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 3 campos: `especificacion_mvp`, `recursos_construccion`, `tiempo_estimado_desarrollo`.\n\n**Herramientas del módulo.** 1 caja(s): `box_mvp_protocol`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `especificacion_mvp`\n\n**El prompt que usa:** Define de forma concreta qué funcionalidades o entregables incluirá la primera versión (MVP).\n\n**Ejemplo que muestra la guía:** Ej: Una Landing Page sencilla en Webflow con botón de pago de Stripe para pre-vender el plan semanal, sin App móvil aún.\n\n**Benchmark / criterio de calidad:** Ciclo Construir-Medir-Aprender validado en < 2 semanas con métricas AARRR.\n\n**De dónde viene la guía:** Eric Ries — El Método Lean Startup & Ash Maurya Running Lean\n\n### `recursos_construccion`\n\n**El prompt que usa:** Lista de herramientas no-code, software y recursos mínimos requeridos.\n\n**Ejemplo que muestra la guía:** Ej: Webflow para diseño, Stripe para pagos, Google Sheets para base de datos y un chef de cocina local contratado.\n\n**Benchmark / criterio de calidad:** Ciclo Construir-Medir-Aprender validado en < 2 semanas con métricas AARRR.\n\n**De dónde viene la guía:** Eric Ries — El Método Lean Startup & Ash Maurya Running Lean\n\n### `tiempo_estimado_desarrollo`\n\n**El prompt que usa:** Duración estimada para el lanzamiento del piloto al mercado.\n\n**Ejemplo que muestra la guía:** Ej: 3 semanas para diseño de Landing Page, pruebas de menú y lanzamiento de pauta en redes.\n\n**Benchmark / criterio de calidad:** Ciclo Construir-Medir-Aprender validado en < 2 semanas con métricas AARRR.\n\n**De dónde viene la guía:** Eric Ries — El Método Lean Startup & Ash Maurya Running Lean"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Protocolo de Validación de MVP (Concierge / Wizard of Oz)\n\n`box_mvp_protocol` · tipo **checklist** · fuente: The Lean Startup — p. 114\n\nChecklist de hipótesis de valor y crecimiento antes del desarrollo."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Diseño de Experimentos y MVP** de *Agile Startup (Lean MVP)*. La justificación metodológica completa está en la página del modelo y en `docs/agile_startup.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `agile_startup.experimento.mvp_design.especificacion_mvp` → tipo `text`\n- `agile_startup.experimento.mvp_design.recursos_construccion` → tipo `text`\n- `agile_startup.experimento.mvp_design.tiempo_estimado_desarrollo` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `agile_startup:mvp_design`): `box_mvp_protocol`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

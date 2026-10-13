@@ -1,0 +1,101 @@
+{
+  "id": "modulo.business.inversion",
+  "title": "Inversión Inicial (CAPEX)",
+  "summary": "Requerimientos de capital para arranque.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "business",
+  "moduleKey": "inversion",
+  "pillarKey": "organizacion",
+  "openUrl": "/business/inversion",
+  "fields": [
+    {
+      "key": "inversion_fija",
+      "type": "text",
+      "address": "business.organizacion.inversion.inversion_fija",
+      "prompt": "[ANCLAJE OBLIGATORIO A SEMILLA] Activos fijos tangibles. Su monto debe sumar armónicamente con la inversión diferida y el OPEX inicial para totalizar la cifra de `semilla.inversion_esperada`.",
+      "ejemplo": "Ej: \"De $20,000,000 MXN totales de semilla: Banco de pruebas hidráulicas ($5.5M), instrumental de telemetría ($3.5M), nave y adecuaciones ($4.0M), flotilla de servicio móvil ($2.0M). Total fija: $15.0M MXN.\"",
+      "benchmark": "Presupuesto CAPEX de activos fijos con cotizaciones formales por escrito.",
+      "cita": "Linda Pinson — Anatomy of a Business Plan (Ch. 7, p. 165)",
+      "placeholder": "Inversión en terrenos, edificios, maquinaria y mobiliario duradero..."
+    },
+    {
+      "key": "inversion_diferida",
+      "type": "text",
+      "address": "business.organizacion.inversion.inversion_diferida",
+      "prompt": "[ANCLAJE OBLIGATORIO A SEMILLA] Gastos preoperativos y patentes. Parte integral del desglose canónico de `semilla.inversion_esperada`.",
+      "ejemplo": "Ej: \"De los $20M de semilla: Certificación ISO 4406 ($450K), constitución SAPI y registros IP ($350K), software y ERP ($1.2M). Total diferida: $2.0M MXN.\"",
+      "benchmark": "Gastos preoperativos amortizables en un periodo máximo de 3 a 5 años.",
+      "cita": "Plan de Negocios VF (p. 118)",
+      "placeholder": "Gastos de constitución, licencias, patentes, capacitación inicial y proyectos..."
+    },
+    {
+      "key": "opex_inicial",
+      "type": "text",
+      "address": "business.organizacion.inversion.opex_inicial",
+      "prompt": "[ANCLAJE OBLIGATORIO A SEMILLA] Capital de trabajo y fondo de maniobra derivado de la estructura de capital de `semilla.inversion_esperada` para cubrir los primeros 3 a 6 meses de operación.",
+      "ejemplo": "Ej: \"De la inversión inicial de $20M MXN, se asignan $2,000,000 MXN a OPEX inicial: nómina preoperativa, seguros, rentas y reservas de contingencia.\"",
+      "benchmark": "Fondo de maniobra / Capital de trabajo para cubrir entre 3 y 6 meses de costos fijos.",
+      "cita": "Carl Schramm — Burn the Business Plan (Ch. 6, p. 125)",
+      "placeholder": "Capital de trabajo operativo para alcanzar el punto de equilibrio..."
+    },
+    {
+      "key": "financiamiento",
+      "type": "text",
+      "address": "business.organizacion.inversion.financiamiento",
+      "prompt": "[ANCLAJE OBLIGATORIO A SEMILLA] Fuentes de capital estructuradas exactamente para fondear el monto canónico de `semilla.inversion_esperada`. Detalla capital propio, aportaciones y crédito bancario.",
+      "ejemplo": "Ej: \"Financiamiento de $20M MXN totales: Serie A Fundadores 65% ($13M MXN), Serie B Inversionistas 35% ($7M MXN con dividendo preferente y recompra).\"",
+      "benchmark": "Estructura de financiamiento balanceada (máximo 60% deuda / 40% capital propio).",
+      "cita": "Linda Pinson — Anatomy of a Business Plan (Ch. 7, p. 172)",
+      "placeholder": "Fuentes de financiamiento: aportaciones de socios o créditos bancarios..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_wacc_van_tir",
+      "title": "Evaluación Financiera Maestra (WACC, VAN, TIR)",
+      "type": "formula",
+      "description": "Modelo de descuento de flujos con costo de capital CAPM.",
+      "source": "The Nature of Value — Ch. 5"
+    },
+    {
+      "id": "box_tornado_sensibilidad",
+      "title": "box_tornado_sensibilidad",
+      "type": "desconocido",
+      "description": "",
+      "source": ""
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Requerimientos de capital para arranque.\n\n**Cómo se usa.** Está en el pilar **Organización y Finanzas** del modelo *Plan de Negocios Comercial*. Se abre en `/business/inversion`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 4 campos: `inversion_fija`, `inversion_diferida`, `opex_inicial`, `financiamiento`.\n\n**Herramientas del módulo.** 2 caja(s): `box_wacc_van_tir`, `box_tornado_sensibilidad`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `inversion_fija`\n\n**El prompt que usa:** [ANCLAJE OBLIGATORIO A SEMILLA] Activos fijos tangibles. Su monto debe sumar armónicamente con la inversión diferida y el OPEX inicial para totalizar la cifra de `semilla.inversion_esperada`.\n\n**Ejemplo que muestra la guía:** Ej: \"De $20,000,000 MXN totales de semilla: Banco de pruebas hidráulicas ($5.5M), instrumental de telemetría ($3.5M), nave y adecuaciones ($4.0M), flotilla de servicio móvil ($2.0M). Total fija: $15.0M MXN.\"\n\n**Benchmark / criterio de calidad:** Presupuesto CAPEX de activos fijos con cotizaciones formales por escrito.\n\n**De dónde viene la guía:** Linda Pinson — Anatomy of a Business Plan (Ch. 7, p. 165)\n\n### `inversion_diferida`\n\n**El prompt que usa:** [ANCLAJE OBLIGATORIO A SEMILLA] Gastos preoperativos y patentes. Parte integral del desglose canónico de `semilla.inversion_esperada`.\n\n**Ejemplo que muestra la guía:** Ej: \"De los $20M de semilla: Certificación ISO 4406 ($450K), constitución SAPI y registros IP ($350K), software y ERP ($1.2M). Total diferida: $2.0M MXN.\"\n\n**Benchmark / criterio de calidad:** Gastos preoperativos amortizables en un periodo máximo de 3 a 5 años.\n\n**De dónde viene la guía:** Plan de Negocios VF (p. 118)\n\n### `opex_inicial`\n\n**El prompt que usa:** [ANCLAJE OBLIGATORIO A SEMILLA] Capital de trabajo y fondo de maniobra derivado de la estructura de capital de `semilla.inversion_esperada` para cubrir los primeros 3 a 6 meses de operación.\n\n**Ejemplo que muestra la guía:** Ej: \"De la inversión inicial de $20M MXN, se asignan $2,000,000 MXN a OPEX inicial: nómina preoperativa, seguros, rentas y reservas de contingencia.\"\n\n**Benchmark / criterio de calidad:** Fondo de maniobra / Capital de trabajo para cubrir entre 3 y 6 meses de costos fijos.\n\n**De dónde viene la guía:** Carl Schramm — Burn the Business Plan (Ch. 6, p. 125)\n\n### `financiamiento`\n\n**El prompt que usa:** [ANCLAJE OBLIGATORIO A SEMILLA] Fuentes de capital estructuradas exactamente para fondear el monto canónico de `semilla.inversion_esperada`. Detalla capital propio, aportaciones y crédito bancario.\n\n**Ejemplo que muestra la guía:** Ej: \"Financiamiento de $20M MXN totales: Serie A Fundadores 65% ($13M MXN), Serie B Inversionistas 35% ($7M MXN con dividendo preferente y recompra).\"\n\n**Benchmark / criterio de calidad:** Estructura de financiamiento balanceada (máximo 60% deuda / 40% capital propio).\n\n**De dónde viene la guía:** Linda Pinson — Anatomy of a Business Plan (Ch. 7, p. 172)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Evaluación Financiera Maestra (WACC, VAN, TIR)\n\n`box_wacc_van_tir` · tipo **formula** · fuente: The Nature of Value — Ch. 5\n\nModelo de descuento de flujos con costo de capital CAPM.\n\n### box_tornado_sensibilidad\n\n`box_tornado_sensibilidad` · tipo **desconocido**\n\n"
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Organización y Finanzas** de *Plan de Negocios Comercial*. La justificación metodológica completa está en la página del modelo y en `docs/business.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `business.organizacion.inversion.inversion_fija` → tipo `text`\n- `business.organizacion.inversion.inversion_diferida` → tipo `text`\n- `business.organizacion.inversion.opex_inicial` → tipo `text`\n- `business.organizacion.inversion.financiamiento` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `business:inversion`): `box_wacc_van_tir`, `box_tornado_sensibilidad`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

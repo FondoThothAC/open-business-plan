@@ -1,0 +1,84 @@
+{
+  "id": "modulo.social_bid.alternativas",
+  "title": "Análisis de Alternativas",
+  "summary": "Estrategias posibles y selección de la alternativa óptima.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "social_bid",
+  "moduleKey": "alternativas",
+  "pillarKey": "identificacion",
+  "openUrl": "/social_bid/alternativas",
+  "fields": [
+    {
+      "key": "estrategias_posibles",
+      "type": "text",
+      "address": "social_bid.identificacion.alternativas.estrategias_posibles",
+      "prompt": "Opciones de solución derivadas del árbol de objetivos.",
+      "ejemplo": "Ej: Estrategia A (Becas económicas) vs Estrategia B (Creación de talleres técnicos).",
+      "benchmark": "Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.",
+      "cita": "Metodología del Marco Lógico (BID / CEPAL / PM4R)",
+      "placeholder": "Define el componente del proyecto social (estrategias_posibles)..."
+    },
+    {
+      "key": "criterios_seleccion",
+      "type": "text",
+      "address": "social_bid.identificacion.alternativas.criterios_seleccion",
+      "prompt": "Criterios usados para elegir la mejor estrategia (costo, impacto, viabilidad).",
+      "ejemplo": "Ej: Se eligió la Estrategia B por mayor sostenibilidad e impacto a largo plazo.",
+      "benchmark": "Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.",
+      "cita": "Metodología del Marco Lógico (BID / CEPAL / PM4R)",
+      "placeholder": "Define el componente del proyecto social (criterios_seleccion)..."
+    },
+    {
+      "key": "alternativa_elegida",
+      "type": "text",
+      "address": "social_bid.identificacion.alternativas.alternativa_elegida",
+      "prompt": "La estrategia final que conformará el proyecto.",
+      "ejemplo": "Ej: Creación de 3 talleres técnicos extracurriculares con equipo donado.",
+      "benchmark": "Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.",
+      "cita": "Metodología del Marco Lógico (BID / CEPAL / PM4R)",
+      "placeholder": "Define el componente del proyecto social (alternativa_elegida)..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_arbol_problemas_mml",
+      "title": "Árbol de Problemas y Objetivos (Marco Lógico BID)",
+      "type": "matrix",
+      "description": "Jerarquía causa-efecto y medios-fines visualizada en diagrama.",
+      "source": "Manual BID / PM4R de Proyectos Sociales — p. 34"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Estrategias posibles y selección de la alternativa óptima.\n\n**Cómo se usa.** Está en el pilar **Identificación del Problema** del modelo *Proyecto Social (Metodología BID)*. Se abre en `/social_bid/alternativas`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 3 campos: `estrategias_posibles`, `criterios_seleccion`, `alternativa_elegida`.\n\n**Herramientas del módulo.** 1 caja(s): `box_arbol_problemas_mml`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `estrategias_posibles`\n\n**El prompt que usa:** Opciones de solución derivadas del árbol de objetivos.\n\n**Ejemplo que muestra la guía:** Ej: Estrategia A (Becas económicas) vs Estrategia B (Creación de talleres técnicos).\n\n**Benchmark / criterio de calidad:** Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.\n\n**De dónde viene la guía:** Metodología del Marco Lógico (BID / CEPAL / PM4R)\n\n### `criterios_seleccion`\n\n**El prompt que usa:** Criterios usados para elegir la mejor estrategia (costo, impacto, viabilidad).\n\n**Ejemplo que muestra la guía:** Ej: Se eligió la Estrategia B por mayor sostenibilidad e impacto a largo plazo.\n\n**Benchmark / criterio de calidad:** Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.\n\n**De dónde viene la guía:** Metodología del Marco Lógico (BID / CEPAL / PM4R)\n\n### `alternativa_elegida`\n\n**El prompt que usa:** La estrategia final que conformará el proyecto.\n\n**Ejemplo que muestra la guía:** Ej: Creación de 3 talleres técnicos extracurriculares con equipo donado.\n\n**Benchmark / criterio de calidad:** Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.\n\n**De dónde viene la guía:** Metodología del Marco Lógico (BID / CEPAL / PM4R)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Árbol de Problemas y Objetivos (Marco Lógico BID)\n\n`box_arbol_problemas_mml` · tipo **matrix** · fuente: Manual BID / PM4R de Proyectos Sociales — p. 34\n\nJerarquía causa-efecto y medios-fines visualizada en diagrama."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Identificación del Problema** de *Proyecto Social (Metodología BID)*. La justificación metodológica completa está en la página del modelo y en `docs/social_bid.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `social_bid.identificacion.alternativas.estrategias_posibles` → tipo `text`\n- `social_bid.identificacion.alternativas.criterios_seleccion` → tipo `text`\n- `social_bid.identificacion.alternativas.alternativa_elegida` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `social_bid:alternativas`): `box_arbol_problemas_mml`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

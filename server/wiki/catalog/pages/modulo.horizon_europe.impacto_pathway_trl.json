@@ -1,0 +1,84 @@
+{
+  "id": "modulo.horizon_europe.impacto_pathway_trl",
+  "title": "Pathway de Impacto (TRL 6-9)",
+  "summary": "Ruta de maduración tecnológica desde prototipo hasta despliegue de mercado.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "horizon_europe",
+  "moduleKey": "impacto_pathway_trl",
+  "pillarKey": "impacto_sostenibilidad",
+  "openUrl": "/horizon_europe/impacto_pathway_trl",
+  "fields": [
+    {
+      "key": "pathway_hacia_mercado",
+      "type": "text",
+      "address": "horizon_europe.impacto_sostenibilidad.impacto_pathway_trl.pathway_hacia_mercado",
+      "prompt": "Ruta de adopción y escalamiento: pasos concretos para transferir el resultado de investigación a la industria y sociedad.",
+      "ejemplo": "Ej: Validación en entorno industrial simulado (M12) -> Licenciamiento piloto a socio del consorcio (M24) -> Comercialización global (M36).",
+      "benchmark": "Pathway auditable con hitos de validación con usuarios finales.",
+      "cita": "The Role of Corporate Sustainability in Asian Development (p. 76)",
+      "placeholder": "Fases de transición de laboratorio a mercado y socios receptores..."
+    },
+    {
+      "key": "trl_inicial_final",
+      "type": "text",
+      "address": "horizon_europe.impacto_sostenibilidad.impacto_pathway_trl.trl_inicial_final",
+      "prompt": "Nivel de madurez tecnológica inicial al arranque de la propuesta y nivel TRL objetivo garantizado al cierre.",
+      "ejemplo": "Ej: TRL inicial = 5 (validación en entorno relevante) -> TRL final = 8 (sistema completo y cualificado).",
+      "benchmark": "Incremento de al menos 2 a 3 niveles TRL durante la vida del proyecto europeo.",
+      "cita": "European Innovation Council (EIC) TRL Definitions",
+      "placeholder": "TRL de arranque (ej. TRL 4) y TRL comprometido a la entrega (ej. TRL 7)..."
+    },
+    {
+      "key": "kpis_impacto_socioeconomico",
+      "type": "text",
+      "address": "horizon_europe.impacto_sostenibilidad.impacto_pathway_trl.kpis_impacto_socioeconomico",
+      "prompt": "Indicadores cuantitativos de impacto en empleo, competitividad europea, reducción de huella de carbono y salud.",
+      "ejemplo": "Ej: Reducción de 12,000 tCO2e anuales, creación de 85 empleos de alta cualificación y ahorro de $15M EUR en costes hospitalarios.",
+      "benchmark": "KPIs alineados con las misiones estratégicas del Green Deal europeo.",
+      "cita": "Horizon Europe Impact Assessment Manual",
+      "placeholder": "Métricas cuantitativas de impacto social, ecológico y económico en la UE..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_impacto_pathway_trl6_9",
+      "title": "Pathway de Impacto Horizon Europe y Escalamiento TRL 6-9",
+      "type": "checklist",
+      "description": "Hoja de ruta desde la validación de prototipo industrial hasta la comercialización y adopción en el mercado europeo.",
+      "source": "The Role of Corporate Sustainability in Asian Development — p. 76"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Ruta de maduración tecnológica desde prototipo hasta despliegue de mercado.\n\n**Cómo se usa.** Está en el pilar **Impacto y Sostenibilidad** del modelo *Horizon Europe (Unión Europea)*. Se abre en `/horizon_europe/impacto_pathway_trl`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 3 campos: `pathway_hacia_mercado`, `trl_inicial_final`, `kpis_impacto_socioeconomico`.\n\n**Herramientas del módulo.** 1 caja(s): `box_impacto_pathway_trl6_9`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `pathway_hacia_mercado`\n\n**El prompt que usa:** Ruta de adopción y escalamiento: pasos concretos para transferir el resultado de investigación a la industria y sociedad.\n\n**Ejemplo que muestra la guía:** Ej: Validación en entorno industrial simulado (M12) -> Licenciamiento piloto a socio del consorcio (M24) -> Comercialización global (M36).\n\n**Benchmark / criterio de calidad:** Pathway auditable con hitos de validación con usuarios finales.\n\n**De dónde viene la guía:** The Role of Corporate Sustainability in Asian Development (p. 76)\n\n### `trl_inicial_final`\n\n**El prompt que usa:** Nivel de madurez tecnológica inicial al arranque de la propuesta y nivel TRL objetivo garantizado al cierre.\n\n**Ejemplo que muestra la guía:** Ej: TRL inicial = 5 (validación en entorno relevante) -> TRL final = 8 (sistema completo y cualificado).\n\n**Benchmark / criterio de calidad:** Incremento de al menos 2 a 3 niveles TRL durante la vida del proyecto europeo.\n\n**De dónde viene la guía:** European Innovation Council (EIC) TRL Definitions\n\n### `kpis_impacto_socioeconomico`\n\n**El prompt que usa:** Indicadores cuantitativos de impacto en empleo, competitividad europea, reducción de huella de carbono y salud.\n\n**Ejemplo que muestra la guía:** Ej: Reducción de 12,000 tCO2e anuales, creación de 85 empleos de alta cualificación y ahorro de $15M EUR en costes hospitalarios.\n\n**Benchmark / criterio de calidad:** KPIs alineados con las misiones estratégicas del Green Deal europeo.\n\n**De dónde viene la guía:** Horizon Europe Impact Assessment Manual"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Pathway de Impacto Horizon Europe y Escalamiento TRL 6-9\n\n`box_impacto_pathway_trl6_9` · tipo **checklist** · fuente: The Role of Corporate Sustainability in Asian Development — p. 76\n\nHoja de ruta desde la validación de prototipo industrial hasta la comercialización y adopción en el mercado europeo."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Impacto y Sostenibilidad** de *Horizon Europe (Unión Europea)*. La justificación metodológica completa está en la página del modelo y en `docs/horizon_europe.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `horizon_europe.impacto_sostenibilidad.impacto_pathway_trl.pathway_hacia_mercado` → tipo `text`\n- `horizon_europe.impacto_sostenibilidad.impacto_pathway_trl.trl_inicial_final` → tipo `text`\n- `horizon_europe.impacto_sostenibilidad.impacto_pathway_trl.kpis_impacto_socioeconomico` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `horizon_europe:impacto_pathway_trl`): `box_impacto_pathway_trl6_9`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

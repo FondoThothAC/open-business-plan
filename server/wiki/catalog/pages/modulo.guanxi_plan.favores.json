@@ -1,0 +1,64 @@
+{
+  "id": "modulo.guanxi_plan.favores",
+  "title": "Reciprocidad (Renqing)",
+  "summary": "Dinámica de intercambio ético de favores y equilibrio relacional.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "guanxi_plan",
+  "moduleKey": "favores",
+  "pillarKey": "manejo_conflictos",
+  "openUrl": "/guanxi_plan/favores",
+  "fields": [
+    {
+      "key": "reciprocidad",
+      "type": "text",
+      "address": "guanxi_plan.manejo_conflictos.favores.reciprocidad",
+      "prompt": "Estrategia de favores y beneficios mutuos a largo plazo.",
+      "ejemplo": "Ej (Estilo Huawei): Transferencia de tecnología 5G a cambio de acceso preferencial a redes municipales.",
+      "benchmark": "Matriz relacional de reciprocidad (Bao) y preservación de reputación (Mianzi) con alineación institucional.",
+      "cita": "Negotiating South-South Regional Trade Agreements (UNCTAD) & Ética Comercial China",
+      "placeholder": "Estrategia de confianza y redes relacionales para (reciprocidad)..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_mapa_guanxi_mianzi",
+      "title": "Mapa de Relaciones Guanxi y Preservación de Mianzi",
+      "type": "checklist",
+      "description": "Estrategia de reciprocidad a largo plazo y alineación gubernamental.",
+      "source": "Negotiating South-South Trade Agreements — Ch. 3"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Dinámica de intercambio ético de favores y equilibrio relacional.\n\n**Cómo se usa.** Está en el pilar **Reciprocidad y Capital Social** del modelo *Metodología Guanxi (China - Redes de Relaciones)*. Se abre en `/guanxi_plan/favores`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 1 campo: `reciprocidad`.\n\n**Herramientas del módulo.** 1 caja(s): `box_mapa_guanxi_mianzi`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `reciprocidad`\n\n**El prompt que usa:** Estrategia de favores y beneficios mutuos a largo plazo.\n\n**Ejemplo que muestra la guía:** Ej (Estilo Huawei): Transferencia de tecnología 5G a cambio de acceso preferencial a redes municipales.\n\n**Benchmark / criterio de calidad:** Matriz relacional de reciprocidad (Bao) y preservación de reputación (Mianzi) con alineación institucional.\n\n**De dónde viene la guía:** Negotiating South-South Regional Trade Agreements (UNCTAD) & Ética Comercial China"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Mapa de Relaciones Guanxi y Preservación de Mianzi\n\n`box_mapa_guanxi_mianzi` · tipo **checklist** · fuente: Negotiating South-South Trade Agreements — Ch. 3\n\nEstrategia de reciprocidad a largo plazo y alineación gubernamental."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Reciprocidad y Capital Social** de *Metodología Guanxi (China - Redes de Relaciones)*. La justificación metodológica completa está en la página del modelo y en `docs/guanxi_plan.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `guanxi_plan.manejo_conflictos.favores.reciprocidad` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `guanxi_plan:favores`): `box_mapa_guanxi_mianzi`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

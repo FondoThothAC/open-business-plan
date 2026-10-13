@@ -8,6 +8,7 @@
     "dev": "VITE_BASE_PATH=/ vite",
     "build": "vite build",
     "build:prod": "VITE_BASE_PATH=/obp/ vite build",
+    "wiki:build": "node scripts/generate-wiki-catalog.js",
     "backup:data": "node scripts/backup-project-data.js",
     "test": "node --test --test-concurrency=1 tests/*.test.js tests/swarm/*.test.js tests/integration/*.test.js tests/security/*.test.js",
     "test:map": "node --test tests/inegiMapCenter.test.js tests/browser/inegiMap.test.js",

@@ -1,0 +1,96 @@
+{
+  "id": "modulo.business.segmentacion",
+  "title": "Segmentación y Tamaño",
+  "summary": "TAM, SAM, SOM y perfil del buyer persona.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "business",
+  "moduleKey": "segmentacion",
+  "pillarKey": "mercado",
+  "openUrl": "/business/segmentacion",
+  "fields": [
+    {
+      "key": "tam",
+      "type": "text",
+      "address": "business.mercado.segmentacion.tam",
+      "prompt": "Mercado Total Direccionable. Todo el mercado posible si no tuvieras limitaciones.",
+      "ejemplo": "Ej: \"3.2M de profesionistas en México que no tienen asesor financiero = $9.6B MXN anuales en fees potenciales.\"",
+      "benchmark": "TAM = Población Total x Gasto Anual Promedio.",
+      "cita": "Linda Pinson — Anatomy of a Business Plan (Ch. 4, p. 78)",
+      "placeholder": "Valor total del mercado si se alcanzara el 100% de la demanda teórica..."
+    },
+    {
+      "key": "sam",
+      "type": "text",
+      "address": "business.mercado.segmentacion.sam",
+      "prompt": "Mercado Alcanzable. La porción del TAM que podrías servir con tu modelo actual.",
+      "ejemplo": "Ej: \"185,000 profesionistas en Sonora con ingreso >$20K/mes = $370M MXN anuales en servicios de consultoría.\"",
+      "benchmark": "SAM = TAM x Porcentaje de Segmento Geográfico / Económico.",
+      "cita": "Creating a Business Plan For Dummies (Ch. 5)",
+      "placeholder": "Mercado que realmente puedes atender con tu modelo y territorio actual..."
+    },
+    {
+      "key": "som",
+      "type": "text",
+      "address": "business.mercado.segmentacion.som",
+      "prompt": "Mercado Obtenible. La rebanada realista que planeas capturar en 1-3 años.",
+      "ejemplo": "Ej: \"Capturar 0.5% del SAM = 925 clientes generando $5.5M MXN anuales en el tercer año.\"",
+      "benchmark": "SOM esperado: entre 1% y 5% del SAM en etapas tempranas.",
+      "cita": "The Lean Startup (p. 89) & Starting a Business QuickStart Guide (p. 112)",
+      "placeholder": "Porción de mercado que planeas capturar concretamente en los años 1 a 3..."
+    },
+    {
+      "key": "perfil",
+      "type": "text",
+      "address": "business.mercado.segmentacion.perfil",
+      "prompt": "Características psicográficas: estilo de vida, valores, motivaciones y hábitos de compra.",
+      "ejemplo": "Ej: \"Valora la seguridad sobre el riesgo. Investiga en YouTube antes de comprar. Prefiere apps sobre llamadas telefónicas.\"",
+      "benchmark": "Mapa de empatía completo con 4 cuadrantes (piensa, ve, oye, hace).",
+      "cita": "Alexander Osterwalder — Value Proposition Design (p. 16)",
+      "placeholder": "Hábitos de compra, canales que consulta y criterios de decisión del cliente..."
+    },
+    {
+      "key": "sensibilidad_demanda",
+      "type": "text",
+      "address": "business.mercado.segmentacion.sensibilidad_demanda",
+      "prompt": "Evalúa la elasticidad precio de la demanda y el impacto de cambios económicos.",
+      "ejemplo": "Ej: Demanda inelástica (Ep = -0.4) debido a que el servicio es crítico para evitar paros.",
+      "benchmark": "Elasticidad justificada.",
+      "cita": "The Nature of Value (Ch. 3)",
+      "placeholder": "Elasticidad y factores de riesgo..."
+    }
+  ],
+  "boxes": [],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** TAM, SAM, SOM y perfil del buyer persona.\n\n**Cómo se usa.** Está en el pilar **El Mercado** del modelo *Plan de Negocios Comercial*. Se abre en `/business/segmentacion`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 5 campos: `tam`, `sam`, `som`, `perfil`, `sensibilidad_demanda`.\n\n**Herramientas del módulo.** Ninguna específica: se apoya en los campos de texto."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `tam`\n\n**El prompt que usa:** Mercado Total Direccionable. Todo el mercado posible si no tuvieras limitaciones.\n\n**Ejemplo que muestra la guía:** Ej: \"3.2M de profesionistas en México que no tienen asesor financiero = $9.6B MXN anuales en fees potenciales.\"\n\n**Benchmark / criterio de calidad:** TAM = Población Total x Gasto Anual Promedio.\n\n**De dónde viene la guía:** Linda Pinson — Anatomy of a Business Plan (Ch. 4, p. 78)\n\n### `sam`\n\n**El prompt que usa:** Mercado Alcanzable. La porción del TAM que podrías servir con tu modelo actual.\n\n**Ejemplo que muestra la guía:** Ej: \"185,000 profesionistas en Sonora con ingreso >$20K/mes = $370M MXN anuales en servicios de consultoría.\"\n\n**Benchmark / criterio de calidad:** SAM = TAM x Porcentaje de Segmento Geográfico / Económico.\n\n**De dónde viene la guía:** Creating a Business Plan For Dummies (Ch. 5)\n\n### `som`\n\n**El prompt que usa:** Mercado Obtenible. La rebanada realista que planeas capturar en 1-3 años.\n\n**Ejemplo que muestra la guía:** Ej: \"Capturar 0.5% del SAM = 925 clientes generando $5.5M MXN anuales en el tercer año.\"\n\n**Benchmark / criterio de calidad:** SOM esperado: entre 1% y 5% del SAM en etapas tempranas.\n\n**De dónde viene la guía:** The Lean Startup (p. 89) & Starting a Business QuickStart Guide (p. 112)\n\n### `perfil`\n\n**El prompt que usa:** Características psicográficas: estilo de vida, valores, motivaciones y hábitos de compra.\n\n**Ejemplo que muestra la guía:** Ej: \"Valora la seguridad sobre el riesgo. Investiga en YouTube antes de comprar. Prefiere apps sobre llamadas telefónicas.\"\n\n**Benchmark / criterio de calidad:** Mapa de empatía completo con 4 cuadrantes (piensa, ve, oye, hace).\n\n**De dónde viene la guía:** Alexander Osterwalder — Value Proposition Design (p. 16)\n\n### `sensibilidad_demanda`\n\n**El prompt que usa:** Evalúa la elasticidad precio de la demanda y el impacto de cambios económicos.\n\n**Ejemplo que muestra la guía:** Ej: Demanda inelástica (Ep = -0.4) debido a que el servicio es crítico para evitar paros.\n\n**Benchmark / criterio de calidad:** Elasticidad justificada.\n\n**De dónde viene la guía:** The Nature of Value (Ch. 3)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "Sin cajas asociadas."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **El Mercado** de *Plan de Negocios Comercial*. La justificación metodológica completa está en la página del modelo y en `docs/business.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `business.mercado.segmentacion.tam` → tipo `text`\n- `business.mercado.segmentacion.sam` → tipo `text`\n- `business.mercado.segmentacion.som` → tipo `text`\n- `business.mercado.segmentacion.perfil` → tipo `text`\n- `business.mercado.segmentacion.sensibilidad_demanda` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas:** `src/config/moduleBoxMap.js` no declara cajas para `business:segmentacion`; la pantalla muestra solo los campos de texto.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

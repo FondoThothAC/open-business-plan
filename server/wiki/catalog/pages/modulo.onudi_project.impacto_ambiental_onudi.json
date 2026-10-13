@@ -1,0 +1,84 @@
+{
+  "id": "modulo.onudi_project.impacto_ambiental_onudi",
+  "title": "Evaluación de Impacto Ambiental (EIA)",
+  "summary": "Matriz de mitigación de emisiones, efluentes y residuos industriales.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "onudi_project",
+  "moduleKey": "impacto_ambiental_onudi",
+  "pillarKey": "ingenieria_industrial",
+  "openUrl": "/onudi_project/impacto_ambiental_onudi",
+  "fields": [
+    {
+      "key": "estudio_impacto_eia",
+      "type": "text",
+      "address": "onudi_project.ingenieria_industrial.impacto_ambiental_onudi.estudio_impacto_eia",
+      "prompt": "Manifestación de Impacto Ambiental (MIA / EIA): identificación de impactos físicos, biológicos y socioeconómicos de la planta industrial.",
+      "ejemplo": "Ej: MIA modalidad particular aprobada por SEMARNAT con 14 condicionantes de mitigación ambiental y monitoreo de ruido.",
+      "benchmark": "Aprobación formal de la autoridad ambiental competente previa al desembolso de CAPEX.",
+      "cita": "Manual de Viabilidad Industrial ONUDI & The Role of Corporate Sustainability in Asian Development p. 130",
+      "placeholder": "Resumen de la Manifestación de Impacto Ambiental y estatus de autorización..."
+    },
+    {
+      "key": "gestion_efluentes_emisiones",
+      "type": "text",
+      "address": "onudi_project.ingenieria_industrial.impacto_ambiental_onudi.gestion_efluentes_emisiones",
+      "prompt": "Tecnología de tratamiento de aguas residuales industriales, trampas de grasa, filtros de mangas y control de emisiones a la atmósfera.",
+      "ejemplo": "Ej: Planta de tratamiento de efluentes cárnicos mediante flotación DAF y reactor biológico con descarga en norma NOM-002-SEMARNAT.",
+      "benchmark": "100% de efluentes tratados cumpliendo normas oficiales de descarga y reuso.",
+      "cita": "Manual de Viabilidad Industrial ONUDI & Principios de Producción Limpia",
+      "placeholder": "Tren de tratamiento de residuos líquidos, emisiones gaseosas y lodos..."
+    },
+    {
+      "key": "plan_cumplimiento_ambiental",
+      "type": "text",
+      "address": "onudi_project.ingenieria_industrial.impacto_ambiental_onudi.plan_cumplimiento_ambiental",
+      "prompt": "Plan de gestión y monitoreo ambiental continuo (PMA) con calendario de muestreos de laboratorio acreditado y auditorías.",
+      "ejemplo": "Ej: Muestreo trimestral de descargas por laboratorio acreditado EMA y auditoría ambiental para certificación de Industria Limpia PROFEPA.",
+      "benchmark": "Certificación de cumplimiento ambiental auditable con presupuesto anual de mitigación.",
+      "cita": "The Role of Corporate Sustainability in Asian Development (p. 135)",
+      "placeholder": "Calendario de muestreos, presupuesto ambiental y auditorías de verificación..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_impacto_ambiental_onudi",
+      "title": "Evaluación de Impacto Ambiental y Mitigación Industrial (EIA)",
+      "type": "checklist",
+      "description": "Checklist de cumplimiento para control de efluentes, huella de carbono, manejo de residuos peligrosos y consulta comunitaria.",
+      "source": "The Role of Corporate Sustainability in Asian Development — p. 130"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Matriz de mitigación de emisiones, efluentes y residuos industriales.\n\n**Cómo se usa.** Está en el pilar **Ingeniería y Emplazamiento** del modelo *Estudio de Factibilidad ONUDI (Industrial Global)*. Se abre en `/onudi_project/impacto_ambiental_onudi`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 3 campos: `estudio_impacto_eia`, `gestion_efluentes_emisiones`, `plan_cumplimiento_ambiental`.\n\n**Herramientas del módulo.** 1 caja(s): `box_impacto_ambiental_onudi`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `estudio_impacto_eia`\n\n**El prompt que usa:** Manifestación de Impacto Ambiental (MIA / EIA): identificación de impactos físicos, biológicos y socioeconómicos de la planta industrial.\n\n**Ejemplo que muestra la guía:** Ej: MIA modalidad particular aprobada por SEMARNAT con 14 condicionantes de mitigación ambiental y monitoreo de ruido.\n\n**Benchmark / criterio de calidad:** Aprobación formal de la autoridad ambiental competente previa al desembolso de CAPEX.\n\n**De dónde viene la guía:** Manual de Viabilidad Industrial ONUDI & The Role of Corporate Sustainability in Asian Development p. 130\n\n### `gestion_efluentes_emisiones`\n\n**El prompt que usa:** Tecnología de tratamiento de aguas residuales industriales, trampas de grasa, filtros de mangas y control de emisiones a la atmósfera.\n\n**Ejemplo que muestra la guía:** Ej: Planta de tratamiento de efluentes cárnicos mediante flotación DAF y reactor biológico con descarga en norma NOM-002-SEMARNAT.\n\n**Benchmark / criterio de calidad:** 100% de efluentes tratados cumpliendo normas oficiales de descarga y reuso.\n\n**De dónde viene la guía:** Manual de Viabilidad Industrial ONUDI & Principios de Producción Limpia\n\n### `plan_cumplimiento_ambiental`\n\n**El prompt que usa:** Plan de gestión y monitoreo ambiental continuo (PMA) con calendario de muestreos de laboratorio acreditado y auditorías.\n\n**Ejemplo que muestra la guía:** Ej: Muestreo trimestral de descargas por laboratorio acreditado EMA y auditoría ambiental para certificación de Industria Limpia PROFEPA.\n\n**Benchmark / criterio de calidad:** Certificación de cumplimiento ambiental auditable con presupuesto anual de mitigación.\n\n**De dónde viene la guía:** The Role of Corporate Sustainability in Asian Development (p. 135)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Evaluación de Impacto Ambiental y Mitigación Industrial (EIA)\n\n`box_impacto_ambiental_onudi` · tipo **checklist** · fuente: The Role of Corporate Sustainability in Asian Development — p. 130\n\nChecklist de cumplimiento para control de efluentes, huella de carbono, manejo de residuos peligrosos y consulta comunitaria."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Ingeniería y Emplazamiento** de *Estudio de Factibilidad ONUDI (Industrial Global)*. La justificación metodológica completa está en la página del modelo y en `docs/onudi_project.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `onudi_project.ingenieria_industrial.impacto_ambiental_onudi.estudio_impacto_eia` → tipo `text`\n- `onudi_project.ingenieria_industrial.impacto_ambiental_onudi.gestion_efluentes_emisiones` → tipo `text`\n- `onudi_project.ingenieria_industrial.impacto_ambiental_onudi.plan_cumplimiento_ambiental` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `onudi_project:impacto_ambiental_onudi`): `box_impacto_ambiental_onudi`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

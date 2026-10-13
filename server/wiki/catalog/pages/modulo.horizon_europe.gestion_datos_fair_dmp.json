@@ -1,0 +1,84 @@
+{
+  "id": "modulo.horizon_europe.gestion_datos_fair_dmp",
+  "title": "Gestión de Datos FAIR (DMP)",
+  "summary": "Plan de gestión de datos: Localizables, Accesibles, Interoperables y Reutilizables.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "horizon_europe",
+  "moduleKey": "gestion_datos_fair_dmp",
+  "pillarKey": "excelencia_cientifica",
+  "openUrl": "/horizon_europe/gestion_datos_fair_dmp",
+  "fields": [
+    {
+      "key": "repositorios_fair",
+      "type": "text",
+      "address": "horizon_europe.excelencia_cientifica.gestion_datos_fair_dmp.repositorios_fair",
+      "prompt": "Plataformas y repositorios certificados donde se depositarán los conjuntos de datos científicos (Zenodo, Dryad).",
+      "ejemplo": "Ej: Datasets genómicos y espectroscópicos depositados en Zenodo con DOI asignado de acceso abierto.",
+      "benchmark": "Datos Localizables, Accesibles, Interoperables y Reutilizables (FAIR Principles).",
+      "cita": "Horizon Europe Open Science Manual & Sustain Asia p. 102",
+      "placeholder": "Repositorios con identificador persistente (DOI) y esquemas de metadatos..."
+    },
+    {
+      "key": "politica_acceso_abierto",
+      "type": "text",
+      "address": "horizon_europe.excelencia_cientifica.gestion_datos_fair_dmp.politica_acceso_abierto",
+      "prompt": "Régimen de publicación científica de acceso abierto inmediato bajo licencia Creative Commons (CC-BY).",
+      "ejemplo": "Ej: Todas las publicaciones científicas revisadas por pares serán publicadas en revistas Q1 Open Access sin embargo temporal.",
+      "benchmark": "100% de publicaciones de investigación financiadas en acceso abierto inmediato.",
+      "cita": "Comisión Europea — Horizon Europe Programme Guide",
+      "placeholder": "Licenciamiento abierto (CC-BY) y política de derechos de autor..."
+    },
+    {
+      "key": "plan_gestion_datos_dmp",
+      "type": "text",
+      "address": "horizon_europe.excelencia_cientifica.gestion_datos_fair_dmp.plan_gestion_datos_dmp",
+      "prompt": "Data Management Plan (DMP): tipos de datos generados, preservación a largo plazo y curaduría ética.",
+      "ejemplo": "Ej: DMP vivo actualizado en M6 y M18 con protocolos de cifrado y anonimización de datos sensibles.",
+      "benchmark": "Entrega obligatoria del DMP formal en el mes 6 de ejecución del consorcio.",
+      "cita": "Horizon Europe Guidelines on Data Management",
+      "placeholder": "Protocolo de respaldo, formatos abiertos y preservación a 10 años..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_dmp_fair_checklist",
+      "title": "Checklist de Gestión de Datos FAIR y Data Management Plan (DMP)",
+      "type": "checklist",
+      "description": "Verificación de principios Findable, Accessible, Interoperable y Reusable para datos de investigación y repositorios abiertos.",
+      "source": "The Role of Corporate Sustainability in Asian Development — p. 102"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Plan de gestión de datos: Localizables, Accesibles, Interoperables y Reutilizables.\n\n**Cómo se usa.** Está en el pilar **Excelencia y Ciencia Abierta** del modelo *Horizon Europe (Unión Europea)*. Se abre en `/horizon_europe/gestion_datos_fair_dmp`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 3 campos: `repositorios_fair`, `politica_acceso_abierto`, `plan_gestion_datos_dmp`.\n\n**Herramientas del módulo.** 1 caja(s): `box_dmp_fair_checklist`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `repositorios_fair`\n\n**El prompt que usa:** Plataformas y repositorios certificados donde se depositarán los conjuntos de datos científicos (Zenodo, Dryad).\n\n**Ejemplo que muestra la guía:** Ej: Datasets genómicos y espectroscópicos depositados en Zenodo con DOI asignado de acceso abierto.\n\n**Benchmark / criterio de calidad:** Datos Localizables, Accesibles, Interoperables y Reutilizables (FAIR Principles).\n\n**De dónde viene la guía:** Horizon Europe Open Science Manual & Sustain Asia p. 102\n\n### `politica_acceso_abierto`\n\n**El prompt que usa:** Régimen de publicación científica de acceso abierto inmediato bajo licencia Creative Commons (CC-BY).\n\n**Ejemplo que muestra la guía:** Ej: Todas las publicaciones científicas revisadas por pares serán publicadas en revistas Q1 Open Access sin embargo temporal.\n\n**Benchmark / criterio de calidad:** 100% de publicaciones de investigación financiadas en acceso abierto inmediato.\n\n**De dónde viene la guía:** Comisión Europea — Horizon Europe Programme Guide\n\n### `plan_gestion_datos_dmp`\n\n**El prompt que usa:** Data Management Plan (DMP): tipos de datos generados, preservación a largo plazo y curaduría ética.\n\n**Ejemplo que muestra la guía:** Ej: DMP vivo actualizado en M6 y M18 con protocolos de cifrado y anonimización de datos sensibles.\n\n**Benchmark / criterio de calidad:** Entrega obligatoria del DMP formal en el mes 6 de ejecución del consorcio.\n\n**De dónde viene la guía:** Horizon Europe Guidelines on Data Management"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Checklist de Gestión de Datos FAIR y Data Management Plan (DMP)\n\n`box_dmp_fair_checklist` · tipo **checklist** · fuente: The Role of Corporate Sustainability in Asian Development — p. 102\n\nVerificación de principios Findable, Accessible, Interoperable y Reusable para datos de investigación y repositorios abiertos."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Excelencia y Ciencia Abierta** de *Horizon Europe (Unión Europea)*. La justificación metodológica completa está en la página del modelo y en `docs/horizon_europe.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `horizon_europe.excelencia_cientifica.gestion_datos_fair_dmp.repositorios_fair` → tipo `text`\n- `horizon_europe.excelencia_cientifica.gestion_datos_fair_dmp.politica_acceso_abierto` → tipo `text`\n- `horizon_europe.excelencia_cientifica.gestion_datos_fair_dmp.plan_gestion_datos_dmp` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `horizon_europe:gestion_datos_fair_dmp`): `box_dmp_fair_checklist`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

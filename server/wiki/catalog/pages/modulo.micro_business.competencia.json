@@ -1,0 +1,74 @@
+{
+  "id": "modulo.micro_business.competencia",
+  "title": "La Competencia Local",
+  "summary": "Quién más hace lo mismo cerca de nosotros.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "micro_business",
+  "moduleKey": "competencia",
+  "pillarKey": "mercado",
+  "openUrl": "/micro_business/competencia",
+  "fields": [
+    {
+      "key": "competidores_locales",
+      "type": "text",
+      "address": "micro_business.mercado.competencia.competidores_locales",
+      "prompt": "¿Quién más vende lo mismo cerca de ti?",
+      "ejemplo": "Ej: \"Hay un puesto de hot dogs a la vuelta y una pizzería a dos cuadras.\"",
+      "benchmark": "Operación simple con punto de equilibrio mensual y presupuesto < 30 días.",
+      "cita": "Manual de Plan de Negocios Panamá & Plan de Negocios VF",
+      "placeholder": "Información básica para arrancar el autoempleo en (competidores_locales)..."
+    },
+    {
+      "key": "nuestra_ventaja",
+      "type": "text",
+      "address": "micro_business.mercado.competencia.nuestra_ventaja",
+      "prompt": "¿Por qué te van a comprar a ti en vez de a ellos?",
+      "ejemplo": "Ej: \"Mis salsas son caseras, uso tortilla recién hecha y atiendo muy rápido.\"",
+      "benchmark": "Operación simple con punto de equilibrio mensual y presupuesto < 30 días.",
+      "cita": "Manual de Plan de Negocios Panamá & Plan de Negocios VF",
+      "placeholder": "Información básica para arrancar el autoempleo en (nuestra_ventaja)..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_apertura_30dias",
+      "title": "Checklist de Apertura Legal en 30 Días",
+      "type": "checklist",
+      "description": "RFC, régimen fiscal simplificado, licencias municipales y apertura.",
+      "source": "Plan de Negocios VF & Manual Panamá — p. 15"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Quién más hace lo mismo cerca de nosotros.\n\n**Cómo se usa.** Está en el pilar **Mercadeo Simplificado** del modelo *Plan para Microempresa y Autoempleo (Simplificado)*. Se abre en `/micro_business/competencia`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 2 campos: `competidores_locales`, `nuestra_ventaja`.\n\n**Herramientas del módulo.** 1 caja(s): `box_apertura_30dias`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `competidores_locales`\n\n**El prompt que usa:** ¿Quién más vende lo mismo cerca de ti?\n\n**Ejemplo que muestra la guía:** Ej: \"Hay un puesto de hot dogs a la vuelta y una pizzería a dos cuadras.\"\n\n**Benchmark / criterio de calidad:** Operación simple con punto de equilibrio mensual y presupuesto < 30 días.\n\n**De dónde viene la guía:** Manual de Plan de Negocios Panamá & Plan de Negocios VF\n\n### `nuestra_ventaja`\n\n**El prompt que usa:** ¿Por qué te van a comprar a ti en vez de a ellos?\n\n**Ejemplo que muestra la guía:** Ej: \"Mis salsas son caseras, uso tortilla recién hecha y atiendo muy rápido.\"\n\n**Benchmark / criterio de calidad:** Operación simple con punto de equilibrio mensual y presupuesto < 30 días.\n\n**De dónde viene la guía:** Manual de Plan de Negocios Panamá & Plan de Negocios VF"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Checklist de Apertura Legal en 30 Días\n\n`box_apertura_30dias` · tipo **checklist** · fuente: Plan de Negocios VF & Manual Panamá — p. 15\n\nRFC, régimen fiscal simplificado, licencias municipales y apertura."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Mercadeo Simplificado** de *Plan para Microempresa y Autoempleo (Simplificado)*. La justificación metodológica completa está en la página del modelo y en `docs/micro_business.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `micro_business.mercado.competencia.competidores_locales` → tipo `text`\n- `micro_business.mercado.competencia.nuestra_ventaja` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `micro_business:competencia`): `box_apertura_30dias`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

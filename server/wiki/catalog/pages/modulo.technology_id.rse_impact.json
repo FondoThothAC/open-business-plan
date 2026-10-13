@@ -1,0 +1,76 @@
+{
+  "id": "modulo.technology_id.rse_impact",
+  "title": "Responsabilidad Social (RSE)",
+  "summary": "Evaluación del impacto ético, social y ambiental directo del desarrollo tecnológico.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "technology_id",
+  "moduleKey": "rse_impact",
+  "pillarKey": "responsabilidad_social",
+  "openUrl": "/technology_id/rse_impact",
+  "fields": [
+    {
+      "key": "impacto_socioambiental",
+      "type": "text",
+      "address": "technology_id.responsabilidad_social.rse_impact.impacto_socioambiental",
+      "prompt": "Efectos directos e indirectos del uso de tu tecnología en la sociedad y el ecosistema.",
+      "ejemplo": "Ej: Reducción de 20% en merma de producción disminuye la generación de residuos metálicos en 8 toneladas anuales.",
+      "benchmark": "Madurez tecnológica validada en escala TRL (1 a 9) y novedad patentable.",
+      "cita": "Clayton Christensen — The Innovator's Dilemma & Manual de Oslo",
+      "placeholder": "Especificaciones técnicas e innovación para (impacto_socioambiental)..."
+    },
+    {
+      "key": "generacion_empleo_calificado",
+      "type": "text",
+      "address": "technology_id.responsabilidad_social.rse_impact.generacion_empleo_calificado",
+      "prompt": "Proyecciones de contratación de ingenieros, científicos, doctores o técnicos especializados.",
+      "ejemplo": "Ej: Contratación de 4 desarrolladores de IA senior y 2 ingenieros de automatización con salarios competitivos en la región.",
+      "benchmark": "Madurez tecnológica validada en escala TRL (1 a 9) y novedad patentable.",
+      "cita": "Clayton Christensen — The Innovator's Dilemma & Manual de Oslo",
+      "placeholder": "Especificaciones técnicas e innovación para (generacion_empleo_calificado)..."
+    },
+    {
+      "key": "politica_rse",
+      "type": "text",
+      "address": "technology_id.responsabilidad_social.rse_impact.politica_rse",
+      "prompt": "Principios éticos de la empresa de tecnología (ej. ética de inteligencia artificial, equidad de género en STEM).",
+      "ejemplo": "Ej: Política estricta de no sesgo algorítmico y 40% de puestos técnicos ocupados por mujeres ingenieras.",
+      "benchmark": "Madurez tecnológica validada en escala TRL (1 a 9) y novedad patentable.",
+      "cita": "Clayton Christensen — The Innovator's Dilemma & Manual de Oslo",
+      "placeholder": "Especificaciones técnicas e innovación para (politica_rse)..."
+    }
+  ],
+  "boxes": [],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Evaluación del impacto ético, social y ambiental directo del desarrollo tecnológico.\n\n**Cómo se usa.** Está en el pilar **Impacto Social y Ecológico (RSE)** del modelo *Plan de Negocios de Base Tecnológica e Innovación (I+D)*. Se abre en `/technology_id/rse_impact`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 3 campos: `impacto_socioambiental`, `generacion_empleo_calificado`, `politica_rse`.\n\n**Herramientas del módulo.** Ninguna específica: se apoya en los campos de texto."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `impacto_socioambiental`\n\n**El prompt que usa:** Efectos directos e indirectos del uso de tu tecnología en la sociedad y el ecosistema.\n\n**Ejemplo que muestra la guía:** Ej: Reducción de 20% en merma de producción disminuye la generación de residuos metálicos en 8 toneladas anuales.\n\n**Benchmark / criterio de calidad:** Madurez tecnológica validada en escala TRL (1 a 9) y novedad patentable.\n\n**De dónde viene la guía:** Clayton Christensen — The Innovator's Dilemma & Manual de Oslo\n\n### `generacion_empleo_calificado`\n\n**El prompt que usa:** Proyecciones de contratación de ingenieros, científicos, doctores o técnicos especializados.\n\n**Ejemplo que muestra la guía:** Ej: Contratación de 4 desarrolladores de IA senior y 2 ingenieros de automatización con salarios competitivos en la región.\n\n**Benchmark / criterio de calidad:** Madurez tecnológica validada en escala TRL (1 a 9) y novedad patentable.\n\n**De dónde viene la guía:** Clayton Christensen — The Innovator's Dilemma & Manual de Oslo\n\n### `politica_rse`\n\n**El prompt que usa:** Principios éticos de la empresa de tecnología (ej. ética de inteligencia artificial, equidad de género en STEM).\n\n**Ejemplo que muestra la guía:** Ej: Política estricta de no sesgo algorítmico y 40% de puestos técnicos ocupados por mujeres ingenieras.\n\n**Benchmark / criterio de calidad:** Madurez tecnológica validada en escala TRL (1 a 9) y novedad patentable.\n\n**De dónde viene la guía:** Clayton Christensen — The Innovator's Dilemma & Manual de Oslo"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "Sin cajas asociadas."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Impacto Social y Ecológico (RSE)** de *Plan de Negocios de Base Tecnológica e Innovación (I+D)*. La justificación metodológica completa está en la página del modelo y en `docs/technology_id.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `technology_id.responsabilidad_social.rse_impact.impacto_socioambiental` → tipo `text`\n- `technology_id.responsabilidad_social.rse_impact.generacion_empleo_calificado` → tipo `text`\n- `technology_id.responsabilidad_social.rse_impact.politica_rse` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas:** `src/config/moduleBoxMap.js` no declara cajas para `technology_id:rse_impact`; la pantalla muestra solo los campos de texto.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

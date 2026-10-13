@@ -1,0 +1,64 @@
+{
+  "id": "modulo.horizon_europe.dnsh_principle",
+  "title": "Principio DNSH (UE)",
+  "summary": "Garantía de no causar daño significativo a los 6 objetivos ambientales de la UE.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "horizon_europe",
+  "moduleKey": "dnsh_principle",
+  "pillarKey": "impacto_sostenibilidad",
+  "openUrl": "/horizon_europe/dnsh_principle",
+  "fields": [
+    {
+      "key": "dnsh",
+      "type": "text",
+      "address": "horizon_europe.impacto_sostenibilidad.dnsh_principle.dnsh",
+      "prompt": "Principio Do No Significant Harm. Demostrar que el proyecto no daña ninguno de los 6 objetivos medioambientales.",
+      "ejemplo": "Ej (Estilo Northvolt): El proceso de reciclaje reduce 80% emisiones de CO2 sin generar efluentes tóxicos.",
+      "benchmark": "Cumplimiento estricto de Do No Significant Harm (DNSH) en los 6 objetivos ambientales y FAIR Data.",
+      "cita": "Horizon Europe Programme Guide (Comisión Europea) & Principio DNSH",
+      "placeholder": "Criterios de excelencia e impacto europeo para (dnsh)..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_dnsh_ue_6",
+      "title": "Principio DNSH de la UE (6 Objetivos Medioambientales)",
+      "type": "checklist",
+      "description": "Do No Significant Harm: Clima, agua, economía circular, contaminación, biodiversidad.",
+      "source": "The Role of Corporate Sustainability in Asian Development — p. 89"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Garantía de no causar daño significativo a los 6 objetivos ambientales de la UE.\n\n**Cómo se usa.** Está en el pilar **Impacto y Sostenibilidad** del modelo *Horizon Europe (Unión Europea)*. Se abre en `/horizon_europe/dnsh_principle`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 1 campo: `dnsh`.\n\n**Herramientas del módulo.** 1 caja(s): `box_dnsh_ue_6`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `dnsh`\n\n**El prompt que usa:** Principio Do No Significant Harm. Demostrar que el proyecto no daña ninguno de los 6 objetivos medioambientales.\n\n**Ejemplo que muestra la guía:** Ej (Estilo Northvolt): El proceso de reciclaje reduce 80% emisiones de CO2 sin generar efluentes tóxicos.\n\n**Benchmark / criterio de calidad:** Cumplimiento estricto de Do No Significant Harm (DNSH) en los 6 objetivos ambientales y FAIR Data.\n\n**De dónde viene la guía:** Horizon Europe Programme Guide (Comisión Europea) & Principio DNSH"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Principio DNSH de la UE (6 Objetivos Medioambientales)\n\n`box_dnsh_ue_6` · tipo **checklist** · fuente: The Role of Corporate Sustainability in Asian Development — p. 89\n\nDo No Significant Harm: Clima, agua, economía circular, contaminación, biodiversidad."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Impacto y Sostenibilidad** de *Horizon Europe (Unión Europea)*. La justificación metodológica completa está en la página del modelo y en `docs/horizon_europe.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `horizon_europe.impacto_sostenibilidad.dnsh_principle.dnsh` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `horizon_europe:dnsh_principle`): `box_dnsh_ue_6`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

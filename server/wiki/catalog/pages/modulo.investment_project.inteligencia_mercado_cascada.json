@@ -1,0 +1,94 @@
+{
+  "id": "modulo.investment_project.inteligencia_mercado_cascada",
+  "title": "Inteligencia de Mercado en Cascada",
+  "summary": "Investigación multinivel: Local INEGI DENUE, Scraping Nacional y APIs de Comercio Internacional.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "investment_project",
+  "moduleKey": "inteligencia_mercado_cascada",
+  "pillarKey": "mercado_cuantitativo",
+  "openUrl": "/investment_project/inteligencia_mercado_cascada",
+  "fields": [
+    {
+      "key": "fuente_datos_local",
+      "type": "text",
+      "address": "investment_project.mercado_cuantitativo.inteligencia_mercado_cascada.fuente_datos_local",
+      "prompt": "Registra los datos censales locales obtenidos de INEGI DENUE. Especifica municipio, código SCIAN de actividad, estrato de personal y densidad competitiva territorial.",
+      "ejemplo": "Ej: 'En Hermosillo, Sonora (SCIAN 311612 - Elaboración de embutidos y carnes preparadas), se censaron 14 establecimientos con estrato de 11 a 50 empleados'.",
+      "benchmark": "Mínimo 5 establecimientos censados con ID DENUE oficial y georreferenciación lat/long.",
+      "cita": "INEGI DENUE 2026 & Starting a Business QuickStart Guide (Ch. 5, p. 98)",
+      "placeholder": "Datos censales locales INEGI DENUE, código SCIAN y densidad de competidores..."
+    },
+    {
+      "key": "consulta_web_scraping",
+      "type": "text",
+      "address": "investment_project.mercado_cuantitativo.inteligencia_mercado_cascada.consulta_web_scraping",
+      "prompt": "Documenta los hallazgos de prospección y web scraping multi-fuente a nivel estatal y nacional (DuckDuckGo, Tavily Search, Google Maps/Knowledge Graph). Incluye precios públicos, presencia digital y reseñas.",
+      "ejemplo": "Ej: 'Scraping en Sonora y Sinaloa identificó 6 distribuidores cárnicos mayoristas con precios de Rib-Eye envasado entre $340 y $420 MXN/kg sin certificación TIF'.",
+      "benchmark": "Tasa de coincidencia web > 85% con validación de URL y presencia digital comprobable.",
+      "cita": "Carl Schramm — Burn the Business Plan & South-South Cooperation (Ch. 4, p. 78)",
+      "placeholder": "Resultados de scraping web, competidores nacionales y precios de mercado..."
+    },
+    {
+      "key": "consulta_internacional_api",
+      "type": "text",
+      "address": "investment_project.mercado_cuantitativo.inteligencia_mercado_cascada.consulta_internacional_api",
+      "prompt": "Detalla los flujos arancelarios, cuotas y demanda internacional consultados en APIs y bases de comercio exterior (ITC Trade Map, UN Comtrade, USDA/FAS, World Bank). Registra fracción arancelaria y volumen transfronterizo.",
+      "ejemplo": "Ej: 'Bajo la fracción arancelaria HS 0202.30 (Carne deshuesada congelada), el mercado de Arizona importó 34,200 ton en 2025 con arancel preferencial T-MEC del 0%'.",
+      "benchmark": "Serie histórica de 3 años de importaciones/exportaciones con fracción arancelaria HS de 6 a 8 dígitos.",
+      "cita": "ITC Trade Map & UN Comtrade (Manual de Comercio Exterior UNCTAD/OMC)",
+      "placeholder": "Fracción arancelaria HS, volumen de importación y barreras arancelarias..."
+    },
+    {
+      "key": "validacion_cruzada",
+      "type": "text",
+      "address": "investment_project.mercado_cuantitativo.inteligencia_mercado_cascada.validacion_cruzada",
+      "prompt": "Sintetiza la triangulación entre la capa local (INEGI), nacional (Web Scraping) e internacional (APIs comerciales). Formula el dictamen de viabilidad comercial y la estrategia de posicionamiento escalable.",
+      "ejemplo": "Ej: 'La triangulación valida viabilidad comercial regional inmediata (Fase 1) por déficit de oferta con valor agregado en Hermosillo, y respalda el salto a exportación (Fase 2) hacia Phoenix/Tucson'.",
+      "benchmark": "Matriz de triangulación con consistencia de precios, volumen de demanda y análisis de brecha competitiva.",
+      "cita": "The Nature of Value (Ch. 4, p. 78) & Anatomy of a Business Plan (Ch. 5)",
+      "placeholder": "Veredicto de triangulación de mercado y plan de penetración comercial..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_cascada_mercado_3niveles",
+      "title": "Cascada de Inteligencia de Mercado (3 Niveles: Local, Nacional, Global)",
+      "type": "table",
+      "description": "Matriz comparativa de 3 capas: Local INEGI DENUE, Scraping Nacional y Estadísticas de Comercio Internacional.",
+      "source": "Starting a Business QuickStart Guide & South-South Cooperation — Ch. 5; Ch. 4"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Investigación multinivel: Local INEGI DENUE, Scraping Nacional y APIs de Comercio Internacional.\n\n**Cómo se usa.** Está en el pilar **Estudio de Mercado Cuantitativo** del modelo *Proyecto de Inversión (Ingeniería y Finanzas)*. Se abre en `/investment_project/inteligencia_mercado_cascada`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 4 campos: `fuente_datos_local`, `consulta_web_scraping`, `consulta_internacional_api`, `validacion_cruzada`.\n\n**Herramientas del módulo.** 1 caja(s): `box_cascada_mercado_3niveles`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `fuente_datos_local`\n\n**El prompt que usa:** Registra los datos censales locales obtenidos de INEGI DENUE. Especifica municipio, código SCIAN de actividad, estrato de personal y densidad competitiva territorial.\n\n**Ejemplo que muestra la guía:** Ej: 'En Hermosillo, Sonora (SCIAN 311612 - Elaboración de embutidos y carnes preparadas), se censaron 14 establecimientos con estrato de 11 a 50 empleados'.\n\n**Benchmark / criterio de calidad:** Mínimo 5 establecimientos censados con ID DENUE oficial y georreferenciación lat/long.\n\n**De dónde viene la guía:** INEGI DENUE 2026 & Starting a Business QuickStart Guide (Ch. 5, p. 98)\n\n### `consulta_web_scraping`\n\n**El prompt que usa:** Documenta los hallazgos de prospección y web scraping multi-fuente a nivel estatal y nacional (DuckDuckGo, Tavily Search, Google Maps/Knowledge Graph). Incluye precios públicos, presencia digital y reseñas.\n\n**Ejemplo que muestra la guía:** Ej: 'Scraping en Sonora y Sinaloa identificó 6 distribuidores cárnicos mayoristas con precios de Rib-Eye envasado entre $340 y $420 MXN/kg sin certificación TIF'.\n\n**Benchmark / criterio de calidad:** Tasa de coincidencia web > 85% con validación de URL y presencia digital comprobable.\n\n**De dónde viene la guía:** Carl Schramm — Burn the Business Plan & South-South Cooperation (Ch. 4, p. 78)\n\n### `consulta_internacional_api`\n\n**El prompt que usa:** Detalla los flujos arancelarios, cuotas y demanda internacional consultados en APIs y bases de comercio exterior (ITC Trade Map, UN Comtrade, USDA/FAS, World Bank). Registra fracción arancelaria y volumen transfronterizo.\n\n**Ejemplo que muestra la guía:** Ej: 'Bajo la fracción arancelaria HS 0202.30 (Carne deshuesada congelada), el mercado de Arizona importó 34,200 ton en 2025 con arancel preferencial T-MEC del 0%'.\n\n**Benchmark / criterio de calidad:** Serie histórica de 3 años de importaciones/exportaciones con fracción arancelaria HS de 6 a 8 dígitos.\n\n**De dónde viene la guía:** ITC Trade Map & UN Comtrade (Manual de Comercio Exterior UNCTAD/OMC)\n\n### `validacion_cruzada`\n\n**El prompt que usa:** Sintetiza la triangulación entre la capa local (INEGI), nacional (Web Scraping) e internacional (APIs comerciales). Formula el dictamen de viabilidad comercial y la estrategia de posicionamiento escalable.\n\n**Ejemplo que muestra la guía:** Ej: 'La triangulación valida viabilidad comercial regional inmediata (Fase 1) por déficit de oferta con valor agregado en Hermosillo, y respalda el salto a exportación (Fase 2) hacia Phoenix/Tucson'.\n\n**Benchmark / criterio de calidad:** Matriz de triangulación con consistencia de precios, volumen de demanda y análisis de brecha competitiva.\n\n**De dónde viene la guía:** The Nature of Value (Ch. 4, p. 78) & Anatomy of a Business Plan (Ch. 5)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Cascada de Inteligencia de Mercado (3 Niveles: Local, Nacional, Global)\n\n`box_cascada_mercado_3niveles` · tipo **table** · fuente: Starting a Business QuickStart Guide & South-South Cooperation — Ch. 5; Ch. 4\n\nMatriz comparativa de 3 capas: Local INEGI DENUE, Scraping Nacional y Estadísticas de Comercio Internacional."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Estudio de Mercado Cuantitativo** de *Proyecto de Inversión (Ingeniería y Finanzas)*. La justificación metodológica completa está en la página del modelo y en `docs/investment_project.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `investment_project.mercado_cuantitativo.inteligencia_mercado_cascada.fuente_datos_local` → tipo `text`\n- `investment_project.mercado_cuantitativo.inteligencia_mercado_cascada.consulta_web_scraping` → tipo `text`\n- `investment_project.mercado_cuantitativo.inteligencia_mercado_cascada.consulta_internacional_api` → tipo `text`\n- `investment_project.mercado_cuantitativo.inteligencia_mercado_cascada.validacion_cruzada` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `investment_project:inteligencia_mercado_cascada`): `box_cascada_mercado_3niveles`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

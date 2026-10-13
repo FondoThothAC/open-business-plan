@@ -1,0 +1,104 @@
+{
+  "id": "modulo.social_bid.evaluacion_social_cuantitativa",
+  "title": "Evaluación Cuantitativa BID",
+  "summary": "Tasa social de descuento (8-12%), costos sombra y rentabilidad socioeconómica.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "social_bid",
+  "moduleKey": "evaluacion_social_cuantitativa",
+  "pillarKey": "presupuesto",
+  "openUrl": "/social_bid/evaluacion_social_cuantitativa",
+  "fields": [
+    {
+      "key": "tasa_descuento_social",
+      "type": "text",
+      "address": "social_bid.presupuesto.evaluacion_social_cuantitativa.tasa_descuento_social",
+      "prompt": "Tasa social de descuento recomendada por organismos multilaterales (BID / CEPAL / Banco Mundial).",
+      "ejemplo": "Ej: Tasa social de descuento del 10.0% anual según parámetros del BID para proyectos comunitarios.",
+      "benchmark": "Rango normativo de 8.0% a 12.0% para evaluación social de proyectos.",
+      "cita": "The Nature of Value (Ch. 5, p. 92) & Guías de Evaluación Social BID",
+      "placeholder": "Porcentaje de tasa social de descuento y fuente oficial..."
+    },
+    {
+      "key": "beneficios_socioeconomicos",
+      "type": "text",
+      "address": "social_bid.presupuesto.evaluacion_social_cuantitativa.beneficios_socioeconomicos",
+      "prompt": "Monetización de externalidades positivas: ahorro de tiempo, mejoras en salud, reducción de emisiones o incremento de ingresos.",
+      "ejemplo": "Ej: Ahorro de 45 horas/mes por familia valoradas a salario mínimo sombra ($3.2M MXN anuales acumulados).",
+      "benchmark": "Beneficios directos e indirectos con ratio B/C >= 1.25 con precios sombra.",
+      "cita": "Manual de Proyectos Panamá (p. 18) & Metodología CEPAL",
+      "placeholder": "Detalle y valuación monetaria de los beneficios sociales generados..."
+    },
+    {
+      "key": "costos_sociales_sombra",
+      "type": "text",
+      "address": "social_bid.presupuesto.evaluacion_social_cuantitativa.costos_sociales_sombra",
+      "prompt": "Costos de inversión y operación ajustados por factores de conversión a precios sociales.",
+      "ejemplo": "Ej: Factor de conversión de mano de obra no calificada = 0.75 sobre el salario nominal.",
+      "benchmark": "Ajuste sombra del 15% al 25% para eliminar distorsiones fiscales.",
+      "cita": "The Nature of Value (Ch. 5, p. 94)",
+      "placeholder": "Factores de corrección social y costos sombra aplicados..."
+    },
+    {
+      "key": "tir_social_pct",
+      "type": "text",
+      "address": "social_bid.presupuesto.evaluacion_social_cuantitativa.tir_social_pct",
+      "prompt": "Tasa Interna de Retorno Social del proyecto considerando el flujo de beneficios socioeconómicos netos.",
+      "ejemplo": "Ej: TIR Social proyectada de 16.4% anual, superando ampliamente la tasa de corte del 10.0%.",
+      "benchmark": "TIR Social > Tasa Social de Descuento (mínimo 8% - 12%) para viabilidad.",
+      "cita": "Metodología de Evaluación de Proyectos Sociales BID (PM4R)",
+      "placeholder": "Porcentaje de TIR Social calculada y margen sobre la tasa de corte..."
+    },
+    {
+      "key": "vpn_social_monto",
+      "type": "text",
+      "address": "social_bid.presupuesto.evaluacion_social_cuantitativa.vpn_social_monto",
+      "prompt": "Valor Presente Neto Social que representa la ganancia de bienestar colectivo aportada por el proyecto.",
+      "ejemplo": "Ej: VPN Social de +$4,850,000 MXN descontado al 10.0% en un horizonte de 10 años.",
+      "benchmark": "VPN Social estrictamente positivo (VAN Social > 0).",
+      "cita": "The Nature of Value (Ch. 5, p. 96)",
+      "placeholder": "Monto en moneda local del Valor Presente Neto Social generado..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_tir_vpn_social_bid",
+      "title": "Evaluación Social Cuantitativa (TIR y VPN Social)",
+      "type": "formula",
+      "description": "Cálculo de viabilidad socioeconómica mediante tasa de descuento social nacional (6-12%) y beneficios sociales monetizados.",
+      "source": "The Nature of Value & Manual de Panamá — Ch. 5 p. 92; p. 18"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Tasa social de descuento (8-12%), costos sombra y rentabilidad socioeconómica.\n\n**Cómo se usa.** Está en el pilar **Presupuesto y Evaluación** del modelo *Proyecto Social (Metodología BID)*. Se abre en `/social_bid/evaluacion_social_cuantitativa`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 5 campos: `tasa_descuento_social`, `beneficios_socioeconomicos`, `costos_sociales_sombra`, `tir_social_pct`, `vpn_social_monto`.\n\n**Herramientas del módulo.** 1 caja(s): `box_tir_vpn_social_bid`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `tasa_descuento_social`\n\n**El prompt que usa:** Tasa social de descuento recomendada por organismos multilaterales (BID / CEPAL / Banco Mundial).\n\n**Ejemplo que muestra la guía:** Ej: Tasa social de descuento del 10.0% anual según parámetros del BID para proyectos comunitarios.\n\n**Benchmark / criterio de calidad:** Rango normativo de 8.0% a 12.0% para evaluación social de proyectos.\n\n**De dónde viene la guía:** The Nature of Value (Ch. 5, p. 92) & Guías de Evaluación Social BID\n\n### `beneficios_socioeconomicos`\n\n**El prompt que usa:** Monetización de externalidades positivas: ahorro de tiempo, mejoras en salud, reducción de emisiones o incremento de ingresos.\n\n**Ejemplo que muestra la guía:** Ej: Ahorro de 45 horas/mes por familia valoradas a salario mínimo sombra ($3.2M MXN anuales acumulados).\n\n**Benchmark / criterio de calidad:** Beneficios directos e indirectos con ratio B/C >= 1.25 con precios sombra.\n\n**De dónde viene la guía:** Manual de Proyectos Panamá (p. 18) & Metodología CEPAL\n\n### `costos_sociales_sombra`\n\n**El prompt que usa:** Costos de inversión y operación ajustados por factores de conversión a precios sociales.\n\n**Ejemplo que muestra la guía:** Ej: Factor de conversión de mano de obra no calificada = 0.75 sobre el salario nominal.\n\n**Benchmark / criterio de calidad:** Ajuste sombra del 15% al 25% para eliminar distorsiones fiscales.\n\n**De dónde viene la guía:** The Nature of Value (Ch. 5, p. 94)\n\n### `tir_social_pct`\n\n**El prompt que usa:** Tasa Interna de Retorno Social del proyecto considerando el flujo de beneficios socioeconómicos netos.\n\n**Ejemplo que muestra la guía:** Ej: TIR Social proyectada de 16.4% anual, superando ampliamente la tasa de corte del 10.0%.\n\n**Benchmark / criterio de calidad:** TIR Social > Tasa Social de Descuento (mínimo 8% - 12%) para viabilidad.\n\n**De dónde viene la guía:** Metodología de Evaluación de Proyectos Sociales BID (PM4R)\n\n### `vpn_social_monto`\n\n**El prompt que usa:** Valor Presente Neto Social que representa la ganancia de bienestar colectivo aportada por el proyecto.\n\n**Ejemplo que muestra la guía:** Ej: VPN Social de +$4,850,000 MXN descontado al 10.0% en un horizonte de 10 años.\n\n**Benchmark / criterio de calidad:** VPN Social estrictamente positivo (VAN Social > 0).\n\n**De dónde viene la guía:** The Nature of Value (Ch. 5, p. 96)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Evaluación Social Cuantitativa (TIR y VPN Social)\n\n`box_tir_vpn_social_bid` · tipo **formula** · fuente: The Nature of Value & Manual de Panamá — Ch. 5 p. 92; p. 18\n\nCálculo de viabilidad socioeconómica mediante tasa de descuento social nacional (6-12%) y beneficios sociales monetizados."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Presupuesto y Evaluación** de *Proyecto Social (Metodología BID)*. La justificación metodológica completa está en la página del modelo y en `docs/social_bid.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `social_bid.presupuesto.evaluacion_social_cuantitativa.tasa_descuento_social` → tipo `text`\n- `social_bid.presupuesto.evaluacion_social_cuantitativa.beneficios_socioeconomicos` → tipo `text`\n- `social_bid.presupuesto.evaluacion_social_cuantitativa.costos_sociales_sombra` → tipo `text`\n- `social_bid.presupuesto.evaluacion_social_cuantitativa.tir_social_pct` → tipo `text`\n- `social_bid.presupuesto.evaluacion_social_cuantitativa.vpn_social_monto` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `social_bid:evaluacion_social_cuantitativa`): `box_tir_vpn_social_bid`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

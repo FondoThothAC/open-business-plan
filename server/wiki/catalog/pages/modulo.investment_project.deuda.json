@@ -1,0 +1,74 @@
+{
+  "id": "modulo.investment_project.deuda",
+  "title": "Apalancamiento y Deuda",
+  "summary": "Estructura del crédito y amortizaciones.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "investment_project",
+  "moduleKey": "deuda",
+  "pillarKey": "estructura_capital",
+  "openUrl": "/investment_project/deuda",
+  "fields": [
+    {
+      "key": "apalancamiento",
+      "type": "text",
+      "address": "investment_project.estructura_capital.deuda.apalancamiento",
+      "prompt": "Estructura de la deuda: bancos involucrados, plazos, tasas y garantías.",
+      "ejemplo": "Ej (Estilo JP Morgan): \"Crédito Sindicado a 15 años. Tasa SOFR + 3.5%. Garantía prendaria sobre los equipos.\"",
+      "benchmark": "TIR > WACC + 4% con análisis probabilístico Monte Carlo al 95% de confianza.",
+      "cita": "The Nature of Value (Ch. 5 WACC/CAPM) & CSI MasterFormat",
+      "placeholder": "Memoria de cálculo y parámetros cuantitativos para (apalancamiento)..."
+    },
+    {
+      "key": "servicio_deuda",
+      "type": "text",
+      "address": "investment_project.estructura_capital.deuda.servicio_deuda",
+      "prompt": "Tabla de amortización proyectada, pagos de capital e intereses (DSCR).",
+      "ejemplo": "Ej: \"DSCR mínimo esperado de 1.45x durante los primeros 5 años de operación.\"",
+      "benchmark": "TIR > WACC + 4% con análisis probabilístico Monte Carlo al 95% de confianza.",
+      "cita": "The Nature of Value (Ch. 5 WACC/CAPM) & CSI MasterFormat",
+      "placeholder": "Memoria de cálculo y parámetros cuantitativos para (servicio_deuda)..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_wacc_van_tir",
+      "title": "box_wacc_van_tir",
+      "type": "desconocido",
+      "description": "",
+      "source": ""
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Estructura del crédito y amortizaciones.\n\n**Cómo se usa.** Está en el pilar **Estructura de Capital** del modelo *Proyecto de Inversión (Ingeniería y Finanzas)*. Se abre en `/investment_project/deuda`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 2 campos: `apalancamiento`, `servicio_deuda`.\n\n**Herramientas del módulo.** 1 caja(s): `box_wacc_van_tir`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `apalancamiento`\n\n**El prompt que usa:** Estructura de la deuda: bancos involucrados, plazos, tasas y garantías.\n\n**Ejemplo que muestra la guía:** Ej (Estilo JP Morgan): \"Crédito Sindicado a 15 años. Tasa SOFR + 3.5%. Garantía prendaria sobre los equipos.\"\n\n**Benchmark / criterio de calidad:** TIR > WACC + 4% con análisis probabilístico Monte Carlo al 95% de confianza.\n\n**De dónde viene la guía:** The Nature of Value (Ch. 5 WACC/CAPM) & CSI MasterFormat\n\n### `servicio_deuda`\n\n**El prompt que usa:** Tabla de amortización proyectada, pagos de capital e intereses (DSCR).\n\n**Ejemplo que muestra la guía:** Ej: \"DSCR mínimo esperado de 1.45x durante los primeros 5 años de operación.\"\n\n**Benchmark / criterio de calidad:** TIR > WACC + 4% con análisis probabilístico Monte Carlo al 95% de confianza.\n\n**De dónde viene la guía:** The Nature of Value (Ch. 5 WACC/CAPM) & CSI MasterFormat"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### box_wacc_van_tir\n\n`box_wacc_van_tir` · tipo **desconocido**\n\n"
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Estructura de Capital** de *Proyecto de Inversión (Ingeniería y Finanzas)*. La justificación metodológica completa está en la página del modelo y en `docs/investment_project.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `investment_project.estructura_capital.deuda.apalancamiento` → tipo `text`\n- `investment_project.estructura_capital.deuda.servicio_deuda` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `investment_project:deuda`): `box_wacc_van_tir`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

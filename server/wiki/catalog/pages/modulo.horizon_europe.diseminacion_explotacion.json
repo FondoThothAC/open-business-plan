@@ -1,0 +1,84 @@
+{
+  "id": "modulo.horizon_europe.diseminacion_explotacion",
+  "title": "Diseminación y Explotación",
+  "summary": "Estrategia de comunicación científica, patentes conjuntas y adopción comercial.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "horizon_europe",
+  "moduleKey": "diseminacion_explotacion",
+  "pillarKey": "implementacion_trabajo",
+  "openUrl": "/horizon_europe/diseminacion_explotacion",
+  "fields": [
+    {
+      "key": "medidas_diseminacion",
+      "type": "text",
+      "address": "horizon_europe.implementacion_trabajo.diseminacion_explotacion.medidas_diseminacion",
+      "prompt": "Plan de comunicación para audiencias no científicas: web pública, notas de prensa, redes, webinars y talleres.",
+      "ejemplo": "Ej: Portal web multilingüe, 6 notas de prensa europeas, 4 workshops para PyMEs y campaña en LinkedIn con alcance > 50,000 profesionales.",
+      "benchmark": "Estrategia diferenciada entre 'diseminación a pares' y 'comunicación a la sociedad'.",
+      "cita": "The Role of Corporate Sustainability in Asian Development (p. 115)",
+      "placeholder": "Canales, público objetivo, mensajes clave y calendario de difusión..."
+    },
+    {
+      "key": "propiedad_intelectual_consorcio",
+      "type": "text",
+      "address": "horizon_europe.implementacion_trabajo.diseminacion_explotacion.propiedad_intelectual_consorcio",
+      "prompt": "Consortium Agreement (CA): régimen de propiedad del 'Background' previo y titularidad del 'Foreground' conjunto.",
+      "ejemplo": "Ej: Acuerdo DESCA: Cada socio retiene la propiedad de sus patentes previas; las patentes conjuntas se licencian con regalías proporcionales.",
+      "benchmark": "Firma del acuerdo de consorcio basada en el modelo estándar DESCA antes del Grant Agreement.",
+      "cita": "DESCA Consortium Agreement Model for Horizon Europe",
+      "placeholder": "Protección de IP previa, reparto de inventiva y acuerdos de explotación..."
+    },
+    {
+      "key": "hoja_ruta_explotacion",
+      "type": "text",
+      "address": "horizon_europe.implementacion_trabajo.diseminacion_explotacion.hoja_ruta_explotacion",
+      "prompt": "Modelo de negocio y plan de explotación comercial o institucional post-proyecto por los socios industriales.",
+      "ejemplo": "Ej: Socio industrial A adquiere la opción exclusiva de explotación comercial en Europa pagando 3% royalties a las universidades asociadas.",
+      "benchmark": "Plan de explotación con cartas de compromiso de los socios industriales.",
+      "cita": "Horizon Europe Exploitation Strategy Manual",
+      "placeholder": "Estrategia de comercialización de los resultados por cada socio..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_plan_diseminacion_eu",
+      "title": "Matriz de Diseminación, Explotación y Comunicación Científica",
+      "type": "table",
+      "description": "Plan estructurado por grupo de interés (científicos, industria, decisores políticos y público en general) con KPIs de impacto.",
+      "source": "The Role of Corporate Sustainability in Asian Development — p. 115"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Estrategia de comunicación científica, patentes conjuntas y adopción comercial.\n\n**Cómo se usa.** Está en el pilar **Implementación y Presupuesto EU** del modelo *Horizon Europe (Unión Europea)*. Se abre en `/horizon_europe/diseminacion_explotacion`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 3 campos: `medidas_diseminacion`, `propiedad_intelectual_consorcio`, `hoja_ruta_explotacion`.\n\n**Herramientas del módulo.** 1 caja(s): `box_plan_diseminacion_eu`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `medidas_diseminacion`\n\n**El prompt que usa:** Plan de comunicación para audiencias no científicas: web pública, notas de prensa, redes, webinars y talleres.\n\n**Ejemplo que muestra la guía:** Ej: Portal web multilingüe, 6 notas de prensa europeas, 4 workshops para PyMEs y campaña en LinkedIn con alcance > 50,000 profesionales.\n\n**Benchmark / criterio de calidad:** Estrategia diferenciada entre 'diseminación a pares' y 'comunicación a la sociedad'.\n\n**De dónde viene la guía:** The Role of Corporate Sustainability in Asian Development (p. 115)\n\n### `propiedad_intelectual_consorcio`\n\n**El prompt que usa:** Consortium Agreement (CA): régimen de propiedad del 'Background' previo y titularidad del 'Foreground' conjunto.\n\n**Ejemplo que muestra la guía:** Ej: Acuerdo DESCA: Cada socio retiene la propiedad de sus patentes previas; las patentes conjuntas se licencian con regalías proporcionales.\n\n**Benchmark / criterio de calidad:** Firma del acuerdo de consorcio basada en el modelo estándar DESCA antes del Grant Agreement.\n\n**De dónde viene la guía:** DESCA Consortium Agreement Model for Horizon Europe\n\n### `hoja_ruta_explotacion`\n\n**El prompt que usa:** Modelo de negocio y plan de explotación comercial o institucional post-proyecto por los socios industriales.\n\n**Ejemplo que muestra la guía:** Ej: Socio industrial A adquiere la opción exclusiva de explotación comercial en Europa pagando 3% royalties a las universidades asociadas.\n\n**Benchmark / criterio de calidad:** Plan de explotación con cartas de compromiso de los socios industriales.\n\n**De dónde viene la guía:** Horizon Europe Exploitation Strategy Manual"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Matriz de Diseminación, Explotación y Comunicación Científica\n\n`box_plan_diseminacion_eu` · tipo **table** · fuente: The Role of Corporate Sustainability in Asian Development — p. 115\n\nPlan estructurado por grupo de interés (científicos, industria, decisores políticos y público en general) con KPIs de impacto."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Implementación y Presupuesto EU** de *Horizon Europe (Unión Europea)*. La justificación metodológica completa está en la página del modelo y en `docs/horizon_europe.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `horizon_europe.implementacion_trabajo.diseminacion_explotacion.medidas_diseminacion` → tipo `text`\n- `horizon_europe.implementacion_trabajo.diseminacion_explotacion.propiedad_intelectual_consorcio` → tipo `text`\n- `horizon_europe.implementacion_trabajo.diseminacion_explotacion.hoja_ruta_explotacion` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `horizon_europe:diseminacion_explotacion`): `box_plan_diseminacion_eu`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

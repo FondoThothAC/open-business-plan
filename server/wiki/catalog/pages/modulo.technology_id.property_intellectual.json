@@ -1,0 +1,94 @@
+{
+  "id": "modulo.technology_id.property_intellectual",
+  "title": "Propiedad Intelectual",
+  "summary": "Estrategia legal de registro de marcas, secretos industriales y patentes nacionales o internacionales.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "technology_id",
+  "moduleKey": "property_intellectual",
+  "pillarKey": "innovacion",
+  "openUrl": "/technology_id/property_intellectual",
+  "fields": [
+    {
+      "key": "estado_del_arte",
+      "type": "text",
+      "address": "technology_id.innovacion.property_intellectual.estado_del_arte",
+      "prompt": "Búsqueda sistemática de patentes y literatura científica para asegurar que no hay infracciones.",
+      "ejemplo": "Ej: Búsqueda en USPTO y EPO localizando 3 patentes similares, diferenciándonos por la arquitectura de red ligera.",
+      "benchmark": "Madurez tecnológica validada en escala TRL (1 a 9) y novedad patentable.",
+      "cita": "Clayton Christensen — The Innovator's Dilemma & Manual de Oslo",
+      "placeholder": "Especificaciones técnicas e innovación para (estado_del_arte)..."
+    },
+    {
+      "key": "estrategia_patentes",
+      "type": "text",
+      "address": "technology_id.innovacion.property_intellectual.estrategia_patentes",
+      "prompt": "Plan legal para la solicitud de patentes, modelos de utilidad o protección de secretos industriales.",
+      "ejemplo": "Ej: Registro de marca nacional en IMPI y solicitud de patente internacional vía tratado PCT en Q3.",
+      "benchmark": "Madurez tecnológica validada en escala TRL (1 a 9) y novedad patentable.",
+      "cita": "Clayton Christensen — The Innovator's Dilemma & Manual de Oslo",
+      "placeholder": "Especificaciones técnicas e innovación para (estrategia_patentes)..."
+    },
+    {
+      "key": "clasificacion_patentes_ipc",
+      "type": "text",
+      "address": "technology_id.innovacion.property_intellectual.clasificacion_patentes_ipc",
+      "prompt": "Códigos de la Clasificación Internacional de Patentes (IPC) aplicables a tu desarrollo.",
+      "ejemplo": "Ej: G06T 7/00 (Análisis de datos de imagen) y G06N 3/02 (Redes neuronales).",
+      "benchmark": "Madurez tecnológica validada en escala TRL (1 a 9) y novedad patentable.",
+      "cita": "Clayton Christensen — The Innovator's Dilemma & Manual de Oslo",
+      "placeholder": "Especificaciones técnicas e innovación para (clasificacion_patentes_ipc)..."
+    },
+    {
+      "key": "secretos_industriales",
+      "type": "text",
+      "address": "technology_id.innovacion.property_intellectual.secretos_industriales",
+      "prompt": "Medidas de seguridad y acuerdos legales (NDA) para proteger el conocimiento no patentable.",
+      "ejemplo": "Ej: Código fuente fragmentado en servidores seguros y contratos laborales con cláusulas estrictas de confidencialidad.",
+      "benchmark": "Madurez tecnológica validada en escala TRL (1 a 9) y novedad patentable.",
+      "cita": "Clayton Christensen — The Innovator's Dilemma & Manual de Oslo",
+      "placeholder": "Especificaciones técnicas e innovación para (secretos_industriales)..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_ipc_classifier",
+      "title": "Clasificación Internacional de Patentes (IPC)",
+      "type": "table",
+      "description": "Mapeo de tecnologías a categorías A61K, C12N, G06F, H01L.",
+      "source": "Anatomy of a Business Plan (IPC Edition) — p. 210"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Estrategia legal de registro de marcas, secretos industriales y patentes nacionales o internacionales.\n\n**Cómo se usa.** Está en el pilar **Innovación y Propiedad Intelectual** del modelo *Plan de Negocios de Base Tecnológica e Innovación (I+D)*. Se abre en `/technology_id/property_intellectual`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 4 campos: `estado_del_arte`, `estrategia_patentes`, `clasificacion_patentes_ipc`, `secretos_industriales`.\n\n**Herramientas del módulo.** 1 caja(s): `box_ipc_classifier`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `estado_del_arte`\n\n**El prompt que usa:** Búsqueda sistemática de patentes y literatura científica para asegurar que no hay infracciones.\n\n**Ejemplo que muestra la guía:** Ej: Búsqueda en USPTO y EPO localizando 3 patentes similares, diferenciándonos por la arquitectura de red ligera.\n\n**Benchmark / criterio de calidad:** Madurez tecnológica validada en escala TRL (1 a 9) y novedad patentable.\n\n**De dónde viene la guía:** Clayton Christensen — The Innovator's Dilemma & Manual de Oslo\n\n### `estrategia_patentes`\n\n**El prompt que usa:** Plan legal para la solicitud de patentes, modelos de utilidad o protección de secretos industriales.\n\n**Ejemplo que muestra la guía:** Ej: Registro de marca nacional en IMPI y solicitud de patente internacional vía tratado PCT en Q3.\n\n**Benchmark / criterio de calidad:** Madurez tecnológica validada en escala TRL (1 a 9) y novedad patentable.\n\n**De dónde viene la guía:** Clayton Christensen — The Innovator's Dilemma & Manual de Oslo\n\n### `clasificacion_patentes_ipc`\n\n**El prompt que usa:** Códigos de la Clasificación Internacional de Patentes (IPC) aplicables a tu desarrollo.\n\n**Ejemplo que muestra la guía:** Ej: G06T 7/00 (Análisis de datos de imagen) y G06N 3/02 (Redes neuronales).\n\n**Benchmark / criterio de calidad:** Madurez tecnológica validada en escala TRL (1 a 9) y novedad patentable.\n\n**De dónde viene la guía:** Clayton Christensen — The Innovator's Dilemma & Manual de Oslo\n\n### `secretos_industriales`\n\n**El prompt que usa:** Medidas de seguridad y acuerdos legales (NDA) para proteger el conocimiento no patentable.\n\n**Ejemplo que muestra la guía:** Ej: Código fuente fragmentado en servidores seguros y contratos laborales con cláusulas estrictas de confidencialidad.\n\n**Benchmark / criterio de calidad:** Madurez tecnológica validada en escala TRL (1 a 9) y novedad patentable.\n\n**De dónde viene la guía:** Clayton Christensen — The Innovator's Dilemma & Manual de Oslo"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Clasificación Internacional de Patentes (IPC)\n\n`box_ipc_classifier` · tipo **table** · fuente: Anatomy of a Business Plan (IPC Edition) — p. 210\n\nMapeo de tecnologías a categorías A61K, C12N, G06F, H01L."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Innovación y Propiedad Intelectual** de *Plan de Negocios de Base Tecnológica e Innovación (I+D)*. La justificación metodológica completa está en la página del modelo y en `docs/technology_id.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `technology_id.innovacion.property_intellectual.estado_del_arte` → tipo `text`\n- `technology_id.innovacion.property_intellectual.estrategia_patentes` → tipo `text`\n- `technology_id.innovacion.property_intellectual.clasificacion_patentes_ipc` → tipo `text`\n- `technology_id.innovacion.property_intellectual.secretos_industriales` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `technology_id:property_intellectual`): `box_ipc_classifier`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

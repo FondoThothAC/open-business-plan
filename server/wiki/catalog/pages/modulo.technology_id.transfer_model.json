@@ -1,0 +1,84 @@
+{
+  "id": "modulo.technology_id.transfer_model",
+  "title": "Modelo de Transferencia",
+  "summary": "Esquema de monetización: cobro de royalties, cesión de patentes o constitución de spin-off.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "technology_id",
+  "moduleKey": "transfer_model",
+  "pillarKey": "mercado_tecnologico",
+  "openUrl": "/technology_id/transfer_model",
+  "fields": [
+    {
+      "key": "esquema_royalties",
+      "type": "text",
+      "address": "technology_id.mercado_tecnologico.transfer_model.esquema_royalties",
+      "prompt": "Estructura de cobro de regalías: porcentaje sobre ventas, licenciamiento anual o pago por uso.",
+      "ejemplo": "Ej (Estilo ARM): Licencia anual de software SaaS de $5,000 USD por línea de producción instalada + 1% de regalías por eficiencia.",
+      "benchmark": "Madurez tecnológica validada en escala TRL (1 a 9) y novedad patentable.",
+      "cita": "Clayton Christensen — The Innovator's Dilemma & Manual de Oslo",
+      "placeholder": "Especificaciones técnicas e innovación para (esquema_royalties)..."
+    },
+    {
+      "key": "constitucion_spinoff",
+      "type": "text",
+      "address": "technology_id.mercado_tecnologico.transfer_model.constitucion_spinoff",
+      "prompt": "Estrategia para crear una empresa independiente (spin-off) de base tecnológica desde la universidad o empresa madre.",
+      "ejemplo": "Ej (Estilo Stanford Spin-offs): Transferencia del derecho de explotación de la patente universitaria a la Spin-Off a cambio de 10% de participación accionaria.",
+      "benchmark": "Madurez tecnológica validada en escala TRL (1 a 9) y novedad patentable.",
+      "cita": "Clayton Christensen — The Innovator's Dilemma & Manual de Oslo",
+      "placeholder": "Especificaciones técnicas e innovación para (constitucion_spinoff)..."
+    },
+    {
+      "key": "estrategia_comercializacion_id",
+      "type": "text",
+      "address": "technology_id.mercado_tecnologico.transfer_model.estrategia_comercializacion_id",
+      "prompt": "Modelo comercial de comercialización: venta directa, licenciamiento de patentes o consultoría tecnológica especializada.",
+      "ejemplo": "Ej: Licenciamiento de la patente a distribuidores autorizados en Sudamérica y venta directa en México.",
+      "benchmark": "Madurez tecnológica validada en escala TRL (1 a 9) y novedad patentable.",
+      "cita": "Clayton Christensen — The Innovator's Dilemma & Manual de Oslo",
+      "placeholder": "Especificaciones técnicas e innovación para (estrategia_comercializacion_id)..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_ipc_classifier",
+      "title": "Clasificación Internacional de Patentes (IPC)",
+      "type": "table",
+      "description": "Mapeo de tecnologías a categorías A61K, C12N, G06F, H01L.",
+      "source": "Anatomy of a Business Plan (IPC Edition) — p. 210"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Esquema de monetización: cobro de royalties, cesión de patentes o constitución de spin-off.\n\n**Cómo se usa.** Está en el pilar **Mercado Científico y Transferencia** del modelo *Plan de Negocios de Base Tecnológica e Innovación (I+D)*. Se abre en `/technology_id/transfer_model`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 3 campos: `esquema_royalties`, `constitucion_spinoff`, `estrategia_comercializacion_id`.\n\n**Herramientas del módulo.** 1 caja(s): `box_ipc_classifier`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `esquema_royalties`\n\n**El prompt que usa:** Estructura de cobro de regalías: porcentaje sobre ventas, licenciamiento anual o pago por uso.\n\n**Ejemplo que muestra la guía:** Ej (Estilo ARM): Licencia anual de software SaaS de $5,000 USD por línea de producción instalada + 1% de regalías por eficiencia.\n\n**Benchmark / criterio de calidad:** Madurez tecnológica validada en escala TRL (1 a 9) y novedad patentable.\n\n**De dónde viene la guía:** Clayton Christensen — The Innovator's Dilemma & Manual de Oslo\n\n### `constitucion_spinoff`\n\n**El prompt que usa:** Estrategia para crear una empresa independiente (spin-off) de base tecnológica desde la universidad o empresa madre.\n\n**Ejemplo que muestra la guía:** Ej (Estilo Stanford Spin-offs): Transferencia del derecho de explotación de la patente universitaria a la Spin-Off a cambio de 10% de participación accionaria.\n\n**Benchmark / criterio de calidad:** Madurez tecnológica validada en escala TRL (1 a 9) y novedad patentable.\n\n**De dónde viene la guía:** Clayton Christensen — The Innovator's Dilemma & Manual de Oslo\n\n### `estrategia_comercializacion_id`\n\n**El prompt que usa:** Modelo comercial de comercialización: venta directa, licenciamiento de patentes o consultoría tecnológica especializada.\n\n**Ejemplo que muestra la guía:** Ej: Licenciamiento de la patente a distribuidores autorizados en Sudamérica y venta directa en México.\n\n**Benchmark / criterio de calidad:** Madurez tecnológica validada en escala TRL (1 a 9) y novedad patentable.\n\n**De dónde viene la guía:** Clayton Christensen — The Innovator's Dilemma & Manual de Oslo"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Clasificación Internacional de Patentes (IPC)\n\n`box_ipc_classifier` · tipo **table** · fuente: Anatomy of a Business Plan (IPC Edition) — p. 210\n\nMapeo de tecnologías a categorías A61K, C12N, G06F, H01L."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Mercado Científico y Transferencia** de *Plan de Negocios de Base Tecnológica e Innovación (I+D)*. La justificación metodológica completa está en la página del modelo y en `docs/technology_id.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `technology_id.mercado_tecnologico.transfer_model.esquema_royalties` → tipo `text`\n- `technology_id.mercado_tecnologico.transfer_model.constitucion_spinoff` → tipo `text`\n- `technology_id.mercado_tecnologico.transfer_model.estrategia_comercializacion_id` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `technology_id:transfer_model`): `box_ipc_classifier`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

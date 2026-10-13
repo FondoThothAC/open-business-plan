@@ -1,0 +1,104 @@
+{
+  "id": "modulo.technology_id.jobs_to_be_done",
+  "title": "Jobs-to-be-Done (Christensen)",
+  "summary": "Declaración JTBD del cliente, circunstancia disparadora y dimensión funcional-emocional.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "technology_id",
+  "moduleKey": "jobs_to_be_done",
+  "pillarKey": "innovacion",
+  "openUrl": "/technology_id/jobs_to_be_done",
+  "fields": [
+    {
+      "key": "job_statement_christensen",
+      "type": "text",
+      "address": "technology_id.innovacion.jobs_to_be_done.job_statement_christensen",
+      "prompt": "Declaración sintética Jobs-to-be-Done: 'Cuando [circunstancia], quiero [motivación], para poder [resultado esperado]'.",
+      "ejemplo": "Ej: 'Cuando una línea de ensamble falla, quiero diagnosticar en < 3 min la causa hidráulica, para evitar penalizaciones por paro de planta'.",
+      "benchmark": "Estructura formal de Christensen centrada en la causalidad de adopción.",
+      "cita": "Clayton Christensen — The Innovator's Dilemma (Ch. 3, p. 72)",
+      "placeholder": "Cuando [circunstancia disparadora], quiero [motivación], para [resultado]..."
+    },
+    {
+      "key": "circunstancia_disparo",
+      "type": "text",
+      "address": "technology_id.innovacion.jobs_to_be_done.circunstancia_disparo",
+      "prompt": "Contexto temporal, ambiental o situacional específico que detona la necesidad imperiosa de contratación.",
+      "ejemplo": "Ej: Alarma de caída de presión en turno nocturno sin ingenieros senior en piso.",
+      "benchmark": "Circunstancia observable sin atribuir características intrínsecas al usuario.",
+      "cita": "Clayton Christensen — The Innovator's Dilemma (Ch. 3, p. 75)",
+      "placeholder": "Situación y momento crítico en que se activa la necesidad..."
+    },
+    {
+      "key": "motivacion_funcional_emocional",
+      "type": "text",
+      "address": "technology_id.innovacion.jobs_to_be_done.motivacion_funcional_emocional",
+      "prompt": "Desglose de la dimensión funcional (tarea práctica) y dimensión emocional/social (estatus, tranquilidad).",
+      "ejemplo": "Ej: Funcional: Restablecer caudal a 4,500 PSI. Emocional: Eliminar la ansiedad del gerente de mantenimiento ante la auditoría corporativa.",
+      "benchmark": "Equilibrio entre beneficio técnico medible y reducción de fricción emocional.",
+      "cita": "Clayton Christensen — The Innovator's Dilemma (Ch. 3, p. 78)",
+      "placeholder": "Dimensiones funcionales, personales y sociales del trabajo..."
+    },
+    {
+      "key": "resultado_deseado_criterio",
+      "type": "text",
+      "address": "technology_id.innovacion.jobs_to_be_done.resultado_deseado_criterio",
+      "prompt": "Métrica estricta de satisfacción mediante la cual el cliente evalúa el éxito del trabajo realizado.",
+      "ejemplo": "Ej: Tiempo total de parada no programada inferior a 15 minutos por turno mensual.",
+      "benchmark": "Criterio de éxito cuantificable y auditable por el usuario final.",
+      "cita": "Clayton Christensen — The Innovator's Dilemma (Ch. 3, p. 81)",
+      "placeholder": "Métrica objetiva de desempeño y satisfacción esperada..."
+    },
+    {
+      "key": "alternativas_compensatorias",
+      "type": "text",
+      "address": "technology_id.innovacion.jobs_to_be_done.alternativas_compensatorias",
+      "prompt": "Soluciones sustitutas, 'parches' caseros o competidores indirectos actualmente contratados para el trabajo.",
+      "ejemplo": "Ej: Hojas de cálculo manuales combinadas con llamadas de emergencia por WhatsApp a técnicos externos.",
+      "benchmark": "Identificación de no-consumo o soluciones de alto costo/baja eficiencia.",
+      "cita": "Clayton Christensen — The Innovator's Dilemma (Ch. 3, p. 84)",
+      "placeholder": "Alternativas actuales y soluciones provisionales de los clientes..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_jtbd_job_statement",
+      "title": "Declaración de Trabajo a Realizar (Jobs-to-be-Done - JTBD)",
+      "type": "formula",
+      "description": "Fórmula Christensen: Circunstancia de activación + Motivación funcional + Resultado emocional esperado.",
+      "source": "The Innovator's Dilemma — Ch. 3 p. 72"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Declaración JTBD del cliente, circunstancia disparadora y dimensión funcional-emocional.\n\n**Cómo se usa.** Está en el pilar **Innovación y Propiedad Intelectual** del modelo *Plan de Negocios de Base Tecnológica e Innovación (I+D)*. Se abre en `/technology_id/jobs_to_be_done`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 5 campos: `job_statement_christensen`, `circunstancia_disparo`, `motivacion_funcional_emocional`, `resultado_deseado_criterio`, `alternativas_compensatorias`.\n\n**Herramientas del módulo.** 1 caja(s): `box_jtbd_job_statement`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `job_statement_christensen`\n\n**El prompt que usa:** Declaración sintética Jobs-to-be-Done: 'Cuando [circunstancia], quiero [motivación], para poder [resultado esperado]'.\n\n**Ejemplo que muestra la guía:** Ej: 'Cuando una línea de ensamble falla, quiero diagnosticar en < 3 min la causa hidráulica, para evitar penalizaciones por paro de planta'.\n\n**Benchmark / criterio de calidad:** Estructura formal de Christensen centrada en la causalidad de adopción.\n\n**De dónde viene la guía:** Clayton Christensen — The Innovator's Dilemma (Ch. 3, p. 72)\n\n### `circunstancia_disparo`\n\n**El prompt que usa:** Contexto temporal, ambiental o situacional específico que detona la necesidad imperiosa de contratación.\n\n**Ejemplo que muestra la guía:** Ej: Alarma de caída de presión en turno nocturno sin ingenieros senior en piso.\n\n**Benchmark / criterio de calidad:** Circunstancia observable sin atribuir características intrínsecas al usuario.\n\n**De dónde viene la guía:** Clayton Christensen — The Innovator's Dilemma (Ch. 3, p. 75)\n\n### `motivacion_funcional_emocional`\n\n**El prompt que usa:** Desglose de la dimensión funcional (tarea práctica) y dimensión emocional/social (estatus, tranquilidad).\n\n**Ejemplo que muestra la guía:** Ej: Funcional: Restablecer caudal a 4,500 PSI. Emocional: Eliminar la ansiedad del gerente de mantenimiento ante la auditoría corporativa.\n\n**Benchmark / criterio de calidad:** Equilibrio entre beneficio técnico medible y reducción de fricción emocional.\n\n**De dónde viene la guía:** Clayton Christensen — The Innovator's Dilemma (Ch. 3, p. 78)\n\n### `resultado_deseado_criterio`\n\n**El prompt que usa:** Métrica estricta de satisfacción mediante la cual el cliente evalúa el éxito del trabajo realizado.\n\n**Ejemplo que muestra la guía:** Ej: Tiempo total de parada no programada inferior a 15 minutos por turno mensual.\n\n**Benchmark / criterio de calidad:** Criterio de éxito cuantificable y auditable por el usuario final.\n\n**De dónde viene la guía:** Clayton Christensen — The Innovator's Dilemma (Ch. 3, p. 81)\n\n### `alternativas_compensatorias`\n\n**El prompt que usa:** Soluciones sustitutas, 'parches' caseros o competidores indirectos actualmente contratados para el trabajo.\n\n**Ejemplo que muestra la guía:** Ej: Hojas de cálculo manuales combinadas con llamadas de emergencia por WhatsApp a técnicos externos.\n\n**Benchmark / criterio de calidad:** Identificación de no-consumo o soluciones de alto costo/baja eficiencia.\n\n**De dónde viene la guía:** Clayton Christensen — The Innovator's Dilemma (Ch. 3, p. 84)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Declaración de Trabajo a Realizar (Jobs-to-be-Done - JTBD)\n\n`box_jtbd_job_statement` · tipo **formula** · fuente: The Innovator's Dilemma — Ch. 3 p. 72\n\nFórmula Christensen: Circunstancia de activación + Motivación funcional + Resultado emocional esperado."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Innovación y Propiedad Intelectual** de *Plan de Negocios de Base Tecnológica e Innovación (I+D)*. La justificación metodológica completa está en la página del modelo y en `docs/technology_id.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `technology_id.innovacion.jobs_to_be_done.job_statement_christensen` → tipo `text`\n- `technology_id.innovacion.jobs_to_be_done.circunstancia_disparo` → tipo `text`\n- `technology_id.innovacion.jobs_to_be_done.motivacion_funcional_emocional` → tipo `text`\n- `technology_id.innovacion.jobs_to_be_done.resultado_deseado_criterio` → tipo `text`\n- `technology_id.innovacion.jobs_to_be_done.alternativas_compensatorias` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `technology_id:jobs_to_be_done`): `box_jtbd_job_statement`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "id": "modulo.onudi_project.costo_capital",
+  "title": "WACC ONUDI y Spread País",
+  "summary": "Costo de capital ponderado incorporando prima de riesgo soberano EMBI+.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "onudi_project",
+  "moduleKey": "costo_capital",
+  "pillarKey": "financiamiento_global",
+  "openUrl": "/onudi_project/costo_capital",
+  "fields": [
+    {
+      "key": "wacc_onudi",
+      "type": "text",
+      "address": "onudi_project.financiamiento_global.costo_capital.wacc_onudi",
+      "prompt": "Costo Promedio Ponderado de Capital detallado con tasas internacionales.",
+      "ejemplo": "Ej: RFR 4%, Beta 1.2, ERP 6%. WACC = 11.2%.",
+      "benchmark": "Flujo de Caja Libre para la Firma (FCFF) descontado a tasa internacional con viabilidad técnica garantizada.",
+      "cita": "Manual de Estudios de Viabilidad Industrial ONUDI (Behrens & Hawranek)",
+      "placeholder": "Parámetros industriales ONUDI para (wacc_onudi)..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_fcff_onudi_model",
+      "title": "Flujo de Caja Libre para la Firma (FCFF ONUDI)",
+      "type": "formula",
+      "description": "Evaluación industrial con WACC internacional y sensibilidad.",
+      "source": "ONUDI Manual Industrial — Ch. 6"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Costo de capital ponderado incorporando prima de riesgo soberano EMBI+.\n\n**Cómo se usa.** Está en el pilar **Evaluación Financiera Global (COMFAR)** del modelo *Estudio de Factibilidad ONUDI (Industrial Global)*. Se abre en `/onudi_project/costo_capital`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 1 campo: `wacc_onudi`.\n\n**Herramientas del módulo.** 1 caja(s): `box_fcff_onudi_model`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `wacc_onudi`\n\n**El prompt que usa:** Costo Promedio Ponderado de Capital detallado con tasas internacionales.\n\n**Ejemplo que muestra la guía:** Ej: RFR 4%, Beta 1.2, ERP 6%. WACC = 11.2%.\n\n**Benchmark / criterio de calidad:** Flujo de Caja Libre para la Firma (FCFF) descontado a tasa internacional con viabilidad técnica garantizada.\n\n**De dónde viene la guía:** Manual de Estudios de Viabilidad Industrial ONUDI (Behrens & Hawranek)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Flujo de Caja Libre para la Firma (FCFF ONUDI)\n\n`box_fcff_onudi_model` · tipo **formula** · fuente: ONUDI Manual Industrial — Ch. 6\n\nEvaluación industrial con WACC internacional y sensibilidad."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Evaluación Financiera Global (COMFAR)** de *Estudio de Factibilidad ONUDI (Industrial Global)*. La justificación metodológica completa está en la página del modelo y en `docs/onudi_project.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `onudi_project.financiamiento_global.costo_capital.wacc_onudi` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `onudi_project:costo_capital`): `box_fcff_onudi_model`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

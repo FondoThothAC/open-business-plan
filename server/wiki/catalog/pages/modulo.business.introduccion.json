@@ -1,0 +1,94 @@
+{
+  "id": "modulo.business.introduccion",
+  "title": "Justificación y Origen",
+  "summary": "Origen, necesidad que cubre, modelo y propuesta de valor inicial.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "business",
+  "moduleKey": "introduccion",
+  "pillarKey": "naturaleza",
+  "openUrl": "/business/introduccion",
+  "fields": [
+    {
+      "key": "origen",
+      "type": "text",
+      "address": "business.naturaleza.introduccion.origen",
+      "prompt": "Cuenta la historia de cómo surgió la idea. ¿Fue experiencia personal, un hueco en el mercado o una investigación?",
+      "ejemplo": "Ej: \"La idea nació cuando el fundador detectó que sus colegas perdían dinero por falta de educación financiera básica.\"",
+      "benchmark": "Narrativa creíble de experiencia fundadora o descubrimiento empírico.",
+      "cita": "Ken Colwell — Starting a Business QuickStart Guide (Ch. 1, p. 18)",
+      "placeholder": "Narra el momento eureka o la necesidad personal/laboral del proyecto..."
+    },
+    {
+      "key": "necesidad",
+      "type": "text",
+      "address": "business.naturaleza.introduccion.necesidad",
+      "prompt": "Define el dolor no resuelto o la necesidad urgente que atiende el negocio.",
+      "ejemplo": "Ej: Falta de monitoreo en tiempo real genera pérdidas millonarias por paros no programados.",
+      "benchmark": "Dolor cuantificable en dinero o tiempo.",
+      "cita": "The Lean Startup (Ries, p. 45)",
+      "placeholder": "Dolor del mercado, pérdidas actuales..."
+    },
+    {
+      "key": "modelo_negocio",
+      "type": "text",
+      "address": "business.naturaleza.introduccion.modelo_negocio",
+      "prompt": "Explica cómo la empresa captura valor y asegura rentabilidad a largo plazo.",
+      "ejemplo": "Ej: Modelo híbrido de venta de equipo + póliza de mantenimiento preventivo mensual.",
+      "benchmark": "Margen bruto objetivo > 40%.",
+      "cita": "Creating a Business Plan For Dummies (Ch. 3)",
+      "placeholder": "Estructura transaccional y recurrencia..."
+    },
+    {
+      "key": "propuesta_valor",
+      "type": "text",
+      "address": "business.naturaleza.introduccion.propuesta_valor",
+      "prompt": "Enuncia la propuesta de valor nuclear con beneficios medibles y diferenciales.",
+      "ejemplo": "Ej: Mantenimiento predictivo inteligente que incrementa 20% la vida útil del equipo.",
+      "benchmark": "1 frase concisa + 3 métricas de beneficio.",
+      "cita": "Value Proposition Design (p. 28)",
+      "placeholder": "Promesa central diferenciada..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_resumen_ejecutivo_1p",
+      "title": "Resumen Ejecutivo de 1 Página",
+      "type": "table",
+      "description": "Estructura compacta: Problema, Solución, Mercado, Tracción, Ask.",
+      "source": "Anatomy of a Business Plan — p. 12"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Origen, necesidad que cubre, modelo y propuesta de valor inicial.\n\n**Cómo se usa.** Está en el pilar **Naturaleza del Proyecto** del modelo *Plan de Negocios Comercial*. Se abre en `/business/introduccion`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 4 campos: `origen`, `necesidad`, `modelo_negocio`, `propuesta_valor`.\n\n**Herramientas del módulo.** 1 caja(s): `box_resumen_ejecutivo_1p`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `origen`\n\n**El prompt que usa:** Cuenta la historia de cómo surgió la idea. ¿Fue experiencia personal, un hueco en el mercado o una investigación?\n\n**Ejemplo que muestra la guía:** Ej: \"La idea nació cuando el fundador detectó que sus colegas perdían dinero por falta de educación financiera básica.\"\n\n**Benchmark / criterio de calidad:** Narrativa creíble de experiencia fundadora o descubrimiento empírico.\n\n**De dónde viene la guía:** Ken Colwell — Starting a Business QuickStart Guide (Ch. 1, p. 18)\n\n### `necesidad`\n\n**El prompt que usa:** Define el dolor no resuelto o la necesidad urgente que atiende el negocio.\n\n**Ejemplo que muestra la guía:** Ej: Falta de monitoreo en tiempo real genera pérdidas millonarias por paros no programados.\n\n**Benchmark / criterio de calidad:** Dolor cuantificable en dinero o tiempo.\n\n**De dónde viene la guía:** The Lean Startup (Ries, p. 45)\n\n### `modelo_negocio`\n\n**El prompt que usa:** Explica cómo la empresa captura valor y asegura rentabilidad a largo plazo.\n\n**Ejemplo que muestra la guía:** Ej: Modelo híbrido de venta de equipo + póliza de mantenimiento preventivo mensual.\n\n**Benchmark / criterio de calidad:** Margen bruto objetivo > 40%.\n\n**De dónde viene la guía:** Creating a Business Plan For Dummies (Ch. 3)\n\n### `propuesta_valor`\n\n**El prompt que usa:** Enuncia la propuesta de valor nuclear con beneficios medibles y diferenciales.\n\n**Ejemplo que muestra la guía:** Ej: Mantenimiento predictivo inteligente que incrementa 20% la vida útil del equipo.\n\n**Benchmark / criterio de calidad:** 1 frase concisa + 3 métricas de beneficio.\n\n**De dónde viene la guía:** Value Proposition Design (p. 28)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Resumen Ejecutivo de 1 Página\n\n`box_resumen_ejecutivo_1p` · tipo **table** · fuente: Anatomy of a Business Plan — p. 12\n\nEstructura compacta: Problema, Solución, Mercado, Tracción, Ask."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Naturaleza del Proyecto** de *Plan de Negocios Comercial*. La justificación metodológica completa está en la página del modelo y en `docs/business.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `business.naturaleza.introduccion.origen` → tipo `text`\n- `business.naturaleza.introduccion.necesidad` → tipo `text`\n- `business.naturaleza.introduccion.modelo_negocio` → tipo `text`\n- `business.naturaleza.introduccion.propuesta_valor` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `business:introduccion`): `box_resumen_ejecutivo_1p`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

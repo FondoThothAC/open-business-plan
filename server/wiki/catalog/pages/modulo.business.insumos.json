@@ -1,0 +1,76 @@
+{
+  "id": "modulo.business.insumos",
+  "title": "Insumos y Proveedores",
+  "summary": "Materias primas y cadena de suministro.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "business",
+  "moduleKey": "insumos",
+  "pillarKey": "tecnico",
+  "openUrl": "/business/insumos",
+  "fields": [
+    {
+      "key": "materia_prima",
+      "type": "text",
+      "address": "business.tecnico.insumos.materia_prima",
+      "prompt": "Insumos principales para operar. En servicios: materiales de soporte, plataformas, data.",
+      "ejemplo": "Ej: \"Datos de mercado (Reuters, $5K/mes). Papelería corporativa ($2K/mes). Bases de datos CNBV (gratuito).\"",
+      "benchmark": "Especificaciones de insumos con ficha técnica y porcentaje de merma estimado < 3%.",
+      "cita": "Linda Pinson — Anatomy of a Business Plan (Ch. 5, p. 128)",
+      "placeholder": "Materias primas principales, consumibles e insumos requeridos por lote..."
+    },
+    {
+      "key": "proveedores",
+      "type": "text",
+      "address": "business.tecnico.insumos.proveedores",
+      "prompt": "Lista de proveedores clave con nombre, ubicación, condiciones de pago y alternativas.",
+      "ejemplo": "Ej: \"Proveedor 1: AWS (hosting, crédito de $1K). Proveedor 2: Imprenta GraficSon (30 días crédito). Alternativa: DigitalOcean.\"",
+      "benchmark": "Mínimo 2 proveedores calificados por insumo crítico para evitar riesgo de suministro.",
+      "cita": "Creating a Business Plan For Dummies (Ch. 8, p. 180)",
+      "placeholder": "Proveedores clave, plazos de crédito (30-60 días) y tiempos de entrega..."
+    },
+    {
+      "key": "compras",
+      "type": "text",
+      "address": "business.tecnico.insumos.compras",
+      "prompt": "Política de adquisiciones: frecuencia, volumen mínimo, control de calidad, inventario de seguridad.",
+      "ejemplo": "Ej: \"Compras de papelería: mensual. Software: anual con descuento. Criterio: mínimo 3 cotizaciones. Pago a 30 días.\"",
+      "benchmark": "Política de adquisiciones con lotes económicos de compra (EOQ) y compras consolidadas.",
+      "cita": "Ken Colwell — Starting a Business QuickStart Guide (Ch. 6, p. 148)",
+      "placeholder": "Procedimiento de cotización, autorización de compra y recepción en almacén..."
+    }
+  ],
+  "boxes": [],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Materias primas y cadena de suministro.\n\n**Cómo se usa.** Está en el pilar **Estudio Técnico de Producción** del modelo *Plan de Negocios Comercial*. Se abre en `/business/insumos`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 3 campos: `materia_prima`, `proveedores`, `compras`.\n\n**Herramientas del módulo.** Ninguna específica: se apoya en los campos de texto."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `materia_prima`\n\n**El prompt que usa:** Insumos principales para operar. En servicios: materiales de soporte, plataformas, data.\n\n**Ejemplo que muestra la guía:** Ej: \"Datos de mercado (Reuters, $5K/mes). Papelería corporativa ($2K/mes). Bases de datos CNBV (gratuito).\"\n\n**Benchmark / criterio de calidad:** Especificaciones de insumos con ficha técnica y porcentaje de merma estimado < 3%.\n\n**De dónde viene la guía:** Linda Pinson — Anatomy of a Business Plan (Ch. 5, p. 128)\n\n### `proveedores`\n\n**El prompt que usa:** Lista de proveedores clave con nombre, ubicación, condiciones de pago y alternativas.\n\n**Ejemplo que muestra la guía:** Ej: \"Proveedor 1: AWS (hosting, crédito de $1K). Proveedor 2: Imprenta GraficSon (30 días crédito). Alternativa: DigitalOcean.\"\n\n**Benchmark / criterio de calidad:** Mínimo 2 proveedores calificados por insumo crítico para evitar riesgo de suministro.\n\n**De dónde viene la guía:** Creating a Business Plan For Dummies (Ch. 8, p. 180)\n\n### `compras`\n\n**El prompt que usa:** Política de adquisiciones: frecuencia, volumen mínimo, control de calidad, inventario de seguridad.\n\n**Ejemplo que muestra la guía:** Ej: \"Compras de papelería: mensual. Software: anual con descuento. Criterio: mínimo 3 cotizaciones. Pago a 30 días.\"\n\n**Benchmark / criterio de calidad:** Política de adquisiciones con lotes económicos de compra (EOQ) y compras consolidadas.\n\n**De dónde viene la guía:** Ken Colwell — Starting a Business QuickStart Guide (Ch. 6, p. 148)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "Sin cajas asociadas."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Estudio Técnico de Producción** de *Plan de Negocios Comercial*. La justificación metodológica completa está en la página del modelo y en `docs/business.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `business.tecnico.insumos.materia_prima` → tipo `text`\n- `business.tecnico.insumos.proveedores` → tipo `text`\n- `business.tecnico.insumos.compras` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas:** `src/config/moduleBoxMap.js` no declara cajas para `business:insumos`; la pantalla muestra solo los campos de texto.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

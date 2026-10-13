@@ -1,0 +1,76 @@
+{
+  "id": "modulo.social_bid.gobernanza",
+  "title": "Estructura de Gobernanza",
+  "summary": "Directorio, comité ejecutor y roles.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "social_bid",
+  "moduleKey": "gobernanza",
+  "pillarKey": "ejecucion",
+  "openUrl": "/social_bid/gobernanza",
+  "fields": [
+    {
+      "key": "comite_directivo",
+      "type": "text",
+      "address": "social_bid.ejecucion.gobernanza.comite_directivo",
+      "prompt": "Quién toma las decisiones macro del proyecto.",
+      "ejemplo": "Ej: Mesa conformada por el Director de la ONG, un donante y un líder vecinal.",
+      "benchmark": "Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.",
+      "cita": "Metodología del Marco Lógico (BID / CEPAL / PM4R)",
+      "placeholder": "Define el componente del proyecto social (comite_directivo)..."
+    },
+    {
+      "key": "unidad_ejecutora",
+      "type": "text",
+      "address": "social_bid.ejecucion.gobernanza.unidad_ejecutora",
+      "prompt": "El equipo que opera el proyecto día a día.",
+      "ejemplo": "Ej: 1 Coordinador, 3 profesores técnicos, 1 trabajador social.",
+      "benchmark": "Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.",
+      "cita": "Metodología del Marco Lógico (BID / CEPAL / PM4R)",
+      "placeholder": "Define el componente del proyecto social (unidad_ejecutora)..."
+    },
+    {
+      "key": "organigrama_visual",
+      "type": "text",
+      "address": "social_bid.ejecucion.gobernanza.organigrama_visual",
+      "prompt": "Código Mermaid.js que genera el organigrama de gobernanza jerárquicamente.",
+      "ejemplo": "Ej: \"flowchart TD CD[Comité Directivo] --> UE[Unidad Ejecutora] UE --> C[Coordinador] UE --> T[Técnicos]\"",
+      "benchmark": "Estructura organizacional escalable representada en sintaxis Mermaid.js.",
+      "cita": "Linda Pinson — Anatomy of a Business Plan (Ch. 6, p. 148)",
+      "placeholder": "Código Mermaid (graph TD) con la jerarquía institucional de puestos..."
+    }
+  ],
+  "boxes": [],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Directorio, comité ejecutor y roles.\n\n**Cómo se usa.** Está en el pilar **Ejecución y Gobernanza (PM4R)** del modelo *Proyecto Social (Metodología BID)*. Se abre en `/social_bid/gobernanza`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 3 campos: `comite_directivo`, `unidad_ejecutora`, `organigrama_visual`.\n\n**Herramientas del módulo.** Ninguna específica: se apoya en los campos de texto."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `comite_directivo`\n\n**El prompt que usa:** Quién toma las decisiones macro del proyecto.\n\n**Ejemplo que muestra la guía:** Ej: Mesa conformada por el Director de la ONG, un donante y un líder vecinal.\n\n**Benchmark / criterio de calidad:** Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.\n\n**De dónde viene la guía:** Metodología del Marco Lógico (BID / CEPAL / PM4R)\n\n### `unidad_ejecutora`\n\n**El prompt que usa:** El equipo que opera el proyecto día a día.\n\n**Ejemplo que muestra la guía:** Ej: 1 Coordinador, 3 profesores técnicos, 1 trabajador social.\n\n**Benchmark / criterio de calidad:** Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.\n\n**De dónde viene la guía:** Metodología del Marco Lógico (BID / CEPAL / PM4R)\n\n### `organigrama_visual`\n\n**El prompt que usa:** Código Mermaid.js que genera el organigrama de gobernanza jerárquicamente.\n\n**Ejemplo que muestra la guía:** Ej: \"flowchart TD CD[Comité Directivo] --> UE[Unidad Ejecutora] UE --> C[Coordinador] UE --> T[Técnicos]\"\n\n**Benchmark / criterio de calidad:** Estructura organizacional escalable representada en sintaxis Mermaid.js.\n\n**De dónde viene la guía:** Linda Pinson — Anatomy of a Business Plan (Ch. 6, p. 148)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "Sin cajas asociadas."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Ejecución y Gobernanza (PM4R)** de *Proyecto Social (Metodología BID)*. La justificación metodológica completa está en la página del modelo y en `docs/social_bid.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `social_bid.ejecucion.gobernanza.comite_directivo` → tipo `text`\n- `social_bid.ejecucion.gobernanza.unidad_ejecutora` → tipo `text`\n- `social_bid.ejecucion.gobernanza.organigrama_visual` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas:** `src/config/moduleBoxMap.js` no declara cajas para `social_bid:gobernanza`; la pantalla muestra solo los campos de texto.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

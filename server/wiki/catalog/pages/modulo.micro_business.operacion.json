@@ -1,0 +1,64 @@
+{
+  "id": "modulo.micro_business.operacion",
+  "title": "¿Cómo trabajamos?",
+  "summary": "Paso a paso de lo que hacemos en un día normal.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "micro_business",
+  "moduleKey": "operacion",
+  "pillarKey": "tecnico",
+  "openUrl": "/micro_business/operacion",
+  "fields": [
+    {
+      "key": "paso_a_paso_diario",
+      "type": "text",
+      "address": "micro_business.tecnico.operacion.paso_a_paso_diario",
+      "prompt": "¿Cómo es un día normal de trabajo desde que compras hasta que cierras?",
+      "ejemplo": "Ej: \"1. A las 9 AM compro la carne y verduras. 2. A las 2 PM pico y marino la carne. 3. A las 5 PM pongo el carbón y arreglo las mesas. 4. De 6 PM a 12 AM atiendo clientes. 5. Limpieza.\"",
+      "benchmark": "Operación simple con punto de equilibrio mensual y presupuesto < 30 días.",
+      "cita": "Manual de Plan de Negocios Panamá & Plan de Negocios VF",
+      "placeholder": "Información básica para arrancar el autoempleo en (paso_a_paso_diario)..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_apertura_30dias",
+      "title": "Checklist de Apertura Legal en 30 Días",
+      "type": "checklist",
+      "description": "RFC, régimen fiscal simplificado, licencias municipales y apertura.",
+      "source": "Plan de Negocios VF & Manual Panamá — p. 15"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Paso a paso de lo que hacemos en un día normal.\n\n**Cómo se usa.** Está en el pilar **Producción y Operaciones** del modelo *Plan para Microempresa y Autoempleo (Simplificado)*. Se abre en `/micro_business/operacion`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 1 campo: `paso_a_paso_diario`.\n\n**Herramientas del módulo.** 1 caja(s): `box_apertura_30dias`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `paso_a_paso_diario`\n\n**El prompt que usa:** ¿Cómo es un día normal de trabajo desde que compras hasta que cierras?\n\n**Ejemplo que muestra la guía:** Ej: \"1. A las 9 AM compro la carne y verduras. 2. A las 2 PM pico y marino la carne. 3. A las 5 PM pongo el carbón y arreglo las mesas. 4. De 6 PM a 12 AM atiendo clientes. 5. Limpieza.\"\n\n**Benchmark / criterio de calidad:** Operación simple con punto de equilibrio mensual y presupuesto < 30 días.\n\n**De dónde viene la guía:** Manual de Plan de Negocios Panamá & Plan de Negocios VF"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Checklist de Apertura Legal en 30 Días\n\n`box_apertura_30dias` · tipo **checklist** · fuente: Plan de Negocios VF & Manual Panamá — p. 15\n\nRFC, régimen fiscal simplificado, licencias municipales y apertura."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Producción y Operaciones** de *Plan para Microempresa y Autoempleo (Simplificado)*. La justificación metodológica completa está en la página del modelo y en `docs/micro_business.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `micro_business.tecnico.operacion.paso_a_paso_diario` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `micro_business:operacion`): `box_apertura_30dias`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

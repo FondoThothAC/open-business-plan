@@ -1,0 +1,64 @@
+{
+  "id": "modulo.investment_project.layout",
+  "title": "Instalaciones y Lay-out",
+  "summary": "Distribución física, terreno y obras.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "investment_project",
+  "moduleKey": "layout",
+  "pillarKey": "ingenieria_tecnica",
+  "openUrl": "/investment_project/layout",
+  "fields": [
+    {
+      "key": "layout_industrial",
+      "type": "text",
+      "address": "investment_project.ingenieria_tecnica.layout.layout_industrial",
+      "prompt": "Distribución física (Lay-out), requerimientos de terreno y obras de preparación.",
+      "ejemplo": "Ej: \"Terreno de 100 hectáreas con compactación tipo B. Subestación elevadora en el cuadrante noreste.\"",
+      "benchmark": "TIR > WACC + 4% con análisis probabilístico Monte Carlo al 95% de confianza.",
+      "cita": "The Nature of Value (Ch. 5 WACC/CAPM) & CSI MasterFormat",
+      "placeholder": "Memoria de cálculo y parámetros cuantitativos para (layout_industrial)..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_layout_industrial",
+      "title": "Generador y Visualizador de Lay-out de Planta (Distribución Física)",
+      "type": "canvas",
+      "description": "Modelado interactivo de zonas de planta, áreas en m², equipos y flujo de proceso.",
+      "source": "Operations Management (Slack) — Ch. 7"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Distribución física, terreno y obras.\n\n**Cómo se usa.** Está en el pilar **Ingeniería del Proyecto** del modelo *Proyecto de Inversión (Ingeniería y Finanzas)*. Se abre en `/investment_project/layout`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 1 campo: `layout_industrial`.\n\n**Herramientas del módulo.** 1 caja(s): `box_layout_industrial`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `layout_industrial`\n\n**El prompt que usa:** Distribución física (Lay-out), requerimientos de terreno y obras de preparación.\n\n**Ejemplo que muestra la guía:** Ej: \"Terreno de 100 hectáreas con compactación tipo B. Subestación elevadora en el cuadrante noreste.\"\n\n**Benchmark / criterio de calidad:** TIR > WACC + 4% con análisis probabilístico Monte Carlo al 95% de confianza.\n\n**De dónde viene la guía:** The Nature of Value (Ch. 5 WACC/CAPM) & CSI MasterFormat"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Generador y Visualizador de Lay-out de Planta (Distribución Física)\n\n`box_layout_industrial` · tipo **canvas** · fuente: Operations Management (Slack) — Ch. 7\n\nModelado interactivo de zonas de planta, áreas en m², equipos y flujo de proceso."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Ingeniería del Proyecto** de *Proyecto de Inversión (Ingeniería y Finanzas)*. La justificación metodológica completa está en la página del modelo y en `docs/investment_project.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `investment_project.ingenieria_tecnica.layout.layout_industrial` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `investment_project:layout`): `box_layout_industrial`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

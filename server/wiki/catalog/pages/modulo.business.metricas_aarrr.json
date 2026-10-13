@@ -1,0 +1,104 @@
+{
+  "id": "modulo.business.metricas_aarrr",
+  "title": "Métricas Pirata AARRR",
+  "summary": "Embudo cuantitativo: Adquisición, Activación, Retención, Referidos e Ingresos.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "business",
+  "moduleKey": "metricas_aarrr",
+  "pillarKey": "mercado",
+  "openUrl": "/business/metricas_aarrr",
+  "fields": [
+    {
+      "key": "adquisicion_aarrr",
+      "type": "text",
+      "address": "business.mercado.metricas_aarrr.adquisicion_aarrr",
+      "prompt": "Métrica y canales para atraer prospectos calificados al embudo.",
+      "ejemplo": "Ej: Costo por lead de $45 MXN vía campañas de LinkedIn y búsqueda orgánica.",
+      "benchmark": "CAC proyectado inferior a un tercio del LTV (CAC/LTV <= 1:3).",
+      "cita": "Eric Ries — El Método Lean Startup (Ch. 6, p. 114) & Dave McClure AARRR",
+      "placeholder": "Canal de captación, volumen de visitas y costo por adquisición inicial..."
+    },
+    {
+      "key": "activacion_aarrr",
+      "type": "text",
+      "address": "business.mercado.metricas_aarrr.activacion_aarrr",
+      "prompt": "Momento 'Aha!' donde el usuario experimenta el valor del producto por primera vez.",
+      "ejemplo": "Ej: Registro completo y primera cotización generada en menos de 3 minutos.",
+      "benchmark": "Tasa de activación inicial > 35% de visitantes registrados.",
+      "cita": "Ken Colwell — Starting a Business QuickStart Guide (Ch. 9, p. 205)",
+      "placeholder": "Acción clave que define a un usuario activado y porcentaje de éxito..."
+    },
+    {
+      "key": "retencion_aarrr",
+      "type": "text",
+      "address": "business.mercado.metricas_aarrr.retencion_aarrr",
+      "prompt": "Frecuencia con la que los clientes regresan a usar o comprar el producto.",
+      "ejemplo": "Ej: Recompra mensual del 78% en cuentas restauranteras HORECA.",
+      "benchmark": "Churn mensual < 5% en modelos B2B recurrentes.",
+      "cita": "Eric Ries — El Método Lean Startup (Ch. 8, p. 174)",
+      "placeholder": "Tasa de retención de cohortes a 30, 60 y 90 días y control de churn..."
+    },
+    {
+      "key": "referidos_aarrr",
+      "type": "text",
+      "address": "business.mercado.metricas_aarrr.referidos_aarrr",
+      "prompt": "Coeficiente viral y tasa con la que los clientes recomiendan a nuevos usuarios.",
+      "ejemplo": "Ej: Coeficiente viral K = 0.35 impulsado por programa de descuento cruzado.",
+      "benchmark": "Net Promoter Score (NPS) > 50 y coeficiente viral K > 0.2.",
+      "cita": "Carl Schramm — Burn the Business Plan (Ch. 5, p. 82)",
+      "placeholder": "Mecanismo de recomendación 'boca a boca' y métrica de referidos..."
+    },
+    {
+      "key": "ingresos_aarrr",
+      "type": "text",
+      "address": "business.mercado.metricas_aarrr.ingresos_aarrr",
+      "prompt": "Monetización y valor promedio de compra (Ticket promedio y Lifetime Value).",
+      "ejemplo": "Ej: Ingreso promedio mensual por cuenta de $18,500 MXN con LTV a 24 meses de $380,000 MXN.",
+      "benchmark": "Margen de contribución positivo > 40% desde la 1ª transacción.",
+      "cita": "Linda Pinson — Anatomy of a Business Plan (Ch. 7, p. 142)",
+      "placeholder": "Ticket promedio, margen bruto unitario y LTV proyectado..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_aarrr_pirata_5metricas",
+      "title": "Embudo de Crecimiento Pirata AARRR (5 Fases)",
+      "type": "benchmark",
+      "description": "Métricas de Adquisición, Activación, Retención, Referencia e Ingresos con benchmarks de conversión.",
+      "source": "The Lean Startup & QuickStart Guide — Ch. 6 p. 114; Ch. 9 p. 205"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Embudo cuantitativo: Adquisición, Activación, Retención, Referidos e Ingresos.\n\n**Cómo se usa.** Está en el pilar **El Mercado** del modelo *Plan de Negocios Comercial*. Se abre en `/business/metricas_aarrr`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 5 campos: `adquisicion_aarrr`, `activacion_aarrr`, `retencion_aarrr`, `referidos_aarrr`, `ingresos_aarrr`.\n\n**Herramientas del módulo.** 1 caja(s): `box_aarrr_pirata_5metricas`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `adquisicion_aarrr`\n\n**El prompt que usa:** Métrica y canales para atraer prospectos calificados al embudo.\n\n**Ejemplo que muestra la guía:** Ej: Costo por lead de $45 MXN vía campañas de LinkedIn y búsqueda orgánica.\n\n**Benchmark / criterio de calidad:** CAC proyectado inferior a un tercio del LTV (CAC/LTV <= 1:3).\n\n**De dónde viene la guía:** Eric Ries — El Método Lean Startup (Ch. 6, p. 114) & Dave McClure AARRR\n\n### `activacion_aarrr`\n\n**El prompt que usa:** Momento 'Aha!' donde el usuario experimenta el valor del producto por primera vez.\n\n**Ejemplo que muestra la guía:** Ej: Registro completo y primera cotización generada en menos de 3 minutos.\n\n**Benchmark / criterio de calidad:** Tasa de activación inicial > 35% de visitantes registrados.\n\n**De dónde viene la guía:** Ken Colwell — Starting a Business QuickStart Guide (Ch. 9, p. 205)\n\n### `retencion_aarrr`\n\n**El prompt que usa:** Frecuencia con la que los clientes regresan a usar o comprar el producto.\n\n**Ejemplo que muestra la guía:** Ej: Recompra mensual del 78% en cuentas restauranteras HORECA.\n\n**Benchmark / criterio de calidad:** Churn mensual < 5% en modelos B2B recurrentes.\n\n**De dónde viene la guía:** Eric Ries — El Método Lean Startup (Ch. 8, p. 174)\n\n### `referidos_aarrr`\n\n**El prompt que usa:** Coeficiente viral y tasa con la que los clientes recomiendan a nuevos usuarios.\n\n**Ejemplo que muestra la guía:** Ej: Coeficiente viral K = 0.35 impulsado por programa de descuento cruzado.\n\n**Benchmark / criterio de calidad:** Net Promoter Score (NPS) > 50 y coeficiente viral K > 0.2.\n\n**De dónde viene la guía:** Carl Schramm — Burn the Business Plan (Ch. 5, p. 82)\n\n### `ingresos_aarrr`\n\n**El prompt que usa:** Monetización y valor promedio de compra (Ticket promedio y Lifetime Value).\n\n**Ejemplo que muestra la guía:** Ej: Ingreso promedio mensual por cuenta de $18,500 MXN con LTV a 24 meses de $380,000 MXN.\n\n**Benchmark / criterio de calidad:** Margen de contribución positivo > 40% desde la 1ª transacción.\n\n**De dónde viene la guía:** Linda Pinson — Anatomy of a Business Plan (Ch. 7, p. 142)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Embudo de Crecimiento Pirata AARRR (5 Fases)\n\n`box_aarrr_pirata_5metricas` · tipo **benchmark** · fuente: The Lean Startup & QuickStart Guide — Ch. 6 p. 114; Ch. 9 p. 205\n\nMétricas de Adquisición, Activación, Retención, Referencia e Ingresos con benchmarks de conversión."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **El Mercado** de *Plan de Negocios Comercial*. La justificación metodológica completa está en la página del modelo y en `docs/business.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `business.mercado.metricas_aarrr.adquisicion_aarrr` → tipo `text`\n- `business.mercado.metricas_aarrr.activacion_aarrr` → tipo `text`\n- `business.mercado.metricas_aarrr.retencion_aarrr` → tipo `text`\n- `business.mercado.metricas_aarrr.referidos_aarrr` → tipo `text`\n- `business.mercado.metricas_aarrr.ingresos_aarrr` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `business:metricas_aarrr`): `box_aarrr_pirata_5metricas`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

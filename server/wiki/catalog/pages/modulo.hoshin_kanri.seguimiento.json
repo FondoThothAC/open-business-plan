@@ -1,0 +1,64 @@
+{
+  "id": "modulo.hoshin_kanri.seguimiento",
+  "title": "Bowler Charts",
+  "summary": "Revisión mensual visual con semaforización de desviaciones.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "hoshin_kanri",
+  "moduleKey": "seguimiento",
+  "pillarKey": "seguimiento_mejora",
+  "openUrl": "/hoshin-kanri/seguimiento",
+  "fields": [
+    {
+      "key": "bowler",
+      "type": "text",
+      "address": "hoshin_kanri.seguimiento_mejora.seguimiento.bowler",
+      "prompt": "Indicadores de revisión visual mensual.",
+      "ejemplo": "Ej: Gráfico de semáforo Andon para la línea de producción de motores.",
+      "benchmark": "Alineación de objetivos de ruptura (Breakthroughs) en Matriz X con revisiones Catchball periódicas.",
+      "cita": "Yoji Akao — Hoshin Kanri: Policy Deployment & Toyota Production System",
+      "placeholder": "Despliegue estratégico Hoshin para (bowler)..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_matriz_x_hoshin",
+      "title": "Matriz X Hoshin Kanri (4 Cuadrantes)",
+      "type": "matrix",
+      "description": "Alineación de Norte Verdadero, objetivos anuales, prioridades y métricas.",
+      "source": "Creating a Business Plan For Dummies (Hoshin Edition) — Ch. 8"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Revisión mensual visual con semaforización de desviaciones.\n\n**Cómo se usa.** Está en el pilar **Seguimiento y Control Continuo** del modelo *Hoshin Kanri (Japón - Planificación Estratégica)*. Se abre en `/hoshin-kanri/seguimiento`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 1 campo: `bowler`.\n\n**Herramientas del módulo.** 1 caja(s): `box_matriz_x_hoshin`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `bowler`\n\n**El prompt que usa:** Indicadores de revisión visual mensual.\n\n**Ejemplo que muestra la guía:** Ej: Gráfico de semáforo Andon para la línea de producción de motores.\n\n**Benchmark / criterio de calidad:** Alineación de objetivos de ruptura (Breakthroughs) en Matriz X con revisiones Catchball periódicas.\n\n**De dónde viene la guía:** Yoji Akao — Hoshin Kanri: Policy Deployment & Toyota Production System"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Matriz X Hoshin Kanri (4 Cuadrantes)\n\n`box_matriz_x_hoshin` · tipo **matrix** · fuente: Creating a Business Plan For Dummies (Hoshin Edition) — Ch. 8\n\nAlineación de Norte Verdadero, objetivos anuales, prioridades y métricas."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Seguimiento y Control Continuo** de *Hoshin Kanri (Japón - Planificación Estratégica)*. La justificación metodológica completa está en la página del modelo y en `docs/hoshin_kanri.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `hoshin_kanri.seguimiento_mejora.seguimiento.bowler` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `hoshin_kanri:seguimiento`): `box_matriz_x_hoshin`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

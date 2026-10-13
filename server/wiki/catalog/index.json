@@ -1,0 +1,2482 @@
+{
+  "schemaVersion": "wiki-catalog-v1",
+  "generator": "scripts/generate-wiki-catalog.js",
+  "totals": {
+    "models": 12,
+    "pillars": 49,
+    "modules": 141,
+    "fields": 394,
+    "guideTypes": 12,
+    "boxes": 62,
+    "routes": 134,
+    "envServerVars": 27,
+    "envClientVars": 13,
+    "providerHosts": 11,
+    "pages": 154,
+    "slugs": 12
+  },
+  "tree": [
+    {
+      "id": "modelos",
+      "title": "Modelos de plan (12)",
+      "children": [
+        {
+          "id": "modelo.business",
+          "title": "Plan de Negocios Comercial",
+          "pageId": "modelo.business",
+          "children": [
+            {
+              "id": "pilar.business.naturaleza",
+              "title": "Naturaleza del Proyecto",
+              "children": [
+                {
+                  "id": "modulo.business.introduccion",
+                  "title": "Justificación y Origen",
+                  "pageId": "modulo.business.introduccion",
+                  "openUrl": "/business/introduccion"
+                },
+                {
+                  "id": "modulo.business.identidad",
+                  "title": "Identidad Corporativa",
+                  "pageId": "modulo.business.identidad",
+                  "openUrl": "/business/identidad"
+                },
+                {
+                  "id": "modulo.business.objetivos",
+                  "title": "Objetivos y Metas",
+                  "pageId": "modulo.business.objetivos",
+                  "openUrl": "/business/objetivos"
+                },
+                {
+                  "id": "modulo.business.foda",
+                  "title": "Análisis FODA",
+                  "pageId": "modulo.business.foda",
+                  "openUrl": "/business/foda"
+                },
+                {
+                  "id": "modulo.business.pestel",
+                  "title": "Entorno (PESTEL)",
+                  "pageId": "modulo.business.pestel",
+                  "openUrl": "/business/pestel"
+                },
+                {
+                  "id": "modulo.business.legal",
+                  "title": "Marco Legal y Socios",
+                  "pageId": "modulo.business.legal",
+                  "openUrl": "/business/legal"
+                },
+                {
+                  "id": "modulo.business.canvas",
+                  "title": "Modelo de Negocio Canvas",
+                  "pageId": "modulo.business.canvas",
+                  "openUrl": "/business/canvas"
+                }
+              ]
+            },
+            {
+              "id": "pilar.business.mercado",
+              "title": "El Mercado",
+              "children": [
+                {
+                  "id": "modulo.business.analisis",
+                  "title": "Análisis de Producto y Valor",
+                  "pageId": "modulo.business.analisis",
+                  "openUrl": "/business/analisis"
+                },
+                {
+                  "id": "modulo.business.segmentacion",
+                  "title": "Segmentación y Tamaño",
+                  "pageId": "modulo.business.segmentacion",
+                  "openUrl": "/business/segmentacion"
+                },
+                {
+                  "id": "modulo.business.metricas_aarrr",
+                  "title": "Métricas Pirata AARRR",
+                  "pageId": "modulo.business.metricas_aarrr",
+                  "openUrl": "/business/metricas_aarrr"
+                },
+                {
+                  "id": "modulo.business.mapa",
+                  "title": "Mapa de Calor y Densidad",
+                  "pageId": "modulo.business.mapa",
+                  "openUrl": "/business/mapa"
+                },
+                {
+                  "id": "modulo.business.competencia",
+                  "title": "Análisis de Competencia",
+                  "pageId": "modulo.business.competencia",
+                  "openUrl": "/business/competencia"
+                },
+                {
+                  "id": "modulo.business.benchmarking",
+                  "title": "Benchmarking",
+                  "pageId": "modulo.business.benchmarking",
+                  "openUrl": "/business/benchmarking"
+                },
+                {
+                  "id": "modulo.business.comercializacion",
+                  "title": "Estrategia de Comercialización",
+                  "pageId": "modulo.business.comercializacion",
+                  "openUrl": "/business/comercializacion"
+                },
+                {
+                  "id": "modulo.business.ventas",
+                  "title": "Plan de Ventas y Precios",
+                  "pageId": "modulo.business.ventas",
+                  "openUrl": "/business/ventas"
+                },
+                {
+                  "id": "modulo.business.inteligencia_mercado_cascada",
+                  "title": "Inteligencia de Mercado en Cascada",
+                  "pageId": "modulo.business.inteligencia_mercado_cascada",
+                  "openUrl": "/business/inteligencia_mercado_cascada"
+                }
+              ]
+            },
+            {
+              "id": "pilar.business.tecnico",
+              "title": "Estudio Técnico de Producción",
+              "children": [
+                {
+                  "id": "modulo.business.ubicacion",
+                  "title": "Localización y Ubicación",
+                  "pageId": "modulo.business.ubicacion",
+                  "openUrl": "/business/ubicacion"
+                },
+                {
+                  "id": "modulo.business.operacion",
+                  "title": "Operación y Procesos",
+                  "pageId": "modulo.business.operacion",
+                  "openUrl": "/business/operacion"
+                },
+                {
+                  "id": "modulo.business.recursos",
+                  "title": "Maquinaria y Tecnología",
+                  "pageId": "modulo.business.recursos",
+                  "openUrl": "/business/recursos"
+                },
+                {
+                  "id": "modulo.business.insumos",
+                  "title": "Insumos y Proveedores",
+                  "pageId": "modulo.business.insumos",
+                  "openUrl": "/business/insumos"
+                },
+                {
+                  "id": "modulo.business.capacidad",
+                  "title": "Capacidad e Inventarios",
+                  "pageId": "modulo.business.capacidad",
+                  "openUrl": "/business/capacidad"
+                },
+                {
+                  "id": "modulo.business.operativa",
+                  "title": "Eficiencia Operativa",
+                  "pageId": "modulo.business.operativa",
+                  "openUrl": "/business/operativa"
+                },
+                {
+                  "id": "modulo.business.ambiental",
+                  "title": "Impacto Ambiental",
+                  "pageId": "modulo.business.ambiental",
+                  "openUrl": "/business/ambiental"
+                }
+              ]
+            },
+            {
+              "id": "pilar.business.organizacion",
+              "title": "Organización y Finanzas",
+              "children": [
+                {
+                  "id": "modulo.business.estructura",
+                  "title": "Estructura Organizativa",
+                  "pageId": "modulo.business.estructura",
+                  "openUrl": "/business/estructura"
+                },
+                {
+                  "id": "modulo.business.recursos_humanos",
+                  "title": "Gestión de Recursos Humanos",
+                  "pageId": "modulo.business.recursos_humanos",
+                  "openUrl": "/business/recursos_humanos"
+                },
+                {
+                  "id": "modulo.business.inversion",
+                  "title": "Inversión Inicial (CAPEX)",
+                  "pageId": "modulo.business.inversion",
+                  "openUrl": "/business/inversion"
+                },
+                {
+                  "id": "modulo.business.costos",
+                  "title": "Costos y Gastos (OPEX)",
+                  "pageId": "modulo.business.costos",
+                  "openUrl": "/business/costos"
+                },
+                {
+                  "id": "modulo.business.estados_financieros",
+                  "title": "Estados Financieros",
+                  "pageId": "modulo.business.estados_financieros",
+                  "openUrl": "/business/estados_financieros"
+                },
+                {
+                  "id": "modulo.business.rentabilidad",
+                  "title": "Rentabilidad y Análisis",
+                  "pageId": "modulo.business.rentabilidad",
+                  "openUrl": "/business/rentabilidad"
+                }
+              ]
+            },
+            {
+              "id": "pilar.business.simulador_financiero",
+              "title": "Simulador y Corridas",
+              "children": [
+                {
+                  "id": "modulo.business.simulador",
+                  "title": "Simulador Financiero",
+                  "pageId": "modulo.business.simulador",
+                  "openUrl": "/business/simulador"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "modelo.social_bid",
+          "title": "Proyecto Social (Metodología BID)",
+          "pageId": "modelo.social_bid",
+          "children": [
+            {
+              "id": "pilar.social_bid.identificacion",
+              "title": "Identificación del Problema",
+              "children": [
+                {
+                  "id": "modulo.social_bid.involucrados",
+                  "title": "Análisis de Involucrados",
+                  "pageId": "modulo.social_bid.involucrados",
+                  "openUrl": "/social_bid/involucrados"
+                },
+                {
+                  "id": "modulo.social_bid.arbol_problemas",
+                  "title": "Árbol de Problemas",
+                  "pageId": "modulo.social_bid.arbol_problemas",
+                  "openUrl": "/social_bid/arbol_problemas"
+                },
+                {
+                  "id": "modulo.social_bid.arbol_objetivos",
+                  "title": "Árbol de Objetivos",
+                  "pageId": "modulo.social_bid.arbol_objetivos",
+                  "openUrl": "/social_bid/arbol_objetivos"
+                },
+                {
+                  "id": "modulo.social_bid.alternativas",
+                  "title": "Análisis de Alternativas",
+                  "pageId": "modulo.social_bid.alternativas",
+                  "openUrl": "/social_bid/alternativas"
+                }
+              ]
+            },
+            {
+              "id": "pilar.social_bid.diseno",
+              "title": "Diseño del Proyecto (MML)",
+              "children": [
+                {
+                  "id": "modulo.social_bid.fin_proposito",
+                  "title": "Fin y Propósito",
+                  "pageId": "modulo.social_bid.fin_proposito",
+                  "openUrl": "/social_bid/fin_proposito"
+                },
+                {
+                  "id": "modulo.social_bid.componentes",
+                  "title": "Componentes (Productos)",
+                  "pageId": "modulo.social_bid.componentes",
+                  "openUrl": "/social_bid/componentes"
+                },
+                {
+                  "id": "modulo.social_bid.actividades",
+                  "title": "Actividades Clave",
+                  "pageId": "modulo.social_bid.actividades",
+                  "openUrl": "/social_bid/actividades"
+                },
+                {
+                  "id": "modulo.social_bid.monitoreo",
+                  "title": "Sistema de Monitoreo",
+                  "pageId": "modulo.social_bid.monitoreo",
+                  "openUrl": "/social_bid/monitoreo"
+                }
+              ]
+            },
+            {
+              "id": "pilar.social_bid.ejecucion",
+              "title": "Ejecución y Gobernanza (PM4R)",
+              "children": [
+                {
+                  "id": "modulo.social_bid.gobernanza",
+                  "title": "Estructura de Gobernanza",
+                  "pageId": "modulo.social_bid.gobernanza",
+                  "openUrl": "/social_bid/gobernanza"
+                },
+                {
+                  "id": "modulo.social_bid.edt",
+                  "title": "Estructura Desglosada (EDT)",
+                  "pageId": "modulo.social_bid.edt",
+                  "openUrl": "/social_bid/edt"
+                },
+                {
+                  "id": "modulo.social_bid.riesgos",
+                  "title": "Matriz de Riesgos",
+                  "pageId": "modulo.social_bid.riesgos",
+                  "openUrl": "/social_bid/riesgos"
+                },
+                {
+                  "id": "modulo.social_bid.comunicaciones",
+                  "title": "Plan de Comunicaciones",
+                  "pageId": "modulo.social_bid.comunicaciones",
+                  "openUrl": "/social_bid/comunicaciones"
+                }
+              ]
+            },
+            {
+              "id": "pilar.social_bid.presupuesto",
+              "title": "Presupuesto y Evaluación",
+              "children": [
+                {
+                  "id": "modulo.social_bid.presupuesto_detallado",
+                  "title": "Presupuesto por Componentes",
+                  "pageId": "modulo.social_bid.presupuesto_detallado",
+                  "openUrl": "/social_bid/presupuesto_detallado"
+                },
+                {
+                  "id": "modulo.social_bid.evaluacion_exante",
+                  "title": "Evaluación Ex-ante",
+                  "pageId": "modulo.social_bid.evaluacion_exante",
+                  "openUrl": "/social_bid/evaluacion_exante"
+                },
+                {
+                  "id": "modulo.social_bid.evaluacion_social_cuantitativa",
+                  "title": "Evaluación Cuantitativa BID",
+                  "pageId": "modulo.social_bid.evaluacion_social_cuantitativa",
+                  "openUrl": "/social_bid/evaluacion_social_cuantitativa"
+                },
+                {
+                  "id": "modulo.social_bid.sostenibilidad",
+                  "title": "Estrategia de Sostenibilidad",
+                  "pageId": "modulo.social_bid.sostenibilidad",
+                  "openUrl": "/social_bid/sostenibilidad"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "modelo.agile_startup",
+          "title": "Agile Startup (Lean MVP)",
+          "pageId": "modelo.agile_startup",
+          "children": [
+            {
+              "id": "pilar.agile_startup.validacion",
+              "title": "Validación y Lienzo (Lean Canvas)",
+              "children": [
+                {
+                  "id": "modulo.agile_startup.canvas",
+                  "title": "Lienzo Lean Canvas",
+                  "pageId": "modulo.agile_startup.canvas",
+                  "openUrl": "/agile_startup/canvas"
+                },
+                {
+                  "id": "modulo.agile_startup.buyer_persona",
+                  "title": "Cliente y Empatía",
+                  "pageId": "modulo.agile_startup.buyer_persona",
+                  "openUrl": "/agile_startup/buyer_persona"
+                }
+              ]
+            },
+            {
+              "id": "pilar.agile_startup.experimento",
+              "title": "Diseño de Experimentos y MVP",
+              "children": [
+                {
+                  "id": "modulo.agile_startup.mvp_design",
+                  "title": "Diseño del MVP",
+                  "pageId": "modulo.agile_startup.mvp_design",
+                  "openUrl": "/agile_startup/mvp_design"
+                },
+                {
+                  "id": "modulo.agile_startup.critical_hypotheses",
+                  "title": "Hipótesis y Métricas",
+                  "pageId": "modulo.agile_startup.critical_hypotheses",
+                  "openUrl": "/agile_startup/critical_hypotheses"
+                },
+                {
+                  "id": "modulo.agile_startup.experimentos_tdd",
+                  "title": "Experimentos Lean TDD",
+                  "pageId": "modulo.agile_startup.experimentos_tdd",
+                  "openUrl": "/agile_startup/experimentos_tdd"
+                }
+              ]
+            },
+            {
+              "id": "pilar.agile_startup.aprendizaje",
+              "title": "Tracción y Aprendizaje",
+              "children": [
+                {
+                  "id": "modulo.agile_startup.pilot_results",
+                  "title": "Resultados del Piloto",
+                  "pageId": "modulo.agile_startup.pilot_results",
+                  "openUrl": "/agile_startup/pilot_results"
+                },
+                {
+                  "id": "modulo.agile_startup.innovation_accounting",
+                  "title": "Contabilidad de Innovación",
+                  "pageId": "modulo.agile_startup.innovation_accounting",
+                  "openUrl": "/agile_startup/innovation_accounting"
+                },
+                {
+                  "id": "modulo.agile_startup.pivot_persevere",
+                  "title": "Pivotar o Perseverar",
+                  "pageId": "modulo.agile_startup.pivot_persevere",
+                  "openUrl": "/agile_startup/pivot_persevere"
+                }
+              ]
+            },
+            {
+              "id": "pilar.agile_startup.finanzas_agiles",
+              "title": "Finanzas y Métricas Unitarias",
+              "children": [
+                {
+                  "id": "modulo.agile_startup.unit_economics",
+                  "title": "Unit Economics",
+                  "pageId": "modulo.agile_startup.unit_economics",
+                  "openUrl": "/agile_startup/unit_economics"
+                },
+                {
+                  "id": "modulo.agile_startup.burn_rate",
+                  "title": "Runway y Burn Rate",
+                  "pageId": "modulo.agile_startup.burn_rate",
+                  "openUrl": "/agile_startup/burn_rate"
+                }
+              ]
+            },
+            {
+              "id": "pilar.agile_startup.simulador_financiero",
+              "title": "Simulador y Corridas",
+              "children": [
+                {
+                  "id": "modulo.agile_startup.simulador",
+                  "title": "Simulador Financiero",
+                  "pageId": "modulo.agile_startup.simulador",
+                  "openUrl": "/agile_startup/simulador"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "modelo.technology_id",
+          "title": "Plan de Negocios de Base Tecnológica e Innovación (I+D)",
+          "pageId": "modelo.technology_id",
+          "children": [
+            {
+              "id": "pilar.technology_id.innovacion",
+              "title": "Innovación y Propiedad Intelectual",
+              "children": [
+                {
+                  "id": "modulo.technology_id.tech_invention",
+                  "title": "Tecnología e Invención",
+                  "pageId": "modulo.technology_id.tech_invention",
+                  "openUrl": "/technology_id/tech_invention"
+                },
+                {
+                  "id": "modulo.technology_id.jobs_to_be_done",
+                  "title": "Jobs-to-be-Done (Christensen)",
+                  "pageId": "modulo.technology_id.jobs_to_be_done",
+                  "openUrl": "/technology_id/jobs_to_be_done"
+                },
+                {
+                  "id": "modulo.technology_id.property_intellectual",
+                  "title": "Propiedad Intelectual",
+                  "pageId": "modulo.technology_id.property_intellectual",
+                  "openUrl": "/technology_id/property_intellectual"
+                }
+              ]
+            },
+            {
+              "id": "pilar.technology_id.viabilidad_tecnica",
+              "title": "Estudio de Viabilidad Técnica",
+              "children": [
+                {
+                  "id": "modulo.technology_id.technical_id",
+                  "title": "Ingeniería e I+D",
+                  "pageId": "modulo.technology_id.technical_id",
+                  "openUrl": "/technology_id/technical_id"
+                },
+                {
+                  "id": "modulo.technology_id.prototyping",
+                  "title": "Prototipado y Pruebas",
+                  "pageId": "modulo.technology_id.prototyping",
+                  "openUrl": "/technology_id/prototyping"
+                }
+              ]
+            },
+            {
+              "id": "pilar.technology_id.mercado_tecnologico",
+              "title": "Mercado Científico y Transferencia",
+              "children": [
+                {
+                  "id": "modulo.technology_id.tech_market",
+                  "title": "Mercado Tecnológico",
+                  "pageId": "modulo.technology_id.tech_market",
+                  "openUrl": "/technology_id/tech_market"
+                },
+                {
+                  "id": "modulo.technology_id.disrupcion_sustaining",
+                  "title": "Disrupción vs Sostenimiento",
+                  "pageId": "modulo.technology_id.disrupcion_sustaining",
+                  "openUrl": "/technology_id/disrupcion_sustaining"
+                },
+                {
+                  "id": "modulo.technology_id.transfer_model",
+                  "title": "Modelo de Transferencia",
+                  "pageId": "modulo.technology_id.transfer_model",
+                  "openUrl": "/technology_id/transfer_model"
+                }
+              ]
+            },
+            {
+              "id": "pilar.technology_id.responsabilidad_social",
+              "title": "Impacto Social y Ecológico (RSE)",
+              "children": [
+                {
+                  "id": "modulo.technology_id.rse_impact",
+                  "title": "Responsabilidad Social (RSE)",
+                  "pageId": "modulo.technology_id.rse_impact",
+                  "openUrl": "/technology_id/rse_impact"
+                },
+                {
+                  "id": "modulo.technology_id.circular_economy",
+                  "title": "Economía Circular",
+                  "pageId": "modulo.technology_id.circular_economy",
+                  "openUrl": "/technology_id/circular_economy"
+                }
+              ]
+            },
+            {
+              "id": "pilar.technology_id.simulador_financiero",
+              "title": "Simulador y Corridas",
+              "children": [
+                {
+                  "id": "modulo.technology_id.simulador",
+                  "title": "Simulador Financiero",
+                  "pageId": "modulo.technology_id.simulador",
+                  "openUrl": "/technology_id/simulador"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "modelo.micro_business",
+          "title": "Plan para Microempresa y Autoempleo (Simplificado)",
+          "pageId": "modelo.micro_business",
+          "children": [
+            {
+              "id": "pilar.micro_business.naturaleza",
+              "title": "Presentación Básica",
+              "children": [
+                {
+                  "id": "modulo.micro_business.introduccion",
+                  "title": "Sumario Ejecutivo",
+                  "pageId": "modulo.micro_business.introduccion",
+                  "openUrl": "/micro_business/introduccion"
+                },
+                {
+                  "id": "modulo.micro_business.identidad",
+                  "title": "Presentación de la Empresa",
+                  "pageId": "modulo.micro_business.identidad",
+                  "openUrl": "/micro_business/identidad"
+                }
+              ]
+            },
+            {
+              "id": "pilar.micro_business.mercado",
+              "title": "Mercadeo Simplificado",
+              "children": [
+                {
+                  "id": "modulo.micro_business.clientes",
+                  "title": "¿A quién le vendemos?",
+                  "pageId": "modulo.micro_business.clientes",
+                  "openUrl": "/micro_business/clientes"
+                },
+                {
+                  "id": "modulo.micro_business.competencia",
+                  "title": "La Competencia Local",
+                  "pageId": "modulo.micro_business.competencia",
+                  "openUrl": "/micro_business/competencia"
+                },
+                {
+                  "id": "modulo.micro_business.comercializacion",
+                  "title": "Precios y Promoción",
+                  "pageId": "modulo.micro_business.comercializacion",
+                  "openUrl": "/micro_business/comercializacion"
+                }
+              ]
+            },
+            {
+              "id": "pilar.micro_business.tecnico",
+              "title": "Producción y Operaciones",
+              "children": [
+                {
+                  "id": "modulo.micro_business.operacion",
+                  "title": "¿Cómo trabajamos?",
+                  "pageId": "modulo.micro_business.operacion",
+                  "openUrl": "/micro_business/operacion"
+                },
+                {
+                  "id": "modulo.micro_business.recursos",
+                  "title": "Equipos y Herramientas",
+                  "pageId": "modulo.micro_business.recursos",
+                  "openUrl": "/micro_business/recursos"
+                },
+                {
+                  "id": "modulo.micro_business.croquis",
+                  "title": "Croquis del Local",
+                  "pageId": "modulo.micro_business.croquis",
+                  "openUrl": "/micro_business/croquis"
+                }
+              ]
+            },
+            {
+              "id": "pilar.micro_business.organizacion",
+              "title": "Plan Financiero Básico",
+              "children": [
+                {
+                  "id": "modulo.micro_business.inversion",
+                  "title": "¿Cuánto ocupamos para iniciar?",
+                  "pageId": "modulo.micro_business.inversion",
+                  "openUrl": "/micro_business/inversion"
+                },
+                {
+                  "id": "modulo.micro_business.costos",
+                  "title": "Gastos de cada mes",
+                  "pageId": "modulo.micro_business.costos",
+                  "openUrl": "/micro_business/costos"
+                },
+                {
+                  "id": "modulo.micro_business.punto_equilibrio_micro",
+                  "title": "Punto de Equilibrio Micro",
+                  "pageId": "modulo.micro_business.punto_equilibrio_micro",
+                  "openUrl": "/micro_business/punto_equilibrio_micro"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "modelo.investment_project",
+          "title": "Proyecto de Inversión (Ingeniería y Finanzas)",
+          "pageId": "modelo.investment_project",
+          "children": [
+            {
+              "id": "pilar.investment_project.mercado_cuantitativo",
+              "title": "Estudio de Mercado Cuantitativo",
+              "children": [
+                {
+                  "id": "modulo.investment_project.demanda",
+                  "title": "Análisis de Demanda",
+                  "pageId": "modulo.investment_project.demanda",
+                  "openUrl": "/investment_project/demanda"
+                },
+                {
+                  "id": "modulo.investment_project.oferta",
+                  "title": "Proyección de Oferta",
+                  "pageId": "modulo.investment_project.oferta",
+                  "openUrl": "/investment_project/oferta"
+                },
+                {
+                  "id": "modulo.investment_project.inteligencia_mercado_cascada",
+                  "title": "Inteligencia de Mercado en Cascada",
+                  "pageId": "modulo.investment_project.inteligencia_mercado_cascada",
+                  "openUrl": "/investment_project/inteligencia_mercado_cascada"
+                }
+              ]
+            },
+            {
+              "id": "pilar.investment_project.ingenieria_tecnica",
+              "title": "Ingeniería del Proyecto",
+              "children": [
+                {
+                  "id": "modulo.investment_project.ingenieria",
+                  "title": "Ingeniería Básica",
+                  "pageId": "modulo.investment_project.ingenieria",
+                  "openUrl": "/investment_project/ingenieria"
+                },
+                {
+                  "id": "modulo.investment_project.layout",
+                  "title": "Instalaciones y Lay-out",
+                  "pageId": "modulo.investment_project.layout",
+                  "openUrl": "/investment_project/layout"
+                }
+              ]
+            },
+            {
+              "id": "pilar.investment_project.presupuesto_obra",
+              "title": "Presupuesto Base de Obra (CAPEX)",
+              "children": [
+                {
+                  "id": "modulo.investment_project.presupuesto",
+                  "title": "Catálogo y Costos",
+                  "pageId": "modulo.investment_project.presupuesto",
+                  "openUrl": "/investment_project/presupuesto"
+                },
+                {
+                  "id": "modulo.investment_project.capex_csi_16",
+                  "title": "Desglose CAPEX CSI-16",
+                  "pageId": "modulo.investment_project.capex_csi_16",
+                  "openUrl": "/investment_project/capex_csi_16"
+                },
+                {
+                  "id": "modulo.investment_project.cronograma",
+                  "title": "Cronograma Físico-Financiero",
+                  "pageId": "modulo.investment_project.cronograma",
+                  "openUrl": "/investment_project/cronograma"
+                }
+              ]
+            },
+            {
+              "id": "pilar.investment_project.estructura_capital",
+              "title": "Estructura de Capital",
+              "children": [
+                {
+                  "id": "modulo.investment_project.capital",
+                  "title": "Costo de Capital (WACC)",
+                  "pageId": "modulo.investment_project.capital",
+                  "openUrl": "/investment_project/capital"
+                },
+                {
+                  "id": "modulo.investment_project.deuda",
+                  "title": "Apalancamiento y Deuda",
+                  "pageId": "modulo.investment_project.deuda",
+                  "openUrl": "/investment_project/deuda"
+                }
+              ]
+            },
+            {
+              "id": "pilar.investment_project.riesgo_matematico",
+              "title": "Riesgo Matemático y Sensibilidad",
+              "children": [
+                {
+                  "id": "modulo.investment_project.sensibilidad",
+                  "title": "Análisis de Sensibilidad",
+                  "pageId": "modulo.investment_project.sensibilidad",
+                  "openUrl": "/investment_project/sensibilidad"
+                },
+                {
+                  "id": "modulo.investment_project.tornado_sensibilidad",
+                  "title": "Diagrama Tornado de Riesgo",
+                  "pageId": "modulo.investment_project.tornado_sensibilidad",
+                  "openUrl": "/investment_project/tornado_sensibilidad"
+                },
+                {
+                  "id": "modulo.investment_project.probabilidad",
+                  "title": "Simulación de Riesgo",
+                  "pageId": "modulo.investment_project.probabilidad",
+                  "openUrl": "/investment_project/probabilidad"
+                }
+              ]
+            },
+            {
+              "id": "pilar.investment_project.simulador_financiero",
+              "title": "Simulador y Corridas",
+              "children": [
+                {
+                  "id": "modulo.investment_project.simulador",
+                  "title": "Simulador Financiero",
+                  "pageId": "modulo.investment_project.simulador",
+                  "openUrl": "/investment_project/simulador"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "modelo.zopp",
+          "title": "ZOPP / Marco Lógico (Enfoque Alemán-BID)",
+          "pageId": "modelo.zopp",
+          "children": [
+            {
+              "id": "pilar.zopp.analisis_situacion",
+              "title": "Análisis de la Situación",
+              "children": [
+                {
+                  "id": "modulo.zopp.participacion",
+                  "title": "Matriz de Participación",
+                  "pageId": "modulo.zopp.participacion",
+                  "openUrl": "/zopp/participacion"
+                },
+                {
+                  "id": "modulo.zopp.problemas",
+                  "title": "Árbol de Problemas",
+                  "pageId": "modulo.zopp.problemas",
+                  "openUrl": "/zopp/problemas"
+                }
+              ]
+            },
+            {
+              "id": "pilar.zopp.planificacion_mpp",
+              "title": "Planificación Estratégica (MPP)",
+              "children": [
+                {
+                  "id": "modulo.zopp.objetivos",
+                  "title": "Árbol de Objetivos",
+                  "pageId": "modulo.zopp.objetivos",
+                  "openUrl": "/zopp/objetivos"
+                },
+                {
+                  "id": "modulo.zopp.analisis_alternativas_zopp",
+                  "title": "Análisis de Alternativas",
+                  "pageId": "modulo.zopp.analisis_alternativas_zopp",
+                  "openUrl": "/zopp/analisis_alternativas_zopp"
+                },
+                {
+                  "id": "modulo.zopp.matriz_logica",
+                  "title": "Matriz Lógica (MPP 4x4)",
+                  "pageId": "modulo.zopp.matriz_logica",
+                  "openUrl": "/zopp/matriz_logica"
+                }
+              ]
+            },
+            {
+              "id": "pilar.zopp.cronograma_presupuesto",
+              "title": "Operación y Recursos",
+              "children": [
+                {
+                  "id": "modulo.zopp.planificacion_actividades_cronograma",
+                  "title": "Plan de Actividades (Gantt)",
+                  "pageId": "modulo.zopp.planificacion_actividades_cronograma",
+                  "openUrl": "/zopp/planificacion_actividades_cronograma"
+                },
+                {
+                  "id": "modulo.zopp.presupuesto_componentes",
+                  "title": "Presupuesto por Componentes",
+                  "pageId": "modulo.zopp.presupuesto_componentes",
+                  "openUrl": "/zopp/presupuesto_componentes"
+                }
+              ]
+            },
+            {
+              "id": "pilar.zopp.evaluacion_sostenibilidad",
+              "title": "Evaluación y Sostenibilidad",
+              "children": [
+                {
+                  "id": "modulo.zopp.evaluacion_expost",
+                  "title": "Evaluación Ex-Post y Factores",
+                  "pageId": "modulo.zopp.evaluacion_expost",
+                  "openUrl": "/zopp/evaluacion_expost"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "modelo.horizon_europe",
+          "title": "Horizon Europe (Unión Europea)",
+          "pageId": "modelo.horizon_europe",
+          "children": [
+            {
+              "id": "pilar.horizon_europe.excelencia_cientifica",
+              "title": "Excelencia y Ciencia Abierta",
+              "children": [
+                {
+                  "id": "modulo.horizon_europe.consorcio",
+                  "title": "Consorcio Transnacional",
+                  "pageId": "modulo.horizon_europe.consorcio",
+                  "openUrl": "/horizon_europe/consorcio"
+                },
+                {
+                  "id": "modulo.horizon_europe.ciencia_abierta",
+                  "title": "Open Science",
+                  "pageId": "modulo.horizon_europe.ciencia_abierta",
+                  "openUrl": "/horizon_europe/ciencia_abierta"
+                },
+                {
+                  "id": "modulo.horizon_europe.gestion_datos_fair_dmp",
+                  "title": "Gestión de Datos FAIR (DMP)",
+                  "pageId": "modulo.horizon_europe.gestion_datos_fair_dmp",
+                  "openUrl": "/horizon_europe/gestion_datos_fair_dmp"
+                }
+              ]
+            },
+            {
+              "id": "pilar.horizon_europe.impacto_sostenibilidad",
+              "title": "Impacto y Sostenibilidad",
+              "children": [
+                {
+                  "id": "modulo.horizon_europe.dnsh_principle",
+                  "title": "Principio DNSH (UE)",
+                  "pageId": "modulo.horizon_europe.dnsh_principle",
+                  "openUrl": "/horizon_europe/dnsh_principle"
+                },
+                {
+                  "id": "modulo.horizon_europe.impacto",
+                  "title": "Impacto Más Allá del SOTA",
+                  "pageId": "modulo.horizon_europe.impacto",
+                  "openUrl": "/horizon_europe/impacto"
+                },
+                {
+                  "id": "modulo.horizon_europe.impacto_pathway_trl",
+                  "title": "Pathway de Impacto (TRL 6-9)",
+                  "pageId": "modulo.horizon_europe.impacto_pathway_trl",
+                  "openUrl": "/horizon_europe/impacto_pathway_trl"
+                }
+              ]
+            },
+            {
+              "id": "pilar.horizon_europe.implementacion_trabajo",
+              "title": "Implementación y Presupuesto EU",
+              "children": [
+                {
+                  "id": "modulo.horizon_europe.diseminacion_explotacion",
+                  "title": "Diseminación y Explotación",
+                  "pageId": "modulo.horizon_europe.diseminacion_explotacion",
+                  "openUrl": "/horizon_europe/diseminacion_explotacion"
+                },
+                {
+                  "id": "modulo.horizon_europe.presupuesto_eu_microsoft",
+                  "title": "Presupuesto UE por Categorías",
+                  "pageId": "modulo.horizon_europe.presupuesto_eu_microsoft",
+                  "openUrl": "/horizon_europe/presupuesto_eu_microsoft"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "modelo.hoshin_kanri",
+          "title": "Hoshin Kanri (Japón - Planificación Estratégica)",
+          "pageId": "modelo.hoshin_kanri",
+          "children": [
+            {
+              "id": "pilar.hoshin_kanri.vision_largo_plazo",
+              "title": "Visión y Breakthroughs",
+              "children": [
+                {
+                  "id": "modulo.hoshin_kanri.norte_verdadero",
+                  "title": "True North (Norte Verdadero)",
+                  "pageId": "modulo.hoshin_kanri.norte_verdadero",
+                  "openUrl": "/hoshin-kanri/norte_verdadero"
+                },
+                {
+                  "id": "modulo.hoshin_kanri.disrupcion",
+                  "title": "Objetivos Breakthrough",
+                  "pageId": "modulo.hoshin_kanri.disrupcion",
+                  "openUrl": "/hoshin-kanri/disrupcion"
+                }
+              ]
+            },
+            {
+              "id": "pilar.hoshin_kanri.alineacion_ejecucion",
+              "title": "Alineación Estratégica",
+              "children": [
+                {
+                  "id": "modulo.hoshin_kanri.matriz_x",
+                  "title": "Matriz X (4 Cuadrantes)",
+                  "pageId": "modulo.hoshin_kanri.matriz_x",
+                  "openUrl": "/hoshin-kanri/matriz_x"
+                },
+                {
+                  "id": "modulo.hoshin_kanri.catchball_nemawashi",
+                  "title": "Catchball & Nemawashi",
+                  "pageId": "modulo.hoshin_kanri.catchball_nemawashi",
+                  "openUrl": "/hoshin-kanri/catchball_nemawashi"
+                },
+                {
+                  "id": "modulo.hoshin_kanri.a3_deployment",
+                  "title": "Despliegue de Informes A3",
+                  "pageId": "modulo.hoshin_kanri.a3_deployment",
+                  "openUrl": "/hoshin-kanri/a3_deployment"
+                }
+              ]
+            },
+            {
+              "id": "pilar.hoshin_kanri.seguimiento_mejora",
+              "title": "Seguimiento y Control Continuo",
+              "children": [
+                {
+                  "id": "modulo.hoshin_kanri.seguimiento",
+                  "title": "Bowler Charts",
+                  "pageId": "modulo.hoshin_kanri.seguimiento",
+                  "openUrl": "/hoshin-kanri/seguimiento"
+                },
+                {
+                  "id": "modulo.hoshin_kanri.pdca_hoshin",
+                  "title": "Ciclo PDCA de Mejora",
+                  "pageId": "modulo.hoshin_kanri.pdca_hoshin",
+                  "openUrl": "/hoshin-kanri/pdca_hoshin"
+                },
+                {
+                  "id": "modulo.hoshin_kanri.okrs_alineados",
+                  "title": "OKRs Alineados a la Matriz X",
+                  "pageId": "modulo.hoshin_kanri.okrs_alineados",
+                  "openUrl": "/hoshin-kanri/okrs_alineados"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "modelo.amoeba_management",
+          "title": "Amoeba Management (Kyocera - Micro-Ganancias)",
+          "pageId": "modelo.amoeba_management",
+          "children": [
+            {
+              "id": "pilar.amoeba_management.estructuracion_celulas",
+              "title": "Estructuración y Filosofía",
+              "children": [
+                {
+                  "id": "modulo.amoeba_management.celulas",
+                  "title": "Mapeo de Células Amoeba",
+                  "pageId": "modulo.amoeba_management.celulas",
+                  "openUrl": "/amoeba_management/celulas"
+                },
+                {
+                  "id": "modulo.amoeba_management.filosofia_corp",
+                  "title": "Filosofía Inamori",
+                  "pageId": "modulo.amoeba_management.filosofia_corp",
+                  "openUrl": "/amoeba_management/filosofia_corp"
+                },
+                {
+                  "id": "modulo.amoeba_management.principios_inamori_12",
+                  "title": "12 Principios de Gestión Inamori",
+                  "pageId": "modulo.amoeba_management.principios_inamori_12",
+                  "openUrl": "/amoeba_management/principios_inamori_12"
+                }
+              ]
+            },
+            {
+              "id": "pilar.amoeba_management.economia_interna",
+              "title": "Economía Interna y Productividad",
+              "children": [
+                {
+                  "id": "modulo.amoeba_management.precios",
+                  "title": "Precios de Transferencia",
+                  "pageId": "modulo.amoeba_management.precios",
+                  "openUrl": "/amoeba_management/precios"
+                },
+                {
+                  "id": "modulo.amoeba_management.rentabilidad",
+                  "title": "Rentabilidad por Hora",
+                  "pageId": "modulo.amoeba_management.rentabilidad",
+                  "openUrl": "/amoeba_management/rentabilidad"
+                },
+                {
+                  "id": "modulo.amoeba_management.time_based_management",
+                  "title": "Gestión Basada en el Tiempo",
+                  "pageId": "modulo.amoeba_management.time_based_management",
+                  "openUrl": "/amoeba_management/time_based_management"
+                }
+              ]
+            },
+            {
+              "id": "pilar.amoeba_management.operaciones_comunicacion",
+              "title": "Comunicación Operativa",
+              "children": [
+                {
+                  "id": "modulo.amoeba_management.horenso_reportar_contactar_consultar",
+                  "title": "Protocolo Ho-Ren-So",
+                  "pageId": "modulo.amoeba_management.horenso_reportar_contactar_consultar",
+                  "openUrl": "/amoeba_management/horenso_reportar_contactar_consultar"
+                }
+              ]
+            },
+            {
+              "id": "pilar.amoeba_management.simulador_financiero",
+              "title": "Simulador de Células",
+              "children": [
+                {
+                  "id": "modulo.amoeba_management.simulador",
+                  "title": "Simulador Financiero",
+                  "pageId": "modulo.amoeba_management.simulador",
+                  "openUrl": "/amoeba_management/simulador"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "modelo.guanxi_plan",
+          "title": "Metodología Guanxi (China - Redes de Relaciones)",
+          "pageId": "modelo.guanxi_plan",
+          "children": [
+            {
+              "id": "pilar.guanxi_plan.redes_estado",
+              "title": "Conexiones y Alineación Estratégica",
+              "children": [
+                {
+                  "id": "modulo.guanxi_plan.mapa_relacional",
+                  "title": "Mapa Relacional Guanxi",
+                  "pageId": "modulo.guanxi_plan.mapa_relacional",
+                  "openUrl": "/guanxi_plan/mapa_relacional"
+                },
+                {
+                  "id": "modulo.guanxi_plan.alineacion_estado",
+                  "title": "Alineación al 14º Plan Quinquenal",
+                  "pageId": "modulo.guanxi_plan.alineacion_estado",
+                  "openUrl": "/guanxi_plan/alineacion_estado"
+                }
+              ]
+            },
+            {
+              "id": "pilar.guanxi_plan.manejo_conflictos",
+              "title": "Reciprocidad y Capital Social",
+              "children": [
+                {
+                  "id": "modulo.guanxi_plan.favores",
+                  "title": "Reciprocidad (Renqing)",
+                  "pageId": "modulo.guanxi_plan.favores",
+                  "openUrl": "/guanxi_plan/favores"
+                },
+                {
+                  "id": "modulo.guanxi_plan.mianzi",
+                  "title": "Preservación de la Cara (Mianzi)",
+                  "pageId": "modulo.guanxi_plan.mianzi",
+                  "openUrl": "/guanxi_plan/mianzi"
+                },
+                {
+                  "id": "modulo.guanxi_plan.gift_giving_renqing",
+                  "title": "Protocolo de Obsequios",
+                  "pageId": "modulo.guanxi_plan.gift_giving_renqing",
+                  "openUrl": "/guanxi_plan/gift_giving_renqing"
+                }
+              ]
+            },
+            {
+              "id": "pilar.guanxi_plan.protocolo_negociacion",
+              "title": "Protocolo y Tácticas de Negociación",
+              "children": [
+                {
+                  "id": "modulo.guanxi_plan.banquet_protocol_ritual",
+                  "title": "Protocolo de Banquetes Chinos",
+                  "pageId": "modulo.guanxi_plan.banquet_protocol_ritual",
+                  "openUrl": "/guanxi_plan/banquet_protocol_ritual"
+                },
+                {
+                  "id": "modulo.guanxi_plan.mianzi_ladder_8niveles",
+                  "title": "Escala Mianzi de 8 Niveles",
+                  "pageId": "modulo.guanxi_plan.mianzi_ladder_8niveles",
+                  "openUrl": "/guanxi_plan/mianzi_ladder_8niveles"
+                },
+                {
+                  "id": "modulo.guanxi_plan.tacticas_negociacion_estrategica",
+                  "title": "Tácticas de Negociación China",
+                  "pageId": "modulo.guanxi_plan.tacticas_negociacion_estrategica",
+                  "openUrl": "/guanxi_plan/tacticas_negociacion_estrategica"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "modelo.onudi_project",
+          "title": "Estudio de Factibilidad ONUDI (Industrial Global)",
+          "pageId": "modelo.onudi_project",
+          "children": [
+            {
+              "id": "pilar.onudi_project.ingenieria_industrial",
+              "title": "Ingeniería y Emplazamiento",
+              "children": [
+                {
+                  "id": "modulo.onudi_project.tecnologia",
+                  "title": "Ingeniería Básica y Selección Tecnológica",
+                  "pageId": "modulo.onudi_project.tecnologia",
+                  "openUrl": "/onudi_project/tecnologia"
+                },
+                {
+                  "id": "modulo.onudi_project.localizacion_industrial",
+                  "title": "Matriz de Localización ONUDI",
+                  "pageId": "modulo.onudi_project.localizacion_industrial",
+                  "openUrl": "/onudi_project/localizacion_industrial"
+                },
+                {
+                  "id": "modulo.onudi_project.impacto_ambiental_onudi",
+                  "title": "Evaluación de Impacto Ambiental (EIA)",
+                  "pageId": "modulo.onudi_project.impacto_ambiental_onudi",
+                  "openUrl": "/onudi_project/impacto_ambiental_onudi"
+                }
+              ]
+            },
+            {
+              "id": "pilar.onudi_project.financiamiento_global",
+              "title": "Evaluación Financiera Global (COMFAR)",
+              "children": [
+                {
+                  "id": "modulo.onudi_project.costo_capital",
+                  "title": "WACC ONUDI y Spread País",
+                  "pageId": "modulo.onudi_project.costo_capital",
+                  "openUrl": "/onudi_project/costo_capital"
+                },
+                {
+                  "id": "modulo.onudi_project.flujo_firma",
+                  "title": "Flujo de Caja Libre (FCFF)",
+                  "pageId": "modulo.onudi_project.flujo_firma",
+                  "openUrl": "/onudi_project/flujo_firma"
+                },
+                {
+                  "id": "modulo.onudi_project.riesgo_pais_cambiario",
+                  "title": "Riesgo País y Riesgo Cambiario",
+                  "pageId": "modulo.onudi_project.riesgo_pais_cambiario",
+                  "openUrl": "/onudi_project/riesgo_pais_cambiario"
+                },
+                {
+                  "id": "modulo.onudi_project.riesgo",
+                  "title": "Análisis de Sensibilidad Tornado",
+                  "pageId": "modulo.onudi_project.riesgo",
+                  "openUrl": "/onudi_project/riesgo"
+                }
+              ]
+            },
+            {
+              "id": "pilar.onudi_project.simulador_financiero",
+              "title": "Simulador y Factibilidad",
+              "children": [
+                {
+                  "id": "modulo.onudi_project.simulador",
+                  "title": "Simulador Financiero",
+                  "pageId": "modulo.onudi_project.simulador",
+                  "openUrl": "/onudi_project/simulador"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "referencia",
+      "title": "Referencia técnica",
+      "children": [
+        {
+          "id": "referencia-apis",
+          "title": "APIs e integraciones",
+          "pageId": "referencia-apis"
+        }
+      ]
+    }
+  ],
+  "pages": {
+    "modelo.business": {
+      "file": "pages/modelo.business.json",
+      "title": "Plan de Negocios Comercial",
+      "summary": "Modelo de plan con 30 módulos y 113 campos.",
+      "kind": "modelo",
+      "audience": "cliente"
+    },
+    "modelo.social_bid": {
+      "file": "pages/modelo.social_bid.json",
+      "title": "Proyecto Social (Metodología BID)",
+      "summary": "Modelo de plan con 16 módulos y 53 campos.",
+      "kind": "modelo",
+      "audience": "cliente"
+    },
+    "modelo.agile_startup": {
+      "file": "pages/modelo.agile_startup.json",
+      "title": "Agile Startup (Lean MVP)",
+      "summary": "Modelo de plan con 11 módulos y 45 campos.",
+      "kind": "modelo",
+      "audience": "cliente"
+    },
+    "modelo.technology_id": {
+      "file": "pages/modelo.technology_id.json",
+      "title": "Plan de Negocios de Base Tecnológica e Innovación (I+D)",
+      "summary": "Modelo de plan con 11 módulos y 36 campos.",
+      "kind": "modelo",
+      "audience": "cliente"
+    },
+    "modelo.micro_business": {
+      "file": "pages/modelo.micro_business.json",
+      "title": "Plan para Microempresa y Autoempleo (Simplificado)",
+      "summary": "Modelo de plan con 11 módulos y 25 campos.",
+      "kind": "modelo",
+      "audience": "cliente"
+    },
+    "modelo.investment_project": {
+      "file": "pages/modelo.investment_project.json",
+      "title": "Proyecto de Inversión (Ingeniería y Finanzas)",
+      "summary": "Modelo de plan con 14 módulos y 30 campos.",
+      "kind": "modelo",
+      "audience": "cliente"
+    },
+    "modelo.zopp": {
+      "file": "pages/modelo.zopp.json",
+      "title": "ZOPP / Marco Lógico (Enfoque Alemán-BID)",
+      "summary": "Modelo de plan con 8 módulos y 16 campos.",
+      "kind": "modelo",
+      "audience": "cliente"
+    },
+    "modelo.horizon_europe": {
+      "file": "pages/modelo.horizon_europe.json",
+      "title": "Horizon Europe (Unión Europea)",
+      "summary": "Modelo de plan con 8 módulos y 16 campos.",
+      "kind": "modelo",
+      "audience": "cliente"
+    },
+    "modelo.hoshin_kanri": {
+      "file": "pages/modelo.hoshin_kanri.json",
+      "title": "Hoshin Kanri (Japón - Planificación Estratégica)",
+      "summary": "Modelo de plan con 8 módulos y 16 campos.",
+      "kind": "modelo",
+      "audience": "cliente"
+    },
+    "modelo.amoeba_management": {
+      "file": "pages/modelo.amoeba_management.json",
+      "title": "Amoeba Management (Kyocera - Micro-Ganancias)",
+      "summary": "Modelo de plan con 8 módulos y 14 campos.",
+      "kind": "modelo",
+      "audience": "cliente"
+    },
+    "modelo.guanxi_plan": {
+      "file": "pages/modelo.guanxi_plan.json",
+      "title": "Metodología Guanxi (China - Redes de Relaciones)",
+      "summary": "Modelo de plan con 8 módulos y 16 campos.",
+      "kind": "modelo",
+      "audience": "cliente"
+    },
+    "modelo.onudi_project": {
+      "file": "pages/modelo.onudi_project.json",
+      "title": "Estudio de Factibilidad ONUDI (Industrial Global)",
+      "summary": "Modelo de plan con 8 módulos y 14 campos.",
+      "kind": "modelo",
+      "audience": "cliente"
+    },
+    "modulo.business.introduccion": {
+      "file": "pages/modulo.business.introduccion.json",
+      "title": "Justificación y Origen",
+      "summary": "Origen, necesidad que cubre, modelo y propuesta de valor inicial.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/business/introduccion"
+    },
+    "modulo.business.identidad": {
+      "file": "pages/modulo.business.identidad.json",
+      "title": "Identidad Corporativa",
+      "summary": "Misión, Visión, Valores y concepto de marca.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/business/identidad"
+    },
+    "modulo.business.objetivos": {
+      "file": "pages/modulo.business.objetivos.json",
+      "title": "Objetivos y Metas",
+      "summary": "Objetivos SMART a corto, mediano y largo plazo.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/business/objetivos"
+    },
+    "modulo.business.foda": {
+      "file": "pages/modulo.business.foda.json",
+      "title": "Análisis FODA",
+      "summary": "Fortalezas, Oportunidades, Debilidades y Amenazas.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/business/foda"
+    },
+    "modulo.business.pestel": {
+      "file": "pages/modulo.business.pestel.json",
+      "title": "Entorno (PESTEL)",
+      "summary": "Factores Políticos, Económicos, Sociales, Tecnológicos, etc.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/business/pestel"
+    },
+    "modulo.business.legal": {
+      "file": "pages/modulo.business.legal.json",
+      "title": "Marco Legal y Socios",
+      "summary": "Estructura legal, constitución y permisos requeridos.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/business/legal"
+    },
+    "modulo.business.canvas": {
+      "file": "pages/modulo.business.canvas.json",
+      "title": "Modelo de Negocio Canvas",
+      "summary": "El lienzo del modelo de negocios (9 bloques esenciales) para planificar estratégicamente.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/business/canvas"
+    },
+    "modulo.business.analisis": {
+      "file": "pages/modulo.business.analisis.json",
+      "title": "Análisis de Producto y Valor",
+      "summary": "Descripción detallada del producto y beneficios.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/business/analisis"
+    },
+    "modulo.business.segmentacion": {
+      "file": "pages/modulo.business.segmentacion.json",
+      "title": "Segmentación y Tamaño",
+      "summary": "TAM, SAM, SOM y perfil del buyer persona.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/business/segmentacion"
+    },
+    "modulo.business.metricas_aarrr": {
+      "file": "pages/modulo.business.metricas_aarrr.json",
+      "title": "Métricas Pirata AARRR",
+      "summary": "Embudo cuantitativo: Adquisición, Activación, Retención, Referidos e Ingresos.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/business/metricas_aarrr"
+    },
+    "modulo.business.mapa": {
+      "file": "pages/modulo.business.mapa.json",
+      "title": "Mapa de Calor y Densidad",
+      "summary": "Visualización geográfica de la demanda y densidad de mercado.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/business/mapa"
+    },
+    "modulo.business.competencia": {
+      "file": "pages/modulo.business.competencia.json",
+      "title": "Análisis de Competencia",
+      "summary": "Competidores directos, indirectos y ventaja competitiva.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/business/competencia"
+    },
+    "modulo.business.benchmarking": {
+      "file": "pages/modulo.business.benchmarking.json",
+      "title": "Benchmarking",
+      "summary": "Comparativa estructurada contra líderes del mercado.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/business/benchmarking"
+    },
+    "modulo.business.comercializacion": {
+      "file": "pages/modulo.business.comercializacion.json",
+      "title": "Estrategia de Comercialización",
+      "summary": "Canales de distribución, marketing e identidad de ventas.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/business/comercializacion"
+    },
+    "modulo.business.ventas": {
+      "file": "pages/modulo.business.ventas.json",
+      "title": "Plan de Ventas y Precios",
+      "summary": "Estrategia de pricing y proyecciones de volumen.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/business/ventas"
+    },
+    "modulo.business.inteligencia_mercado_cascada": {
+      "file": "pages/modulo.business.inteligencia_mercado_cascada.json",
+      "title": "Inteligencia de Mercado en Cascada",
+      "summary": "Investigación multinivel: Local INEGI DENUE, Scraping Nacional y APIs de Comercio Internacional.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/business/inteligencia_mercado_cascada"
+    },
+    "modulo.business.ubicacion": {
+      "file": "pages/modulo.business.ubicacion.json",
+      "title": "Localización y Ubicación",
+      "summary": "Macro y micro localización del negocio.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/business/ubicacion"
+    },
+    "modulo.business.operacion": {
+      "file": "pages/modulo.business.operacion.json",
+      "title": "Operación y Procesos",
+      "summary": "Diagrama de flujo de operaciones y tecnología.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/business/operacion"
+    },
+    "modulo.business.recursos": {
+      "file": "pages/modulo.business.recursos.json",
+      "title": "Maquinaria y Tecnología",
+      "summary": "Equipamiento, hardware y herramientas necesarias.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/business/recursos"
+    },
+    "modulo.business.insumos": {
+      "file": "pages/modulo.business.insumos.json",
+      "title": "Insumos y Proveedores",
+      "summary": "Materias primas y cadena de suministro.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/business/insumos"
+    },
+    "modulo.business.capacidad": {
+      "file": "pages/modulo.business.capacidad.json",
+      "title": "Capacidad e Inventarios",
+      "summary": "Capacidad instalada, manejo de stock y turnos.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/business/capacidad"
+    },
+    "modulo.business.operativa": {
+      "file": "pages/modulo.business.operativa.json",
+      "title": "Eficiencia Operativa",
+      "summary": "Métricas de desempeño: OTD, Rotación, DSO, DPO y Ciclo de Efectivo.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/business/operativa"
+    },
+    "modulo.business.ambiental": {
+      "file": "pages/modulo.business.ambiental.json",
+      "title": "Impacto Ambiental",
+      "summary": "Sostenibilidad, manejo de residuos y normatividad.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/business/ambiental"
+    },
+    "modulo.business.estructura": {
+      "file": "pages/modulo.business.estructura.json",
+      "title": "Estructura Organizativa",
+      "summary": "Organigrama y descripción de puestos clave.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/business/estructura"
+    },
+    "modulo.business.recursos_humanos": {
+      "file": "pages/modulo.business.recursos_humanos.json",
+      "title": "Gestión de Recursos Humanos",
+      "summary": "Políticas de contratación, capacitación y sueldos.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/business/recursos_humanos"
+    },
+    "modulo.business.inversion": {
+      "file": "pages/modulo.business.inversion.json",
+      "title": "Inversión Inicial (CAPEX)",
+      "summary": "Requerimientos de capital para arranque.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/business/inversion"
+    },
+    "modulo.business.costos": {
+      "file": "pages/modulo.business.costos.json",
+      "title": "Costos y Gastos (OPEX)",
+      "summary": "Estructura de costos fijos y variables mensuales.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/business/costos"
+    },
+    "modulo.business.estados_financieros": {
+      "file": "pages/modulo.business.estados_financieros.json",
+      "title": "Estados Financieros",
+      "summary": "Proyecciones de resultados, balance y flujo.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/business/estados_financieros"
+    },
+    "modulo.business.rentabilidad": {
+      "file": "pages/modulo.business.rentabilidad.json",
+      "title": "Rentabilidad y Análisis",
+      "summary": "TIR, VPN, Punto de Equilibrio y ROI.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/business/rentabilidad"
+    },
+    "modulo.business.simulador": {
+      "file": "pages/modulo.business.simulador.json",
+      "title": "Simulador Financiero",
+      "summary": "Simulador interactivo avanzado con corridas dinámicas a 5 años.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/business/simulador"
+    },
+    "modulo.social_bid.involucrados": {
+      "file": "pages/modulo.social_bid.involucrados.json",
+      "title": "Análisis de Involucrados",
+      "summary": "Mapeo de actores, beneficiarios, aliados y oponentes.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/social_bid/involucrados"
+    },
+    "modulo.social_bid.arbol_problemas": {
+      "file": "pages/modulo.social_bid.arbol_problemas.json",
+      "title": "Árbol de Problemas",
+      "summary": "Identificación del problema central, sus causas (raíces) y efectos (ramas).",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/social_bid/arbol_problemas"
+    },
+    "modulo.social_bid.arbol_objetivos": {
+      "file": "pages/modulo.social_bid.arbol_objetivos.json",
+      "title": "Árbol de Objetivos",
+      "summary": "Conversión del problema en objetivo central, medios y fines.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/social_bid/arbol_objetivos"
+    },
+    "modulo.social_bid.alternativas": {
+      "file": "pages/modulo.social_bid.alternativas.json",
+      "title": "Análisis de Alternativas",
+      "summary": "Estrategias posibles y selección de la alternativa óptima.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/social_bid/alternativas"
+    },
+    "modulo.social_bid.fin_proposito": {
+      "file": "pages/modulo.social_bid.fin_proposito.json",
+      "title": "Fin y Propósito",
+      "summary": "Impacto a largo plazo y objetivo específico del proyecto.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/social_bid/fin_proposito"
+    },
+    "modulo.social_bid.componentes": {
+      "file": "pages/modulo.social_bid.componentes.json",
+      "title": "Componentes (Productos)",
+      "summary": "Bienes o servicios que entregará el proyecto.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/social_bid/componentes"
+    },
+    "modulo.social_bid.actividades": {
+      "file": "pages/modulo.social_bid.actividades.json",
+      "title": "Actividades Clave",
+      "summary": "Tareas necesarias para producir cada componente.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/social_bid/actividades"
+    },
+    "modulo.social_bid.monitoreo": {
+      "file": "pages/modulo.social_bid.monitoreo.json",
+      "title": "Sistema de Monitoreo",
+      "summary": "Medios de verificación y línea base.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/social_bid/monitoreo"
+    },
+    "modulo.social_bid.gobernanza": {
+      "file": "pages/modulo.social_bid.gobernanza.json",
+      "title": "Estructura de Gobernanza",
+      "summary": "Directorio, comité ejecutor y roles.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/social_bid/gobernanza"
+    },
+    "modulo.social_bid.edt": {
+      "file": "pages/modulo.social_bid.edt.json",
+      "title": "Estructura Desglosada (EDT)",
+      "summary": "División del trabajo y cronograma detallado.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/social_bid/edt"
+    },
+    "modulo.social_bid.riesgos": {
+      "file": "pages/modulo.social_bid.riesgos.json",
+      "title": "Matriz de Riesgos",
+      "summary": "Identificación, probabilidad y mitigación de riesgos sociales/ambientales.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/social_bid/riesgos"
+    },
+    "modulo.social_bid.comunicaciones": {
+      "file": "pages/modulo.social_bid.comunicaciones.json",
+      "title": "Plan de Comunicaciones",
+      "summary": "Estrategia para mantener informados a los stakeholders.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/social_bid/comunicaciones"
+    },
+    "modulo.social_bid.presupuesto_detallado": {
+      "file": "pages/modulo.social_bid.presupuesto_detallado.json",
+      "title": "Presupuesto por Componentes",
+      "summary": "Costo total desglosado por actividad y componente.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/social_bid/presupuesto_detallado"
+    },
+    "modulo.social_bid.evaluacion_exante": {
+      "file": "pages/modulo.social_bid.evaluacion_exante.json",
+      "title": "Evaluación Ex-ante",
+      "summary": "Costo-Beneficio Social y análisis de costo-eficiencia.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/social_bid/evaluacion_exante"
+    },
+    "modulo.social_bid.evaluacion_social_cuantitativa": {
+      "file": "pages/modulo.social_bid.evaluacion_social_cuantitativa.json",
+      "title": "Evaluación Cuantitativa BID",
+      "summary": "Tasa social de descuento (8-12%), costos sombra y rentabilidad socioeconómica.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/social_bid/evaluacion_social_cuantitativa"
+    },
+    "modulo.social_bid.sostenibilidad": {
+      "file": "pages/modulo.social_bid.sostenibilidad.json",
+      "title": "Estrategia de Sostenibilidad",
+      "summary": "Cómo sobrevivirá el proyecto al terminar el financiamiento del BID.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/social_bid/sostenibilidad"
+    },
+    "modulo.agile_startup.canvas": {
+      "file": "pages/modulo.agile_startup.canvas.json",
+      "title": "Lienzo Lean Canvas",
+      "summary": "Los 9 bloques simplificados del modelo de negocios ágil para enfocar la propuesta de valor.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/agile_startup/canvas"
+    },
+    "modulo.agile_startup.buyer_persona": {
+      "file": "pages/modulo.agile_startup.buyer_persona.json",
+      "title": "Cliente y Empatía",
+      "summary": "Creación detallada del Buyer Persona o avatar de cliente y su mapa de empatía.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/agile_startup/buyer_persona"
+    },
+    "modulo.agile_startup.mvp_design": {
+      "file": "pages/modulo.agile_startup.mvp_design.json",
+      "title": "Diseño del MVP",
+      "summary": "Especificación técnica y operativa del Producto Mínimo Viable a construir.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/agile_startup/mvp_design"
+    },
+    "modulo.agile_startup.critical_hypotheses": {
+      "file": "pages/modulo.agile_startup.critical_hypotheses.json",
+      "title": "Hipótesis y Métricas",
+      "summary": "Identificación de las dos hipótesis más críticas de valor y crecimiento, y sus métricas.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/agile_startup/critical_hypotheses"
+    },
+    "modulo.agile_startup.experimentos_tdd": {
+      "file": "pages/modulo.agile_startup.experimentos_tdd.json",
+      "title": "Experimentos Lean TDD",
+      "summary": "Diseño riguroso de pruebas con criterios de falsificación, muestra y duración.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/agile_startup/experimentos_tdd"
+    },
+    "modulo.agile_startup.pilot_results": {
+      "file": "pages/modulo.agile_startup.pilot_results.json",
+      "title": "Resultados del Piloto",
+      "summary": "Resultados cuantitativos y cualitativos obtenidos durante las pruebas con clientes reales.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/agile_startup/pilot_results"
+    },
+    "modulo.agile_startup.innovation_accounting": {
+      "file": "pages/modulo.agile_startup.innovation_accounting.json",
+      "title": "Contabilidad de Innovación",
+      "summary": "Evaluación cuantitativa de hitos: Línea base, optimizaciones y análisis de cohortes.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/agile_startup/innovation_accounting"
+    },
+    "modulo.agile_startup.pivot_persevere": {
+      "file": "pages/modulo.agile_startup.pivot_persevere.json",
+      "title": "Pivotar o Perseverar",
+      "summary": "Decisión estratégica de negocio basada en datos reales de tracción para pivotar o seguir escalando.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/agile_startup/pivot_persevere"
+    },
+    "modulo.agile_startup.unit_economics": {
+      "file": "pages/modulo.agile_startup.unit_economics.json",
+      "title": "Unit Economics",
+      "summary": "Estructura detallada de costos e ingresos unitarios.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/agile_startup/unit_economics"
+    },
+    "modulo.agile_startup.burn_rate": {
+      "file": "pages/modulo.agile_startup.burn_rate.json",
+      "title": "Runway y Burn Rate",
+      "summary": "Monitoreo de flujo mensual y supervivencia de caja.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/agile_startup/burn_rate"
+    },
+    "modulo.agile_startup.simulador": {
+      "file": "pages/modulo.agile_startup.simulador.json",
+      "title": "Simulador Financiero",
+      "summary": "Simulador interactivo avanzado con corridas dinámicas y unit economics a 5 años.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/agile_startup/simulador"
+    },
+    "modulo.technology_id.tech_invention": {
+      "file": "pages/modulo.technology_id.tech_invention.json",
+      "title": "Tecnología e Invención",
+      "summary": "Descripción detallada de la tecnología, su novedad científica y nivel de maduración TRL (Technology Readiness Level).",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/technology_id/tech_invention"
+    },
+    "modulo.technology_id.jobs_to_be_done": {
+      "file": "pages/modulo.technology_id.jobs_to_be_done.json",
+      "title": "Jobs-to-be-Done (Christensen)",
+      "summary": "Declaración JTBD del cliente, circunstancia disparadora y dimensión funcional-emocional.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/technology_id/jobs_to_be_done"
+    },
+    "modulo.technology_id.property_intellectual": {
+      "file": "pages/modulo.technology_id.property_intellectual.json",
+      "title": "Propiedad Intelectual",
+      "summary": "Estrategia legal de registro de marcas, secretos industriales y patentes nacionales o internacionales.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/technology_id/property_intellectual"
+    },
+    "modulo.technology_id.technical_id": {
+      "file": "pages/modulo.technology_id.technical_id.json",
+      "title": "Ingeniería e I+D",
+      "summary": "Escalamiento técnico de laboratorio a planta piloto y especificaciones científicas de producción.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/technology_id/technical_id"
+    },
+    "modulo.technology_id.prototyping": {
+      "file": "pages/modulo.technology_id.prototyping.json",
+      "title": "Prototipado y Pruebas",
+      "summary": "Cronograma y resultados de pruebas de concepto, maquetas físicas o prototipos alpha/beta.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/technology_id/prototyping"
+    },
+    "modulo.technology_id.tech_market": {
+      "file": "pages/modulo.technology_id.tech_market.json",
+      "title": "Mercado Tecnológico",
+      "summary": "Identificación de licenciatarios, análisis B2B o B2G, y alianzas estratégicas de co-desarrollo.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/technology_id/tech_market"
+    },
+    "modulo.technology_id.disrupcion_sustaining": {
+      "file": "pages/modulo.technology_id.disrupcion_sustaining.json",
+      "title": "Disrupción vs Sostenimiento",
+      "summary": "Evaluación de trayectoria disruptiva (gama baja / nuevo mercado) y marco RPV organizacional.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/technology_id/disrupcion_sustaining"
+    },
+    "modulo.technology_id.transfer_model": {
+      "file": "pages/modulo.technology_id.transfer_model.json",
+      "title": "Modelo de Transferencia",
+      "summary": "Esquema de monetización: cobro de royalties, cesión de patentes o constitución de spin-off.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/technology_id/transfer_model"
+    },
+    "modulo.technology_id.rse_impact": {
+      "file": "pages/modulo.technology_id.rse_impact.json",
+      "title": "Responsabilidad Social (RSE)",
+      "summary": "Evaluación del impacto ético, social y ambiental directo del desarrollo tecnológico.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/technology_id/rse_impact"
+    },
+    "modulo.technology_id.circular_economy": {
+      "file": "pages/modulo.technology_id.circular_economy.json",
+      "title": "Economía Circular",
+      "summary": "Ecodiseño, ciclo de vida del producto tecnológico y manejo sostenible de insumos/residuos.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/technology_id/circular_economy"
+    },
+    "modulo.technology_id.simulador": {
+      "file": "pages/modulo.technology_id.simulador.json",
+      "title": "Simulador Financiero",
+      "summary": "Simulador interactivo con proyecciones de I+D, VAN y TIR a 5 años.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/technology_id/simulador"
+    },
+    "modulo.micro_business.introduccion": {
+      "file": "pages/modulo.micro_business.introduccion.json",
+      "title": "Sumario Ejecutivo",
+      "summary": "Idea del negocio y objetivo principal.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/micro_business/introduccion"
+    },
+    "modulo.micro_business.identidad": {
+      "file": "pages/modulo.micro_business.identidad.json",
+      "title": "Presentación de la Empresa",
+      "summary": "Nombre, quiénes somos y qué ofrecemos.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/micro_business/identidad"
+    },
+    "modulo.micro_business.clientes": {
+      "file": "pages/modulo.micro_business.clientes.json",
+      "title": "¿A quién le vendemos?",
+      "summary": "Quiénes son nuestros clientes y dónde están.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/micro_business/clientes"
+    },
+    "modulo.micro_business.competencia": {
+      "file": "pages/modulo.micro_business.competencia.json",
+      "title": "La Competencia Local",
+      "summary": "Quién más hace lo mismo cerca de nosotros.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/micro_business/competencia"
+    },
+    "modulo.micro_business.comercializacion": {
+      "file": "pages/modulo.micro_business.comercializacion.json",
+      "title": "Precios y Promoción",
+      "summary": "Cómo calculamos el precio y cómo nos damos a conocer.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/micro_business/comercializacion"
+    },
+    "modulo.micro_business.operacion": {
+      "file": "pages/modulo.micro_business.operacion.json",
+      "title": "¿Cómo trabajamos?",
+      "summary": "Paso a paso de lo que hacemos en un día normal.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/micro_business/operacion"
+    },
+    "modulo.micro_business.recursos": {
+      "file": "pages/modulo.micro_business.recursos.json",
+      "title": "Equipos y Herramientas",
+      "summary": "Lo que necesitamos comprar o tener para empezar.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/micro_business/recursos"
+    },
+    "modulo.micro_business.croquis": {
+      "file": "pages/modulo.micro_business.croquis.json",
+      "title": "Croquis del Local",
+      "summary": "Distribución física del espacio de trabajo.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/micro_business/croquis"
+    },
+    "modulo.micro_business.inversion": {
+      "file": "pages/modulo.micro_business.inversion.json",
+      "title": "¿Cuánto ocupamos para iniciar?",
+      "summary": "Dinero necesario para arrancar el negocio.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/micro_business/inversion"
+    },
+    "modulo.micro_business.costos": {
+      "file": "pages/modulo.micro_business.costos.json",
+      "title": "Gastos de cada mes",
+      "summary": "Lista de pagos fijos como luz, agua, renta y sueldos.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/micro_business/costos"
+    },
+    "modulo.micro_business.punto_equilibrio_micro": {
+      "file": "pages/modulo.micro_business.punto_equilibrio_micro.json",
+      "title": "Punto de Equilibrio Micro",
+      "summary": "Cálculo exacto de unidades mínimas de venta para cubrir costos fijos y variables.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/micro_business/punto_equilibrio_micro"
+    },
+    "modulo.investment_project.demanda": {
+      "file": "pages/modulo.investment_project.demanda.json",
+      "title": "Análisis de Demanda",
+      "summary": "Datos duros, elasticidad y comportamiento histórico.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/investment_project/demanda"
+    },
+    "modulo.investment_project.oferta": {
+      "file": "pages/modulo.investment_project.oferta.json",
+      "title": "Proyección de Oferta",
+      "summary": "Modelos de proyección para oferta, déficit y demanda futura.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/investment_project/oferta"
+    },
+    "modulo.investment_project.inteligencia_mercado_cascada": {
+      "file": "pages/modulo.investment_project.inteligencia_mercado_cascada.json",
+      "title": "Inteligencia de Mercado en Cascada",
+      "summary": "Investigación multinivel: Local INEGI DENUE, Scraping Nacional y APIs de Comercio Internacional.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/investment_project/inteligencia_mercado_cascada"
+    },
+    "modulo.investment_project.ingenieria": {
+      "file": "pages/modulo.investment_project.ingenieria.json",
+      "title": "Ingeniería Básica",
+      "summary": "Diseño macro, tecnología y memorias de cálculo.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/investment_project/ingenieria"
+    },
+    "modulo.investment_project.layout": {
+      "file": "pages/modulo.investment_project.layout.json",
+      "title": "Instalaciones y Lay-out",
+      "summary": "Distribución física, terreno y obras.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/investment_project/layout"
+    },
+    "modulo.investment_project.presupuesto": {
+      "file": "pages/modulo.investment_project.presupuesto.json",
+      "title": "Catálogo y Costos",
+      "summary": "Catálogo de conceptos y explosión de insumos físicos.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/investment_project/presupuesto"
+    },
+    "modulo.investment_project.capex_csi_16": {
+      "file": "pages/modulo.investment_project.capex_csi_16.json",
+      "title": "Desglose CAPEX CSI-16",
+      "summary": "Estructuración según las 16 divisiones estándar CSI de construcción y maquinaria.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/investment_project/capex_csi_16"
+    },
+    "modulo.investment_project.cronograma": {
+      "file": "pages/modulo.investment_project.cronograma.json",
+      "title": "Cronograma Físico-Financiero",
+      "summary": "Avance de obra vs. desembolso de capital mensual.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/investment_project/cronograma"
+    },
+    "modulo.investment_project.capital": {
+      "file": "pages/modulo.investment_project.capital.json",
+      "title": "Costo de Capital (WACC)",
+      "summary": "Cálculo del Costo Promedio Ponderado de Capital.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/investment_project/capital"
+    },
+    "modulo.investment_project.deuda": {
+      "file": "pages/modulo.investment_project.deuda.json",
+      "title": "Apalancamiento y Deuda",
+      "summary": "Estructura del crédito y amortizaciones.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/investment_project/deuda"
+    },
+    "modulo.investment_project.sensibilidad": {
+      "file": "pages/modulo.investment_project.sensibilidad.json",
+      "title": "Análisis de Sensibilidad",
+      "summary": "Sensibilidad unidimensional y multivariable.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/investment_project/sensibilidad"
+    },
+    "modulo.investment_project.tornado_sensibilidad": {
+      "file": "pages/modulo.investment_project.tornado_sensibilidad.json",
+      "title": "Diagrama Tornado de Riesgo",
+      "summary": "Variación de variables críticas (precio, volumen, CAPEX) sobre el VAN.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/investment_project/tornado_sensibilidad"
+    },
+    "modulo.investment_project.probabilidad": {
+      "file": "pages/modulo.investment_project.probabilidad.json",
+      "title": "Simulación de Riesgo",
+      "summary": "Simulación probabilística tipo Monte Carlo.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/investment_project/probabilidad"
+    },
+    "modulo.investment_project.simulador": {
+      "file": "pages/modulo.investment_project.simulador.json",
+      "title": "Simulador Financiero",
+      "summary": "Simulador interactivo avanzado con corridas dinámicas de inversión a 5 años.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/investment_project/simulador"
+    },
+    "modulo.zopp.participacion": {
+      "file": "pages/modulo.zopp.participacion.json",
+      "title": "Matriz de Participación",
+      "summary": "Identificación, intereses y expectativas de involucrados.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/zopp/participacion"
+    },
+    "modulo.zopp.problemas": {
+      "file": "pages/modulo.zopp.problemas.json",
+      "title": "Árbol de Problemas",
+      "summary": "Análisis causal de causas directas, indirectas y efectos.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/zopp/problemas"
+    },
+    "modulo.zopp.objetivos": {
+      "file": "pages/modulo.zopp.objetivos.json",
+      "title": "Árbol de Objetivos",
+      "summary": "Conversión de problemas a soluciones, medios y fines.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/zopp/objetivos"
+    },
+    "modulo.zopp.analisis_alternativas_zopp": {
+      "file": "pages/modulo.zopp.analisis_alternativas_zopp.json",
+      "title": "Análisis de Alternativas",
+      "summary": "Evaluación comparativa de estrategias según viabilidad técnica y financiera.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/zopp/analisis_alternativas_zopp"
+    },
+    "modulo.zopp.matriz_logica": {
+      "file": "pages/modulo.zopp.matriz_logica.json",
+      "title": "Matriz Lógica (MPP 4x4)",
+      "summary": "Resumen narrativo, indicadores verificables, fuentes y supuestos.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/zopp/matriz_logica"
+    },
+    "modulo.zopp.planificacion_actividades_cronograma": {
+      "file": "pages/modulo.zopp.planificacion_actividades_cronograma.json",
+      "title": "Plan de Actividades (Gantt)",
+      "summary": "Desglose de paquetes de trabajo, hitos y ruta crítica.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/zopp/planificacion_actividades_cronograma"
+    },
+    "modulo.zopp.presupuesto_componentes": {
+      "file": "pages/modulo.zopp.presupuesto_componentes.json",
+      "title": "Presupuesto por Componentes",
+      "summary": "Asignación de costos de inversión y operación por resultado.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/zopp/presupuesto_componentes"
+    },
+    "modulo.zopp.evaluacion_expost": {
+      "file": "pages/modulo.zopp.evaluacion_expost.json",
+      "title": "Evaluación Ex-Post y Factores",
+      "summary": "Criterios de pertinencia, eficacia, impacto y continuidad operativa.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/zopp/evaluacion_expost"
+    },
+    "modulo.horizon_europe.consorcio": {
+      "file": "pages/modulo.horizon_europe.consorcio.json",
+      "title": "Consorcio Transnacional",
+      "summary": "Estructura internacional de socios, capacidades y gobernanza.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/horizon_europe/consorcio"
+    },
+    "modulo.horizon_europe.ciencia_abierta": {
+      "file": "pages/modulo.horizon_europe.ciencia_abierta.json",
+      "title": "Open Science",
+      "summary": "Políticas de ciencia abierta y acceso libre a publicaciones.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/horizon_europe/ciencia_abierta"
+    },
+    "modulo.horizon_europe.gestion_datos_fair_dmp": {
+      "file": "pages/modulo.horizon_europe.gestion_datos_fair_dmp.json",
+      "title": "Gestión de Datos FAIR (DMP)",
+      "summary": "Plan de gestión de datos: Localizables, Accesibles, Interoperables y Reutilizables.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/horizon_europe/gestion_datos_fair_dmp"
+    },
+    "modulo.horizon_europe.dnsh_principle": {
+      "file": "pages/modulo.horizon_europe.dnsh_principle.json",
+      "title": "Principio DNSH (UE)",
+      "summary": "Garantía de no causar daño significativo a los 6 objetivos ambientales de la UE.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/horizon_europe/dnsh_principle"
+    },
+    "modulo.horizon_europe.impacto": {
+      "file": "pages/modulo.horizon_europe.impacto.json",
+      "title": "Impacto Más Allá del SOTA",
+      "summary": "Avance científico sobre el estado del arte y beneficios para la UE.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/horizon_europe/impacto"
+    },
+    "modulo.horizon_europe.impacto_pathway_trl": {
+      "file": "pages/modulo.horizon_europe.impacto_pathway_trl.json",
+      "title": "Pathway de Impacto (TRL 6-9)",
+      "summary": "Ruta de maduración tecnológica desde prototipo hasta despliegue de mercado.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/horizon_europe/impacto_pathway_trl"
+    },
+    "modulo.horizon_europe.diseminacion_explotacion": {
+      "file": "pages/modulo.horizon_europe.diseminacion_explotacion.json",
+      "title": "Diseminación y Explotación",
+      "summary": "Estrategia de comunicación científica, patentes conjuntas y adopción comercial.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/horizon_europe/diseminacion_explotacion"
+    },
+    "modulo.horizon_europe.presupuesto_eu_microsoft": {
+      "file": "pages/modulo.horizon_europe.presupuesto_eu_microsoft.json",
+      "title": "Presupuesto UE por Categorías",
+      "summary": "Costes de personal, equipamiento, subcontratación y 25% flat indirecto.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/horizon_europe/presupuesto_eu_microsoft"
+    },
+    "modulo.hoshin_kanri.norte_verdadero": {
+      "file": "pages/modulo.hoshin_kanri.norte_verdadero.json",
+      "title": "True North (Norte Verdadero)",
+      "summary": "Visión de propósito inmutable a 5-10 años.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/hoshin-kanri/norte_verdadero"
+    },
+    "modulo.hoshin_kanri.disrupcion": {
+      "file": "pages/modulo.hoshin_kanri.disrupcion.json",
+      "title": "Objetivos Breakthrough",
+      "summary": "Metas de ruptura que transforman la competitividad del negocio.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/hoshin-kanri/disrupcion"
+    },
+    "modulo.hoshin_kanri.matriz_x": {
+      "file": "pages/modulo.hoshin_kanri.matriz_x.json",
+      "title": "Matriz X (4 Cuadrantes)",
+      "summary": "Correlación entre visión, objetivos anuales, prioridades y métricas.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/hoshin-kanri/matriz_x"
+    },
+    "modulo.hoshin_kanri.catchball_nemawashi": {
+      "file": "pages/modulo.hoshin_kanri.catchball_nemawashi.json",
+      "title": "Catchball & Nemawashi",
+      "summary": "Proceso bidireccional de consenso y negociación de recursos entre niveles.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/hoshin-kanri/catchball_nemawashi"
+    },
+    "modulo.hoshin_kanri.a3_deployment": {
+      "file": "pages/modulo.hoshin_kanri.a3_deployment.json",
+      "title": "Despliegue de Informes A3",
+      "summary": "Estructuración concisa del problema, causa raíz, contramedidas y plan.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/hoshin-kanri/a3_deployment"
+    },
+    "modulo.hoshin_kanri.seguimiento": {
+      "file": "pages/modulo.hoshin_kanri.seguimiento.json",
+      "title": "Bowler Charts",
+      "summary": "Revisión mensual visual con semaforización de desviaciones.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/hoshin-kanri/seguimiento"
+    },
+    "modulo.hoshin_kanri.pdca_hoshin": {
+      "file": "pages/modulo.hoshin_kanri.pdca_hoshin.json",
+      "title": "Ciclo PDCA de Mejora",
+      "summary": "Planear, Hacer, Verificar y Actuar para institucionalizar aprendizajes.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/hoshin-kanri/pdca_hoshin"
+    },
+    "modulo.hoshin_kanri.okrs_alineados": {
+      "file": "pages/modulo.hoshin_kanri.okrs_alineados.json",
+      "title": "OKRs Alineados a la Matriz X",
+      "summary": "Objetivos trimestrales y resultados clave de equipos operativos.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/hoshin-kanri/okrs_alineados"
+    },
+    "modulo.amoeba_management.celulas": {
+      "file": "pages/modulo.amoeba_management.celulas.json",
+      "title": "Mapeo de Células Amoeba",
+      "summary": "División de la organización en micro-unidades de ganancia autónomas.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/amoeba_management/celulas"
+    },
+    "modulo.amoeba_management.filosofia_corp": {
+      "file": "pages/modulo.amoeba_management.filosofia_corp.json",
+      "title": "Filosofía Inamori",
+      "summary": "Principios de gestión basados en hacer lo correcto como ser humano.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/amoeba_management/filosofia_corp"
+    },
+    "modulo.amoeba_management.principios_inamori_12": {
+      "file": "pages/modulo.amoeba_management.principios_inamori_12.json",
+      "title": "12 Principios de Gestión Inamori",
+      "summary": "Reglas fundamentales: fijar metas elevadas, precio óptimo y transparencia total.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/amoeba_management/principios_inamori_12"
+    },
+    "modulo.amoeba_management.precios": {
+      "file": "pages/modulo.amoeba_management.precios.json",
+      "title": "Precios de Transferencia",
+      "summary": "Tarifas de compra-venta justa entre células internas sin márgenes ficticios.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/amoeba_management/precios"
+    },
+    "modulo.amoeba_management.rentabilidad": {
+      "file": "pages/modulo.amoeba_management.rentabilidad.json",
+      "title": "Rentabilidad por Hora",
+      "summary": "Cálculo de valor generado por hora: (Ventas Netas - Gastos) / Horas Totales.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/amoeba_management/rentabilidad"
+    },
+    "modulo.amoeba_management.time_based_management": {
+      "file": "pages/modulo.amoeba_management.time_based_management.json",
+      "title": "Gestión Basada en el Tiempo",
+      "summary": "Eliminación sistemática de tiempos improductivos y maximización de valor/hora.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/amoeba_management/time_based_management"
+    },
+    "modulo.amoeba_management.horenso_reportar_contactar_consultar": {
+      "file": "pages/modulo.amoeba_management.horenso_reportar_contactar_consultar.json",
+      "title": "Protocolo Ho-Ren-So",
+      "summary": "Reglas de comunicación: Hokoku (Reportar), Renraku (Informar), Sodan (Consultar).",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/amoeba_management/horenso_reportar_contactar_consultar"
+    },
+    "modulo.amoeba_management.simulador": {
+      "file": "pages/modulo.amoeba_management.simulador.json",
+      "title": "Simulador Financiero",
+      "summary": "Simulador de rentabilidad por hora y micro-ganancias amoeba.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/amoeba_management/simulador"
+    },
+    "modulo.guanxi_plan.mapa_relacional": {
+      "file": "pages/modulo.guanxi_plan.mapa_relacional.json",
+      "title": "Mapa Relacional Guanxi",
+      "summary": "Clasificación de círculos de confianza: familia, amigos, intermediarios y autoridades.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/guanxi_plan/mapa_relacional"
+    },
+    "modulo.guanxi_plan.alineacion_estado": {
+      "file": "pages/modulo.guanxi_plan.alineacion_estado.json",
+      "title": "Alineación al 14º Plan Quinquenal",
+      "summary": "Sintonía del proyecto con los objetivos prioritarios del gobierno central y local chino.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/guanxi_plan/alineacion_estado"
+    },
+    "modulo.guanxi_plan.favores": {
+      "file": "pages/modulo.guanxi_plan.favores.json",
+      "title": "Reciprocidad (Renqing)",
+      "summary": "Dinámica de intercambio ético de favores y equilibrio relacional.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/guanxi_plan/favores"
+    },
+    "modulo.guanxi_plan.mianzi": {
+      "file": "pages/modulo.guanxi_plan.mianzi.json",
+      "title": "Preservación de la Cara (Mianzi)",
+      "summary": "Estrategias para otorgar, mantener y nunca hacer perder la reputación pública.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/guanxi_plan/mianzi"
+    },
+    "modulo.guanxi_plan.gift_giving_renqing": {
+      "file": "pages/modulo.guanxi_plan.gift_giving_renqing.json",
+      "title": "Protocolo de Obsequios",
+      "summary": "Normas culturales sobre regalos adecuados, momentos idóneos y valor simbólico.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/guanxi_plan/gift_giving_renqing"
+    },
+    "modulo.guanxi_plan.banquet_protocol_ritual": {
+      "file": "pages/modulo.guanxi_plan.banquet_protocol_ritual.json",
+      "title": "Protocolo de Banquetes Chinos",
+      "summary": "Orden de asignación de asientos, rituales de brindis (Ganbei) y creación de confianza.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/guanxi_plan/banquet_protocol_ritual"
+    },
+    "modulo.guanxi_plan.mianzi_ladder_8niveles": {
+      "file": "pages/modulo.guanxi_plan.mianzi_ladder_8niveles.json",
+      "title": "Escala Mianzi de 8 Niveles",
+      "summary": "Jerarquía de preservación del estatus y gestión de desacuerdos indirectos.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/guanxi_plan/mianzi_ladder_8niveles"
+    },
+    "modulo.guanxi_plan.tacticas_negociacion_estrategica": {
+      "file": "pages/modulo.guanxi_plan.tacticas_negociacion_estrategica.json",
+      "title": "Tácticas de Negociación China",
+      "summary": "Manejo de tiempos prolongados, concesiones graduales y pactos basados en la relación.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/guanxi_plan/tacticas_negociacion_estrategica"
+    },
+    "modulo.onudi_project.tecnologia": {
+      "file": "pages/modulo.onudi_project.tecnologia.json",
+      "title": "Ingeniería Básica y Selección Tecnológica",
+      "summary": "Evaluación de patentes, licencias, rendimientos y capacidad instalada óptima.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/onudi_project/tecnologia"
+    },
+    "modulo.onudi_project.localizacion_industrial": {
+      "file": "pages/modulo.onudi_project.localizacion_industrial.json",
+      "title": "Matriz de Localización ONUDI",
+      "summary": "Evaluación multicriterio ponderada: materias primas, energía, agua y logística.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/onudi_project/localizacion_industrial"
+    },
+    "modulo.onudi_project.impacto_ambiental_onudi": {
+      "file": "pages/modulo.onudi_project.impacto_ambiental_onudi.json",
+      "title": "Evaluación de Impacto Ambiental (EIA)",
+      "summary": "Matriz de mitigación de emisiones, efluentes y residuos industriales.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/onudi_project/impacto_ambiental_onudi"
+    },
+    "modulo.onudi_project.costo_capital": {
+      "file": "pages/modulo.onudi_project.costo_capital.json",
+      "title": "WACC ONUDI y Spread País",
+      "summary": "Costo de capital ponderado incorporando prima de riesgo soberano EMBI+.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/onudi_project/costo_capital"
+    },
+    "modulo.onudi_project.flujo_firma": {
+      "file": "pages/modulo.onudi_project.flujo_firma.json",
+      "title": "Flujo de Caja Libre (FCFF)",
+      "summary": "Flujo de caja para la firma antes de financiamiento y valor terminal.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/onudi_project/flujo_firma"
+    },
+    "modulo.onudi_project.riesgo_pais_cambiario": {
+      "file": "pages/modulo.onudi_project.riesgo_pais_cambiario.json",
+      "title": "Riesgo País y Riesgo Cambiario",
+      "summary": "Evaluación de volatilidad cambiaria, convertibilidad y estrategias de cobertura.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/onudi_project/riesgo_pais_cambiario"
+    },
+    "modulo.onudi_project.riesgo": {
+      "file": "pages/modulo.onudi_project.riesgo.json",
+      "title": "Análisis de Sensibilidad Tornado",
+      "summary": "Sensibilidad combinada precio-volumen y punto de quiebre industrial.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/onudi_project/riesgo"
+    },
+    "modulo.onudi_project.simulador": {
+      "file": "pages/modulo.onudi_project.simulador.json",
+      "title": "Simulador Financiero",
+      "summary": "Simulador cuantitativo de factibilidad industrial ONUDI a 5 años.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/onudi_project/simulador"
+    },
+    "referencia-apis": {
+      "file": "pages/referencia-apis.json",
+      "title": "APIs e integraciones",
+      "summary": "Qué endpoint sirve qué, con qué proveedor y qué variable de entorno necesita.",
+      "kind": "referencia",
+      "audience": "tecnico"
+    }
+  }
+}

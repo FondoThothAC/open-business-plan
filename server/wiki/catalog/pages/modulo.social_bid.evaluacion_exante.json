@@ -1,0 +1,76 @@
+{
+  "id": "modulo.social_bid.evaluacion_exante",
+  "title": "Evaluación Ex-ante",
+  "summary": "Costo-Beneficio Social y análisis de costo-eficiencia.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "social_bid",
+  "moduleKey": "evaluacion_exante",
+  "pillarKey": "presupuesto",
+  "openUrl": "/social_bid/evaluacion_exante",
+  "fields": [
+    {
+      "key": "beneficios_sociales",
+      "type": "text",
+      "address": "social_bid.presupuesto.evaluacion_exante.beneficios_sociales",
+      "prompt": "Valorización monetaria del impacto (Ej. incremento de sueldo futuro).",
+      "ejemplo": "Ej: Los graduados ganarán $30,000 extra al año. En 500 jóvenes = $15M anuales.",
+      "benchmark": "Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.",
+      "cita": "Metodología del Marco Lógico (BID / CEPAL / PM4R)",
+      "placeholder": "Define el componente del proyecto social (beneficios_sociales)..."
+    },
+    {
+      "key": "tir_social",
+      "type": "text",
+      "address": "social_bid.presupuesto.evaluacion_exante.tir_social",
+      "prompt": "Tasa Interna de Retorno pero midiendo beneficios a la sociedad, no ganancias.",
+      "ejemplo": "Ej: TIR Social estimada: 25% (muy superior a la tasa de descuento social del 10%).",
+      "benchmark": "Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.",
+      "cita": "Metodología del Marco Lógico (BID / CEPAL / PM4R)",
+      "placeholder": "Define el componente del proyecto social (tir_social)..."
+    },
+    {
+      "key": "vpn_social",
+      "type": "text",
+      "address": "social_bid.presupuesto.evaluacion_exante.vpn_social",
+      "prompt": "Valor Presente Neto de los beneficios sociales menos el costo del proyecto.",
+      "ejemplo": "Ej: Valor Presente Neto Social: +$4.5 Millones a 5 años.",
+      "benchmark": "Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.",
+      "cita": "Metodología del Marco Lógico (BID / CEPAL / PM4R)",
+      "placeholder": "Define el componente del proyecto social (vpn_social)..."
+    }
+  ],
+  "boxes": [],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Costo-Beneficio Social y análisis de costo-eficiencia.\n\n**Cómo se usa.** Está en el pilar **Presupuesto y Evaluación** del modelo *Proyecto Social (Metodología BID)*. Se abre en `/social_bid/evaluacion_exante`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 3 campos: `beneficios_sociales`, `tir_social`, `vpn_social`.\n\n**Herramientas del módulo.** Ninguna específica: se apoya en los campos de texto."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `beneficios_sociales`\n\n**El prompt que usa:** Valorización monetaria del impacto (Ej. incremento de sueldo futuro).\n\n**Ejemplo que muestra la guía:** Ej: Los graduados ganarán $30,000 extra al año. En 500 jóvenes = $15M anuales.\n\n**Benchmark / criterio de calidad:** Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.\n\n**De dónde viene la guía:** Metodología del Marco Lógico (BID / CEPAL / PM4R)\n\n### `tir_social`\n\n**El prompt que usa:** Tasa Interna de Retorno pero midiendo beneficios a la sociedad, no ganancias.\n\n**Ejemplo que muestra la guía:** Ej: TIR Social estimada: 25% (muy superior a la tasa de descuento social del 10%).\n\n**Benchmark / criterio de calidad:** Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.\n\n**De dónde viene la guía:** Metodología del Marco Lógico (BID / CEPAL / PM4R)\n\n### `vpn_social`\n\n**El prompt que usa:** Valor Presente Neto de los beneficios sociales menos el costo del proyecto.\n\n**Ejemplo que muestra la guía:** Ej: Valor Presente Neto Social: +$4.5 Millones a 5 años.\n\n**Benchmark / criterio de calidad:** Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.\n\n**De dónde viene la guía:** Metodología del Marco Lógico (BID / CEPAL / PM4R)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "Sin cajas asociadas."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Presupuesto y Evaluación** de *Proyecto Social (Metodología BID)*. La justificación metodológica completa está en la página del modelo y en `docs/social_bid.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `social_bid.presupuesto.evaluacion_exante.beneficios_sociales` → tipo `text`\n- `social_bid.presupuesto.evaluacion_exante.tir_social` → tipo `text`\n- `social_bid.presupuesto.evaluacion_exante.vpn_social` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas:** `src/config/moduleBoxMap.js` no declara cajas para `social_bid:evaluacion_exante`; la pantalla muestra solo los campos de texto.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

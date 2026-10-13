@@ -1,0 +1,84 @@
+{
+  "id": "modulo.guanxi_plan.banquet_protocol_ritual",
+  "title": "Protocolo de Banquetes Chinos",
+  "summary": "Orden de asignación de asientos, rituales de brindis (Ganbei) y creación de confianza.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "guanxi_plan",
+  "moduleKey": "banquet_protocol_ritual",
+  "pillarKey": "protocolo_negociacion",
+  "openUrl": "/guanxi_plan/banquet_protocol_ritual",
+  "fields": [
+    {
+      "key": "protocolo_banquetes_orden",
+      "type": "text",
+      "address": "guanxi_plan.protocolo_negociacion.banquet_protocol_ritual.protocolo_banquetes_orden",
+      "prompt": "Protocolo de mesa redonda en banquetes de negocios: el anfitrión principal frente a la puerta de entrada y el invitado de honor a su derecha.",
+      "ejemplo": "Ej: Ubicación del CEO invitado a la derecha del anfitrión corporativo chino con menú de 12 tiempos simbolizando prosperidad.",
+      "benchmark": "Disposición protocolaria impecable para transmitir máximo respeto y cortesía.",
+      "cita": "Negotiating South-South Regional Trade Agreements (UNCTAD Ch. 3 p. 45)",
+      "placeholder": "Asignación de asientos de honor, orden de mesas y menú protocolario..."
+    },
+    {
+      "key": "etiqueta_brindis_asientos",
+      "type": "text",
+      "address": "guanxi_plan.protocolo_negociacion.banquet_protocol_ritual.etiqueta_brindis_asientos",
+      "prompt": "Ritual del brindis (Ganbei): sostener la copa con ambas manos y situar el borde ligeramente por debajo de la copa del interlocutor en señal de respeto.",
+      "ejemplo": "Ej: Brindis formal por la amistad binacional con copa sostenida por debajo del presidente de la empresa estatal anfitriona.",
+      "benchmark": "Dominio de la etiqueta corporal para generar empatía y cercanía emocional genuina.",
+      "cita": "Negotiating South-South Regional Trade Agreements (Ch. 3 p. 46)",
+      "placeholder": "Reglas de brindis, lenguaje corporal de deferencia y creación de confianza..."
+    },
+    {
+      "key": "reglas_cortesia_empresarial",
+      "type": "text",
+      "address": "guanxi_plan.protocolo_negociacion.banquet_protocol_ritual.reglas_cortesia_empresarial",
+      "prompt": "Entrega de tarjetas de presentación (Biaozhi) con ambas manos y reverencia leve, lectura atenta antes de guardarla y uso de títulos profesionales.",
+      "ejemplo": "Ej: Tarjetas bilingües español-mandarín impresas en oro entregadas formalmente con ambas manos a cada miembro de la comitiva.",
+      "benchmark": "100% de apego a la etiqueta corporativa oriental en misiones comerciales.",
+      "cita": "Negotiating South-South Regional Trade Agreements (Ch. 3 p. 47)",
+      "placeholder": "Intercambio de credenciales, tratamiento formal y etiqueta de reuniones..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_banquet_protocol_8pasos",
+      "title": "Protocolo de Banquete de Negocios y Etiqueta China (8 Pasos)",
+      "type": "checklist",
+      "description": "Reglas indispensables de asientos de honor, rondas de brindis (Ganbei), orden de platos y construcción de confianza.",
+      "source": "Negotiating South-South Regional Agreements — Ch. 3 p. 45"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Orden de asignación de asientos, rituales de brindis (Ganbei) y creación de confianza.\n\n**Cómo se usa.** Está en el pilar **Protocolo y Tácticas de Negociación** del modelo *Metodología Guanxi (China - Redes de Relaciones)*. Se abre en `/guanxi_plan/banquet_protocol_ritual`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 3 campos: `protocolo_banquetes_orden`, `etiqueta_brindis_asientos`, `reglas_cortesia_empresarial`.\n\n**Herramientas del módulo.** 1 caja(s): `box_banquet_protocol_8pasos`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `protocolo_banquetes_orden`\n\n**El prompt que usa:** Protocolo de mesa redonda en banquetes de negocios: el anfitrión principal frente a la puerta de entrada y el invitado de honor a su derecha.\n\n**Ejemplo que muestra la guía:** Ej: Ubicación del CEO invitado a la derecha del anfitrión corporativo chino con menú de 12 tiempos simbolizando prosperidad.\n\n**Benchmark / criterio de calidad:** Disposición protocolaria impecable para transmitir máximo respeto y cortesía.\n\n**De dónde viene la guía:** Negotiating South-South Regional Trade Agreements (UNCTAD Ch. 3 p. 45)\n\n### `etiqueta_brindis_asientos`\n\n**El prompt que usa:** Ritual del brindis (Ganbei): sostener la copa con ambas manos y situar el borde ligeramente por debajo de la copa del interlocutor en señal de respeto.\n\n**Ejemplo que muestra la guía:** Ej: Brindis formal por la amistad binacional con copa sostenida por debajo del presidente de la empresa estatal anfitriona.\n\n**Benchmark / criterio de calidad:** Dominio de la etiqueta corporal para generar empatía y cercanía emocional genuina.\n\n**De dónde viene la guía:** Negotiating South-South Regional Trade Agreements (Ch. 3 p. 46)\n\n### `reglas_cortesia_empresarial`\n\n**El prompt que usa:** Entrega de tarjetas de presentación (Biaozhi) con ambas manos y reverencia leve, lectura atenta antes de guardarla y uso de títulos profesionales.\n\n**Ejemplo que muestra la guía:** Ej: Tarjetas bilingües español-mandarín impresas en oro entregadas formalmente con ambas manos a cada miembro de la comitiva.\n\n**Benchmark / criterio de calidad:** 100% de apego a la etiqueta corporativa oriental en misiones comerciales.\n\n**De dónde viene la guía:** Negotiating South-South Regional Trade Agreements (Ch. 3 p. 47)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Protocolo de Banquete de Negocios y Etiqueta China (8 Pasos)\n\n`box_banquet_protocol_8pasos` · tipo **checklist** · fuente: Negotiating South-South Regional Agreements — Ch. 3 p. 45\n\nReglas indispensables de asientos de honor, rondas de brindis (Ganbei), orden de platos y construcción de confianza."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Protocolo y Tácticas de Negociación** de *Metodología Guanxi (China - Redes de Relaciones)*. La justificación metodológica completa está en la página del modelo y en `docs/guanxi_plan.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `guanxi_plan.protocolo_negociacion.banquet_protocol_ritual.protocolo_banquetes_orden` → tipo `text`\n- `guanxi_plan.protocolo_negociacion.banquet_protocol_ritual.etiqueta_brindis_asientos` → tipo `text`\n- `guanxi_plan.protocolo_negociacion.banquet_protocol_ritual.reglas_cortesia_empresarial` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `guanxi_plan:banquet_protocol_ritual`): `box_banquet_protocol_8pasos`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

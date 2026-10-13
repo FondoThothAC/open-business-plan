@@ -1,0 +1,84 @@
+{
+  "id": "modulo.technology_id.technical_id",
+  "title": "Ingeniería e I+D",
+  "summary": "Escalamiento técnico de laboratorio a planta piloto y especificaciones científicas de producción.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "technology_id",
+  "moduleKey": "technical_id",
+  "pillarKey": "viabilidad_tecnica",
+  "openUrl": "/technology_id/technical_id",
+  "fields": [
+    {
+      "key": "escalamiento_produccion",
+      "type": "text",
+      "address": "technology_id.viabilidad_tecnica.technical_id.escalamiento_produccion",
+      "prompt": "Cómo se escalará la producción tecnológica desde el laboratorio a la producción en masa.",
+      "ejemplo": "Ej: Migración de servidores de prueba locales a una arquitectura balanceada en la nube (AWS autoscaling).",
+      "benchmark": "Madurez tecnológica validada en escala TRL (1 a 9) y novedad patentable.",
+      "cita": "Clayton Christensen — The Innovator's Dilemma & Manual de Oslo",
+      "placeholder": "Especificaciones técnicas e innovación para (escalamiento_produccion)..."
+    },
+    {
+      "key": "infraestructura_cientifica",
+      "type": "text",
+      "address": "technology_id.viabilidad_tecnica.technical_id.infraestructura_cientifica",
+      "prompt": "Equipos de laboratorio, licencias de software de simulación y herramientas especializadas necesarias.",
+      "ejemplo": "Ej: Servidores dedicados GPU NVIDIA A100 y licencias de simulación MATLAB/Simulink.",
+      "benchmark": "Madurez tecnológica validada en escala TRL (1 a 9) y novedad patentable.",
+      "cita": "Clayton Christensen — The Innovator's Dilemma & Manual de Oslo",
+      "placeholder": "Especificaciones técnicas e innovación para (infraestructura_cientifica)..."
+    },
+    {
+      "key": "normativas_tecnicas_calidad",
+      "type": "text",
+      "address": "technology_id.viabilidad_tecnica.technical_id.normativas_tecnicas_calidad",
+      "prompt": "Estándares internacionales obligatorios de la industria (ISO, NOM, etc.).",
+      "ejemplo": "Ej: Cumplimiento de la norma ISO/IEC 27001 de seguridad de información y NOM-024-SCFI de hardware.",
+      "benchmark": "Madurez tecnológica validada en escala TRL (1 a 9) y novedad patentable.",
+      "cita": "Clayton Christensen — The Innovator's Dilemma & Manual de Oslo",
+      "placeholder": "Especificaciones técnicas e innovación para (normativas_tecnicas_calidad)..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_trl_assessment",
+      "title": "Evaluación de Nivel de Madurez Tecnológica (TRL 1-9)",
+      "type": "checklist",
+      "description": "Checklist de validación desde principio básico hasta despliegue operativo.",
+      "source": "The Innovator's Dilemma — Ch. 3"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Escalamiento técnico de laboratorio a planta piloto y especificaciones científicas de producción.\n\n**Cómo se usa.** Está en el pilar **Estudio de Viabilidad Técnica** del modelo *Plan de Negocios de Base Tecnológica e Innovación (I+D)*. Se abre en `/technology_id/technical_id`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 3 campos: `escalamiento_produccion`, `infraestructura_cientifica`, `normativas_tecnicas_calidad`.\n\n**Herramientas del módulo.** 1 caja(s): `box_trl_assessment`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `escalamiento_produccion`\n\n**El prompt que usa:** Cómo se escalará la producción tecnológica desde el laboratorio a la producción en masa.\n\n**Ejemplo que muestra la guía:** Ej: Migración de servidores de prueba locales a una arquitectura balanceada en la nube (AWS autoscaling).\n\n**Benchmark / criterio de calidad:** Madurez tecnológica validada en escala TRL (1 a 9) y novedad patentable.\n\n**De dónde viene la guía:** Clayton Christensen — The Innovator's Dilemma & Manual de Oslo\n\n### `infraestructura_cientifica`\n\n**El prompt que usa:** Equipos de laboratorio, licencias de software de simulación y herramientas especializadas necesarias.\n\n**Ejemplo que muestra la guía:** Ej: Servidores dedicados GPU NVIDIA A100 y licencias de simulación MATLAB/Simulink.\n\n**Benchmark / criterio de calidad:** Madurez tecnológica validada en escala TRL (1 a 9) y novedad patentable.\n\n**De dónde viene la guía:** Clayton Christensen — The Innovator's Dilemma & Manual de Oslo\n\n### `normativas_tecnicas_calidad`\n\n**El prompt que usa:** Estándares internacionales obligatorios de la industria (ISO, NOM, etc.).\n\n**Ejemplo que muestra la guía:** Ej: Cumplimiento de la norma ISO/IEC 27001 de seguridad de información y NOM-024-SCFI de hardware.\n\n**Benchmark / criterio de calidad:** Madurez tecnológica validada en escala TRL (1 a 9) y novedad patentable.\n\n**De dónde viene la guía:** Clayton Christensen — The Innovator's Dilemma & Manual de Oslo"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Evaluación de Nivel de Madurez Tecnológica (TRL 1-9)\n\n`box_trl_assessment` · tipo **checklist** · fuente: The Innovator's Dilemma — Ch. 3\n\nChecklist de validación desde principio básico hasta despliegue operativo."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Estudio de Viabilidad Técnica** de *Plan de Negocios de Base Tecnológica e Innovación (I+D)*. La justificación metodológica completa está en la página del modelo y en `docs/technology_id.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `technology_id.viabilidad_tecnica.technical_id.escalamiento_produccion` → tipo `text`\n- `technology_id.viabilidad_tecnica.technical_id.infraestructura_cientifica` → tipo `text`\n- `technology_id.viabilidad_tecnica.technical_id.normativas_tecnicas_calidad` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `technology_id:technical_id`): `box_trl_assessment`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

@@ -1,0 +1,84 @@
+{
+  "id": "modulo.guanxi_plan.tacticas_negociacion_estrategica",
+  "title": "Tácticas de Negociación China",
+  "summary": "Manejo de tiempos prolongados, concesiones graduales y pactos basados en la relación.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "guanxi_plan",
+  "moduleKey": "tacticas_negociacion_estrategica",
+  "pillarKey": "protocolo_negociacion",
+  "openUrl": "/guanxi_plan/tacticas_negociacion_estrategica",
+  "fields": [
+    {
+      "key": "estrategia_36_estratagemas",
+      "type": "text",
+      "address": "guanxi_plan.protocolo_negociacion.tacticas_negociacion_estrategica.estrategia_36_estratagemas",
+      "prompt": "Comprensión y aplicación defensiva de los 36 estratagemas clásicos chinos en la mesa de negociación internacional.",
+      "ejemplo": "Ej: Identificación de la estratagema 'hacer ruido en el este para atacar en el oeste' cuando presionaron por plazos para ocultar concesiones de precio.",
+      "benchmark": "Capacidad de lectura estratégica del comportamiento negociador oriental sin caer en manipulaciones.",
+      "cita": "Negotiating South-South Regional Trade Agreements (Ch. 4 p. 78)",
+      "placeholder": "Estratagema identificada y contramedida diplomática adoptada..."
+    },
+    {
+      "key": "gestion_concesiones_paciencia",
+      "type": "text",
+      "address": "guanxi_plan.protocolo_negociacion.tacticas_negociacion_estrategica.gestion_concesiones_paciencia",
+      "prompt": "Manejo de la paciencia estratégica: las negociaciones chinas son circulares y las concesiones solo deben otorgarse al final.",
+      "ejemplo": "Ej: Reserva de un 5% de descuento por pronto pago para la ronda final tras semanas de discusión sobre condiciones técnicas.",
+      "benchmark": "Resistencia a la presión de tiempos límite artificiales en el cierre contractual.",
+      "cita": "Negotiating South-South Regional Trade Agreements (Ch. 4 p. 82)",
+      "placeholder": "Estrategia de administración de concesiones y resistencia temporal..."
+    },
+    {
+      "key": "cierre_contratos_relacionales",
+      "type": "text",
+      "address": "guanxi_plan.protocolo_negociacion.tacticas_negociacion_estrategica.cierre_contratos_relacionales",
+      "prompt": "Naturaleza del contrato en China: no es el final de la negociación sino el acta de nacimiento de una relación viva y adaptable.",
+      "ejemplo": "Ej: Inclusión de cláusulas de renegociación de buena fe ante contingencias arancelarias basadas en el espíritu del acuerdo.",
+      "benchmark": "Equilibrio entre blindaje jurídico formal occidental y flexibilidad relacional oriental.",
+      "cita": "Negotiating South-South Regional Trade Agreements (Ch. 4 p. 86)",
+      "placeholder": "Enfoque relacional del contrato, mecanismos de adaptación y mediación..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_tacticas_negociacion_china",
+      "title": "Tácticas de Negociación y Estratagemas Comerciales",
+      "type": "table",
+      "description": "Catálogo de negociación intercultural basado en paciencia estratégica, contratos marco y flexibilidad pragmática.",
+      "source": "Negotiating South-South Regional Agreements — Ch. 4 p. 78"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Manejo de tiempos prolongados, concesiones graduales y pactos basados en la relación.\n\n**Cómo se usa.** Está en el pilar **Protocolo y Tácticas de Negociación** del modelo *Metodología Guanxi (China - Redes de Relaciones)*. Se abre en `/guanxi_plan/tacticas_negociacion_estrategica`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 3 campos: `estrategia_36_estratagemas`, `gestion_concesiones_paciencia`, `cierre_contratos_relacionales`.\n\n**Herramientas del módulo.** 1 caja(s): `box_tacticas_negociacion_china`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `estrategia_36_estratagemas`\n\n**El prompt que usa:** Comprensión y aplicación defensiva de los 36 estratagemas clásicos chinos en la mesa de negociación internacional.\n\n**Ejemplo que muestra la guía:** Ej: Identificación de la estratagema 'hacer ruido en el este para atacar en el oeste' cuando presionaron por plazos para ocultar concesiones de precio.\n\n**Benchmark / criterio de calidad:** Capacidad de lectura estratégica del comportamiento negociador oriental sin caer en manipulaciones.\n\n**De dónde viene la guía:** Negotiating South-South Regional Trade Agreements (Ch. 4 p. 78)\n\n### `gestion_concesiones_paciencia`\n\n**El prompt que usa:** Manejo de la paciencia estratégica: las negociaciones chinas son circulares y las concesiones solo deben otorgarse al final.\n\n**Ejemplo que muestra la guía:** Ej: Reserva de un 5% de descuento por pronto pago para la ronda final tras semanas de discusión sobre condiciones técnicas.\n\n**Benchmark / criterio de calidad:** Resistencia a la presión de tiempos límite artificiales en el cierre contractual.\n\n**De dónde viene la guía:** Negotiating South-South Regional Trade Agreements (Ch. 4 p. 82)\n\n### `cierre_contratos_relacionales`\n\n**El prompt que usa:** Naturaleza del contrato en China: no es el final de la negociación sino el acta de nacimiento de una relación viva y adaptable.\n\n**Ejemplo que muestra la guía:** Ej: Inclusión de cláusulas de renegociación de buena fe ante contingencias arancelarias basadas en el espíritu del acuerdo.\n\n**Benchmark / criterio de calidad:** Equilibrio entre blindaje jurídico formal occidental y flexibilidad relacional oriental.\n\n**De dónde viene la guía:** Negotiating South-South Regional Trade Agreements (Ch. 4 p. 86)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Tácticas de Negociación y Estratagemas Comerciales\n\n`box_tacticas_negociacion_china` · tipo **table** · fuente: Negotiating South-South Regional Agreements — Ch. 4 p. 78\n\nCatálogo de negociación intercultural basado en paciencia estratégica, contratos marco y flexibilidad pragmática."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Protocolo y Tácticas de Negociación** de *Metodología Guanxi (China - Redes de Relaciones)*. La justificación metodológica completa está en la página del modelo y en `docs/guanxi_plan.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `guanxi_plan.protocolo_negociacion.tacticas_negociacion_estrategica.estrategia_36_estratagemas` → tipo `text`\n- `guanxi_plan.protocolo_negociacion.tacticas_negociacion_estrategica.gestion_concesiones_paciencia` → tipo `text`\n- `guanxi_plan.protocolo_negociacion.tacticas_negociacion_estrategica.cierre_contratos_relacionales` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `guanxi_plan:tacticas_negociacion_estrategica`): `box_tacticas_negociacion_china`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

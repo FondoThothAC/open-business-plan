@@ -1,0 +1,64 @@
+{
+  "id": "modulo.hoshin_kanri.matriz_x",
+  "title": "Matriz X (4 Cuadrantes)",
+  "summary": "Correlación entre visión, objetivos anuales, prioridades y métricas.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "hoshin_kanri",
+  "moduleKey": "matriz_x",
+  "pillarKey": "alineacion_ejecucion",
+  "openUrl": "/hoshin-kanri/matriz_x",
+  "fields": [
+    {
+      "key": "matriz_x",
+      "type": "text",
+      "address": "hoshin_kanri.alineacion_ejecucion.matriz_x.matriz_x",
+      "prompt": "Herramienta que alinea visión a largo plazo, objetivos anuales, iniciativas y métricas.",
+      "ejemplo": "Ej (Estilo Sony): Eje Sur (Iniciativa: Lente 8K) conectado con Eje Este (KPI: Reducir costo 15%).",
+      "benchmark": "Alineación de objetivos de ruptura (Breakthroughs) en Matriz X con revisiones Catchball periódicas.",
+      "cita": "Yoji Akao — Hoshin Kanri: Policy Deployment & Toyota Production System",
+      "placeholder": "Despliegue estratégico Hoshin para (matriz_x)..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_matriz_x_hoshin",
+      "title": "Matriz X Hoshin Kanri (4 Cuadrantes)",
+      "type": "matrix",
+      "description": "Alineación de Norte Verdadero, objetivos anuales, prioridades y métricas.",
+      "source": "Creating a Business Plan For Dummies (Hoshin Edition) — Ch. 8"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Correlación entre visión, objetivos anuales, prioridades y métricas.\n\n**Cómo se usa.** Está en el pilar **Alineación Estratégica** del modelo *Hoshin Kanri (Japón - Planificación Estratégica)*. Se abre en `/hoshin-kanri/matriz_x`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 1 campo: `matriz_x`.\n\n**Herramientas del módulo.** 1 caja(s): `box_matriz_x_hoshin`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `matriz_x`\n\n**El prompt que usa:** Herramienta que alinea visión a largo plazo, objetivos anuales, iniciativas y métricas.\n\n**Ejemplo que muestra la guía:** Ej (Estilo Sony): Eje Sur (Iniciativa: Lente 8K) conectado con Eje Este (KPI: Reducir costo 15%).\n\n**Benchmark / criterio de calidad:** Alineación de objetivos de ruptura (Breakthroughs) en Matriz X con revisiones Catchball periódicas.\n\n**De dónde viene la guía:** Yoji Akao — Hoshin Kanri: Policy Deployment & Toyota Production System"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Matriz X Hoshin Kanri (4 Cuadrantes)\n\n`box_matriz_x_hoshin` · tipo **matrix** · fuente: Creating a Business Plan For Dummies (Hoshin Edition) — Ch. 8\n\nAlineación de Norte Verdadero, objetivos anuales, prioridades y métricas."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Alineación Estratégica** de *Hoshin Kanri (Japón - Planificación Estratégica)*. La justificación metodológica completa está en la página del modelo y en `docs/hoshin_kanri.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `hoshin_kanri.alineacion_ejecucion.matriz_x.matriz_x` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `hoshin_kanri:matriz_x`): `box_matriz_x_hoshin`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

@@ -1,6 +1,8 @@
 # Tabla Módulo → Textbox → Prompt — 12 Modelos
 
-> **Generado:** 2026-09-10T05:48:10.106Z — **Fuente:** `src/config/frameworks.js` + `src/lib/field_guides.js` + `src/config/moduleBoxMap.js`
+> ⚠️ **NO EDITAR A MANO.** Este archivo se regenera con `node scripts/generate-tabla-modulo-prompt.js`.
+> Cualquier cambio manual se pierde en la siguiente regeneración. La wiki lo consume como anexo.
+> **Generado:** 2026-10-13T23:17:03.940Z — **Fuente:** `src/config/frameworks.js` + `src/lib/field_guides.js` + `src/config/moduleBoxMap.js`
 > **Textboxes totales:** se calculan abajo · Cada campo ya está **dividido en 5 textboxes** en `PromptEditor.jsx` (Instrucción / Ejemplo / Benchmark / Cita / Placeholder) — no es un solo textbox.
 
 

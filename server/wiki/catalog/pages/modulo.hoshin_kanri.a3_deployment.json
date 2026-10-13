@@ -1,0 +1,84 @@
+{
+  "id": "modulo.hoshin_kanri.a3_deployment",
+  "title": "Despliegue de Informes A3",
+  "summary": "Estructuración concisa del problema, causa raíz, contramedidas y plan.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "hoshin_kanri",
+  "moduleKey": "a3_deployment",
+  "pillarKey": "alineacion_ejecucion",
+  "openUrl": "/hoshin-kanri/a3_deployment",
+  "fields": [
+    {
+      "key": "antecedentes_a3",
+      "type": "text",
+      "address": "hoshin_kanri.alineacion_ejecucion.a3_deployment.antecedentes_a3",
+      "prompt": "Sección 1 del informe A3: Contexto estratégico y justificación de por qué este problema debe resolverse ahora.",
+      "ejemplo": "Ej: 'Las devoluciones por cocción irregular aumentaron 8% en el último trimestre, arriesgando contratos con 3 cadenas'.",
+      "benchmark": "Resumen ejecutivo en 1 párrafo con datos históricos irrefutables.",
+      "cita": "John Shook — Managing to Learn (Toyota A3 Thinking)",
+      "placeholder": "Contexto histórico, impacto en el negocio y justificación estratégica..."
+    },
+    {
+      "key": "condicion_actual_a3",
+      "type": "text",
+      "address": "hoshin_kanri.alineacion_ejecucion.a3_deployment.condicion_actual_a3",
+      "prompt": "Sección 2 del informe A3: Mapeo visual del estado actual del proceso (Value Stream Map) y cuantificación del dolor.",
+      "ejemplo": "Ej: 'Tiempo de ciclo actual de 180 min con desviación estándar de 45 min debido a fallas en quemadores'.",
+      "benchmark": "Diagrama de flujo con métricas reales observadas en el lugar de trabajo (Gemba).",
+      "cita": "John Shook — Managing to Learn (Toyota A3 Thinking)",
+      "placeholder": "Estado actual cuantitativo observado directamente en piso (Gemba)..."
+    },
+    {
+      "key": "contramedidas_plan_accion",
+      "type": "text",
+      "address": "hoshin_kanri.alineacion_ejecucion.a3_deployment.contramedidas_plan_accion",
+      "prompt": "Secciones 3 y 4 del A3: Acciones correctivas a la causa raíz (5 Porqués), responsables, fechas y verificación.",
+      "ejemplo": "Ej: 'Instalación de pirómetros digitales (responsable: Mantenimiento, fecha: 15 Oct, meta: dispersión < 2°C)'.",
+      "benchmark": "Contramedidas atacando causas raíz, no síntomas superficiales.",
+      "cita": "John Shook — Managing to Learn (Toyota A3 Thinking)",
+      "placeholder": "Acciones específicas, responsables, fechas límite y métrica de éxito..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_a3_template_lean",
+      "title": "Plantilla de Despliegue Estratégico A3 Lean",
+      "type": "canvas",
+      "description": "Lienzo de resolución estructurada de problemas en 7 bloques: contexto, condición actual, meta, análisis causa-raíz y plan.",
+      "source": "The Lean Startup — Ch. 9 p. 198"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Estructuración concisa del problema, causa raíz, contramedidas y plan.\n\n**Cómo se usa.** Está en el pilar **Alineación Estratégica** del modelo *Hoshin Kanri (Japón - Planificación Estratégica)*. Se abre en `/hoshin-kanri/a3_deployment`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 3 campos: `antecedentes_a3`, `condicion_actual_a3`, `contramedidas_plan_accion`.\n\n**Herramientas del módulo.** 1 caja(s): `box_a3_template_lean`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `antecedentes_a3`\n\n**El prompt que usa:** Sección 1 del informe A3: Contexto estratégico y justificación de por qué este problema debe resolverse ahora.\n\n**Ejemplo que muestra la guía:** Ej: 'Las devoluciones por cocción irregular aumentaron 8% en el último trimestre, arriesgando contratos con 3 cadenas'.\n\n**Benchmark / criterio de calidad:** Resumen ejecutivo en 1 párrafo con datos históricos irrefutables.\n\n**De dónde viene la guía:** John Shook — Managing to Learn (Toyota A3 Thinking)\n\n### `condicion_actual_a3`\n\n**El prompt que usa:** Sección 2 del informe A3: Mapeo visual del estado actual del proceso (Value Stream Map) y cuantificación del dolor.\n\n**Ejemplo que muestra la guía:** Ej: 'Tiempo de ciclo actual de 180 min con desviación estándar de 45 min debido a fallas en quemadores'.\n\n**Benchmark / criterio de calidad:** Diagrama de flujo con métricas reales observadas en el lugar de trabajo (Gemba).\n\n**De dónde viene la guía:** John Shook — Managing to Learn (Toyota A3 Thinking)\n\n### `contramedidas_plan_accion`\n\n**El prompt que usa:** Secciones 3 y 4 del A3: Acciones correctivas a la causa raíz (5 Porqués), responsables, fechas y verificación.\n\n**Ejemplo que muestra la guía:** Ej: 'Instalación de pirómetros digitales (responsable: Mantenimiento, fecha: 15 Oct, meta: dispersión < 2°C)'.\n\n**Benchmark / criterio de calidad:** Contramedidas atacando causas raíz, no síntomas superficiales.\n\n**De dónde viene la guía:** John Shook — Managing to Learn (Toyota A3 Thinking)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Plantilla de Despliegue Estratégico A3 Lean\n\n`box_a3_template_lean` · tipo **canvas** · fuente: The Lean Startup — Ch. 9 p. 198\n\nLienzo de resolución estructurada de problemas en 7 bloques: contexto, condición actual, meta, análisis causa-raíz y plan."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Alineación Estratégica** de *Hoshin Kanri (Japón - Planificación Estratégica)*. La justificación metodológica completa está en la página del modelo y en `docs/hoshin_kanri.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `hoshin_kanri.alineacion_ejecucion.a3_deployment.antecedentes_a3` → tipo `text`\n- `hoshin_kanri.alineacion_ejecucion.a3_deployment.condicion_actual_a3` → tipo `text`\n- `hoshin_kanri.alineacion_ejecucion.a3_deployment.contramedidas_plan_accion` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `hoshin_kanri:a3_deployment`): `box_a3_template_lean`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

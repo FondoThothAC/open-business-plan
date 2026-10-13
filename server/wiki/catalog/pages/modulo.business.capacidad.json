@@ -1,0 +1,86 @@
+{
+  "id": "modulo.business.capacidad",
+  "title": "Capacidad e Inventarios",
+  "summary": "Capacidad instalada, manejo de stock y turnos.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "business",
+  "moduleKey": "capacidad",
+  "pillarKey": "tecnico",
+  "openUrl": "/business/capacidad",
+  "fields": [
+    {
+      "key": "instalada",
+      "type": "text",
+      "address": "business.tecnico.capacidad.instalada",
+      "prompt": "Calcula la capacidad instalada máxima vs la capacidad utilizada en turnos normales de operación (unidades/mes u horas de servicio).",
+      "ejemplo": "Ej: Capacidad máxima: 80 overhauls de cilindros al mes (2 turnos de 8 hrs). Operación inicial al 45% (36 servicios/mes).",
+      "benchmark": "Utilización inicial óptima entre 40% y 65% para permitir escalabilidad sin nuevo CAPEX.",
+      "cita": "Operations Management (Slack, p. 280) & Anatomy of a Business Plan (Ch. 6)",
+      "placeholder": "Capacidad máxima, turnos y nivel de utilización inicial..."
+    },
+    {
+      "key": "inventarios",
+      "type": "text",
+      "address": "business.tecnico.capacidad.inventarios",
+      "prompt": "Método de control de existencias (PEPS, UEPS, ABC) y software utilizado.",
+      "ejemplo": "Ej: \"Para servicios: Control de citas vía Calendly. Para productos: Método PEPS en Excel con alerta de stock mínimo.\"",
+      "benchmark": "Método de costeo de inventarios PEPS/Promedio y rotación de inventarios > 6 veces al año.",
+      "cita": "Starting a Business QuickStart Guide (Ch. 8, p. 175)",
+      "placeholder": "Sistema de gestión de inventarios, stock de seguridad y punto de reorden..."
+    },
+    {
+      "key": "mano_obra",
+      "type": "text",
+      "address": "business.tecnico.capacidad.mano_obra",
+      "prompt": "Personal necesario por área con perfil, cantidad, turno y tipo de contratación.",
+      "ejemplo": "Ej: \"2 asesores financieros (planta). 1 community manager (medio tiempo). 1 contador (outsourcing). 1 desarrollador (freelance).\"",
+      "benchmark": "Costo de mano de obra directa no superior al 25% del costo total de producción.",
+      "cita": "Plan de Negocios VF (p. 94)",
+      "placeholder": "Personal operativo directo e indirecto, turnos de trabajo y perfil técnico..."
+    },
+    {
+      "key": "punto_reorden",
+      "type": "text",
+      "address": "business.tecnico.capacidad.punto_reorden",
+      "prompt": "Nivel mínimo de existencias de insumos que dispara automáticamente una nueva orden de compra.",
+      "ejemplo": "Ej: \"Mangueras de alta presión: Punto de reorden en 15 unidades (lead time de entrega de 5 días). Sellos hidráulicos: 50 sets.\"",
+      "benchmark": "Punto de Reorden = (Demanda diaria promedio x Tiempo de entrega del proveedor) + Stock de seguridad.",
+      "cita": "Creating a Business Plan For Dummies (Ch. 8, p. 185)",
+      "placeholder": "Umbrales numéricos de inventario que disparan una nueva orden de compra..."
+    }
+  ],
+  "boxes": [],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Capacidad instalada, manejo de stock y turnos.\n\n**Cómo se usa.** Está en el pilar **Estudio Técnico de Producción** del modelo *Plan de Negocios Comercial*. Se abre en `/business/capacidad`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 4 campos: `instalada`, `inventarios`, `mano_obra`, `punto_reorden`.\n\n**Herramientas del módulo.** Ninguna específica: se apoya en los campos de texto."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `instalada`\n\n**El prompt que usa:** Calcula la capacidad instalada máxima vs la capacidad utilizada en turnos normales de operación (unidades/mes u horas de servicio).\n\n**Ejemplo que muestra la guía:** Ej: Capacidad máxima: 80 overhauls de cilindros al mes (2 turnos de 8 hrs). Operación inicial al 45% (36 servicios/mes).\n\n**Benchmark / criterio de calidad:** Utilización inicial óptima entre 40% y 65% para permitir escalabilidad sin nuevo CAPEX.\n\n**De dónde viene la guía:** Operations Management (Slack, p. 280) & Anatomy of a Business Plan (Ch. 6)\n\n### `inventarios`\n\n**El prompt que usa:** Método de control de existencias (PEPS, UEPS, ABC) y software utilizado.\n\n**Ejemplo que muestra la guía:** Ej: \"Para servicios: Control de citas vía Calendly. Para productos: Método PEPS en Excel con alerta de stock mínimo.\"\n\n**Benchmark / criterio de calidad:** Método de costeo de inventarios PEPS/Promedio y rotación de inventarios > 6 veces al año.\n\n**De dónde viene la guía:** Starting a Business QuickStart Guide (Ch. 8, p. 175)\n\n### `mano_obra`\n\n**El prompt que usa:** Personal necesario por área con perfil, cantidad, turno y tipo de contratación.\n\n**Ejemplo que muestra la guía:** Ej: \"2 asesores financieros (planta). 1 community manager (medio tiempo). 1 contador (outsourcing). 1 desarrollador (freelance).\"\n\n**Benchmark / criterio de calidad:** Costo de mano de obra directa no superior al 25% del costo total de producción.\n\n**De dónde viene la guía:** Plan de Negocios VF (p. 94)\n\n### `punto_reorden`\n\n**El prompt que usa:** Nivel mínimo de existencias de insumos que dispara automáticamente una nueva orden de compra.\n\n**Ejemplo que muestra la guía:** Ej: \"Mangueras de alta presión: Punto de reorden en 15 unidades (lead time de entrega de 5 días). Sellos hidráulicos: 50 sets.\"\n\n**Benchmark / criterio de calidad:** Punto de Reorden = (Demanda diaria promedio x Tiempo de entrega del proveedor) + Stock de seguridad.\n\n**De dónde viene la guía:** Creating a Business Plan For Dummies (Ch. 8, p. 185)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "Sin cajas asociadas."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Estudio Técnico de Producción** de *Plan de Negocios Comercial*. La justificación metodológica completa está en la página del modelo y en `docs/business.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `business.tecnico.capacidad.instalada` → tipo `text`\n- `business.tecnico.capacidad.inventarios` → tipo `text`\n- `business.tecnico.capacidad.mano_obra` → tipo `text`\n- `business.tecnico.capacidad.punto_reorden` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas:** `src/config/moduleBoxMap.js` no declara cajas para `business:capacidad`; la pantalla muestra solo los campos de texto.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

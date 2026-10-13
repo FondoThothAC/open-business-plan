@@ -1,0 +1,56 @@
+{
+  "id": "modulo.technology_id.simulador",
+  "title": "Simulador Financiero",
+  "summary": "Simulador interactivo con proyecciones de I+D, VAN y TIR a 5 años.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "technology_id",
+  "moduleKey": "simulador",
+  "pillarKey": "simulador_financiero",
+  "openUrl": "/technology_id/simulador",
+  "fields": [
+    {
+      "key": "iframe_simulador",
+      "type": "text",
+      "address": "technology_id.simulador_financiero.simulador.iframe_simulador",
+      "prompt": "Describe las variables y memorias de cálculo utilizadas en las simulaciones estocásticas.",
+      "ejemplo": "Ej: Parámetros de Monte Carlo: 10,000 iteraciones con distribución triangular sobre volumen y precio.",
+      "benchmark": "Intervalo de confianza al 95%.",
+      "cita": "The Nature of Value (Ch. 5)",
+      "placeholder": "Parámetros del simulador y corridas..."
+    }
+  ],
+  "boxes": [],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Simulador interactivo con proyecciones de I+D, VAN y TIR a 5 años.\n\n**Cómo se usa.** Está en el pilar **Simulador y Corridas** del modelo *Plan de Negocios de Base Tecnológica e Innovación (I+D)*. Se abre en `/technology_id/simulador`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 1 campo: `iframe_simulador`.\n\n**Herramientas del módulo.** Ninguna específica: se apoya en los campos de texto."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `iframe_simulador`\n\n**El prompt que usa:** Describe las variables y memorias de cálculo utilizadas en las simulaciones estocásticas.\n\n**Ejemplo que muestra la guía:** Ej: Parámetros de Monte Carlo: 10,000 iteraciones con distribución triangular sobre volumen y precio.\n\n**Benchmark / criterio de calidad:** Intervalo de confianza al 95%.\n\n**De dónde viene la guía:** The Nature of Value (Ch. 5)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "Sin cajas asociadas."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Simulador y Corridas** de *Plan de Negocios de Base Tecnológica e Innovación (I+D)*. La justificación metodológica completa está en la página del modelo y en `docs/technology_id.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `technology_id.simulador_financiero.simulador.iframe_simulador` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas:** `src/config/moduleBoxMap.js` no declara cajas para `technology_id:simulador`; la pantalla muestra solo los campos de texto.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

@@ -1,0 +1,76 @@
+{
+  "id": "modulo.business.recursos_humanos",
+  "title": "Gestión de Recursos Humanos",
+  "summary": "Políticas de contratación, capacitación y sueldos.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "business",
+  "moduleKey": "recursos_humanos",
+  "pillarKey": "organizacion",
+  "openUrl": "/business/recursos_humanos",
+  "fields": [
+    {
+      "key": "reclutamiento",
+      "type": "text",
+      "address": "business.organizacion.recursos_humanos.reclutamiento",
+      "prompt": "Proceso de atracción y selección de talento. Fuentes, filtros y tiempos.",
+      "ejemplo": "Ej: \"Publicación en LinkedIn + OCC. Filtro: CV → Entrevista técnica → Caso práctico → Contratación. Tiempo: 3 semanas.\"",
+      "benchmark": "Proceso de selección estandarizado con tiempo de cobertura de vacante < 30 días.",
+      "cita": "Plan de Negocios VF (p. 110)",
+      "placeholder": "Canales de reclutamiento, filtros técnicos y entrevistas por competencias..."
+    },
+    {
+      "key": "contratacion",
+      "type": "text",
+      "address": "business.organizacion.recursos_humanos.contratacion",
+      "prompt": "Tipo de contrato, período de prueba, prestaciones y obligaciones patronales.",
+      "ejemplo": "Ej: \"Contrato indeterminado con 3 meses de prueba. Prestaciones de ley + seguro de gastos médicos mayores (6to mes).\"",
+      "benchmark": "Cumplimiento estricto de la Ley Federal del Trabajo, IMSS e INFONAVIT.",
+      "cita": "Manual de Plan de Negocios Panamá (p. 20)",
+      "placeholder": "Tipo de contratos (indeterminado, obra, prueba), prestaciones y marco laboral..."
+    },
+    {
+      "key": "sueldos",
+      "type": "text",
+      "address": "business.organizacion.recursos_humanos.sueldos",
+      "prompt": "Tabla salarial por puesto incluyendo sueldo bruto, neto, prestaciones y costo total.",
+      "ejemplo": "Ej: \"Asesor Jr: $15K bruto + comisiones. Asesor Sr: $25K + bono. Dir. Comercial: $40K + 2% de ventas totales.\"",
+      "benchmark": "Tabulador salarial competitivo contra medias del mercado regional (Mercer/INEGI).",
+      "cita": "Starting a Business QuickStart Guide (Ch. 9, p. 198)",
+      "placeholder": "Nómina presupuestada mensual, sueldos base, bonos y cargas patronales..."
+    }
+  ],
+  "boxes": [],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Políticas de contratación, capacitación y sueldos.\n\n**Cómo se usa.** Está en el pilar **Organización y Finanzas** del modelo *Plan de Negocios Comercial*. Se abre en `/business/recursos_humanos`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 3 campos: `reclutamiento`, `contratacion`, `sueldos`.\n\n**Herramientas del módulo.** Ninguna específica: se apoya en los campos de texto."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `reclutamiento`\n\n**El prompt que usa:** Proceso de atracción y selección de talento. Fuentes, filtros y tiempos.\n\n**Ejemplo que muestra la guía:** Ej: \"Publicación en LinkedIn + OCC. Filtro: CV → Entrevista técnica → Caso práctico → Contratación. Tiempo: 3 semanas.\"\n\n**Benchmark / criterio de calidad:** Proceso de selección estandarizado con tiempo de cobertura de vacante < 30 días.\n\n**De dónde viene la guía:** Plan de Negocios VF (p. 110)\n\n### `contratacion`\n\n**El prompt que usa:** Tipo de contrato, período de prueba, prestaciones y obligaciones patronales.\n\n**Ejemplo que muestra la guía:** Ej: \"Contrato indeterminado con 3 meses de prueba. Prestaciones de ley + seguro de gastos médicos mayores (6to mes).\"\n\n**Benchmark / criterio de calidad:** Cumplimiento estricto de la Ley Federal del Trabajo, IMSS e INFONAVIT.\n\n**De dónde viene la guía:** Manual de Plan de Negocios Panamá (p. 20)\n\n### `sueldos`\n\n**El prompt que usa:** Tabla salarial por puesto incluyendo sueldo bruto, neto, prestaciones y costo total.\n\n**Ejemplo que muestra la guía:** Ej: \"Asesor Jr: $15K bruto + comisiones. Asesor Sr: $25K + bono. Dir. Comercial: $40K + 2% de ventas totales.\"\n\n**Benchmark / criterio de calidad:** Tabulador salarial competitivo contra medias del mercado regional (Mercer/INEGI).\n\n**De dónde viene la guía:** Starting a Business QuickStart Guide (Ch. 9, p. 198)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "Sin cajas asociadas."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Organización y Finanzas** de *Plan de Negocios Comercial*. La justificación metodológica completa está en la página del modelo y en `docs/business.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `business.organizacion.recursos_humanos.reclutamiento` → tipo `text`\n- `business.organizacion.recursos_humanos.contratacion` → tipo `text`\n- `business.organizacion.recursos_humanos.sueldos` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas:** `src/config/moduleBoxMap.js` no declara cajas para `business:recursos_humanos`; la pantalla muestra solo los campos de texto.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

@@ -1,0 +1,84 @@
+{
+  "id": "modulo.technology_id.prototyping",
+  "title": "Prototipado y Pruebas",
+  "summary": "Cronograma y resultados de pruebas de concepto, maquetas físicas o prototipos alpha/beta.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "technology_id",
+  "moduleKey": "prototyping",
+  "pillarKey": "viabilidad_tecnica",
+  "openUrl": "/technology_id/prototyping",
+  "fields": [
+    {
+      "key": "especificaciones_prototipo",
+      "type": "text",
+      "address": "technology_id.viabilidad_tecnica.prototyping.especificaciones_prototipo",
+      "prompt": "Detalla las características funcionales y físicas de tu prototipo actual.",
+      "ejemplo": "Ej: Prototipo beta funcional en contenedor Docker con interfaz web React de diagnóstico básico.",
+      "benchmark": "Madurez tecnológica validada en escala TRL (1 a 9) y novedad patentable.",
+      "cita": "Clayton Christensen — The Innovator's Dilemma & Manual de Oslo",
+      "placeholder": "Especificaciones técnicas e innovación para (especificaciones_prototipo)..."
+    },
+    {
+      "key": "bitacora_pruebas",
+      "type": "text",
+      "address": "technology_id.viabilidad_tecnica.prototyping.bitacora_pruebas",
+      "prompt": "Registros de las pruebas técnicas realizadas, errores detectados y correcciones aplicadas.",
+      "ejemplo": "Ej: Pruebas de estrés de 1,000 peticiones concurrentes: latencia media 120ms, 0.01% de tasa de error.",
+      "benchmark": "Madurez tecnológica validada en escala TRL (1 a 9) y novedad patentable.",
+      "cita": "Clayton Christensen — The Innovator's Dilemma & Manual de Oslo",
+      "placeholder": "Especificaciones técnicas e innovación para (bitacora_pruebas)..."
+    },
+    {
+      "key": "certificaciones_necesarias",
+      "type": "text",
+      "address": "technology_id.viabilidad_tecnica.prototyping.certificaciones_necesarias",
+      "prompt": "Sellos de calidad, validaciones de laboratorios de terceros o permisos sanitarios indispensables.",
+      "ejemplo": "Ej: Certificación de seguridad eléctrica por la UL (Underwriters Laboratories) para distribución en EE.UU.",
+      "benchmark": "Madurez tecnológica validada en escala TRL (1 a 9) y novedad patentable.",
+      "cita": "Clayton Christensen — The Innovator's Dilemma & Manual de Oslo",
+      "placeholder": "Especificaciones técnicas e innovación para (certificaciones_necesarias)..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_trl_assessment",
+      "title": "Evaluación de Nivel de Madurez Tecnológica (TRL 1-9)",
+      "type": "checklist",
+      "description": "Checklist de validación desde principio básico hasta despliegue operativo.",
+      "source": "The Innovator's Dilemma — Ch. 3"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Cronograma y resultados de pruebas de concepto, maquetas físicas o prototipos alpha/beta.\n\n**Cómo se usa.** Está en el pilar **Estudio de Viabilidad Técnica** del modelo *Plan de Negocios de Base Tecnológica e Innovación (I+D)*. Se abre en `/technology_id/prototyping`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 3 campos: `especificaciones_prototipo`, `bitacora_pruebas`, `certificaciones_necesarias`.\n\n**Herramientas del módulo.** 1 caja(s): `box_trl_assessment`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `especificaciones_prototipo`\n\n**El prompt que usa:** Detalla las características funcionales y físicas de tu prototipo actual.\n\n**Ejemplo que muestra la guía:** Ej: Prototipo beta funcional en contenedor Docker con interfaz web React de diagnóstico básico.\n\n**Benchmark / criterio de calidad:** Madurez tecnológica validada en escala TRL (1 a 9) y novedad patentable.\n\n**De dónde viene la guía:** Clayton Christensen — The Innovator's Dilemma & Manual de Oslo\n\n### `bitacora_pruebas`\n\n**El prompt que usa:** Registros de las pruebas técnicas realizadas, errores detectados y correcciones aplicadas.\n\n**Ejemplo que muestra la guía:** Ej: Pruebas de estrés de 1,000 peticiones concurrentes: latencia media 120ms, 0.01% de tasa de error.\n\n**Benchmark / criterio de calidad:** Madurez tecnológica validada en escala TRL (1 a 9) y novedad patentable.\n\n**De dónde viene la guía:** Clayton Christensen — The Innovator's Dilemma & Manual de Oslo\n\n### `certificaciones_necesarias`\n\n**El prompt que usa:** Sellos de calidad, validaciones de laboratorios de terceros o permisos sanitarios indispensables.\n\n**Ejemplo que muestra la guía:** Ej: Certificación de seguridad eléctrica por la UL (Underwriters Laboratories) para distribución en EE.UU.\n\n**Benchmark / criterio de calidad:** Madurez tecnológica validada en escala TRL (1 a 9) y novedad patentable.\n\n**De dónde viene la guía:** Clayton Christensen — The Innovator's Dilemma & Manual de Oslo"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Evaluación de Nivel de Madurez Tecnológica (TRL 1-9)\n\n`box_trl_assessment` · tipo **checklist** · fuente: The Innovator's Dilemma — Ch. 3\n\nChecklist de validación desde principio básico hasta despliegue operativo."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Estudio de Viabilidad Técnica** de *Plan de Negocios de Base Tecnológica e Innovación (I+D)*. La justificación metodológica completa está en la página del modelo y en `docs/technology_id.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `technology_id.viabilidad_tecnica.prototyping.especificaciones_prototipo` → tipo `text`\n- `technology_id.viabilidad_tecnica.prototyping.bitacora_pruebas` → tipo `text`\n- `technology_id.viabilidad_tecnica.prototyping.certificaciones_necesarias` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `technology_id:prototyping`): `box_trl_assessment`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

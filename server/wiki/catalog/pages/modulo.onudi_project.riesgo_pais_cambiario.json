@@ -1,0 +1,84 @@
+{
+  "id": "modulo.onudi_project.riesgo_pais_cambiario",
+  "title": "Riesgo País y Riesgo Cambiario",
+  "summary": "Evaluación de volatilidad cambiaria, convertibilidad y estrategias de cobertura.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "onudi_project",
+  "moduleKey": "riesgo_pais_cambiario",
+  "pillarKey": "financiamiento_global",
+  "openUrl": "/onudi_project/riesgo_pais_cambiario",
+  "fields": [
+    {
+      "key": "prima_riesgo_pais_embi",
+      "type": "text",
+      "address": "onudi_project.financiamiento_global.riesgo_pais_cambiario.prima_riesgo_pais_embi",
+      "prompt": "Incorporación del spread soberano (Emerging Markets Bond Index - EMBI+) en la tasa de descuento de capital internacional.",
+      "ejemplo": "Ej: Tasa libre de riesgo EE.UU. (4.2%) + Spread EMBI México (2.6%) + Beta desapalancada ajustada = Ke de 14.8%.",
+      "benchmark": "Spread EMBI+ de 200 a 400 bps según el mercado emergente destino.",
+      "cita": "The Nature of Value (Ch. 5 p. 98) & Manual COMFAR ONUDI",
+      "placeholder": "Diferencial de riesgo país (spread EMBI+) y tasa libre de riesgo..."
+    },
+    {
+      "key": "exposicion_tipo_cambio",
+      "type": "text",
+      "address": "onudi_project.financiamiento_global.riesgo_pais_cambiario.exposicion_tipo_cambio",
+      "prompt": "Análisis de descalce cambiario entre ingresos (moneda local o dólares de exportación) y deuda/CAPEX (maquinaria importada).",
+      "ejemplo": "Ej: 100% de la maquinaria cotizada en USD mientras el 80% de las ventas del taller piloto son en MXN (riesgo de devaluación).",
+      "benchmark": "Prueba de estrés cambiario con depreciación de la moneda local de hasta +20%.",
+      "cita": "Negotiating South-South Regional Trade Agreements (UNCTAD Ch. 5 p. 92)",
+      "placeholder": "Estructura de divisas de ingresos, compras de insumos y servicio de deuda..."
+    },
+    {
+      "key": "cobertura_financiera_hedging",
+      "type": "text",
+      "address": "onudi_project.financiamiento_global.riesgo_pais_cambiario.cobertura_financiera_hedging",
+      "prompt": "Instrumentos financieros de mitigación de riesgo cambiario y de tasa de interés: forwards, opciones o swaps de cobertura.",
+      "ejemplo": "Ej: Contrato forward tipo de cambio USD/MXN a 12 meses fijando el 70% del valor de la maquinaria importada.",
+      "benchmark": "Cobertura cambiaria del 50% al 80% para proteger el CAPEX importado.",
+      "cita": "The Nature of Value (Ch. 5 p. 102)",
+      "placeholder": "Instrumentos de cobertura cambiaria contratados o proyectados..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_riesgo_pais_mat",
+      "title": "Matriz de Riesgo País y Riesgo Cambiario ONUDI/COMFAR",
+      "type": "matrix",
+      "description": "Evaluación de primas soberanas, devaluación esperada e impacto en la tasa de corte internacional.",
+      "source": "Negotiating South-South Regional Agreements & ONUDI Manual — Ch. 5 p. 92"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Evaluación de volatilidad cambiaria, convertibilidad y estrategias de cobertura.\n\n**Cómo se usa.** Está en el pilar **Evaluación Financiera Global (COMFAR)** del modelo *Estudio de Factibilidad ONUDI (Industrial Global)*. Se abre en `/onudi_project/riesgo_pais_cambiario`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 3 campos: `prima_riesgo_pais_embi`, `exposicion_tipo_cambio`, `cobertura_financiera_hedging`.\n\n**Herramientas del módulo.** 1 caja(s): `box_riesgo_pais_mat`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `prima_riesgo_pais_embi`\n\n**El prompt que usa:** Incorporación del spread soberano (Emerging Markets Bond Index - EMBI+) en la tasa de descuento de capital internacional.\n\n**Ejemplo que muestra la guía:** Ej: Tasa libre de riesgo EE.UU. (4.2%) + Spread EMBI México (2.6%) + Beta desapalancada ajustada = Ke de 14.8%.\n\n**Benchmark / criterio de calidad:** Spread EMBI+ de 200 a 400 bps según el mercado emergente destino.\n\n**De dónde viene la guía:** The Nature of Value (Ch. 5 p. 98) & Manual COMFAR ONUDI\n\n### `exposicion_tipo_cambio`\n\n**El prompt que usa:** Análisis de descalce cambiario entre ingresos (moneda local o dólares de exportación) y deuda/CAPEX (maquinaria importada).\n\n**Ejemplo que muestra la guía:** Ej: 100% de la maquinaria cotizada en USD mientras el 80% de las ventas del taller piloto son en MXN (riesgo de devaluación).\n\n**Benchmark / criterio de calidad:** Prueba de estrés cambiario con depreciación de la moneda local de hasta +20%.\n\n**De dónde viene la guía:** Negotiating South-South Regional Trade Agreements (UNCTAD Ch. 5 p. 92)\n\n### `cobertura_financiera_hedging`\n\n**El prompt que usa:** Instrumentos financieros de mitigación de riesgo cambiario y de tasa de interés: forwards, opciones o swaps de cobertura.\n\n**Ejemplo que muestra la guía:** Ej: Contrato forward tipo de cambio USD/MXN a 12 meses fijando el 70% del valor de la maquinaria importada.\n\n**Benchmark / criterio de calidad:** Cobertura cambiaria del 50% al 80% para proteger el CAPEX importado.\n\n**De dónde viene la guía:** The Nature of Value (Ch. 5 p. 102)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Matriz de Riesgo País y Riesgo Cambiario ONUDI/COMFAR\n\n`box_riesgo_pais_mat` · tipo **matrix** · fuente: Negotiating South-South Regional Agreements & ONUDI Manual — Ch. 5 p. 92\n\nEvaluación de primas soberanas, devaluación esperada e impacto en la tasa de corte internacional."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Evaluación Financiera Global (COMFAR)** de *Estudio de Factibilidad ONUDI (Industrial Global)*. La justificación metodológica completa está en la página del modelo y en `docs/onudi_project.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `onudi_project.financiamiento_global.riesgo_pais_cambiario.prima_riesgo_pais_embi` → tipo `text`\n- `onudi_project.financiamiento_global.riesgo_pais_cambiario.exposicion_tipo_cambio` → tipo `text`\n- `onudi_project.financiamiento_global.riesgo_pais_cambiario.cobertura_financiera_hedging` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `onudi_project:riesgo_pais_cambiario`): `box_riesgo_pais_mat`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

@@ -1,0 +1,84 @@
+{
+  "id": "modulo.technology_id.tech_market",
+  "title": "Mercado Tecnológico",
+  "summary": "Identificación de licenciatarios, análisis B2B o B2G, y alianzas estratégicas de co-desarrollo.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "technology_id",
+  "moduleKey": "tech_market",
+  "pillarKey": "mercado_tecnologico",
+  "openUrl": "/technology_id/tech_market",
+  "fields": [
+    {
+      "key": "clientes_industriales",
+      "type": "text",
+      "address": "technology_id.mercado_tecnologico.tech_market.clientes_industriales",
+      "prompt": "Perfil del comprador B2B, integrador tecnológico o dependencias de gobierno que adquirirán la tecnología.",
+      "ejemplo": "Ej (Estilo TSMC/Intel B2B): Plantas ensambladoras automotrices Tier 1 que buscan automatizar sus líneas de ensamble.",
+      "benchmark": "Madurez tecnológica validada en escala TRL (1 a 9) y novedad patentable.",
+      "cita": "Clayton Christensen — The Innovator's Dilemma & Manual de Oslo",
+      "placeholder": "Especificaciones técnicas e innovación para (clientes_industriales)..."
+    },
+    {
+      "key": "tamaño_mercado_tecnologico",
+      "type": "text",
+      "address": "technology_id.mercado_tecnologico.tech_market.tamaño_mercado_tecnologico",
+      "prompt": "TAM, SAM, SOM enfocados en licenciamiento o ventas corporativas.",
+      "ejemplo": "Ej: SAM: 420 plantas maquiladoras en el norte de México con un valor estimado de mercado de $15M USD anuales.",
+      "benchmark": "Madurez tecnológica validada en escala TRL (1 a 9) y novedad patentable.",
+      "cita": "Clayton Christensen — The Innovator's Dilemma & Manual de Oslo",
+      "placeholder": "Especificaciones técnicas e innovación para (tamaño_mercado_tecnologico)..."
+    },
+    {
+      "key": "alianzas_codesarrollo",
+      "type": "text",
+      "address": "technology_id.mercado_tecnologico.tech_market.alianzas_codesarrollo",
+      "prompt": "Alianzas con centros de investigación, universidades o corporaciones para co-desarrollar o validar la tecnología.",
+      "ejemplo": "Ej (Estilo MIT Media Lab): Convenio de co-desarrollo con el Instituto de Inteligencia Artificial de la Universidad de Sonora.",
+      "benchmark": "Madurez tecnológica validada en escala TRL (1 a 9) y novedad patentable.",
+      "cita": "Clayton Christensen — The Innovator's Dilemma & Manual de Oslo",
+      "placeholder": "Especificaciones técnicas e innovación para (alianzas_codesarrollo)..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_ipc_classifier",
+      "title": "Clasificación Internacional de Patentes (IPC)",
+      "type": "table",
+      "description": "Mapeo de tecnologías a categorías A61K, C12N, G06F, H01L.",
+      "source": "Anatomy of a Business Plan (IPC Edition) — p. 210"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Identificación de licenciatarios, análisis B2B o B2G, y alianzas estratégicas de co-desarrollo.\n\n**Cómo se usa.** Está en el pilar **Mercado Científico y Transferencia** del modelo *Plan de Negocios de Base Tecnológica e Innovación (I+D)*. Se abre en `/technology_id/tech_market`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 3 campos: `clientes_industriales`, `tamaño_mercado_tecnologico`, `alianzas_codesarrollo`.\n\n**Herramientas del módulo.** 1 caja(s): `box_ipc_classifier`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `clientes_industriales`\n\n**El prompt que usa:** Perfil del comprador B2B, integrador tecnológico o dependencias de gobierno que adquirirán la tecnología.\n\n**Ejemplo que muestra la guía:** Ej (Estilo TSMC/Intel B2B): Plantas ensambladoras automotrices Tier 1 que buscan automatizar sus líneas de ensamble.\n\n**Benchmark / criterio de calidad:** Madurez tecnológica validada en escala TRL (1 a 9) y novedad patentable.\n\n**De dónde viene la guía:** Clayton Christensen — The Innovator's Dilemma & Manual de Oslo\n\n### `tamaño_mercado_tecnologico`\n\n**El prompt que usa:** TAM, SAM, SOM enfocados en licenciamiento o ventas corporativas.\n\n**Ejemplo que muestra la guía:** Ej: SAM: 420 plantas maquiladoras en el norte de México con un valor estimado de mercado de $15M USD anuales.\n\n**Benchmark / criterio de calidad:** Madurez tecnológica validada en escala TRL (1 a 9) y novedad patentable.\n\n**De dónde viene la guía:** Clayton Christensen — The Innovator's Dilemma & Manual de Oslo\n\n### `alianzas_codesarrollo`\n\n**El prompt que usa:** Alianzas con centros de investigación, universidades o corporaciones para co-desarrollar o validar la tecnología.\n\n**Ejemplo que muestra la guía:** Ej (Estilo MIT Media Lab): Convenio de co-desarrollo con el Instituto de Inteligencia Artificial de la Universidad de Sonora.\n\n**Benchmark / criterio de calidad:** Madurez tecnológica validada en escala TRL (1 a 9) y novedad patentable.\n\n**De dónde viene la guía:** Clayton Christensen — The Innovator's Dilemma & Manual de Oslo"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Clasificación Internacional de Patentes (IPC)\n\n`box_ipc_classifier` · tipo **table** · fuente: Anatomy of a Business Plan (IPC Edition) — p. 210\n\nMapeo de tecnologías a categorías A61K, C12N, G06F, H01L."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Mercado Científico y Transferencia** de *Plan de Negocios de Base Tecnológica e Innovación (I+D)*. La justificación metodológica completa está en la página del modelo y en `docs/technology_id.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `technology_id.mercado_tecnologico.tech_market.clientes_industriales` → tipo `text`\n- `technology_id.mercado_tecnologico.tech_market.tamaño_mercado_tecnologico` → tipo `text`\n- `technology_id.mercado_tecnologico.tech_market.alianzas_codesarrollo` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `technology_id:tech_market`): `box_ipc_classifier`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

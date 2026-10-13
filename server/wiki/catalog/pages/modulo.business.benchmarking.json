@@ -1,0 +1,66 @@
+{
+  "id": "modulo.business.benchmarking",
+  "title": "Benchmarking",
+  "summary": "Comparativa estructurada contra líderes del mercado.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "business",
+  "moduleKey": "benchmarking",
+  "pillarKey": "mercado",
+  "openUrl": "/business/benchmarking",
+  "fields": [
+    {
+      "key": "comparativa",
+      "type": "text",
+      "address": "business.mercado.benchmarking.comparativa",
+      "prompt": "Tabla comparativa entre tu negocio y los líderes del sector en variables clave.",
+      "ejemplo": "Ej: \"Precio: Nosotros $500/mes vs Competidor A $2,000/mes. Personalización: Alta vs Media. Digital: 100% vs 40%.\"",
+      "benchmark": "Matriz comparativa con al menos 6 variables de evaluación técnica y comercial.",
+      "cita": "Creating a Business Plan For Dummies (Ch. 6, p. 125)",
+      "placeholder": "Tabla cruzada evaluando precio, calidad, velocidad, soporte y tecnología..."
+    },
+    {
+      "key": "matriz",
+      "type": "text",
+      "address": "business.mercado.benchmarking.matriz",
+      "prompt": "Mapa visual donde posicionas tu marca frente a competidores en dos ejes estratégicos.",
+      "ejemplo": "Ej: \"Eje X: Precio (bajo-alto). Eje Y: Personalización (masivo-premium). Nosotros: precio bajo + alta personalización.\"",
+      "benchmark": "Cuadrante de posicionamiento estratégico en dos ejes clave (ej. Precio vs Personalización).",
+      "cita": "Ken Colwell — Starting a Business QuickStart Guide (Ch. 4, p. 94)",
+      "placeholder": "Ubicación en el mapa de posicionamiento frente a la competencia..."
+    }
+  ],
+  "boxes": [],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Comparativa estructurada contra líderes del mercado.\n\n**Cómo se usa.** Está en el pilar **El Mercado** del modelo *Plan de Negocios Comercial*. Se abre en `/business/benchmarking`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 2 campos: `comparativa`, `matriz`.\n\n**Herramientas del módulo.** Ninguna específica: se apoya en los campos de texto."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `comparativa`\n\n**El prompt que usa:** Tabla comparativa entre tu negocio y los líderes del sector en variables clave.\n\n**Ejemplo que muestra la guía:** Ej: \"Precio: Nosotros $500/mes vs Competidor A $2,000/mes. Personalización: Alta vs Media. Digital: 100% vs 40%.\"\n\n**Benchmark / criterio de calidad:** Matriz comparativa con al menos 6 variables de evaluación técnica y comercial.\n\n**De dónde viene la guía:** Creating a Business Plan For Dummies (Ch. 6, p. 125)\n\n### `matriz`\n\n**El prompt que usa:** Mapa visual donde posicionas tu marca frente a competidores en dos ejes estratégicos.\n\n**Ejemplo que muestra la guía:** Ej: \"Eje X: Precio (bajo-alto). Eje Y: Personalización (masivo-premium). Nosotros: precio bajo + alta personalización.\"\n\n**Benchmark / criterio de calidad:** Cuadrante de posicionamiento estratégico en dos ejes clave (ej. Precio vs Personalización).\n\n**De dónde viene la guía:** Ken Colwell — Starting a Business QuickStart Guide (Ch. 4, p. 94)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "Sin cajas asociadas."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **El Mercado** de *Plan de Negocios Comercial*. La justificación metodológica completa está en la página del modelo y en `docs/business.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `business.mercado.benchmarking.comparativa` → tipo `text`\n- `business.mercado.benchmarking.matriz` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas:** `src/config/moduleBoxMap.js` no declara cajas para `business:benchmarking`; la pantalla muestra solo los campos de texto.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

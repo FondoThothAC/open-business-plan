@@ -1,0 +1,84 @@
+{
+  "id": "modulo.business.rentabilidad",
+  "title": "Rentabilidad y Análisis",
+  "summary": "TIR, VPN, Punto de Equilibrio y ROI.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "business",
+  "moduleKey": "rentabilidad",
+  "pillarKey": "organizacion",
+  "openUrl": "/business/rentabilidad",
+  "fields": [
+    {
+      "key": "punto_equilibrio",
+      "type": "text",
+      "address": "business.organizacion.rentabilidad.punto_equilibrio",
+      "prompt": "Volumen crítico en unidades monetarias y servicios para absorber costos fijos. Evita fórmulas con división por cero o símbolos infinitos (∞).",
+      "ejemplo": "Ej: \"Punto de equilibrio mensual: $350K CF ÷ (1 - 0.42 CV) = $603,448 MXN mensuales en facturación (aprox. 18 servicios mayores al mes).\"",
+      "benchmark": "Punto de Equilibrio alcanzable antes del mes 12 de operación.",
+      "cita": "Linda Pinson — Anatomy of a Business Plan (Ch. 7, p. 188)",
+      "placeholder": "Volumen mínimo de ventas en unidades y dinero para no ganar ni perder..."
+    },
+    {
+      "key": "indicadores",
+      "type": "text",
+      "address": "business.organizacion.rentabilidad.indicadores",
+      "prompt": "[ANCLAJE OBLIGATORIO A SEMILLA] Indicadores financieros maestros calculados a partir del desembolso de `semilla.inversion_esperada`. La TIR debe situarse en un rango plausible (15% a 40%) y el Payback corresponder al plazo de retorno.",
+      "ejemplo": "Ej: \"Inversión Base: $20,000,000 MXN. TIR: 24.5%, VAN (tasa 12%): $3.42M MXN, Payback: 4.1 años (49 meses), ROI proyectado: 68% a 5 años.\"",
+      "benchmark": "Objetivo de cumplimiento > 90% respecto al benchmark de industria.",
+      "cita": "Linda Pinson — Anatomy of a Business Plan (Ch. 2-7)",
+      "placeholder": "Ingresa los detalles metodológicos de (indicadores)..."
+    },
+    {
+      "key": "relacion_bc",
+      "type": "text",
+      "address": "business.organizacion.rentabilidad.relacion_bc",
+      "prompt": "Relación Beneficio-Costo (B/C). Valor presente de beneficios descontados entre la inversión inicial canónica.",
+      "ejemplo": "Ej: \"Relación B/C de 1.42 (VPN positivo con inversión inicial de $20M MXN a tasa del 12%), ratificando viabilidad financiera sólida.\"",
+      "benchmark": "Objetivo de cumplimiento > 90% respecto al benchmark de industria.",
+      "cita": "Linda Pinson — Anatomy of a Business Plan (Ch. 2-7)",
+      "placeholder": "Ingresa los detalles metodológicos de (relacion_bc)..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_wacc_van_tir",
+      "title": "Evaluación Financiera Maestra (WACC, VAN, TIR)",
+      "type": "formula",
+      "description": "Modelo de descuento de flujos con costo de capital CAPM.",
+      "source": "The Nature of Value — Ch. 5"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** TIR, VPN, Punto de Equilibrio y ROI.\n\n**Cómo se usa.** Está en el pilar **Organización y Finanzas** del modelo *Plan de Negocios Comercial*. Se abre en `/business/rentabilidad`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 3 campos: `punto_equilibrio`, `indicadores`, `relacion_bc`.\n\n**Herramientas del módulo.** 1 caja(s): `box_wacc_van_tir`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `punto_equilibrio`\n\n**El prompt que usa:** Volumen crítico en unidades monetarias y servicios para absorber costos fijos. Evita fórmulas con división por cero o símbolos infinitos (∞).\n\n**Ejemplo que muestra la guía:** Ej: \"Punto de equilibrio mensual: $350K CF ÷ (1 - 0.42 CV) = $603,448 MXN mensuales en facturación (aprox. 18 servicios mayores al mes).\"\n\n**Benchmark / criterio de calidad:** Punto de Equilibrio alcanzable antes del mes 12 de operación.\n\n**De dónde viene la guía:** Linda Pinson — Anatomy of a Business Plan (Ch. 7, p. 188)\n\n### `indicadores`\n\n**El prompt que usa:** [ANCLAJE OBLIGATORIO A SEMILLA] Indicadores financieros maestros calculados a partir del desembolso de `semilla.inversion_esperada`. La TIR debe situarse en un rango plausible (15% a 40%) y el Payback corresponder al plazo de retorno.\n\n**Ejemplo que muestra la guía:** Ej: \"Inversión Base: $20,000,000 MXN. TIR: 24.5%, VAN (tasa 12%): $3.42M MXN, Payback: 4.1 años (49 meses), ROI proyectado: 68% a 5 años.\"\n\n**Benchmark / criterio de calidad:** Objetivo de cumplimiento > 90% respecto al benchmark de industria.\n\n**De dónde viene la guía:** Linda Pinson — Anatomy of a Business Plan (Ch. 2-7)\n\n### `relacion_bc`\n\n**El prompt que usa:** Relación Beneficio-Costo (B/C). Valor presente de beneficios descontados entre la inversión inicial canónica.\n\n**Ejemplo que muestra la guía:** Ej: \"Relación B/C de 1.42 (VPN positivo con inversión inicial de $20M MXN a tasa del 12%), ratificando viabilidad financiera sólida.\"\n\n**Benchmark / criterio de calidad:** Objetivo de cumplimiento > 90% respecto al benchmark de industria.\n\n**De dónde viene la guía:** Linda Pinson — Anatomy of a Business Plan (Ch. 2-7)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Evaluación Financiera Maestra (WACC, VAN, TIR)\n\n`box_wacc_van_tir` · tipo **formula** · fuente: The Nature of Value — Ch. 5\n\nModelo de descuento de flujos con costo de capital CAPM."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Organización y Finanzas** de *Plan de Negocios Comercial*. La justificación metodológica completa está en la página del modelo y en `docs/business.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `business.organizacion.rentabilidad.punto_equilibrio` → tipo `text`\n- `business.organizacion.rentabilidad.indicadores` → tipo `text`\n- `business.organizacion.rentabilidad.relacion_bc` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `business:rentabilidad`): `box_wacc_van_tir`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

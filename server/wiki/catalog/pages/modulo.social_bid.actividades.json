@@ -1,0 +1,66 @@
+{
+  "id": "modulo.social_bid.actividades",
+  "title": "Actividades Clave",
+  "summary": "Tareas necesarias para producir cada componente.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "social_bid",
+  "moduleKey": "actividades",
+  "pillarKey": "diseno",
+  "openUrl": "/social_bid/actividades",
+  "fields": [
+    {
+      "key": "descripcion_actividades",
+      "type": "text",
+      "address": "social_bid.diseno.actividades.descripcion_actividades",
+      "prompt": "Las tareas necesarias para entregar los componentes.",
+      "ejemplo": "Ej: Para el Componente 1: a) Cotizar equipos b) Comprar c) Instalar d) Probar.",
+      "benchmark": "Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.",
+      "cita": "Metodología del Marco Lógico (BID / CEPAL / PM4R)",
+      "placeholder": "Define el componente del proyecto social (descripcion_actividades)..."
+    },
+    {
+      "key": "cronograma_macro",
+      "type": "text",
+      "address": "social_bid.diseno.actividades.cronograma_macro",
+      "prompt": "Resumen de tiempos de las actividades principales.",
+      "ejemplo": "Ej: Mes 1-2: Compras. Mes 3: Instalación. Mes 4-12: Talleres.",
+      "benchmark": "Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.",
+      "cita": "Metodología del Marco Lógico (BID / CEPAL / PM4R)",
+      "placeholder": "Define el componente del proyecto social (cronograma_macro)..."
+    }
+  ],
+  "boxes": [],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Tareas necesarias para producir cada componente.\n\n**Cómo se usa.** Está en el pilar **Diseño del Proyecto (MML)** del modelo *Proyecto Social (Metodología BID)*. Se abre en `/social_bid/actividades`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 2 campos: `descripcion_actividades`, `cronograma_macro`.\n\n**Herramientas del módulo.** Ninguna específica: se apoya en los campos de texto."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `descripcion_actividades`\n\n**El prompt que usa:** Las tareas necesarias para entregar los componentes.\n\n**Ejemplo que muestra la guía:** Ej: Para el Componente 1: a) Cotizar equipos b) Comprar c) Instalar d) Probar.\n\n**Benchmark / criterio de calidad:** Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.\n\n**De dónde viene la guía:** Metodología del Marco Lógico (BID / CEPAL / PM4R)\n\n### `cronograma_macro`\n\n**El prompt que usa:** Resumen de tiempos de las actividades principales.\n\n**Ejemplo que muestra la guía:** Ej: Mes 1-2: Compras. Mes 3: Instalación. Mes 4-12: Talleres.\n\n**Benchmark / criterio de calidad:** Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.\n\n**De dónde viene la guía:** Metodología del Marco Lógico (BID / CEPAL / PM4R)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "Sin cajas asociadas."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Diseño del Proyecto (MML)** de *Proyecto Social (Metodología BID)*. La justificación metodológica completa está en la página del modelo y en `docs/social_bid.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `social_bid.diseno.actividades.descripcion_actividades` → tipo `text`\n- `social_bid.diseno.actividades.cronograma_macro` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas:** `src/config/moduleBoxMap.js` no declara cajas para `social_bid:actividades`; la pantalla muestra solo los campos de texto.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

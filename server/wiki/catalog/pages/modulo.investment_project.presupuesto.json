@@ -1,0 +1,74 @@
+{
+  "id": "modulo.investment_project.presupuesto",
+  "title": "Catálogo y Costos",
+  "summary": "Catálogo de conceptos y explosión de insumos físicos.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "investment_project",
+  "moduleKey": "presupuesto",
+  "pillarKey": "presupuesto_obra",
+  "openUrl": "/investment_project/presupuesto",
+  "fields": [
+    {
+      "key": "catalogo_conceptos",
+      "type": "text",
+      "address": "investment_project.presupuesto_obra.presupuesto.catalogo_conceptos",
+      "prompt": "Listado exhaustivo de todas las partidas de obra y equipamiento.",
+      "ejemplo": "Ej: \"Partida 1: Terracerías. Partida 2: Cimentación. Partida 3: Montaje electromecánico.\"",
+      "benchmark": "TIR > WACC + 4% con análisis probabilístico Monte Carlo al 95% de confianza.",
+      "cita": "The Nature of Value (Ch. 5 WACC/CAPM) & CSI MasterFormat",
+      "placeholder": "Memoria de cálculo y parámetros cuantitativos para (catalogo_conceptos)..."
+    },
+    {
+      "key": "explosion_insumos",
+      "type": "text",
+      "address": "investment_project.presupuesto_obra.presupuesto.explosion_insumos",
+      "prompt": "Resumen cuantitativo de los insumos físicos más relevantes a adquirir.",
+      "ejemplo": "Ej: \"120,000 paneles solares de 600W, 400 toneladas de acero estructural, 25 inversores centrales.\"",
+      "benchmark": "TIR > WACC + 4% con análisis probabilístico Monte Carlo al 95% de confianza.",
+      "cita": "The Nature of Value (Ch. 5 WACC/CAPM) & CSI MasterFormat",
+      "placeholder": "Memoria de cálculo y parámetros cuantitativos para (explosion_insumos)..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_capex_csi_table",
+      "title": "Catálogo de Conceptos y CAPEX de Obra (División CSI 16)",
+      "type": "table",
+      "description": "Presupuesto base de infraestructura y equipamiento industrial.",
+      "source": "Anatomy of a Business Plan — Ch. 7"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Catálogo de conceptos y explosión de insumos físicos.\n\n**Cómo se usa.** Está en el pilar **Presupuesto Base de Obra (CAPEX)** del modelo *Proyecto de Inversión (Ingeniería y Finanzas)*. Se abre en `/investment_project/presupuesto`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 2 campos: `catalogo_conceptos`, `explosion_insumos`.\n\n**Herramientas del módulo.** 1 caja(s): `box_capex_csi_table`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `catalogo_conceptos`\n\n**El prompt que usa:** Listado exhaustivo de todas las partidas de obra y equipamiento.\n\n**Ejemplo que muestra la guía:** Ej: \"Partida 1: Terracerías. Partida 2: Cimentación. Partida 3: Montaje electromecánico.\"\n\n**Benchmark / criterio de calidad:** TIR > WACC + 4% con análisis probabilístico Monte Carlo al 95% de confianza.\n\n**De dónde viene la guía:** The Nature of Value (Ch. 5 WACC/CAPM) & CSI MasterFormat\n\n### `explosion_insumos`\n\n**El prompt que usa:** Resumen cuantitativo de los insumos físicos más relevantes a adquirir.\n\n**Ejemplo que muestra la guía:** Ej: \"120,000 paneles solares de 600W, 400 toneladas de acero estructural, 25 inversores centrales.\"\n\n**Benchmark / criterio de calidad:** TIR > WACC + 4% con análisis probabilístico Monte Carlo al 95% de confianza.\n\n**De dónde viene la guía:** The Nature of Value (Ch. 5 WACC/CAPM) & CSI MasterFormat"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Catálogo de Conceptos y CAPEX de Obra (División CSI 16)\n\n`box_capex_csi_table` · tipo **table** · fuente: Anatomy of a Business Plan — Ch. 7\n\nPresupuesto base de infraestructura y equipamiento industrial."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Presupuesto Base de Obra (CAPEX)** de *Proyecto de Inversión (Ingeniería y Finanzas)*. La justificación metodológica completa está en la página del modelo y en `docs/investment_project.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `investment_project.presupuesto_obra.presupuesto.catalogo_conceptos` → tipo `text`\n- `investment_project.presupuesto_obra.presupuesto.explosion_insumos` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `investment_project:presupuesto`): `box_capex_csi_table`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

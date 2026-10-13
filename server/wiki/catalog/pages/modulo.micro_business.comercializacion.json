@@ -1,0 +1,74 @@
+{
+  "id": "modulo.micro_business.comercializacion",
+  "title": "Precios y Promoción",
+  "summary": "Cómo calculamos el precio y cómo nos damos a conocer.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "micro_business",
+  "moduleKey": "comercializacion",
+  "pillarKey": "mercado",
+  "openUrl": "/micro_business/comercializacion",
+  "fields": [
+    {
+      "key": "lista_precios",
+      "type": "text",
+      "address": "micro_business.mercado.comercializacion.lista_precios",
+      "prompt": "Precio de tus productos principales.",
+      "ejemplo": "Ej: \"Taco: $35. Caramelo: $70. Refresco: $25.\"",
+      "benchmark": "Operación simple con punto de equilibrio mensual y presupuesto < 30 días.",
+      "cita": "Manual de Plan de Negocios Panamá & Plan de Negocios VF",
+      "placeholder": "Información básica para arrancar el autoempleo en (lista_precios)..."
+    },
+    {
+      "key": "como_promocionamos",
+      "type": "text",
+      "address": "micro_business.mercado.comercializacion.como_promocionamos",
+      "prompt": "¿Cómo vas a conseguir clientes?",
+      "ejemplo": "Ej: \"Pondré una lona luminosa grande, repartiré volantes en la colonia y abriré una página de Facebook.\"",
+      "benchmark": "Operación simple con punto de equilibrio mensual y presupuesto < 30 días.",
+      "cita": "Manual de Plan de Negocios Panamá & Plan de Negocios VF",
+      "placeholder": "Información básica para arrancar el autoempleo en (como_promocionamos)..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_apertura_30dias",
+      "title": "Checklist de Apertura Legal en 30 Días",
+      "type": "checklist",
+      "description": "RFC, régimen fiscal simplificado, licencias municipales y apertura.",
+      "source": "Plan de Negocios VF & Manual Panamá — p. 15"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Cómo calculamos el precio y cómo nos damos a conocer.\n\n**Cómo se usa.** Está en el pilar **Mercadeo Simplificado** del modelo *Plan para Microempresa y Autoempleo (Simplificado)*. Se abre en `/micro_business/comercializacion`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 2 campos: `lista_precios`, `como_promocionamos`.\n\n**Herramientas del módulo.** 1 caja(s): `box_apertura_30dias`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `lista_precios`\n\n**El prompt que usa:** Precio de tus productos principales.\n\n**Ejemplo que muestra la guía:** Ej: \"Taco: $35. Caramelo: $70. Refresco: $25.\"\n\n**Benchmark / criterio de calidad:** Operación simple con punto de equilibrio mensual y presupuesto < 30 días.\n\n**De dónde viene la guía:** Manual de Plan de Negocios Panamá & Plan de Negocios VF\n\n### `como_promocionamos`\n\n**El prompt que usa:** ¿Cómo vas a conseguir clientes?\n\n**Ejemplo que muestra la guía:** Ej: \"Pondré una lona luminosa grande, repartiré volantes en la colonia y abriré una página de Facebook.\"\n\n**Benchmark / criterio de calidad:** Operación simple con punto de equilibrio mensual y presupuesto < 30 días.\n\n**De dónde viene la guía:** Manual de Plan de Negocios Panamá & Plan de Negocios VF"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Checklist de Apertura Legal en 30 Días\n\n`box_apertura_30dias` · tipo **checklist** · fuente: Plan de Negocios VF & Manual Panamá — p. 15\n\nRFC, régimen fiscal simplificado, licencias municipales y apertura."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Mercadeo Simplificado** de *Plan para Microempresa y Autoempleo (Simplificado)*. La justificación metodológica completa está en la página del modelo y en `docs/micro_business.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `micro_business.mercado.comercializacion.lista_precios` → tipo `text`\n- `micro_business.mercado.comercializacion.como_promocionamos` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `micro_business:comercializacion`): `box_apertura_30dias`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

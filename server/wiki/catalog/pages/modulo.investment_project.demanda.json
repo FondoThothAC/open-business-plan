@@ -1,0 +1,74 @@
+{
+  "id": "modulo.investment_project.demanda",
+  "title": "Análisis de Demanda",
+  "summary": "Datos duros, elasticidad y comportamiento histórico.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "investment_project",
+  "moduleKey": "demanda",
+  "pillarKey": "mercado_cuantitativo",
+  "openUrl": "/investment_project/demanda",
+  "fields": [
+    {
+      "key": "demanda_historica",
+      "type": "text",
+      "address": "investment_project.mercado_cuantitativo.demanda.demanda_historica",
+      "prompt": "Análisis histórico de la demanda con datos duros y series de tiempo.",
+      "ejemplo": "Ej: \"La demanda de energía en la región noroeste creció 4.5% anual de 2018 a 2024 (Fuente: CENACE).\"",
+      "benchmark": "TIR > WACC + 4% con análisis probabilístico Monte Carlo al 95% de confianza.",
+      "cita": "The Nature of Value (Ch. 5 WACC/CAPM) & CSI MasterFormat",
+      "placeholder": "Memoria de cálculo y parámetros cuantitativos para (demanda_historica)..."
+    },
+    {
+      "key": "elasticidad",
+      "type": "text",
+      "address": "investment_project.mercado_cuantitativo.demanda.elasticidad",
+      "prompt": "Cálculo de la elasticidad precio-demanda o sensibilidad del consumo ante variables macroeconómicas.",
+      "ejemplo": "Ej: \"Elasticidad precio de -0.8; la demanda es relativamente inelástica ante incrementos tarifarios.\"",
+      "benchmark": "TIR > WACC + 4% con análisis probabilístico Monte Carlo al 95% de confianza.",
+      "cita": "The Nature of Value (Ch. 5 WACC/CAPM) & CSI MasterFormat",
+      "placeholder": "Memoria de cálculo y parámetros cuantitativos para (elasticidad)..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_tam_sam_som",
+      "title": "box_tam_sam_som",
+      "type": "desconocido",
+      "description": "",
+      "source": ""
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Datos duros, elasticidad y comportamiento histórico.\n\n**Cómo se usa.** Está en el pilar **Estudio de Mercado Cuantitativo** del modelo *Proyecto de Inversión (Ingeniería y Finanzas)*. Se abre en `/investment_project/demanda`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 2 campos: `demanda_historica`, `elasticidad`.\n\n**Herramientas del módulo.** 1 caja(s): `box_tam_sam_som`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `demanda_historica`\n\n**El prompt que usa:** Análisis histórico de la demanda con datos duros y series de tiempo.\n\n**Ejemplo que muestra la guía:** Ej: \"La demanda de energía en la región noroeste creció 4.5% anual de 2018 a 2024 (Fuente: CENACE).\"\n\n**Benchmark / criterio de calidad:** TIR > WACC + 4% con análisis probabilístico Monte Carlo al 95% de confianza.\n\n**De dónde viene la guía:** The Nature of Value (Ch. 5 WACC/CAPM) & CSI MasterFormat\n\n### `elasticidad`\n\n**El prompt que usa:** Cálculo de la elasticidad precio-demanda o sensibilidad del consumo ante variables macroeconómicas.\n\n**Ejemplo que muestra la guía:** Ej: \"Elasticidad precio de -0.8; la demanda es relativamente inelástica ante incrementos tarifarios.\"\n\n**Benchmark / criterio de calidad:** TIR > WACC + 4% con análisis probabilístico Monte Carlo al 95% de confianza.\n\n**De dónde viene la guía:** The Nature of Value (Ch. 5 WACC/CAPM) & CSI MasterFormat"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### box_tam_sam_som\n\n`box_tam_sam_som` · tipo **desconocido**\n\n"
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Estudio de Mercado Cuantitativo** de *Proyecto de Inversión (Ingeniería y Finanzas)*. La justificación metodológica completa está en la página del modelo y en `docs/investment_project.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `investment_project.mercado_cuantitativo.demanda.demanda_historica` → tipo `text`\n- `investment_project.mercado_cuantitativo.demanda.elasticidad` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `investment_project:demanda`): `box_tam_sam_som`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

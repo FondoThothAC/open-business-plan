@@ -1,0 +1,101 @@
+{
+  "id": "modulo.agile_startup.unit_economics",
+  "title": "Unit Economics",
+  "summary": "Estructura detallada de costos e ingresos unitarios.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "agile_startup",
+  "moduleKey": "unit_economics",
+  "pillarKey": "finanzas_agiles",
+  "openUrl": "/agile_startup/unit_economics",
+  "fields": [
+    {
+      "key": "cac_adquisicion",
+      "type": "text",
+      "address": "agile_startup.finanzas_agiles.unit_economics.cac_adquisicion",
+      "prompt": "Costo de Adquisición de Cliente. ¿Cuánto dinero gastas en promedio para obtener un cliente de pago?",
+      "ejemplo": "Ej: Gastamos $3,000 en anuncios y obtuvimos 15 clientes de pago = CAC de $200 MXN.",
+      "benchmark": "Ciclo Construir-Medir-Aprender validado en < 2 semanas con métricas AARRR.",
+      "cita": "Eric Ries — El Método Lean Startup & Ash Maurya Running Lean",
+      "placeholder": "Documenta la hipótesis o métrica ágil para (cac_adquisicion)..."
+    },
+    {
+      "key": "ltv_vida_cliente",
+      "type": "text",
+      "address": "agile_startup.finanzas_agiles.unit_economics.ltv_vida_cliente",
+      "prompt": "Valor del tiempo de vida del cliente. Ingresos estimados que un cliente generará antes de darse de baja.",
+      "ejemplo": "Ej: Suscripción promedio dura 8 semanas a $1,200 MXN/semana = LTV de $9,600 MXN por cliente.",
+      "benchmark": "Ciclo Construir-Medir-Aprender validado en < 2 semanas con métricas AARRR.",
+      "cita": "Eric Ries — El Método Lean Startup & Ash Maurya Running Lean",
+      "placeholder": "Documenta la hipótesis o métrica ágil para (ltv_vida_cliente)..."
+    },
+    {
+      "key": "margen_contribucion_unitario",
+      "type": "text",
+      "address": "agile_startup.finanzas_agiles.unit_economics.margen_contribucion_unitario",
+      "prompt": "Ingreso unitario menos el costo variable unitario de entrega.",
+      "ejemplo": "Ej: Precio del menú $200 - Ingredientes $70 - Entrega $40 = Margen de Contribución de $90 MXN (45%).",
+      "benchmark": "Ciclo Construir-Medir-Aprender validado en < 2 semanas con métricas AARRR.",
+      "cita": "Eric Ries — El Método Lean Startup & Ash Maurya Running Lean",
+      "placeholder": "Documenta la hipótesis o métrica ágil para (margen_contribucion_unitario)..."
+    },
+    {
+      "key": "retorno_inversion_marketing",
+      "type": "text",
+      "address": "agile_startup.finanzas_agiles.unit_economics.retorno_inversion_marketing",
+      "prompt": "Mide la eficiencia del gasto de marketing (LTV / CAC). Lo ideal es una relación mayor a 3.",
+      "ejemplo": "Ej: LTV ($9,600) / CAC ($200) = Relación de 48x (Altamente rentable).",
+      "benchmark": "Ciclo Construir-Medir-Aprender validado en < 2 semanas con métricas AARRR.",
+      "cita": "Eric Ries — El Método Lean Startup & Ash Maurya Running Lean",
+      "placeholder": "Documenta la hipótesis o métrica ágil para (retorno_inversion_marketing)..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_unit_economics",
+      "title": "box_unit_economics",
+      "type": "desconocido",
+      "description": "",
+      "source": ""
+    },
+    {
+      "id": "box_benchmark_cac_ltv",
+      "title": "box_benchmark_cac_ltv",
+      "type": "desconocido",
+      "description": "",
+      "source": ""
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Estructura detallada de costos e ingresos unitarios.\n\n**Cómo se usa.** Está en el pilar **Finanzas y Métricas Unitarias** del modelo *Agile Startup (Lean MVP)*. Se abre en `/agile_startup/unit_economics`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 4 campos: `cac_adquisicion`, `ltv_vida_cliente`, `margen_contribucion_unitario`, `retorno_inversion_marketing`.\n\n**Herramientas del módulo.** 2 caja(s): `box_unit_economics`, `box_benchmark_cac_ltv`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `cac_adquisicion`\n\n**El prompt que usa:** Costo de Adquisición de Cliente. ¿Cuánto dinero gastas en promedio para obtener un cliente de pago?\n\n**Ejemplo que muestra la guía:** Ej: Gastamos $3,000 en anuncios y obtuvimos 15 clientes de pago = CAC de $200 MXN.\n\n**Benchmark / criterio de calidad:** Ciclo Construir-Medir-Aprender validado en < 2 semanas con métricas AARRR.\n\n**De dónde viene la guía:** Eric Ries — El Método Lean Startup & Ash Maurya Running Lean\n\n### `ltv_vida_cliente`\n\n**El prompt que usa:** Valor del tiempo de vida del cliente. Ingresos estimados que un cliente generará antes de darse de baja.\n\n**Ejemplo que muestra la guía:** Ej: Suscripción promedio dura 8 semanas a $1,200 MXN/semana = LTV de $9,600 MXN por cliente.\n\n**Benchmark / criterio de calidad:** Ciclo Construir-Medir-Aprender validado en < 2 semanas con métricas AARRR.\n\n**De dónde viene la guía:** Eric Ries — El Método Lean Startup & Ash Maurya Running Lean\n\n### `margen_contribucion_unitario`\n\n**El prompt que usa:** Ingreso unitario menos el costo variable unitario de entrega.\n\n**Ejemplo que muestra la guía:** Ej: Precio del menú $200 - Ingredientes $70 - Entrega $40 = Margen de Contribución de $90 MXN (45%).\n\n**Benchmark / criterio de calidad:** Ciclo Construir-Medir-Aprender validado en < 2 semanas con métricas AARRR.\n\n**De dónde viene la guía:** Eric Ries — El Método Lean Startup & Ash Maurya Running Lean\n\n### `retorno_inversion_marketing`\n\n**El prompt que usa:** Mide la eficiencia del gasto de marketing (LTV / CAC). Lo ideal es una relación mayor a 3.\n\n**Ejemplo que muestra la guía:** Ej: LTV ($9,600) / CAC ($200) = Relación de 48x (Altamente rentable).\n\n**Benchmark / criterio de calidad:** Ciclo Construir-Medir-Aprender validado en < 2 semanas con métricas AARRR.\n\n**De dónde viene la guía:** Eric Ries — El Método Lean Startup & Ash Maurya Running Lean"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### box_unit_economics\n\n`box_unit_economics` · tipo **desconocido**\n\n\n\n### box_benchmark_cac_ltv\n\n`box_benchmark_cac_ltv` · tipo **desconocido**\n\n"
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Finanzas y Métricas Unitarias** de *Agile Startup (Lean MVP)*. La justificación metodológica completa está en la página del modelo y en `docs/agile_startup.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `agile_startup.finanzas_agiles.unit_economics.cac_adquisicion` → tipo `text`\n- `agile_startup.finanzas_agiles.unit_economics.ltv_vida_cliente` → tipo `text`\n- `agile_startup.finanzas_agiles.unit_economics.margen_contribucion_unitario` → tipo `text`\n- `agile_startup.finanzas_agiles.unit_economics.retorno_inversion_marketing` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `agile_startup:unit_economics`): `box_unit_economics`, `box_benchmark_cac_ltv`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

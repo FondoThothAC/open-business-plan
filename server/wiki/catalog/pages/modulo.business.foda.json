@@ -1,0 +1,86 @@
+{
+  "id": "modulo.business.foda",
+  "title": "Análisis FODA",
+  "summary": "Fortalezas, Oportunidades, Debilidades y Amenazas.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "business",
+  "moduleKey": "foda",
+  "pillarKey": "naturaleza",
+  "openUrl": "/business/foda",
+  "fields": [
+    {
+      "key": "fortalezas",
+      "type": "text",
+      "address": "business.naturaleza.foda.fortalezas",
+      "prompt": "Ventajas internas que te diferencian de la competencia. Recursos, talento, tecnología propia.",
+      "ejemplo": "Ej: \"Equipo con certificación AMIB, plataforma digital propia, alianzas con 3 aseguradoras líderes.\"",
+      "benchmark": "Mínimo 3 capacidades internas críticas difícilmente replicables a corto plazo.",
+      "cita": "Creating a Business Plan For Dummies (Ch. 5, p. 95)",
+      "placeholder": "Ventajas internas: know-how, tecnología propia, licencias, equipo certificado..."
+    },
+    {
+      "key": "oportunidades",
+      "type": "text",
+      "address": "business.naturaleza.foda.oportunidades",
+      "prompt": "Factores externos favorables que puedes aprovechar. Tendencias, vacíos de mercado, regulaciones nuevas.",
+      "ejemplo": "Ej: \"Crecimiento del 23% anual en inversiones digitales en México. Nueva ley de educación financiera obligatoria.\"",
+      "benchmark": "Tendencias macroeconómicas o regulatorias con crecimiento anual compuesto (CAGR) > 8%.",
+      "cita": "Michael Porter — Competitive Strategy (Ch. 2, p. 48)",
+      "placeholder": "Cambios en el entorno, vacíos de mercado o nuevas leyes favorables..."
+    },
+    {
+      "key": "debilidades",
+      "type": "text",
+      "address": "business.naturaleza.foda.debilidades",
+      "prompt": "Limitaciones internas actuales. Sé honesto: falta de capital, equipo pequeño, marca nueva.",
+      "ejemplo": "Ej: \"Marca sin reconocimiento regional. Presupuesto de marketing limitado a $15K/mes. Solo 2 asesores certificados.\"",
+      "benchmark": "Identificación honesta de brechas de capital, talento o tracción con plan de mitigación.",
+      "cita": "Carl Schramm — Burn the Business Plan (Ch. 4, p. 72)",
+      "placeholder": "Limitaciones internas actuales y cómo se compensarán en la fase inicial..."
+    },
+    {
+      "key": "amenazas",
+      "type": "text",
+      "address": "business.naturaleza.foda.amenazas",
+      "prompt": "Riesgos externos que podrían afectarte. Competencia agresiva, cambios regulatorios, crisis económica.",
+      "ejemplo": "Ej: \"Entrada de fintechs internacionales (Betterment, GBM+). Volatilidad en tasas de interés de Banxico.\"",
+      "benchmark": "Evaluación de riesgos externos con probabilidad e impacto asignados.",
+      "cita": "Plan de Negocios VF (Metodología Hispana, p. 41)",
+      "placeholder": "Riesgos de mercado, competidores agresivos o volatilidad económica..."
+    }
+  ],
+  "boxes": [],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Fortalezas, Oportunidades, Debilidades y Amenazas.\n\n**Cómo se usa.** Está en el pilar **Naturaleza del Proyecto** del modelo *Plan de Negocios Comercial*. Se abre en `/business/foda`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 4 campos: `fortalezas`, `oportunidades`, `debilidades`, `amenazas`.\n\n**Herramientas del módulo.** Ninguna específica: se apoya en los campos de texto."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `fortalezas`\n\n**El prompt que usa:** Ventajas internas que te diferencian de la competencia. Recursos, talento, tecnología propia.\n\n**Ejemplo que muestra la guía:** Ej: \"Equipo con certificación AMIB, plataforma digital propia, alianzas con 3 aseguradoras líderes.\"\n\n**Benchmark / criterio de calidad:** Mínimo 3 capacidades internas críticas difícilmente replicables a corto plazo.\n\n**De dónde viene la guía:** Creating a Business Plan For Dummies (Ch. 5, p. 95)\n\n### `oportunidades`\n\n**El prompt que usa:** Factores externos favorables que puedes aprovechar. Tendencias, vacíos de mercado, regulaciones nuevas.\n\n**Ejemplo que muestra la guía:** Ej: \"Crecimiento del 23% anual en inversiones digitales en México. Nueva ley de educación financiera obligatoria.\"\n\n**Benchmark / criterio de calidad:** Tendencias macroeconómicas o regulatorias con crecimiento anual compuesto (CAGR) > 8%.\n\n**De dónde viene la guía:** Michael Porter — Competitive Strategy (Ch. 2, p. 48)\n\n### `debilidades`\n\n**El prompt que usa:** Limitaciones internas actuales. Sé honesto: falta de capital, equipo pequeño, marca nueva.\n\n**Ejemplo que muestra la guía:** Ej: \"Marca sin reconocimiento regional. Presupuesto de marketing limitado a $15K/mes. Solo 2 asesores certificados.\"\n\n**Benchmark / criterio de calidad:** Identificación honesta de brechas de capital, talento o tracción con plan de mitigación.\n\n**De dónde viene la guía:** Carl Schramm — Burn the Business Plan (Ch. 4, p. 72)\n\n### `amenazas`\n\n**El prompt que usa:** Riesgos externos que podrían afectarte. Competencia agresiva, cambios regulatorios, crisis económica.\n\n**Ejemplo que muestra la guía:** Ej: \"Entrada de fintechs internacionales (Betterment, GBM+). Volatilidad en tasas de interés de Banxico.\"\n\n**Benchmark / criterio de calidad:** Evaluación de riesgos externos con probabilidad e impacto asignados.\n\n**De dónde viene la guía:** Plan de Negocios VF (Metodología Hispana, p. 41)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "Sin cajas asociadas."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Naturaleza del Proyecto** de *Plan de Negocios Comercial*. La justificación metodológica completa está en la página del modelo y en `docs/business.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `business.naturaleza.foda.fortalezas` → tipo `text`\n- `business.naturaleza.foda.oportunidades` → tipo `text`\n- `business.naturaleza.foda.debilidades` → tipo `text`\n- `business.naturaleza.foda.amenazas` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas:** `src/config/moduleBoxMap.js` no declara cajas para `business:foda`; la pantalla muestra solo los campos de texto.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

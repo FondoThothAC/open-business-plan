@@ -1,0 +1,66 @@
+{
+  "id": "modulo.business.competencia",
+  "title": "Análisis de Competencia",
+  "summary": "Competidores directos, indirectos y ventaja competitiva.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "business",
+  "moduleKey": "competencia",
+  "pillarKey": "mercado",
+  "openUrl": "/business/competencia",
+  "fields": [
+    {
+      "key": "competidores",
+      "type": "text",
+      "address": "business.mercado.competencia.competidores",
+      "prompt": "Lista de competidores directos e indirectos con sus fortalezas y debilidades.",
+      "ejemplo": "Ej: \"Directos: GBM+ (digital, masivo), Actinver (premium). Indirectos: YouTube financiero, apps como Fintual.\"",
+      "benchmark": "Mapeo de al menos 3 competidores directos y 2 sustitutos con su cuota estimada.",
+      "cita": "Michael Porter — Competitive Strategy (Ch. 3, p. 74)",
+      "placeholder": "Lista de competidores directos e indirectos, precios y fortalezas..."
+    },
+    {
+      "key": "ventajas",
+      "type": "text",
+      "address": "business.mercado.competencia.ventajas",
+      "prompt": "Lo que te hace superior frente a cada competidor identificado.",
+      "ejemplo": "Ej: \"vs GBM+: Asesoría personalizada humana. vs Actinver: Accesibilidad (monto mínimo de $500 vs $100K).\"",
+      "benchmark": "Ventaja de costo o diferenciación clara demostrable en comparativa cabeza a cabeza.",
+      "cita": "Michael Porter — Competitive Advantage (Ch. 2, p. 38)",
+      "placeholder": "Puntos clave de superioridad frente a las alternativas actuales del cliente..."
+    }
+  ],
+  "boxes": [],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Competidores directos, indirectos y ventaja competitiva.\n\n**Cómo se usa.** Está en el pilar **El Mercado** del modelo *Plan de Negocios Comercial*. Se abre en `/business/competencia`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 2 campos: `competidores`, `ventajas`.\n\n**Herramientas del módulo.** Ninguna específica: se apoya en los campos de texto."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `competidores`\n\n**El prompt que usa:** Lista de competidores directos e indirectos con sus fortalezas y debilidades.\n\n**Ejemplo que muestra la guía:** Ej: \"Directos: GBM+ (digital, masivo), Actinver (premium). Indirectos: YouTube financiero, apps como Fintual.\"\n\n**Benchmark / criterio de calidad:** Mapeo de al menos 3 competidores directos y 2 sustitutos con su cuota estimada.\n\n**De dónde viene la guía:** Michael Porter — Competitive Strategy (Ch. 3, p. 74)\n\n### `ventajas`\n\n**El prompt que usa:** Lo que te hace superior frente a cada competidor identificado.\n\n**Ejemplo que muestra la guía:** Ej: \"vs GBM+: Asesoría personalizada humana. vs Actinver: Accesibilidad (monto mínimo de $500 vs $100K).\"\n\n**Benchmark / criterio de calidad:** Ventaja de costo o diferenciación clara demostrable en comparativa cabeza a cabeza.\n\n**De dónde viene la guía:** Michael Porter — Competitive Advantage (Ch. 2, p. 38)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "Sin cajas asociadas."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **El Mercado** de *Plan de Negocios Comercial*. La justificación metodológica completa está en la página del modelo y en `docs/business.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `business.mercado.competencia.competidores` → tipo `text`\n- `business.mercado.competencia.ventajas` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas:** `src/config/moduleBoxMap.js` no declara cajas para `business:competencia`; la pantalla muestra solo los campos de texto.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

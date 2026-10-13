@@ -1,0 +1,104 @@
+{
+  "id": "modulo.business.estados_financieros",
+  "title": "Estados Financieros",
+  "summary": "Proyecciones de resultados, balance y flujo.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "business",
+  "moduleKey": "estados_financieros",
+  "pillarKey": "organizacion",
+  "openUrl": "/business/estados_financieros",
+  "fields": [
+    {
+      "key": "resultados",
+      "type": "text",
+      "address": "business.organizacion.estados_financieros.resultados",
+      "prompt": "[ANCLAJE OBLIGATORIO A SEMILLA] Proyección a 5 años sustentada en la capacidad instalada fondeada con `semilla.inversion_esperada`. Detalla ingresos, EBITDA y utilidades netas.",
+      "ejemplo": "Ej: \"Año 1: Ingresos $18.5M - Costos/Gastos $14.2M = EBITDA $4.3M (Utilidad Neta $2.8M). Año 5: Ingresos $46.0M - EBITDA $14.8M.\"",
+      "benchmark": "Objetivo de cumplimiento > 90% respecto al benchmark de industria.",
+      "cita": "Linda Pinson — Anatomy of a Business Plan (Ch. 2-7)",
+      "placeholder": "Ingresa los detalles metodológicos de (resultados)..."
+    },
+    {
+      "key": "balance",
+      "type": "text",
+      "address": "business.organizacion.estados_financieros.balance",
+      "prompt": "[ANCLAJE OBLIGATORIO A SEMILLA] Estado de Situación Financiera. El Activo Total en el Año 1 debe reflejar la aplicación íntegra del capital de `semilla.inversion_esperada` (Activos = Pasivos + Capital).",
+      "ejemplo": "Ej: \"Año 1: Activos Totales $20,000,000 MXN (Fijo $15M + Circulante $5M) = Pasivos $6,000,000 MXN + Capital Social $14,000,000 MXN.\"",
+      "benchmark": "Objetivo de cumplimiento > 90% respecto al benchmark de industria.",
+      "cita": "Linda Pinson — Anatomy of a Business Plan (Ch. 2-7)",
+      "placeholder": "Ingresa los detalles metodológicos de (balance)..."
+    },
+    {
+      "key": "flujo_caja",
+      "type": "text",
+      "address": "business.organizacion.estados_financieros.flujo_caja",
+      "prompt": "[ANCLAJE OBLIGATORIO A SEMILLA] Flujo de caja libre. El periodo 0 debe registrar el desembolso exacto del CAPEX canónico de `semilla.inversion_esperada`.",
+      "ejemplo": "Ej: \"Año 0 (Inversión inicial): -$20,000,000 MXN. Año 1: +$3,850,000 MXN. Año 2: +$6,420,000 MXN. Flujo acumulado positivo a partir del mes 48.\"",
+      "benchmark": "Flujo de efectivo operativo positivo de forma sostenida a partir del mes 9-12.",
+      "cita": "Linda Pinson — Anatomy of a Business Plan (Ch. 7, p. 202)",
+      "placeholder": "Proyección de entradas y salidas de efectivo mensuales para evitar iliquidez..."
+    },
+    {
+      "key": "amortizacion_creditos",
+      "type": "text",
+      "address": "business.organizacion.estados_financieros.amortizacion_creditos",
+      "prompt": "Servicio de deuda para la porción apalancada declarada en el financiamiento de la inversión.",
+      "ejemplo": "Ej: \"Crédito institucional por $7M MXN a 60 meses, tasa anual 13.5%, cuota mensual de $161,000 MXN con amortización creciente.\"",
+      "benchmark": "Objetivo de cumplimiento > 90% respecto al benchmark de industria.",
+      "cita": "Linda Pinson — Anatomy of a Business Plan (Ch. 2-7)",
+      "placeholder": "Ingresa los detalles metodológicos de (amortizacion_creditos)..."
+    },
+    {
+      "key": "memorias_calculo",
+      "type": "text",
+      "address": "business.organizacion.estados_financieros.memorias_calculo",
+      "prompt": "[ANCLAJE OBLIGATORIO A SEMILLA] Supuestos cuantitativos, precios de contratos y costos unitarios que soportan los ingresos proyectados a partir del despliegue de `semilla.inversion_esperada`.",
+      "ejemplo": "Ej: \"Base de cálculo: 35 unidades mineras monitoreadas @ $48,000 MXN/mes + 12 mantenimientos mayores mensuales @ $95,000 MXN.\"",
+      "benchmark": "Objetivo de cumplimiento > 90% respecto al benchmark de industria.",
+      "cita": "Linda Pinson — Anatomy of a Business Plan (Ch. 2-7)",
+      "placeholder": "Ingresa los detalles metodológicos de (memorias_calculo)..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_montecarlo_sim",
+      "title": "box_montecarlo_sim",
+      "type": "desconocido",
+      "description": "",
+      "source": ""
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Proyecciones de resultados, balance y flujo.\n\n**Cómo se usa.** Está en el pilar **Organización y Finanzas** del modelo *Plan de Negocios Comercial*. Se abre en `/business/estados_financieros`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 5 campos: `resultados`, `balance`, `flujo_caja`, `amortizacion_creditos`, `memorias_calculo`.\n\n**Herramientas del módulo.** 1 caja(s): `box_montecarlo_sim`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `resultados`\n\n**El prompt que usa:** [ANCLAJE OBLIGATORIO A SEMILLA] Proyección a 5 años sustentada en la capacidad instalada fondeada con `semilla.inversion_esperada`. Detalla ingresos, EBITDA y utilidades netas.\n\n**Ejemplo que muestra la guía:** Ej: \"Año 1: Ingresos $18.5M - Costos/Gastos $14.2M = EBITDA $4.3M (Utilidad Neta $2.8M). Año 5: Ingresos $46.0M - EBITDA $14.8M.\"\n\n**Benchmark / criterio de calidad:** Objetivo de cumplimiento > 90% respecto al benchmark de industria.\n\n**De dónde viene la guía:** Linda Pinson — Anatomy of a Business Plan (Ch. 2-7)\n\n### `balance`\n\n**El prompt que usa:** [ANCLAJE OBLIGATORIO A SEMILLA] Estado de Situación Financiera. El Activo Total en el Año 1 debe reflejar la aplicación íntegra del capital de `semilla.inversion_esperada` (Activos = Pasivos + Capital).\n\n**Ejemplo que muestra la guía:** Ej: \"Año 1: Activos Totales $20,000,000 MXN (Fijo $15M + Circulante $5M) = Pasivos $6,000,000 MXN + Capital Social $14,000,000 MXN.\"\n\n**Benchmark / criterio de calidad:** Objetivo de cumplimiento > 90% respecto al benchmark de industria.\n\n**De dónde viene la guía:** Linda Pinson — Anatomy of a Business Plan (Ch. 2-7)\n\n### `flujo_caja`\n\n**El prompt que usa:** [ANCLAJE OBLIGATORIO A SEMILLA] Flujo de caja libre. El periodo 0 debe registrar el desembolso exacto del CAPEX canónico de `semilla.inversion_esperada`.\n\n**Ejemplo que muestra la guía:** Ej: \"Año 0 (Inversión inicial): -$20,000,000 MXN. Año 1: +$3,850,000 MXN. Año 2: +$6,420,000 MXN. Flujo acumulado positivo a partir del mes 48.\"\n\n**Benchmark / criterio de calidad:** Flujo de efectivo operativo positivo de forma sostenida a partir del mes 9-12.\n\n**De dónde viene la guía:** Linda Pinson — Anatomy of a Business Plan (Ch. 7, p. 202)\n\n### `amortizacion_creditos`\n\n**El prompt que usa:** Servicio de deuda para la porción apalancada declarada en el financiamiento de la inversión.\n\n**Ejemplo que muestra la guía:** Ej: \"Crédito institucional por $7M MXN a 60 meses, tasa anual 13.5%, cuota mensual de $161,000 MXN con amortización creciente.\"\n\n**Benchmark / criterio de calidad:** Objetivo de cumplimiento > 90% respecto al benchmark de industria.\n\n**De dónde viene la guía:** Linda Pinson — Anatomy of a Business Plan (Ch. 2-7)\n\n### `memorias_calculo`\n\n**El prompt que usa:** [ANCLAJE OBLIGATORIO A SEMILLA] Supuestos cuantitativos, precios de contratos y costos unitarios que soportan los ingresos proyectados a partir del despliegue de `semilla.inversion_esperada`.\n\n**Ejemplo que muestra la guía:** Ej: \"Base de cálculo: 35 unidades mineras monitoreadas @ $48,000 MXN/mes + 12 mantenimientos mayores mensuales @ $95,000 MXN.\"\n\n**Benchmark / criterio de calidad:** Objetivo de cumplimiento > 90% respecto al benchmark de industria.\n\n**De dónde viene la guía:** Linda Pinson — Anatomy of a Business Plan (Ch. 2-7)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### box_montecarlo_sim\n\n`box_montecarlo_sim` · tipo **desconocido**\n\n"
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Organización y Finanzas** de *Plan de Negocios Comercial*. La justificación metodológica completa está en la página del modelo y en `docs/business.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `business.organizacion.estados_financieros.resultados` → tipo `text`\n- `business.organizacion.estados_financieros.balance` → tipo `text`\n- `business.organizacion.estados_financieros.flujo_caja` → tipo `text`\n- `business.organizacion.estados_financieros.amortizacion_creditos` → tipo `text`\n- `business.organizacion.estados_financieros.memorias_calculo` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `business:estados_financieros`): `box_montecarlo_sim`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

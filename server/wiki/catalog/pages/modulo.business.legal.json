@@ -1,0 +1,76 @@
+{
+  "id": "modulo.business.legal",
+  "title": "Marco Legal y Socios",
+  "summary": "Estructura legal, constitución y permisos requeridos.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "business",
+  "moduleKey": "legal",
+  "pillarKey": "naturaleza",
+  "openUrl": "/business/legal",
+  "fields": [
+    {
+      "key": "constitucion",
+      "type": "text",
+      "address": "business.naturaleza.legal.constitucion",
+      "prompt": "Tipo de persona moral o física. Régimen fiscal elegido y justificación.",
+      "ejemplo": "Ej: \"S.A. de C.V. bajo régimen general de ley. Capital social de $50,000 MXN con 3 socios fundadores.\"",
+      "benchmark": "Régimen societario óptimo para captación de capital (S.A.P.I. de C.V. o S.A. de C.V.).",
+      "cita": "Starting a Business QuickStart Guide (Ch. 12, p. 265)",
+      "placeholder": "Tipo de sociedad mercantil, objeto social y justificación del régimen fiscal..."
+    },
+    {
+      "key": "socios",
+      "type": "text",
+      "address": "business.naturaleza.legal.socios",
+      "prompt": "Lista de inversionistas, socios fundadores y su porcentaje de participación.",
+      "ejemplo": "Ej: \"Roberto Celis (40%), Ana García (30%), Luis Acosta (30%). Inversionista ángel: FundSonora ($200K MXN).\"",
+      "benchmark": "Distribución accionaria con cláusulas de vesting (4 años con 1 año de cliff).",
+      "cita": "Carl Schramm — Burn the Business Plan (Ch. 6, p. 110)",
+      "placeholder": "Estructura de fundadores, porcentajes de participación y aportaciones..."
+    },
+    {
+      "key": "permisos",
+      "type": "text",
+      "address": "business.naturaleza.legal.permisos",
+      "prompt": "Licencias y trámites necesarios para operar legalmente. Incluye tiempos estimados.",
+      "ejemplo": "Ej: \"Licencia municipal de Hermosillo (3 semanas). RFC con actividad 5411 (inmediato). Registro IMSS patronal (5 días).\"",
+      "benchmark": "Checklist de trámites municipales, estatales y federales con ruta crítica < 60 días.",
+      "cita": "Manual de Plan de Negocios Panamá (p. 15)",
+      "placeholder": "Lista de permisos requeridos, dependencias emisoras y tiempos estimados..."
+    }
+  ],
+  "boxes": [],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Estructura legal, constitución y permisos requeridos.\n\n**Cómo se usa.** Está en el pilar **Naturaleza del Proyecto** del modelo *Plan de Negocios Comercial*. Se abre en `/business/legal`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 3 campos: `constitucion`, `socios`, `permisos`.\n\n**Herramientas del módulo.** Ninguna específica: se apoya en los campos de texto."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `constitucion`\n\n**El prompt que usa:** Tipo de persona moral o física. Régimen fiscal elegido y justificación.\n\n**Ejemplo que muestra la guía:** Ej: \"S.A. de C.V. bajo régimen general de ley. Capital social de $50,000 MXN con 3 socios fundadores.\"\n\n**Benchmark / criterio de calidad:** Régimen societario óptimo para captación de capital (S.A.P.I. de C.V. o S.A. de C.V.).\n\n**De dónde viene la guía:** Starting a Business QuickStart Guide (Ch. 12, p. 265)\n\n### `socios`\n\n**El prompt que usa:** Lista de inversionistas, socios fundadores y su porcentaje de participación.\n\n**Ejemplo que muestra la guía:** Ej: \"Roberto Celis (40%), Ana García (30%), Luis Acosta (30%). Inversionista ángel: FundSonora ($200K MXN).\"\n\n**Benchmark / criterio de calidad:** Distribución accionaria con cláusulas de vesting (4 años con 1 año de cliff).\n\n**De dónde viene la guía:** Carl Schramm — Burn the Business Plan (Ch. 6, p. 110)\n\n### `permisos`\n\n**El prompt que usa:** Licencias y trámites necesarios para operar legalmente. Incluye tiempos estimados.\n\n**Ejemplo que muestra la guía:** Ej: \"Licencia municipal de Hermosillo (3 semanas). RFC con actividad 5411 (inmediato). Registro IMSS patronal (5 días).\"\n\n**Benchmark / criterio de calidad:** Checklist de trámites municipales, estatales y federales con ruta crítica < 60 días.\n\n**De dónde viene la guía:** Manual de Plan de Negocios Panamá (p. 15)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "Sin cajas asociadas."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Naturaleza del Proyecto** de *Plan de Negocios Comercial*. La justificación metodológica completa está en la página del modelo y en `docs/business.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `business.naturaleza.legal.constitucion` → tipo `text`\n- `business.naturaleza.legal.socios` → tipo `text`\n- `business.naturaleza.legal.permisos` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas:** `src/config/moduleBoxMap.js` no declara cajas para `business:legal`; la pantalla muestra solo los campos de texto.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

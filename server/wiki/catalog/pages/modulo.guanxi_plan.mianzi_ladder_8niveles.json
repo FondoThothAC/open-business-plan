@@ -1,0 +1,84 @@
+{
+  "id": "modulo.guanxi_plan.mianzi_ladder_8niveles",
+  "title": "Escala Mianzi de 8 Niveles",
+  "summary": "Jerarquía de preservación del estatus y gestión de desacuerdos indirectos.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "guanxi_plan",
+  "moduleKey": "mianzi_ladder_8niveles",
+  "pillarKey": "protocolo_negociacion",
+  "openUrl": "/guanxi_plan/mianzi_ladder_8niveles",
+  "fields": [
+    {
+      "key": "niveles_preservacion_mianzi",
+      "type": "text",
+      "address": "guanxi_plan.protocolo_negociacion.mianzi_ladder_8niveles.niveles_preservacion_mianzi",
+      "prompt": "Escala de 8 niveles de la reputación social (Mianzi): desde 'tener cara' (you mianzi) hasta 'luchar por la cara' (zheng mianzi).",
+      "ejemplo": "Ej: Reconocimiento público explícito al liderazgo de la contraparte china durante el anuncio oficial conjunto a la prensa.",
+      "benchmark": "Gestión activa de la reputación y estatus del socio para fortalecer el vínculo comercial.",
+      "cita": "Negotiating South-South Regional Trade Agreements (UNCTAD Ch. 3 p. 52)",
+      "placeholder": "Nivel de reputación y tácticas para otorgar estatus al interlocutor..."
+    },
+    {
+      "key": "tacticas_dar_cara",
+      "type": "text",
+      "address": "guanxi_plan.protocolo_negociacion.mianzi_ladder_8niveles.tacticas_dar_cara",
+      "prompt": "Mecanismos para otorgar prestigio y honor público (gei mianzi) a los líderes del proyecto mediante reconocimientos y ceremonias.",
+      "ejemplo": "Ej: Invitación como orador magistral en congreso industrial internacional con entrega de placa conmemorativa.",
+      "benchmark": "Generación de capital relacional duradero mediante el engrandecimiento público del socio.",
+      "cita": "Negotiating South-South Regional Trade Agreements (Ch. 3 p. 54)",
+      "placeholder": "Ceremonias, homenajes y plataformas de prestigio otorgadas a los socios..."
+    },
+    {
+      "key": "prevencion_perdida_cara",
+      "type": "text",
+      "address": "guanxi_plan.protocolo_negociacion.mianzi_ladder_8niveles.prevencion_perdida_cara",
+      "prompt": "Protocolo para evitar hacer perder la cara (diu mianzi): nunca corregir, contradecir o rechazar una propuesta en público.",
+      "ejemplo": "Ej: Ante una discrepancia contractual, se convocó a una reunión técnica privada y se utilizó lenguaje condicional indirecto.",
+      "benchmark": "Cero confrontación abierta en presencia de terceros para preservar la armonía relacional.",
+      "cita": "Negotiating South-South Regional Trade Agreements (Ch. 3 p. 56)",
+      "placeholder": "Canales privados y lenguaje diplomático indirecto para resolver discrepancias..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_mianzi_ladder_8niveles",
+      "title": "Escalera de Mianzi (Reputación, Prestigio y Salvar la Cara)",
+      "type": "matrix",
+      "description": "Matriz de 8 niveles para evitar confrontación pública, otorgar reconocimiento y proteger la dignidad de contrapartes.",
+      "source": "Negotiating South-South Regional Agreements — Ch. 3 p. 52"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Jerarquía de preservación del estatus y gestión de desacuerdos indirectos.\n\n**Cómo se usa.** Está en el pilar **Protocolo y Tácticas de Negociación** del modelo *Metodología Guanxi (China - Redes de Relaciones)*. Se abre en `/guanxi_plan/mianzi_ladder_8niveles`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 3 campos: `niveles_preservacion_mianzi`, `tacticas_dar_cara`, `prevencion_perdida_cara`.\n\n**Herramientas del módulo.** 1 caja(s): `box_mianzi_ladder_8niveles`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `niveles_preservacion_mianzi`\n\n**El prompt que usa:** Escala de 8 niveles de la reputación social (Mianzi): desde 'tener cara' (you mianzi) hasta 'luchar por la cara' (zheng mianzi).\n\n**Ejemplo que muestra la guía:** Ej: Reconocimiento público explícito al liderazgo de la contraparte china durante el anuncio oficial conjunto a la prensa.\n\n**Benchmark / criterio de calidad:** Gestión activa de la reputación y estatus del socio para fortalecer el vínculo comercial.\n\n**De dónde viene la guía:** Negotiating South-South Regional Trade Agreements (UNCTAD Ch. 3 p. 52)\n\n### `tacticas_dar_cara`\n\n**El prompt que usa:** Mecanismos para otorgar prestigio y honor público (gei mianzi) a los líderes del proyecto mediante reconocimientos y ceremonias.\n\n**Ejemplo que muestra la guía:** Ej: Invitación como orador magistral en congreso industrial internacional con entrega de placa conmemorativa.\n\n**Benchmark / criterio de calidad:** Generación de capital relacional duradero mediante el engrandecimiento público del socio.\n\n**De dónde viene la guía:** Negotiating South-South Regional Trade Agreements (Ch. 3 p. 54)\n\n### `prevencion_perdida_cara`\n\n**El prompt que usa:** Protocolo para evitar hacer perder la cara (diu mianzi): nunca corregir, contradecir o rechazar una propuesta en público.\n\n**Ejemplo que muestra la guía:** Ej: Ante una discrepancia contractual, se convocó a una reunión técnica privada y se utilizó lenguaje condicional indirecto.\n\n**Benchmark / criterio de calidad:** Cero confrontación abierta en presencia de terceros para preservar la armonía relacional.\n\n**De dónde viene la guía:** Negotiating South-South Regional Trade Agreements (Ch. 3 p. 56)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Escalera de Mianzi (Reputación, Prestigio y Salvar la Cara)\n\n`box_mianzi_ladder_8niveles` · tipo **matrix** · fuente: Negotiating South-South Regional Agreements — Ch. 3 p. 52\n\nMatriz de 8 niveles para evitar confrontación pública, otorgar reconocimiento y proteger la dignidad de contrapartes."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Protocolo y Tácticas de Negociación** de *Metodología Guanxi (China - Redes de Relaciones)*. La justificación metodológica completa está en la página del modelo y en `docs/guanxi_plan.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `guanxi_plan.protocolo_negociacion.mianzi_ladder_8niveles.niveles_preservacion_mianzi` → tipo `text`\n- `guanxi_plan.protocolo_negociacion.mianzi_ladder_8niveles.tacticas_dar_cara` → tipo `text`\n- `guanxi_plan.protocolo_negociacion.mianzi_ladder_8niveles.prevencion_perdida_cara` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `guanxi_plan:mianzi_ladder_8niveles`): `box_mianzi_ladder_8niveles`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

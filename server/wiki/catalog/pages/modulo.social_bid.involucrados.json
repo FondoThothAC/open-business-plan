@@ -1,0 +1,94 @@
+{
+  "id": "modulo.social_bid.involucrados",
+  "title": "Análisis de Involucrados",
+  "summary": "Mapeo de actores, beneficiarios, aliados y oponentes.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "social_bid",
+  "moduleKey": "involucrados",
+  "pillarKey": "identificacion",
+  "openUrl": "/social_bid/involucrados",
+  "fields": [
+    {
+      "key": "beneficiarios",
+      "type": "text",
+      "address": "social_bid.identificacion.involucrados.beneficiarios",
+      "prompt": "¿A quiénes ayuda exactamente este proyecto? (Población objetivo)",
+      "ejemplo": "Ej: 500 jóvenes de 15 a 18 años en rezago educativo en la colonia X.",
+      "benchmark": "Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.",
+      "cita": "Metodología del Marco Lógico (BID / CEPAL / PM4R)",
+      "placeholder": "Define el componente del proyecto social (beneficiarios)..."
+    },
+    {
+      "key": "aliados",
+      "type": "text",
+      "address": "social_bid.identificacion.involucrados.aliados",
+      "prompt": "Instituciones, ONGs o líderes comunitarios que apoyarán el proyecto.",
+      "ejemplo": "Ej: Fundación Y, Secretaría de Educación, Junta de Vecinos.",
+      "benchmark": "Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.",
+      "cita": "Metodología del Marco Lógico (BID / CEPAL / PM4R)",
+      "placeholder": "Define el componente del proyecto social (aliados)..."
+    },
+    {
+      "key": "oponentes",
+      "type": "text",
+      "address": "social_bid.identificacion.involucrados.oponentes",
+      "prompt": "Actores que podrían oponerse al proyecto o verse afectados negativamente.",
+      "ejemplo": "Ej: Sindicato de maestros locales (riesgo de rechazo por nuevos métodos).",
+      "benchmark": "Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.",
+      "cita": "Metodología del Marco Lógico (BID / CEPAL / PM4R)",
+      "placeholder": "Define el componente del proyecto social (oponentes)..."
+    },
+    {
+      "key": "matriz_interes",
+      "type": "text",
+      "address": "social_bid.identificacion.involucrados.matriz_interes",
+      "prompt": "Clasificación de actores por su nivel de poder e interés en el proyecto.",
+      "ejemplo": "Ej: Gobierno local (Alto Poder, Bajo Interés) -> Estrategia: Mantener informado.",
+      "benchmark": "Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.",
+      "cita": "Metodología del Marco Lógico (BID / CEPAL / PM4R)",
+      "placeholder": "Define el componente del proyecto social (matriz_interes)..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_matriz_interes_poder",
+      "title": "Matriz de Involucrados (Poder vs Interés)",
+      "type": "matrix",
+      "description": "Clasificación estratégica de aliados, oponentes y beneficiarios.",
+      "source": "Negotiating South-South Regional Agreements — p. 45"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Mapeo de actores, beneficiarios, aliados y oponentes.\n\n**Cómo se usa.** Está en el pilar **Identificación del Problema** del modelo *Proyecto Social (Metodología BID)*. Se abre en `/social_bid/involucrados`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 4 campos: `beneficiarios`, `aliados`, `oponentes`, `matriz_interes`.\n\n**Herramientas del módulo.** 1 caja(s): `box_matriz_interes_poder`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `beneficiarios`\n\n**El prompt que usa:** ¿A quiénes ayuda exactamente este proyecto? (Población objetivo)\n\n**Ejemplo que muestra la guía:** Ej: 500 jóvenes de 15 a 18 años en rezago educativo en la colonia X.\n\n**Benchmark / criterio de calidad:** Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.\n\n**De dónde viene la guía:** Metodología del Marco Lógico (BID / CEPAL / PM4R)\n\n### `aliados`\n\n**El prompt que usa:** Instituciones, ONGs o líderes comunitarios que apoyarán el proyecto.\n\n**Ejemplo que muestra la guía:** Ej: Fundación Y, Secretaría de Educación, Junta de Vecinos.\n\n**Benchmark / criterio de calidad:** Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.\n\n**De dónde viene la guía:** Metodología del Marco Lógico (BID / CEPAL / PM4R)\n\n### `oponentes`\n\n**El prompt que usa:** Actores que podrían oponerse al proyecto o verse afectados negativamente.\n\n**Ejemplo que muestra la guía:** Ej: Sindicato de maestros locales (riesgo de rechazo por nuevos métodos).\n\n**Benchmark / criterio de calidad:** Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.\n\n**De dónde viene la guía:** Metodología del Marco Lógico (BID / CEPAL / PM4R)\n\n### `matriz_interes`\n\n**El prompt que usa:** Clasificación de actores por su nivel de poder e interés en el proyecto.\n\n**Ejemplo que muestra la guía:** Ej: Gobierno local (Alto Poder, Bajo Interés) -> Estrategia: Mantener informado.\n\n**Benchmark / criterio de calidad:** Cumplimiento de indicadores SMART verificables por fuentes públicas oficiales.\n\n**De dónde viene la guía:** Metodología del Marco Lógico (BID / CEPAL / PM4R)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Matriz de Involucrados (Poder vs Interés)\n\n`box_matriz_interes_poder` · tipo **matrix** · fuente: Negotiating South-South Regional Agreements — p. 45\n\nClasificación estratégica de aliados, oponentes y beneficiarios."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Identificación del Problema** de *Proyecto Social (Metodología BID)*. La justificación metodológica completa está en la página del modelo y en `docs/social_bid.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `social_bid.identificacion.involucrados.beneficiarios` → tipo `text`\n- `social_bid.identificacion.involucrados.aliados` → tipo `text`\n- `social_bid.identificacion.involucrados.oponentes` → tipo `text`\n- `social_bid.identificacion.involucrados.matriz_interes` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `social_bid:involucrados`): `box_matriz_interes_poder`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

@@ -1,0 +1,136 @@
+{
+  "id": "modulo.agile_startup.canvas",
+  "title": "Lienzo Lean Canvas",
+  "summary": "Los 9 bloques simplificados del modelo de negocios ágil para enfocar la propuesta de valor.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "agile_startup",
+  "moduleKey": "canvas",
+  "pillarKey": "validacion",
+  "openUrl": "/agile_startup/canvas",
+  "fields": [
+    {
+      "key": "problema",
+      "type": "text",
+      "address": "agile_startup.validacion.canvas.problema",
+      "prompt": "Identifica los 3 principales problemas que resolverás para tu cliente.",
+      "ejemplo": "Ej: 1. Falta de tiempo para cocinar sano. 2. Precios elevados de restaurantes saludables. 3. Poca variedad de comida a domicilio.",
+      "benchmark": "Ciclo Construir-Medir-Aprender validado en < 2 semanas con métricas AARRR.",
+      "cita": "Eric Ries — El Método Lean Startup & Ash Maurya Running Lean",
+      "placeholder": "Documenta la hipótesis o métrica ágil para (problema)..."
+    },
+    {
+      "key": "segmentos_clientes",
+      "type": "text",
+      "address": "agile_startup.validacion.canvas.segmentos_clientes",
+      "prompt": "Define quiénes son tus adoptantes tempranos (Early Adopters) y tu mercado meta.",
+      "ejemplo": "Ej: Profesionistas de 25-40 años que trabajan en oficinas corporativas y no tienen tiempo de cocinar.",
+      "benchmark": "Segmentación psicográfica y demográfica con tamaño de mercado validado.",
+      "cita": "Alexander Osterwalder — Business Model Generation (p. 20)",
+      "placeholder": "Grupos homogéneos de clientes a los que se dirige la oferta..."
+    },
+    {
+      "key": "propuesta_valor",
+      "type": "text",
+      "address": "agile_startup.validacion.canvas.propuesta_valor",
+      "prompt": "Explica tu propuesta única de valor. ¿Por qué eres diferente y vale la pena prestarte atención?",
+      "ejemplo": "Ej (Estilo Uber/Airbnb): Comida saludable gourmet preparada por chefs locales y entregada en menos de 20 minutos por suscripción.",
+      "benchmark": "1 propuesta única validada mediante Jobs-to-be-Done de Christensen.",
+      "cita": "Clayton Christensen — The Innovator's Dilemma (p. 28)",
+      "placeholder": "Explica qué problema resuelves, para quién y qué te hace único..."
+    },
+    {
+      "key": "solucion",
+      "type": "text",
+      "address": "agile_startup.validacion.canvas.solucion",
+      "prompt": "Describe las 3 características principales de tu solución o MVP.",
+      "ejemplo": "Ej: 1. App móvil de pedidos express. 2. Menú rotativo de 5 platos diarios. 3. Red de micro-cocinas locales distribuidas.",
+      "benchmark": "Ciclo Construir-Medir-Aprender validado en < 2 semanas con métricas AARRR.",
+      "cita": "Eric Ries — El Método Lean Startup & Ash Maurya Running Lean",
+      "placeholder": "Documenta la hipótesis o métrica ágil para (solucion)..."
+    },
+    {
+      "key": "canales",
+      "type": "text",
+      "address": "agile_startup.validacion.canvas.canales",
+      "prompt": "¿Cómo vas a dar a conocer y entregar tu solución a tus clientes?",
+      "ejemplo": "Ej: Campañas de marketing local en Instagram, códigos de referido de oficina y entrega vía repartidores propios.",
+      "benchmark": "Estrategia omnicanal con margen de contribución directo > 50%.",
+      "cita": "Alexander Osterwalder — Business Model Generation (p. 30)",
+      "placeholder": "Puntos de contacto para comunicación, distribución y postventa..."
+    },
+    {
+      "key": "flujos_ingresos",
+      "type": "text",
+      "address": "agile_startup.validacion.canvas.flujos_ingresos",
+      "prompt": "¿Cómo ganarás dinero? Suscripción, venta directa, comisiones, publicidad.",
+      "ejemplo": "Ej (Estilo Netflix/Spotify): Planes semanales de suscripción ($1,200 MXN/semana) y catering corporativo para eventos de oficina.",
+      "benchmark": "Ciclo Construir-Medir-Aprender validado en < 2 semanas con métricas AARRR.",
+      "cita": "Eric Ries — El Método Lean Startup & Ash Maurya Running Lean",
+      "placeholder": "Documenta la hipótesis o métrica ágil para (flujos_ingresos)..."
+    },
+    {
+      "key": "estructura_costos",
+      "type": "text",
+      "address": "agile_startup.validacion.canvas.estructura_costos",
+      "prompt": "¿Cuáles son tus costos fijos y variables más significativos para arrancar?",
+      "ejemplo": "Ej: Costo de ingredientes (materia prima), comisión del procesador de pagos, y marketing digital de adquisición.",
+      "benchmark": "Alineación de costos con la propuesta de valor (estructura impulsada por valor o costo).",
+      "cita": "Alexander Osterwalder — Business Model Generation (p. 40)",
+      "placeholder": "Desglose de costos fijos y variables más pesados de la operación..."
+    },
+    {
+      "key": "metricas_clave",
+      "type": "text",
+      "address": "agile_startup.validacion.canvas.metricas_clave",
+      "prompt": "Métricas críticas que demuestran la salud y crecimiento de tu negocio.",
+      "ejemplo": "Ej: Costo de Adquisición de Cliente (CAC), Tasa de Retención Semanal, y Valor de Vida del Cliente (LTV).",
+      "benchmark": "Ciclo Construir-Medir-Aprender validado en < 2 semanas con métricas AARRR.",
+      "cita": "Eric Ries — El Método Lean Startup & Ash Maurya Running Lean",
+      "placeholder": "Documenta la hipótesis o métrica ágil para (metricas_clave)..."
+    },
+    {
+      "key": "ventaja_especial",
+      "type": "text",
+      "address": "agile_startup.validacion.canvas.ventaja_especial",
+      "prompt": "¿Qué tienes que no pueda ser copiado o comprado fácilmente?",
+      "ejemplo": "Ej (Estilo Amazon Logistics): Algoritmo propio de ruteo y distribución que reduce tiempos de entrega a la mitad frente a UberEats.",
+      "benchmark": "Ciclo Construir-Medir-Aprender validado en < 2 semanas con métricas AARRR.",
+      "cita": "Eric Ries — El Método Lean Startup & Ash Maurya Running Lean",
+      "placeholder": "Documenta la hipótesis o métrica ágil para (ventaja_especial)..."
+    }
+  ],
+  "boxes": [],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Los 9 bloques simplificados del modelo de negocios ágil para enfocar la propuesta de valor.\n\n**Cómo se usa.** Está en el pilar **Validación y Lienzo (Lean Canvas)** del modelo *Agile Startup (Lean MVP)*. Se abre en `/agile_startup/canvas`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 9 campos: `problema`, `segmentos_clientes`, `propuesta_valor`, `solucion`, `canales`, `flujos_ingresos`, `estructura_costos`, `metricas_clave`, `ventaja_especial`.\n\n**Herramientas del módulo.** Ninguna específica: se apoya en los campos de texto."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `problema`\n\n**El prompt que usa:** Identifica los 3 principales problemas que resolverás para tu cliente.\n\n**Ejemplo que muestra la guía:** Ej: 1. Falta de tiempo para cocinar sano. 2. Precios elevados de restaurantes saludables. 3. Poca variedad de comida a domicilio.\n\n**Benchmark / criterio de calidad:** Ciclo Construir-Medir-Aprender validado en < 2 semanas con métricas AARRR.\n\n**De dónde viene la guía:** Eric Ries — El Método Lean Startup & Ash Maurya Running Lean\n\n### `segmentos_clientes`\n\n**El prompt que usa:** Define quiénes son tus adoptantes tempranos (Early Adopters) y tu mercado meta.\n\n**Ejemplo que muestra la guía:** Ej: Profesionistas de 25-40 años que trabajan en oficinas corporativas y no tienen tiempo de cocinar.\n\n**Benchmark / criterio de calidad:** Segmentación psicográfica y demográfica con tamaño de mercado validado.\n\n**De dónde viene la guía:** Alexander Osterwalder — Business Model Generation (p. 20)\n\n### `propuesta_valor`\n\n**El prompt que usa:** Explica tu propuesta única de valor. ¿Por qué eres diferente y vale la pena prestarte atención?\n\n**Ejemplo que muestra la guía:** Ej (Estilo Uber/Airbnb): Comida saludable gourmet preparada por chefs locales y entregada en menos de 20 minutos por suscripción.\n\n**Benchmark / criterio de calidad:** 1 propuesta única validada mediante Jobs-to-be-Done de Christensen.\n\n**De dónde viene la guía:** Clayton Christensen — The Innovator's Dilemma (p. 28)\n\n### `solucion`\n\n**El prompt que usa:** Describe las 3 características principales de tu solución o MVP.\n\n**Ejemplo que muestra la guía:** Ej: 1. App móvil de pedidos express. 2. Menú rotativo de 5 platos diarios. 3. Red de micro-cocinas locales distribuidas.\n\n**Benchmark / criterio de calidad:** Ciclo Construir-Medir-Aprender validado en < 2 semanas con métricas AARRR.\n\n**De dónde viene la guía:** Eric Ries — El Método Lean Startup & Ash Maurya Running Lean\n\n### `canales`\n\n**El prompt que usa:** ¿Cómo vas a dar a conocer y entregar tu solución a tus clientes?\n\n**Ejemplo que muestra la guía:** Ej: Campañas de marketing local en Instagram, códigos de referido de oficina y entrega vía repartidores propios.\n\n**Benchmark / criterio de calidad:** Estrategia omnicanal con margen de contribución directo > 50%.\n\n**De dónde viene la guía:** Alexander Osterwalder — Business Model Generation (p. 30)\n\n### `flujos_ingresos`\n\n**El prompt que usa:** ¿Cómo ganarás dinero? Suscripción, venta directa, comisiones, publicidad.\n\n**Ejemplo que muestra la guía:** Ej (Estilo Netflix/Spotify): Planes semanales de suscripción ($1,200 MXN/semana) y catering corporativo para eventos de oficina.\n\n**Benchmark / criterio de calidad:** Ciclo Construir-Medir-Aprender validado en < 2 semanas con métricas AARRR.\n\n**De dónde viene la guía:** Eric Ries — El Método Lean Startup & Ash Maurya Running Lean\n\n### `estructura_costos`\n\n**El prompt que usa:** ¿Cuáles son tus costos fijos y variables más significativos para arrancar?\n\n**Ejemplo que muestra la guía:** Ej: Costo de ingredientes (materia prima), comisión del procesador de pagos, y marketing digital de adquisición.\n\n**Benchmark / criterio de calidad:** Alineación de costos con la propuesta de valor (estructura impulsada por valor o costo).\n\n**De dónde viene la guía:** Alexander Osterwalder — Business Model Generation (p. 40)\n\n### `metricas_clave`\n\n**El prompt que usa:** Métricas críticas que demuestran la salud y crecimiento de tu negocio.\n\n**Ejemplo que muestra la guía:** Ej: Costo de Adquisición de Cliente (CAC), Tasa de Retención Semanal, y Valor de Vida del Cliente (LTV).\n\n**Benchmark / criterio de calidad:** Ciclo Construir-Medir-Aprender validado en < 2 semanas con métricas AARRR.\n\n**De dónde viene la guía:** Eric Ries — El Método Lean Startup & Ash Maurya Running Lean\n\n### `ventaja_especial`\n\n**El prompt que usa:** ¿Qué tienes que no pueda ser copiado o comprado fácilmente?\n\n**Ejemplo que muestra la guía:** Ej (Estilo Amazon Logistics): Algoritmo propio de ruteo y distribución que reduce tiempos de entrega a la mitad frente a UberEats.\n\n**Benchmark / criterio de calidad:** Ciclo Construir-Medir-Aprender validado en < 2 semanas con métricas AARRR.\n\n**De dónde viene la guía:** Eric Ries — El Método Lean Startup & Ash Maurya Running Lean"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "Sin cajas asociadas."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Validación y Lienzo (Lean Canvas)** de *Agile Startup (Lean MVP)*. La justificación metodológica completa está en la página del modelo y en `docs/agile_startup.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `agile_startup.validacion.canvas.problema` → tipo `text`\n- `agile_startup.validacion.canvas.segmentos_clientes` → tipo `text`\n- `agile_startup.validacion.canvas.propuesta_valor` → tipo `text`\n- `agile_startup.validacion.canvas.solucion` → tipo `text`\n- `agile_startup.validacion.canvas.canales` → tipo `text`\n- `agile_startup.validacion.canvas.flujos_ingresos` → tipo `text`\n- `agile_startup.validacion.canvas.estructura_costos` → tipo `text`\n- `agile_startup.validacion.canvas.metricas_clave` → tipo `text`\n- `agile_startup.validacion.canvas.ventaja_especial` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas:** `src/config/moduleBoxMap.js` no declara cajas para `agile_startup:canvas`; la pantalla muestra solo los campos de texto.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

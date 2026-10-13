@@ -1,0 +1,84 @@
+{
+  "id": "modulo.agile_startup.burn_rate",
+  "title": "Runway y Burn Rate",
+  "summary": "Monitoreo de flujo mensual y supervivencia de caja.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "agile_startup",
+  "moduleKey": "burn_rate",
+  "pillarKey": "finanzas_agiles",
+  "openUrl": "/agile_startup/burn_rate",
+  "fields": [
+    {
+      "key": "burn_rate_mensual",
+      "type": "text",
+      "address": "agile_startup.finanzas_agiles.burn_rate.burn_rate_mensual",
+      "prompt": "Flujo de caja negativo neto promedio mensual (dinero consumido al mes).",
+      "ejemplo": "Ej: Aplicación práctica y cuantificada para el campo burn_rate_mensual.",
+      "benchmark": "Ciclo Construir-Medir-Aprender validado en < 2 semanas con métricas AARRR.",
+      "cita": "Eric Ries — El Método Lean Startup & Ash Maurya Running Lean",
+      "placeholder": "Ej: $45,000 MXN mensuales en salarios, servidores y marketing."
+    },
+    {
+      "key": "runway_meses",
+      "type": "text",
+      "address": "agile_startup.finanzas_agiles.burn_rate.runway_meses",
+      "prompt": "Meses de supervivencia con el capital disponible actual. Caja actual / Burn Rate.",
+      "ejemplo": "Ej: Caja disponible $270,000 / Burn Rate $45,000 = 6 meses de Runway restante.",
+      "benchmark": "Ciclo Construir-Medir-Aprender validado en < 2 semanas con métricas AARRR.",
+      "cita": "Eric Ries — El Método Lean Startup & Ash Maurya Running Lean",
+      "placeholder": "Documenta la hipótesis o métrica ágil para (runway_meses)..."
+    },
+    {
+      "key": "capital_supervivencia",
+      "type": "text",
+      "address": "agile_startup.finanzas_agiles.burn_rate.capital_supervivencia",
+      "prompt": "Monto de dinero mínimo en caja que se mantendrá como reserva estratégica.",
+      "ejemplo": "Ej: Mantener un fondo de reserva de $90,000 MXN equivalente a 2 meses de operación.",
+      "benchmark": "Ciclo Construir-Medir-Aprender validado en < 2 semanas con métricas AARRR.",
+      "cita": "Eric Ries — El Método Lean Startup & Ash Maurya Running Lean",
+      "placeholder": "Documenta la hipótesis o métrica ágil para (capital_supervivencia)..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_burn_runway",
+      "title": "Burn Rate & Runway de Supervivencia",
+      "type": "benchmark",
+      "description": "Monitoreo de meses de pista financiera con alerta de Kill Switch.",
+      "source": "Starting a Business QuickStart Guide — Ch. 9"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Monitoreo de flujo mensual y supervivencia de caja.\n\n**Cómo se usa.** Está en el pilar **Finanzas y Métricas Unitarias** del modelo *Agile Startup (Lean MVP)*. Se abre en `/agile_startup/burn_rate`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 3 campos: `burn_rate_mensual`, `runway_meses`, `capital_supervivencia`.\n\n**Herramientas del módulo.** 1 caja(s): `box_burn_runway`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `burn_rate_mensual`\n\n**El prompt que usa:** Flujo de caja negativo neto promedio mensual (dinero consumido al mes).\n\n**Ejemplo que muestra la guía:** Ej: Aplicación práctica y cuantificada para el campo burn_rate_mensual.\n\n**Benchmark / criterio de calidad:** Ciclo Construir-Medir-Aprender validado en < 2 semanas con métricas AARRR.\n\n**De dónde viene la guía:** Eric Ries — El Método Lean Startup & Ash Maurya Running Lean\n\n### `runway_meses`\n\n**El prompt que usa:** Meses de supervivencia con el capital disponible actual. Caja actual / Burn Rate.\n\n**Ejemplo que muestra la guía:** Ej: Caja disponible $270,000 / Burn Rate $45,000 = 6 meses de Runway restante.\n\n**Benchmark / criterio de calidad:** Ciclo Construir-Medir-Aprender validado en < 2 semanas con métricas AARRR.\n\n**De dónde viene la guía:** Eric Ries — El Método Lean Startup & Ash Maurya Running Lean\n\n### `capital_supervivencia`\n\n**El prompt que usa:** Monto de dinero mínimo en caja que se mantendrá como reserva estratégica.\n\n**Ejemplo que muestra la guía:** Ej: Mantener un fondo de reserva de $90,000 MXN equivalente a 2 meses de operación.\n\n**Benchmark / criterio de calidad:** Ciclo Construir-Medir-Aprender validado en < 2 semanas con métricas AARRR.\n\n**De dónde viene la guía:** Eric Ries — El Método Lean Startup & Ash Maurya Running Lean"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Burn Rate & Runway de Supervivencia\n\n`box_burn_runway` · tipo **benchmark** · fuente: Starting a Business QuickStart Guide — Ch. 9\n\nMonitoreo de meses de pista financiera con alerta de Kill Switch."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Finanzas y Métricas Unitarias** de *Agile Startup (Lean MVP)*. La justificación metodológica completa está en la página del modelo y en `docs/agile_startup.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `agile_startup.finanzas_agiles.burn_rate.burn_rate_mensual` → tipo `text`\n- `agile_startup.finanzas_agiles.burn_rate.runway_meses` → tipo `text`\n- `agile_startup.finanzas_agiles.burn_rate.capital_supervivencia` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `agile_startup:burn_rate`): `box_burn_runway`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

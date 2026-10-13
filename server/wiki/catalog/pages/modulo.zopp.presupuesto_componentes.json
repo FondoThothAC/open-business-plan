@@ -1,0 +1,84 @@
+{
+  "id": "modulo.zopp.presupuesto_componentes",
+  "title": "Presupuesto por Componentes",
+  "summary": "Asignación de costos de inversión y operación por resultado.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "zopp",
+  "moduleKey": "presupuesto_componentes",
+  "pillarKey": "cronograma_presupuesto",
+  "openUrl": "/zopp/presupuesto_componentes",
+  "fields": [
+    {
+      "key": "costos_inversion_zopp",
+      "type": "text",
+      "address": "zopp.cronograma_presupuesto.presupuesto_componentes.costos_inversion_zopp",
+      "prompt": "Presupuesto de capital asignado para la adquisición de infraestructura y equipamiento de arranque.",
+      "ejemplo": "Ej: Inversión en adecuación de taller piloto y 1 horno ASADHOR: $4,000,000 MXN.",
+      "benchmark": "Costeo base cero con al menos 3 cotizaciones formales de proveedores.",
+      "cita": "Metodología ZOPP GTZ (p. 68)",
+      "placeholder": "Monto de inversión fija y diferida por componente..."
+    },
+    {
+      "key": "costos_operacion_zopp",
+      "type": "text",
+      "address": "zopp.cronograma_presupuesto.presupuesto_componentes.costos_operacion_zopp",
+      "prompt": "Presupuesto de gasto recurrente necesario para mantener las actividades en funcionamiento continuo.",
+      "ejemplo": "Ej: $320,000 MXN mensuales en nómina de operarios, gas natural, empaque al vacío y logística local.",
+      "benchmark": "Flujo operativo mensual con fondo de maniobra para 3 a 6 meses.",
+      "cita": "Metodología ZOPP GTZ (p. 72)",
+      "placeholder": "Costos recurrentes de personal, insumos y mantenimiento..."
+    },
+    {
+      "key": "fuentes_financiamiento_zopp",
+      "type": "text",
+      "address": "zopp.cronograma_presupuesto.presupuesto_componentes.fuentes_financiamiento_zopp",
+      "prompt": "Origen de los fondos asignados: aportes de socios, créditos de desarrollo o fondos multilaterales.",
+      "ejemplo": "Ej: 60% aporte de socios fundadores ($2.4M) + 40% crédito blando estatal FIDESON ($1.6M).",
+      "benchmark": "Estructura de fondos con desembolsos vinculados a hitos (3 a 5 fases).",
+      "cita": "Metodología ZOPP GTZ (p. 76)",
+      "placeholder": "Desglose de aportes institucionales y calendario de recursos..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_presupuesto_componentes",
+      "title": "Presupuesto Desglosado por Componentes y Rubros ZOPP",
+      "type": "table",
+      "description": "Costeo por actividad agrupado en los componentes operativos del proyecto.",
+      "source": "Manual ZOPP GTZ — p. 68"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Asignación de costos de inversión y operación por resultado.\n\n**Cómo se usa.** Está en el pilar **Operación y Recursos** del modelo *ZOPP / Marco Lógico (Enfoque Alemán-BID)*. Se abre en `/zopp/presupuesto_componentes`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 3 campos: `costos_inversion_zopp`, `costos_operacion_zopp`, `fuentes_financiamiento_zopp`.\n\n**Herramientas del módulo.** 1 caja(s): `box_presupuesto_componentes`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `costos_inversion_zopp`\n\n**El prompt que usa:** Presupuesto de capital asignado para la adquisición de infraestructura y equipamiento de arranque.\n\n**Ejemplo que muestra la guía:** Ej: Inversión en adecuación de taller piloto y 1 horno ASADHOR: $4,000,000 MXN.\n\n**Benchmark / criterio de calidad:** Costeo base cero con al menos 3 cotizaciones formales de proveedores.\n\n**De dónde viene la guía:** Metodología ZOPP GTZ (p. 68)\n\n### `costos_operacion_zopp`\n\n**El prompt que usa:** Presupuesto de gasto recurrente necesario para mantener las actividades en funcionamiento continuo.\n\n**Ejemplo que muestra la guía:** Ej: $320,000 MXN mensuales en nómina de operarios, gas natural, empaque al vacío y logística local.\n\n**Benchmark / criterio de calidad:** Flujo operativo mensual con fondo de maniobra para 3 a 6 meses.\n\n**De dónde viene la guía:** Metodología ZOPP GTZ (p. 72)\n\n### `fuentes_financiamiento_zopp`\n\n**El prompt que usa:** Origen de los fondos asignados: aportes de socios, créditos de desarrollo o fondos multilaterales.\n\n**Ejemplo que muestra la guía:** Ej: 60% aporte de socios fundadores ($2.4M) + 40% crédito blando estatal FIDESON ($1.6M).\n\n**Benchmark / criterio de calidad:** Estructura de fondos con desembolsos vinculados a hitos (3 a 5 fases).\n\n**De dónde viene la guía:** Metodología ZOPP GTZ (p. 76)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Presupuesto Desglosado por Componentes y Rubros ZOPP\n\n`box_presupuesto_componentes` · tipo **table** · fuente: Manual ZOPP GTZ — p. 68\n\nCosteo por actividad agrupado en los componentes operativos del proyecto."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Operación y Recursos** de *ZOPP / Marco Lógico (Enfoque Alemán-BID)*. La justificación metodológica completa está en la página del modelo y en `docs/zopp.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `zopp.cronograma_presupuesto.presupuesto_componentes.costos_inversion_zopp` → tipo `text`\n- `zopp.cronograma_presupuesto.presupuesto_componentes.costos_operacion_zopp` → tipo `text`\n- `zopp.cronograma_presupuesto.presupuesto_componentes.fuentes_financiamiento_zopp` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `zopp:presupuesto_componentes`): `box_presupuesto_componentes`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

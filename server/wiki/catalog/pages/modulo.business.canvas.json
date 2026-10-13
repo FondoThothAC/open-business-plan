@@ -1,0 +1,136 @@
+{
+  "id": "modulo.business.canvas",
+  "title": "Modelo de Negocio Canvas",
+  "summary": "El lienzo del modelo de negocios (9 bloques esenciales) para planificar estratégicamente.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "business",
+  "moduleKey": "canvas",
+  "pillarKey": "naturaleza",
+  "openUrl": "/business/canvas",
+  "fields": [
+    {
+      "key": "socios_clave",
+      "type": "text",
+      "address": "business.naturaleza.canvas.socios_clave",
+      "prompt": "Lista los socios estratégicos, proveedores clave y aliados institucionales indispensables para operar.",
+      "ejemplo": "Ej: Distribuidores autorizados de maquinaria, despachos contables y proveedores de nube.",
+      "benchmark": "Mínimo 3 alianzas críticas.",
+      "cita": "Alexander Osterwalder — Business Model Generation (p. 38)",
+      "placeholder": "Distribuidores, proveedores, alianzas..."
+    },
+    {
+      "key": "actividades_clave",
+      "type": "text",
+      "address": "business.naturaleza.canvas.actividades_clave",
+      "prompt": "Define las acciones operativas y de entrega neurálgicas que hacen funcionar la propuesta de valor.",
+      "ejemplo": "Ej: Diagnóstico técnico, desarrollo de software, control de calidad y soporte 24/7.",
+      "benchmark": "Enfocadas a la entrega de valor.",
+      "cita": "Business Model Generation (p. 36)",
+      "placeholder": "Operación, desarrollo, soporte..."
+    },
+    {
+      "key": "recursos_clave",
+      "type": "text",
+      "address": "business.naturaleza.canvas.recursos_clave",
+      "prompt": "Detalla los activos físicos, intelectuales, humanos y financieros indispensables.",
+      "ejemplo": "Ej: Taller certificado, ingenieros seniors, servidores dedicados y fondo de maniobra.",
+      "benchmark": "Activos difícilmente imitables.",
+      "cita": "Business Model Generation (p. 34)",
+      "placeholder": "Infraestructura, talento, capital..."
+    },
+    {
+      "key": "propuestas_valor",
+      "type": "text",
+      "address": "business.naturaleza.canvas.propuestas_valor",
+      "prompt": "Redacta el paquete de productos y servicios que resuelven el dolor específico del cliente.",
+      "ejemplo": "Ej: Reducción del 35% en costos correctivos y garantía de disponibilidad del 99%.",
+      "benchmark": "Diferenciación cuantificada.",
+      "cita": "Value Proposition Design (p. 18)",
+      "placeholder": "Promesa única cuantificada..."
+    },
+    {
+      "key": "relaciones_clientes",
+      "type": "text",
+      "address": "business.naturaleza.canvas.relaciones_clientes",
+      "prompt": "Define el tipo de relación e interacción con cada segmento (dedicada, automatizada, autoservicio).",
+      "ejemplo": "Ej: Asistencia personalizada con ejecutivos de cuenta B2B y revisiones trimestrales.",
+      "benchmark": "Retención / Churn < 5% anual.",
+      "cita": "Business Model Generation (p. 30)",
+      "placeholder": "Asistencia dedicada, autoservicio..."
+    },
+    {
+      "key": "canales",
+      "type": "text",
+      "address": "business.naturaleza.canvas.canales",
+      "prompt": "Establece los canales de comunicación, venta, distribución y postventa.",
+      "ejemplo": "Ej: Venta directa consultiva B2B, portal web de pedidos y soporte vía app móvil.",
+      "benchmark": "Estrategia omnicanal.",
+      "cita": "Business Model Generation (p. 28)",
+      "placeholder": "Canales directos e indirectos..."
+    },
+    {
+      "key": "segmentos_clientes",
+      "type": "text",
+      "address": "business.naturaleza.canvas.segmentos_clientes",
+      "prompt": "Segmenta a los clientes por industria, volumen de compra, geografía y necesidades.",
+      "ejemplo": "Ej: Empresas mineras medianas y grandes en el noroeste de México con maquinaria pesada.",
+      "benchmark": "Segmentación B2B por capacidad de compra.",
+      "cita": "Business Model Generation (p. 22)",
+      "placeholder": "Perfil de empresas o consumidores..."
+    },
+    {
+      "key": "estructura_costos",
+      "type": "text",
+      "address": "business.naturaleza.canvas.estructura_costos",
+      "prompt": "Identifica los costos fijos y variables más significativos que sustentan la operación.",
+      "ejemplo": "Ej: Nómina técnica (45%), refacciones (25%), renta y servicios (15%), marketing (15%).",
+      "benchmark": "Costos fijos < 45% del ingreso proyectado.",
+      "cita": "Business Model Generation (p. 40)",
+      "placeholder": "Nómina, insumos, infraestructura..."
+    },
+    {
+      "key": "fuentes_ingresos",
+      "type": "text",
+      "address": "business.naturaleza.canvas.fuentes_ingresos",
+      "prompt": "Describe los flujos y mecanismos de monetización (suscripciones, venta directa, comisiones).",
+      "ejemplo": "Ej: 60% contratos anuales de mantenimiento recurrente, 40% servicios por evento.",
+      "benchmark": "Mínimo 50% de ingresos recurrentes (ARR).",
+      "cita": "Business Model Generation (p. 32)",
+      "placeholder": "MaaS, venta puntual, suscripción..."
+    }
+  ],
+  "boxes": [],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** El lienzo del modelo de negocios (9 bloques esenciales) para planificar estratégicamente.\n\n**Cómo se usa.** Está en el pilar **Naturaleza del Proyecto** del modelo *Plan de Negocios Comercial*. Se abre en `/business/canvas`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 9 campos: `socios_clave`, `actividades_clave`, `recursos_clave`, `propuestas_valor`, `relaciones_clientes`, `canales`, `segmentos_clientes`, `estructura_costos`, `fuentes_ingresos`.\n\n**Herramientas del módulo.** Ninguna específica: se apoya en los campos de texto."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `socios_clave`\n\n**El prompt que usa:** Lista los socios estratégicos, proveedores clave y aliados institucionales indispensables para operar.\n\n**Ejemplo que muestra la guía:** Ej: Distribuidores autorizados de maquinaria, despachos contables y proveedores de nube.\n\n**Benchmark / criterio de calidad:** Mínimo 3 alianzas críticas.\n\n**De dónde viene la guía:** Alexander Osterwalder — Business Model Generation (p. 38)\n\n### `actividades_clave`\n\n**El prompt que usa:** Define las acciones operativas y de entrega neurálgicas que hacen funcionar la propuesta de valor.\n\n**Ejemplo que muestra la guía:** Ej: Diagnóstico técnico, desarrollo de software, control de calidad y soporte 24/7.\n\n**Benchmark / criterio de calidad:** Enfocadas a la entrega de valor.\n\n**De dónde viene la guía:** Business Model Generation (p. 36)\n\n### `recursos_clave`\n\n**El prompt que usa:** Detalla los activos físicos, intelectuales, humanos y financieros indispensables.\n\n**Ejemplo que muestra la guía:** Ej: Taller certificado, ingenieros seniors, servidores dedicados y fondo de maniobra.\n\n**Benchmark / criterio de calidad:** Activos difícilmente imitables.\n\n**De dónde viene la guía:** Business Model Generation (p. 34)\n\n### `propuestas_valor`\n\n**El prompt que usa:** Redacta el paquete de productos y servicios que resuelven el dolor específico del cliente.\n\n**Ejemplo que muestra la guía:** Ej: Reducción del 35% en costos correctivos y garantía de disponibilidad del 99%.\n\n**Benchmark / criterio de calidad:** Diferenciación cuantificada.\n\n**De dónde viene la guía:** Value Proposition Design (p. 18)\n\n### `relaciones_clientes`\n\n**El prompt que usa:** Define el tipo de relación e interacción con cada segmento (dedicada, automatizada, autoservicio).\n\n**Ejemplo que muestra la guía:** Ej: Asistencia personalizada con ejecutivos de cuenta B2B y revisiones trimestrales.\n\n**Benchmark / criterio de calidad:** Retención / Churn < 5% anual.\n\n**De dónde viene la guía:** Business Model Generation (p. 30)\n\n### `canales`\n\n**El prompt que usa:** Establece los canales de comunicación, venta, distribución y postventa.\n\n**Ejemplo que muestra la guía:** Ej: Venta directa consultiva B2B, portal web de pedidos y soporte vía app móvil.\n\n**Benchmark / criterio de calidad:** Estrategia omnicanal.\n\n**De dónde viene la guía:** Business Model Generation (p. 28)\n\n### `segmentos_clientes`\n\n**El prompt que usa:** Segmenta a los clientes por industria, volumen de compra, geografía y necesidades.\n\n**Ejemplo que muestra la guía:** Ej: Empresas mineras medianas y grandes en el noroeste de México con maquinaria pesada.\n\n**Benchmark / criterio de calidad:** Segmentación B2B por capacidad de compra.\n\n**De dónde viene la guía:** Business Model Generation (p. 22)\n\n### `estructura_costos`\n\n**El prompt que usa:** Identifica los costos fijos y variables más significativos que sustentan la operación.\n\n**Ejemplo que muestra la guía:** Ej: Nómina técnica (45%), refacciones (25%), renta y servicios (15%), marketing (15%).\n\n**Benchmark / criterio de calidad:** Costos fijos < 45% del ingreso proyectado.\n\n**De dónde viene la guía:** Business Model Generation (p. 40)\n\n### `fuentes_ingresos`\n\n**El prompt que usa:** Describe los flujos y mecanismos de monetización (suscripciones, venta directa, comisiones).\n\n**Ejemplo que muestra la guía:** Ej: 60% contratos anuales de mantenimiento recurrente, 40% servicios por evento.\n\n**Benchmark / criterio de calidad:** Mínimo 50% de ingresos recurrentes (ARR).\n\n**De dónde viene la guía:** Business Model Generation (p. 32)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "Sin cajas asociadas."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Naturaleza del Proyecto** de *Plan de Negocios Comercial*. La justificación metodológica completa está en la página del modelo y en `docs/business.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `business.naturaleza.canvas.socios_clave` → tipo `text`\n- `business.naturaleza.canvas.actividades_clave` → tipo `text`\n- `business.naturaleza.canvas.recursos_clave` → tipo `text`\n- `business.naturaleza.canvas.propuestas_valor` → tipo `text`\n- `business.naturaleza.canvas.relaciones_clientes` → tipo `text`\n- `business.naturaleza.canvas.canales` → tipo `text`\n- `business.naturaleza.canvas.segmentos_clientes` → tipo `text`\n- `business.naturaleza.canvas.estructura_costos` → tipo `text`\n- `business.naturaleza.canvas.fuentes_ingresos` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas:** `src/config/moduleBoxMap.js` no declara cajas para `business:canvas`; la pantalla muestra solo los campos de texto.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

@@ -1,0 +1,84 @@
+{
+  "id": "modulo.zopp.evaluacion_expost",
+  "title": "Evaluación Ex-Post y Factores",
+  "summary": "Criterios de pertinencia, eficacia, impacto y continuidad operativa.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "zopp",
+  "moduleKey": "evaluacion_expost",
+  "pillarKey": "evaluacion_sostenibilidad",
+  "openUrl": "/zopp/evaluacion_expost",
+  "fields": [
+    {
+      "key": "pertinencia_evaluacion",
+      "type": "text",
+      "address": "zopp.evaluacion_sostenibilidad.evaluacion_expost.pertinencia_evaluacion",
+      "prompt": "Evaluación ex-post de congruencia: si los objetivos del proyecto respondieron adecuadamente a la necesidad real.",
+      "ejemplo": "Ej: 100% de pertinencia al resolver la escasez de mano de obra calificada en cocinas restauranteras.",
+      "benchmark": "Criterios del Comité de Asistencia al Desarrollo (CAD/OCDE).",
+      "cita": "Metodología ZOPP GTZ (p. 84) & Criterios de Evaluación CAD",
+      "placeholder": "Alineación entre la intervención y las prioridades de los beneficiarios..."
+    },
+    {
+      "key": "eficacia_impacto",
+      "type": "text",
+      "address": "zopp.evaluacion_sostenibilidad.evaluacion_expost.eficacia_impacto",
+      "prompt": "Grado de consecución del propósito y medición del impacto socioeconómico generado a mediano plazo.",
+      "ejemplo": "Ej: Se alcanzó el 104% de la meta de producción y los restaurantes redujeron costos en 22% promedio.",
+      "benchmark": "Comparación cuantitativa entre línea base y resultados ex-post.",
+      "cita": "Metodología ZOPP GTZ (p. 88)",
+      "placeholder": "Metas alcanzadas e impacto duradero sobre los beneficiarios..."
+    },
+    {
+      "key": "sostenibilidad_futura",
+      "type": "text",
+      "address": "zopp.evaluacion_sostenibilidad.evaluacion_expost.sostenibilidad_futura",
+      "prompt": "Capacidad institucional, tecnológica y financiera del proyecto para continuar operando sin apoyos externos.",
+      "ejemplo": "Ej: Flujo de caja libre positivo mensual de $1.5M MXN garantiza autofinanciamiento y reinversión continua.",
+      "benchmark": "Autonomía financiera validada con cobertura de gastos operativos al 100%.",
+      "cita": "Metodología ZOPP GTZ (p. 92)",
+      "placeholder": "Factores que garantizan la continuidad a largo plazo..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_evaluacion_expost_lista",
+      "title": "Checklist de Evaluación Ex-Post y Factores de Sostenibilidad",
+      "type": "checklist",
+      "description": "Criterios de viabilidad técnica, institucional, financiera y ecológica tras el cierre del proyecto.",
+      "source": "Manual ZOPP GTZ — p. 84"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Criterios de pertinencia, eficacia, impacto y continuidad operativa.\n\n**Cómo se usa.** Está en el pilar **Evaluación y Sostenibilidad** del modelo *ZOPP / Marco Lógico (Enfoque Alemán-BID)*. Se abre en `/zopp/evaluacion_expost`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 3 campos: `pertinencia_evaluacion`, `eficacia_impacto`, `sostenibilidad_futura`.\n\n**Herramientas del módulo.** 1 caja(s): `box_evaluacion_expost_lista`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `pertinencia_evaluacion`\n\n**El prompt que usa:** Evaluación ex-post de congruencia: si los objetivos del proyecto respondieron adecuadamente a la necesidad real.\n\n**Ejemplo que muestra la guía:** Ej: 100% de pertinencia al resolver la escasez de mano de obra calificada en cocinas restauranteras.\n\n**Benchmark / criterio de calidad:** Criterios del Comité de Asistencia al Desarrollo (CAD/OCDE).\n\n**De dónde viene la guía:** Metodología ZOPP GTZ (p. 84) & Criterios de Evaluación CAD\n\n### `eficacia_impacto`\n\n**El prompt que usa:** Grado de consecución del propósito y medición del impacto socioeconómico generado a mediano plazo.\n\n**Ejemplo que muestra la guía:** Ej: Se alcanzó el 104% de la meta de producción y los restaurantes redujeron costos en 22% promedio.\n\n**Benchmark / criterio de calidad:** Comparación cuantitativa entre línea base y resultados ex-post.\n\n**De dónde viene la guía:** Metodología ZOPP GTZ (p. 88)\n\n### `sostenibilidad_futura`\n\n**El prompt que usa:** Capacidad institucional, tecnológica y financiera del proyecto para continuar operando sin apoyos externos.\n\n**Ejemplo que muestra la guía:** Ej: Flujo de caja libre positivo mensual de $1.5M MXN garantiza autofinanciamiento y reinversión continua.\n\n**Benchmark / criterio de calidad:** Autonomía financiera validada con cobertura de gastos operativos al 100%.\n\n**De dónde viene la guía:** Metodología ZOPP GTZ (p. 92)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Checklist de Evaluación Ex-Post y Factores de Sostenibilidad\n\n`box_evaluacion_expost_lista` · tipo **checklist** · fuente: Manual ZOPP GTZ — p. 84\n\nCriterios de viabilidad técnica, institucional, financiera y ecológica tras el cierre del proyecto."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Evaluación y Sostenibilidad** de *ZOPP / Marco Lógico (Enfoque Alemán-BID)*. La justificación metodológica completa está en la página del modelo y en `docs/zopp.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `zopp.evaluacion_sostenibilidad.evaluacion_expost.pertinencia_evaluacion` → tipo `text`\n- `zopp.evaluacion_sostenibilidad.evaluacion_expost.eficacia_impacto` → tipo `text`\n- `zopp.evaluacion_sostenibilidad.evaluacion_expost.sostenibilidad_futura` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `zopp:evaluacion_expost`): `box_evaluacion_expost_lista`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}
