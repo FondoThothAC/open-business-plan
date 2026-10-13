@@ -3,6 +3,7 @@ import { PROJECT_EXAMPLES } from '../lib/projects_db';
 import { FRAMEWORKS } from '../config/frameworks';
 import { getApiBase } from '../config/apiConfig';
 import { slugify, KNOWN_PROJECT_SLUGS } from '../config/urlRouting';
+import { identitySlug } from '../lib/serverUtils/projectIdentity';
 import { saveProjectToIDB, loadProjectFromIDB, migrateFromLocalStorage } from '../lib/storage/indexedDbStorage';
 import { runAgenticModuleGeneration } from '../lib/agenticEngine';
 import { normalizeSearchConfig } from '../lib/tools/provenance';
@@ -812,7 +813,11 @@ export const PlanProvider = ({ children }) => {
     const fresh = createEmptyPlan(type);
     
     const finalName = projectName || seedData?.nombre_proyecto || seedData?.negocio?.nombre_marca || 'Proyecto Nuevo';
-    const cleanSlug = slugify(finalName);
+    // [C2] La identidad de archivo sale de la funcion canonica compartida con el server,
+    // no del slug de URLs: urlRouting.slugify produce guiones ('ferreteria-y-...') y el
+    // server escribia guiones bajos, de modo que el id del cliente nunca coincidia con la
+    // carpeta hasta despues del primer guardado. Las rutas siguen usando slugify().
+    const cleanSlug = identitySlug(finalName);
     const assignedProjectId = cleanSlug && cleanSlug !== 'proyecto_nuevo' && cleanSlug !== 'proyecto' ? cleanSlug : 'draft_activo';
     
     fresh.config.brandKit.companyName = finalName;

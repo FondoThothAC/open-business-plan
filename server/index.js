@@ -54,6 +54,7 @@ import { AI_PROVIDER_HOSTS } from './aiEndpointAllowlist.js';
 import { writeJsonAtomic } from '../src/lib/serverUtils/atomicJson.js';
 import { assertSafeExternalUrl, perteneceADominio } from './urlSafety.js';
 import { crearBuscadorSeguro } from './ddgLimiter.js';
+import { identitySlug, canonicId, esIdTemporal, variantasDeResolucion, claveComparacion } from '../src/lib/serverUtils/projectIdentity.js';
 
 function documentForExternalReview(data) {
   const copy = JSON.parse(JSON.stringify(data || {}));
@@ -1439,6 +1440,22 @@ function jsonToMarkdown(planData) {
  * @param {string} text
  * @returns {string}
  */
+/**
+ * [C2] Primera grafia del id que resuelve a un proyecto ya existente, incluyendo las dos
+ * ortografias legacy escritas por el renombrado y por el slug de URLs.
+ * @param {string} type @param {string} id @param {Object} user
+ * @returns {string|null}
+ */
+function resolverIdDeProyectoExistente(type, id, user) {
+  for (const variante of variantasDeResolucion(id)) {
+    try {
+      const encontrado = resolveReadableProject(type, variante, user);
+      if (encontrado) return variante;
+    } catch { /* segmento rechazado: probar la siguiente grafia */ }
+  }
+  return null;
+}
+
 function slugifyFileName(text) {
   if (!text) return 'draft_activo';
   const clean = String(text)
@@ -1461,17 +1478,24 @@ app.post('/api/save', prohibirRevisorMutacion, (req, res) => {
     const projectTypeRaw = planData.config?.projectType || 'business';
     const projectType = projectTypeRaw === 'social_bid' ? 'social' : 'negocios';
     const rawName = planData.config?.brandKit?.companyName || planData.semilla?.nombre_proyecto || planData.semilla?.negocio?.nombre_marca || '';
-    const cleanSlug = slugifyFileName(rawName);
+    const cleanSlug = identitySlug(rawName);
 
-    // Si el proyecto tiene nombre comercial real, usarlo como ID limpio; si no, usar un único borrador temporal
-    let persistentId = String(planData.config?.projectId || '').replace(/[^a-z0-9_]/gi, '_').toLowerCase();
-    const isUuidOrRandom = !persistentId || /^project_[a-f0-9_-]+$/i.test(persistentId) || /^[a-f0-9]{8}_[a-f0-9]{4}/i.test(persistentId) || /^[a-f0-9]{8}-[a-f0-9]{4}/i.test(persistentId);
+    // [C2] El identificador se deriva del nombre comercial SOLO al nacer el proyecto.
+    // Antes se recalculaba en cada guardado, de modo que cambiar el nombre en
+    // Configuracion creaba una carpeta nueva y abandonaba la anterior sin borrarla,
+    // sin fusionarla y sin avisar: es la causa de que un mismo negocio (Ferreteria Kino,
+    // Closets Corona) exista en cuatro carpetas con tres grafias distintas. Ver
+    // docs/CENSO_PROYECTOS_DUPLICADOS.md y src/lib/serverUtils/projectIdentity.js.
+    const idEntrante = canonicId(planData.config?.projectId);
+    const idExistente = esIdTemporal(idEntrante)
+      ? null
+      : resolverIdDeProyectoExistente(projectType, idEntrante, req.user);
 
-    if (cleanSlug && cleanSlug !== 'draft_activo' && cleanSlug !== 'proyecto' && cleanSlug !== 'proyecto_nuevo') {
-      persistentId = cleanSlug;
-    } else if (isUuidOrRandom) {
-      persistentId = 'draft_activo';
-    }
+    let persistentId = idExistente
+      || (cleanSlug && resolverIdDeProyectoExistente(projectType, cleanSlug, req.user))
+      || cleanSlug
+      || (esIdTemporal(idEntrante) ? 'draft_activo' : idEntrante)
+      || 'draft_activo';
     assertSafeProjectSegment(persistentId);
     const safeName = persistentId;
     
@@ -1702,7 +1726,7 @@ function calculateMissingModules(planData) {
 
 app.get('/api/projects', (req, res) => {
   const baseDir = path.resolve('proyectos');
-  const results = { negocios: [], social: [] };
+  const results = { negocios: [], social: [] };   // 'ambiguedades' es un campo anadido opcional [C2]
 
   const reqUserId = req.user?.username || req.headers['x-user-id'] || req.query.userId || '';
   const isTargetAdmin = req.user?.role === 'superadmin';
@@ -1786,6 +1810,9 @@ app.get('/api/projects', (req, res) => {
 
               projects.push({
                 id: entry.name,
+                carpeta: entry.name,
+                inquilino: targetUserFolder || null,
+                nombre: projectName,
                 name: projectName,
                 file: `${entry.name}.json`,
                 mtime: stats.mtime,
@@ -1808,6 +1835,28 @@ app.get('/api/projects', (req, res) => {
       };
 
       scanDir(dir);
+      // [C2] Un mismo negocio puede estar en varias carpetas (raiz vs inquilino, o en
+      // inquilinos distintos). No se fusiona ni se oculta nada: se marca para que la
+      // interfaz y el usuario lo vean, porque borrar silenciosamente series de planes
+      // de clientes seria peor que mostrarlos.
+      const grupos = new Map();
+      for (const p of projects) {
+        const clave = claveComparacion(p.name || p.id);
+        if (!clave) continue;
+        if (!grupos.has(clave)) grupos.set(clave, []);
+        grupos.get(clave).push(p);
+      }
+      for (const grupo of grupos.values()) {
+        const ambiguo = grupo.length > 1;
+        for (const p of grupo) {
+          p.ambiguo = ambiguo;
+          p.duplicadosEn = ambiguo ? grupo.filter(o => o !== p).map(o => (o.inquilino ? `${o.inquilino}/` : '(raíz)/') + o.carpeta) : [];
+        }
+      }
+      const ambiguedades = Array.from(grupos.entries())
+        .filter(([, v]) => v.length > 1)
+        .map(([clave, v]) => ({ nombre: v[0].name, clave, carpetas: v.map(p => (p.inquilino ? `${p.inquilino}/` : '(raíz)/') + p.carpeta) }));
+      if (ambiguedades.length) results.ambiguedades = (results.ambiguedades || []).concat(ambiguedades);
       results[type] = projects;
     }
   });
