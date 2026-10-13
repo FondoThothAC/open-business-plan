@@ -157,7 +157,7 @@ const jsonLimiteMediano = express.json({ limit: '4mb' });
 // servidor bufferee hasta 8 MB. Ninguna de estas rutas es pública, y authGuard es
 // idempotente, así que volver a ejecutarse más abajo en app.use('/api', authGuard) no
 // cambia el resultado. cookieParser (L139) ya corrió y es lo que authGuard necesita.
-for (const ruta of ['/api/save', '/api/logo/save', '/api/ai/proxy', '/api/ai/bob-chat', '/api/ai/account-chat']) {
+for (const ruta of ['/api/save', '/api/logo/save', '/api/ai/proxy', '/api/ai/bob-chat', '/api/ai/account-chat', '/api/analyze', '/api/ai/analyze']) {
   app.use(ruta, authGuard, jsonLimiteGrande);
 }
 for (const ruta of ['/api/logo/generate', '/api/market/competitors', '/api/market/enrich', '/api/market/viability', '/api/research/start']) {
@@ -439,6 +439,49 @@ app.post('/api/ai/bob-chat', async (req, res) => {
   }
   return res.status(502).json({ error: lastError?.message || 'No fue posible conectar con los proveedores configurados.' });
 });
+
+// Analista financiero de IA para el simulador financiero interactivo
+const handleAiAnalyze = async (req, res) => {
+  const { prompt, provider: requestedProvider = 'ollamaCloud', model } = req.body || {};
+  if (!prompt || typeof prompt !== 'string' || prompt.length > 500000) {
+    return res.status(400).json({ error: 'Prompt inválido o demasiado extenso.' });
+  }
+
+  const userId = req.user?.id;
+  const userKeys = userId ? obtenerApiKeysParaServicio(userId) : {};
+
+  // Normalizar proveedor solicitado por el simulador
+  const providerNorm = requestedProvider === 'gemini' ? 'gemini' : (requestedProvider === 'ollama' ? 'ollamaCloud' : requestedProvider);
+  let resolvedKey = userKeys[providerNorm] || 
+                    (providerNorm === 'ollamaCloud' ? (userKeys.ollama || userKeys.ollama_cloud || userKeys.ollamaCloud) : null) ||
+                    (providerNorm === 'ollamaCloud' ? sharedApiKey(req, 'OLLAMA_KEY', 'VITE_OLLAMA_KEY') : null) ||
+                    (providerNorm === 'gemini' ? (userKeys.gemini || sharedApiKey(req, 'GEMINI_API_KEY', 'VITE_GEMINI_API_KEY')) : null) ||
+                    userKeys.groq ||
+                    sharedApiKey(req, 'GROQ_API_KEY', 'VITE_GROQ_KEY');
+
+  const fallbackProv = resolvedKey ? (providerNorm in PERSONAL_AI_PROVIDERS ? providerNorm : 'ollamaCloud') : 'ollamaCloud';
+  const effectiveKey = resolvedKey || userKeys.ollamaCloud || userKeys.ollama || sharedApiKey(req, 'OLLAMA_KEY', 'VITE_OLLAMA_KEY');
+
+  if (!effectiveKey) {
+    return res.status(200).json({
+      text: '⚠️ **Llave de IA no configurada.**\n\nPor favor, en tu perfil o configuración de OBP, agrega tu API Key de Ollama Cloud o Gemini para habilitar el Diagnóstico Financiero inteligente.'
+    });
+  }
+
+  try {
+    const targetModel = model || (fallbackProv === 'ollamaCloud' ? 'gpt-oss:20b' : 'gemini-2.0-flash');
+    const result = await callPersonalAi(fallbackProv, effectiveKey, prompt, targetModel, 4096);
+    return res.json({ text: result.text || '', provider: fallbackProv, model: result.model });
+  } catch (err) {
+    console.error('[AnalyzeServer] Error en análisis financiero IA:', err.message);
+    return res.status(200).json({
+      text: `❌ Error al procesar el diagnóstico con IA: ${err.message}. Verifica que tus claves de API o servicio de inferencia estén activos.`
+    });
+  }
+};
+
+app.post('/api/analyze', handleAiAnalyze);
+app.post('/api/ai/analyze', handleAiAnalyze);
 
 // Generación de módulos con las credenciales de la cuenta actual. La llave se
 // descifra y utiliza exclusivamente en el servidor y nunca vuelve al navegador.

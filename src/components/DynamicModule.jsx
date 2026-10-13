@@ -20,6 +20,8 @@ import XMatrixHoshinKanri from './XMatrixHoshinKanri';
 import AmoebaStructureViewer from './AmoebaStructureViewer';
 import MicroCroquisEditor from './MicroCroquisEditor';
 import DeepMarketResearch from './DeepMarketResearch';
+import { parseToProjectData } from '../lib/finanzas/calculadoraFinanciera';
+import { extractDriversFromPlan } from '../lib/finanzas/driversExtractor';
 
 const normalizeSlug = (value) => String(value || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
@@ -66,6 +68,158 @@ const BusinessModelSelector = ({ value, onChange }) => {
     </div>
   );
 };
+
+function SimuladorFinancieroIframe({ planData }) {
+  const iframeRef = useRef(null);
+  const rawBase = import.meta.env.BASE_URL || '/';
+  const basePath = rawBase.endsWith('/') ? rawBase : `${rawBase}/`;
+  const iframeSrc = `${basePath}simulador/index.html`;
+
+  const projectTitle = planData?.semilla?.negocio?.nombre || planData?.semilla?.nombre_proyecto || 'Proyecto sin nombre';
+  const projectGiro = planData?.semilla?.negocio?.giro || planData?.semilla?.giro || 'Pendiente de definir';
+
+  const buildSimulatorPayload = () => {
+    try {
+      const projectData = parseToProjectData(planData);
+      const driversFicha = extractDriversFromPlan(planData);
+      const drivers = driversFicha?.drivers || {};
+      const concepto = drivers.concepto_producto?.valor || projectGiro || 'Línea de Producción Principal';
+
+      // 1. Mapear inversiones (CAPEX)
+      const investments = (projectData?.investmentItems || []).map((item, idx) => ({
+        id: `inv_${idx + 1}`,
+        concept: item.name || item.concepto || `Inversión ${idx + 1}`,
+        category: item.type === 'Activo Fijo' ? 'Activos Fijos' : (item.type === 'Activo Diferido' ? 'Activos Diferidos' : 'Capital de Trabajo'),
+        unit: 'LOTE',
+        quantity: 1,
+        unitCost: Number(item.amount) || 0,
+        fromProgram: 0,
+        fromPartners: Number(item.amount) || 0,
+        totalCost: Number(item.amount) || 0
+      }));
+
+      // 2. Mapear ingresos recurrentes
+      let revenues = [];
+      const ticket = Number(drivers.precio_unitario_o_ticket?.valor) || 0;
+      const vol = Number(drivers.volumen_mensual_ventas?.valor) || 0;
+
+      if (ticket > 0 && vol > 0) {
+        revenues.push({
+          id: 'rev_1',
+          concept: concepto,
+          unit: 'UNIDAD',
+          price: ticket,
+          highSeasonQty: vol,
+          lowSeasonQty: Math.max(1, Math.round(vol * 0.8))
+        });
+      } else if (projectData?.recurringRevenues?.length > 0) {
+        revenues = projectData.recurringRevenues.map((r, idx) => ({
+          id: `rev_${idx + 1}`,
+          concept: r.name || `Ingreso ${idx + 1}`,
+          unit: 'SERVICIO',
+          price: Number(r.initialMonthlyAmount) || 0,
+          highSeasonQty: 1,
+          lowSeasonQty: 1
+        }));
+      }
+
+      // 3. Mapear insumos y costos variables
+      const consumables = [];
+      const costVar = Number(drivers.costo_variable_unitario?.valor) || 0;
+      if (costVar > 0 && vol > 0) {
+        consumables.push({
+          id: 'con_1',
+          concept: `Insumos directos de ${concepto}`,
+          unit: 'LOTE',
+          purchasePrice: costVar,
+          highSeasonQty: vol,
+          lowSeasonQty: Math.max(1, Math.round(vol * 0.8)),
+          useInFormula: true
+        });
+      }
+
+      // 4. Mapear costos fijos
+      const fixedCosts = (projectData?.recurringExpenses || [])
+        .filter(e => e.type === 'Fijo')
+        .map((e, idx) => ({
+          id: `fix_${idx + 1}`,
+          concept: e.name || `Gasto Fijo ${idx + 1}`,
+          unit: 'Servicio',
+          quantity: 1,
+          unitCost: Number(e.initialMonthlyAmount) || 0,
+          frequency: 1
+        }));
+
+      // 5. Escenario base calibrado
+      const scenario = {
+        discountRate: 0.12,
+        annualGrowthRate: 0.05,
+        annualExpenseInflation: 0.045,
+        taxRate: 0.30
+      };
+
+      return {
+        investments: investments.length > 0 ? investments : undefined,
+        revenues: revenues.length > 0 ? revenues : undefined,
+        consumables: consumables.length > 0 ? consumables : [],
+        fixedCosts: fixedCosts.length > 0 ? fixedCosts : undefined,
+        scenario
+      };
+    } catch (err) {
+      console.warn('Error construyendo payload del simulador:', err);
+      return null;
+    }
+  };
+
+  const sendInitToSimulator = () => {
+    if (!iframeRef.current?.contentWindow) return;
+    try {
+      iframeRef.current.contentWindow.postMessage({
+        type: 'OBP_SET_PROJECT',
+        title: projectTitle,
+        badge: projectGiro,
+        giro: projectGiro
+      }, '*');
+
+      const payload = buildSimulatorPayload();
+      if (payload) {
+        iframeRef.current.contentWindow.postMessage({
+          type: 'OBP_INIT_SIMULATOR',
+          payload
+        }, '*');
+      }
+    } catch (err) {
+      console.warn('No se pudo enviar mensaje al iframe del simulador:', err);
+    }
+  };
+
+  useEffect(() => {
+    const handleMessage = (event) => {
+      if (event.data?.type === 'OBP_SIMULATOR_READY') {
+        sendInitToSimulator();
+      }
+    };
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, [planData, projectTitle, projectGiro]);
+
+  return (
+    <div className="module-view" style={{ padding: 0, height: 'calc(100vh - 80px)', overflow: 'hidden' }}>
+      <div style={{ width: '100%', height: '100%', position: 'relative', borderRadius: '14px', overflow: 'hidden', border: '1px solid var(--border-color)', background: '#f8fafc' }}>
+        <iframe 
+          ref={iframeRef}
+          src={iframeSrc} 
+          style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}
+          title="Simulador Financiero"
+          onLoad={() => {
+            setTimeout(sendInitToSimulator, 150);
+            setTimeout(sendInitToSimulator, 600);
+          }}
+        />
+      </div>
+    </div>
+  );
+}
 
 export default function DynamicModule() {
   const { pillarId: paramPillarId, moduleId: paramModuleId, tipoDoc, slug } = useParams();
@@ -229,34 +383,7 @@ export default function DynamicModule() {
   }
 
   if (pillarId === 'simulador_financiero' && moduleId === 'simulador') {
-    const rawBase = import.meta.env.BASE_URL || '/';
-    const basePath = rawBase.endsWith('/') ? rawBase : `${rawBase}/`;
-    const iframeSrc = `${basePath}simulador/index.html`;
-    const projectTitle = planData?.semilla?.negocio?.nombre || planData?.semilla?.nombre_proyecto || 'Proyecto sin nombre';
-    const projectGiro = planData?.semilla?.negocio?.giro || planData?.semilla?.giro || 'Pendiente de definir';
-
-    return (
-      <div className="module-view" style={{ padding: 0, height: 'calc(100vh - 80px)', overflow: 'hidden' }}>
-        <div style={{ width: '100%', height: '100%', position: 'relative', borderRadius: '14px', overflow: 'hidden', border: '1px solid var(--border-color)', background: '#f8fafc' }}>
-          <iframe 
-            src={iframeSrc} 
-            style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}
-            title="Simulador Financiero"
-            onLoad={(e) => {
-              try {
-                e.target.contentWindow?.postMessage({
-                  type: 'OBP_SET_PROJECT',
-                  title: projectTitle,
-                  badge: projectGiro
-                }, '*');
-              } catch (err) {
-                console.warn('Could not postMessage to simulator iframe', err);
-              }
-            }}
-          />
-        </div>
-      </div>
-    );
+    return <SimuladorFinancieroIframe planData={planData} />;
   }
 
   if (isFinancialModule && effectiveFrameworkKey === 'business') {

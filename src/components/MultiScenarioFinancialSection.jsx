@@ -1,10 +1,52 @@
 import { useState } from 'react';
 import { BarChart3 } from 'lucide-react';
+import { extractDriversFromPlan } from '../lib/finanzas/driversExtractor';
+import { parseToProjectData } from '../lib/finanzas/calculadoraFinanciera';
 
+/**
+ * Función auxiliar para calcular el VAN (Valor Actual Neto)
+ * @param {number} rate - Tasa de descuento en decimal (ej. 0.12)
+ * @param {number} initial - Inversión inicial (número positivo)
+ * @param {number[]} cashFlows - Array de flujos de efectivo de los años 1 a N
+ * @returns {number} VAN calculado
+ */
+function calcularVan(rate, initial, cashFlows) {
+  let van = -initial;
+  for (let i = 0; i < cashFlows.length; i++) {
+    van += cashFlows[i] / Math.pow(1 + rate, i + 1);
+  }
+  return van;
+}
+
+/**
+ * Función auxiliar para estimar la TIR (Tasa Interna de Retorno)
+ * @param {number} initial - Inversión inicial
+ * @param {number[]} cashFlows - Flujos de efectivo
+ * @returns {number} TIR estimada en porcentaje (ej. 18.5)
+ */
+function estimarTir(initial, cashFlows) {
+  let low = -0.5;
+  let high = 2.0;
+  for (let iter = 0; iter < 100; iter++) {
+    const mid = (low + high) / 2;
+    const npv = calcularVan(mid, initial, cashFlows);
+    if (Math.abs(npv) < 1) return Number((mid * 100).toFixed(2));
+    if (npv > 0) {
+      low = mid;
+    } else {
+      high = mid;
+    }
+  }
+  return Number(((low + high) / 2 * 100).toFixed(2));
+}
+
+/**
+ * Componente de Simulación Financiera y Evaluación de Riesgo Multi-Escenario
+ * Proyecta escenarios base, optimista y pesimista adaptados al giro y drivers del proyecto.
+ */
 export default function MultiScenarioFinancialSection({ planData }) {
   const [selectedScenario, setSelectedScenario] = useState('base');
 
-  // Helper seguro para extraer montos del planData o aplicar el modelo base
   const parseAmount = (val, fallback) => {
     if (!val) return fallback;
     if (typeof val === 'number') return Number.isFinite(val) && val > 0 ? val : fallback;
@@ -13,68 +55,156 @@ export default function MultiScenarioFinancialSection({ planData }) {
     return Number.isFinite(num) && num > 0 ? num : fallback;
   };
 
-  // Obtener cifras base del plan o fallback corporativo ($20M MXN / MaaS Minero)
-  const inversionBase = parseAmount(
-    planData?.organizacion?.inversion?.monto_total ||
-    planData?.organizacion?.inversion?.capex ||
-    planData?.semilla?.finanzas?.inversion_total,
-    20000000
-  );
+  // Extracción dinámica de drivers y datos formales del proyecto
+  const driversFicha = extractDriversFromPlan(planData);
+  const drivers = driversFicha?.drivers || {};
+  const projectData = parseToProjectData(planData);
 
-  const factorEscala = inversionBase / 20000000;
+  const companyName = planData?.config?.brandKit?.companyName || planData?.semilla?.negocio?.nombre || planData?.semilla?.nombre_proyecto || 'Proyecto Empresarial';
+  const projectGiro = planData?.semilla?.negocio?.giro || planData?.semilla?.giro || 'Operaciones y Servicios';
+  const concepto = drivers.concepto_producto?.valor || projectGiro;
+
+  // Inversión inicial (CAPEX)
+  const inversionBase = drivers.capex_total?.valor > 0 
+    ? drivers.capex_total.valor 
+    : parseAmount(
+        planData?.organizacion?.inversion?.monto_total ||
+        planData?.organizacion?.inversion?.capex ||
+        planData?.semilla?.finanzas?.inversion_total,
+        1500000
+      );
+
+  // Ventas de arranque anuales
+  let ventasBaseAnual = 0;
+  const ticket = Number(drivers.precio_unitario_o_ticket?.valor) || 0;
+  const volumen = Number(drivers.volumen_mensual_ventas?.valor) || 0;
+
+  if (ticket > 0 && volumen > 0) {
+    ventasBaseAnual = ticket * volumen * 12;
+  } else if (projectData?.recurringRevenues?.length > 0) {
+    ventasBaseAnual = projectData.recurringRevenues.reduce((acc, r) => acc + (r.initialMonthlyAmount || 0), 0) * 12;
+  } else {
+    ventasBaseAnual = Math.round(inversionBase * 0.90);
+  }
+
+  // Costos de arranque anuales
+  let costosBaseAnual = 0;
+  if (projectData?.recurringExpenses?.length > 0) {
+    costosBaseAnual = projectData.recurringExpenses.reduce((acc, e) => acc + (e.initialMonthlyAmount || 0), 0) * 12;
+  } else {
+    costosBaseAnual = Math.round(ventasBaseAnual * 0.65);
+  }
+
+  // Reserva de tesorería y rendimiento colateralizado (yield 6.5%)
+  const reservaTesoreria = Math.round(inversionBase * 0.10);
+  const rendimientoTesoreria = Math.round(reservaTesoreria * 0.065);
+  const reembolsoReservaA5 = reservaTesoreria;
+  const wacc = 12.0;
+
+  // Constructor de proyecciones a 5 años según modificadores
+  const buildScenario = (nombre, descripcion, color, modVentas, modCostos, crecVentas, inflacCostos) => {
+    const ventas = [];
+    const costos = [];
+    const flujoLibre = [];
+
+    const v1 = Math.round(ventasBaseAnual * modVentas);
+    const c1 = Math.round(costosBaseAnual * modCostos);
+
+    for (let yr = 0; yr < 5; yr++) {
+      const v = Math.round(v1 * Math.pow(1 + crecVentas, yr));
+      const c = Math.round(c1 * Math.pow(1 + inflacCostos, yr));
+      ventas.push(v);
+      costos.push(c);
+
+      // Flujo después de impuestos operativos (30% ISR) más rendimiento de tesorería
+      const utilidadOp = v - c;
+      const isr = utilidadOp > 0 ? utilidadOp * 0.30 : 0;
+      const f = Math.round(utilidadOp - isr + rendimientoTesoreria);
+      flujoLibre.push(f);
+    }
+
+    const flujosConReembolso = [...flujoLibre];
+    flujosConReembolso[4] += reembolsoReservaA5;
+
+    const van = calcularVan(wacc / 100, inversionBase, flujosConReembolso);
+    let tir = estimarTir(inversionBase, flujosConReembolso);
+    if (!Number.isFinite(tir) || tir > 150) tir = 15.0;
+
+    const roi = Number(((flujosConReembolso.reduce((a, b) => a + b, 0) / (inversionBase || 1) - 1) * 100).toFixed(1));
+
+    // Cálculo del periodo de recuperación
+    let acumulado = -inversionBase;
+    let paybackStr = 'Más de 5 Años';
+    for (let i = 0; i < flujosConReembolso.length; i++) {
+      const prev = acumulado;
+      acumulado += flujosConReembolso[i];
+      if (prev < 0 && acumulado >= 0) {
+        const fraccion = Math.abs(prev) / flujosConReembolso[i];
+        paybackStr = `${(i + fraccion).toFixed(1)} Años`;
+        break;
+      }
+    }
+
+    const puntoEquilibrioMensual = Math.round(costos[0] / 12);
+
+    return {
+      nombre,
+      descripcion,
+      color,
+      wacc,
+      tir,
+      van,
+      roi,
+      payback: paybackStr,
+      puntoEquilibrioMensual,
+      ventas,
+      costos,
+      rendimientoTesoreria,
+      flujoLibre,
+      reembolsoReservaA5
+    };
+  };
 
   const scenarios = {
-    base: {
-      nombre: 'Escenario Base (Modelo Maestro / RAG)',
-      descripcion: 'Caso maestro con contratos mineros Tier 1/2 en Sonora, 65% de costos operativos y reserva líquida de tesorería con yield del 6.5%.',
-      color: '#4f46e5',
-      wacc: 12.0,
-      tir: 15.11,
-      van: 1836412.50 * factorEscala,
-      roi: 24.2,
-      payback: '4.1 Años',
-      puntoEquilibrioMensual: Math.round(641666 * factorEscala),
-      ventas: [16000000, 19200000, 23040000, 27648000, 33177600].map(v => Math.round(v * factorEscala)),
-      costos: [10400000, 12480000, 14976000, 17971200, 21565440].map(c => Math.round(c * factorEscala)),
-      rendimientoTesoreria: Math.round(455000 * factorEscala),
-      flujoLibre: [3935750, 4663750, 5537350, 6585670, 7843654].map(f => Math.round(f * factorEscala)),
-      reembolsoReservaA5: Math.round(7000000 * factorEscala)
-    },
-    optimista: {
-      nombre: 'Escenario Optimista (+15% Volumen y +5% Tarifas)',
-      descripcion: 'Mayor penetración en distritos mineros de Cananea/Nacozari y expansión acelerada de telemetría IoT.',
-      color: '#10b981',
-      wacc: 12.0,
-      tir: 22.45,
-      van: 4520800.00 * factorEscala,
-      roi: 38.5,
-      payback: '3.4 Años',
-      puntoEquilibrioMensual: Math.round(590000 * factorEscala),
-      ventas: [19200000, 23040000, 27648000, 33177600, 39813120].map(v => Math.round(v * factorEscala)),
-      costos: [11520000, 13824000, 16588800, 19906560, 23887872].map(c => Math.round(c * factorEscala)),
-      rendimientoTesoreria: Math.round(455000 * factorEscala),
-      flujoLibre: [5287750, 6288750, 7489950, 8931390, 10661118].map(f => Math.round(f * factorEscala)),
-      reembolsoReservaA5: Math.round(7000000 * factorEscala)
-    },
-    pesimista: {
-      nombre: 'Escenario Pesimista (-25% Ventas y +10% Inflación en Insumos)',
-      descripcion: 'Desaceleración temporal en licitaciones y retraso en cobranza de grandes corporativos.',
-      color: '#ef4444',
-      wacc: 12.0,
-      tir: 8.92,
-      van: -1120500.00 * factorEscala,
-      roi: 9.8,
-      payback: '5.2 Años',
-      puntoEquilibrioMensual: Math.round(720000 * factorEscala),
-      ventas: [12000000, 14400000, 17280000, 20736000, 24883200].map(v => Math.round(v * factorEscala)),
-      costos: [8640000, 10368000, 12441600, 14929920, 17915904].map(c => Math.round(c * factorEscala)),
-      rendimientoTesoreria: Math.round(455000 * factorEscala),
-      flujoLibre: [2479750, 2907750, 3421350, 4037670, 4777254].map(f => Math.round(f * factorEscala)),
-      reembolsoReservaA5: Math.round(7000000 * factorEscala)
-    }
+    base: buildScenario(
+      'Escenario Base (Modelo Maestro / RAG)',
+      `Proyección institucional para ${companyName} (${concepto}), considerando 65% de estructura de costos promedio y reserva líquida con rendimiento del 6.5%.`,
+      '#4f46e5',
+      1.0,
+      1.0,
+      0.08,
+      0.045
+    ),
+    optimista: buildScenario(
+      'Escenario Optimista (+15% Volumen y +5% Tarifas)',
+      `Mayor penetración comercial de ${concepto}, expansión acelerada de clientes y optimización en compras de insumos.`,
+      '#10b981',
+      1.15,
+      0.95,
+      0.12,
+      0.035
+    ),
+    pesimista: buildScenario(
+      'Escenario Pesimista (-20% Ventas y +10% Inflación en Insumos)',
+      `Contracción en la demanda de ${concepto}, incremento en costos de operación y retrasos temporales en cobranza.`,
+      '#ef4444',
+      0.80,
+      1.10,
+      0.04,
+      0.065
+    )
   };
 
   const current = scenarios[selectedScenario] || scenarios.base;
+
+  // Cálculo de unidades de equilibrio contextualizadas
+  let unidadesEquilibrioTexto = '';
+  if (ticket > 0) {
+    const unidadesEq = Math.round(current.puntoEquilibrioMensual / ticket);
+    unidadesEquilibrioTexto = `~${unidadesEq.toLocaleString('es-MX')} unidades de ${concepto}/mes`;
+  } else {
+    unidadesEquilibrioTexto = `Operación continua de ${concepto}`;
+  }
 
   return (
     <div className="multi-scenario-financial-section" style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem', width: '100%', margin: '1.5rem 0', pageBreakInside: 'avoid' }}>
@@ -87,7 +217,7 @@ export default function MultiScenarioFinancialSection({ planData }) {
             Simulación Financiera y Evaluación de Riesgo Multi-Escenario
           </h4>
           <p style={{ fontSize: '0.8rem', color: '#64748b', margin: '4px 0 0 0' }}>
-            Proyección a 5 años basada en capital de $20,000,000 MXN y rendimiento de tesorería colateralizada
+            Proyección a 5 años para {companyName} basada en capital de ${inversionBase.toLocaleString('es-MX')} MXN y rendimiento de tesorería colateralizada
           </p>
         </div>
 
@@ -140,7 +270,7 @@ export default function MultiScenarioFinancialSection({ planData }) {
           <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#3b82f6', marginTop: '4px' }}>
             ${current.puntoEquilibrioMensual.toLocaleString('es-MX')}
           </div>
-          <span style={{ fontSize: '0.7rem', color: '#64748b' }}>MXN/mes (~22 pistones/mes)</span>
+          <span style={{ fontSize: '0.7rem', color: '#64748b' }}>MXN/mes ({unidadesEquilibrioTexto})</span>
         </div>
 
         <div style={{ background: '#ffffff', padding: '1rem', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
@@ -148,7 +278,7 @@ export default function MultiScenarioFinancialSection({ planData }) {
           <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#0f172a', marginTop: '4px' }}>
             {current.payback}
           </div>
-          <span style={{ fontSize: '0.7rem', color: '#64748b' }}>Con Recompra Serie B Año 5</span>
+          <span style={{ fontSize: '0.7rem', color: '#64748b' }}>Con Reembolso de Reserva Año 5</span>
         </div>
       </div>
 
@@ -168,7 +298,7 @@ export default function MultiScenarioFinancialSection({ planData }) {
           </thead>
           <tbody>
             <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
-              <td style={{ padding: '0.65rem 0.75rem', textAlign: 'left', fontWeight: 600, color: '#0f172a' }}>Inversión Inicial Emitida (Serie B)</td>
+              <td style={{ padding: '0.65rem 0.75rem', textAlign: 'left', fontWeight: 600, color: '#0f172a' }}>Inversión Inicial de Capital (CAPEX)</td>
               <td style={{ padding: '0.65rem 0.75rem', color: '#ef4444', fontWeight: 700 }}>-${inversionBase.toLocaleString('es-MX')}</td>
               <td style={{ padding: '0.65rem 0.75rem', color: '#64748b' }}>$0</td>
               <td style={{ padding: '0.65rem 0.75rem', color: '#64748b' }}>$0</td>
@@ -184,7 +314,7 @@ export default function MultiScenarioFinancialSection({ planData }) {
               ))}
             </tr>
             <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
-              <td style={{ padding: '0.65rem 0.75rem', textAlign: 'left', color: '#64748b' }}>(-) Costos y Gastos de Operación (65%)</td>
+              <td style={{ padding: '0.65rem 0.75rem', textAlign: 'left', color: '#64748b' }}>(-) Costos y Gastos de Operación</td>
               <td style={{ padding: '0.65rem 0.75rem', color: '#64748b' }}>$0</td>
               {current.costos.map((c, i) => (
                 <td key={i} style={{ padding: '0.65rem 0.75rem', color: '#ef4444' }}>-${c.toLocaleString('es-MX')}</td>

@@ -24,10 +24,11 @@
       }
     </style>
     <script>
-      // Puente dinámico con Open Business Plan con protección estricta contra bucles de mutación
+      // Puente dinámico con Open Business Plan (Fondo Thoth AC)
       (function() {
-        let activeProjectTitle = 'COMERCIO CUÁNTICO INTERNACIONAL';
-        let activeBadge = 'MAAS IOT / INVERSIÓN MINERA';
+        let activeProjectTitle = 'PLAN DE NEGOCIOS';
+        let activeBadge = 'PROYECCIÓN FINANCIERA';
+        let activeGiro = 'NEGOCIOS';
         let isUpdating = false;
         let updateTimeout = null;
 
@@ -36,21 +37,23 @@
           isUpdating = true;
 
           try {
-            // Reemplazar textos en el header de forma idempotente
             document.querySelectorAll('span, h1, h2, h3, h4, p, div').forEach(el => {
               if (el.children.length === 0 && el.textContent) {
                 const txt = el.textContent;
-                if (txt.includes('FAPPA / PROMETE') && el.textContent !== activeBadge) {
+                // Reemplazo de badges superiores y subtítulos
+                if ((txt.includes('FAPPA / PROMETE') || txt.includes('MAAS IOT') || txt.includes('COMERCIO CUÁNTICO')) && el.textContent !== activeBadge) {
                   el.textContent = activeBadge;
                   el.className = 'badge-project';
-                } else if (txt.includes('CIBERCAFE') && el.textContent !== activeProjectTitle) {
+                } else if ((txt.includes('CIBERCAFE') || txt.includes('COMERCIO CUÁNTICO INTERNACIONAL')) && el.textContent !== activeProjectTitle) {
                   el.textContent = activeProjectTitle;
                 } else if (txt.includes('Metodología SAGARPA') && !txt.includes('Modelo Atómico')) {
-                  el.textContent = 'Modelo Atómico Cuántico (SAPI de CV)';
-                } else if (txt.includes('este Cibercafé') && !txt.includes('Mantenimiento Minero')) {
-                  el.textContent = 'este proyecto de Mantenimiento Minero';
-                } else if (txt.includes('Reducción del 25% en ventas de internet') && !txt.includes('órdenes de servicio')) {
-                  el.textContent = 'Reducción del 25% en órdenes de servicio y +10% en insumos importados.';
+                  el.textContent = 'Modelo Atómico Cuántico Financiero';
+                } else if (txt.includes('este Cibercafé') || txt.includes('este proyecto de Mantenimiento Minero')) {
+                  el.textContent = 'este proyecto empresarial';
+                } else if (txt.includes('Reducción del 25% en ventas de internet') || txt.includes('órdenes de servicio y +10% en insumos importados')) {
+                  el.textContent = 'Reducción del 25% en volumen de ventas y +10% en costos de insumos.';
+                } else if (txt.includes('SIMULADOR MAAS © 2026') || txt.includes('Mantenimiento Predictivo Minero')) {
+                  el.textContent = `${activeProjectTitle} — Simulador Financiero © 2026`;
                 }
               }
             });
@@ -59,7 +62,6 @@
           }
         }
 
-        // Observar cambios en el DOM con debounce para evitar congelamientos de la pestaña
         const observer = new MutationObserver(() => {
           if (isUpdating) return;
           if (updateTimeout) clearTimeout(updateTimeout);
@@ -73,12 +75,13 @@
           updateDOMTexts();
         });
 
-        // Escuchar mensajes del padre (DynamicModule / PlanContext)
         window.addEventListener('message', (event) => {
-          if (event.data && event.data.type === 'OBP_SET_PROJECT') {
-            const { title, badge } = event.data;
+          if (!event.data) return;
+          if (event.data.type === 'OBP_SET_PROJECT') {
+            const { title, badge, giro } = event.data;
             if (title) activeProjectTitle = title.toUpperCase();
             if (badge) activeBadge = badge.toUpperCase();
+            if (giro) activeGiro = giro.toUpperCase();
             updateDOMTexts();
           }
         });
