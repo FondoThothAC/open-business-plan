@@ -197,14 +197,14 @@ Tres cosas que los briefs prometian y no estaban hechas, y 5 detalles de segurid
 sumaron en `f996e86`: `saveQuotaData` seguia con `writeFileSync` a pesar del texto de B3;
 `PROJECT_TYPES` estaba importado pero sin efecto en las ~25 rutas `/api/projects/:type/...`
 (hoy aplica en `projectPaths`/`resolveReadableProject`); `/api/ai/proxy` acceptaba cualquier
-esquema y seguia redirecciones; faltaban los tuneleras IPv6 (6to4 `2002::/16`, Teredo
+esquema y seguia redirecciones; faltaban los túneles IPv6 (6to4 `2002::/16`, Teredo
 `2001::/32`, NAT64 `64:ff9b::/96`); y `http://[::1]:11434` no comparaba contra la lista de
 loopback por los corchetes.
 
 Y dos lecciones de procedimientos, que valen para cualquier fase futura:
 
 - **Un test que escribe un store resuelto por `__dirname` contamina el repositorio.** El test
-  de cuota de B3 escribia el `server/data/search_quota.json` real y el cambio qued6 commiteado
+  de cuota de B3 escribia el `server/data/search_quota.json` real y el cambio quedó commiteado
   dentro de `e87169e` (revertido en `f996e86`). Por eso `quotaTracker.js` acepta ahora
   `QUOTA_FILE`. Antes de dar por aislado un test, comprobar de donde saca su ruta el modulo.
 - **`git add docs/` barre el trabajo de la sesion concurrente.** Al comitear B6 se colaron
