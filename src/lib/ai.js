@@ -213,6 +213,87 @@ function resolveProviderModel({ primaryProvider, model, installedModels = [] }) 
   return { provider: prov, model: finalModel };
 }
 
+/**
+ * Calibra la temperatura de la IA de forma adaptativa según el tipo de tarea, prompt y necesidad de precisión.
+ * - Si se pasa una temperatura explícita numérica (0.0 a 1.0), se respeta la preferencia del usuario.
+ * - Si la tarea exige JSON estructurado (tablas, arrays, esquemas de cálculo), reduce a 0.2 para eliminar alucinaciones sintácticas.
+ * - Si el contexto es financiero, contable o analítico (márgenes, CAPEX, flujo), calibra a 0.2.
+ * - Si es estratégico/evaluativo (FODA, PESTEL, Porter, ZOPP), calibra a 0.35.
+ * - Para redacción creativa general, usa 0.7.
+ *
+ * Soporta invocación por objeto: resolveAdaptiveTemperature({ config, prompt, expectJson, taskType })
+ * o invocación posicional / directa: resolveAdaptiveTemperature(configOrTemp, promptOrTask, expectJson)
+ *
+ * @param {Object|number} [optionsOrConfig] - Objeto de configuración o temperatura explícita
+ * @param {string} [promptOrTask] - Prompt o tipo de tarea
+ * @param {boolean} [expectJsonArg] - Si espera JSON estricto
+ * @returns {number} Temperatura calibrada entre 0.0 y 1.0
+ */
+export function resolveAdaptiveTemperature(optionsOrConfig = {}, promptOrTask = '', expectJsonArg = undefined) {
+  let explicitTemp;
+  let expectJson;
+  let textToInspect;
+
+  if (typeof optionsOrConfig === 'number') {
+    explicitTemp = optionsOrConfig;
+    textToInspect = String(promptOrTask || '');
+    expectJson = Boolean(expectJsonArg);
+  } else if (optionsOrConfig && typeof optionsOrConfig === 'object') {
+    explicitTemp = optionsOrConfig.temperature;
+    expectJson = expectJsonArg !== undefined ? Boolean(expectJsonArg) : Boolean(optionsOrConfig.expectJson);
+    const task = optionsOrConfig.taskType || optionsOrConfig.task || optionsOrConfig.role || optionsOrConfig.agent || '';
+    textToInspect = `${task} ${promptOrTask || optionsOrConfig.prompt || ''}`;
+  } else {
+    explicitTemp = undefined;
+    textToInspect = String(promptOrTask || '');
+    expectJson = Boolean(expectJsonArg);
+  }
+
+  // Si hay temperatura explícita válida (número finito entre 0.0 y 1.0), se respeta
+  if (typeof explicitTemp === 'number' && Number.isFinite(explicitTemp) && explicitTemp >= 0 && explicitTemp <= 1) {
+    return explicitTemp;
+  }
+
+  const normalized = textToInspect.toLowerCase();
+
+  // 1. Tareas de máxima precisión analítica y financiera: 0.2
+  const isFinancialOrAnalytical =
+    normalized.includes('financier') ||
+    normalized.includes('costo') ||
+    normalized.includes('cost') ||
+    normalized.includes('flujo de caja') ||
+    normalized.includes('capex') ||
+    normalized.includes('opex') ||
+    normalized.includes('tir') ||
+    normalized.includes('van') ||
+    normalized.includes('calcul') ||
+    normalized.includes('sensibilidad') ||
+    normalized.includes('montecarlo') ||
+    normalized.includes('analista') ||
+    normalized.includes('critico');
+
+  if (isFinancialOrAnalytical || expectJson) {
+    return 0.2;
+  }
+
+  // 2. Tareas de estructuración estratégica: 0.35
+  const isStrategic =
+    normalized.includes('estratega') ||
+    normalized.includes('foda') ||
+    normalized.includes('pestel') ||
+    normalized.includes('porter') ||
+    normalized.includes('zopp') ||
+    normalized.includes('riesgo') ||
+    normalized.includes('contingencia');
+
+  if (isStrategic) {
+    return 0.35;
+  }
+
+  // 3. Redacción libre o creativa: 0.7
+  return 0.7;
+}
+
 // Extractor y sanitizador de pool de API keys (soporta múltiples llaves separadas por comas o saltos de línea)
 export function parseApiKeys(rawKey) {
   if (!rawKey) return [];
@@ -974,6 +1055,11 @@ export async function callAiProvider(config, prompt, expectJson = true, expected
   } = config || {};
 
   const effectiveOllamaKey = ollamaKey || config?.ollamaKey || '';
+  const adaptiveTemp = resolveAdaptiveTemperature({
+    temperature: config?.temperature,
+    expectJson,
+    taskType: config?.taskType || config?.role || config?.agent || ''
+  });
 
   // Los modelos de Ollama Cloud intentan primero pasar por el servidor autenticado
   // para usar la llave de la cuenta o la llave suministrada en la configuración.
@@ -991,6 +1077,7 @@ export async function callAiProvider(config, prompt, expectJson = true, expected
           provider: 'ollamaCloud', 
           model: model || 'gpt-oss:20b', 
           maxTokens: expectJson ? 8192 : 4096,
+          temperature: adaptiveTemp,
           apiKey: effectiveOllamaKey,
           ollamaKey: effectiveOllamaKey
         })
@@ -1006,19 +1093,19 @@ export async function callAiProvider(config, prompt, expectJson = true, expected
   }
 
   const invokeSingle = async (prov, mod, key) => {
-    if (prov === 'bai' || prov === 'b.ai') return await callBAI(key || baiKey || apiKey, mod, prompt, expectJson);
-    if (prov === 'minimax')     return await callMinimax(key || minimaxKey || apiKey, mod, prompt, expectJson);
-    if (prov === 'gemini')      return await callGemini(key || apiKey, mod, prompt);
-    if (prov === 'groq')        return await callGroq(key || groqKey || apiKey, mod, prompt, expectJson);
-    if (prov === 'nvidia')      return await callNvidia(key || nvidiaKey || apiKey, mod, prompt);
-    if (prov === 'openrouter')  return await callOpenRouter(key || openrouterKey || apiKey, mod, prompt, expectJson);
-    if (prov === 'opencode')    return await callOpenRouter(key || opencodeKey || apiKey, mod, prompt, expectJson);
-    if (prov === 'tokenrouter') return await callTokenRouter(key || tokenrouterKey || apiKey, mod, prompt, expectJson);
-    if (prov === 'orcarouter')  return await callOrcaRouter(key || orcaRouterKey || apiKey, mod, prompt, expectJson);
-    if (prov === 'ollama')      return await callOllama(endpoint, mod, prompt, expectJson, key || effectiveOllamaKey || '');
-    if (prov === 'lmstudio')    return await callLmStudio(endpoint || lmStudioEndpoint, mod, prompt, expectJson, key || apiKey);
-    if (prov === 'mistral')     return await callMistral(key || mistralKey || apiKey, mod, prompt);
-    if (prov === 'openai')      return await callOpenAI(key || apiKey, mod, prompt, expectJson);
+    if (prov === 'bai' || prov === 'b.ai') return await callBAI(key || baiKey || apiKey, mod, prompt, expectJson, adaptiveTemp);
+    if (prov === 'minimax')     return await callMinimax(key || minimaxKey || apiKey, mod, prompt, expectJson, adaptiveTemp);
+    if (prov === 'gemini')      return await callGemini(key || apiKey, mod, prompt, adaptiveTemp);
+    if (prov === 'groq')        return await callGroq(key || groqKey || apiKey, mod, prompt, expectJson, adaptiveTemp);
+    if (prov === 'nvidia')      return await callNvidia(key || nvidiaKey || apiKey, mod, prompt, adaptiveTemp);
+    if (prov === 'openrouter')  return await callOpenRouter(key || openrouterKey || apiKey, mod, prompt, expectJson, adaptiveTemp);
+    if (prov === 'opencode')    return await callOpenRouter(key || opencodeKey || apiKey, mod, prompt, expectJson, adaptiveTemp);
+    if (prov === 'tokenrouter') return await callTokenRouter(key || tokenrouterKey || apiKey, mod, prompt, expectJson, adaptiveTemp);
+    if (prov === 'orcarouter')  return await callOrcaRouter(key || orcaRouterKey || apiKey, mod, prompt, expectJson, adaptiveTemp);
+    if (prov === 'ollama')      return await callOllama(endpoint, mod, prompt, expectJson, key || effectiveOllamaKey || '', adaptiveTemp);
+    if (prov === 'lmstudio')    return await callLmStudio(endpoint || lmStudioEndpoint, mod, prompt, expectJson, key || apiKey, adaptiveTemp);
+    if (prov === 'mistral')     return await callMistral(key || mistralKey || apiKey, mod, prompt, adaptiveTemp);
+    if (prov === 'openai')      return await callOpenAI(key || apiKey, mod, prompt, expectJson, adaptiveTemp);
     throw new Error(`Proveedor ${prov} no soportado`);
   };
 
@@ -1163,7 +1250,7 @@ export async function callAiProvider(config, prompt, expectJson = true, expected
   return expectJson ? parseAIResponse(text, expectedKeys) : text;
 }
 
-export async function callMinimax(apiKey, model, prompt, _expectJson = true) {
+export async function callMinimax(apiKey, model, prompt, _expectJson = true, temperature = 0.6) {
   const rotatedKey = getRotatedApiKey(apiKey, 'minimax');
   if (!rotatedKey) throw new Error('API Key de MiniMax requerida');
 
@@ -1179,7 +1266,7 @@ export async function callMinimax(apiKey, model, prompt, _expectJson = true) {
     body: JSON.stringify({
       model: preferredModel,
       messages: [{ role: 'user', content: prompt }],
-      temperature: 0.6
+      temperature: typeof temperature === 'number' ? temperature : 0.6
     })
   }, { fastFailOn429: true });
 
@@ -1190,7 +1277,7 @@ export async function callMinimax(apiKey, model, prompt, _expectJson = true) {
   return data.choices?.[0]?.message?.content || data.reply || '';
 }
 
-async function callOllama(endpoint, model, prompt, expectJson, ollamaKey = '') {
+async function callOllama(endpoint, model, prompt, expectJson, ollamaKey = '', temperature = 0.7) {
   let targetModel = model || 'gpt-oss:20b';
 
   // Normalización de modelos para Ollama Cloud
@@ -1216,7 +1303,8 @@ async function callOllama(endpoint, model, prompt, expectJson, ollamaKey = '') {
         body: JSON.stringify({
           model: targetModel,
           messages: [{ role: 'user', content: prompt }],
-          ...(expectJson ? { response_format: { type: 'json_object' } } : {})
+          ...(expectJson ? { response_format: { type: 'json_object' } } : {}),
+          temperature: typeof temperature === 'number' ? temperature : 0.7
         }),
         signal: AbortSignal.timeout(90000)
       });
@@ -1240,7 +1328,8 @@ async function callOllama(endpoint, model, prompt, expectJson, ollamaKey = '') {
             body: JSON.stringify({
               model: targetModel,
               messages: [{ role: 'user', content: prompt }],
-              ...(expectJson ? { response_format: { type: 'json_object' } } : {})
+              ...(expectJson ? { response_format: { type: 'json_object' } } : {}),
+              temperature: typeof temperature === 'number' ? temperature : 0.7
             }),
             signal: AbortSignal.timeout(60000)
           });
@@ -1279,7 +1368,13 @@ async function callOllama(endpoint, model, prompt, expectJson, ollamaKey = '') {
 
   const targetEndpoint = endpoint || 'http://localhost:11434';
   const url = `${targetEndpoint}/api/generate`;
-  const payload = { model: targetModel, prompt, stream: false, format: expectJson ? 'json' : undefined };
+  const payload = {
+    model: targetModel,
+    prompt,
+    stream: false,
+    format: expectJson ? 'json' : undefined,
+    options: { temperature: typeof temperature === 'number' ? temperature : 0.7 }
+  };
 
   let response;
   try {
@@ -1317,7 +1412,7 @@ async function callOllama(endpoint, model, prompt, expectJson, ollamaKey = '') {
   return data.response;
 }
 
-async function callLmStudio(endpoint, model, prompt, expectJson, apiKey) {
+async function callLmStudio(endpoint, model, prompt, expectJson, apiKey, temperature = 0.7) {
   const url = `${endpoint || 'http://localhost:1234/v1'}/chat/completions`;
   const headers = { 'Content-Type': 'application/json' };
   if (apiKey) {
@@ -1331,7 +1426,7 @@ async function callLmStudio(endpoint, model, prompt, expectJson, apiKey) {
       model: model || 'local-model',
       messages: [{ role: 'user', content: prompt }],
       response_format: expectJson ? { type: 'json_object' } : undefined,
-      temperature: 0.7
+      temperature: typeof temperature === 'number' ? temperature : 0.7
     })
   });
   const data = await response.json();
@@ -1339,7 +1434,7 @@ async function callLmStudio(endpoint, model, prompt, expectJson, apiKey) {
   return data.choices[0].message.content;
 }
 
-async function callGemini(apiKey, model, prompt) {
+async function callGemini(apiKey, model, prompt, temperature = 0.7) {
   const keys = parseApiKeys(apiKey);
   if (keys.length === 0) throw new Error('No se proporcionó API Key de Google Gemini válida');
 
@@ -1373,7 +1468,12 @@ async function callGemini(apiKey, model, prompt) {
         const response = await fetchWithRetry(url, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: {
+              temperature: typeof temperature === 'number' ? temperature : 0.7
+            }
+          })
         }, { maxRetries: 0, fastFailOn429: true });
 
         if (response.status === 429) {
@@ -1430,7 +1530,7 @@ async function fetchWithProxy(url, options = {}) {
   return fetch(url, options);
 }
 
-async function callGroq(apiKey, model, prompt, expectJson) {
+async function callGroq(apiKey, model, prompt, expectJson, temperature = 0.7) {
   const keys = parseApiKeys(apiKey);
   if (keys.length === 0) throw new Error('No se proporcionó API Key de Groq válida');
 
@@ -1469,7 +1569,7 @@ async function callGroq(apiKey, model, prompt, expectJson) {
             model: candidate,
             messages: [{ role: 'user', content: prompt }],
             response_format: expectJson ? { type: 'json_object' } : undefined,
-            temperature: 0.7
+            temperature: typeof temperature === 'number' ? temperature : 0.7
           })
         }, { maxRetries: 0, fastFailOn429: true });
 
@@ -1502,14 +1602,14 @@ async function callGroq(apiKey, model, prompt, expectJson) {
   throw lastError || new Error('No se pudo obtener respuesta de ningún modelo o llave disponible en Groq.');
 }
 
-async function callNvidia(apiKey, model, prompt) {
+async function callNvidia(apiKey, model, prompt, temperature = 0.7) {
   const response = await fetchWithRetry('https://integrate.api.nvidia.com/v1/chat/completions', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
     body: JSON.stringify({
       model: model && !model.includes('nemotron-70b-instruct') ? model : 'meta/llama-3.1-70b-instruct',
       messages: [{ role: 'user', content: prompt }],
-      temperature: 0.7,
+      temperature: typeof temperature === 'number' ? temperature : 0.7,
       max_tokens: 4096
     })
   });
@@ -1518,7 +1618,7 @@ async function callNvidia(apiKey, model, prompt) {
   return data.choices[0].message.content;
 }
 
-async function callOpenRouter(apiKey, model, prompt, expectJson) {
+async function callOpenRouter(apiKey, model, prompt, expectJson, temperature = 0.7) {
   const keys = parseApiKeys(apiKey);
   if (keys.length === 0) throw new Error('No se proporcionó API Key de OpenRouter válida');
 
@@ -1552,7 +1652,7 @@ async function callOpenRouter(apiKey, model, prompt, expectJson) {
             model: candidate,
             messages: [{ role: 'user', content: prompt }],
             response_format: expectJson ? { type: 'json_object' } : undefined,
-            temperature: 0.7
+            temperature: typeof temperature === 'number' ? temperature : 0.7
           })
         }, { maxRetries: 0, fastFailOn429: true });
 
@@ -1580,7 +1680,7 @@ async function callOpenRouter(apiKey, model, prompt, expectJson) {
   throw lastError || new Error('No se pudo obtener respuesta de ningún modelo disponible en OpenRouter.');
 }
 
-async function callOpenAI(apiKey, model, prompt, expectJson) {
+async function callOpenAI(apiKey, model, prompt, expectJson, temperature = 0.7) {
   const resolvedModel = model || 'gpt-4o';
   const response = await fetchWithRetry('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
@@ -1588,7 +1688,8 @@ async function callOpenAI(apiKey, model, prompt, expectJson) {
     body: JSON.stringify({
       model: resolvedModel,
       messages: [{ role: 'user', content: prompt }],
-      response_format: expectJson ? { type: 'json_object' } : undefined
+      response_format: expectJson ? { type: 'json_object' } : undefined,
+      temperature: typeof temperature === 'number' ? temperature : 0.7
     })
   });
   const data = await response.json();
@@ -1598,7 +1699,7 @@ async function callOpenAI(apiKey, model, prompt, expectJson) {
   return data.choices[0].message.content;
 }
 
-async function callBAI(apiKey, model, prompt, expectJson) {
+async function callBAI(apiKey, model, prompt, expectJson, temperature = 0.7) {
   const keys = parseApiKeys(apiKey);
   if (keys.length === 0) throw new Error('No se proporcionó API Key de B.AI válida');
 
@@ -1630,7 +1731,7 @@ async function callBAI(apiKey, model, prompt, expectJson) {
             model: candidate,
             messages: [{ role: 'user', content: prompt }],
             response_format: expectJson ? { type: 'json_object' } : undefined,
-            temperature: 0.7
+            temperature: typeof temperature === 'number' ? temperature : 0.7
           })
         }, { maxRetries: 0, fastFailOn429: true });
 
@@ -1740,7 +1841,7 @@ function recordTokenTelemetry(provider, totalTokens, model = null, promptTokens 
   }
 }
 
-async function callOrcaRouter(apiKey, model, prompt, expectJson) {
+async function callOrcaRouter(apiKey, model, prompt, expectJson, temperature = 0.7) {
   const keys = parseApiKeys(apiKey);
   if (keys.length === 0) throw new Error('No se proporcionó API Key de Orca Router válida');
 
@@ -1754,7 +1855,8 @@ async function callOrcaRouter(apiKey, model, prompt, expectJson) {
       body: JSON.stringify({
         model: targetModel,
         messages: [{ role: 'user', content: prompt }],
-        response_format: expectJson ? { type: 'json_object' } : undefined
+        response_format: expectJson ? { type: 'json_object' } : undefined,
+        temperature: typeof temperature === 'number' ? temperature : 0.7
       })
     });
     
@@ -1770,7 +1872,7 @@ async function callOrcaRouter(apiKey, model, prompt, expectJson) {
   }
 }
 
-async function callTokenRouter(apiKey, model, prompt, expectJson) {
+async function callTokenRouter(apiKey, model, prompt, expectJson, temperature = 0.7) {
   const keys = parseApiKeys(apiKey);
   if (keys.length === 0) throw new Error('No se proporcionó API Key de TokenRouter válida');
 
@@ -1813,7 +1915,7 @@ async function callTokenRouter(apiKey, model, prompt, expectJson) {
               model: targetModel,
               messages: [{ role: 'user', content: prompt }],
               response_format: expectJson ? { type: 'json_object' } : undefined,
-              temperature: 0.7
+              temperature: typeof temperature === 'number' ? temperature : 0.7
             })
           }, { maxRetries: 0, fastFailOn429: true });
 
@@ -1842,14 +1944,15 @@ async function callTokenRouter(apiKey, model, prompt, expectJson) {
   throw lastError || new Error('No se pudo completar la llamada con TokenRouter');
 }
 
-async function callMistral(apiKey, model, prompt) {
+async function callMistral(apiKey, model, prompt, temperature = 0.7) {
   const resolvedModel = model || 'mistral-large-latest';
   const response = await fetchWithRetry('https://api.mistral.ai/v1/chat/completions', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
     body: JSON.stringify({
       model: resolvedModel,
-      messages: [{ role: 'user', content: prompt }]
+      messages: [{ role: 'user', content: prompt }],
+      temperature: typeof temperature === 'number' ? temperature : 0.7
     })
   });
   const data = await response.json();
