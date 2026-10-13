@@ -171,3 +171,43 @@ Después de escribirlos, los releí contra el código con un subagente de revisi
 4. **B2:** la forma "obvia" de montar parsers por ruta (`app.post(path, parser, handler)` arriba de todo) registra la ruta **antes** de `app.use('/api', authGuard)` (L241) y la deja sin autenticar. Solo es válido `app.use(<prefijo>, parser)` antes del parser global.
 
 También se corrigieron: el default real de Ollama local es `http://localhost:11434` (`LlmExecutionEngine.js:159`), no solo `127.0.0.1`; el vínculo de sesión de swarm debe reclamarse **al abrir el SSE** (el cliente abre el stream antes que `industrialize`); `RUTAS_PUBLICAS` tiene 8 entradas de IA/swarm, no 6; hay 13 `incrementSearchQuota`, no 9; `cors()` está en `index.js:138-145` y el bloque de `L152-159` es anti-CSRF; y los usuarios de test nacen en `status: 'pending'` (§0.4).
+
+
+## 0.16 Lo que solo se pudo ver despues de implementar (revision de codigo, 12-oct)
+
+Los briefs se verificaron contra el codigo, pero habia afirmaciones que solo se caen al
+escribir la solucion. Dos bloqueadores quedaron en el primer commit de B6 y los encontro
+una revision de solo lectura del diff completo:
+
+1. **Reentrada en la cola = deadlock.** `safeDdgSearch` reintentaba llamandose a si misma
+   *dentro* del turno de `createThrottledQueue`, y la cola encadena el siguiente eslabon
+   sobre el turno que aun no resolvio. Un "too quickly" de DuckDuckGo colgaba
+   `/api/search` y `/api/market/enrich` para siempre. Regla: **dentro de un turno de cola,
+   el reintento es un bucle, nunca una nueva entrada a la cola.**
+2. **`resourceType()` de Puppeteer no usa los nombres de Playwright.** El guardia de
+   redirecciones filtraba por `['main','sub_frame']`: el valor real es el enum
+   `Network.ResourceType` de CDP en minusculas (`document`, `xhr`, `fetch`, `websocket`,
+   `image`, `script`, `other`…), verificado en
+   `node_modules/puppeteer-core/lib/puppeteer/cdp/HTTPRequest.js:33`. Con esa lista el
+   `if` nunca acertaba y el 302 interno que se queria bloquear pasaba. Regla: **no escribir
+   codigo de API de una libreria desde la memoria de otra; comprobar el enum en la fuente
+   instalada.** El filtro final no usa tipos: aborta todo http(s) que falle la validacion.
+
+Tres cosas que los briefs prometian y no estaban hechas, y 5 detalles de seguridad que se
+sumaron en `f996e86`: `saveQuotaData` seguia con `writeFileSync` a pesar del texto de B3;
+`PROJECT_TYPES` estaba importado pero sin efecto en las ~25 rutas `/api/projects/:type/...`
+(hoy aplica en `projectPaths`/`resolveReadableProject`); `/api/ai/proxy` acceptaba cualquier
+esquema y seguia redirecciones; faltaban los tuneleras IPv6 (6to4 `2002::/16`, Teredo
+`2001::/32`, NAT64 `64:ff9b::/96`); y `http://[::1]:11434` no comparaba contra la lista de
+loopback por los corchetes.
+
+Y dos lecciones de procedimientos, que valen para cualquier fase futura:
+
+- **Un test que escribe un store resuelto por `__dirname` contamina el repositorio.** El test
+  de cuota de B3 escribia el `server/data/search_quota.json` real y el cambio qued6 commiteado
+  dentro de `e87169e` (revertido en `f996e86`). Por eso `quotaTracker.js` acepta ahora
+  `QUOTA_FILE`. Antes de dar por aislado un test, comprobar de donde saca su ruta el modulo.
+- **`git add docs/` barre el trabajo de la sesion concurrente.** Al comitear B6 se colaron
+  `docs/pestel_plan/*` y `docs/PLAN_PESTEL_QODER_ANTIGRAVITY.md` de otra sesion; se deshizo
+  con `git reset --soft HEAD~1` antes del push. Regla: **stage por archivo, no por directorio,
+  mientras haya otra sesion viva en el repo.**

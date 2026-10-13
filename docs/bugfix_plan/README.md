@@ -10,12 +10,12 @@ La auditoría se verificó contra el código real el 12-oct-2026 (HEAD `de9db87`
 
 | # | Brief | Severidad | Área | Estado |
 |---|---|---|---|---|
-| 1 | [`RUN/B1_PATH_TRAVERSAL.md`](RUN/B1_PATH_TRAVERSAL.md) | Crítico | `projectAccess.js` + logo/logs en `index.js` | pendiente |
-| 2 | [`RUN/B2_CREDENCIALES_ENDPOINTS.md`](RUN/B2_CREDENCIALES_ENDPOINTS.md) | Crítico | credencial INEGI, `authGuard.js`, límites de body | pendiente |
-| 3 | [`RUN/B3_CARRERAS_PERSISTENCIA.md`](RUN/B3_CARRERAS_PERSISTENCIA.md) | Alto | `auth.js`, `/api/save`, cuotas, `draft_activo` | pendiente |
-| 4 | [`RUN/B4_FRONTEND_ROBUSTEZ.md`](RUN/B4_FRONTEND_ROBUSTEZ.md) | Alto | `ModuloFinanciero`, `Layout`, `ReviewPage` | pendiente |
-| 5 | [`RUN/B5_LOGICA_FINANCIERA.md`](RUN/B5_LOGICA_FINANCIERA.md) | Medio | TIR, histograma Monte Carlo, inputs | pendiente |
-| 6 | [`RUN/B6_SSRF_CIERRE.md`](RUN/B6_SSRF_CIERRE.md) | Medio | `scraper.js`, limiter DDG + **verificación integral** | pendiente |
+| 1 | [`RUN/B1_PATH_TRAVERSAL.md`](RUN/B1_PATH_TRAVERSAL.md) | Crítico | `projectAccess.js` + logo/logs en `index.js` | ✅ `680ef4e` |
+| 2 | [`RUN/B2_CREDENCIALES_ENDPOINTS.md`](RUN/B2_CREDENCIALES_ENDPOINTS.md) | Crítico | credencial INEGI, `authGuard.js`, límites de body | ✅ `4fef73f` |
+| 3 | [`RUN/B3_CARRERAS_PERSISTENCIA.md`](RUN/B3_CARRERAS_PERSISTENCIA.md) | Alto | `auth.js`, `/api/save`, cuotas, `draft_activo` | ✅ `e87169e` |
+| 4 | [`RUN/B4_FRONTEND_ROBUSTEZ.md`](RUN/B4_FRONTEND_ROBUSTEZ.md) | Alto | `ModuloFinanciero`, `Layout`, `ReviewPage` | ✅ `639d539` |
+| 5 | [`RUN/B5_LOGICA_FINANCIERA.md`](RUN/B5_LOGICA_FINANCIERA.md) | Medio | TIR, histograma Monte Carlo, inputs | ✅ `1e3c5e6` |
+| 6 | [`RUN/B6_SSRF_CIERRE.md`](RUN/B6_SSRF_CIERRE.md) | Medio | `scraper.js`, limiter DDG + **verificación integral** | ✅ `2659d75` + `f996e86` |
 
 **[`RUN/00_CONTEXTO.md`](RUN/00_CONTEXTO.md) es lectura obligatoria antes de cualquier fase.** Contiene: entorno y comandos, modelo de auth y roles reales, los 6 hechos de deploy que sostienen el "no romper producción", dónde está realmente la credencial, política de secretos, el paso B0 de aislamiento de `server/data` (porque `npm test` escribe datos reales), la topología de ramas, las 8 correcciones a las fichas, qué no se toca en ninguna fase y los pendientes que son del dueño.
 
@@ -33,6 +33,14 @@ Detalladas en `RUN/00_CONTEXTO.md` §0.10. Resumen:
 6. **B5**: los 4 `no-useless-assignment` son higiene, no bugs ocultos.
 7. **B2 es más grande**: 6 sitios con la credencial (no 1), `aiConfig.endpoint` controlado por el request en swarm, y `GET /api/swarm/stream/:sessionId` pública con CORS `*` por el `startsWith` del matcher.
 8. **El baseline de lint ya está roto** (`npm run lint` → exit 1); se repara en B5. Y `/ultra-review` no existe en este entorno → subagente de review de solo lectura.
+
+## Estado de ejecución (12-oct-2026)
+
+Las seis fases se ejecutaron, cada una en su rama `fix/fase-b<N>` con su commit y su merge
+local a `main`. **Sin push y sin deploy**: eso sigue siendo decisión del dueño. Suite final
+420/420 (baseline 402), ESLint 0 errores, `vite build` OK. Una revisión de código de solo
+lectura sobre el diff completo encontró 2 bloqueadores en el propio B6 ya implementado y 8
+ajustes; se corrigieron en `f996e86` y están documentados en `RUN/00_CONTEXTO.md` §0.16.
 
 ## Registro de la auditoría
 

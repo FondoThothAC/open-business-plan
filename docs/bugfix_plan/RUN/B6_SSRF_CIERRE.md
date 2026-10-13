@@ -89,7 +89,7 @@ Revalidar **síncronamente** no resuelve DNS; para eso hay dos opciones y hay qu
 export function createThrottledQueue({ intervalMs })  // => { run(fn) }
 ```
 
-`run(fn)` encadena: `cola = cola.then(() => espera(restante)).then(() => { ultima = Date.now(); return fn(); })`. Reescribir `safeDdgSearch` (`index.js:69-93`) para usar la cola **conservando su firma y su contrato de retorno**: hoy devuelve un **arreglo** (`respuesta.results || []` en L82, y `[]` en el camino de error L91), **no** un objeto `{results}` — no cambies la forma o rompes los 10 call sites: L2242, L2283, L2326, L2345, L2385, L2404, L2449, L2464, L2579 y L3358. Conserva también el retry cuando el mensaje contiene `"too quickly"` (L85-89, con su pausa de 2500 ms) y el `console.warn` de fallo (L90).
+`run(fn)` encadena: `cola = cola.then(() => espera(restante)).then(() => { ultima = Date.now(); return fn(); })`. Reescribir `safeDdgSearch` (`index.js:69-93`) para usar la cola de `server/ddgLimiter.js` **conservando su firma y su contrato de retorno**: hoy devuelve un **arreglo** (`respuesta.results || []` en L82, y `[]` en el camino de error L91), **no** un objeto `{results}` — no cambies la forma o rompes los 10 call sites: L2242, L2283, L2326, L2345, L2385, L2404, L2449, L2464, L2579 y L3358. Conserva también el retry cuando el mensaje contiene `"too quickly"` (L85-89, con su pausa de 2500 ms) y el `console.warn` de fallo (L90).
 
 No se intenta compartir esta cola con B3: B3 eligió permanecér síncrono a propósito (§0.10.1). Y **no** se instala `express-rate-limit` (dependencia nueva de producción); queda como follow-up acotado a `/api/auth/login`.
 
