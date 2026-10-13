@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FileSpreadsheet, LineChart, PieChart, Settings, Eye, BrainCircuit, ChevronDown, ChevronRight, ChevronLeft, Save, FilePlus, Folder, FolderOpen, Check, Image as ImageIcon, Sprout, Copy, Star, Briefcase, Zap, Globe, Cpu, ShoppingBag, Landmark, ListChecks, Compass, Target, Layers, Share2, Factory, UploadCloud, Bell, Terminal, User, LogOut, Shield, Users, FolderGit2 } from 'lucide-react';
+import { LayoutDashboard, FileSpreadsheet, LineChart, PieChart, Settings, Eye, BrainCircuit, ChevronDown, ChevronRight, ChevronLeft, Save, FilePlus, Folder, FolderOpen, Check, Image as ImageIcon, Sprout, Copy, Star, Briefcase, Zap, Globe, Cpu, ShoppingBag, Landmark, ListChecks, Compass, Target, Layers, Share2, Factory, UploadCloud, Bell, Terminal, User, LogOut, Shield, Users, FolderGit2, BookOpen } from 'lucide-react';
 import { usePlan } from '../context/PlanContext';
 import { useAuth } from '../contexts/AuthContext';
 import { PROJECT_EXAMPLES } from '../lib/projects_db';
@@ -687,6 +687,22 @@ export default function Layout() {
             >
               <div className="nav-icon-box"><ImageIcon size={18} /></div>
               {!isSidebarCollapsed && <span>Anexos y Evidencia</span>}
+            </NavLink>
+            <NavLink 
+              to={buildSemanticUrl({ projectType: planData?.config?.projectType, section: 'wiki', slug: currentProjectSlug })} 
+              className="nav-item" 
+              title="Wiki Knowledge Center (Metodologías y Fórmulas)" 
+              style={isSidebarCollapsed ? { justifyContent: 'center' } : {}}
+            >
+              <div className="nav-icon-box" style={{ color: '#8b5cf6' }}><BookOpen size={18} /></div>
+              {!isSidebarCollapsed && (
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                  <span>Wiki Knowledge</span>
+                  <span style={{ fontSize: '0.62rem', padding: '1px 5px', borderRadius: '4px', background: 'rgba(139, 92, 246, 0.15)', color: '#8b5cf6', fontWeight: 800 }}>
+                    WIKI
+                  </span>
+                </div>
+              )}
             </NavLink>
             <NavLink 
               to={buildSemanticUrl({ projectType: planData?.config?.projectType, section: 'configuracion', slug: currentProjectSlug })} 
