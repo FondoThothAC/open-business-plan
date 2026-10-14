@@ -26,6 +26,7 @@ import { renameProject } from '../src/lib/serverUtils/projectRename.js';
 import { sanitizeProjectConfig } from '../src/lib/serverUtils/sanitizeProjectConfig.js';
 import marketCascadeRouter from './routes/marketCascade.js';
 import wikiRouter from './routes/wikiRouter.js';
+import { TelegramBotService } from './integrations/telegramBot.js';
 import { GenerationJobStore } from './generationJobStore.js';
 import cookieParser from 'cookie-parser';
 import { 
@@ -439,6 +440,58 @@ app.post('/api/ai/bob-chat', async (req, res) => {
     }
   }
   return res.status(502).json({ error: lastError?.message || 'No fue posible conectar con los proveedores configurados.' });
+});
+
+let telegramBotService = null;
+
+/**
+ * Ejecuta una consulta al motor de IA usando las claves configuradas en el entorno o perfil.
+ * Usado por BOB en Telegram y módulos ejecutivos.
+ * 
+ * @param {string} prompt
+ * @param {string} [targetModel]
+ * @returns {Promise<{ text: string, model: string, provider: string }>}
+ */
+export async function executeBobAiPrompt(prompt, targetModel) {
+  const keys = {
+    ollamaCloud: process.env.OLLAMA_KEY || process.env.VITE_BOB_OLLAMA_KEY || process.env.VITE_OLLAMA_KEY,
+    groq: process.env.GROQ_KEY || process.env.VITE_GROQ_KEY,
+    openrouter: process.env.OPENROUTER_API_KEY || process.env.VITE_OPENROUTER_KEY,
+    openai: process.env.OPENAI_API_KEY
+  };
+
+  const preference = ['ollamaCloud', 'groq', 'openrouter', 'openai'];
+  const providers = preference.filter(name => keys[name] && PERSONAL_AI_PROVIDERS[name]);
+
+  if (!providers.length) {
+    throw new Error('Configura al menos una clave de IA en el servidor (OLLAMA_KEY, GROQ_KEY, OPENROUTER_API_KEY o OPENAI_API_KEY).');
+  }
+
+  let lastError = null;
+  for (const provider of providers) {
+    try {
+      const result = await callPersonalAi(provider, keys[provider], prompt, targetModel);
+      return { text: result.text, model: result.model, provider };
+    } catch (error) {
+      console.warn(`[BobAI] Error con proveedor ${provider}:`, error.message);
+      lastError = error;
+    }
+  }
+  throw lastError || new Error('No fue posible conectar con los proveedores configurados.');
+}
+
+// Ruta Webhook oficial para recibir mensajes de Telegram en producción
+app.post('/api/telegram/webhook', async (req, res) => {
+  if (telegramBotService && telegramBotService.isConfigured()) {
+    try {
+      await telegramBotService.handleUpdate(req.body);
+      return res.json({ ok: true });
+    } catch (err) {
+      console.error('[TelegramWebhook] Error procesando update:', err);
+      return res.status(500).json({ error: err.message });
+    }
+  }
+  return res.status(503).json({ error: 'Telegram Bot no configurado o inactivo.' });
 });
 
 // Analista financiero de IA para el simulador financiero interactivo
@@ -5735,4 +5788,35 @@ app.listen(PORT, HOST, () => {
   console.log('');
   console.log('Esperando actividad…');
   console.log('');
+
+  // Inicialización condicional del servicio de Telegram con BOB
+  if (process.env.TELEGRAM_BOT_TOKEN) {
+    telegramBotService = new TelegramBotService({
+      token: process.env.TELEGRAM_BOT_TOKEN,
+      allowedUsers: process.env.TELEGRAM_ALLOWED_USERS,
+      defaultProject: process.env.TELEGRAM_DEFAULT_PROJECT,
+      aiHandler: executeBobAiPrompt
+    });
+
+    const webhookUrl = process.env.TELEGRAM_WEBHOOK_URL;
+    if (webhookUrl) {
+      telegramBotService.setWebhook(webhookUrl).then(ok => {
+        console.log(`[TelegramBot] Webhook configurado en ${webhookUrl}: ${ok ? 'Exitoso' : 'Fallo'}`);
+      }).catch(err => {
+        console.warn('[TelegramBot] Error configurando webhook:', err.message);
+      });
+    } else {
+      telegramBotService.startPolling();
+    }
+  }
 });
+
+// Manejo de apagado ordenado del proceso
+const handleShutdown = () => {
+  if (telegramBotService) {
+    telegramBotService.stopPolling();
+  }
+  process.exit(0);
+};
+process.on('SIGINT', handleShutdown);
+process.on('SIGTERM', handleShutdown);

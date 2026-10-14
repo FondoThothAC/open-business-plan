@@ -71,6 +71,14 @@ graph TD
   * Recalcula VAN, TIR, ROI, Punto de Equilibrio y PESTEL.
   * Retorna matriz comparativa `{ baseMetrics, forkMetrics, deltaPercentage, impactTrafficLight: 'GREEN' | 'YELLOW' | 'RED' }`.
 
+### 2.5 Integración de Telegram con BOB Chat (`server/integrations/telegramBot.js`)
+* **`TelegramBotService`**:
+  * **Capa de Transporte:** Conexión nativa con Telegram Bot API vía `fetch` (sin dependencias npm pesadas).
+  * **Modo Dual:** Long Polling automático para desarrollo local y Webhook (`POST /api/telegram/webhook`) para producción en VPS.
+  * **Cerebro Cuántico de BOB:** Inyección contextual de `Semilla`, `Mercado`, `Finanzas`, `BEP`, `Margen` y `FRLI` bajo la metodología de Empresas Cuánticas (Fondo Thoth AC).
+  * **Comandos Ejecutivos:** `/start`, `/proyectos`, `/usar <slug>`, `/info` (resumen), `/diagnostico` (modelo atómico y delegación), `/finanzas` (runway y punto de equilibrio) y `/ayuda`.
+  * **Seguridad:** Control estricto por lista blanca `TELEGRAM_ALLOWED_USERS` y chunking automático a 4000 caracteres.
+
 ---
 
 ## 3. Topología de Despliegue en Producción & Enrutamiento Subfolder (`/obp/`)

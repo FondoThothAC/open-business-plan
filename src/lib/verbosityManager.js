@@ -43,7 +43,7 @@ export function buildVerbosityConstraint(verbosity = 'normal', moduleKey = '') {
 
   // Regla especial prioritaria para Análisis FODA (Fortalezas, Oportunidades, Debilidades, Amenazas)
   if (mod === 'foda') {
-    return `\n\nREGLA ESTRICTA DE EXTENSIÓN PARA FODA: Formato ultra-conciso obligatorio. Redacta únicamente de 3 a 5 viñetas (bullet points) concretas por cuadrante, compuestas por oraciones cortas y directas al grano (máximo 15 a 25 palabras por viñeta). PROHIBIDO escribir párrafos extensos de fundamentación, introducciones teóricas o relleno narrativo redundante.`;
+    return `\n\nREGLA ESTRICTA DE EXTENSIÓN PARA FODA: Formato ultra-conciso obligatorio. Redacta únicamente de 3 a 5 viñetas (bullet points) concretas por cuadrante, compuestas por oraciones cortas y directas al grano (máximo 15 a 25 palabras por viñeta). PROHIBIDO escribir párrafos extensos de fundamentación, introducciones teóricas o relleno narrativo redundante. REGLA METODOLÓGICA: Prohibido incluir factores legales, leyes o reformas macro (reservados exclusivamente para PESTEL). Formular debilidades y oportunidades orientadas a ser convertidas en fortalezas operativas.`;
   }
 
   // Regla especial prioritaria para Business Model Canvas (9 bloques concisos)

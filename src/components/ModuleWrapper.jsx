@@ -607,7 +607,20 @@ export default function ModuleWrapper({ pillar, moduleKey, title, description, f
       }}>
         <div className="glass-panel" style={{ padding: '2.5rem', display: 'flex', flexDirection: 'column', gap: '3rem', border: '1px solid var(--border-color)', borderRadius: '20px' }}>
           {moduleKey === 'foda' && !fodaEditMode ? (
-            <FodaMatrix data={moduleData} />
+            <FodaMatrix 
+              data={moduleData} 
+              onChange={(field, val) => handleChange(field, val)}
+              onMoveToPestel={(factorText) => {
+                const pestelPillar = planData?.[pillar]?.pestel !== undefined ? pillar : (planData?.naturaleza?.pestel !== undefined ? 'naturaleza' : pillar);
+                const currentLegal = planData?.[pestelPillar]?.pestel?.legal || '';
+                const cleanFactor = factorText.trim();
+                const updatedLegal = currentLegal 
+                  ? `${currentLegal}\n- ${cleanFactor}`
+                  : `- ${cleanFactor}`;
+                updateSection(pestelPillar, 'pestel', 'legal', updatedLegal);
+                alert(`El factor se transfirió con éxito al módulo PESTEL (Dimensión Legal):\n"${cleanFactor}"`);
+              }}
+            />
           ) : moduleKey === 'pestel' && !pestelEditMode ? (
             <PestelAnalysis
               data={moduleData}

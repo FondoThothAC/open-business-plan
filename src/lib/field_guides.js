@@ -76,32 +76,32 @@ export const BUSINESS_GUIDES = {
     "placeholder": "Cronograma de hitos cuantitativos a 6, 12, 18 y 24 meses..."
   },
   "fortalezas": {
-    "instruccion": "Ventajas internas que te diferencian de la competencia. Recursos, talento, tecnología propia.",
-    "ejemplo": "Ej: \"Equipo con certificación AMIB, plataforma digital propia, alianzas con 3 aseguradoras líderes.\"",
-    "benchmark": "Mínimo 3 capacidades internas críticas difícilmente replicables a corto plazo.",
+    "instruccion": "Ventajas competitivas y capacidades internas que diferencian a tu empresa. Recursos propios, talento, tecnología, procesos y activos directamente controlables.",
+    "ejemplo": "Ej: \"Equipo con certificación técnica propia, cocina central con capacidad de 1,200 raciones/día, alianzas de suministro directo con ganaderos locales.\"",
+    "benchmark": "Mínimo 3 capacidades o ventajas operativas internas difíciles de replicar a corto plazo.",
     "cita": "Creating a Business Plan For Dummies (Ch. 5, p. 95)",
-    "placeholder": "Ventajas internas: know-how, tecnología propia, licencias, equipo certificado..."
+    "placeholder": "Ventajas internas: know-how, procesos y capacidades clave..."
   },
   "oportunidades": {
-    "instruccion": "Factores externos favorables que puedes aprovechar. Tendencias, vacíos de mercado, regulaciones nuevas.",
-    "ejemplo": "Ej: \"Crecimiento del 23% anual en inversiones digitales en México. Nueva ley de educación financiera obligatoria.\"",
-    "benchmark": "Tendencias macroeconómicas o regulatorias con crecimiento anual compuesto (CAGR) > 8%.",
+    "instruccion": "Tendencias del mercado, nichos desatendidos y demandas insatisfechas que la empresa puede capitalizar convirtiéndolas en fortalezas propias. (Nota: Leyes y reformas macro van en PESTEL Legal).",
+    "ejemplo": "Ej: \"Demanda insatisfecha de cortes empacados al vacío en el canal HORECA regional (+28% anual). Crecimiento del consumo saludable D2C.\"",
+    "benchmark": "Tendencias de demanda de mercado o nichos específicos con crecimiento anual compuesto (CAGR) > 8%.",
     "cita": "Michael Porter — Competitive Strategy (Ch. 2, p. 48)",
-    "placeholder": "Cambios en el entorno, vacíos de mercado o nuevas leyes favorables..."
+    "placeholder": "Tendencias de mercado y nichos insatisfechos a capturar..."
   },
   "debilidades": {
-    "instruccion": "Limitaciones internas actuales. Sé honesto: falta de capital, equipo pequeño, marca nueva.",
-    "ejemplo": "Ej: \"Marca sin reconocimiento regional. Presupuesto de marketing limitado a $15K/mes. Solo 2 asesores certificados.\"",
-    "benchmark": "Identificación honesta de brechas de capital, talento o tracción con plan de mitigación.",
+    "instruccion": "Limitaciones y brechas internas actuales (capital, talento del fundador, cuellos de botella) formuladas con vocación de superación o delegación cuántica.",
+    "ejemplo": "Ej: \"Dependencia del fundador en ventas comerciales; ausencia de canal e-commerce propio; capacidad de almacenamiento en frío limitada a 500 kg.\"",
+    "benchmark": "Identificación honesta de brechas internas con ruta clara de mitigación o delegación profesional.",
     "cita": "Carl Schramm — Burn the Business Plan (Ch. 4, p. 72)",
-    "placeholder": "Limitaciones internas actuales y cómo se compensarán en la fase inicial..."
+    "placeholder": "Limitaciones internas actuales y ruta de superación..."
   },
   "amenazas": {
-    "instruccion": "Riesgos externos que podrían afectarte. Competencia agresiva, cambios regulatorios, crisis económica.",
-    "ejemplo": "Ej: \"Entrada de fintechs internacionales (Betterment, GBM+). Volatilidad en tasas de interés de Banxico.\"",
-    "benchmark": "Evaluación de riesgos externos con probabilidad e impacto asignados.",
+    "instruccion": "Riesgos del entorno competitivo inmediato: nuevos competidores directos, guerras de precios, escasez de insumos o productos sustitutos. (Nota: Leyes, reformas fiscales o normativas van en PESTEL Legal).",
+    "ejemplo": "Ej: \"Aparición de dos cadenas foráneas de autoservicio en la zona; volatilidad en precio del grano forrajero; guerra de descuentos en carnicerías locales.\"",
+    "benchmark": "Riesgos competitivos y de mercado inmediato con estrategia de blindaje o diferenciación.",
     "cita": "Plan de Negocios VF (Metodología Hispana, p. 41)",
-    "placeholder": "Riesgos de mercado, competidores agresivos o volatilidad económica..."
+    "placeholder": "Riesgos competitivos, sustitutos y volatilidad de insumos..."
   },
   "politico": {
     "instruccion": "Leyes, regulaciones, estabilidad gubernamental y políticas fiscales que impactan tu operación.",

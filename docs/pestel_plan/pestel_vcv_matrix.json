@@ -1,0 +1,148 @@
+{
+  "version": 1,
+  "empresa": "VCV Cortes Finos SA de CV",
+  "horizonte": "2027-2028",
+  "formula": "Impacto = [(IP + Ir) / 2] × p(x)",
+  "umbrales": { "alto": 2.5, "medio": 1.5 },
+  "escala": { "ip": "1-3", "ir": "1-3", "px": "0-1" },
+  "ventana_fuentes": { "desde": "2024-10", "hasta": "2026-10" },
+  "matriz": [
+    {
+      "n": 1, "dim": "politico", "oa": "O",
+      "factor": "Revisión conjunta del T-MEC (1-jul-2026) y demanda de ANETIF de eliminar aranceles y cuotas a la carne mexicana",
+      "fuente": "El País México / BM Editores (ANETIF)", "fecha": "2026-07-01",
+      "url": "https://elpais.com/mexico/2026-07-01/mexico-se-juega-su-ventaja-comercial-en-la-revision-del-tmec-ante-la-renovada-ofensiva-de-trump.html",
+      "ip": 2, "tendencia": "+", "ir": 1, "px": 0.60, "impacto": 0.90, "clasificacion": "bajo",
+      "justificacion_px": "La revisión conjunta ya se realizó el 1 de julio de 2026 y sigue en conversación, pero no existe aún un acuerdo cárneo firmado que elimine aranceles o cuotas."
+    },
+    {
+      "n": 2, "dim": "politico", "oa": "A",
+      "factor": "Extorsión: 6,562 denuncias en el 1S-2026 y 45.6 % de empresas afectadas, con alza del seguro de transporte refrigerado",
+      "fuente": "SESNSP y Coparmex, vía Infobae", "fecha": "2026-09-23",
+      "url": "https://www.infobae.com/mexico/2026/09/23/la-extorsion-ya-condiciona-decisiones-de-empresas-coparmex-reporta-record-de-casos-en-2026/",
+      "ip": 3, "tendencia": "-", "ir": 3, "px": 0.70, "impacto": 2.10, "clasificacion": "medio",
+      "justificacion_px": "Es una tendencia instalada y en su máximo para un primer semestre en once años, aunque no se dispone de una serie confirmada específica de Sonora."
+    },
+    {
+      "n": 3, "dim": "economico", "oa": "A",
+      "factor": "Res de $139 a $167/kg entre 2024 y 2025 y carne +16.5 % en enero-2026 por recorte a importaciones",
+      "fuente": "Consejo Mexicano de la Carne, vía Forbes México / El Economista", "fecha": "2026-02-19",
+      "url": "https://www.eleconomista.com.mx/empresas/precio-carne-dispara-16-5-enero-seguira-afectando-bolsillo-consumidor-20260219-800697.html",
+      "ip": 3, "tendencia": "-", "ir": 3, "px": 0.88, "impacto": 2.64, "clasificacion": "alto",
+      "justificacion_px": "No es una previsión sino una condición ya observable: el kilo subió de $139 a $167 y las cuotas sustituyeron a las licencias automáticas de importación."
+    },
+    {
+      "n": 4, "dim": "economico", "oa": "O",
+      "factor": "Inflación de 3.69 % al cierre 2025 y 3.85 % esperada 2026-2027, con peso en ~17.2 ¢/USD",
+      "fuente": "INEGI / Banco de México", "fecha": "2026-01-09",
+      "url": "https://www.elfinanciero.com.mx/economia/2026/01/09/inflacion-en-mexico-se-desacelera-a-369-al-cierre-de-2025/",
+      "ip": 2, "tendencia": "+", "ir": 3, "px": 0.65, "impacto": 1.63, "clasificacion": "medio",
+      "justificacion_px": "La trayectoria del Banco de México es consistente entre informe trimestral y encuesta de especialistas, pero depende de decisiones de política monetaria."
+    },
+    {
+      "n": 5, "dim": "social", "oa": "O",
+      "factor": "Consumo de carne de 85.3 kg per cápita en 2025, 6º mundial, con demanda interna sobre la oferta",
+      "fuente": "Consejo Mexicano de la Carne, Compendio Estadístico 2026", "fecha": "2026-01-01",
+      "url": "https://comecarne.org/compendio26",
+      "ip": 3, "tendencia": "+", "ir": 2, "px": 0.80, "impacto": 2.00, "clasificacion": "medio",
+      "justificacion_px": "El crecimiento lleva dos años documentados y la demanda nacional continúa por encima de la oferta interna."
+    },
+    {
+      "n": 6, "dim": "social", "oa": "O",
+      "factor": "Hermosillo: 962,020 habitantes (31.8 % de Sonora) y edad mediana de 30 a 32 años",
+      "fuente": "INEGI, Encuesta Intercensal 2025", "fecha": "2026-01-01",
+      "url": "https://www.inegi.org.mx/contenidos/saladeprensa/boletines/2026/ei/EIC2025-def_RR.pdf",
+      "ip": 2, "tendencia": "+", "ir": 2, "px": 0.85, "impacto": 1.70, "clasificacion": "medio",
+      "justificacion_px": "Es un hecho censal ya medido por la Encuesta Intercensal 2025 y no una proyección."
+    },
+    {
+      "n": 7, "dim": "tecnologico", "oa": "O",
+      "factor": "E-commerce de 941 mil mdp en 2025 (+19.2 %), 77.2 millones de compradores y despensa ya en línea",
+      "fuente": "Asociación Mexicana de Ventas Online, Estudio de Venta Online 2026", "fecha": "2026-01-01",
+      "url": "https://amvo.org.mx/descarga-evo-2026",
+      "ip": 3, "tendencia": "+", "ir": 2, "px": 0.60, "impacto": 1.50, "clasificacion": "medio",
+      "justificacion_px": "El canal crece a doble dígito, pero la penetración de despensa en línea sigue en 17.7 % y VCV no lo opera hoy."
+    },
+    {
+      "n": 8, "dim": "tecnologico", "oa": "O",
+      "factor": "CoDi en 3 pasos, $135,000 sin alta y SPEI sin comisiones desde diciembre de 2026",
+      "fuente": "Banco de México, vía El Economista", "fecha": "2026-09-24",
+      "url": "https://www.eleconomista.com.mx/sectorfinanciero/pagos-digitales-nuevo-impulso-codi-cuentas-mayor-monto-diciembre-20260924-835183.html",
+      "ip": 2, "tendencia": "+", "ir": 1, "px": 0.75, "impacto": 1.13, "clasificacion": "bajo",
+      "justificacion_px": "La medida está publicada con vigencia desde diciembre de 2026; la única variable pendiente es la adopción del cliente."
+    },
+    {
+      "n": 9, "dim": "ecologico", "oa": "A",
+      "factor": "Presas de Sonora al 13.2 % de almacenamiento y Abelardo L. Rodríguez de Hermosillo vacía en 2025",
+      "fuente": "Milenio (datos CONAGUA / UGRS)", "fecha": "2025-09-01",
+      "url": "https://www.milenio.com/estados/sequia-cierre-fronterizo-golpea-sector-ganadero-sonora",
+      "ip": 3, "tendencia": "-", "ir": 3, "px": 0.75, "impacto": 2.25, "clasificacion": "medio",
+      "justificacion_px": "El déficit de presas es estructural y se repite desde 2023, aunque las lluvias del huracán Polo revirtieron parcialmente el indicador."
+    },
+    {
+      "n": 10, "dim": "ecologico", "oa": "A",
+      "factor": "Gusano barrenador: 14,321 casos, 870 focos activos y 1.2 millones de cabezas varadas (nov-2024 a dic-2025)",
+      "fuente": "SENASICA, vía El Imparcial", "fecha": "2026-01-23",
+      "url": "https://www.elimparcial.com/mexico/2026/01/23/mexico-acumula-mas-de-14-mil-casos-de-gusano-barrenador-del-ganado-y-870-focos-activos-senasica-acelera-una-planta-de-moscas-esteriles-en-chiapas-mientras-el-cierre-con-estados-unidos-impacta-al-sector/",
+      "ip": 3, "tendencia": "-", "ir": 2, "px": 0.85, "impacto": 2.13, "clasificacion": "medio",
+      "justificacion_px": "El brote sigue activo con 870 focos abiertos y la planta de moscas estériles apenas se encuentra en aceleración."
+    },
+    {
+      "n": 11, "dim": "legal", "oa": "A",
+      "factor": "Reforma a la LFT: jornada máxima de 46 horas semanales en 2027 y 44 horas en 2028",
+      "fuente": "Diario Oficial de la Federación", "fecha": "2026-05-01",
+      "url": "https://dof.gob.mx/nota_detalle.php?codigo=5786537&fecha=01/05/2026",
+      "ip": 3, "tendencia": "-", "ir": 3, "px": 0.92, "impacto": 2.76, "clasificacion": "alto",
+      "justificacion_px": "La obligación está publicada en el DOF desde el 1 de mayo de 2026 con calendario forzoso por año; el riesgo residual sería una prórroga."
+    },
+    {
+      "n": 12, "dim": "legal", "oa": "A",
+      "factor": "NOM-051 Fase III desde el 1-ene-2026 en alimentos preenvasados: aplica a paquetes al vacío y aderezos",
+      "fuente": "Secretaría de Economía y Secretaría de Salud", "fecha": "2025-05-09",
+      "url": "https://www.gob.mx/se/prensa/secretaria-de-economia-y-la-secretaria-de-salud-amplian-plazo-de-implementacion-sobre-etiquetado-nutrimental?idiom=es-MX",
+      "ip": 2, "tendencia": "-", "ir": 1, "px": 0.55, "impacto": 0.83, "clasificacion": "bajo",
+      "justificacion_px": "La fase III está vigente, pero la carne fresca de un solo ingrediente queda fuera del etiquetado frontal."
+    }
+  ],
+  "priorizacion": [
+    {
+      "orden": 1, "factor_n": 11, "impacto": 2.76,
+      "que": "Reprogramar la planta del ASADHOR para producir los 5,184 kg/mes dentro del tope legal de 46 horas.",
+      "como": "Cuatro jornadas de 8 h de lunes a viernes más un medio turno de 6 h del sábado (46 exactas), con un operario de medio tiempo ($11,000/mes) en lugar de horas extra y anexos de horario firmados.",
+      "cuando": "Pilotos en el 4T-2026 y operación plena a partir del 1-febrero-2027."
+    },
+    {
+      "orden": 2, "factor_n": 3, "impacto": 2.64,
+      "que": "Blindar el costo del insumo que representa ~75 % del producto y pasar a precios indexados.",
+      "como": "Acuerdo trimestral de precio fijo con Núñez Carnes por 3,000 kg/mes con tope de 8 %, homologar a Premium Carnes con 1,500 kg/mes y sustituir la lista anual por tarifa semestral atada al precio medio de COMECARNE, con 60 % de anticipo a restaurantes.",
+      "cuando": "Negociar y firmar entre noviembre y diciembre de 2026; primera tarifa indexada el 1-enero-2027."
+    },
+    {
+      "orden": 3, "factor_n": 9, "impacto": 2.25,
+      "que": "Quitar al clima sonorense el control exclusivo del abasto y de la mezcla de producto.",
+      "como": "Calificar un segundo origen de canales fuera de la cuenca del Yaqui (Sinaloa o Chihuahua) por 800 kg/mes y mover 25 % de la mezcla del Rib-Eye hacia cortes económicos en paquetes familiares de 400 g.",
+      "cuando": "Decidir la compra del segundo origen antes del 30-junio-2027 y relanzar la línea económica en el 3T-2027."
+    }
+  ],
+  "conclusion": "El entorno 2027-2028 es desfavorable para VCV Cortes Finos, con ventanas de oportunidad reales. De los doce factores, seis son amenazas y seis oportunidades, pero el peso se concentra en las amenazas: los dos únicos impactos altos, la jornada de 46 horas desde 2027 (2.76) y el encarecimiento de la res de 139 a 167 pesos por kilo (2.64), junto con los medios de sequía (2.25), gusano barrenador (2.13) y extorsión (2.10), suman 12.71 puntos frente a 8.86 de las oportunidades, ninguna de las cuales supera 2.00. La presión recae de forma simultánea sobre el costo, que es 75 por ciento del producto, sobre la capacidad de 5,184 kilos mensuales y sobre la logística de frío. La implicación estratégica principal es que VCV no debe crecer por volumen: necesita proteger margen y asegurar suministro antes de escalar el canal digital.",
+  "conclusion_palabras": 140,
+  "fuentes": [
+    "Asociación Mexicana de Ventas Online. (2026). Estudio de Venta Online 2026. https://amvo.org.mx/descarga-evo-2026",
+    "Banco de México. (2026). Informe trimestral abril-junio 2026. https://www.banxico.org.mx/publicaciones-y-prensa/resumenes-visuales/informe-trimestral-html/informe-trimestral-abr-jun-00005.html",
+    "BM Editores. (2026). Propuestas del sector cárnico para optimizar el T-MEC. https://bmeditores.mx/entorno-pecuario/propuestas-del-sector-carnico-para-optimizar-el-t-mec/",
+    "Consejo Mexicano de la Carne. (2026). Compendio estadístico 2026. https://comecarne.org/compendio26",
+    "Diario Oficial de la Federación. (2026, 1 de mayo). Decreto por el que se reforman los artículos 59, 61, 66, 68, 69 y 71 de la Ley Federal del Trabajo, en materia de reducción de la jornada laboral. https://dof.gob.mx/nota_detalle.php?codigo=5786537&fecha=01/05/2026",
+    "El Economista. (2026, 19 de febrero). Precio de la carne se dispara 16.5 % en enero; seguirá afectando el bolsillo del consumidor. https://www.eleconomista.com.mx/empresas/precio-carne-dispara-16-5-enero-seguira-afectando-bolsillo-consumidor-20260219-800697.html",
+    "El Economista. (2026, 24 de septiembre). Pagos digitales: nuevo impulso a CoDi, cuentas de mayor monto desde diciembre. https://www.eleconomista.com.mx/sectorfinanciero/pagos-digitales-nuevo-impulso-codi-cuentas-mayor-monto-diciembre-20260924-835183.html",
+    "El Financiero. (2026, 9 de enero). Inflación en México se desacelera a 3.69 % al cierre de 2025. https://www.elfinanciero.com.mx/economia/2026/01/09/inflacion-en-mexico-se-desacelera-a-369-al-cierre-de-2025/",
+    "El Imparcial. (2026, 23 de enero). México acumula más de 14 mil casos de gusano barrenador del ganado y 870 focos activos. https://www.elimparcial.com/mexico/2026/01/23/mexico-acumula-mas-de-14-mil-casos-de-gusano-barrenador-del-ganado-y-870-focos-activos-senasica-acelera-una-planta-de-moscas-esteriles-en-chiapas-mientras-el-cierre-con-estados-unidos-impacta-al-sector/",
+    "El País México. (2026, 1 de julio). México se juega su ventaja comercial en la revisión del T-MEC ante la renovada ofensiva de Trump. https://elpais.com/mexico/2026-07-01/mexico-se-juega-su-ventaja-comercial-en-la-revision-del-tmec-ante-la-renovada-ofensiva-de-trump.html",
+    "Expreso. (2026). Sonora supera 3 millones de habitantes y envejece su población. https://www.expreso.com.mx/noticias/sonora/sonora-supera-3-millones-de-habitantes-y-envejece-su-poblacion/264995",
+    "Forbes México. (2025). Precio de la carne de res ha subido más que el salario mínimo. https://forbes.com.mx/precio-de-la-carne-de-res-ha-subido-mas-que-el-salario-minimo-empresas/",
+    "Infobae. (2026, 23 de septiembre). La extorsión ya condiciona decisiones de empresas: Coparmex reporta máximo de casos en 2026. https://www.infobae.com/mexico/2026/09/23/la-extorsion-ya-condiciona-decisiones-de-empresas-coparmex-reporta-record-de-casos-en-2026/",
+    "Instituto Nacional de Estadística y Geografía. (2026). Encuesta Intercensal 2025: principales resultados por entidad (Boletín EIC2025). https://www.inegi.org.mx/contenidos/saladeprensa/boletines/2026/ei/EIC2025-def_RR.pdf",
+    "López, A. (2025). Sequía y cierre fronterizo golpea a sector ganadero en Sonora. Milenio. https://www.milenio.com/estados/sequia-cierre-fronterizo-golpea-sector-ganadero-sonora",
+    "Secretaría de Economía y Secretaría de Salud. (2025, 9 de mayo). Amplían plazo de implementación sobre etiquetado nutrimental (NOM-051). https://www.gob.mx/se/prensa/secretaria-de-economia-y-la-secretaria-de-salud-amplian-plazo-de-implementacion-sobre-etiquetado-nutrimental?idiom=es-MX"
+  ],
+  "origen": "docs/pestel_plan (Fases 0-3, ejecutadas 2026-10-13; aritmética verificada con Decimal y fuentes primarias abiertas)"
+}
