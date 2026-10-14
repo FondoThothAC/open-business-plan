@@ -505,6 +505,320 @@ export const FRAMEWORKS = {
         ]
       }
     ]
+  },
+  cafes: {
+    id: 'cafes',
+    name: 'Plan de Negocios CAFES (Emprendimiento Social y Familiar)',
+    pillars: [
+      {
+        key: 'unidad_a',
+        title: 'Unidad A · Resumen y Perfil del Emprendimiento',
+        modules: [
+          {
+            key: 'resumen_ejecutivo',
+            title: '0. Resumen Ejecutivo Integral',
+            description: 'Síntesis ejecutiva de oportunidad, propuesta de valor, demanda, inversión y viabilidad.',
+            fields: [
+              'descripcion_situacion_actual',
+              'problema_oportunidad',
+              'propuesta_valor_diferencial',
+              'cliente_objetivo_resumen',
+              'validacion_demanda_resumen',
+              'ventaja_competitiva',
+              'modelo_ingresos_precios',
+              'capital_semilla_resumen',
+              'ventas_utilidades_resumen',
+              'punto_equilibrio_resumen',
+              'relacion_beneficio_costo_resumen',
+              'impacto_social_familiar_resumen',
+              'riesgos_mitigaciones_resumen',
+              'cronograma_12_semanas_resumen'
+            ]
+          },
+          {
+            key: 'perfil_emprendedor',
+            title: '1. Perfil del Emprendedor y Diagnóstico Cuántico',
+            description: 'Identificación, historia, horario disponible, Modelo Atómico (3 Áreas) y ruta de independencia.',
+            fields: [
+              'datos_identificacion',
+              'historia_motivacion',
+              'experiencia_habilidades',
+              'horario_apoyo_familiar',
+              'diagnostico_capacitacion',
+              'situacion_actual_negocio',
+              'modelo_atomico_evaluacion',
+              'plan_delegacion_cuantica',
+              'ruta_independencia_fundador'
+            ]
+          }
+        ]
+      },
+      {
+        key: 'unidad_b',
+        title: 'Unidad B · Mercado, Portafolio y Cliente',
+        modules: [
+          {
+            key: 'idea_portafolio',
+            title: '2. Idea de Negocio y Portafolio de Productos',
+            description: 'Fichas técnicas, BOM de insumos, presentaciones, calidad e inocuidad alimentaria/comercial.',
+            fields: [
+              'descripcion_productos_servicios',
+              'fichas_tecnicas_bom',
+              'presentaciones_empaques',
+              'requerimientos_inocuidad_calidad',
+              'alcance_limitaciones_iniciales'
+            ]
+          },
+          {
+            key: 'estudio_mercado',
+            title: '3. Estudio de Mercado Práctico y Demanda',
+            description: 'Segmento, competencia local (3 mínimo), validación, estacionalidad y dimensionamiento TAM/SAM/SOM.',
+            fields: [
+              'segmento_capacidad_pago',
+              'necesidades_criterios_compra',
+              'competidores_locales_matriz',
+              'diferenciadores_competencia',
+              'validacion_demanda_piloto',
+              'ubicacion_cobertura_rutas',
+              'estacionalidad_picos_venta',
+              'estimacion_demanda_tam_sam_som'
+            ]
+          }
+        ]
+      },
+      {
+        key: 'unidad_c',
+        title: 'Unidad C · Operaciones, Capacidad y Producción',
+        modules: [
+          {
+            key: 'plan_operaciones',
+            title: '4. Plan de Operaciones, Cuello de Botella y Layout',
+            description: 'Flujo del proceso, cuello de botella (TOC), programa productivo, proveedores, layout y logística.',
+            fields: [
+              'flujo_proceso_diagrama',
+              'capacidad_cuello_botella_toc',
+              'programa_produccion_metas',
+              'aseguramiento_calidad_inocuidad',
+              'lista_insumos_proveedores',
+              'equipos_herramientas_catalogo',
+              'layout_espacio_trabajo',
+              'logistica_entregas_embalaje',
+              'inventarios_rotacion_minimos',
+              'manejo_residuos_seguridad'
+            ]
+          }
+        ]
+      },
+      {
+        key: 'unidad_d',
+        title: 'Unidad D · Legal, Organización y Modelo Canvas',
+        modules: [
+          {
+            key: 'aspectos_legales',
+            title: '5. Aspectos Legales y Formalización Gradual',
+            description: 'Transición a la formalidad, permisos de uso de suelo/salud, marca, contratos y régimen fiscal RESICO.',
+            fields: [
+              'esquema_operacion_transicion',
+              'permisos_avisos_licencias',
+              'propiedad_intelectual_marca',
+              'contratos_esenciales',
+              'cumplimiento_fiscal_resico'
+            ]
+          },
+          {
+            key: 'organizacion_talento',
+            title: '6. Organización, Talento y Modelo Atómico',
+            description: 'Estructura del equipo, tareas estándar, salarios con carga patronal, manuales y turnos familiares.',
+            fields: [
+              'estructura_equipo_organigrama',
+              'perfiles_tareas_tiempos',
+              'politica_sueldos_capacitacion',
+              'manuales_operacion_calidad',
+              'turnos_conciliacion_familiar'
+            ]
+          },
+          {
+            key: 'propuesta_valor_canvas',
+            title: '7. Propuesta de Valor y Lienzo Canvas',
+            description: 'Propuesta de valor, promesa de servicio, Canvas de 9 bloques, política de precios y pruebas piloto.',
+            fields: [
+              'propuesta_valor_beneficios',
+              'promesa_experiencia_cliente',
+              'lienzo_canvas_9bloques',
+              'politica_precios_margen',
+              'estrategia_pruebas_aprendizaje'
+            ]
+          }
+        ]
+      },
+      {
+        key: 'unidad_e',
+        title: 'Unidad E · Marketing y Plan Comercial',
+        modules: [
+          {
+            key: 'plan_comercial',
+            title: '8. Plan Comercial, Canales y Lanzamiento 90 Días',
+            description: 'Identidad de marca, canales (WhatsApp, ferias), promoción de bajo costo, garantías, alianzas y plan 90 días.',
+            fields: [
+              'marca_identidad_mensajes',
+              'canales_venta_distribucion',
+              'promocion_bajo_costo_referidos',
+              'portafolio_paquetes_combos',
+              'servicio_cliente_garantias',
+              'metas_comerciales_kpis',
+              'alianzas_locales_comunitarias',
+              'plan_lanzamiento_90_dias'
+            ]
+          }
+        ]
+      },
+      {
+        key: 'unidad_f',
+        title: 'Unidad F · Finanzas, Factibilidad y Corridas',
+        modules: [
+          {
+            key: 'plan_financiero',
+            title: '9. Plan Financiero, Proyecciones y Rentabilidad (B/C, TIR, VAN)',
+            description: 'Inversión inicial, capital de trabajo, costos fijos/variables, BOM, punto de equilibrio, proyecciones a 12 meses y 3 años, rentabilidad (B/C, ROI, VAN, TIR), sensibilidad y capacidad de pago.',
+            fields: [
+              'supuestos_base_operativa',
+              'presupuesto_inversion_inicial',
+              'capital_trabajo_caja_chica',
+              'costos_fijos_variables',
+              'costeo_unitario_bom',
+              'depreciacion_equipos',
+              'politica_precios_margen_financiero',
+              'punto_equilibrio_unidades_pesos',
+              'proyeccion_ventas_1_3_anos',
+              'estado_resultados_12_meses',
+              'flujo_efectivo_12_meses',
+              'balance_inicial_cierre_ano1',
+              'indicadores_rentabilidad_bc_roi_van_tir',
+              'analisis_sensibilidad_escenarios',
+              'escenarios_pesimista_base_optimista',
+              'capacidad_pago_credito'
+            ]
+          }
+        ]
+      },
+      {
+        key: 'unidad_g',
+        title: 'Unidad G · Impacto Social, Familiar y Gestión de Riesgos',
+        modules: [
+          {
+            key: 'impacto_social_ambiental',
+            title: '10. Impacto Social, Familiar y Ambiental',
+            description: 'Elevación del ingreso familiar, empleos generados, equidad de género, prácticas verdes y alineación a metas.',
+            fields: [
+              'aumento_ingreso_familiar',
+              'empleos_directos_indirectos',
+              'enfoque_inclusion_equidad',
+              'practicas_ambientales_verdes',
+              'alineacion_objetivos_comunitarios'
+            ]
+          },
+          {
+            key: 'matriz_riesgos',
+            title: '11. Matriz de Riesgos y Plan B',
+            description: 'Identificación de riesgos de mercado, operativos, financieros y legales, probabilidad/impacto, mitigación y gatillos Plan B.',
+            fields: [
+              'identificacion_riesgos_matriz',
+              'probabilidad_impacto_calificacion',
+              'medidas_mitigacion_preventiva',
+              'plan_b_gatillos_accion'
+            ]
+          }
+        ]
+      },
+      {
+        key: 'unidad_h',
+        title: 'Unidad H · Implementación y Solicitud al Financiador',
+        modules: [
+          {
+            key: 'plan_implementacion',
+            title: '12. Plan de Implementación (Ruta Crítica 12 Semanas)',
+            description: 'Gantt de arranque, entregables semanales, responsables, KPIs de avance y contingencias.',
+            fields: [
+              'ruta_critica_gantt_12semanas',
+              'hitos_entregables_semanales',
+              'indicadores_avance_responsables',
+              'plan_contingencias_arranque'
+            ]
+          },
+          {
+            key: 'requerimiento_capital',
+            title: '13. Requerimiento de Capital Semilla e Inversión',
+            description: 'Monto solicitado, desglose por rubro, aportación propia en especie/efectivo, cotizaciones, impacto marginal antes/después y comprobación.',
+            fields: [
+              'monto_solicitado_total',
+              'desglose_rubros_destino',
+              'aportacion_propia_fuentes',
+              'evidencias_cotizaciones_proveedor',
+              'impacto_capital_ventas_utilidad',
+              'plan_uso_rendicion_cuentas'
+            ]
+          },
+          {
+            key: 'conclusiones_peticion',
+            title: '14. Conclusiones y Petición Formal de Recursos',
+            description: 'Argumento integral de factibilidad, compromisos del emprendedor y mentoría/capacitación requerida.',
+            fields: [
+              'argumento_factibilidad_sintesis',
+              'compromisos_metas_emprendedor',
+              'requerimientos_acompanamiento_mentoria'
+            ]
+          }
+        ]
+      },
+      {
+        key: 'unidad_i',
+        title: 'Unidad I · Anexos y Expediente de Verificación',
+        modules: [
+          {
+            key: 'expediente_anexos',
+            title: 'Anexos (A1 a A22) y Checklist de Control',
+            description: 'Expediente documental completo para comités de evaluación, convocatorias y financiamiento.',
+            fields: [
+              'checklist_expediente_completo',
+              'identificaciones_comprobantes_a1',
+              'curriculum_emprendedor_a2',
+              'fotografias_productos_a3',
+              'fichas_tecnicas_costeo_a4',
+              'cotizaciones_equipo_insumos_a5',
+              'directorio_proveedores_a6',
+              'encuestas_validacion_a7',
+              'registro_fotografico_espacio_a8',
+              'diagramas_layout_a9',
+              'permisos_avisos_contratos_a10',
+              'tablas_financieras_impresas_a11',
+              'tabla_amortizacion_credito_a12',
+              'cartas_intencion_pedidos_a13',
+              'manuales_operacion_atencion_a14',
+              'politicas_calidad_inocuidad_a15',
+              'bitacora_piloto_aprendizajes_a16',
+              'evidencias_ventas_iniciales_a17',
+              'carta_compromiso_metas_a18',
+              'checklist_firmado_a19',
+              'diagnostico_habilidades_capacitacion_a20',
+              'convenio_convocatoria_a21',
+              'constancias_capacitacion_a22'
+            ]
+          }
+        ]
+      },
+      {
+        key: 'simulador_financiero',
+        title: 'Simulador Financiero y Corridas Cuánticas',
+        modules: [
+          {
+            key: 'simulador',
+            title: 'Simulador Financiero y Escenarios Monte Carlo',
+            description: 'Simulador interactivo con cálculo automático de estados proforma, punto de equilibrio, B/C, TIR, VAN y análisis de estrés.',
+            fields: ['iframe_simulador']
+          }
+        ]
+      }
+    ]
   }
 };
 

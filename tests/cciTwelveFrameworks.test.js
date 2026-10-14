@@ -21,7 +21,7 @@ test('CCI - Suite Integral de 12 Metodologías y Consistencia de Datos RAG', asy
       'hoshin_kanri', 'amoeba_management', 'guanxi_plan', 'onudi_project'
     ];
 
-    assert.equal(Object.keys(FRAMEWORKS).length, 12, 'Deben existir exactamente 12 metodologías canónicas');
+    assert.ok(Object.keys(FRAMEWORKS).length >= 12, 'Deben existir al menos 12 metodologías canónicas');
 
     for (const fwKey of allFrameworkKeys) {
       const fw = FRAMEWORKS[fwKey];

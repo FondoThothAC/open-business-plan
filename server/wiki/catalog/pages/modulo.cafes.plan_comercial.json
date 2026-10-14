@@ -1,0 +1,126 @@
+{
+  "id": "modulo.cafes.plan_comercial",
+  "title": "8. Plan Comercial, Canales y Lanzamiento 90 Días",
+  "summary": "Identidad de marca, canales (WhatsApp, ferias), promoción de bajo costo, garantías, alianzas y plan 90 días.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "cafes",
+  "moduleKey": "plan_comercial",
+  "pillarKey": "unidad_e",
+  "openUrl": "/cafes/plan_comercial",
+  "fields": [
+    {
+      "key": "marca_identidad_mensajes",
+      "type": "text",
+      "address": "cafes.unidad_e.plan_comercial.marca_identidad_mensajes",
+      "prompt": "Identidad de la marca: nombre comercial, eslogan, colores institucionales y mensaje que conecta con el público.",
+      "ejemplo": "Ej: Dulce Hogar - Tradición y Sabor en tu Mesa. Colores cálidos (crema y guinda) que evocan cocina tradicional sonorense.",
+      "benchmark": "Identidad visual consistente en empaques y redes.",
+      "cita": "Starting a Business QuickStart Guide",
+      "placeholder": "Nombre comercial, eslogan y mensaje de marca..."
+    },
+    {
+      "key": "canales_venta_distribucion",
+      "type": "text",
+      "address": "cafes.unidad_e.plan_comercial.canales_venta_distribucion",
+      "prompt": "Canales comerciales utilizados: WhatsApp Business con catálogo, pedidos directos por teléfono, bazares y ferias locales.",
+      "ejemplo": "Ej: 75% pedidos vía WhatsApp Business con catálogo interactivo; 25% ventas directas en bazar comunitario quincenal.",
+      "benchmark": "Al menos un canal digital directo activo y medible.",
+      "cita": "Creating a Business Plan For Dummies",
+      "placeholder": "Canales de venta físicos y digitales..."
+    },
+    {
+      "key": "promocion_bajo_costo_referidos",
+      "type": "text",
+      "address": "cafes.unidad_e.plan_comercial.promocion_bajo_costo_referidos",
+      "prompt": "Tácticas de publicidad sin costo o muy baratas: muestras de degustación en eventos, programa de recomendados y promociones.",
+      "ejemplo": "Ej: Muestras gratuitas de quequitos en reuniones vecinales; programa: recomienda a una amiga y ambas reciben 15% de descuento.",
+      "benchmark": "Costo de adquisición de clientes (CAC) tendiente a cero.",
+      "cita": "Starting a Business QuickStart Guide & CAFES",
+      "placeholder": "Promociones de boca a boca y referidos..."
+    },
+    {
+      "key": "portafolio_paquetes_combos",
+      "type": "text",
+      "address": "cafes.unidad_e.plan_comercial.portafolio_paquetes_combos",
+      "prompt": "Diseño de paquetes atractivos y combos para festejos familiares con precios psicológicos para elevar el ticket promedio.",
+      "ejemplo": "Ej: Paquete Cumpleaños Feliz: 1 pastel mediano + 12 quequitos + 1 piñata mediana por $599 MXN (ahorro de $80 MXN).",
+      "benchmark": "Incremento del ticket promedio en al menos un 25%.",
+      "cita": "Creating a Business Plan For Dummies",
+      "placeholder": "Combos, paquetes para fiestas y precios..."
+    },
+    {
+      "key": "servicio_cliente_garantias",
+      "type": "text",
+      "address": "cafes.unidad_e.plan_comercial.servicio_cliente_garantias",
+      "prompt": "Políticas de garantía de satisfacción: reposición ante inconformidades, puntualidad en entregas y trato personalizado.",
+      "ejemplo": "Ej: Compromiso de entrega en la hora acordada; si el diseño presenta algún defecto atribuible al taller se repone de inmediato.",
+      "benchmark": "Resolución de quejas en menos de 24 horas.",
+      "cita": "Operations Management (Slack)",
+      "placeholder": "Garantías, atención y resolución de quejas..."
+    },
+    {
+      "key": "metas_comerciales_kpis",
+      "type": "text",
+      "address": "cafes.unidad_e.plan_comercial.metas_comerciales_kpis",
+      "prompt": "Metas cuantitativas de venta: clientes nuevos por mes, ticket promedio esperado y tasa de recompra recurrente.",
+      "ejemplo": "Ej: Meta Mes 1: 15 clientes ($18,000 MXN); Mes 6: 40 clientes ($48,000 MXN); ticket promedio de $350 MXN; recompra > 35%.",
+      "benchmark": "Metas mensuales SMART monitoreadas semanalmente.",
+      "cita": "Starting a Business QuickStart Guide",
+      "placeholder": "Clientes por mes, ticket promedio y recompra..."
+    },
+    {
+      "key": "alianzas_locales_comunitarias",
+      "type": "text",
+      "address": "cafes.unidad_e.plan_comercial.alianzas_locales_comunitarias",
+      "prompt": "Convenios y acuerdos con otros comercios o instituciones vecinales: escuelas, salones de eventos, iglesias o tiendas de abarrotes.",
+      "ejemplo": "Ej: Alianza con salón de fiestas infantil del vecindario para ser proveedor preferente de pastelería con comisión del 10%.",
+      "benchmark": "Al menos dos alianzas comerciales locales activas.",
+      "cita": "Manual de Emprendimiento Social CAFES",
+      "placeholder": "Alianzas con escuelas, salones y comercios..."
+    },
+    {
+      "key": "plan_lanzamiento_90_dias",
+      "type": "text",
+      "address": "cafes.unidad_e.plan_comercial.plan_lanzamiento_90_dias",
+      "prompt": "Cronograma comercial detallado de las primeras 12 semanas (90 días) con acciones concretas para captar clientes.",
+      "ejemplo": "Ej: Sem 1-2: Degustaciones a familiares y conocidos; Sem 3-4: Lanzamiento de catálogo en WhatsApp; Sem 5-8: Promoción Día de las Madres.",
+      "benchmark": "Acciones semanales medibles con presupuesto mínimo.",
+      "cita": "Starting a Business QuickStart Guide & CAFES",
+      "placeholder": "Calendario de acciones para los primeros 90 días..."
+    }
+  ],
+  "boxes": [],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Identidad de marca, canales (WhatsApp, ferias), promoción de bajo costo, garantías, alianzas y plan 90 días.\n\n**Cómo se usa.** Está en el pilar **Unidad E · Marketing y Plan Comercial** del modelo *Plan de Negocios CAFES (Emprendimiento Social y Familiar)*. Se abre en `/cafes/plan_comercial`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 8 campos: `marca_identidad_mensajes`, `canales_venta_distribucion`, `promocion_bajo_costo_referidos`, `portafolio_paquetes_combos`, `servicio_cliente_garantias`, `metas_comerciales_kpis`, `alianzas_locales_comunitarias`, `plan_lanzamiento_90_dias`.\n\n**Herramientas del módulo.** Ninguna específica: se apoya en los campos de texto."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `marca_identidad_mensajes`\n\n**El prompt que usa:** Identidad de la marca: nombre comercial, eslogan, colores institucionales y mensaje que conecta con el público.\n\n**Ejemplo que muestra la guía:** Ej: Dulce Hogar - Tradición y Sabor en tu Mesa. Colores cálidos (crema y guinda) que evocan cocina tradicional sonorense.\n\n**Benchmark / criterio de calidad:** Identidad visual consistente en empaques y redes.\n\n**De dónde viene la guía:** Starting a Business QuickStart Guide\n\n### `canales_venta_distribucion`\n\n**El prompt que usa:** Canales comerciales utilizados: WhatsApp Business con catálogo, pedidos directos por teléfono, bazares y ferias locales.\n\n**Ejemplo que muestra la guía:** Ej: 75% pedidos vía WhatsApp Business con catálogo interactivo; 25% ventas directas en bazar comunitario quincenal.\n\n**Benchmark / criterio de calidad:** Al menos un canal digital directo activo y medible.\n\n**De dónde viene la guía:** Creating a Business Plan For Dummies\n\n### `promocion_bajo_costo_referidos`\n\n**El prompt que usa:** Tácticas de publicidad sin costo o muy baratas: muestras de degustación en eventos, programa de recomendados y promociones.\n\n**Ejemplo que muestra la guía:** Ej: Muestras gratuitas de quequitos en reuniones vecinales; programa: recomienda a una amiga y ambas reciben 15% de descuento.\n\n**Benchmark / criterio de calidad:** Costo de adquisición de clientes (CAC) tendiente a cero.\n\n**De dónde viene la guía:** Starting a Business QuickStart Guide & CAFES\n\n### `portafolio_paquetes_combos`\n\n**El prompt que usa:** Diseño de paquetes atractivos y combos para festejos familiares con precios psicológicos para elevar el ticket promedio.\n\n**Ejemplo que muestra la guía:** Ej: Paquete Cumpleaños Feliz: 1 pastel mediano + 12 quequitos + 1 piñata mediana por $599 MXN (ahorro de $80 MXN).\n\n**Benchmark / criterio de calidad:** Incremento del ticket promedio en al menos un 25%.\n\n**De dónde viene la guía:** Creating a Business Plan For Dummies\n\n### `servicio_cliente_garantias`\n\n**El prompt que usa:** Políticas de garantía de satisfacción: reposición ante inconformidades, puntualidad en entregas y trato personalizado.\n\n**Ejemplo que muestra la guía:** Ej: Compromiso de entrega en la hora acordada; si el diseño presenta algún defecto atribuible al taller se repone de inmediato.\n\n**Benchmark / criterio de calidad:** Resolución de quejas en menos de 24 horas.\n\n**De dónde viene la guía:** Operations Management (Slack)\n\n### `metas_comerciales_kpis`\n\n**El prompt que usa:** Metas cuantitativas de venta: clientes nuevos por mes, ticket promedio esperado y tasa de recompra recurrente.\n\n**Ejemplo que muestra la guía:** Ej: Meta Mes 1: 15 clientes ($18,000 MXN); Mes 6: 40 clientes ($48,000 MXN); ticket promedio de $350 MXN; recompra > 35%.\n\n**Benchmark / criterio de calidad:** Metas mensuales SMART monitoreadas semanalmente.\n\n**De dónde viene la guía:** Starting a Business QuickStart Guide\n\n### `alianzas_locales_comunitarias`\n\n**El prompt que usa:** Convenios y acuerdos con otros comercios o instituciones vecinales: escuelas, salones de eventos, iglesias o tiendas de abarrotes.\n\n**Ejemplo que muestra la guía:** Ej: Alianza con salón de fiestas infantil del vecindario para ser proveedor preferente de pastelería con comisión del 10%.\n\n**Benchmark / criterio de calidad:** Al menos dos alianzas comerciales locales activas.\n\n**De dónde viene la guía:** Manual de Emprendimiento Social CAFES\n\n### `plan_lanzamiento_90_dias`\n\n**El prompt que usa:** Cronograma comercial detallado de las primeras 12 semanas (90 días) con acciones concretas para captar clientes.\n\n**Ejemplo que muestra la guía:** Ej: Sem 1-2: Degustaciones a familiares y conocidos; Sem 3-4: Lanzamiento de catálogo en WhatsApp; Sem 5-8: Promoción Día de las Madres.\n\n**Benchmark / criterio de calidad:** Acciones semanales medibles con presupuesto mínimo.\n\n**De dónde viene la guía:** Starting a Business QuickStart Guide & CAFES"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "Sin cajas asociadas."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Unidad E · Marketing y Plan Comercial** de *Plan de Negocios CAFES (Emprendimiento Social y Familiar)*. La justificación metodológica completa está en la página del modelo y en `docs/cafes.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `cafes.unidad_e.plan_comercial.marca_identidad_mensajes` → tipo `text`\n- `cafes.unidad_e.plan_comercial.canales_venta_distribucion` → tipo `text`\n- `cafes.unidad_e.plan_comercial.promocion_bajo_costo_referidos` → tipo `text`\n- `cafes.unidad_e.plan_comercial.portafolio_paquetes_combos` → tipo `text`\n- `cafes.unidad_e.plan_comercial.servicio_cliente_garantias` → tipo `text`\n- `cafes.unidad_e.plan_comercial.metas_comerciales_kpis` → tipo `text`\n- `cafes.unidad_e.plan_comercial.alianzas_locales_comunitarias` → tipo `text`\n- `cafes.unidad_e.plan_comercial.plan_lanzamiento_90_dias` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas:** `src/config/moduleBoxMap.js` no declara cajas para `cafes:plan_comercial`; la pantalla muestra solo los campos de texto.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

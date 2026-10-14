@@ -187,6 +187,25 @@ export const MODULE_BOX_MAP = {
   'horizon_europe:gestion_datos_fair_dmp': ['box_dmp_fair_checklist'],
   'horizon_europe:diseminacion_explotacion': ['box_plan_diseminacion_eu'],
   'horizon_europe:presupuesto_eu_microsoft': ['box_presupuesto_eu_categorias'],
+
+  // ============ PLAN CAFES (UNISON / SAETA) ============
+  'cafes:resumen_ejecutivo': ['box_resumen_ejecutivo_1p'],
+  'cafes:perfil_emprendedor': [],
+  'cafes:idea_portafolio': [],
+  'cafes:estudio_mercado': ['box_tam_sam_som'],
+  'cafes:plan_operaciones': ['box_kpi_otd_dso_dio_ccc', 'box_micro_croquis_2d'],
+  'cafes:aspectos_legales': [],
+  'cafes:organizacion_talento': [],
+  'cafes:propuesta_valor_canvas': ['box_canvas_osterwalder'],
+  'cafes:plan_comercial': [],
+  'cafes:plan_financiero': ['box_punto_equilibrio_micro', 'box_wacc_van_tir', 'box_montecarlo_sim'],
+  'cafes:impacto_social_ambiental': [],
+  'cafes:matriz_riesgos': [],
+  'cafes:plan_implementacion': [],
+  'cafes:requerimiento_capital': [],
+  'cafes:conclusiones_peticion': [],
+  'cafes:expediente_anexos': [],
+  'cafes:simulador': ['box_montecarlo_sim'],
 };
 
 /**

@@ -1,0 +1,96 @@
+{
+  "id": "modulo.cafes.idea_portafolio",
+  "title": "2. Idea de Negocio y Portafolio de Productos",
+  "summary": "Fichas técnicas, BOM de insumos, presentaciones, calidad e inocuidad alimentaria/comercial.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "cafes",
+  "moduleKey": "idea_portafolio",
+  "pillarKey": "unidad_b",
+  "openUrl": "/cafes/idea_portafolio",
+  "fields": [
+    {
+      "key": "descripcion_productos_servicios",
+      "type": "text",
+      "address": "cafes.unidad_b.idea_portafolio.descripcion_productos_servicios",
+      "prompt": "Descripción detallada de cada producto o servicio: ingredientes, características físicas, sabor, porciones y uso.",
+      "ejemplo": "Ej: Pasteles de tres leches tradicionales, quequitos decorados y gelatinas mosaico individuales para eventos familiares.",
+      "benchmark": "Catálogo definido con al menos 3 productos estándar.",
+      "cita": "Manual de Plan de Negocios Panamá",
+      "placeholder": "Catálogo de productos y especificaciones..."
+    },
+    {
+      "key": "fichas_tecnicas_bom",
+      "type": "text",
+      "address": "cafes.unidad_b.idea_portafolio.fichas_tecnicas_bom",
+      "prompt": "Ficha técnica por producto con lista de ingredientes o insumos (BOM), cantidades exactas, merma y tiempo de elaboración.",
+      "ejemplo": "Ej: Pastel mediano: 500g harina ($12), 6 huevos ($18), 1 lata tres leches ($28), crema batida ($25); costo insumos $83 MXN; tiempo 75 min; merma 3%.",
+      "benchmark": "Costeo unitario basado en recetas con merma calculada.",
+      "cita": "Manual CAFES-UNISON / SAETA",
+      "placeholder": "BOM de insumos, gramajes, tiempos y mermas..."
+    },
+    {
+      "key": "presentaciones_empaques",
+      "type": "text",
+      "address": "cafes.unidad_b.idea_portafolio.presentaciones_empaques",
+      "prompt": "Medidas, empaques ecológicos o grado alimenticio, etiquetas y presentación visual para el cliente.",
+      "ejemplo": "Ej: Cajas de cartón blanco biodegradable con domo transparente, base rígida y etiqueta con logotipo y fecha de elaboración.",
+      "benchmark": "Empaque que preserva la frescura e higiene durante el traslado.",
+      "cita": "Starting a Business QuickStart Guide",
+      "placeholder": "Empaques, medidas, cajas y etiquetas..."
+    },
+    {
+      "key": "requerimientos_inocuidad_calidad",
+      "type": "text",
+      "address": "cafes.unidad_b.idea_portafolio.requerimientos_inocuidad_calidad",
+      "prompt": "Normas de higiene, desinfección, manejo de alimentos o floristería, control de temperaturas y caducidad.",
+      "ejemplo": "Ej: Uso obligatorio de red para cabello, cubrebocas, lavado de manos cada 30 min y refrigeración estricta a 4°C.",
+      "benchmark": "Cumplimiento de la NOM-251-SSA1-2009 de prácticas de higiene.",
+      "cita": "Regulaciones Sanitarias COFEPRIS & CAFES",
+      "placeholder": "Buenas prácticas de higiene, inocuidad y control..."
+    },
+    {
+      "key": "alcance_limitaciones_iniciales",
+      "type": "text",
+      "address": "cafes.unidad_b.idea_portafolio.alcance_limitaciones_iniciales",
+      "prompt": "Claridad de lo que sí y lo que NO se atenderá al arranque del proyecto para no comprometer la calidad.",
+      "ejemplo": "Ej: Se atenderán únicamente pedidos de pastelería estándar con 48h de anticipación; no se elaborarán banquetes masivos al inicio.",
+      "benchmark": "Enfoque en productos de alta rotación sin dispersión de recursos.",
+      "cita": "The Lean Startup",
+      "placeholder": "Alcances y límites operativos iniciales..."
+    }
+  ],
+  "boxes": [],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Fichas técnicas, BOM de insumos, presentaciones, calidad e inocuidad alimentaria/comercial.\n\n**Cómo se usa.** Está en el pilar **Unidad B · Mercado, Portafolio y Cliente** del modelo *Plan de Negocios CAFES (Emprendimiento Social y Familiar)*. Se abre en `/cafes/idea_portafolio`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 5 campos: `descripcion_productos_servicios`, `fichas_tecnicas_bom`, `presentaciones_empaques`, `requerimientos_inocuidad_calidad`, `alcance_limitaciones_iniciales`.\n\n**Herramientas del módulo.** Ninguna específica: se apoya en los campos de texto."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `descripcion_productos_servicios`\n\n**El prompt que usa:** Descripción detallada de cada producto o servicio: ingredientes, características físicas, sabor, porciones y uso.\n\n**Ejemplo que muestra la guía:** Ej: Pasteles de tres leches tradicionales, quequitos decorados y gelatinas mosaico individuales para eventos familiares.\n\n**Benchmark / criterio de calidad:** Catálogo definido con al menos 3 productos estándar.\n\n**De dónde viene la guía:** Manual de Plan de Negocios Panamá\n\n### `fichas_tecnicas_bom`\n\n**El prompt que usa:** Ficha técnica por producto con lista de ingredientes o insumos (BOM), cantidades exactas, merma y tiempo de elaboración.\n\n**Ejemplo que muestra la guía:** Ej: Pastel mediano: 500g harina ($12), 6 huevos ($18), 1 lata tres leches ($28), crema batida ($25); costo insumos $83 MXN; tiempo 75 min; merma 3%.\n\n**Benchmark / criterio de calidad:** Costeo unitario basado en recetas con merma calculada.\n\n**De dónde viene la guía:** Manual CAFES-UNISON / SAETA\n\n### `presentaciones_empaques`\n\n**El prompt que usa:** Medidas, empaques ecológicos o grado alimenticio, etiquetas y presentación visual para el cliente.\n\n**Ejemplo que muestra la guía:** Ej: Cajas de cartón blanco biodegradable con domo transparente, base rígida y etiqueta con logotipo y fecha de elaboración.\n\n**Benchmark / criterio de calidad:** Empaque que preserva la frescura e higiene durante el traslado.\n\n**De dónde viene la guía:** Starting a Business QuickStart Guide\n\n### `requerimientos_inocuidad_calidad`\n\n**El prompt que usa:** Normas de higiene, desinfección, manejo de alimentos o floristería, control de temperaturas y caducidad.\n\n**Ejemplo que muestra la guía:** Ej: Uso obligatorio de red para cabello, cubrebocas, lavado de manos cada 30 min y refrigeración estricta a 4°C.\n\n**Benchmark / criterio de calidad:** Cumplimiento de la NOM-251-SSA1-2009 de prácticas de higiene.\n\n**De dónde viene la guía:** Regulaciones Sanitarias COFEPRIS & CAFES\n\n### `alcance_limitaciones_iniciales`\n\n**El prompt que usa:** Claridad de lo que sí y lo que NO se atenderá al arranque del proyecto para no comprometer la calidad.\n\n**Ejemplo que muestra la guía:** Ej: Se atenderán únicamente pedidos de pastelería estándar con 48h de anticipación; no se elaborarán banquetes masivos al inicio.\n\n**Benchmark / criterio de calidad:** Enfoque en productos de alta rotación sin dispersión de recursos.\n\n**De dónde viene la guía:** The Lean Startup"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "Sin cajas asociadas."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Unidad B · Mercado, Portafolio y Cliente** de *Plan de Negocios CAFES (Emprendimiento Social y Familiar)*. La justificación metodológica completa está en la página del modelo y en `docs/cafes.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `cafes.unidad_b.idea_portafolio.descripcion_productos_servicios` → tipo `text`\n- `cafes.unidad_b.idea_portafolio.fichas_tecnicas_bom` → tipo `text`\n- `cafes.unidad_b.idea_portafolio.presentaciones_empaques` → tipo `text`\n- `cafes.unidad_b.idea_portafolio.requerimientos_inocuidad_calidad` → tipo `text`\n- `cafes.unidad_b.idea_portafolio.alcance_limitaciones_iniciales` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas:** `src/config/moduleBoxMap.js` no declara cajas para `cafes:idea_portafolio`; la pantalla muestra solo los campos de texto.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

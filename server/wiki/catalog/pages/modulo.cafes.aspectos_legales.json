@@ -1,0 +1,96 @@
+{
+  "id": "modulo.cafes.aspectos_legales",
+  "title": "5. Aspectos Legales y Formalización Gradual",
+  "summary": "Transición a la formalidad, permisos de uso de suelo/salud, marca, contratos y régimen fiscal RESICO.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "cafes",
+  "moduleKey": "aspectos_legales",
+  "pillarKey": "unidad_d",
+  "openUrl": "/cafes/aspectos_legales",
+  "fields": [
+    {
+      "key": "esquema_operacion_transicion",
+      "type": "text",
+      "address": "cafes.unidad_d.aspectos_legales.esquema_operacion_transicion",
+      "prompt": "Estrategia para pasar de la operación informal inicial hacia la formalización legal y fiscal conforme crezca el negocio.",
+      "ejemplo": "Ej: Arranque como persona física en autoempleo; registro ante SAT en RESICO al mes 3 tras validar punto de equilibrio.",
+      "benchmark": "Ruta de formalización en 3 fases: Validación -> Alta Fiscal -> Afiliación IMSS.",
+      "cita": "Manual de Formalización CAFES-UNISON",
+      "placeholder": "Transición paulatina hacia la formalidad..."
+    },
+    {
+      "key": "permisos_avisos_licencias",
+      "type": "text",
+      "address": "cafes.unidad_d.aspectos_legales.permisos_avisos_licencias",
+      "prompt": "Avisos y trámites obligatorios según el giro: Aviso de funcionamiento sanitario COFEPRIS, uso de suelo municipal y visto bueno de bomberos.",
+      "ejemplo": "Ej: Aviso de funcionamiento COFEPRIS de bajo riesgo (trámite gratuito en línea) y anuencia de vecinos para uso habitacional mixto.",
+      "benchmark": "Identificación de costos y tiempos de resolución de licencias.",
+      "cita": "Marco Regulatorio Municipal y COFEPRIS",
+      "placeholder": "Permisos, licencias y avisos sanitarios..."
+    },
+    {
+      "key": "propiedad_intelectual_marca",
+      "type": "text",
+      "address": "cafes.unidad_d.aspectos_legales.propiedad_intelectual_marca",
+      "prompt": "Búsqueda fonética en Marcanet (IMPI) del nombre comercial y estrategia de registro de marca y logotipo.",
+      "ejemplo": "Ej: Búsqueda fonética en clase 30 del IMPI sin coincidencias; logotipo registrado en expediente como paso previo a registro formal.",
+      "benchmark": "Verificación de no invasión de marcas preexistentes.",
+      "cita": "Creating a Business Plan For Dummies",
+      "placeholder": "Nombre comercial, búsqueda fonética y marca..."
+    },
+    {
+      "key": "contratos_esenciales",
+      "type": "text",
+      "address": "cafes.unidad_d.aspectos_legales.contratos_esenciales",
+      "prompt": "Contratos necesarios: comodato de espacio familiar o arrendamiento de local, contratos con proveedores clave y pedidos de clientes.",
+      "ejemplo": "Ej: Contrato de comodato por espacio habitacional familiar y notas de pedido con cláusula de anticipo no reembolsable.",
+      "benchmark": "Documentación legal básica para evitar controversias familiares.",
+      "cita": "Manual CAFES-UNISON / SAETA",
+      "placeholder": "Contratos de renta, comodato o proveedores..."
+    },
+    {
+      "key": "cumplimiento_fiscal_resico",
+      "type": "text",
+      "address": "cafes.unidad_d.aspectos_legales.cumplimiento_fiscal_resico",
+      "prompt": "Régimen fiscal seleccionado (RESICO - Régimen Simplificado de Confianza), tasa de ISR reducida (1%-2.5%) y emisión de facturas electrónicas.",
+      "ejemplo": "Ej: Alta en RESICO como Persona Física con Actividad Empresarial con tasa de ISR del 1% sobre ingresos efectivamente cobrados.",
+      "benchmark": "Aprovechamiento de las ventajas del RESICO para microempresarios.",
+      "cita": "Código Fiscal de la Federación & CAFES",
+      "placeholder": "Régimen fiscal, facturación CFDI e impuestos..."
+    }
+  ],
+  "boxes": [],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Transición a la formalidad, permisos de uso de suelo/salud, marca, contratos y régimen fiscal RESICO.\n\n**Cómo se usa.** Está en el pilar **Unidad D · Legal, Organización y Modelo Canvas** del modelo *Plan de Negocios CAFES (Emprendimiento Social y Familiar)*. Se abre en `/cafes/aspectos_legales`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 5 campos: `esquema_operacion_transicion`, `permisos_avisos_licencias`, `propiedad_intelectual_marca`, `contratos_esenciales`, `cumplimiento_fiscal_resico`.\n\n**Herramientas del módulo.** Ninguna específica: se apoya en los campos de texto."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `esquema_operacion_transicion`\n\n**El prompt que usa:** Estrategia para pasar de la operación informal inicial hacia la formalización legal y fiscal conforme crezca el negocio.\n\n**Ejemplo que muestra la guía:** Ej: Arranque como persona física en autoempleo; registro ante SAT en RESICO al mes 3 tras validar punto de equilibrio.\n\n**Benchmark / criterio de calidad:** Ruta de formalización en 3 fases: Validación -> Alta Fiscal -> Afiliación IMSS.\n\n**De dónde viene la guía:** Manual de Formalización CAFES-UNISON\n\n### `permisos_avisos_licencias`\n\n**El prompt que usa:** Avisos y trámites obligatorios según el giro: Aviso de funcionamiento sanitario COFEPRIS, uso de suelo municipal y visto bueno de bomberos.\n\n**Ejemplo que muestra la guía:** Ej: Aviso de funcionamiento COFEPRIS de bajo riesgo (trámite gratuito en línea) y anuencia de vecinos para uso habitacional mixto.\n\n**Benchmark / criterio de calidad:** Identificación de costos y tiempos de resolución de licencias.\n\n**De dónde viene la guía:** Marco Regulatorio Municipal y COFEPRIS\n\n### `propiedad_intelectual_marca`\n\n**El prompt que usa:** Búsqueda fonética en Marcanet (IMPI) del nombre comercial y estrategia de registro de marca y logotipo.\n\n**Ejemplo que muestra la guía:** Ej: Búsqueda fonética en clase 30 del IMPI sin coincidencias; logotipo registrado en expediente como paso previo a registro formal.\n\n**Benchmark / criterio de calidad:** Verificación de no invasión de marcas preexistentes.\n\n**De dónde viene la guía:** Creating a Business Plan For Dummies\n\n### `contratos_esenciales`\n\n**El prompt que usa:** Contratos necesarios: comodato de espacio familiar o arrendamiento de local, contratos con proveedores clave y pedidos de clientes.\n\n**Ejemplo que muestra la guía:** Ej: Contrato de comodato por espacio habitacional familiar y notas de pedido con cláusula de anticipo no reembolsable.\n\n**Benchmark / criterio de calidad:** Documentación legal básica para evitar controversias familiares.\n\n**De dónde viene la guía:** Manual CAFES-UNISON / SAETA\n\n### `cumplimiento_fiscal_resico`\n\n**El prompt que usa:** Régimen fiscal seleccionado (RESICO - Régimen Simplificado de Confianza), tasa de ISR reducida (1%-2.5%) y emisión de facturas electrónicas.\n\n**Ejemplo que muestra la guía:** Ej: Alta en RESICO como Persona Física con Actividad Empresarial con tasa de ISR del 1% sobre ingresos efectivamente cobrados.\n\n**Benchmark / criterio de calidad:** Aprovechamiento de las ventajas del RESICO para microempresarios.\n\n**De dónde viene la guía:** Código Fiscal de la Federación & CAFES"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "Sin cajas asociadas."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Unidad D · Legal, Organización y Modelo Canvas** de *Plan de Negocios CAFES (Emprendimiento Social y Familiar)*. La justificación metodológica completa está en la página del modelo y en `docs/cafes.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `cafes.unidad_d.aspectos_legales.esquema_operacion_transicion` → tipo `text`\n- `cafes.unidad_d.aspectos_legales.permisos_avisos_licencias` → tipo `text`\n- `cafes.unidad_d.aspectos_legales.propiedad_intelectual_marca` → tipo `text`\n- `cafes.unidad_d.aspectos_legales.contratos_esenciales` → tipo `text`\n- `cafes.unidad_d.aspectos_legales.cumplimiento_fiscal_resico` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas:** `src/config/moduleBoxMap.js` no declara cajas para `cafes:aspectos_legales`; la pantalla muestra solo los campos de texto.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

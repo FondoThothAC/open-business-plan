@@ -22,8 +22,9 @@ describe('VCV Cortes Finos SA de CV - Consolidación y Calibración Financiera',
     assert.equal(project.companyName, 'VCV Cortes Finos, S.A. de C.V.');
     assert.equal(project.config.activeMethodologies.length, 12);
 
-    for (const [fwId, fwConfig] of Object.entries(FRAMEWORKS)) {
-      if (!fwConfig.pillars) continue;
+    for (const fwId of project.config.activeMethodologies) {
+      const fwConfig = FRAMEWORKS[fwId];
+      if (!fwConfig || !fwConfig.pillars) continue;
       for (const pillar of fwConfig.pillars) {
         assert.ok(project[pillar.key], `Pilar ${pillar.key} debe existir en el proyecto`);
         for (const mod of pillar.modules) {

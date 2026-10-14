@@ -1,0 +1,106 @@
+{
+  "id": "modulo.cafes.requerimiento_capital",
+  "title": "13. Requerimiento de Capital Semilla e Inversión",
+  "summary": "Monto solicitado, desglose por rubro, aportación propia en especie/efectivo, cotizaciones, impacto marginal antes/después y comprobación.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "cafes",
+  "moduleKey": "requerimiento_capital",
+  "pillarKey": "unidad_h",
+  "openUrl": "/cafes/requerimiento_capital",
+  "fields": [
+    {
+      "key": "monto_solicitado_total",
+      "type": "text",
+      "address": "cafes.unidad_h.requerimiento_capital.monto_solicitado_total",
+      "prompt": "Cifra exacta del monto de capital semilla o financiamiento solicitado al fondo, banco o convocatoria.",
+      "ejemplo": "Ej: $35,000 MXN (Treinta y cinco mil pesos 00/100 M.N.).",
+      "benchmark": "El monto solicitado debe coincidir exactamente con las cotizaciones anexas.",
+      "cita": "Manual de Convocatorias CAFES-UNISON",
+      "placeholder": "Monto total en pesos y letra..."
+    },
+    {
+      "key": "desglose_rubros_destino",
+      "type": "text",
+      "address": "cafes.unidad_h.requerimiento_capital.desglose_rubros_destino",
+      "prompt": "Tabla desglosada por rubro: Inversión en equipo, herramientas, insumos iniciales, acondicionamiento y mercadotecnia.",
+      "ejemplo": "Ej: 1) Horno de convección: $22,000; 2) Mesa acero inoxidable: $8,000; 3) Insumos iniciales: $3,500; 4) Empaques e imagen: $1,500. Total: $35,000 MXN.",
+      "benchmark": "Desglose alineado a las reglas de operación del fondo.",
+      "cita": "Manual CAFES-UNISON / SAETA",
+      "placeholder": "Desglose detallado por concepto y costo..."
+    },
+    {
+      "key": "aportacion_propia_fuentes",
+      "type": "text",
+      "address": "cafes.unidad_h.requerimiento_capital.aportacion_propia_fuentes",
+      "prompt": "Aportación del emprendedor (en efectivo o en especie: local, batidora propia, gas, horas de trabajo no remuneradas).",
+      "ejemplo": "Ej: Aportación propia: Local habilitado ($15,000 valor estimado) + batidora 10L ($9,500) + $5,000 MXN en efectivo. Total aportación: $29,500 MXN (45% del total).",
+      "benchmark": "Aportación propia recomendada de al menos el 20% del valor total del proyecto.",
+      "cita": "Manual de Convocatorias CAFES-UNISON",
+      "placeholder": "Aportación en especie, equipo previo o efectivo..."
+    },
+    {
+      "key": "evidencias_cotizaciones_proveedor",
+      "type": "text",
+      "address": "cafes.unidad_h.requerimiento_capital.evidencias_cotizaciones_proveedor",
+      "prompt": "Relación de cotizaciones formales anexas: nombre comercial del proveedor, fecha de cotización, vigencia y enlace o teléfono.",
+      "ejemplo": "Ej: Cotización #1: Ferretería y Maquinaria del Norte (Vigencia 30 días, Tel 662-214-8800); Cotización #2: Equipos Gastronómicos Sonora.",
+      "benchmark": "Cotizaciones vigentes con datos fiscales del proveedor.",
+      "cita": "Manual CAFES-UNISON / SAETA",
+      "placeholder": "Proveedores cotizados, montos y vigencias..."
+    },
+    {
+      "key": "impacto_capital_ventas_utilidad",
+      "type": "text",
+      "address": "cafes.unidad_h.requerimiento_capital.impacto_capital_ventas_utilidad",
+      "prompt": "Comparativa de antes y después del capital semilla: cómo cambia la capacidad, las ventas y la utilidad al contar con el equipo.",
+      "ejemplo": "Ej: Antes: 10 pasteles/semana ($8,000 venta/mes, utilidad $2,800); Después con horno industrial: 40 pasteles/semana ($38,000 venta/mes, utilidad $14,500).",
+      "benchmark": "Demostración de salto cuántico en productividad y margen.",
+      "cita": "Empresas Cuánticas & CAFES-UNISON",
+      "placeholder": "Comparativo de ventas y utilidad antes y después..."
+    },
+    {
+      "key": "plan_uso_rendicion_cuentas",
+      "type": "text",
+      "address": "cafes.unidad_h.requerimiento_capital.plan_uso_rendicion_cuentas",
+      "prompt": "Mecanismo de comprobación del recurso: facturas fiscales a nombre del titular, fotografías de los bienes adquiridos y bitácora de gastos.",
+      "ejemplo": "Ej: Se presentarán facturas CFDI con archivo XML en plazo no mayor a 30 días naturales posteriores a la entrega del recurso y registro fotográfico.",
+      "benchmark": "Comprobación al 100% mediante facturas electrónicas válidas ante el SAT.",
+      "cita": "Reglas de Operación CAFES-UNISON",
+      "placeholder": "Comprobación de gastos, facturas y rendición de cuentas..."
+    }
+  ],
+  "boxes": [],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Monto solicitado, desglose por rubro, aportación propia en especie/efectivo, cotizaciones, impacto marginal antes/después y comprobación.\n\n**Cómo se usa.** Está en el pilar **Unidad H · Implementación y Solicitud al Financiador** del modelo *Plan de Negocios CAFES (Emprendimiento Social y Familiar)*. Se abre en `/cafes/requerimiento_capital`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 6 campos: `monto_solicitado_total`, `desglose_rubros_destino`, `aportacion_propia_fuentes`, `evidencias_cotizaciones_proveedor`, `impacto_capital_ventas_utilidad`, `plan_uso_rendicion_cuentas`.\n\n**Herramientas del módulo.** Ninguna específica: se apoya en los campos de texto."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `monto_solicitado_total`\n\n**El prompt que usa:** Cifra exacta del monto de capital semilla o financiamiento solicitado al fondo, banco o convocatoria.\n\n**Ejemplo que muestra la guía:** Ej: $35,000 MXN (Treinta y cinco mil pesos 00/100 M.N.).\n\n**Benchmark / criterio de calidad:** El monto solicitado debe coincidir exactamente con las cotizaciones anexas.\n\n**De dónde viene la guía:** Manual de Convocatorias CAFES-UNISON\n\n### `desglose_rubros_destino`\n\n**El prompt que usa:** Tabla desglosada por rubro: Inversión en equipo, herramientas, insumos iniciales, acondicionamiento y mercadotecnia.\n\n**Ejemplo que muestra la guía:** Ej: 1) Horno de convección: $22,000; 2) Mesa acero inoxidable: $8,000; 3) Insumos iniciales: $3,500; 4) Empaques e imagen: $1,500. Total: $35,000 MXN.\n\n**Benchmark / criterio de calidad:** Desglose alineado a las reglas de operación del fondo.\n\n**De dónde viene la guía:** Manual CAFES-UNISON / SAETA\n\n### `aportacion_propia_fuentes`\n\n**El prompt que usa:** Aportación del emprendedor (en efectivo o en especie: local, batidora propia, gas, horas de trabajo no remuneradas).\n\n**Ejemplo que muestra la guía:** Ej: Aportación propia: Local habilitado ($15,000 valor estimado) + batidora 10L ($9,500) + $5,000 MXN en efectivo. Total aportación: $29,500 MXN (45% del total).\n\n**Benchmark / criterio de calidad:** Aportación propia recomendada de al menos el 20% del valor total del proyecto.\n\n**De dónde viene la guía:** Manual de Convocatorias CAFES-UNISON\n\n### `evidencias_cotizaciones_proveedor`\n\n**El prompt que usa:** Relación de cotizaciones formales anexas: nombre comercial del proveedor, fecha de cotización, vigencia y enlace o teléfono.\n\n**Ejemplo que muestra la guía:** Ej: Cotización #1: Ferretería y Maquinaria del Norte (Vigencia 30 días, Tel 662-214-8800); Cotización #2: Equipos Gastronómicos Sonora.\n\n**Benchmark / criterio de calidad:** Cotizaciones vigentes con datos fiscales del proveedor.\n\n**De dónde viene la guía:** Manual CAFES-UNISON / SAETA\n\n### `impacto_capital_ventas_utilidad`\n\n**El prompt que usa:** Comparativa de antes y después del capital semilla: cómo cambia la capacidad, las ventas y la utilidad al contar con el equipo.\n\n**Ejemplo que muestra la guía:** Ej: Antes: 10 pasteles/semana ($8,000 venta/mes, utilidad $2,800); Después con horno industrial: 40 pasteles/semana ($38,000 venta/mes, utilidad $14,500).\n\n**Benchmark / criterio de calidad:** Demostración de salto cuántico en productividad y margen.\n\n**De dónde viene la guía:** Empresas Cuánticas & CAFES-UNISON\n\n### `plan_uso_rendicion_cuentas`\n\n**El prompt que usa:** Mecanismo de comprobación del recurso: facturas fiscales a nombre del titular, fotografías de los bienes adquiridos y bitácora de gastos.\n\n**Ejemplo que muestra la guía:** Ej: Se presentarán facturas CFDI con archivo XML en plazo no mayor a 30 días naturales posteriores a la entrega del recurso y registro fotográfico.\n\n**Benchmark / criterio de calidad:** Comprobación al 100% mediante facturas electrónicas válidas ante el SAT.\n\n**De dónde viene la guía:** Reglas de Operación CAFES-UNISON"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "Sin cajas asociadas."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Unidad H · Implementación y Solicitud al Financiador** de *Plan de Negocios CAFES (Emprendimiento Social y Familiar)*. La justificación metodológica completa está en la página del modelo y en `docs/cafes.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `cafes.unidad_h.requerimiento_capital.monto_solicitado_total` → tipo `text`\n- `cafes.unidad_h.requerimiento_capital.desglose_rubros_destino` → tipo `text`\n- `cafes.unidad_h.requerimiento_capital.aportacion_propia_fuentes` → tipo `text`\n- `cafes.unidad_h.requerimiento_capital.evidencias_cotizaciones_proveedor` → tipo `text`\n- `cafes.unidad_h.requerimiento_capital.impacto_capital_ventas_utilidad` → tipo `text`\n- `cafes.unidad_h.requerimiento_capital.plan_uso_rendicion_cuentas` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas:** `src/config/moduleBoxMap.js` no declara cajas para `cafes:requerimiento_capital`; la pantalla muestra solo los campos de texto.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

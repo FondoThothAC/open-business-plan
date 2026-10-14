@@ -2889,6 +2889,925 @@ export const ONUDI_PROJECT_GUIDES = {
   }
 };
 
+export const CAFES_GUIDES = {
+  "descripcion_situacion_actual": {
+    "instruccion": "Describe brevemente qué hace el emprendimiento hoy en día, en qué etapa se encuentra y qué productos o servicios ofrece.",
+    "ejemplo": "Ej: Taller familiar de elaboración de piñatas artesanales y repostería casera operando desde el domicilio particular en Hermosillo.",
+    "benchmark": "Operación activa o etapa pre-operativa con validación local < 3 meses.",
+    "cita": "Metodología CAFES-UNISON / SAETA",
+    "placeholder": "Situación actual del negocio, ventas iniciales y giro..."
+  },
+  "problema_oportunidad": {
+    "instruccion": "Explica qué necesidad o problema de los clientes atiende tu negocio y por qué existe una oportunidad real de venta.",
+    "ejemplo": "Ej: Falta de repostería fresca y temática para festejos familiares a precios accesibles en la colonia sin tener que desplazarse al centro.",
+    "benchmark": "Problema validado con al menos 15 clientes potenciales del sector.",
+    "cita": "Starting a Business QuickStart Guide & CAFES-UNISON",
+    "placeholder": "Problema u oportunidad de mercado detectada..."
+  },
+  "propuesta_valor_diferencial": {
+    "instruccion": "¿Qué hace a tu producto o servicio único y preferible frente a las opciones comerciales comunes?",
+    "ejemplo": "Ej: Recetas tradicionales con ingredientes naturales de Sonora, diseños personalizados y entrega puntual a domicilio.",
+    "benchmark": "Diferenciador perceptible en calidad, sabor, personalización o tiempo de entrega.",
+    "cita": "Business Model Generation & CAFES-UNISON",
+    "placeholder": "Propuesta de valor y beneficio clave para el cliente..."
+  },
+  "cliente_objetivo_resumen": {
+    "instruccion": "Perfil resumido de quién compra tus productos: edad, ubicación, ocasiones de consumo y capacidad de pago.",
+    "ejemplo": "Ej: Madres de familia y organizadores de eventos de 22 a 50 años en colonias del norte y poniente de Hermosillo.",
+    "benchmark": "Segmento local identificado con frecuencia de compra mensual o bimestral.",
+    "cita": "Anatomy of a Business Plan",
+    "placeholder": "Perfil del cliente que compra..."
+  },
+  "validacion_demanda_resumen": {
+    "instruccion": "Evidencias concretas de que el producto tiene demanda (pedidos piloto, sondeos rápidos, ventas previas).",
+    "ejemplo": "Ej: Se realizaron 25 pedidos piloto en el último mes con 100% de satisfacción y 8 recompras espontáneas.",
+    "benchmark": "Tasa de satisfacción > 90% y tasa de recompra verificable.",
+    "cita": "The Lean Startup & CAFES-UNISON",
+    "placeholder": "Resultados de pruebas piloto y pedidos de sondeo..."
+  },
+  "ventaja_competitiva": {
+    "instruccion": "Factores por los que el negocio sostendrá sus ventas frente a competidores directos e informales.",
+    "ejemplo": "Ej: Costos de operación reducidos por taller propio, dominio de la técnica artesanal y atención cercana vía WhatsApp.",
+    "benchmark": "Margen bruto superior al 40% y relación de confianza comunitaria.",
+    "cita": "Creating a Business Plan For Dummies",
+    "placeholder": "Ventaja competitiva frente a otros comercios..."
+  },
+  "modelo_ingresos_precios": {
+    "instruccion": "Forma en que el negocio genera ingresos: venta directa, paquetes, mayoreo o eventos especiales.",
+    "ejemplo": "Ej: Venta individual sobre pedido con anticipo del 50% y paquetes para fiestas con descuento por volumen.",
+    "benchmark": "Política de anticipos para asegurar flujo de caja y evitar mermas.",
+    "cita": "Starting a Business QuickStart Guide",
+    "placeholder": "Fuentes de ingresos y esquema de precios..."
+  },
+  "capital_semilla_resumen": {
+    "instruccion": "Monto total de capital semilla requerido y desglose sintético de equipamiento e insumos.",
+    "ejemplo": "Ej: $35,000 MXN destinados a horno industrial de convección ($22,000), mesa de acero ($8,000) e insumos iniciales ($5,000).",
+    "benchmark": "Presupuesto 100% cotizado con al menos 2 opciones de proveedor.",
+    "cita": "Manual CAFES-UNISON / SAETA",
+    "placeholder": "Monto requerido y destino del subsidio/crédito..."
+  },
+  "ventas_utilidades_resumen": {
+    "instruccion": "Proyección estimada de ventas mensuales y utilidad neta para el primer año de operación formal.",
+    "ejemplo": "Ej: Ventas de $38,000 MXN mensuales promedio con una utilidad neta proyectada de $14,500 MXN mensuales.",
+    "benchmark": "Margen neto operativo entre 25% y 40% para micronegocios familiares.",
+    "cita": "Manual de Plan de Negocios Panamá & CAFES",
+    "placeholder": "Cifras clave de ventas y utilidad esperada Año 1..."
+  },
+  "punto_equilibrio_resumen": {
+    "instruccion": "Cifra de ventas mínimas mensuales en dinero y piezas para no ganar ni perder.",
+    "ejemplo": "Ej: 65 paquetes o $16,250 MXN mensuales para cubrir todos los costos fijos y variables.",
+    "benchmark": "Alcanzable en la semana 2 o 3 de cada mes operativo.",
+    "cita": "Starting a Business QuickStart Guide",
+    "placeholder": "Punto de equilibrio en unidades y pesos..."
+  },
+  "relacion_beneficio_costo_resumen": {
+    "instruccion": "Indicador B/C que demuestra cuántos pesos de beneficio se generan por cada peso gastado.",
+    "ejemplo": "Ej: Relación B/C de 1.38 (por cada $1.00 MXN invertido se recuperan $1.38 MXN en valor presente).",
+    "benchmark": "Relación B/C > 1.15 para viabilidad económica.",
+    "cita": "Evaluación Financiera SAGARPA & CAFES-UNISON",
+    "placeholder": "Relación Beneficio Costo esperada..."
+  },
+  "impacto_social_familiar_resumen": {
+    "instruccion": "Beneficios directos para la economía del hogar, sustento familiar y la comunidad vecinal.",
+    "ejemplo": "Ej: Aumento del 45% en el ingreso disponible de la familia y generación de 2 autoempleos dignos en el hogar.",
+    "benchmark": "Mejora demostrable en la canasta básica y bienestar familiar.",
+    "cita": "Manual BID / PM4R de Proyectos Sociales & CAFES",
+    "placeholder": "Impacto social y familiar generado..."
+  },
+  "riesgos_mitigaciones_resumen": {
+    "instruccion": "Principales riesgos que enfrenta el negocio y cómo se van a prevenir o controlar.",
+    "ejemplo": "Ej: Aumento de insumos mitigado con compras en mayoreo; fallas eléctricas mitigadas con respaldo de gas LP.",
+    "benchmark": "Matriz preventiva con Plan B inmediato.",
+    "cita": "Anatomy of a Business Plan",
+    "placeholder": "Riesgos principales y plan de mitigación..."
+  },
+  "cronograma_12_semanas_resumen": {
+    "instruccion": "Resumen de hitos clave para la puesta en marcha durante las primeras 12 semanas.",
+    "ejemplo": "Ej: Semanas 1-3 compra de equipo; semanas 4-6 acondicionamiento; semanas 7-9 pruebas piloto; semana 10 lanzamiento oficial.",
+    "benchmark": "Ruta crítica realista sin retrasos en adquisiciones.",
+    "cita": "Manual CAFES-UNISON / SAETA",
+    "placeholder": "Hitos del cronograma de 12 semanas..."
+  },
+  "datos_identificacion": {
+    "instruccion": "Nombre completo del emprendedor/a, domicilio del proyecto, teléfono, correo y datos de contacto.",
+    "ejemplo": "Ej: María Elena Morales Ruiz, Calle Arizona #142, Col. San Benito, Hermosillo, Sonora. Tel: 662-123-4567.",
+    "benchmark": "Expediente con CURP y comprobante de domicilio vigente < 3 meses.",
+    "cita": "Manual de Convocatorias CAFES-UNISON",
+    "placeholder": "Datos de contacto e identificación del titular..."
+  },
+  "historia_motivacion": {
+    "instruccion": "Historia personal de cómo nació la idea, motivación para emprender y compromiso de vida con el proyecto.",
+    "ejemplo": "Ej: Tradición de repostería heredada de mi abuela; deseo de generar ingresos propios para costear la educación de mis hijos.",
+    "benchmark": "Compromiso de permanencia y arraigo en la actividad económica.",
+    "cita": "Metodología CAFES-UNISON",
+    "placeholder": "Historia, raíces y motivación para emprender..."
+  },
+  "experiencia_habilidades": {
+    "instruccion": "Experiencia previa en el oficio, cursos tomados (ej. SAETA, CECATI, ICATSON) y habilidades desarrolladas.",
+    "ejemplo": "Ej: 4 años de experiencia en cocina casera, diploma de SAETA en Panadería y Decoración, y manejo básico de redes sociales.",
+    "benchmark": "Al menos 1 constancia o evidencia práctica de dominio del oficio.",
+    "cita": "Convenio CAFES-UNISON / SAETA",
+    "placeholder": "Oficios aprendidos, constancias y habilidades..."
+  },
+  "horario_apoyo_familiar": {
+    "instruccion": "Horas semanales disponibles para el negocio y distribución del apoyo familiar para no descuidar el hogar.",
+    "ejemplo": "Ej: 35 horas semanales dedicadas; mi esposo apoya con compras matutinas y mi hija mayor ayuda con empaque.",
+    "benchmark": "Disponibilidad mínima de 30 horas semanales sin interferir con cuidados esenciales.",
+    "cita": "Manual de Emprendimiento Familiar CAFES",
+    "placeholder": "Horarios operativos y apoyo de familiares..."
+  },
+  "diagnostico_capacitacion": {
+    "instruccion": "Áreas donde el emprendedor reconoce que necesita capacitarse (administración, costeo, venta digital, calidad).",
+    "ejemplo": "Ej: Necesidad de dominar cálculo de precios por costeo unitario y aprender publicidad básica en Facebook e Instagram.",
+    "benchmark": "Plan de capacitación de 20 horas en administración y ventas.",
+    "cita": "Metodología CAFES-UNISON / SAETA",
+    "placeholder": "Necesidades de capacitación detectadas..."
+  },
+  "situacion_actual_negocio": {
+    "instruccion": "Si el negocio ya opera, describe ventas mensuales actuales, número de clientes y equipo con el que ya cuenta.",
+    "ejemplo": "Ej: Opera informalmente desde hace 6 meses con ventas de $8,000 MXN mensuales y cartera de 18 clientes regulares.",
+    "benchmark": "Registro de bitácora de ventas o pedidos previos.",
+    "cita": "Manual CAFES-UNISON",
+    "placeholder": "Ventas, clientes y herramientas que ya se tienen..."
+  },
+  "modelo_atomico_evaluacion": {
+    "instruccion": "Diagnóstico Cuántico: Evalúa en cuáles de las 3 áreas nucleares (Finanzas, Operativo, Administrativo) es fuerte el fundador y alerta sobre riesgo de fusión atómica.",
+    "ejemplo": "Ej: Fuerte en Operativo (elaboración del producto); débil en Finanzas y Administrativo. Alerta de saturación si opera solo.",
+    "benchmark": "El fundador solo debe concentrarse en 1 o máximo 2 áreas nucleares.",
+    "cita": "Empresas Cuánticas (Fondo Thoth AC)",
+    "placeholder": "Evaluación en Finanzas, Operaciones y Administración..."
+  },
+  "plan_delegacion_cuantica": {
+    "instruccion": "Define qué roles o tareas deben delegarse a terceros o familiares complementarios para no sobrecargar al fundador.",
+    "ejemplo": "Ej: Se delega la entrega y cobranza al socio familiar; la contabilidad y cálculo fiscal a despacho externo de bajo costo.",
+    "benchmark": "Perfiles de puesto claros con responsabilidades y horas asignadas.",
+    "cita": "Empresas Cuánticas (Fondo Thoth AC)",
+    "placeholder": "Estrategia de delegación y asignación de puestos..."
+  },
+  "ruta_independencia_fundador": {
+    "instruccion": "Estrategia para estandarizar recetas, procesos y manuales para que el negocio funcione sin depender 100% de la presencia del fundador.",
+    "ejemplo": "Ej: Recetarios estandarizados con gramajes exactos y manual de atención al cliente para que un ayudante produzca con idéntica calidad.",
+    "benchmark": "Documentación de procesos clave con capacidad de reemplazo temporal.",
+    "cita": "Empresas Cuánticas (Fondo Thoth AC)",
+    "placeholder": "Estandarización para autonomía del negocio..."
+  },
+  "descripcion_productos_servicios": {
+    "instruccion": "Descripción detallada de cada producto o servicio: ingredientes, características físicas, sabor, porciones y uso.",
+    "ejemplo": "Ej: Pasteles de tres leches tradicionales, quequitos decorados y gelatinas mosaico individuales para eventos familiares.",
+    "benchmark": "Catálogo definido con al menos 3 productos estándar.",
+    "cita": "Manual de Plan de Negocios Panamá",
+    "placeholder": "Catálogo de productos y especificaciones..."
+  },
+  "fichas_tecnicas_bom": {
+    "instruccion": "Ficha técnica por producto con lista de ingredientes o insumos (BOM), cantidades exactas, merma y tiempo de elaboración.",
+    "ejemplo": "Ej: Pastel mediano: 500g harina ($12), 6 huevos ($18), 1 lata tres leches ($28), crema batida ($25); costo insumos $83 MXN; tiempo 75 min; merma 3%.",
+    "benchmark": "Costeo unitario basado en recetas con merma calculada.",
+    "cita": "Manual CAFES-UNISON / SAETA",
+    "placeholder": "BOM de insumos, gramajes, tiempos y mermas..."
+  },
+  "presentaciones_empaques": {
+    "instruccion": "Medidas, empaques ecológicos o grado alimenticio, etiquetas y presentación visual para el cliente.",
+    "ejemplo": "Ej: Cajas de cartón blanco biodegradable con domo transparente, base rígida y etiqueta con logotipo y fecha de elaboración.",
+    "benchmark": "Empaque que preserva la frescura e higiene durante el traslado.",
+    "cita": "Starting a Business QuickStart Guide",
+    "placeholder": "Empaques, medidas, cajas y etiquetas..."
+  },
+  "requerimientos_inocuidad_calidad": {
+    "instruccion": "Normas de higiene, desinfección, manejo de alimentos o floristería, control de temperaturas y caducidad.",
+    "ejemplo": "Ej: Uso obligatorio de red para cabello, cubrebocas, lavado de manos cada 30 min y refrigeración estricta a 4°C.",
+    "benchmark": "Cumplimiento de la NOM-251-SSA1-2009 de prácticas de higiene.",
+    "cita": "Regulaciones Sanitarias COFEPRIS & CAFES",
+    "placeholder": "Buenas prácticas de higiene, inocuidad y control..."
+  },
+  "alcance_limitaciones_iniciales": {
+    "instruccion": "Claridad de lo que sí y lo que NO se atenderá al arranque del proyecto para no comprometer la calidad.",
+    "ejemplo": "Ej: Se atenderán únicamente pedidos de pastelería estándar con 48h de anticipación; no se elaborarán banquetes masivos al inicio.",
+    "benchmark": "Enfoque en productos de alta rotación sin dispersión de recursos.",
+    "cita": "The Lean Startup",
+    "placeholder": "Alcances y límites operativos iniciales..."
+  },
+  "segmento_capacidad_pago": {
+    "instruccion": "Perfil del comprador local: nivel de ingresos promedio, capacidad de gasto por ocasión y hábitos de compra.",
+    "ejemplo": "Ej: Familias de nivel socioeconómico C y D+ con presupuesto de $250 a $500 MXN para celebraciones de fin de semana.",
+    "benchmark": "Ticket promedio accesible compatible con el ingreso medio del sector.",
+    "cita": "Anatomy of a Business Plan",
+    "placeholder": "Capacidad de pago y nivel socioeconómico del cliente..."
+  },
+  "necesidades_criterios_compra": {
+    "instruccion": "¿Por qué compra el cliente? Razones principales: frescura, cercanía, sabor, diseño personalizado o precio.",
+    "ejemplo": "Ej: Buscan pasteles frescos del día sin conservadores artificiales, con diseños solicitados por sus hijos para cumpleaños.",
+    "benchmark": "Jerarquía de valor clara (Sabor > Puntualidad > Precio).",
+    "cita": "Creating a Business Plan For Dummies",
+    "placeholder": "Criterios de compra prioritarios..."
+  },
+  "competidores_locales_matriz": {
+    "instruccion": "Mapeo de al menos 3 competidores locales directos e indirectos: nombre, ubicación, precios y debilidades detectadas.",
+    "ejemplo": "Ej: 1) Panadería La Espiga: precios bajos ($180) pero calidad industrial; 2) Pastelería Susy: alta calidad pero precios elevados ($450); 3) Supermercado local: productos fríos sin personalización.",
+    "benchmark": "Matriz comparativa de precios y ubicación en radio de 3 km.",
+    "cita": "Starting a Business QuickStart Guide & CAFES",
+    "placeholder": "Matriz de competidores locales y precios..."
+  },
+  "diferenciadores_competencia": {
+    "instruccion": "Aspectos en los que coincidimos con la competencia y aquellos donde somos notablemente mejores.",
+    "ejemplo": "Ej: Coincidimos en variedad de sabores; nos diferenciamos en ingredientes 100% caseros, decoración moderna y trato cálido.",
+    "benchmark": "Ventaja percibida por el 80% de los compradores de prueba.",
+    "cita": "Business Model Generation",
+    "placeholder": "Diferencias frente a las opciones existentes..."
+  },
+  "validacion_demanda_piloto": {
+    "instruccion": "Sondeos directos realizados: encuestas rápidas a vecinos, pedidos de prueba o ventas en bazares comunitarios.",
+    "ejemplo": "Ej: Encuesta a 40 vecinos del sector: 32 indicaron que comprarían repostería casera al menos dos veces al mes.",
+    "benchmark": "Tasa de intención de compra > 70% en muestra local.",
+    "cita": "The Lean Startup & CAFES-UNISON",
+    "placeholder": "Resultados de encuestas exprés y pilotos..."
+  },
+  "ubicacion_cobertura_rutas": {
+    "instruccion": "Ubicación física del negocio, accesibilidad, radio de cobertura para entregas y participación en ferias.",
+    "ejemplo": "Ej: Taller en Col. San Benito; entregas a domicilio en radio de 5 km en motocicleta y entrega en punto medio.",
+    "benchmark": "Tiempos de traslado < 25 minutos para garantizar frescura.",
+    "cita": "Manual de Plan de Negocios Panamá",
+    "placeholder": "Ubicación, radio de entrega y logística local..."
+  },
+  "estacionalidad_picos_venta": {
+    "instruccion": "Meses y fechas con mayor demanda (Día de las Madres, Navidad, graduaciones) y temporadas bajas.",
+    "ejemplo": "Ej: Picos de venta en mayo (Día de las Madres), junio (graduaciones) y diciembre (posadas); temporada baja en julio-agosto por vacaciones escolares.",
+    "benchmark": "Estrategia de promociones contra-estacionales en meses bajos.",
+    "cita": "Starting a Business QuickStart Guide",
+    "placeholder": "Fechas pico, estacionalidad y meses bajos..."
+  },
+  "estimacion_demanda_tam_sam_som": {
+    "instruccion": "Dimensionamiento cuantitativo: Mercado Total (TAM), Mercado Disponible en la zona (SAM) y Mercado Objetivo conservador (SOM).",
+    "ejemplo": "Ej: TAM: 120,000 familias en Hermosillo ($60M/año); SAM: 8,500 familias en la zona norte ($4.2M/año); SOM: 120 familias regulares el Año 1 (180 pedidos/mes = $540,000/año).",
+    "benchmark": "SOM conservador equivalente a una cuota de mercado < 2% del SAM.",
+    "cita": "Anatomy of a Business Plan & Fondo Thoth AC",
+    "placeholder": "Cálculo de TAM, SAM y SOM con justificación..."
+  },
+  "flujo_proceso_diagrama": {
+    "instruccion": "Diagrama paso a paso de la producción: desde la recepción de insumos, preparación, horneado/ensamble, decorado, empaque y entrega.",
+    "ejemplo": "Ej: 1) Pesaje de ingredientes (10 min) -> 2) Batido y mezclado (15 min) -> 3) Horneado (35 min) -> 4) Enfriado (40 min) -> 5) Relleno y decorado (25 min) -> 6) Empaque y refrigeración (10 min).",
+    "benchmark": "Flujo lineal continuo sin retrocesos ni contaminación cruzada.",
+    "cita": "Operations Management (Slack)",
+    "placeholder": "Paso a paso de producción y tiempos por etapa..."
+  },
+  "capacidad_cuello_botella_toc": {
+    "instruccion": "Teoría de Restricciones (TOC): Identifica la capacidad máxima instalada y la estación que representa el cuello de botella del proceso.",
+    "ejemplo": "Ej: El cuello de botella es el horno casero (capacidad máx: 4 pasteles simultáneos cada 45 min = máx 24 pasteles/día).",
+    "benchmark": "Identificación formal de la restricción para planear su elevación.",
+    "cita": "The Goal (Goldratt) & Operations Management",
+    "placeholder": "Capacidad diaria/semanal y cuello de botella..."
+  },
+  "programa_produccion_metas": {
+    "instruccion": "Volúmenes meta de producción semanal, mensual y anual ajustados a la capacidad instalada real.",
+    "ejemplo": "Ej: Meta de producción: 40 unidades semanales (160 mensuales; 1,920 anuales), operando al 65% de la capacidad máxima.",
+    "benchmark": "Utilización de capacidad entre 60% y 80% para evitar sobrecarga.",
+    "cita": "Operations Management (Slack)",
+    "placeholder": "Programa y volúmenes meta de producción..."
+  },
+  "aseguramiento_calidad_inocuidad": {
+    "instruccion": "Procedimientos de control de calidad: inspección visual, pruebas de sabor, fecha de consumo preferente y trazabilidad.",
+    "ejemplo": "Ej: Revisión organoléptica de materia prima, prueba de horneado con termómetro de aguja y rotulado de lote y fecha.",
+    "benchmark": "Tasa de rechazo o devolución < 1%.",
+    "cita": "Manual de Buenas Prácticas de Higiene & CAFES",
+    "placeholder": "Controles de calidad, sabor y frescura..."
+  },
+  "lista_insumos_proveedores": {
+    "instruccion": "Directorio de materias primas con precios cotizados en al menos 2 proveedores locales y condiciones de compra.",
+    "ejemplo": "Ej: Harina y azúcar en Central de Abastos (Proveedor A: $14/kg vs Proveedor B: $16/kg); compras semanales de contado.",
+    "benchmark": "Mínimo dos cotizaciones por insumo crítico.",
+    "cita": "Manual CAFES-UNISON / SAETA",
+    "placeholder": "Insumos, proveedores cotizados y precios..."
+  },
+  "equipos_herramientas_catalogo": {
+    "instruccion": "Inventario de maquinaria fija y herramientas menores requeridas, especificando si ya se tienen o se van a comprar.",
+    "ejemplo": "Ej: Horno de convección 4 charolas (nuevo, $22,000), batidora planetaria 10L (ya se tiene), mesa acero inoxidable (nuevo, $8,000).",
+    "benchmark": "Vida útil estimada y ficha técnica de cada equipo.",
+    "cita": "Anatomy of a Business Plan",
+    "placeholder": "Maquinaria, herramientas y equipamiento..."
+  },
+  "layout_espacio_trabajo": {
+    "instruccion": "Distribución física del área de trabajo: zonas de lavado, preparación, cocción/ensamble, empaque y producto terminado.",
+    "ejemplo": "Ej: Taller de 20m² organizado en forma de \"U\": área húmeda a la izquierda, mesa central de ensamble, horno al fondo y empaque a la salida.",
+    "benchmark": "Distancias mínimas de seguridad y ventilación adecuada.",
+    "cita": "Manual de Plan de Negocios Panamá (Cap. 9)",
+    "placeholder": "Croquis y distribución de áreas de trabajo..."
+  },
+  "logistica_entregas_embalaje": {
+    "instruccion": "Modalidad de entrega al cliente: mostrador en local, entrega propia a domicilio o convenios de mensajería.",
+    "ejemplo": "Ej: 60% retiro en domicilio por el cliente; 40% entrega a domicilio en auto familiar en hieleras térmicas.",
+    "benchmark": "Costo de entrega cubierto por el cliente o absorbido en precio de venta.",
+    "cita": "Starting a Business QuickStart Guide",
+    "placeholder": "Logística de empaque, traslado y tiempos..."
+  },
+  "inventarios_rotacion_minimos": {
+    "instruccion": "Niveles mínimos de stock de materias primas no perecederas y frecuencia de rotación de insumos perecederos.",
+    "ejemplo": "Ej: Harinas y empaques: stock de seguridad para 15 días; lácteos y huevos: compras cada 3 días para garantizar frescura.",
+    "benchmark": "Rotación de perecederos menor a 4 días; cero caducidades.",
+    "cita": "Operations Management (Slack)",
+    "placeholder": "Inventarios mínimos y políticas de rotación..."
+  },
+  "manejo_residuos_seguridad": {
+    "instruccion": "Manejo ecológico de desechos orgánicos e inorgánicos, extintor de incendios, botiquín de primeros auxilios y seguridad ocupacional.",
+    "ejemplo": "Ej: Separación de cartón y plástico para reciclaje; extintor tipo ABC de 4.5kg junto al área de cocción y botiquín accesible.",
+    "benchmark": "Normas básicas de Protección Civil y prevención de quemaduras.",
+    "cita": "Manual CAFES-UNISON",
+    "placeholder": "Seguridad en taller, botiquín y manejo de basura..."
+  },
+  "esquema_operacion_transicion": {
+    "instruccion": "Estrategia para pasar de la operación informal inicial hacia la formalización legal y fiscal conforme crezca el negocio.",
+    "ejemplo": "Ej: Arranque como persona física en autoempleo; registro ante SAT en RESICO al mes 3 tras validar punto de equilibrio.",
+    "benchmark": "Ruta de formalización en 3 fases: Validación -> Alta Fiscal -> Afiliación IMSS.",
+    "cita": "Manual de Formalización CAFES-UNISON",
+    "placeholder": "Transición paulatina hacia la formalidad..."
+  },
+  "permisos_avisos_licencias": {
+    "instruccion": "Avisos y trámites obligatorios según el giro: Aviso de funcionamiento sanitario COFEPRIS, uso de suelo municipal y visto bueno de bomberos.",
+    "ejemplo": "Ej: Aviso de funcionamiento COFEPRIS de bajo riesgo (trámite gratuito en línea) y anuencia de vecinos para uso habitacional mixto.",
+    "benchmark": "Identificación de costos y tiempos de resolución de licencias.",
+    "cita": "Marco Regulatorio Municipal y COFEPRIS",
+    "placeholder": "Permisos, licencias y avisos sanitarios..."
+  },
+  "propiedad_intelectual_marca": {
+    "instruccion": "Búsqueda fonética en Marcanet (IMPI) del nombre comercial y estrategia de registro de marca y logotipo.",
+    "ejemplo": "Ej: Búsqueda fonética en clase 30 del IMPI sin coincidencias; logotipo registrado en expediente como paso previo a registro formal.",
+    "benchmark": "Verificación de no invasión de marcas preexistentes.",
+    "cita": "Creating a Business Plan For Dummies",
+    "placeholder": "Nombre comercial, búsqueda fonética y marca..."
+  },
+  "contratos_esenciales": {
+    "instruccion": "Contratos necesarios: comodato de espacio familiar o arrendamiento de local, contratos con proveedores clave y pedidos de clientes.",
+    "ejemplo": "Ej: Contrato de comodato por espacio habitacional familiar y notas de pedido con cláusula de anticipo no reembolsable.",
+    "benchmark": "Documentación legal básica para evitar controversias familiares.",
+    "cita": "Manual CAFES-UNISON / SAETA",
+    "placeholder": "Contratos de renta, comodato o proveedores..."
+  },
+  "cumplimiento_fiscal_resico": {
+    "instruccion": "Régimen fiscal seleccionado (RESICO - Régimen Simplificado de Confianza), tasa de ISR reducida (1%-2.5%) y emisión de facturas electrónicas.",
+    "ejemplo": "Ej: Alta en RESICO como Persona Física con Actividad Empresarial con tasa de ISR del 1% sobre ingresos efectivamente cobrados.",
+    "benchmark": "Aprovechamiento de las ventajas del RESICO para microempresarios.",
+    "cita": "Código Fiscal de la Federación & CAFES",
+    "placeholder": "Régimen fiscal, facturación CFDI e impuestos..."
+  },
+  "estructura_equipo_organigrama": {
+    "instruccion": "Organigrama visual sencillo y definición clara de quién es responsable de la producción, ventas y administración.",
+    "ejemplo": "Ej: Dirección y Producción: Emprendedora titular; Ventas y Envíos: Colaborador familiar; Contabilidad: Contador externo.",
+    "benchmark": "Líneas de reporte y responsabilidades sin ambigüedad.",
+    "cita": "Anatomy of a Business Plan & Fondo Thoth AC",
+    "placeholder": "Organigrama y roles del equipo de trabajo..."
+  },
+  "perfiles_tareas_tiempos": {
+    "instruccion": "Descripción de puestos: tareas cotidianas asignadas a cada persona y tiempos estándar por actividad.",
+    "ejemplo": "Ej: Puesto repostero: mezclado, horneado y decorado (4 horas diarias); Puesto atención: WhatsApp, empaque y cobranza (2 horas diarias).",
+    "benchmark": "Manual de funciones de una página por colaborador.",
+    "cita": "Operations Management (Slack)",
+    "placeholder": "Tareas diarias y horas dedicadas por puesto..."
+  },
+  "politica_sueldos_capacitacion": {
+    "instruccion": "Política de estipendios o sueldos para el emprendedor y ayudantes, considerando una reserva patronal para formalización.",
+    "ejemplo": "Ej: Sueldo base del emprendedor de $8,000 MXN mensuales; ayudante de fin de semana $2,500 MXN; reserva del 32% para futura carga IMSS.",
+    "benchmark": "El fundador DEBE asignarse un sueldo explícito en la estructura de costos.",
+    "cita": "Starting a Business QuickStart Guide & Fondo Thoth",
+    "placeholder": "Sueldos fijados, estipendios y capacitación..."
+  },
+  "manuales_operacion_calidad": {
+    "instruccion": "Manuales operativos breves (1-2 páginas): apertura y cierre de cocina/taller, limpieza profunda y protocolo de atención al cliente.",
+    "ejemplo": "Ej: Checklist diario de limpieza y desinfección al cierre; protocolo de respuesta inmediata y amable por WhatsApp.",
+    "benchmark": "Listas de verificación aplicadas diariamente.",
+    "cita": "Manual CAFES-UNISON / SAETA",
+    "placeholder": "Manuales de operación, atención y calidad..."
+  },
+  "turnos_conciliacion_familiar": {
+    "instruccion": "Organización de horarios de trabajo compatibles con el cuidado de hijos, escuelas y quehaceres del hogar.",
+    "ejemplo": "Ej: Producción intensiva de 9:00 AM a 1:00 PM mientras los hijos están en la escuela; empaque y entregas de 4:00 PM a 6:30 PM.",
+    "benchmark": "Equilibrio operativo sin vulnerar la dinámica del hogar.",
+    "cita": "Manual de Emprendimiento Social y Familiar CAFES",
+    "placeholder": "Turnos, cuidado de hijos y dinámica del hogar..."
+  },
+  "propuesta_valor_beneficios": {
+    "instruccion": "Beneficios emocionales y funcionales que recibe el cliente al elegirte frente a opciones comerciales comunes.",
+    "ejemplo": "Ej: La tranquilidad de festejar con un pastel casero fresco, delicioso y personalizado que enorgullece a la familia anfitriona.",
+    "benchmark": "Beneficios centrados en la solución de problemas reales del cliente.",
+    "cita": "Value Proposition Design (Osterwalder)",
+    "placeholder": "Beneficios emocionales y funcionales clave..."
+  },
+  "promesa_experiencia_cliente": {
+    "instruccion": "La promesa de servicio: puntualidad en la entrega, frescura garantizada y trato cercano y respetuoso.",
+    "ejemplo": "Ej: Tu pastel listo a tiempo, exactamente como lo soñaste, o te bonificamos el 50% de tu compra.",
+    "benchmark": "Promesa de servicio audaz pero 100% cumplible.",
+    "cita": "Creating a Business Plan For Dummies",
+    "placeholder": "Promesa de servicio y experiencia memorable..."
+  },
+  "lienzo_canvas_9bloques": {
+    "instruccion": "Resumen ejecutivo de los 9 bloques del Canvas: Socios clave, Actividades, Recursos, Propuesta de valor, Relaciones, Canales, Segmentos, Costos e Ingresos.",
+    "ejemplo": "Ej: Socios: Proveedores locales y SAETA; Actividades: Horneado y venta; Recursos: Horno y recetas; Propuesta: Repostería personalizada; Canales: WhatsApp y bazares; Segmento: Familias locales; Costos: Insumos y energía; Ingresos: Venta directa.",
+    "benchmark": "Alineación de los 9 bloques de Osterwalder.",
+    "cita": "Business Model Generation (Osterwalder)",
+    "placeholder": "Lienzo Canvas de 9 bloques estructurado..."
+  },
+  "politica_precios_margen": {
+    "instruccion": "Cálculo del precio de venta a partir del costeo unitario: costo de insumos + mano de obra + gastos indirectos + margen de ganancia.",
+    "ejemplo": "Ej: Costo unitario total: $110 MXN; margen deseado: 45%; precio de venta sugerido: $200 MXN al público.",
+    "benchmark": "Margen de contribución mínimo del 35% por producto.",
+    "cita": "Manual de Costos CAFES-UNISON",
+    "placeholder": "Fórmula de fijación de precios y margen neto..."
+  },
+  "estrategia_pruebas_aprendizaje": {
+    "instruccion": "Mecanismo de aprendizaje constante a partir de los comentarios de los clientes para mejorar recetas y presentación.",
+    "ejemplo": "Ej: Mensaje de seguimiento por WhatsApp al día siguiente del evento solicitando opinión y sugerencias de mejora.",
+    "benchmark": "Bucle Lean: Producir -> Medir -> Aprender.",
+    "cita": "The Lean Startup",
+    "placeholder": "Pruebas piloto y retroalimentación de clientes..."
+  },
+  "marca_identidad_mensajes": {
+    "instruccion": "Identidad de la marca: nombre comercial, eslogan, colores institucionales y mensaje que conecta con el público.",
+    "ejemplo": "Ej: Dulce Hogar - Tradición y Sabor en tu Mesa. Colores cálidos (crema y guinda) que evocan cocina tradicional sonorense.",
+    "benchmark": "Identidad visual consistente en empaques y redes.",
+    "cita": "Starting a Business QuickStart Guide",
+    "placeholder": "Nombre comercial, eslogan y mensaje de marca..."
+  },
+  "canales_venta_distribucion": {
+    "instruccion": "Canales comerciales utilizados: WhatsApp Business con catálogo, pedidos directos por teléfono, bazares y ferias locales.",
+    "ejemplo": "Ej: 75% pedidos vía WhatsApp Business con catálogo interactivo; 25% ventas directas en bazar comunitario quincenal.",
+    "benchmark": "Al menos un canal digital directo activo y medible.",
+    "cita": "Creating a Business Plan For Dummies",
+    "placeholder": "Canales de venta físicos y digitales..."
+  },
+  "promocion_bajo_costo_referidos": {
+    "instruccion": "Tácticas de publicidad sin costo o muy baratas: muestras de degustación en eventos, programa de recomendados y promociones.",
+    "ejemplo": "Ej: Muestras gratuitas de quequitos en reuniones vecinales; programa: recomienda a una amiga y ambas reciben 15% de descuento.",
+    "benchmark": "Costo de adquisición de clientes (CAC) tendiente a cero.",
+    "cita": "Starting a Business QuickStart Guide & CAFES",
+    "placeholder": "Promociones de boca a boca y referidos..."
+  },
+  "portafolio_paquetes_combos": {
+    "instruccion": "Diseño de paquetes atractivos y combos para festejos familiares con precios psicológicos para elevar el ticket promedio.",
+    "ejemplo": "Ej: Paquete Cumpleaños Feliz: 1 pastel mediano + 12 quequitos + 1 piñata mediana por $599 MXN (ahorro de $80 MXN).",
+    "benchmark": "Incremento del ticket promedio en al menos un 25%.",
+    "cita": "Creating a Business Plan For Dummies",
+    "placeholder": "Combos, paquetes para fiestas y precios..."
+  },
+  "servicio_cliente_garantias": {
+    "instruccion": "Políticas de garantía de satisfacción: reposición ante inconformidades, puntualidad en entregas y trato personalizado.",
+    "ejemplo": "Ej: Compromiso de entrega en la hora acordada; si el diseño presenta algún defecto atribuible al taller se repone de inmediato.",
+    "benchmark": "Resolución de quejas en menos de 24 horas.",
+    "cita": "Operations Management (Slack)",
+    "placeholder": "Garantías, atención y resolución de quejas..."
+  },
+  "metas_comerciales_kpis": {
+    "instruccion": "Metas cuantitativas de venta: clientes nuevos por mes, ticket promedio esperado y tasa de recompra recurrente.",
+    "ejemplo": "Ej: Meta Mes 1: 15 clientes ($18,000 MXN); Mes 6: 40 clientes ($48,000 MXN); ticket promedio de $350 MXN; recompra > 35%.",
+    "benchmark": "Metas mensuales SMART monitoreadas semanalmente.",
+    "cita": "Starting a Business QuickStart Guide",
+    "placeholder": "Clientes por mes, ticket promedio y recompra..."
+  },
+  "alianzas_locales_comunitarias": {
+    "instruccion": "Convenios y acuerdos con otros comercios o instituciones vecinales: escuelas, salones de eventos, iglesias o tiendas de abarrotes.",
+    "ejemplo": "Ej: Alianza con salón de fiestas infantil del vecindario para ser proveedor preferente de pastelería con comisión del 10%.",
+    "benchmark": "Al menos dos alianzas comerciales locales activas.",
+    "cita": "Manual de Emprendimiento Social CAFES",
+    "placeholder": "Alianzas con escuelas, salones y comercios..."
+  },
+  "plan_lanzamiento_90_dias": {
+    "instruccion": "Cronograma comercial detallado de las primeras 12 semanas (90 días) con acciones concretas para captar clientes.",
+    "ejemplo": "Ej: Sem 1-2: Degustaciones a familiares y conocidos; Sem 3-4: Lanzamiento de catálogo en WhatsApp; Sem 5-8: Promoción Día de las Madres.",
+    "benchmark": "Acciones semanales medibles con presupuesto mínimo.",
+    "cita": "Starting a Business QuickStart Guide & CAFES",
+    "placeholder": "Calendario de acciones para los primeros 90 días..."
+  },
+  "supuestos_base_operativa": {
+    "instruccion": "Supuestos de formulación: días trabajados al mes, horas diarias, capacidad de producción, porcentaje de merma y días de crédito.",
+    "ejemplo": "Ej: 24 días laborables al mes; 7 horas diarias; 3% merma de insumos; 100% ventas de contado (cero cartera vencida).",
+    "benchmark": "Supuestos conservadores y verificables.",
+    "cita": "Manual de Formulación SAGARPA & CAFES",
+    "placeholder": "Días operativos, horas, mermas y supuestos base..."
+  },
+  "presupuesto_inversion_inicial": {
+    "instruccion": "Inversión fija requerida para arrancar: maquinaria, herramientas, mobiliario, instalaciones y equipos de transporte.",
+    "ejemplo": "Ej: Horno $22,000; Batidora $9,500; Mesa $6,000; Charolas y moldes $3,500; Total Inversión Fija: $41,000 MXN.",
+    "benchmark": "Presupuesto basado en cotizaciones formales por escrito.",
+    "cita": "Anatomy of a Business Plan & CAFES",
+    "placeholder": "Presupuesto de inversión en maquinaria y herramientas..."
+  },
+  "capital_trabajo_caja_chica": {
+    "instruccion": "Capital de trabajo necesario para cubrir compras iniciales de insumos, gas, luz y caja chica antes de recibir los primeros ingresos.",
+    "ejemplo": "Ej: $8,000 MXN para insumos del primer mes + $2,000 MXN de fondo de caja chica. Total Capital de Trabajo: $10,000 MXN.",
+    "benchmark": "Equivalente a 1 mes de costos operativos variables y fijos.",
+    "cita": "Starting a Business QuickStart Guide",
+    "placeholder": "Insumos de arranque y fondo de caja chica..."
+  },
+  "costos_fijos_variables": {
+    "instruccion": "Desglose mensual de costos fijos (luz, gas, sueldos fijos, internet, renta) y costos variables (harinas, azúcar, empaques).",
+    "ejemplo": "Ej: Fijos mensuales: $11,500 MXN (sueldo $8,000, servicios $2,500, mantenimiento $1,000); Variables: 40% sobre el precio de venta.",
+    "benchmark": "Clara separación de costos fijos vs variables.",
+    "cita": "Manual CAFES-UNISON / SAETA",
+    "placeholder": "Lista mensual de costos fijos y variables..."
+  },
+  "costeo_unitario_bom": {
+    "instruccion": "Costeo detallado por unidad producida para los productos principales del portafolio.",
+    "ejemplo": "Ej: Pastel estándar: Materia prima $83 + Mano de obra directa $35 + Gastos indirectos prorrateados $22 = Costo Unitario Total: $140 MXN.",
+    "benchmark": "Absorción completa de costos directos e indirectos.",
+    "cita": "Manual de Costos CAFES-UNISON",
+    "placeholder": "Costo unitario por producto con desglose..."
+  },
+  "depreciacion_equipos": {
+    "instruccion": "Cálculo de depreciación en línea recta de los equipos principales según su vida útil (ej. 10 años maquinaria = 10% anual).",
+    "ejemplo": "Ej: Horno ($22,000 a 10 años = $2,200/año = $183/mes); Batidora ($9,500 a 5 años = $1,900/año = $158/mes).",
+    "benchmark": "Inclusión del gasto de depreciación para reemplazo futuro.",
+    "cita": "Anatomy of a Business Plan",
+    "placeholder": "Depreciación mensual y vida útil de equipos..."
+  },
+  "politica_precios_margen_financiero": {
+    "instruccion": "Determinación del precio de venta final y margen de ganancia bruto y neto por línea de producto.",
+    "ejemplo": "Ej: Costo unitario $140 MXN; Precio de venta $250 MXN; Margen bruto: $110 MXN (44%); Margen neto después de costos fijos: 28%.",
+    "benchmark": "Margen financiero competitivo acorde al mercado local.",
+    "cita": "Starting a Business QuickStart Guide",
+    "placeholder": "Precios finales y margen de contribución..."
+  },
+  "punto_equilibrio_unidades_pesos": {
+    "instruccion": "Cálculo exacto del punto de equilibrio mensual: Costos Fijos / Margen de Contribución Unitario.",
+    "ejemplo": "Ej: $11,500 fijos / $110 margen unitario = 105 unidades al mes ($26,250 MXN en ventas mensuales requeridas).",
+    "benchmark": "El punto de equilibrio debe ser inferior al 60% de la capacidad de producción.",
+    "cita": "Starting a Business QuickStart Guide & CAFES",
+    "placeholder": "Fórmula y resultado del Punto de Equilibrio..."
+  },
+  "proyeccion_ventas_1_3_anos": {
+    "instruccion": "Proyección mensual de ventas en unidades y dinero para el Año 1, y proyecciones anuales para los Años 2 y 3.",
+    "ejemplo": "Ej: Año 1: $420,000 MXN (crecimiento gradual de $25k a $45k/mes); Año 2: $550,000 MXN (+31%); Año 3: $680,000 MXN (+23%).",
+    "benchmark": "Crecimiento prudente con escalamiento sostenible.",
+    "cita": "Anatomy of a Business Plan",
+    "placeholder": "Ventas proyectadas Año 1 a 3..."
+  },
+  "estado_resultados_12_meses": {
+    "instruccion": "Estado de Resultados proforma mensual a 12 meses: Ventas - Costo de Ventas = Utilidad Bruta - Gastos Operativos = Utilidad Neta.",
+    "ejemplo": "Ej: Mes 12: Ventas $42,000 - Costos var $16,800 = Utilidad bruta $25,200 - Costos fijos $11,500 = Utilidad neta $13,700 MXN.",
+    "benchmark": "Resultados positivos desde el mes 3 de operación.",
+    "cita": "Manual de Formulación SAGARPA & CAFES",
+    "placeholder": "Estado de resultados proyectado a 12 meses..."
+  },
+  "flujo_efectivo_12_meses": {
+    "instruccion": "Flujo de caja mensual a 12 meses: Saldo inicial + Entradas en efectivo - Salidas en efectivo = Saldo final de caja acumulado.",
+    "ejemplo": "Ej: Mantiene siempre saldo positivo de caja superior a $5,000 MXN para imprevistos operativos en todos los meses.",
+    "benchmark": "Flujo de caja libre positivo sin quiebre de liquidez.",
+    "cita": "Starting a Business QuickStart Guide",
+    "placeholder": "Entradas, salidas y saldo final mensual..."
+  },
+  "balance_inicial_cierre_ano1": {
+    "instruccion": "Balance general simplificado al arranque y al cierre del primer año: Activo (Caja + Equipo) = Pasivo (Deuda) + Capital Contable.",
+    "ejemplo": "Ej: Balance Inicial: Activo $51,000 = Pasivo $0 + Capital $51,000; Cierre Año 1: Activo $84,500 = Pasivo $0 + Capital $84,500.",
+    "benchmark": "Estructura financiera balanceada con incremento de patrimonio.",
+    "cita": "Anatomy of a Business Plan",
+    "placeholder": "Activos, pasivos y patrimonio inicial y Año 1..."
+  },
+  "indicadores_rentabilidad_bc_roi_van_tir": {
+    "instruccion": "Indicadores cuantitativos de rentabilidad: Relación Beneficio/Costo (B/C), Retorno de Inversión (ROI), Payback, VAN y TIR con tasa de descuento.",
+    "ejemplo": "Ej: B/C: 1.34; ROI: 58%; Payback: 14 meses; VAN (tasa 12%): $42,850 MXN; TIR: 34.8%.",
+    "benchmark": "B/C > 1.15; TIR > Tasa de descuento; VAN > 0.",
+    "cita": "The Nature of Value & SAGARPA Evaluaciones",
+    "placeholder": "B/C, ROI, Payback, VAN y TIR calculados..."
+  },
+  "analisis_sensibilidad_escenarios": {
+    "instruccion": "Evaluación de impacto ante fluctuaciones de mercado: caída de ventas del 10% y aumento de costos de insumos del 10%.",
+    "ejemplo": "Ej: Si las ventas caen 10%, la utilidad neta mensual pasa de $13,700 a $9,500 MXN, manteniendo margen de solvencia positivo.",
+    "benchmark": "Supervivencia demostrada ante shocks de mercado del +-10%.",
+    "cita": "The Nature of Value (Ch. 6)",
+    "placeholder": "Sensibilidad ante caída de ventas o alza de costos..."
+  },
+  "escenarios_pesimista_base_optimista": {
+    "instruccion": "Construcción de tres escenarios de desempeño financiero: pesimista (60% de meta), base (100% de meta) y optimista (130% de meta).",
+    "ejemplo": "Ej: Pesimista: Ventas $25,200/mes (utilidad $3,600); Base: Ventas $42,000/mes (utilidad $13,700); Optimista: Ventas $54,600/mes (utilidad $21,200).",
+    "benchmark": "El escenario pesimista debe mantenerse por encima del punto de equilibrio.",
+    "cita": "Anatomy of a Business Plan & CAFES",
+    "placeholder": "Escenarios pesimista, base y optimista..."
+  },
+  "capacidad_pago_credito": {
+    "instruccion": "En caso de solicitar financiamiento o crédito, demostrar la capacidad mensual para pagar el servicio de la deuda sin asfixiar la operación.",
+    "ejemplo": "Ej: Cuota mensual del crédito $1,850 MXN; utilidad neta disponible $13,700 MXN; cobertura de deuda de 7.4 a 1.",
+    "benchmark": "Cobertura del servicio de la deuda (DSCR) > 1.8x.",
+    "cita": "Starting a Business QuickStart Guide",
+    "placeholder": "Monto de cuota y cobertura de pago de crédito..."
+  },
+  "aumento_ingreso_familiar": {
+    "instruccion": "Cuantificación de cuánto aumentará el ingreso mensual neto del hogar gracias a las utilidades generadas por el emprendimiento.",
+    "ejemplo": "Ej: Aumento de $9,500 a $14,000 MXN mensuales en la economía del hogar, permitiendo mejorar la alimentación y pagar estudios.",
+    "benchmark": "Aumento superior al 30% del ingreso familiar previo.",
+    "cita": "Manual de Proyectos Sociales BID & CAFES",
+    "placeholder": "Incremento estimado del ingreso en el hogar..."
+  },
+  "empleos_directos_indirectos": {
+    "instruccion": "Número de personas empleadas: autoempleo del titular, familiares que reciben estipendio y empleos indirectos con proveedores locales.",
+    "ejemplo": "Ej: 1 autoempleo permanente (titular), 1 empleo familiar de medio tiempo y derrama indirecta en 3 abarroteras del sector.",
+    "benchmark": "Generación de empleos dignos sin precarización laboral.",
+    "cita": "Manual BID / PM4R de Proyectos Sociales",
+    "placeholder": "Empleos directos, familiares e indirectos..."
+  },
+  "enfoque_inclusion_equidad": {
+    "instruccion": "Enfoque de género e inclusión: participación de mujeres jefas de familia, jóvenes o personas adultas mayores en el negocio.",
+    "ejemplo": "Ej: Negocio liderado por mujer jefa de familia, con integración laboral de su madre adulta mayor en tareas ligeras de empaque.",
+    "benchmark": "Inclusión activa y fortalecimiento de autonomía económica femenina.",
+    "cita": "Metodología CAFES-UNISON",
+    "placeholder": "Equidad de género, inclusión y desarrollo familiar..."
+  },
+  "practicas_ambientales_verdes": {
+    "instruccion": "Medidas ecológicas: reducción de plásticos de un solo uso, aprovechamiento de mermas orgánicas y uso eficiente de agua y gas.",
+    "ejemplo": "Ej: Uso de empaques de cartón kraft compostable, donación de residuos orgánicos para composta y equipo de gas de alta eficiencia.",
+    "benchmark": "Manejo responsable de residuos conforme a normas ambientales.",
+    "cita": "The Role of Corporate Sustainability & CAFES",
+    "placeholder": "Empaques biodegradables, reciclaje y ahorro de energía..."
+  },
+  "alineacion_objetivos_comunitarios": {
+    "instruccion": "Alineación con metas comunitarias locales: fortalecimiento del comercio barrial, cohesión social y compras en la comunidad.",
+    "ejemplo": "Ej: Fomenta el consumo local en la colonia, sustituye productos ultraprocesados por alimentos frescos y retiene el dinero en el barrio.",
+    "benchmark": "Impacto comunitario positivo verificable.",
+    "cita": "Manual de Emprendimiento Social CAFES",
+    "placeholder": "Beneficios para la colonia y comunidad..."
+  },
+  "identificacion_riesgos_matriz": {
+    "instruccion": "Matriz de identificación de riesgos en 4 cuadrantes: Mercado (competencia), Operativo (daño de equipo), Financiero (inflación) y Legal (clausuras).",
+    "ejemplo": "Ej: 1) Aumento en precio de harina/huevo; 2) Falla del horno; 3) Baja de ventas en temporada de calor; 4) Retraso en licencias.",
+    "benchmark": "Identificación de riesgos en las 4 dimensiones críticas.",
+    "cita": "Anatomy of a Business Plan",
+    "placeholder": "Riesgos de mercado, operativos, de dinero y legales..."
+  },
+  "probabilidad_impacto_calificacion": {
+    "instruccion": "Calificación de cada riesgo según su probabilidad de ocurrencia (Baja, Media, Alta) y su impacto en el negocio (Bajo, Medio, Alto).",
+    "ejemplo": "Ej: Aumento de insumos: Probabilidad Alta, Impacto Medio; Falla de horno: Probabilidad Baja, Impacto Alto.",
+    "benchmark": "Semaforización de riesgos críticos prioritarios.",
+    "cita": "Operations Management (Slack)",
+    "placeholder": "Semaforización: probabilidad e impacto por riesgo..."
+  },
+  "medidas_mitigacion_preventiva": {
+    "instruccion": "Acciones preventivas para evitar que los riesgos ocurran: mantenimiento de equipo, compras anticipadas o convenios de precios.",
+    "ejemplo": "Ej: Mantenimiento preventivo bimensual del horno; compra anticipada de harinas no perecederas ante avisos de aumento.",
+    "benchmark": "Controles preventivos rutinarios calendarizados.",
+    "cita": "Starting a Business QuickStart Guide",
+    "placeholder": "Medidas de prevención y mantenimiento..."
+  },
+  "plan_b_gatillos_accion": {
+    "instruccion": "Gatillos de acción (Plan B): Qué hacer exactamente y a quién acudir si ocurre una emergencia o falla crítica.",
+    "ejemplo": "Ej: Si falla el horno, convenio con panadería vecina para maquilar horneado pagando cuota por charola; si sube el huevo, ajuste temporal de combo.",
+    "benchmark": "Plan de contingencia con solución operativa inmediata.",
+    "cita": "Anatomy of a Business Plan & Fondo Thoth AC",
+    "placeholder": "Plan B inmediato y gatillos de respuesta..."
+  },
+  "ruta_critica_gantt_12semanas": {
+    "instruccion": "Cronograma de la ruta crítica de 12 semanas (Gantt): compras, adecuación, trámites, pruebas, mercadotecnia y arranque.",
+    "ejemplo": "Ej: Sem 1-2: Trámite de capital semilla y cotizaciones; Sem 3-4: Adquisición de maquinaria; Sem 5-6: Instalación eléctrica y gas; Sem 7-8: Pruebas; Sem 9-10: Campaña; Sem 11-12: Venta.",
+    "benchmark": "Hitos secuenciales sin holguras críticas en compras.",
+    "cita": "Manual CAFES-UNISON / SAETA",
+    "placeholder": "Ruta crítica de 12 semanas paso a paso..."
+  },
+  "hitos_entregables_semanales": {
+    "instruccion": "Lista de entregables tangibles por semana para comprobar el avance ante evaluadores o tutores del programa.",
+    "ejemplo": "Ej: Sem 2: Facturas de compra; Sem 4: Foto de equipo instalado; Sem 8: Ficha de cata y degustación; Sem 12: Primera factura emitida.",
+    "benchmark": "Evidencia física o documental por cada hito de avance.",
+    "cita": "Manual CAFES-UNISON / SAETA",
+    "placeholder": "Entregables semanales y productos tangibles..."
+  },
+  "indicadores_avance_responsables": {
+    "instruccion": "Quién es responsable de cada actividad del cronograma y cómo se mide el cumplimiento en tiempo y forma.",
+    "ejemplo": "Ej: Adquisiciones: Titular del proyecto; Acondicionamiento: Electricista certificado supervisado por titular; Cumplimiento: 100% en tiempo.",
+    "benchmark": "Un solo responsable nominal por actividad.",
+    "cita": "Operations Management (Slack)",
+    "placeholder": "Responsable por tarea e indicador de cumplimiento..."
+  },
+  "plan_contingencias_arranque": {
+    "instruccion": "Medidas para absorber retrasos de proveedores o demoras en la entrega de maquinaria sin frenar la apertura.",
+    "ejemplo": "Ej: En caso de demora del proveedor del horno, se inicia con producción en horno auxiliar casero para cumplir pedidos comprometidos.",
+    "benchmark": "Plan alternativo para no retrasar la inauguración.",
+    "cita": "Starting a Business QuickStart Guide",
+    "placeholder": "Contingencias ante retrasos en equipamiento..."
+  },
+  "monto_solicitado_total": {
+    "instruccion": "Cifra exacta del monto de capital semilla o financiamiento solicitado al fondo, banco o convocatoria.",
+    "ejemplo": "Ej: $35,000 MXN (Treinta y cinco mil pesos 00/100 M.N.).",
+    "benchmark": "El monto solicitado debe coincidir exactamente con las cotizaciones anexas.",
+    "cita": "Manual de Convocatorias CAFES-UNISON",
+    "placeholder": "Monto total en pesos y letra..."
+  },
+  "desglose_rubros_destino": {
+    "instruccion": "Tabla desglosada por rubro: Inversión en equipo, herramientas, insumos iniciales, acondicionamiento y mercadotecnia.",
+    "ejemplo": "Ej: 1) Horno de convección: $22,000; 2) Mesa acero inoxidable: $8,000; 3) Insumos iniciales: $3,500; 4) Empaques e imagen: $1,500. Total: $35,000 MXN.",
+    "benchmark": "Desglose alineado a las reglas de operación del fondo.",
+    "cita": "Manual CAFES-UNISON / SAETA",
+    "placeholder": "Desglose detallado por concepto y costo..."
+  },
+  "aportacion_propia_fuentes": {
+    "instruccion": "Aportación del emprendedor (en efectivo o en especie: local, batidora propia, gas, horas de trabajo no remuneradas).",
+    "ejemplo": "Ej: Aportación propia: Local habilitado ($15,000 valor estimado) + batidora 10L ($9,500) + $5,000 MXN en efectivo. Total aportación: $29,500 MXN (45% del total).",
+    "benchmark": "Aportación propia recomendada de al menos el 20% del valor total del proyecto.",
+    "cita": "Manual de Convocatorias CAFES-UNISON",
+    "placeholder": "Aportación en especie, equipo previo o efectivo..."
+  },
+  "evidencias_cotizaciones_proveedor": {
+    "instruccion": "Relación de cotizaciones formales anexas: nombre comercial del proveedor, fecha de cotización, vigencia y enlace o teléfono.",
+    "ejemplo": "Ej: Cotización #1: Ferretería y Maquinaria del Norte (Vigencia 30 días, Tel 662-214-8800); Cotización #2: Equipos Gastronómicos Sonora.",
+    "benchmark": "Cotizaciones vigentes con datos fiscales del proveedor.",
+    "cita": "Manual CAFES-UNISON / SAETA",
+    "placeholder": "Proveedores cotizados, montos y vigencias..."
+  },
+  "impacto_capital_ventas_utilidad": {
+    "instruccion": "Comparativa de antes y después del capital semilla: cómo cambia la capacidad, las ventas y la utilidad al contar con el equipo.",
+    "ejemplo": "Ej: Antes: 10 pasteles/semana ($8,000 venta/mes, utilidad $2,800); Después con horno industrial: 40 pasteles/semana ($38,000 venta/mes, utilidad $14,500).",
+    "benchmark": "Demostración de salto cuántico en productividad y margen.",
+    "cita": "Empresas Cuánticas & CAFES-UNISON",
+    "placeholder": "Comparativo de ventas y utilidad antes y después..."
+  },
+  "plan_uso_rendicion_cuentas": {
+    "instruccion": "Mecanismo de comprobación del recurso: facturas fiscales a nombre del titular, fotografías de los bienes adquiridos y bitácora de gastos.",
+    "ejemplo": "Ej: Se presentarán facturas CFDI con archivo XML en plazo no mayor a 30 días naturales posteriores a la entrega del recurso y registro fotográfico.",
+    "benchmark": "Comprobación al 100% mediante facturas electrónicas válidas ante el SAT.",
+    "cita": "Reglas de Operación CAFES-UNISON",
+    "placeholder": "Comprobación de gastos, facturas y rendición de cuentas..."
+  },
+  "argumento_factibilidad_sintesis": {
+    "instruccion": "Resumen contundente que demuestra por qué el proyecto es viable en mercado, técnico, legal, social y financiero.",
+    "ejemplo": "Ej: Proyecto con demanda validada en sondeos, capacidad técnica comprobada, margen bruto del 44%, relación B/C de 1.34 y alto impacto en la economía familiar.",
+    "benchmark": "Síntesis concluyente para comités de evaluación.",
+    "cita": "Anatomy of a Business Plan & CAFES",
+    "placeholder": "Argumentación final de factibilidad integral..."
+  },
+  "compromisos_metas_emprendedor": {
+    "instruccion": "Compromisos asumidos por el titular: cumplimiento de metas de producción, asistencia a mentorías y reinversión de utilidades.",
+    "ejemplo": "Ej: Compromiso de dedicar 35 horas semanales, mantener en buen estado el equipo, acudir a sesiones de asesoría y reinvertir el 20% de utilidades.",
+    "benchmark": "Firma de carta compromiso con metas trimestrales.",
+    "cita": "Manual CAFES-UNISON / SAETA",
+    "placeholder": "Compromisos de trabajo, metas y reinversión..."
+  },
+  "requerimientos_acompanamiento_mentoria": {
+    "instruccion": "Tipo de apoyo y mentoría que el emprendedor solicita a la universidad o incubadora para garantizar el éxito del negocio.",
+    "ejemplo": "Ej: Asesoría trimestral en revisión de costeo, acompañamiento en trámites fiscales de RESICO y vinculación a ferias comerciales.",
+    "benchmark": "Acompañamiento técnico continuo durante los primeros 6 meses.",
+    "cita": "Convenio CAFES-UNISON / SAETA",
+    "placeholder": "Mentorías, talleres y asesorías requeridas..."
+  },
+  "checklist_expediente_completo": {
+    "instruccion": "Lista de control firmada que certifica que todos los documentos anexos (A1 a A22) han sido recopilados y revisados.",
+    "ejemplo": "Ej: Expediente con 22 documentos verificados y foliados conforme al índice oficial del programa.",
+    "benchmark": "100% de cumplimiento en la lista de cotejo documental.",
+    "cita": "Manual CAFES-UNISON / SAETA",
+    "placeholder": "Estado de revisión del checklist de documentos anexos..."
+  },
+  "identificaciones_comprobantes_a1": {
+    "instruccion": "Anexo A1: Copia de credencial de elector (INE/IFE), CURP y comprobante de domicilio reciente del emprendedor/a.",
+    "ejemplo": "Ej: INE vigente por ambos lados, CURP certificada y recibo de luz (CFE) con antigüedad menor a 60 días.",
+    "benchmark": "Documentación oficial legible y vigente.",
+    "cita": "Expediente Oficial CAFES-UNISON",
+    "placeholder": "Detalle de identificaciones y comprobante de domicilio anexos..."
+  },
+  "curriculum_emprendedor_a2": {
+    "instruccion": "Anexo A2: Síntesis curricular del emprendedor y miembros del equipo (máximo 1 página por persona).",
+    "ejemplo": "Ej: Trayectoria laboral, cursos de capacitación técnica tomados y habilidades desarrolladas.",
+    "benchmark": "Enfoque en experiencia práctica relevante para el giro.",
+    "cita": "Manual CAFES-UNISON / SAETA",
+    "placeholder": "Resumen de experiencia laboral y habilidades del equipo..."
+  },
+  "fotografias_productos_a3": {
+    "instruccion": "Anexo A3: Muestrario fotográfico a color de los productos elaborados y muestras de presentación.",
+    "ejemplo": "Ej: Registro de 6 fotografías en alta resolución de pasteles decorados, quequitos y empaques terminados.",
+    "benchmark": "Fotografías nítidas con buena iluminación y presentación higiénica.",
+    "cita": "Manual de Convocatorias CAFES",
+    "placeholder": "Descripción de fotografías de productos integradas..."
+  },
+  "fichas_tecnicas_costeo_a4": {
+    "instruccion": "Anexo A4: Formato impreso de las fichas técnicas de costeo unitario y recetas completas por producto.",
+    "ejemplo": "Ej: Hojas de cálculo impresas con gramajes, precios de insumos por gramo y costo total por pieza.",
+    "benchmark": "Cálculos matemáticos revisados sin errores de suma.",
+    "cita": "Manual de Costos CAFES-UNISON",
+    "placeholder": "Relación de fichas de costeo impresas anexas..."
+  },
+  "cotizaciones_equipo_insumos_a5": {
+    "instruccion": "Anexo A5: Copia física o digital de las cotizaciones formales de maquinaria, herramientas e insumos.",
+    "ejemplo": "Ej: Cotizaciones con membrete de Ferretería del Norte y Maquinaria Gastronómica fechadas en el mes en curso.",
+    "benchmark": "Mínimo 2 cotizaciones por rubro de inversión.",
+    "cita": "Manual CAFES-UNISON / SAETA",
+    "placeholder": "Folios y datos de cotizaciones de proveedores anexas..."
+  },
+  "directorio_proveedores_a6": {
+    "instruccion": "Anexo A6: Directorio telefónico y domiciliario de los proveedores seleccionados con listas de precios de mayoreo.",
+    "ejemplo": "Ej: Datos de contacto de molinos, distribuidores de azúcar, comercializadoras de empaque y materias primas.",
+    "benchmark": "Directorio local actualizado con teléfonos activos.",
+    "cita": "Starting a Business QuickStart Guide",
+    "placeholder": "Directorio de proveedores y teléfonos de contacto..."
+  },
+  "encuestas_validacion_a7": {
+    "instruccion": "Anexo A7: Hojas de encuestas aplicadas a clientes potenciales y resumen estadístico de los resultados de validación.",
+    "ejemplo": "Ej: 30 encuestas físicas aplicadas a vecinos con tabulación de frecuencia de consumo y preferencias de sabor.",
+    "benchmark": "Encuestas debidamente foliadas y firmadas por los encuestados.",
+    "cita": "The Lean Startup & CAFES",
+    "placeholder": "Tabulación de encuestas y formatos aplicados..."
+  },
+  "registro_fotografico_espacio_a8": {
+    "instruccion": "Anexo A8: Reporte fotográfico del espacio donde operará el negocio (local, taller, cocina o patio de trabajo).",
+    "ejemplo": "Ej: 4 fotografías que muestran las condiciones físicas actuales del espacio de trabajo y conexiones de servicio.",
+    "benchmark": "Evidencia de viabilidad física y condiciones salubres.",
+    "cita": "Manual CAFES-UNISON / SAETA",
+    "placeholder": "Descripción de fotos del espacio y taller..."
+  },
+  "diagramas_layout_a9": {
+    "instruccion": "Anexo A9: Diagrama técnico o plano arquitectónico del lay-out con medidas exactas de las áreas de trabajo.",
+    "ejemplo": "Ej: Plano acotado en escala 1:50 que muestra la ubicación del horno, mesa de trabajo, tarja y extintor.",
+    "benchmark": "Plano legible con cotas y zonas señaladas.",
+    "cita": "Manual de Plan de Negocios Panamá",
+    "placeholder": "Plano o croquis técnico acotado anexo..."
+  },
+  "permisos_avisos_contratos_a10": {
+    "instruccion": "Anexo A10: Copia de avisos sanitarios, licencias de uso de suelo o contratos de arrendamiento/comodato (si aplica).",
+    "ejemplo": "Ej: Acuse de recibo de aviso de funcionamiento COFEPRIS y contrato de comodato firmado con el propietario del predio.",
+    "benchmark": "Documentos en regla y cotejados.",
+    "cita": "Marco Jurídico de Negocios & CAFES",
+    "placeholder": "Relación de permisos, avisos y contratos anexados..."
+  },
+  "tablas_financieras_impresas_a11": {
+    "instruccion": "Anexo A11: Juego completo de tablas financieras impresas con supuestos visibles, estados de resultados y flujos de caja.",
+    "ejemplo": "Ej: Reporte financiero de 12 páginas con corridas mensuales del primer año y proyecciones a 3 años.",
+    "benchmark": "Tablas limpias con encabezados y fórmulas transparentes.",
+    "cita": "Manual de Formulación SAGARPA & CAFES",
+    "placeholder": "Relación de corridas y balances impresos..."
+  },
+  "tabla_amortizacion_credito_a12": {
+    "instruccion": "Anexo A12: Tabla de amortización en caso de que el proyecto involucre un crédito bancario, microcrédito o fondo revolvente.",
+    "ejemplo": "Ej: Tabla de amortización a 24 meses con cuotas fijas de capital e intereses y saldo insoluto.",
+    "benchmark": "Cálculo exacto del costo financiero y tasa de interés.",
+    "cita": "Starting a Business QuickStart Guide",
+    "placeholder": "Tabla de amortización y desglose de pagos..."
+  },
+  "cartas_intencion_pedidos_a13": {
+    "instruccion": "Anexo A13: Cartas de intención de compra, pedidos piloto firmados o convenios preliminares con clientes y comercios.",
+    "ejemplo": "Ej: 3 cartas firmadas por salones de eventos y organizadores vecinales manifestando interés de compra regular.",
+    "benchmark": "Cartas con nombre, teléfono y firma autógrafa.",
+    "cita": "Creating a Business Plan For Dummies",
+    "placeholder": "Cartas de intención y convenios firmados..."
+  },
+  "manuales_operacion_atencion_a14": {
+    "instruccion": "Anexo A14: Documento impreso con el manual básico de operaciones, recetas estandarizadas y protocolo de servicio.",
+    "ejemplo": "Ej: Carpeta de procedimientos con el paso a paso detallado para que cualquier colaborador opere con la misma calidad.",
+    "benchmark": "Manual comprensible y de fácil consulta.",
+    "cita": "Operations Management (Slack)",
+    "placeholder": "Manuales operativos y procedimientos anexados..."
+  },
+  "politicas_calidad_inocuidad_a15": {
+    "instruccion": "Anexo A15: Documento con las políticas de higiene, inocuidad alimentaria o calidad según el giro del micronegocio.",
+    "ejemplo": "Ej: Reglamento interno de inocuidad: vestimenta, desinfección de superficies y protocolo de rechazo de insumos.",
+    "benchmark": "Alineación con normas sanitarias vigentes.",
+    "cita": "COFEPRIS & CAFES-UNISON",
+    "placeholder": "Políticas de inocuidad y control de calidad anexas..."
+  },
+  "bitacora_piloto_aprendizajes_a16": {
+    "instruccion": "Anexo A16: Bitácora de pruebas piloto con registro de fechas, productos elaborados, comentarios de clientes y ajustes hechos.",
+    "ejemplo": "Ej: Registro de 15 pruebas realizadas durante el mes de preparación con ajustes en azúcar y tiempos de cocción.",
+    "benchmark": "Evidencia de aprendizaje iterativo antes del arranque.",
+    "cita": "The Lean Startup & CAFES",
+    "placeholder": "Bitácora de pruebas, comentarios y mejoras..."
+  },
+  "evidencias_ventas_iniciales_a17": {
+    "instruccion": "Anexo A17: Comprobantes de ventas previas: notas de remisión, tickets, capturas de transferencias bancarias o depósitos.",
+    "ejemplo": "Ej: Copia de 20 notas de venta y estados de cuenta con transferencias de clientes de los últimos dos meses.",
+    "benchmark": "Comprobantes que acrediten tracción comercial real.",
+    "cita": "Manual de Convocatorias CAFES",
+    "placeholder": "Comprobantes de venta y transferencias iniciales..."
+  },
+  "carta_compromiso_metas_a18": {
+    "instruccion": "Anexo A18: Carta de compromiso formal firmada por el emprendedor comprometiéndose a cumplir las metas del plan.",
+    "ejemplo": "Ej: Documento firmado donde se asume el compromiso de reportar avances trimestrales y aplicar el recurso con honestidad.",
+    "benchmark": "Carta con firma autógrafa y huella digital del titular.",
+    "cita": "Manual CAFES-UNISON / SAETA",
+    "placeholder": "Carta compromiso de metas y seguimiento firmada..."
+  },
+  "checklist_firmado_a19": {
+    "instruccion": "Anexo A19: Lista de cotejo institucional firmada por el asesor del programa CAFES y el emprendedor certificando el expediente completo.",
+    "ejemplo": "Ej: Formato institucional de la UNISON con palomeo de todos los requisitos documentales y firmas correspondientes.",
+    "benchmark": "Validación conjunta asesor-emprendedor.",
+    "cita": "Manual CAFES-UNISON / SAETA",
+    "placeholder": "Checklist firmado y validado por la asesoría..."
+  },
+  "diagnostico_habilidades_capacitacion_a20": {
+    "instruccion": "Anexo A20: Ficha del diagnóstico de habilidades del emprendedor y plan individual de capacitación asignado por CAFES.",
+    "ejemplo": "Ej: Evaluación diagnóstica inicial y programa calendarizado de talleres de costeo y comercialización.",
+    "benchmark": "Plan de capacitación personalizado para cubrir áreas débiles.",
+    "cita": "Metodología CAFES-UNISON",
+    "placeholder": "Ficha de diagnóstico y plan de formación..."
+  },
+  "convenio_convocatoria_a21": {
+    "instruccion": "Anexo A21: Copia de la convocatoria, lineamientos del fondo o convenio institucional aplicable (ej. CAFES/SAETA).",
+    "ejemplo": "Ej: Bases de la convocatoria de Apoyo al Emprendimiento Social 2026 y convenio de colaboración UNISON-SAETA.",
+    "benchmark": "Identificación de la convocatoria de financiamiento meta.",
+    "cita": "Convocatorias Oficiales CAFES / SAETA",
+    "placeholder": "Copia de bases de convocatoria o convenio anexo..."
+  },
+  "constancias_capacitacion_a22": {
+    "instruccion": "Anexo A22: Copia de diplomas, reconocimientos o constancias de capacitación emitidas por UNISON, SAETA o instituciones reconocidas.",
+    "ejemplo": "Ej: Constancia del curso de Panadería y Repostería emitido por SAETA y constancia del taller de Finanzas Personales de CAFES-UNISON.",
+    "benchmark": "Constancias oficiales con folio y firma de instructores.",
+    "cita": "Convenio CAFES-UNISON / SAETA",
+    "placeholder": "Constancias y diplomas de capacitación técnica anexos..."
+  },
+  "iframe_simulador": {
+    "instruccion": "Describe los parámetros de las corridas financieras interactivas, estados de resultados y simulador de Monte Carlo.",
+    "ejemplo": "Ej: Simulación interactiva con corridas a 12 meses y 3 años con análisis de estrés de +-15% en ventas y costos.",
+    "benchmark": "Cálculos sincronizados con el motor financiero canónico de OBP.",
+    "cita": "Calculadora Financiera OBP & CAFES-UNISON",
+    "placeholder": "Parámetros del simulador financiero y corridas..."
+  },
+};
 export const FIELD_GUIDES_MAP = {
   business: BUSINESS_GUIDES,
   social_bid: SOCIAL_BID_GUIDES,
@@ -2902,4 +3821,5 @@ export const FIELD_GUIDES_MAP = {
   amoeba_management: AMOEBA_MANAGEMENT_GUIDES,
   guanxi_plan: GUANXI_PLAN_GUIDES,
   onudi_project: ONUDI_PROJECT_GUIDES,
+  cafes: CAFES_GUIDES,
 };

@@ -44,7 +44,10 @@ export const FRAMEWORK_SLUG_MAP = {
   'guanxi': 'guanxi_plan',
   'guanxi_plan': 'guanxi_plan',
   'onudi': 'onudi_project',
-  'onudi_project': 'onudi_project'
+  'onudi_project': 'onudi_project',
+  'cafes': 'cafes',
+  'plan-cafes': 'cafes',
+  'metodo-cafes': 'cafes'
 };
 
 /**
@@ -62,7 +65,8 @@ export const REVERSE_FRAMEWORK_SLUG_MAP = {
   hoshin_kanri: 'hoshin-kanri',
   amoeba_management: 'amoeba',
   guanxi_plan: 'guanxi',
-  onudi_project: 'onudi'
+  onudi_project: 'onudi',
+  cafes: 'plan-cafes'
 };
 
 /**

@@ -1,0 +1,194 @@
+{
+  "id": "modulo.cafes.resumen_ejecutivo",
+  "title": "0. Resumen Ejecutivo Integral",
+  "summary": "Síntesis ejecutiva de oportunidad, propuesta de valor, demanda, inversión y viabilidad.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "cafes",
+  "moduleKey": "resumen_ejecutivo",
+  "pillarKey": "unidad_a",
+  "openUrl": "/cafes/resumen_ejecutivo",
+  "fields": [
+    {
+      "key": "descripcion_situacion_actual",
+      "type": "text",
+      "address": "cafes.unidad_a.resumen_ejecutivo.descripcion_situacion_actual",
+      "prompt": "Describe brevemente qué hace el emprendimiento hoy en día, en qué etapa se encuentra y qué productos o servicios ofrece.",
+      "ejemplo": "Ej: Taller familiar de elaboración de piñatas artesanales y repostería casera operando desde el domicilio particular en Hermosillo.",
+      "benchmark": "Operación activa o etapa pre-operativa con validación local < 3 meses.",
+      "cita": "Metodología CAFES-UNISON / SAETA",
+      "placeholder": "Situación actual del negocio, ventas iniciales y giro..."
+    },
+    {
+      "key": "problema_oportunidad",
+      "type": "text",
+      "address": "cafes.unidad_a.resumen_ejecutivo.problema_oportunidad",
+      "prompt": "Explica qué necesidad o problema de los clientes atiende tu negocio y por qué existe una oportunidad real de venta.",
+      "ejemplo": "Ej: Falta de repostería fresca y temática para festejos familiares a precios accesibles en la colonia sin tener que desplazarse al centro.",
+      "benchmark": "Problema validado con al menos 15 clientes potenciales del sector.",
+      "cita": "Starting a Business QuickStart Guide & CAFES-UNISON",
+      "placeholder": "Problema u oportunidad de mercado detectada..."
+    },
+    {
+      "key": "propuesta_valor_diferencial",
+      "type": "text",
+      "address": "cafes.unidad_a.resumen_ejecutivo.propuesta_valor_diferencial",
+      "prompt": "¿Qué hace a tu producto o servicio único y preferible frente a las opciones comerciales comunes?",
+      "ejemplo": "Ej: Recetas tradicionales con ingredientes naturales de Sonora, diseños personalizados y entrega puntual a domicilio.",
+      "benchmark": "Diferenciador perceptible en calidad, sabor, personalización o tiempo de entrega.",
+      "cita": "Business Model Generation & CAFES-UNISON",
+      "placeholder": "Propuesta de valor y beneficio clave para el cliente..."
+    },
+    {
+      "key": "cliente_objetivo_resumen",
+      "type": "text",
+      "address": "cafes.unidad_a.resumen_ejecutivo.cliente_objetivo_resumen",
+      "prompt": "Perfil resumido de quién compra tus productos: edad, ubicación, ocasiones de consumo y capacidad de pago.",
+      "ejemplo": "Ej: Madres de familia y organizadores de eventos de 22 a 50 años en colonias del norte y poniente de Hermosillo.",
+      "benchmark": "Segmento local identificado con frecuencia de compra mensual o bimestral.",
+      "cita": "Anatomy of a Business Plan",
+      "placeholder": "Perfil del cliente que compra..."
+    },
+    {
+      "key": "validacion_demanda_resumen",
+      "type": "text",
+      "address": "cafes.unidad_a.resumen_ejecutivo.validacion_demanda_resumen",
+      "prompt": "Evidencias concretas de que el producto tiene demanda (pedidos piloto, sondeos rápidos, ventas previas).",
+      "ejemplo": "Ej: Se realizaron 25 pedidos piloto en el último mes con 100% de satisfacción y 8 recompras espontáneas.",
+      "benchmark": "Tasa de satisfacción > 90% y tasa de recompra verificable.",
+      "cita": "The Lean Startup & CAFES-UNISON",
+      "placeholder": "Resultados de pruebas piloto y pedidos de sondeo..."
+    },
+    {
+      "key": "ventaja_competitiva",
+      "type": "text",
+      "address": "cafes.unidad_a.resumen_ejecutivo.ventaja_competitiva",
+      "prompt": "Factores por los que el negocio sostendrá sus ventas frente a competidores directos e informales.",
+      "ejemplo": "Ej: Costos de operación reducidos por taller propio, dominio de la técnica artesanal y atención cercana vía WhatsApp.",
+      "benchmark": "Margen bruto superior al 40% y relación de confianza comunitaria.",
+      "cita": "Creating a Business Plan For Dummies",
+      "placeholder": "Ventaja competitiva frente a otros comercios..."
+    },
+    {
+      "key": "modelo_ingresos_precios",
+      "type": "text",
+      "address": "cafes.unidad_a.resumen_ejecutivo.modelo_ingresos_precios",
+      "prompt": "Forma en que el negocio genera ingresos: venta directa, paquetes, mayoreo o eventos especiales.",
+      "ejemplo": "Ej: Venta individual sobre pedido con anticipo del 50% y paquetes para fiestas con descuento por volumen.",
+      "benchmark": "Política de anticipos para asegurar flujo de caja y evitar mermas.",
+      "cita": "Starting a Business QuickStart Guide",
+      "placeholder": "Fuentes de ingresos y esquema de precios..."
+    },
+    {
+      "key": "capital_semilla_resumen",
+      "type": "text",
+      "address": "cafes.unidad_a.resumen_ejecutivo.capital_semilla_resumen",
+      "prompt": "Monto total de capital semilla requerido y desglose sintético de equipamiento e insumos.",
+      "ejemplo": "Ej: $35,000 MXN destinados a horno industrial de convección ($22,000), mesa de acero ($8,000) e insumos iniciales ($5,000).",
+      "benchmark": "Presupuesto 100% cotizado con al menos 2 opciones de proveedor.",
+      "cita": "Manual CAFES-UNISON / SAETA",
+      "placeholder": "Monto requerido y destino del subsidio/crédito..."
+    },
+    {
+      "key": "ventas_utilidades_resumen",
+      "type": "text",
+      "address": "cafes.unidad_a.resumen_ejecutivo.ventas_utilidades_resumen",
+      "prompt": "Proyección estimada de ventas mensuales y utilidad neta para el primer año de operación formal.",
+      "ejemplo": "Ej: Ventas de $38,000 MXN mensuales promedio con una utilidad neta proyectada de $14,500 MXN mensuales.",
+      "benchmark": "Margen neto operativo entre 25% y 40% para micronegocios familiares.",
+      "cita": "Manual de Plan de Negocios Panamá & CAFES",
+      "placeholder": "Cifras clave de ventas y utilidad esperada Año 1..."
+    },
+    {
+      "key": "punto_equilibrio_resumen",
+      "type": "text",
+      "address": "cafes.unidad_a.resumen_ejecutivo.punto_equilibrio_resumen",
+      "prompt": "Cifra de ventas mínimas mensuales en dinero y piezas para no ganar ni perder.",
+      "ejemplo": "Ej: 65 paquetes o $16,250 MXN mensuales para cubrir todos los costos fijos y variables.",
+      "benchmark": "Alcanzable en la semana 2 o 3 de cada mes operativo.",
+      "cita": "Starting a Business QuickStart Guide",
+      "placeholder": "Punto de equilibrio en unidades y pesos..."
+    },
+    {
+      "key": "relacion_beneficio_costo_resumen",
+      "type": "text",
+      "address": "cafes.unidad_a.resumen_ejecutivo.relacion_beneficio_costo_resumen",
+      "prompt": "Indicador B/C que demuestra cuántos pesos de beneficio se generan por cada peso gastado.",
+      "ejemplo": "Ej: Relación B/C de 1.38 (por cada $1.00 MXN invertido se recuperan $1.38 MXN en valor presente).",
+      "benchmark": "Relación B/C > 1.15 para viabilidad económica.",
+      "cita": "Evaluación Financiera SAGARPA & CAFES-UNISON",
+      "placeholder": "Relación Beneficio Costo esperada..."
+    },
+    {
+      "key": "impacto_social_familiar_resumen",
+      "type": "text",
+      "address": "cafes.unidad_a.resumen_ejecutivo.impacto_social_familiar_resumen",
+      "prompt": "Beneficios directos para la economía del hogar, sustento familiar y la comunidad vecinal.",
+      "ejemplo": "Ej: Aumento del 45% en el ingreso disponible de la familia y generación de 2 autoempleos dignos en el hogar.",
+      "benchmark": "Mejora demostrable en la canasta básica y bienestar familiar.",
+      "cita": "Manual BID / PM4R de Proyectos Sociales & CAFES",
+      "placeholder": "Impacto social y familiar generado..."
+    },
+    {
+      "key": "riesgos_mitigaciones_resumen",
+      "type": "text",
+      "address": "cafes.unidad_a.resumen_ejecutivo.riesgos_mitigaciones_resumen",
+      "prompt": "Principales riesgos que enfrenta el negocio y cómo se van a prevenir o controlar.",
+      "ejemplo": "Ej: Aumento de insumos mitigado con compras en mayoreo; fallas eléctricas mitigadas con respaldo de gas LP.",
+      "benchmark": "Matriz preventiva con Plan B inmediato.",
+      "cita": "Anatomy of a Business Plan",
+      "placeholder": "Riesgos principales y plan de mitigación..."
+    },
+    {
+      "key": "cronograma_12_semanas_resumen",
+      "type": "text",
+      "address": "cafes.unidad_a.resumen_ejecutivo.cronograma_12_semanas_resumen",
+      "prompt": "Resumen de hitos clave para la puesta en marcha durante las primeras 12 semanas.",
+      "ejemplo": "Ej: Semanas 1-3 compra de equipo; semanas 4-6 acondicionamiento; semanas 7-9 pruebas piloto; semana 10 lanzamiento oficial.",
+      "benchmark": "Ruta crítica realista sin retrasos en adquisiciones.",
+      "cita": "Manual CAFES-UNISON / SAETA",
+      "placeholder": "Hitos del cronograma de 12 semanas..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_resumen_ejecutivo_1p",
+      "title": "Resumen Ejecutivo CAFES (Síntesis de 1 Página)",
+      "type": "table",
+      "description": "Estructura ejecutiva para fuentes de financiamiento: Problema, Solución, Mercado, Costos y Ask.",
+      "source": "CAFES-UNISON / SAETA & Anatomy of a Business Plan — Manual CAFES 2026"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Síntesis ejecutiva de oportunidad, propuesta de valor, demanda, inversión y viabilidad.\n\n**Cómo se usa.** Está en el pilar **Unidad A · Resumen y Perfil del Emprendimiento** del modelo *Plan de Negocios CAFES (Emprendimiento Social y Familiar)*. Se abre en `/cafes/resumen_ejecutivo`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 14 campos: `descripcion_situacion_actual`, `problema_oportunidad`, `propuesta_valor_diferencial`, `cliente_objetivo_resumen`, `validacion_demanda_resumen`, `ventaja_competitiva`, `modelo_ingresos_precios`, `capital_semilla_resumen`, `ventas_utilidades_resumen`, `punto_equilibrio_resumen`, `relacion_beneficio_costo_resumen`, `impacto_social_familiar_resumen`, `riesgos_mitigaciones_resumen`, `cronograma_12_semanas_resumen`.\n\n**Herramientas del módulo.** 1 caja(s): `box_resumen_ejecutivo_1p`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `descripcion_situacion_actual`\n\n**El prompt que usa:** Describe brevemente qué hace el emprendimiento hoy en día, en qué etapa se encuentra y qué productos o servicios ofrece.\n\n**Ejemplo que muestra la guía:** Ej: Taller familiar de elaboración de piñatas artesanales y repostería casera operando desde el domicilio particular en Hermosillo.\n\n**Benchmark / criterio de calidad:** Operación activa o etapa pre-operativa con validación local < 3 meses.\n\n**De dónde viene la guía:** Metodología CAFES-UNISON / SAETA\n\n### `problema_oportunidad`\n\n**El prompt que usa:** Explica qué necesidad o problema de los clientes atiende tu negocio y por qué existe una oportunidad real de venta.\n\n**Ejemplo que muestra la guía:** Ej: Falta de repostería fresca y temática para festejos familiares a precios accesibles en la colonia sin tener que desplazarse al centro.\n\n**Benchmark / criterio de calidad:** Problema validado con al menos 15 clientes potenciales del sector.\n\n**De dónde viene la guía:** Starting a Business QuickStart Guide & CAFES-UNISON\n\n### `propuesta_valor_diferencial`\n\n**El prompt que usa:** ¿Qué hace a tu producto o servicio único y preferible frente a las opciones comerciales comunes?\n\n**Ejemplo que muestra la guía:** Ej: Recetas tradicionales con ingredientes naturales de Sonora, diseños personalizados y entrega puntual a domicilio.\n\n**Benchmark / criterio de calidad:** Diferenciador perceptible en calidad, sabor, personalización o tiempo de entrega.\n\n**De dónde viene la guía:** Business Model Generation & CAFES-UNISON\n\n### `cliente_objetivo_resumen`\n\n**El prompt que usa:** Perfil resumido de quién compra tus productos: edad, ubicación, ocasiones de consumo y capacidad de pago.\n\n**Ejemplo que muestra la guía:** Ej: Madres de familia y organizadores de eventos de 22 a 50 años en colonias del norte y poniente de Hermosillo.\n\n**Benchmark / criterio de calidad:** Segmento local identificado con frecuencia de compra mensual o bimestral.\n\n**De dónde viene la guía:** Anatomy of a Business Plan\n\n### `validacion_demanda_resumen`\n\n**El prompt que usa:** Evidencias concretas de que el producto tiene demanda (pedidos piloto, sondeos rápidos, ventas previas).\n\n**Ejemplo que muestra la guía:** Ej: Se realizaron 25 pedidos piloto en el último mes con 100% de satisfacción y 8 recompras espontáneas.\n\n**Benchmark / criterio de calidad:** Tasa de satisfacción > 90% y tasa de recompra verificable.\n\n**De dónde viene la guía:** The Lean Startup & CAFES-UNISON\n\n### `ventaja_competitiva`\n\n**El prompt que usa:** Factores por los que el negocio sostendrá sus ventas frente a competidores directos e informales.\n\n**Ejemplo que muestra la guía:** Ej: Costos de operación reducidos por taller propio, dominio de la técnica artesanal y atención cercana vía WhatsApp.\n\n**Benchmark / criterio de calidad:** Margen bruto superior al 40% y relación de confianza comunitaria.\n\n**De dónde viene la guía:** Creating a Business Plan For Dummies\n\n### `modelo_ingresos_precios`\n\n**El prompt que usa:** Forma en que el negocio genera ingresos: venta directa, paquetes, mayoreo o eventos especiales.\n\n**Ejemplo que muestra la guía:** Ej: Venta individual sobre pedido con anticipo del 50% y paquetes para fiestas con descuento por volumen.\n\n**Benchmark / criterio de calidad:** Política de anticipos para asegurar flujo de caja y evitar mermas.\n\n**De dónde viene la guía:** Starting a Business QuickStart Guide\n\n### `capital_semilla_resumen`\n\n**El prompt que usa:** Monto total de capital semilla requerido y desglose sintético de equipamiento e insumos.\n\n**Ejemplo que muestra la guía:** Ej: $35,000 MXN destinados a horno industrial de convección ($22,000), mesa de acero ($8,000) e insumos iniciales ($5,000).\n\n**Benchmark / criterio de calidad:** Presupuesto 100% cotizado con al menos 2 opciones de proveedor.\n\n**De dónde viene la guía:** Manual CAFES-UNISON / SAETA\n\n### `ventas_utilidades_resumen`\n\n**El prompt que usa:** Proyección estimada de ventas mensuales y utilidad neta para el primer año de operación formal.\n\n**Ejemplo que muestra la guía:** Ej: Ventas de $38,000 MXN mensuales promedio con una utilidad neta proyectada de $14,500 MXN mensuales.\n\n**Benchmark / criterio de calidad:** Margen neto operativo entre 25% y 40% para micronegocios familiares.\n\n**De dónde viene la guía:** Manual de Plan de Negocios Panamá & CAFES\n\n### `punto_equilibrio_resumen`\n\n**El prompt que usa:** Cifra de ventas mínimas mensuales en dinero y piezas para no ganar ni perder.\n\n**Ejemplo que muestra la guía:** Ej: 65 paquetes o $16,250 MXN mensuales para cubrir todos los costos fijos y variables.\n\n**Benchmark / criterio de calidad:** Alcanzable en la semana 2 o 3 de cada mes operativo.\n\n**De dónde viene la guía:** Starting a Business QuickStart Guide\n\n### `relacion_beneficio_costo_resumen`\n\n**El prompt que usa:** Indicador B/C que demuestra cuántos pesos de beneficio se generan por cada peso gastado.\n\n**Ejemplo que muestra la guía:** Ej: Relación B/C de 1.38 (por cada $1.00 MXN invertido se recuperan $1.38 MXN en valor presente).\n\n**Benchmark / criterio de calidad:** Relación B/C > 1.15 para viabilidad económica.\n\n**De dónde viene la guía:** Evaluación Financiera SAGARPA & CAFES-UNISON\n\n### `impacto_social_familiar_resumen`\n\n**El prompt que usa:** Beneficios directos para la economía del hogar, sustento familiar y la comunidad vecinal.\n\n**Ejemplo que muestra la guía:** Ej: Aumento del 45% en el ingreso disponible de la familia y generación de 2 autoempleos dignos en el hogar.\n\n**Benchmark / criterio de calidad:** Mejora demostrable en la canasta básica y bienestar familiar.\n\n**De dónde viene la guía:** Manual BID / PM4R de Proyectos Sociales & CAFES\n\n### `riesgos_mitigaciones_resumen`\n\n**El prompt que usa:** Principales riesgos que enfrenta el negocio y cómo se van a prevenir o controlar.\n\n**Ejemplo que muestra la guía:** Ej: Aumento de insumos mitigado con compras en mayoreo; fallas eléctricas mitigadas con respaldo de gas LP.\n\n**Benchmark / criterio de calidad:** Matriz preventiva con Plan B inmediato.\n\n**De dónde viene la guía:** Anatomy of a Business Plan\n\n### `cronograma_12_semanas_resumen`\n\n**El prompt que usa:** Resumen de hitos clave para la puesta en marcha durante las primeras 12 semanas.\n\n**Ejemplo que muestra la guía:** Ej: Semanas 1-3 compra de equipo; semanas 4-6 acondicionamiento; semanas 7-9 pruebas piloto; semana 10 lanzamiento oficial.\n\n**Benchmark / criterio de calidad:** Ruta crítica realista sin retrasos en adquisiciones.\n\n**De dónde viene la guía:** Manual CAFES-UNISON / SAETA"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Resumen Ejecutivo CAFES (Síntesis de 1 Página)\n\n`box_resumen_ejecutivo_1p` · tipo **table** · fuente: CAFES-UNISON / SAETA & Anatomy of a Business Plan — Manual CAFES 2026\n\nEstructura ejecutiva para fuentes de financiamiento: Problema, Solución, Mercado, Costos y Ask."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Unidad A · Resumen y Perfil del Emprendimiento** de *Plan de Negocios CAFES (Emprendimiento Social y Familiar)*. La justificación metodológica completa está en la página del modelo y en `docs/cafes.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `cafes.unidad_a.resumen_ejecutivo.descripcion_situacion_actual` → tipo `text`\n- `cafes.unidad_a.resumen_ejecutivo.problema_oportunidad` → tipo `text`\n- `cafes.unidad_a.resumen_ejecutivo.propuesta_valor_diferencial` → tipo `text`\n- `cafes.unidad_a.resumen_ejecutivo.cliente_objetivo_resumen` → tipo `text`\n- `cafes.unidad_a.resumen_ejecutivo.validacion_demanda_resumen` → tipo `text`\n- `cafes.unidad_a.resumen_ejecutivo.ventaja_competitiva` → tipo `text`\n- `cafes.unidad_a.resumen_ejecutivo.modelo_ingresos_precios` → tipo `text`\n- `cafes.unidad_a.resumen_ejecutivo.capital_semilla_resumen` → tipo `text`\n- `cafes.unidad_a.resumen_ejecutivo.ventas_utilidades_resumen` → tipo `text`\n- `cafes.unidad_a.resumen_ejecutivo.punto_equilibrio_resumen` → tipo `text`\n- `cafes.unidad_a.resumen_ejecutivo.relacion_beneficio_costo_resumen` → tipo `text`\n- `cafes.unidad_a.resumen_ejecutivo.impacto_social_familiar_resumen` → tipo `text`\n- `cafes.unidad_a.resumen_ejecutivo.riesgos_mitigaciones_resumen` → tipo `text`\n- `cafes.unidad_a.resumen_ejecutivo.cronograma_12_semanas_resumen` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `cafes:resumen_ejecutivo`): `box_resumen_ejecutivo_1p`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

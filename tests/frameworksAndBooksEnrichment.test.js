@@ -12,11 +12,12 @@ test('Enriquecimiento Integral de las 12 Metodologías con los 13 Libros Técnic
   const allFrameworkKeys = [
     'business', 'social_bid', 'agile_startup', 'technology_id',
     'micro_business', 'investment_project', 'zopp', 'horizon_europe',
-    'hoshin_kanri', 'amoeba_management', 'guanxi_plan', 'onudi_project'
+    'hoshin_kanri', 'amoeba_management', 'guanxi_plan', 'onudi_project',
+    'cafes'
   ];
 
-  await t.test('1. Las 12 metodologías canónicas están definidas y superan el estado de stub (>= 7 módulos c/u)', () => {
-    assert.equal(Object.keys(FRAMEWORKS).length, 12, 'Deben existir exactamente 12 metodologías canónicas');
+  await t.test('1. Las 13 metodologías canónicas están definidas y superan el estado de stub (>= 7 módulos c/u)', () => {
+    assert.equal(Object.keys(FRAMEWORKS).length, 13, 'Deben existir exactamente 13 metodologías canónicas');
 
     for (const key of allFrameworkKeys) {
       const fw = FRAMEWORKS[key];
@@ -101,9 +102,10 @@ test('Enriquecimiento Integral de las 12 Metodologías con los 13 Libros Técnic
     assert.ok(MODULE_BOX_MAP['amoeba_management:principios_inamori_12']?.includes('box_12_principios_inamori'));
     assert.ok(MODULE_BOX_MAP['guanxi_plan:banquet_protocol_ritual']?.includes('box_banquet_protocol_8pasos'));
     assert.ok(MODULE_BOX_MAP['onudi_project:localizacion_industrial']?.includes('box_matriz_localizacion_onudi'));
+    assert.ok(MODULE_BOX_MAP['cafes:plan_financiero']?.includes('box_wacc_van_tir'));
   });
 
-  await t.test('4. Existencia y rigor de los 12 documentos de referencia técnica L3 en docs/', () => {
+  await t.test('4. Existencia y rigor de los documentos de referencia técnica L3 en docs/', () => {
     for (const key of allFrameworkKeys) {
       const docPath = path.resolve(`docs/${key}.md`);
       assert.ok(fs.existsSync(docPath), `El documento docs/${key}.md debe existir`);
@@ -198,7 +200,8 @@ test('Enriquecimiento Integral de las 12 Metodologías con los 13 Libros Técnic
       'Behrens', 'NOM', 'SENASICA', 'USDA', 'Horizon', 'UE', 'Guanxi',
       'Keller', 'Business Model Generation', 'Slack', 'Marco Lógico', 'BID',
       'CEPAL', 'PM4R', 'EIC', 'Toyota', 'Liker', 'Shook', 'Deming', 'Doerr',
-      'Imai', 'Ho-Ren-So'
+      'Imai', 'Ho-Ren-So', 'CAFES', 'UNISON', 'SAETA', 'Fondo Thoth', 'SAGARPA', 'COFEPRIS',
+      'Goldratt', 'The Goal', 'Operations Management'
     ];
     for (const [fwKey, guides] of Object.entries(FIELD_GUIDES_MAP)) {
       for (const [fieldKey, guide] of Object.entries(guides)) {

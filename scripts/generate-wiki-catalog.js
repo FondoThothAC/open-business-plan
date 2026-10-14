@@ -41,7 +41,8 @@ export const METHODOLOGY_DOCS = {
   hoshin_kanri: 'docs/hoshin_kanri.md',
   amoeba_management: 'docs/amoeba_management.md',
   guanxi_plan: 'docs/guanxi_plan.md',
-  onudi_project: 'docs/onudi_project.md'
+  onudi_project: 'docs/onudi_project.md',
+  cafes: 'docs/cafes.md'
 };
 
 const readSource = (rel) => {

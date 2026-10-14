@@ -473,6 +473,65 @@ export const BOX_REGISTRY = {
       description: 'Desglose oficial: Costes de personal, subcontratación, compras, costes indirectos (25% flat rate) y contribución comunitaria.',
       source: { book: 'The Role of Corporate Sustainability in Asian Development', page: 'p. 118' }
     }
+  ],
+
+  cafes: [
+    {
+      id: 'box_resumen_ejecutivo_1p',
+      type: BOX_TYPES.TABLE,
+      title: 'Resumen Ejecutivo CAFES (Síntesis de 1 Página)',
+      description: 'Estructura ejecutiva para fuentes de financiamiento: Problema, Solución, Mercado, Costos y Ask.',
+      source: { book: 'CAFES-UNISON / SAETA & Anatomy of a Business Plan', page: 'Manual CAFES 2026' }
+    },
+    {
+      id: 'box_tam_sam_som',
+      type: BOX_TYPES.FORMULA,
+      title: 'Mercado Total, Disponible y Objetivo (TAM / SAM / SOM)',
+      description: 'Dimensionamiento cuantitativo de clientes locales y demanda en pesos.',
+      source: { book: 'Anatomy of a Business Plan', page: 'p. 78' }
+    },
+    {
+      id: 'box_canvas_osterwalder',
+      type: BOX_TYPES.CANVAS,
+      title: 'Lienzo de Modelo de Negocio Canvas (9 Bloques)',
+      description: 'Mapeo estratégico simplificado para microempresas y autoempleo.',
+      source: { book: 'Business Model Generation (Osterwalder)', page: 'p. 14' }
+    },
+    {
+      id: 'box_micro_croquis_2d',
+      type: BOX_TYPES.CANVAS,
+      title: 'Croquis 2D y Lay-out del Espacio de Trabajo',
+      description: 'Distribución física del taller, cocina, local o puesto de trabajo.',
+      source: { book: 'Manual de Plan de Negocios Panamá (Cap. 9)', page: 'p. 24' }
+    },
+    {
+      id: 'box_kpi_otd_dso_dio_ccc',
+      type: BOX_TYPES.BENCHMARK,
+      title: 'Eficiencia Operativa y Ciclo de Conversión de Efectivo',
+      description: 'Métricas de tiempos de entrega (OTD), rotación de inventarios y días de cobro.',
+      source: { book: 'Operations Management (Slack)', page: 'p. 210' }
+    },
+    {
+      id: 'box_punto_equilibrio_micro',
+      type: BOX_TYPES.FORMULA,
+      title: 'Punto de Equilibrio y Margen Unitario de Micronegocio',
+      description: 'Cálculo directo de ventas mínimas diarias/mensuales para cubrir costos fijos y variables.',
+      source: { book: 'Starting a Business QuickStart Guide & Manual CAFES', page: 'Ch. 13' }
+    },
+    {
+      id: 'box_wacc_van_tir',
+      type: BOX_TYPES.FORMULA,
+      title: 'Evaluación Financiera (B/C, VAN, TIR y Payback)',
+      description: 'Relación Beneficio/Costo, Tasa Interna de Retorno y Valor Actual Neto con tasa de oportunidad.',
+      source: { book: 'The Nature of Value & CAFES-UNISON', page: 'Ch. 5' }
+    },
+    {
+      id: 'box_montecarlo_sim',
+      type: BOX_TYPES.FORMULA,
+      title: 'Simulación Estocástica de Monte Carlo',
+      description: 'Distribución de probabilidad de utilidades y estrés ante caídas de ventas.',
+      source: { book: 'ONUDI Manual Industrial', page: 'p. 142' }
+    }
   ]
 };
 

@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FileSpreadsheet, LineChart, PieChart, Settings, Eye, BrainCircuit, ChevronDown, ChevronRight, ChevronLeft, Save, FilePlus, Folder, FolderOpen, Check, Image as ImageIcon, Sprout, Copy, Star, Briefcase, Zap, Globe, Cpu, ShoppingBag, Landmark, ListChecks, Compass, Target, Layers, Share2, Factory, UploadCloud, Bell, Terminal, User, LogOut, Shield, Users, FolderGit2, BookOpen } from 'lucide-react';
+import { LayoutDashboard, FileSpreadsheet, LineChart, PieChart, Settings, Eye, BrainCircuit, ChevronDown, ChevronRight, ChevronLeft, Save, FilePlus, Folder, FolderOpen, Check, Image as ImageIcon, Sprout, Copy, Star, Briefcase, Zap, Globe, Cpu, ShoppingBag, Landmark, ListChecks, Compass, Target, Layers, Share2, Factory, UploadCloud, Bell, Terminal, User, LogOut, Shield, Users, FolderGit2, BookOpen, GraduationCap } from 'lucide-react';
 import { usePlan } from '../context/PlanContext';
 import { useAuth } from '../contexts/AuthContext';
 import { PROJECT_EXAMPLES } from '../lib/projects_db';
@@ -38,6 +38,7 @@ const METHODOLOGY_CONFIG = {
   amoeba_management: { name: 'Amoeba Management', icon: Layers, color: '#f97316' },
   guanxi_plan: { name: 'Metodología Guanxi', icon: Share2, color: '#a855f7' },
   onudi_project: { name: 'Estudio ONUDI', icon: Factory, color: '#6b7280' },
+  cafes: { name: 'Plan CAFES (UNISON)', icon: GraduationCap, color: '#d97706' },
 };
 
 const EXAMPLE_FRAMEWORK_MAP = {

@@ -1,0 +1,64 @@
+{
+  "id": "modulo.cafes.simulador",
+  "title": "Simulador Financiero y Escenarios Monte Carlo",
+  "summary": "Simulador interactivo con cálculo automático de estados proforma, punto de equilibrio, B/C, TIR, VAN y análisis de estrés.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "cafes",
+  "moduleKey": "simulador",
+  "pillarKey": "simulador_financiero",
+  "openUrl": "/cafes/simulador",
+  "fields": [
+    {
+      "key": "iframe_simulador",
+      "type": "text",
+      "address": "cafes.simulador_financiero.simulador.iframe_simulador",
+      "prompt": "Describe los parámetros de las corridas financieras interactivas, estados de resultados y simulador de Monte Carlo.",
+      "ejemplo": "Ej: Simulación interactiva con corridas a 12 meses y 3 años con análisis de estrés de +-15% en ventas y costos.",
+      "benchmark": "Cálculos sincronizados con el motor financiero canónico de OBP.",
+      "cita": "Calculadora Financiera OBP & CAFES-UNISON",
+      "placeholder": "Parámetros del simulador financiero y corridas..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_montecarlo_sim",
+      "title": "Simulación Estocástica de Monte Carlo",
+      "type": "formula",
+      "description": "Distribución de probabilidad de utilidades y estrés ante caídas de ventas.",
+      "source": "ONUDI Manual Industrial — p. 142"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Simulador interactivo con cálculo automático de estados proforma, punto de equilibrio, B/C, TIR, VAN y análisis de estrés.\n\n**Cómo se usa.** Está en el pilar **Simulador Financiero y Corridas Cuánticas** del modelo *Plan de Negocios CAFES (Emprendimiento Social y Familiar)*. Se abre en `/cafes/simulador`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 1 campo: `iframe_simulador`.\n\n**Herramientas del módulo.** 1 caja(s): `box_montecarlo_sim`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `iframe_simulador`\n\n**El prompt que usa:** Describe los parámetros de las corridas financieras interactivas, estados de resultados y simulador de Monte Carlo.\n\n**Ejemplo que muestra la guía:** Ej: Simulación interactiva con corridas a 12 meses y 3 años con análisis de estrés de +-15% en ventas y costos.\n\n**Benchmark / criterio de calidad:** Cálculos sincronizados con el motor financiero canónico de OBP.\n\n**De dónde viene la guía:** Calculadora Financiera OBP & CAFES-UNISON"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Simulación Estocástica de Monte Carlo\n\n`box_montecarlo_sim` · tipo **formula** · fuente: ONUDI Manual Industrial — p. 142\n\nDistribución de probabilidad de utilidades y estrés ante caídas de ventas."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Simulador Financiero y Corridas Cuánticas** de *Plan de Negocios CAFES (Emprendimiento Social y Familiar)*. La justificación metodológica completa está en la página del modelo y en `docs/cafes.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `cafes.simulador_financiero.simulador.iframe_simulador` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `cafes:simulador`): `box_montecarlo_sim`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

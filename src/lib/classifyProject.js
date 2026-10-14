@@ -20,7 +20,7 @@ export async function classifyProject(aiConfig, rawText) {
     };
   }
 
-  // Resumen sintético de los 12 frameworks para el prompt
+  // Resumen sintético de los frameworks para el prompt
   const frameworksSummary = Object.entries(FRAMEWORKS).map(([id, fw]) => {
     return `- ID: "${id}" | Nombre: "${fw.name}" | Pilares: ${fw.pillars.map(p => p.title).join(', ')}`;
   }).join('\n');
@@ -33,14 +33,15 @@ Un emprendedor ha narrado la idea de su proyecto en texto libre (o dictado por v
 ${rawText}
 """
 
-Tu tarea es analizar la naturaleza de la idea y clasificarla en el framework estratégico MÁS ADECUADO de entre los siguientes 12 disponibles:
+Tu tarea es analizar la naturaleza de la idea y clasificarla en el framework estratégico MÁS ADECUADO de entre los siguientes 13 disponibles:
 
 ${frameworksSummary}
 
 Criterios de clasificación:
+- Si menciona oficios familiares, piñatas, repostería, autoempleo familiar vulnerable, capital semilla universitario, subsidios, CAFES, SAETA o UNISON → "cafes".
 - Si menciona impacto social, comunidad, ONGs, pobreza, educación pública o fondos BID → "social_bid" o "zopp".
 - Si es una app, SaaS, tecnología de punta, IA, patente, laboratorio o I+D → "technology_id" o "agile_startup".
-- Si es un negocio tradicional pequeño, local, de autoempleo (tortillería, barbería, papelería, fonda) → "micro_business".
+- Si es un negocio tradicional pequeño, local, de autoempleo (tortillería, barbería, papelería, fonda) sin vinculación universitaria → "micro_business".
 - Si requiere alta ingeniería, naves industriales, CAPEX elevado, infraestructura u obra → "investment_project" u "onudi_project".
 - Si busca inversión privada, venture capital o franquicias → "business" o "agile_startup".
 - Si habla de internacionalización en Asia/China, alianzas de estado → "guanxi_plan".
@@ -105,7 +106,10 @@ Devuelve ÚNICAMENTE un objeto JSON válido con la siguiente estructura (sin for
     let inferredId = 'business';
     let reasoning = 'Inferencia rápida basada en palabras clave del proyecto.';
 
-    if (textLower.includes('social') || textLower.includes('comunidad') || textLower.includes('ong') || textLower.includes('bid')) {
+    if (textLower.includes('cafes') || textLower.includes('saeta') || textLower.includes('unison') || textLower.includes('piñata') || textLower.includes('oficio familiar') || textLower.includes('emprendimiento familiar')) {
+      inferredId = 'cafes';
+      reasoning = 'Detectada orientación hacia la Metodología CAFES-UNISON / SAETA de emprendimiento familiar y oficios.';
+    } else if (textLower.includes('social') || textLower.includes('comunidad') || textLower.includes('ong') || textLower.includes('bid')) {
       inferredId = 'social_bid';
       reasoning = 'Detectada orientación hacia desarrollo social e impacto comunitario.';
     } else if (textLower.includes('tortilleria') || textLower.includes('tortillería') || textLower.includes('abarrotes') || textLower.includes('taller') || textLower.includes('autoempleo') || textLower.includes('local')) {
