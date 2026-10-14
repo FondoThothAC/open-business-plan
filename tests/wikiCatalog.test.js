@@ -132,10 +132,10 @@ describe('Wiki de software — catálogo generado desde el código', () => {
     }
   });
 
-  it('integra los 8 artículos archivados de negocio sin pérdida de fórmulas ni contenido', () => {
+  it('integra los artículos archivados de negocio sin pérdida de fórmulas ni contenido', () => {
     const archivadas = pages.filter((p) => p.kind === 'archivado');
-    assert.equal(archivadas.length, 8, 'Debe haber exactamente 8 páginas archivadas');
-    assert.equal(catalog.totals.archivedPages, 8);
+    assert.ok(archivadas.length >= 8, 'Debe haber al menos 8 páginas archivadas');
+    assert.equal(catalog.totals.archivedPages, archivadas.length);
 
     const artWacc = archivadas.find((p) => p.id === 'archivado.matematicas-financieras-wacc-van-tir');
     assert.ok(artWacc, 'Falta la página archivada de matemáticas financieras');
@@ -146,6 +146,9 @@ describe('Wiki de software — catálogo generado desde el código', () => {
 
     const artCuanticas = archivadas.find((p) => p.id === 'archivado.empresas-cuanticas-modelo-atomico');
     assert.ok(artCuanticas, 'Falta la página de Empresas Cuánticas');
+
+    const artFoda = archivadas.find((p) => p.id === 'archivado.foda-dinamico-conversion-fortalezas');
+    assert.ok(artFoda, 'Falta la página archivada de FODA Dinámico');
   });
 
   it('declara las guías de arquitectura para superadmin en el catálogo de referencia', () => {

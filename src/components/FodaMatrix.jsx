@@ -25,10 +25,13 @@ import {
   X, 
   ArrowRight,
   MoveRight,
-  HelpCircle
+  HelpCircle,
+  Loader2,
+  Brain
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { getApiBase } from '../config/apiConfig.js';
 import { 
   parseFodaText, 
   serializeFodaItems, 
@@ -43,6 +46,7 @@ export default function FodaMatrix({ data, onChange, onMoveToPestel }) {
   const [conversionTarget, setConversionTarget] = useState(null); // { item, fromCategory }
   const [conversionPlan, setConversionPlan] = useState('');
   const [removeOriginOnConvert, setRemoveOriginOnConvert] = useState(false);
+  const [isSuggestingAi, setIsSuggestingAi] = useState(false);
 
   // Estado para edición en línea de un ítem individual
   const [editingItemId, setEditingItemId] = useState(null);
@@ -159,6 +163,50 @@ export default function FodaMatrix({ data, onChange, onMoveToPestel }) {
       setFeedbackMsg(`✓ Factor transferido a PESTEL (Dimensión Legal).`);
       setTimeout(() => setFeedbackMsg(null), 4000);
     }
+  };
+
+  // Generar propuesta de superación o delegación cuántica con IA (Opción A)
+  const handleSuggestPlanWithAi = async () => {
+    if (!conversionTarget) return;
+    const { item, fromCategory } = conversionTarget;
+    setIsSuggestingAi(true);
+
+    const prompts = {
+      debilidades: `Genera una estrategia ejecutiva de 1 sola oración concreta para resolver o delegar esta debilidad de la empresa (aplica la metodología de Fondo Thoth AC de Delegación Cuántica o acción correctiva): "${item.text}". Responde solo con la propuesta de acción sin introducciones.`,
+      oportunidades: `Genera una estrategia ejecutiva de 1 sola oración concreta para adueñarse de esta oportunidad y convertirla en capacidad propia de la empresa: "${item.text}". Responde solo con la propuesta de acción sin introducciones.`,
+      amenazas: `Genera una estrategia ejecutiva de 1 sola oración concreta para blindar a la empresa o generar una innovación defensiva frente a esta amenaza: "${item.text}". Responde solo con la propuesta de acción sin introducciones.`
+    };
+
+    const prompt = prompts[fromCategory] || prompts.debilidades;
+
+    try {
+      const res = await fetch(`${getApiBase()}/api/ai/bob-chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ prompt })
+      });
+      if (res.ok) {
+        const body = await res.json();
+        const reply = (body.reply || body.text || '').trim();
+        if (reply) {
+          setConversionPlan(reply.replace(/^["'\s]+|["'\s]+$/g, ''));
+          setIsSuggestingAi(false);
+          return;
+        }
+      }
+    } catch {
+      // Ignorar error de red y usar heurística fallback
+    }
+
+    // Heurística de fallback inteligente si no hay conexión o no hay API configurada
+    const fallbacks = {
+      debilidades: `Delegación Cuántica: Reclutar un perfil profesional complementario e implementar protocolo operativo para resolver "${item.text}".`,
+      oportunidades: `Adquisición de Capacidad: Inversión en activos dedicados y formalización de alianzas para capitalizar "${item.text}".`,
+      amenazas: `Blindaje Estratégico: Redundancia operativa y acuerdos contractuales de contingencia ante "${item.text}".`
+    };
+    setConversionPlan(fallbacks[fromCategory] || fallbacks.debilidades);
+    setIsSuggestingAi(false);
   };
 
   // Ejecutar conversión hacia Fortaleza
@@ -589,13 +637,47 @@ export default function FodaMatrix({ data, onChange, onMoveToPestel }) {
             </div>
 
             <div>
-              <label className="form-label" style={{ fontWeight: 700, fontSize: '0.85rem', marginBottom: '0.4rem', display: 'block' }}>
-                {conversionTarget.fromCategory === 'debilidades'
-                  ? 'Plan de Superación / Perfil de Delegación Cuántica:'
-                  : conversionTarget.fromCategory === 'oportunidades'
-                  ? 'Capacidad instalada o inversión para adueñarse de la oportunidad:'
-                  : 'Blindaje defensivo o innovación resiliente:'}
-              </label>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.45rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                <label className="form-label" style={{ fontWeight: 700, fontSize: '0.85rem', margin: 0 }}>
+                  {conversionTarget.fromCategory === 'debilidades'
+                    ? 'Plan de Superación / Perfil de Delegación Cuántica:'
+                    : conversionTarget.fromCategory === 'oportunidades'
+                    ? 'Capacidad instalada o inversión para adueñarse de la oportunidad:'
+                    : 'Blindaje defensivo o innovación resiliente:'}
+                </label>
+                <button
+                  type="button"
+                  onClick={handleSuggestPlanWithAi}
+                  disabled={isSuggestingAi}
+                  style={{
+                    background: 'rgba(99, 102, 241, 0.15)',
+                    border: '1px solid rgba(99, 102, 241, 0.35)',
+                    color: '#818cf8',
+                    padding: '0.22rem 0.65rem',
+                    borderRadius: '6px',
+                    fontSize: '0.74rem',
+                    fontWeight: 700,
+                    cursor: isSuggestingAi ? 'wait' : 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.35rem',
+                    transition: 'all 0.15s ease'
+                  }}
+                  title="Generar propuesta estratégica con IA según la metodología de Fondo Thoth AC"
+                >
+                  {isSuggestingAi ? (
+                    <>
+                      <Loader2 size={12} className="animate-spin" />
+                      <span>Generando propuesta...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles size={12} />
+                      <span>Sugerir con IA (Opción A)</span>
+                    </>
+                  )}
+                </button>
+              </div>
               <textarea
                 value={conversionPlan}
                 onChange={(e) => setConversionPlan(e.target.value)}

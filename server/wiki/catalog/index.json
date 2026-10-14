@@ -13,8 +13,8 @@
     "envClientVars": 13,
     "providerHosts": 11,
     "referencePages": 4,
-    "archivedPages": 8,
-    "pages": 165,
+    "archivedPages": 9,
+    "pages": 166,
     "slugs": 12
   },
   "tree": [
@@ -1276,7 +1276,7 @@
     },
     {
       "id": "archivados",
-      "title": "Archivados (por rescatar) (8)",
+      "title": "Archivados (por rescatar) (9)",
       "children": [
         {
           "id": "archivado.empresas-cuanticas-modelo-atomico",
@@ -1287,6 +1287,11 @@
           "id": "archivado.principio-delegacion-cuantica",
           "title": "Principio de Delegación y Reclutamiento Complementario",
           "pageId": "archivado.principio-delegacion-cuantica"
+        },
+        {
+          "id": "archivado.foda-dinamico-conversion-fortalezas",
+          "title": "Metodología Fondo Thoth AC: Formulación Estratégica, FODA Dinámico y Desacoplamiento PESTEL",
+          "pageId": "archivado.foda-dinamico-conversion-fortalezas"
         },
         {
           "id": "archivado.guia-12-metodologias",
@@ -2573,6 +2578,13 @@
       "file": "pages/archivado.principio-delegacion-cuantica.json",
       "title": "Principio de Delegación y Reclutamiento Complementario",
       "summary": "Cómo transformar las áreas de debilidad del fundador en perfiles de puesto y vacantes de contratación específicas.",
+      "kind": "archivado",
+      "audience": "cliente"
+    },
+    "archivado.foda-dinamico-conversion-fortalezas": {
+      "file": "pages/archivado.foda-dinamico-conversion-fortalezas.json",
+      "title": "Metodología Fondo Thoth AC: Formulación Estratégica, FODA Dinámico y Desacoplamiento PESTEL",
+      "summary": "La razón de ser pedagógica y operativa del plan de negocios: por qué las leyes van en PESTEL y cómo todo factor del FODA evoluciona hacia Fortalezas.",
       "kind": "archivado",
       "audience": "cliente"
     },
