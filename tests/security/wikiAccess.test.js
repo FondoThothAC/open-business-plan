@@ -153,5 +153,28 @@ describe('Control de Acceso y Audiencia en la Wiki (/api/wiki)', () => {
       assert.equal(res.status, 404);
       assert.match(res.body.error, /no encontrada/i);
     });
+
+    it('bloquea con HTTP 403 el acceso a las nuevas guías de arquitectura a usuarios estándar', async () => {
+      for (const id of ['referencia-alta-api', 'referencia-proveedor-llm', 'referencia-extension-modulos']) {
+        const res = await invokeRoute('GET', '/page/:id', {
+          params: { id },
+          user: { id: 'u_123', role: 'user', username: 'alumno' }
+        });
+        assert.equal(res.status, 403, `Debe bloquear ${id} a rol regular`);
+        assert.equal(res.body.code, 'SUPERADMIN_REQUIRED');
+      }
+    });
+
+    it('permite a cualquier usuario con sesión consultar artículos archivados (HTTP 200)', async () => {
+      const res = await invokeRoute('GET', '/page/:id', {
+        params: { id: 'archivado.matematicas-financieras-wacc-van-tir' },
+        user: { id: 'u_123', role: 'user', username: 'alumno' }
+      });
+
+      assert.equal(res.status, 200);
+      assert.equal(res.body.kind, 'archivado');
+      assert.ok(res.body.title.includes('WACC'));
+      assert.ok(res.body.sections.length >= 2);
+    });
   });
 });

@@ -1,0 +1,21 @@
+{
+  "id": "referencia-proveedor-llm",
+  "title": "Conexión de nuevos proveedores de LLM",
+  "summary": "Protocolo de seguridad anti-SSRF y orquestación para integrar nuevos modelos de lenguaje.",
+  "kind": "referencia",
+  "audience": "tecnico",
+  "sections": [
+    {
+      "id": "allowlist",
+      "title": "Allowlist Anti-SSRF (server/aiEndpointAllowlist.js)",
+      "audience": "tecnico",
+      "markdown": "Por directiva de seguridad **[B2]**, el servidor no permite llamadas de inferencia a direcciones arbitrarias proporcionadas por clientes.\n\nCualquier nuevo host de API debe estar explícitamente registrado en `AI_PROVIDER_HOSTS`:\n\n```javascript\nexport const AI_PROVIDER_HOSTS = Object.freeze(new Set([\n  \"api.groq.com\", \"generativelanguage.googleapis.com\", \"api.openai.com\",\n  \"api.mistral.ai\", \"integrate.api.nvidia.com\", \"openrouter.ai\", ...\n]));\n```\n\nPeticiones hacia URLs con protocolos inseguros o hosts no reconocidos son interceptadas y rechazadas con error de seguridad."
+    },
+    {
+      "id": "adaptacion",
+      "title": "Adaptación del contrato de inferencia",
+      "audience": "tecnico",
+      "markdown": "La orquestación central se ubica en `server/index.js:callPersonalAi()` y `server/swarm/LlmExecutionEngine.js`.\n\nAl agregar un proveedor:\n\n- Formatear el payload respetando el endpoint `/chat/completions` para proveedores compatibles con OpenAI o el formato REST correspondiente de Google Gemini / Anthropic.\n\n- Aplicar el límite de tokens de respuesta (`maxTokens`, por defecto 2048 o 4096).\n\n- Controlar la temperatura del modelo (0.2 para cálculos estructurados y consistencia analítica, 0.7 para redacción creativa)."
+    }
+  ]
+}

@@ -14,7 +14,6 @@ import { scrapeSocialFollowers, scrapeEcommercePrices, scrapeUberEatsRappi, scra
 import { busquedaMultiFuente, analizarViabilidad } from './competitorEngine.js';
 import { AutonomousResearchEngine } from './autonomousResearchEngine.js';
 import { FRAMEWORKS } from '../src/config/frameworks.js';
-import { WIKI_CATEGORIES, WIKI_ARTICLES } from '../src/data/wikiArticles.js';
 import { swarmOrchestrator } from './swarm/SwarmOrchestrator.js';
 import { agentStore } from './swarm/AgentStore.js';
 import { generateLogoVariants } from '../src/lib/logoGenerator.js';
@@ -159,7 +158,7 @@ const jsonLimiteMediano = express.json({ limit: '4mb' });
 // servidor bufferee hasta 8 MB. Ninguna de estas rutas es pública, y authGuard es
 // idempotente, así que volver a ejecutarse más abajo en app.use('/api', authGuard) no
 // cambia el resultado. cookieParser (L139) ya corrió y es lo que authGuard necesita.
-for (const ruta of ['/api/save', '/api/logo/save', '/api/ai/proxy', '/api/ai/bob-chat', '/api/ai/account-chat', '/api/analyze', '/api/ai/analyze', '/api/wiki/ask']) {
+for (const ruta of ['/api/save', '/api/logo/save', '/api/ai/proxy', '/api/ai/bob-chat', '/api/ai/account-chat', '/api/analyze', '/api/ai/analyze']) {
   app.use(ruta, authGuard, jsonLimiteGrande);
 }
 for (const ruta of ['/api/logo/generate', '/api/market/competitors', '/api/market/enrich', '/api/market/viability', '/api/research/start']) {
@@ -488,113 +487,8 @@ app.post('/api/ai/analyze', handleAiAnalyze);
 // ─────────────────────────────────────────────────────────
 //  Módulo Wiki Knowledge Center (Fondo Thoth AC)
 // ─────────────────────────────────────────────────────────
-/**
- * Controlador para consultas al asistente de la Wiki con Inteligencia Artificial.
- * Soporta contextualización documental por artículo, orquestación a proveedores
- * configurados (Ollama Cloud, Gemini, Groq, OpenRouter) y respuesta de contingencia
- * guiada en caso de no contar con claves de API externas.
- *
- * @param {import('express').Request} req - Solicitud HTTP de Express.
- * @param {import('express').Response} res - Respuesta HTTP de Express.
- * @returns {Promise<void>}
- */
-const handleWikiAsk = async (req, res) => {
-  const { question, articleContext, provider: requestedProvider = 'ollamaCloud', model } = req.body || {};
-
-  if (!question || typeof question !== 'string' || question.trim().length === 0) {
-    return res.status(400).json({ error: 'La pregunta es requerida y debe ser un texto válido.' });
-  }
-
-  if (question.length > 20000) {
-    return res.status(400).json({ error: 'La pregunta excede el límite de 20,000 caracteres.' });
-  }
-
-  const userId = req.user?.id;
-  const userKeys = userId ? obtenerApiKeysParaServicio(userId) : {};
-
-  // Normalizar proveedor solicitado
-  const providerNorm = requestedProvider === 'gemini' ? 'gemini' : (requestedProvider === 'ollama' ? 'ollamaCloud' : requestedProvider);
-  let resolvedKey = userKeys[providerNorm] || 
-                    (providerNorm === 'ollamaCloud' ? (userKeys.ollama || userKeys.ollama_cloud || userKeys.ollamaCloud) : null) ||
-                    (providerNorm === 'ollamaCloud' ? sharedApiKey(req, 'OLLAMA_KEY', 'VITE_OLLAMA_KEY') : null) ||
-                    (providerNorm === 'gemini' ? (userKeys.gemini || sharedApiKey(req, 'GEMINI_API_KEY', 'VITE_GEMINI_API_KEY')) : null) ||
-                    userKeys.groq ||
-                    sharedApiKey(req, 'GROQ_API_KEY', 'VITE_GROQ_KEY') ||
-                    userKeys.openrouter ||
-                    sharedApiKey(req, 'OPENROUTER_API_KEY');
-
-  const fallbackProv = resolvedKey ? (providerNorm in PERSONAL_AI_PROVIDERS ? providerNorm : 'ollamaCloud') : 'ollamaCloud';
-  const effectiveKey = resolvedKey || userKeys.ollamaCloud || userKeys.ollama || sharedApiKey(req, 'OLLAMA_KEY', 'VITE_OLLAMA_KEY');
-
-  // Si no hay llave configurada, responder con base en el contexto del artículo si existe, o guía de configuración
-  if (!effectiveKey) {
-    if (articleContext && articleContext.content) {
-      return res.status(200).json({
-        answer: `ℹ️ **Respuesta Documental Asistida:**\n\nActualmente te encuentras en el artículo **"${articleContext.title || 'Artículo Seleccionado'}"** (Categoría: *${articleContext.category || 'General'}*).\n\nPara obtener análisis predictivos y síntesis generativas avanzadas con IA (Ollama Cloud o Gemini), puedes configurar tu API Key en tu perfil de usuario. Mientras tanto, la información canónica, fórmulas y principios metodológicos están completamente disponibles en la lectura de este artículo.`,
-        provider: 'local-contingency',
-        model: 'documental-fallback'
-      });
-    }
-
-    return res.status(200).json({
-      answer: 'ℹ️ **Asistente de Conocimiento OBP:**\n\nPara consultar al asistente interactivo con IA sobre las 12 metodologías canónicas, Empresas Cuánticas o modelos financieros, ingresa a tu perfil y registra tu API Key (por ejemplo Ollama Cloud o Gemini).',
-      provider: 'local-contingency',
-      model: 'documental-fallback'
-    });
-  }
-
-  // Construir el prompt para el asistente de la Wiki
-  const promptSistema = `Eres el Asistente Experto de la Wiki y Centro de Conocimiento de Open Business Plan (Fondo Thoth AC).
-Tu objetivo es resolver con la máxima precisión técnica, rigor metodológico y claridad pedagógica las dudas del usuario respecto a las metodologías de formulación de negocios (Empresas Cuánticas, Plan Maestro, ZOPP, Lean Startup, Hoshin Kanri, Amoeba, etc.), fórmulas financieras (WACC, VAN, TIR, BEP), y la arquitectura RAG/Drivers de OBP.
-
-${articleContext ? `--- CONTEXTO DEL ARTÍCULO ACTIVO ---
-Título: ${articleContext.title || 'Desconocido'}
-Categoría: ${articleContext.category || 'General'}
-Fragmento Documental:
-${articleContext.content || 'Sin contenido adicional'}
---------------------------------------` : '--- MODO GENERAL WIKI: Consulta sobre todo el catálogo metodológico OBP ---'}
-
-Pregunta del usuario:
-${question}
-
-Instrucciones de Respuesta:
-1. Responde de forma clara, directa, profesional y fundamentada en español neutro.
-2. Si la duda se refiere a Empresas Cuánticas, recuerda los principios nucleares: Modelo Atómico de 3 Áreas (Finanzas, Operaciones, Administración), principio de no fusionar el átomo, delegación efectiva y saltos cuánticos de escala.
-3. Si la duda es financiera, explica la fórmula matemática y su interpretación empresarial.
-4. Usa formato Markdown con viñetas, negritas y bloques de código cuando sea pertinente.`;
-
-  try {
-    const targetModel = model || (fallbackProv === 'ollamaCloud' ? 'gpt-oss:20b' : 'gemini-2.0-flash');
-    const result = await callPersonalAi(fallbackProv, effectiveKey, promptSistema, targetModel, 2048);
-    return res.json({
-      answer: result.text || 'No se obtuvo una respuesta válida del motor de IA.',
-      provider: fallbackProv,
-      model: result.model
-    });
-  } catch (err) {
-    console.error('[WikiServer] Error al consultar asistente de IA para la Wiki:', err.message);
-    return res.status(200).json({
-      answer: `⚠️ Error al consultar el motor de IA (${err.message}). Si el servicio externo está temporalmente ocupado, puedes consultar directamente los artículos canónicos en el panel de navegación de la Wiki.`
-    });
-  }
-};
-
-app.post('/api/wiki/ask', handleWikiAsk);
+// Router centralizado de la Wiki de Software OBP (solo lectura, control por roles)
 app.use('/api/wiki', wikiRouter);
-
-app.get('/api/wiki/articles', (req, res) => {
-  try {
-    return res.json({
-      categories: WIKI_CATEGORIES,
-      articles: WIKI_ARTICLES,
-      totalArticles: WIKI_ARTICLES.length,
-      timestamp: new Date().toISOString()
-    });
-  } catch (err) {
-    console.error('[WikiServer] Error al obtener artículos de la Wiki:', err.message);
-    return res.status(500).json({ error: 'Error interno al cargar la base de conocimiento de la Wiki.' });
-  }
-});
 
 // Generación de módulos con las credenciales de la cuenta actual. La llave se
 // descifra y utiliza exclusivamente en el servidor y nunca vuelve al navegador.

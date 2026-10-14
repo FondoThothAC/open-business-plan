@@ -1,0 +1,30 @@
+{
+  "id": "archivado.principio-delegacion-cuantica",
+  "title": "Principio de Delegación y Reclutamiento Complementario",
+  "summary": "Cómo transformar las áreas de debilidad del fundador en perfiles de puesto y vacantes de contratación específicas.",
+  "kind": "archivado",
+  "audience": "cliente",
+  "category": "empresas_cuanticas",
+  "readTime": "4 min",
+  "author": "Fondo Thoth AC",
+  "sections": [
+    {
+      "id": "resumen",
+      "title": "Ficha y Metadatos",
+      "audience": "cliente",
+      "markdown": "**Categoría de origen:** Empresas Cuánticas\n\n**Autor:** Fondo Thoth AC · **Tiempo estimado de lectura:** 4 min\n\n**Etiquetas temáticas:** `Delegación`, `Recursos Humanos`, `Perfiles`, `Vacantes`\n\n**Resumen:** Cómo transformar las áreas de debilidad del fundador en perfiles de puesto y vacantes de contratación específicas."
+    },
+    {
+      "id": "contenido",
+      "title": "Contenido Completo",
+      "audience": "cliente",
+      "markdown": "\n# Principio de Delegación y Reclutamiento Complementario\n\nEn la metodología de **Empresas Cuánticas**, admitir debilidades en una de las 3 áreas atómicas no es un fallo, sino el **primer paso hacia la resiliencia organizacional**.\n\n---\n\n## La Matriz de Complementariedad\n\nCuando el evaluador de Semilla detecta que el fundador es dominante en **Operaciones** y **Finanzas**, el sistema genera automáticamente una recomendación de delegación prioritaria en **Administración y Capital Humano**.\n\n```mermaid\nflowchart LR\n  F[Perfil del Fundador] --> Eval[Evaluación Atómica]\n  Eval -->|Fuerte en Ops + Finanzas| V1[Generar Vacante: Coordinador Administrativo]\n  Eval -->|Fuerte en Ops + Admin| V2[Generar Vacante: Controller / Asesor Financiero]\n  Eval -->|Fuerte en Finanzas + Admin| V3[Generar Vacante: Director de Operaciones / Planta]\n```\n\n---\n\n## Contenido Estructurado de la Recomendación de Puesto\n\nToda vacante generada por Open Business Plan incluye:\n1. **Título del Puesto:** Alineado al giro del negocio (ej. *Jefe de Aseguramiento de Calidad y Planta Cárnica*).\n2. **Objetivo del Rol:** Qué cuello de botella resuelve y qué libertad le otorga al fundador.\n3. **Perfil Requerido:** Experiencia comprobable, formación académica y competencias duras.\n4. **Rango Salarial de Mercado:** Ajustado a tabuladores de la región y tamaño de la empresa.\n5. **Redacción para Publicación:** Texto listo para publicar en LinkedIn, Indeed o bolsas de empleo locales.\n"
+    },
+    {
+      "id": "fuentes",
+      "title": "Fuentes y Documentación Relacionada",
+      "audience": "cliente",
+      "markdown": "Este artículo forma parte del acervo canónico de Fondo Thoth AC.\n\nDocumentos metodológicos complementarios en el repositorio:\n\n- `docs/zopp.md` (ZOPP y Marco Lógico)\n\n- `docs/hoshin_kanri.md` (Dirección Hoshin)\n\n- `docs/amoeba_management.md` (Gestión Amoeba Kyocera)\n\n- `docs/MATRIZ_MODULOS.md` (Matriz integral de módulos)"
+    }
+  ]
+}

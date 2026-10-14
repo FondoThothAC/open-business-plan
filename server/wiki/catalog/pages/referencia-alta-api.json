@@ -1,0 +1,27 @@
+{
+  "id": "referencia-alta-api",
+  "title": "Alta de API de investigación o datos",
+  "summary": "Guía técnica para integrar y homologar nuevos proveedores de datos externos en el backend.",
+  "kind": "referencia",
+  "audience": "tecnico",
+  "sections": [
+    {
+      "id": "protocolo",
+      "title": "Protocolo de consulta y estados normalizados",
+      "audience": "tecnico",
+      "markdown": "Toda integración de datos o investigación externa en OBP debe registrar proveedor, timestamp, parámetros y estado de respuesta.\n\n**Estados normalizados de consulta:**\n\n- `ok`: La consulta se completó y devolvió datos verificados.\n\n- `missing_key`: El usuario o el entorno no tienen configurada la credencial requerida.\n\n- `quota_exceeded`: La cuota del proveedor se agotó para el periodo actual.\n\n- `unavailable`: El endpoint remoto devolvió 5xx o timeout de conexión.\n\n- `rejected`: La API key fue rechazada por autenticación inválida (HTTP 401/403).\n\n- `no_results`: La búsqueda fue exitosa pero no arrojó registros para los parámetros solicitados.\n\n**Regla de no alucinación:** Nunca inventar cifras ni inferir datos censales o fiscales si la API devuelve error."
+    },
+    {
+      "id": "seguridad",
+      "title": "Almacenamiento seguro de credenciales",
+      "audience": "tecnico",
+      "markdown": "Las credenciales de servicios externos **NUNCA** se almacenan en el navegador (`localStorage` o cookies) ni viajan en respuestas hacia clientes.\n\nEn el servidor se gestionan mediante:\n\n1. **Variables de entorno del sistema (`process.env`)**: Para servicios compartidos de la plataforma.\n\n2. **Perfil cifrado de usuario (`server/auth.js`)**: Las llaves personales de usuarios se cifran con **AES-256-GCM** antes de persistirse en disco."
+    },
+    {
+      "id": "pasos",
+      "title": "Pasos para dar de alta un endpoint",
+      "audience": "tecnico",
+      "markdown": "1. Declarar el servicio en `docs/api-guides.md` con su URL de documentación oficial y alcance.\n\n2. Si es un servicio de IA, incluir su host en la allowlist `AI_PROVIDER_HOSTS` de `server/aiEndpointAllowlist.js`.\n\n3. Implementar la función de llamada en `server/` con control de timeout (máximo 15-30s) y manejo de estados.\n\n4. Registrar la ruta bajo `authGuard` en `server/index.js` o en el router correspondiente.\n\n5. Ejecutar `npm run wiki:build` para que la nueva ruta quede catalogada automáticamente en la documentación."
+    }
+  ]
+}

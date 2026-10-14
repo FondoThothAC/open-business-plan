@@ -20,6 +20,7 @@ import { BOX_REGISTRY } from '../src/config/boxRegistry.js';
 import { getBoxIdsForModule } from '../src/config/moduleBoxMap.js';
 import { fieldAddress, getFieldContract } from '../src/lib/planContracts.js';
 import { FRAMEWORK_SLUG_MAP, REVERSE_FRAMEWORK_SLUG_MAP } from '../src/config/urlRouting.js';
+import { WIKI_ARTICLES, WIKI_CATEGORIES } from '../src/data/wikiArticles.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export const ROOT = path.resolve(__dirname, '..');
@@ -342,11 +343,190 @@ function buildReferencePages(routes, envVars, providerHosts) {
     ]
   };
 
-  return [apis];
+  const altaApi = {
+    id: 'referencia-alta-api',
+    title: 'Alta de API de investigación o datos',
+    summary: 'Guía técnica para integrar y homologar nuevos proveedores de datos externos en el backend.',
+    kind: 'referencia',
+    audience: 'tecnico',
+    sections: [
+      {
+        id: 'protocolo',
+        title: 'Protocolo de consulta y estados normalizados',
+        audience: 'tecnico',
+        markdown: [
+          'Toda integración de datos o investigación externa en OBP debe registrar proveedor, timestamp, parámetros y estado de respuesta.',
+          '**Estados normalizados de consulta:**',
+          '- `ok`: La consulta se completó y devolvió datos verificados.',
+          '- `missing_key`: El usuario o el entorno no tienen configurada la credencial requerida.',
+          '- `quota_exceeded`: La cuota del proveedor se agotó para el periodo actual.',
+          '- `unavailable`: El endpoint remoto devolvió 5xx o timeout de conexión.',
+          '- `rejected`: La API key fue rechazada por autenticación inválida (HTTP 401/403).',
+          '- `no_results`: La búsqueda fue exitosa pero no arrojó registros para los parámetros solicitados.',
+          '**Regla de no alucinación:** Nunca inventar cifras ni inferir datos censales o fiscales si la API devuelve error.'
+        ].join('\n\n')
+      },
+      {
+        id: 'seguridad',
+        title: 'Almacenamiento seguro de credenciales',
+        audience: 'tecnico',
+        markdown: [
+          'Las credenciales de servicios externos **NUNCA** se almacenan en el navegador (`localStorage` o cookies) ni viajan en respuestas hacia clientes.',
+          'En el servidor se gestionan mediante:',
+          '1. **Variables de entorno del sistema (`process.env`)**: Para servicios compartidos de la plataforma.',
+          '2. **Perfil cifrado de usuario (`server/auth.js`)**: Las llaves personales de usuarios se cifran con **AES-256-GCM** antes de persistirse en disco.'
+        ].join('\n\n')
+      },
+      {
+        id: 'pasos',
+        title: 'Pasos para dar de alta un endpoint',
+        audience: 'tecnico',
+        markdown: [
+          '1. Declarar el servicio en `docs/api-guides.md` con su URL de documentación oficial y alcance.',
+          '2. Si es un servicio de IA, incluir su host en la allowlist `AI_PROVIDER_HOSTS` de `server/aiEndpointAllowlist.js`.',
+          '3. Implementar la función de llamada en `server/` con control de timeout (máximo 15-30s) y manejo de estados.',
+          '4. Registrar la ruta bajo `authGuard` en `server/index.js` o en el router correspondiente.',
+          '5. Ejecutar `npm run wiki:build` para que la nueva ruta quede catalogada automáticamente en la documentación.'
+        ].join('\n\n')
+      }
+    ]
+  };
+
+  const proveedorLlm = {
+    id: 'referencia-proveedor-llm',
+    title: 'Conexión de nuevos proveedores de LLM',
+    summary: 'Protocolo de seguridad anti-SSRF y orquestación para integrar nuevos modelos de lenguaje.',
+    kind: 'referencia',
+    audience: 'tecnico',
+    sections: [
+      {
+        id: 'allowlist',
+        title: 'Allowlist Anti-SSRF (server/aiEndpointAllowlist.js)',
+        audience: 'tecnico',
+        markdown: [
+          'Por directiva de seguridad **[B2]**, el servidor no permite llamadas de inferencia a direcciones arbitrarias proporcionadas por clientes.',
+          'Cualquier nuevo host de API debe estar explícitamente registrado en `AI_PROVIDER_HOSTS`:',
+          '```javascript\nexport const AI_PROVIDER_HOSTS = Object.freeze(new Set([\n  "api.groq.com", "generativelanguage.googleapis.com", "api.openai.com",\n  "api.mistral.ai", "integrate.api.nvidia.com", "openrouter.ai", ...\n]));\n```',
+          'Peticiones hacia URLs con protocolos inseguros o hosts no reconocidos son interceptadas y rechazadas con error de seguridad.'
+        ].join('\n\n')
+      },
+      {
+        id: 'adaptacion',
+        title: 'Adaptación del contrato de inferencia',
+        audience: 'tecnico',
+        markdown: [
+          'La orquestación central se ubica en `server/index.js:callPersonalAi()` y `server/swarm/LlmExecutionEngine.js`.',
+          'Al agregar un proveedor:',
+          '- Formatear el payload respetando el endpoint `/chat/completions` para proveedores compatibles con OpenAI o el formato REST correspondiente de Google Gemini / Anthropic.',
+          '- Aplicar el límite de tokens de respuesta (`maxTokens`, por defecto 2048 o 4096).',
+          '- Controlar la temperatura del modelo (0.2 para cálculos estructurados y consistencia analítica, 0.7 para redacción creativa).'
+        ].join('\n\n')
+      }
+    ]
+  };
+
+  const extensionModulos = {
+    id: 'referencia-extension-modulos',
+    title: 'Extensión de modelos, pilares y módulos',
+    summary: 'Guía paso a paso para añadir o modificar módulos en la arquitectura de Open Business Plan.',
+    kind: 'referencia',
+    audience: 'tecnico',
+    sections: [
+      {
+        id: 'frameworks',
+        title: '1. Registro en src/config/frameworks.js',
+        audience: 'tecnico',
+        markdown: [
+          'Cada modelo de negocio se declara en el objeto `FRAMEWORKS`.',
+          'Para agregar un módulo a un pilar existente:',
+          '```javascript\n{\n  key: "nuevo_modulo",\n  title: "Nuevo Módulo de Análisis",\n  description: "Propósito del módulo...",\n  fields: ["campo_uno", "campo_dos"]\n}\n```',
+          'Si se crea un nuevo modelo completo, se debe registrar también su slug en `src/config/urlRouting.js` (`FRAMEWORK_SLUG_MAP` y `REVERSE_FRAMEWORK_SLUG_MAP`).'
+        ].join('\n\n')
+      },
+      {
+        id: 'fieldguides',
+        title: '2. Asignación de prompts en src/lib/field_guides.js',
+        audience: 'tecnico',
+        markdown: [
+          'Todo campo declarado en `fields` debe contar con su contrato y guía en `FIELD_GUIDES_MAP`:',
+          '- `prompt`: Instrucción fundamental que recibe el motor de IA al pulsar "Generar".',
+          '- `ejemplo`: Texto de muestra que guía al usuario sobre la calidad esperada.',
+          '- `benchmark`: Métrica o estándar de aceptación que valida la respuesta.',
+          '- `cita`: Fuente bibliográfica o metodológica que fundamenta el criterio.'
+        ].join('\n\n')
+      },
+      {
+        id: 'cajas',
+        title: '3. Asignación de cajas y sincronización',
+        audience: 'tecnico',
+        markdown: [
+          'Para asociar herramientas visuales interactivas (cajas financieras, matrices FODA, organigramas):',
+          '- Registrar la caja en `src/config/boxRegistry.js` si es un componente nuevo.',
+          '- Mapear la caja al módulo en `src/config/moduleBoxMap.js` usando la clave `projectType:moduleKey`.',
+          '- Ejecutar `npm run wiki:build` para que el catálogo de la Wiki regenere automáticamente la ficha del módulo, actualice el total de campos y verifique la integridad con `npm test`.'
+        ].join('\n\n')
+      }
+    ]
+  };
+
+  return [apis, altaApi, proveedorLlm, extensionModulos];
+}
+
+/** Construye páginas independientes para los artículos de negocio preexistentes. */
+export function buildArchivedPages() {
+  return WIKI_ARTICLES.map((art) => {
+    const id = pageIdOf('archivado', art.id);
+    const categoryObj = WIKI_CATEGORIES.find((c) => c.key === art.category);
+    const catName = categoryObj ? categoryObj.name : art.category;
+    const contenidoLimpio = latexToUnicode(art.content);
+
+    return {
+      id,
+      title: art.title,
+      summary: oneLine(art.excerpt || art.title, 180),
+      kind: 'archivado',
+      audience: 'cliente',
+      category: art.category,
+      readTime: art.readTime || '5 min',
+      author: art.author || 'Fondo Thoth AC',
+      sections: [
+        {
+          id: 'resumen',
+          title: 'Ficha y Metadatos',
+          audience: 'cliente',
+          markdown: [
+            `**Categoría de origen:** ${catName}`,
+            `**Autor:** ${art.author || 'Fondo Thoth AC'} · **Tiempo estimado de lectura:** ${art.readTime || '5 min'}`,
+            art.tags && art.tags.length ? `**Etiquetas temáticas:** ${art.tags.map((t) => `\`${t}\``).join(', ')}` : '',
+            `**Resumen:** ${art.excerpt || 'Artículo canónico de metodología y fundamentos empresariales.'}`
+          ].filter(Boolean).join('\n\n')
+        },
+        {
+          id: 'contenido',
+          title: 'Contenido Completo',
+          audience: 'cliente',
+          markdown: contenidoLimpio
+        },
+        {
+          id: 'fuentes',
+          title: 'Fuentes y Documentación Relacionada',
+          audience: 'cliente',
+          markdown: [
+            'Este artículo forma parte del acervo canónico de Fondo Thoth AC.',
+            'Documentos metodológicos complementarios en el repositorio:',
+            '- `docs/zopp.md` (ZOPP y Marco Lógico)',
+            '- `docs/hoshin_kanri.md` (Dirección Hoshin)',
+            '- `docs/amoeba_management.md` (Gestión Amoeba Kyocera)',
+            '- `docs/MATRIZ_MODULOS.md` (Matriz integral de módulos)'
+          ].join('\n\n')
+        }
+      ]
+    };
+  });
 }
 
 /** Árbol navegable: grupos de un solo nivel, hojas con pageId. */
-function buildTree(modelResults, referencePages) {
+function buildTree(modelResults, referencePages, archivedPages = []) {
   const modelsGroup = {
     id: 'modelos',
     title: `Modelos de plan (${Object.keys(FRAMEWORKS).length})`,
@@ -371,11 +551,17 @@ function buildTree(modelResults, referencePages) {
 
   const referenceGroup = {
     id: 'referencia',
-    title: 'Referencia técnica',
+    title: `Referencia técnica (${referencePages.length})`,
     children: referencePages.map((p) => ({ id: p.id, title: p.title, pageId: p.id }))
   };
 
-  return [modelsGroup, referenceGroup];
+  const archivedGroup = {
+    id: 'archivados',
+    title: `Archivados (por rescatar) (${archivedPages.length})`,
+    children: archivedPages.map((p) => ({ id: p.id, title: p.title, pageId: p.id }))
+  };
+
+  return [modelsGroup, referenceGroup, archivedGroup];
 }
 
 /** Todo el artefacto: índice + páginas. Puro y determinista (sin timestamps). */
@@ -385,9 +571,10 @@ export function build() {
   const envVars = extractEnvVars();
   const providerHosts = extractProviderHosts();
   const referencePages = buildReferencePages(routes, envVars, providerHosts);
+  const archivedPages = buildArchivedPages();
 
   const modulePages = modelResults.flatMap((r) => r.pages);
-  const pages = [...modelResults.map((r) => r.page), ...modulePages, ...referencePages];
+  const pages = [...modelResults.map((r) => r.page), ...modulePages, ...referencePages, ...archivedPages];
 
   const totals = {
     models: Object.keys(FRAMEWORKS).length,
@@ -400,6 +587,8 @@ export function build() {
     envServerVars: envVars.server.length,
     envClientVars: envVars.client.length,
     providerHosts: providerHosts.length,
+    referencePages: referencePages.length,
+    archivedPages: archivedPages.length,
     pages: pages.length,
     slugs: Object.keys(REVERSE_FRAMEWORK_SLUG_MAP).length
   };
@@ -408,7 +597,7 @@ export function build() {
     schemaVersion: SCHEMA_VERSION,
     generator: GENERATOR,
     totals,
-    tree: buildTree(modelResults, referencePages),
+    tree: buildTree(modelResults, referencePages, archivedPages),
     pages: pages.reduce((acc, p) => {
       acc[p.id] = {
         file: `pages/${p.id}.json`,

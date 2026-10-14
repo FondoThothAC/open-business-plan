@@ -1,0 +1,30 @@
+{
+  "id": "archivado.empresas-cuanticas-modelo-atomico",
+  "title": "Metodología Empresas Cuánticas: Modelo Atómico de 3 Áreas",
+  "summary": "Fundamentos del modelo atómico empresarial: separación innegociable de Finanzas, Operaciones y Administración.",
+  "kind": "archivado",
+  "audience": "cliente",
+  "category": "empresas_cuanticas",
+  "readTime": "6 min",
+  "author": "Fondo Thoth AC",
+  "sections": [
+    {
+      "id": "resumen",
+      "title": "Ficha y Metadatos",
+      "audience": "cliente",
+      "markdown": "**Categoría de origen:** Empresas Cuánticas\n\n**Autor:** Fondo Thoth AC · **Tiempo estimado de lectura:** 6 min\n\n**Etiquetas temáticas:** `Fondo Thoth`, `Empresas Cuánticas`, `Modelo Atómico`, `Organización`, `Fundador`\n\n**Resumen:** Fundamentos del modelo atómico empresarial: separación innegociable de Finanzas, Operaciones y Administración."
+    },
+    {
+      "id": "contenido",
+      "title": "Contenido Completo",
+      "audience": "cliente",
+      "markdown": "\n# Metodología Empresas Cuánticas: El Modelo Atómico de 3 Áreas\n\nLa metodología **Empresas Cuánticas**, desarrollada por **Fondo Thoth AC**, postula que toda organización productiva funciona como una estructura atómica conformada por tres órbitas fundamentales:\n\n1. **Área Financiera:** Tesorería, asignación de capital, márgenes de contribución, proyecciones de flujo de caja y rentabilidad de activos.\n2. **Área Operativa:** Creación y entrega del producto o servicio, ingeniería, control de calidad, cadena de suministro y satisfacción del cliente.\n3. **Área Administrativa:** Cumplimiento legal, fiscal, gestión del talento humano, sistemas, compras y procesos normativos.\n\n```mermaid\ngraph TD\n  Fundador[Fundador / Emprendedor] --> Orbita1[Órbita Finanzas]\n  Fundador --> Orbita2[Órbita Operaciones]\n  Delegacion([Delegación Estricta]) --> Orbita3[Órbita Administración]\n  \n  style Orbita1 fill:#4f46e5,stroke:#312e81,color:#fff\n  style Orbita2 fill:#10b981,stroke:#065f46,color:#fff\n  style Orbita3 fill:#f59e0b,stroke:#b45309,color:#fff\n```\n\n---\n\n## El Principio Nuclear: Límite de 2 Áreas\n\n> [!IMPORTANT]\n> **Regla de Oro Cuántica:** El fundador **solo puede ser experto o participar activamente en 1 o máximo 2 de las 3 áreas**. \n> Intentar involucrarse en las 3 áreas de forma simultánea genera el fenómeno de **\"fusión del átomo\"**: colapso por micromanagement, sesgo en toma de decisiones críticas y paralización operativa.\n\n### Anti-Patrones Cuánticos Detectados por el Sistema:\n- **\"El Todólogo\" (Fusión Atómica):** El fundador programa, cobra, atiende clientes y lleva la contabilidad. Resultado: la empresa no escala más allá de su resistencia biológica.\n- **\"Solo Quiero Ser Jefe\":** Ausencia de destreza técnica o financiera; pretende coordinar sin comprender las dinámicas operativas nucleares.\n- **\"Inversor Ausente Prematuro\":** Quien busca retornos rápidos sin involucrarse en consolidar el núcleo de la empresa en su fase de gestación.\n\n---\n\n## Umbrales de Cambio Cuántico de Escala\n\nEl crecimiento empresarial **no es lineal, es cuántico**. Ocurre mediante saltos discretos que exigen reestructuración atómica:\n\n| Salto Cuántico | Umbral Típico | Reestructuración Requerida |\n| :--- | :--- | :--- |\n| **Salto 0 → 1** | 1 a 3 colaboradores | Formalización del rol del fundador; delegación de la tercera área. |\n| **Salto 1 → 2** | 5 a 15 colaboradores | Creación de mandos medios; desvinculación operativa del fundador. |\n| **Salto 2 → 3** | Multi-sucursal / $10M+ MXN | Dirección general corporativa, comités de auditoría y ERP integral. |\n\n> [!TIP]\n> **Meta Suprema del Plan:** La meta última de todo plan de negocios formulado en OBP es que la empresa alcance **autonomía operativa plena**, funcionando de manera eficiente y rentable **sin la presencia diaria del fundador**.\n"
+    },
+    {
+      "id": "fuentes",
+      "title": "Fuentes y Documentación Relacionada",
+      "audience": "cliente",
+      "markdown": "Este artículo forma parte del acervo canónico de Fondo Thoth AC.\n\nDocumentos metodológicos complementarios en el repositorio:\n\n- `docs/zopp.md` (ZOPP y Marco Lógico)\n\n- `docs/hoshin_kanri.md` (Dirección Hoshin)\n\n- `docs/amoeba_management.md` (Gestión Amoeba Kyocera)\n\n- `docs/MATRIZ_MODULOS.md` (Matriz integral de módulos)"
+    }
+  ]
+}

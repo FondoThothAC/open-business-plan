@@ -1,0 +1,30 @@
+{
+  "id": "archivado.guia-12-metodologias",
+  "title": "Guía de los 12 Marcos Metodológicos en Open Business Plan",
+  "summary": "Compendio de las 12 metodologías canónicas soportadas en el sistema para proyectos privados, sociales y de inversión.",
+  "kind": "archivado",
+  "audience": "cliente",
+  "category": "metodologias",
+  "readTime": "8 min",
+  "author": "Equipo OBP",
+  "sections": [
+    {
+      "id": "resumen",
+      "title": "Ficha y Metadatos",
+      "audience": "cliente",
+      "markdown": "**Categoría de origen:** Metodologías de Negocio\n\n**Autor:** Equipo OBP · **Tiempo estimado de lectura:** 8 min\n\n**Etiquetas temáticas:** `Metodologías`, `Frameworks`, `Linda Pinson`, `ZOPP`, `Lean Startup`, `Hoshin Kanri`\n\n**Resumen:** Compendio de las 12 metodologías canónicas soportadas en el sistema para proyectos privados, sociales y de inversión."
+    },
+    {
+      "id": "contenido",
+      "title": "Contenido Completo",
+      "audience": "cliente",
+      "markdown": "\n# Guía de los 12 Marcos Metodológicos en Open Business Plan\n\nOpen Business Plan es la única plataforma que integra **12 metodologías internacionales** de formulación de proyectos en una misma arquitectura de datos:\n\n## 1. Plan Maestro Tradicional (`business`)\n- **Autor de Referencia:** Linda Pinson (*Anatomy of a Business Plan*).\n- **Enfoque:** Estructura clásica en 5 pilares: Naturaleza, Mercado, Técnico/Operativo, Organización y Finanzas.\n- **Ideal para:** PyMEs, empresas comerciales, industrias de manufactura y solicitudes bancarias estándar.\n\n## 2. Proyecto Social BID (`social_bid`)\n- **Enfoque:** Matriz de Impacto Social, stakeholders comunitarios y retorno social de la inversión (SROI).\n- **Ideal para:** Cooperativas, asociaciones civiles, proyectos de desarrollo comunitario y fondos no reembolsables.\n\n## 3. Lean Startup (`agile_startup`)\n- **Autores:** Eric Ries y Alexander Osterwalder.\n- **Enfoque:** Ciclo Construir-Medir-Aprender, Producto Mínimo Viable (MVP), validación de hipótesis tempranas y Business Model Canvas.\n- **Ideal para:** Startups de tecnología, modelos disruptivos y productos digitales.\n\n## 4. Innovación I+D (`technology_id`)\n- **Enfoque:** Escalamiento de madurez tecnológica (TRL 1 a 9), protección de propiedad intelectual (IMPI/PCT) y roadmaps de desarrollo.\n- **Ideal para:** Centros de investigación, patentes y biotecnología.\n\n## 5. Microempresa y Autoempleo (`micro_business`)\n- **Enfoque:** Modelo ágil de baja fricción enfocado en flujo de caja de supervivencia, croquis 2D de taller y formalización inicial.\n- **Ideal para:** Talleres familiares, carpinterías, pastelerías y comercios al detalle.\n\n## 6. Proyecto de Inversión y Finanzas Cuantitativas (`investment_project`)\n- **Enfoque:** Valuación rigurosa mediante flujos descontados (DCF), CAPM, WACC, simulación Monte Carlo estocástica (10,000 iteraciones) y análisis de Tornado.\n- **Ideal para:** Proyectos de gran escala (CAPEX > $10M MXN), fondos de capital privado y banca corporativa.\n\n## 7. ZOPP y Marco Lógico (`zopp`)\n- **Origen:** Agencia Alemana de Cooperación GTZ / Banco Mundial.\n- **Enfoque:** Árbol de problemas (causas-efectos), árbol de objetivos (medios-fines) y Matriz de Marco Lógico 4x4.\n- **Ideal para:** Licitaciones gubernamentales, organismos multilaterales y proyectos de cooperación internacional.\n\n## 8. Horizon Europe (`horizon_europe`)\n- **Origen:** Comisión Europea.\n- **Enfoque:** Criterios de impacto transnacional, ciencia abierta, paridad de género y principio ambiental DNSH (*Do No Significant Harm*).\n- **Ideal para:** Subvenciones de la Unión Europea y consorcios internacionales de investigación.\n\n## 9. Hoshin Kanri (`hoshin_kanri`)\n- **Enfoque:** Despliegue de políticas mediante la **Matriz X** (X-Matrix), catchball y alineación de objetivos estratégicos con KPIs de piso.\n- **Ideal para:** Corporativos medianos y grandes que requieren alineación estratégica total entre directores y operaciones.\n\n## 10. Amoeba Management (`amoeba_management`)\n- **Autor:** Kazuo Inamori (Kyocera).\n- **Enfoque:** División de la empresa en micro-células autónomas (\"Amoebas\") con estado de resultados independiente por hora-hombre trabajada.\n- **Ideal para:** Empresas de manufactura y servicios con equipos descentralizados.\n\n## 11. Metodología Guanxi (`guanxi_plan`)\n- **Enfoque:** Comercio internacional y alianzas estratégicas fundamentadas en redes de confianza mutua, reciprocidad y contratos de largo plazo.\n- **Ideal para:** Importación, exportación y distribución regional cross-border.\n\n## 12. Estudio de Factibilidad ONUDI (`onudi_project`)\n- **Origen:** Organización de las Naciones Unidas para el Desarrollo Industrial.\n- **Enfoque:** Manual de preparación de estudios de viabilidad industrial con evaluación exhaustiva de materias primas, energía, localización y balance de masa.\n- **Ideal para:** Plantas químicas, parques industriales y agroindustria a gran escala.\n"
+    },
+    {
+      "id": "fuentes",
+      "title": "Fuentes y Documentación Relacionada",
+      "audience": "cliente",
+      "markdown": "Este artículo forma parte del acervo canónico de Fondo Thoth AC.\n\nDocumentos metodológicos complementarios en el repositorio:\n\n- `docs/zopp.md` (ZOPP y Marco Lógico)\n\n- `docs/hoshin_kanri.md` (Dirección Hoshin)\n\n- `docs/amoeba_management.md` (Gestión Amoeba Kyocera)\n\n- `docs/MATRIZ_MODULOS.md` (Matriz integral de módulos)"
+    }
+  ]
+}

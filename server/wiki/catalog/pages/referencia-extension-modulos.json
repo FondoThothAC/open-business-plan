@@ -1,0 +1,27 @@
+{
+  "id": "referencia-extension-modulos",
+  "title": "Extensión de modelos, pilares y módulos",
+  "summary": "Guía paso a paso para añadir o modificar módulos en la arquitectura de Open Business Plan.",
+  "kind": "referencia",
+  "audience": "tecnico",
+  "sections": [
+    {
+      "id": "frameworks",
+      "title": "1. Registro en src/config/frameworks.js",
+      "audience": "tecnico",
+      "markdown": "Cada modelo de negocio se declara en el objeto `FRAMEWORKS`.\n\nPara agregar un módulo a un pilar existente:\n\n```javascript\n{\n  key: \"nuevo_modulo\",\n  title: \"Nuevo Módulo de Análisis\",\n  description: \"Propósito del módulo...\",\n  fields: [\"campo_uno\", \"campo_dos\"]\n}\n```\n\nSi se crea un nuevo modelo completo, se debe registrar también su slug en `src/config/urlRouting.js` (`FRAMEWORK_SLUG_MAP` y `REVERSE_FRAMEWORK_SLUG_MAP`)."
+    },
+    {
+      "id": "fieldguides",
+      "title": "2. Asignación de prompts en src/lib/field_guides.js",
+      "audience": "tecnico",
+      "markdown": "Todo campo declarado en `fields` debe contar con su contrato y guía en `FIELD_GUIDES_MAP`:\n\n- `prompt`: Instrucción fundamental que recibe el motor de IA al pulsar \"Generar\".\n\n- `ejemplo`: Texto de muestra que guía al usuario sobre la calidad esperada.\n\n- `benchmark`: Métrica o estándar de aceptación que valida la respuesta.\n\n- `cita`: Fuente bibliográfica o metodológica que fundamenta el criterio."
+    },
+    {
+      "id": "cajas",
+      "title": "3. Asignación de cajas y sincronización",
+      "audience": "tecnico",
+      "markdown": "Para asociar herramientas visuales interactivas (cajas financieras, matrices FODA, organigramas):\n\n- Registrar la caja en `src/config/boxRegistry.js` si es un componente nuevo.\n\n- Mapear la caja al módulo en `src/config/moduleBoxMap.js` usando la clave `projectType:moduleKey`.\n\n- Ejecutar `npm run wiki:build` para que el catálogo de la Wiki regenere automáticamente la ficha del módulo, actualice el total de campos y verifique la integridad con `npm test`."
+    }
+  ]
+}

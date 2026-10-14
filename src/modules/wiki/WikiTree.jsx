@@ -86,8 +86,11 @@ export default function WikiTree({ tree = [], activePageId, onSelectPage, userRo
 
     // Iconografía contextual según la jerarquía
     const renderIcon = () => {
-      if (node.id === 'referencia' || node.id === 'referencia-apis') {
+      if (node.id === 'referencia' || node.id?.startsWith('referencia')) {
         return <Terminal size={15} style={{ color: '#10b981', flexShrink: 0 }} />;
+      }
+      if (node.id === 'archivados' || node.id?.startsWith('archivado.')) {
+        return <BookOpen size={15} style={{ color: '#f59e0b', flexShrink: 0 }} />;
       }
       if (node.id?.startsWith('modelo.')) {
         return <Layers size={15} style={{ color: '#6366f1', flexShrink: 0 }} />;

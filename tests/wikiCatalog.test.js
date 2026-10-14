@@ -131,4 +131,30 @@ describe('Wiki de software — catálogo generado desde el código', () => {
       assert.ok(page.id && page.title && Array.isArray(page.sections), `Página mal formada: ${page.id}`);
     }
   });
+
+  it('integra los 8 artículos archivados de negocio sin pérdida de fórmulas ni contenido', () => {
+    const archivadas = pages.filter((p) => p.kind === 'archivado');
+    assert.equal(archivadas.length, 8, 'Debe haber exactamente 8 páginas archivadas');
+    assert.equal(catalog.totals.archivedPages, 8);
+
+    const artWacc = archivadas.find((p) => p.id === 'archivado.matematicas-financieras-wacc-van-tir');
+    assert.ok(artWacc, 'Falta la página archivada de matemáticas financieras');
+    const secContenido = artWacc.sections.find((s) => s.id === 'contenido');
+    assert.ok(secContenido, 'Falta la sección de contenido en el artículo de WACC');
+    assert.ok(!secContenido.markdown.includes('$$'), 'El artículo de WACC no debe contener bloques $$ sin procesar');
+    assert.match(secContenido.markdown, /WACC/);
+
+    const artCuanticas = archivadas.find((p) => p.id === 'archivado.empresas-cuanticas-modelo-atomico');
+    assert.ok(artCuanticas, 'Falta la página de Empresas Cuánticas');
+  });
+
+  it('declara las guías de arquitectura para superadmin en el catálogo de referencia', () => {
+    const idsEsperados = ['referencia-apis', 'referencia-alta-api', 'referencia-proveedor-llm', 'referencia-extension-modulos'];
+    for (const id of idsEsperados) {
+      const page = pages.find((p) => p.id === id);
+      assert.ok(page, `Falta la página de referencia ${id}`);
+      assert.equal(page.audience, 'tecnico', `La página ${id} debe tener audience técnico`);
+      assert.ok(page.sections.length >= 2, `La página ${id} debe tener al menos 2 secciones`);
+    }
+  });
 });

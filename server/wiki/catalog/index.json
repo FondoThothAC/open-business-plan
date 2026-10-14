@@ -8,11 +8,13 @@
     "fields": 394,
     "guideTypes": 12,
     "boxes": 62,
-    "routes": 135,
+    "routes": 133,
     "envServerVars": 27,
     "envClientVars": 13,
     "providerHosts": 11,
-    "pages": 154,
+    "referencePages": 4,
+    "archivedPages": 8,
+    "pages": 165,
     "slugs": 12
   },
   "tree": [
@@ -1248,12 +1250,73 @@
     },
     {
       "id": "referencia",
-      "title": "Referencia técnica",
+      "title": "Referencia técnica (4)",
       "children": [
         {
           "id": "referencia-apis",
           "title": "APIs e integraciones",
           "pageId": "referencia-apis"
+        },
+        {
+          "id": "referencia-alta-api",
+          "title": "Alta de API de investigación o datos",
+          "pageId": "referencia-alta-api"
+        },
+        {
+          "id": "referencia-proveedor-llm",
+          "title": "Conexión de nuevos proveedores de LLM",
+          "pageId": "referencia-proveedor-llm"
+        },
+        {
+          "id": "referencia-extension-modulos",
+          "title": "Extensión de modelos, pilares y módulos",
+          "pageId": "referencia-extension-modulos"
+        }
+      ]
+    },
+    {
+      "id": "archivados",
+      "title": "Archivados (por rescatar) (8)",
+      "children": [
+        {
+          "id": "archivado.empresas-cuanticas-modelo-atomico",
+          "title": "Metodología Empresas Cuánticas: Modelo Atómico de 3 Áreas",
+          "pageId": "archivado.empresas-cuanticas-modelo-atomico"
+        },
+        {
+          "id": "archivado.principio-delegacion-cuantica",
+          "title": "Principio de Delegación y Reclutamiento Complementario",
+          "pageId": "archivado.principio-delegacion-cuantica"
+        },
+        {
+          "id": "archivado.guia-12-metodologias",
+          "title": "Guía de los 12 Marcos Metodológicos en Open Business Plan",
+          "pageId": "archivado.guia-12-metodologias"
+        },
+        {
+          "id": "archivado.zopp-marco-logico-explicado",
+          "title": "Metodología ZOPP: Árbol de Problemas y Matriz de Marco Lógico",
+          "pageId": "archivado.zopp-marco-logico-explicado"
+        },
+        {
+          "id": "archivado.matematicas-financieras-wacc-van-tir",
+          "title": "Matemáticas Financieras: Fórmulas de WACC, VAN, TIR y Payback",
+          "pageId": "archivado.matematicas-financieras-wacc-van-tir"
+        },
+        {
+          "id": "archivado.punto-equilibrio-analisis-sensibilidad",
+          "title": "Punto de Equilibrio, Diagrama Tornado y Matriz de Estrés",
+          "pageId": "archivado.punto-equilibrio-analisis-sensibilidad"
+        },
+        {
+          "id": "archivado.ficha-drivers-anti-alucinaciones",
+          "title": "Ficha de Drivers Canónicos: Erradicación de Números Huérfanos",
+          "pageId": "archivado.ficha-drivers-anti-alucinaciones"
+        },
+        {
+          "id": "archivado.glosario-acronimos-empresariales",
+          "title": "Glosario Maestro de Acrónimos y Métricas Empresariales",
+          "pageId": "archivado.glosario-acronimos-empresariales"
         }
       ]
     }
@@ -2477,6 +2540,83 @@
       "summary": "Qué endpoint sirve qué, con qué proveedor y qué variable de entorno necesita.",
       "kind": "referencia",
       "audience": "tecnico"
+    },
+    "referencia-alta-api": {
+      "file": "pages/referencia-alta-api.json",
+      "title": "Alta de API de investigación o datos",
+      "summary": "Guía técnica para integrar y homologar nuevos proveedores de datos externos en el backend.",
+      "kind": "referencia",
+      "audience": "tecnico"
+    },
+    "referencia-proveedor-llm": {
+      "file": "pages/referencia-proveedor-llm.json",
+      "title": "Conexión de nuevos proveedores de LLM",
+      "summary": "Protocolo de seguridad anti-SSRF y orquestación para integrar nuevos modelos de lenguaje.",
+      "kind": "referencia",
+      "audience": "tecnico"
+    },
+    "referencia-extension-modulos": {
+      "file": "pages/referencia-extension-modulos.json",
+      "title": "Extensión de modelos, pilares y módulos",
+      "summary": "Guía paso a paso para añadir o modificar módulos en la arquitectura de Open Business Plan.",
+      "kind": "referencia",
+      "audience": "tecnico"
+    },
+    "archivado.empresas-cuanticas-modelo-atomico": {
+      "file": "pages/archivado.empresas-cuanticas-modelo-atomico.json",
+      "title": "Metodología Empresas Cuánticas: Modelo Atómico de 3 Áreas",
+      "summary": "Fundamentos del modelo atómico empresarial: separación innegociable de Finanzas, Operaciones y Administración.",
+      "kind": "archivado",
+      "audience": "cliente"
+    },
+    "archivado.principio-delegacion-cuantica": {
+      "file": "pages/archivado.principio-delegacion-cuantica.json",
+      "title": "Principio de Delegación y Reclutamiento Complementario",
+      "summary": "Cómo transformar las áreas de debilidad del fundador en perfiles de puesto y vacantes de contratación específicas.",
+      "kind": "archivado",
+      "audience": "cliente"
+    },
+    "archivado.guia-12-metodologias": {
+      "file": "pages/archivado.guia-12-metodologias.json",
+      "title": "Guía de los 12 Marcos Metodológicos en Open Business Plan",
+      "summary": "Compendio de las 12 metodologías canónicas soportadas en el sistema para proyectos privados, sociales y de inversión.",
+      "kind": "archivado",
+      "audience": "cliente"
+    },
+    "archivado.zopp-marco-logico-explicado": {
+      "file": "pages/archivado.zopp-marco-logico-explicado.json",
+      "title": "Metodología ZOPP: Árbol de Problemas y Matriz de Marco Lógico",
+      "summary": "Cómo transformar un diagnóstico de causas y efectos en una matriz de marco lógico verificable de 4x4.",
+      "kind": "archivado",
+      "audience": "cliente"
+    },
+    "archivado.matematicas-financieras-wacc-van-tir": {
+      "file": "pages/archivado.matematicas-financieras-wacc-van-tir.json",
+      "title": "Matemáticas Financieras: Fórmulas de WACC, VAN, TIR y Payback",
+      "summary": "Fórmulas matemáticas formales y criterios de viabilidad aplicados en el motor financiero de Open Business Plan.",
+      "kind": "archivado",
+      "audience": "cliente"
+    },
+    "archivado.punto-equilibrio-analisis-sensibilidad": {
+      "file": "pages/archivado.punto-equilibrio-analisis-sensibilidad.json",
+      "title": "Punto de Equilibrio, Diagrama Tornado y Matriz de Estrés",
+      "summary": "Cómo interpretar el punto de equilibrio operativo y las herramientas de análisis de riesgo de mercado.",
+      "kind": "archivado",
+      "audience": "cliente"
+    },
+    "archivado.ficha-drivers-anti-alucinaciones": {
+      "file": "pages/archivado.ficha-drivers-anti-alucinaciones.json",
+      "title": "Ficha de Drivers Canónicos: Erradicación de Números Huérfanos",
+      "summary": "El estándar de cero números huérfanos: cómo OBP blinda las narrativas para que nunca contradigan las corridas financieras.",
+      "kind": "archivado",
+      "audience": "cliente"
+    },
+    "archivado.glosario-acronimos-empresariales": {
+      "file": "pages/archivado.glosario-acronimos-empresariales.json",
+      "title": "Glosario Maestro de Acrónimos y Métricas Empresariales",
+      "summary": "Diccionario exhaustivo de siglas, métricas y términos técnicos utilizados en la plataforma.",
+      "kind": "archivado",
+      "audience": "cliente"
     }
   }
 }

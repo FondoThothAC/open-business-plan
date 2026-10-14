@@ -1,0 +1,30 @@
+{
+  "id": "archivado.zopp-marco-logico-explicado",
+  "title": "Metodología ZOPP: Árbol de Problemas y Matriz de Marco Lógico",
+  "summary": "Cómo transformar un diagnóstico de causas y efectos en una matriz de marco lógico verificable de 4x4.",
+  "kind": "archivado",
+  "audience": "cliente",
+  "category": "metodologias",
+  "readTime": "5 min",
+  "author": "Equipo OBP",
+  "sections": [
+    {
+      "id": "resumen",
+      "title": "Ficha y Metadatos",
+      "audience": "cliente",
+      "markdown": "**Categoría de origen:** Metodologías de Negocio\n\n**Autor:** Equipo OBP · **Tiempo estimado de lectura:** 5 min\n\n**Etiquetas temáticas:** `ZOPP`, `Marco Lógico`, `Árbol de Problemas`, `GTZ`, `BID`\n\n**Resumen:** Cómo transformar un diagnóstico de causas y efectos en una matriz de marco lógico verificable de 4x4."
+    },
+    {
+      "id": "contenido",
+      "title": "Contenido Completo",
+      "audience": "cliente",
+      "markdown": "\n# Metodología ZOPP y Matriz de Marco Lógico\n\n**ZOPP** (*Zielorientierte Projektplanung* o Planificación de Proyectos Orientada a Objetivos) es el estándar de oro para proyectos sociales, gubernamentales y multilaterales.\n\n---\n\n## 1. El Árbol de Problemas (Diagnóstico)\nEl árbol de problemas permite identificar la **causa raíz** de una situación insatisfactoria en lugar de atacar únicamente los síntomas superficiales:\n\n```mermaid\ngraph TD\n  E1[Efecto 1: Pérdida económica] --- Efectos[EFECTOS / IMPACTO NEGATIVO]\n  E2[Efecto 2: Abandono comunitario] --- Efectos\n  Efectos --> PC[PROBLEMA CENTRAL]\n  PC --> C1[Causa 1: Falta de tecnología adecuada]\n  PC --> C2[Causa 2: Desorganización operativa]\n  C1 --- CausaRaiz[CAUSAS RAÍZ]\n  C2 --- CausaRaiz\n```\n\n---\n\n## 2. El Árbol de Objetivos (Solución)\nPor inversión lógica positiva, cada problema se convierte en un objetivo deseado:\n- *Causas* → se convierten en **Medios o Actividades**.\n- *Problema Central* → se convierte en el **Propósito del Proyecto**.\n- *Efectos* → se convierten en los **Fines o Beneficios Esperados**.\n\n---\n\n## 3. La Matriz de Marco Lógico (4x4)\nEstructura la lógica de intervención en 4 niveles jerárquicos:\n\n1. **Fin:** Contribución al desarrollo general a largo plazo.\n2. **Propósito:** El impacto directo logrado al finalizar el proyecto.\n3. **Componentes / Resultados:** Los entregables tangibles completados.\n4. **Actividades:** Las acciones presupuestadas para generar cada componente.\n\nCada nivel cuenta con **Indicadores Objetivamente Verificables (IOV)**, **Fuentes de Verificación** y **Supuestos Críticos**.\n"
+    },
+    {
+      "id": "fuentes",
+      "title": "Fuentes y Documentación Relacionada",
+      "audience": "cliente",
+      "markdown": "Este artículo forma parte del acervo canónico de Fondo Thoth AC.\n\nDocumentos metodológicos complementarios en el repositorio:\n\n- `docs/zopp.md` (ZOPP y Marco Lógico)\n\n- `docs/hoshin_kanri.md` (Dirección Hoshin)\n\n- `docs/amoeba_management.md` (Gestión Amoeba Kyocera)\n\n- `docs/MATRIZ_MODULOS.md` (Matriz integral de módulos)"
+    }
+  ]
+}

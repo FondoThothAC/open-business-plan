@@ -1,0 +1,30 @@
+{
+  "id": "archivado.ficha-drivers-anti-alucinaciones",
+  "title": "Ficha de Drivers Canónicos: Erradicación de Números Huérfanos",
+  "summary": "El estándar de cero números huérfanos: cómo OBP blinda las narrativas para que nunca contradigan las corridas financieras.",
+  "kind": "archivado",
+  "audience": "cliente",
+  "category": "rag_drivers",
+  "readTime": "6 min",
+  "author": "Arquitectura de Datos OBP",
+  "sections": [
+    {
+      "id": "resumen",
+      "title": "Ficha y Metadatos",
+      "audience": "cliente",
+      "markdown": "**Categoría de origen:** RAG y Ficha de Drivers\n\n**Autor:** Arquitectura de Datos OBP · **Tiempo estimado de lectura:** 6 min\n\n**Etiquetas temáticas:** `RAG`, `Drivers`, `Anti-alucinaciones`, `Auditoría`, `Trazabilidad`\n\n**Resumen:** El estándar de cero números huérfanos: cómo OBP blinda las narrativas para que nunca contradigan las corridas financieras."
+    },
+    {
+      "id": "contenido",
+      "title": "Contenido Completo",
+      "audience": "cliente",
+      "markdown": "\n# Ficha de Drivers Canónicos y Cero Números Huérfanos\n\nUno de los problemas más graves de los planes de negocios generados por modelos de lenguaje genéricos es la **inconsistencia numérica** (ej. la narrativa menciona una inversión de $500,000 pero la tabla financiera dice $4,000,000, o se inventan conceptos de repostería en una empresa ganadera).\n\n---\n\n## El Principio de Cero Números Huérfanos\n\n> [!IMPORTANT]\n> En Open Business Plan, **ningún módulo de texto puede inventar una cifra económica**. Toda mención monetaria debe proceder de la **Ficha de Drivers Canónicos** o de una fuente documental RAG aprobada por el usuario.\n\n```mermaid\nflowchart TD\n  RAG[Documentos RAG: Word/PDF/Cotizaciones] --> Extractor[driversExtractor.js]\n  Seed[Semilla del Proyecto] --> Extractor\n  Extractor --> Ficha[Ficha de Drivers Canónica]\n  \n  Ficha --> Calc[calculadoraFinanciera.js]\n  Ficha --> Dynamic[DynamicModule.jsx]\n  Ficha --> Multi[MultiScenarioFinancialSection.jsx]\n  Ficha --> Sim[Simulador Financiero Iframe]\n  \n  Auditor[auditorCifras.js] -.->|Verifica consistencia| Dynamic\n  Auditor -.->|Alerta contradicciones| Multi\n```\n\n---\n\n## Los 6 Drivers Primarios\n1. **`capex_total`:** Inversión total requerida para arrancar o expandir.\n2. **`concepto_producto`:** Denominación formal del bien o servicio principal.\n3. **`precio_unitario_o_ticket`:** Precio de venta promedio por unidad o servicio.\n4. **`volumen_mensual_ventas`:** Unidades proyectadas al mes en régimen normal.\n5. **`costos_fijos_mensuales`:** Nómina, renta, servicios y seguros mensuales.\n6. **`costo_variable_unitario`:** Insumos y mano de obra directa por unidad producida.\n"
+    },
+    {
+      "id": "fuentes",
+      "title": "Fuentes y Documentación Relacionada",
+      "audience": "cliente",
+      "markdown": "Este artículo forma parte del acervo canónico de Fondo Thoth AC.\n\nDocumentos metodológicos complementarios en el repositorio:\n\n- `docs/zopp.md` (ZOPP y Marco Lógico)\n\n- `docs/hoshin_kanri.md` (Dirección Hoshin)\n\n- `docs/amoeba_management.md` (Gestión Amoeba Kyocera)\n\n- `docs/MATRIZ_MODULOS.md` (Matriz integral de módulos)"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "id": "archivado.glosario-acronimos-empresariales",
+  "title": "Glosario Maestro de Acrónimos y Métricas Empresariales",
+  "summary": "Diccionario exhaustivo de siglas, métricas y términos técnicos utilizados en la plataforma.",
+  "kind": "archivado",
+  "audience": "cliente",
+  "category": "glosario",
+  "readTime": "5 min",
+  "author": "Equipo OBP",
+  "sections": [
+    {
+      "id": "resumen",
+      "title": "Ficha y Metadatos",
+      "audience": "cliente",
+      "markdown": "**Categoría de origen:** Glosario y Acrónimos\n\n**Autor:** Equipo OBP · **Tiempo estimado de lectura:** 5 min\n\n**Etiquetas temáticas:** `Glosario`, `Acrónimos`, `CAPEX`, `OPEX`, `TRL`, `DNSH`, `EBITDA`\n\n**Resumen:** Diccionario exhaustivo de siglas, métricas y términos técnicos utilizados en la plataforma."
+    },
+    {
+      "id": "contenido",
+      "title": "Contenido Completo",
+      "audience": "cliente",
+      "markdown": "\n# Glosario Maestro de Acrónimos y Métricas\n\n- **CAPEX (Capital Expenditure):** Inversiones de capital en activos fijos tangibles e intangibles de largo plazo (maquinaria, equipo, construcciones, licencias pre-operativas).\n- **OPEX (Operational Expenditure):** Gastos corrientes recurrentes para la operación cotidiana (sueldos, rentas, insumos, suministros, marketing).\n- **TRL (Technology Readiness Level):** Escala del 1 al 9 inventada por la NASA para medir la madurez tecnológica de un desarrollo (TRL 1: Principios básicos observados; TRL 9: Sistema probado en entorno operativo real).\n- **DNSH (Do No Significant Harm):** Principio rector de la Unión Europea y Horizon Europe que exige demostrar que una inversión no perjudica los objetivos de mitigación climática, agua, economía circular, prevención de contaminación o biodiversidad.\n- **EBITDA (Earnings Before Interest, Taxes, Depreciation, and Amortization):** Utilidad operativa antes de intereses, impuestos, depreciaciones y amortizaciones; métrica clave de generación de caja pura del negocio.\n- **CAGR (Compound Annual Growth Rate):** Tasa de crecimiento anual compuesto; mide la tasa constante de crecimiento anual durante un periodo de varios años.\n- **SCIAN (Sistema de Clasificación Industrial de América del Norte):** Catálogo oficial de actividades económicas homologado entre México, Estados Unidos y Canadá.\n- **DENUE (Directorio Estadístico Nacional de Unidades Económicas):** Censo en tiempo real de establecimientos económicos en México gestionado por el INEGI.\n- **TAM / SAM / SOM:**\n  - **TAM (Total Addressable Market):** Mercado total disponible si existiera 100% de cuota.\n  - **SAM (Serviceable Addressable Market):** Mercado que tu modelo de negocio puede atender geográficamente y tecnológicamente.\n  - **SOM (Serviceable Obtainable Market):** Cuota real y alcanzable que capturarás a corto y mediano plazo.\n"
+    },
+    {
+      "id": "fuentes",
+      "title": "Fuentes y Documentación Relacionada",
+      "audience": "cliente",
+      "markdown": "Este artículo forma parte del acervo canónico de Fondo Thoth AC.\n\nDocumentos metodológicos complementarios en el repositorio:\n\n- `docs/zopp.md` (ZOPP y Marco Lógico)\n\n- `docs/hoshin_kanri.md` (Dirección Hoshin)\n\n- `docs/amoeba_management.md` (Gestión Amoeba Kyocera)\n\n- `docs/MATRIZ_MODULOS.md` (Matriz integral de módulos)"
+    }
+  ]
+}

@@ -68,8 +68,16 @@ export default function WikiPage({ page, isLoading, error }) {
               {model.toUpperCase()}
             </span>
           )}
-          <span style={{ fontSize: '0.72rem', padding: '2px 8px', borderRadius: '4px', background: 'rgba(255, 255, 255, 0.08)', opacity: 0.8 }}>
-            {kind === 'modulo' ? 'Módulo de Plan' : (kind === 'modelo' ? 'Metodología / Modelo' : 'Referencia Técnica')}
+          <span style={{ 
+            fontSize: '0.72rem', 
+            padding: '2px 8px', 
+            borderRadius: '4px', 
+            background: kind === 'archivado' ? 'rgba(245, 158, 11, 0.15)' : 'rgba(255, 255, 255, 0.08)', 
+            color: kind === 'archivado' ? '#fbbf24' : 'inherit',
+            fontWeight: kind === 'archivado' ? 600 : 400,
+            opacity: kind === 'archivado' ? 1 : 0.8 
+          }}>
+            {kind === 'modulo' ? 'Módulo de Plan' : (kind === 'modelo' ? 'Metodología / Modelo' : (kind === 'archivado' ? 'Archivado (Fondo Thoth)' : 'Referencia Técnica'))}
           </span>
           {audience === 'tecnico' && (
             <span style={{ fontSize: '0.72rem', padding: '2px 8px', borderRadius: '4px', background: 'rgba(16, 185, 129, 0.15)', color: '#34d399', fontWeight: 600 }}>

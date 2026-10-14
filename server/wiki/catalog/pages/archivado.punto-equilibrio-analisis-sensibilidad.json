@@ -1,0 +1,30 @@
+{
+  "id": "archivado.punto-equilibrio-analisis-sensibilidad",
+  "title": "Punto de Equilibrio, Diagrama Tornado y Matriz de Estrés",
+  "summary": "Cómo interpretar el punto de equilibrio operativo y las herramientas de análisis de riesgo de mercado.",
+  "kind": "archivado",
+  "audience": "cliente",
+  "category": "finanzas",
+  "readTime": "5 min",
+  "author": "Dirección Financiera OBP",
+  "sections": [
+    {
+      "id": "resumen",
+      "title": "Ficha y Metadatos",
+      "audience": "cliente",
+      "markdown": "**Categoría de origen:** Finanzas y SAGARPA\n\n**Autor:** Dirección Financiera OBP · **Tiempo estimado de lectura:** 5 min\n\n**Etiquetas temáticas:** `Punto de Equilibrio`, `Sensibilidad`, `Tornado`, `Stress Testing`\n\n**Resumen:** Cómo interpretar el punto de equilibrio operativo y las herramientas de análisis de riesgo de mercado."
+    },
+    {
+      "id": "contenido",
+      "title": "Contenido Completo",
+      "audience": "cliente",
+      "markdown": "\n# Punto de Equilibrio y Análisis de Sensibilidad\n\nEl punto de equilibrio y el análisis de estrés son las herramientas esenciales para convencer a comités de inversión de la resiliencia del modelo comercial.\n\n---\n\n## 1. Punto de Equilibrio Operativo (BEP)\nDetermina el volumen de ventas en el que los ingresos totales cubren exactamente los costos fijos y variables, arrojando utilidad operativa cero:\n\nBEP_{pesos = {Costos Fijos Mensuales{1 - {Costo Variable Unitario{Precio Unitario\n\nBEP_{unidades = {Costos Fijos Mensuales{Precio Unitario - Costo Variable Unitario\n\n---\n\n## 2. Diagrama de Tornado (Sensibilidad Unidimensional)\nMide el impacto de una volatilidad del **±15%** en cada variable de manera independiente, ordenándolas jerárquicamente de mayor a menor impacto en el VAN:\n\n1. **Volumen de Ventas:** Habitualmente el factor con mayor letalidad en el flujo libre.\n2. **Precios y Tarifas:** Afecta directamente el margen sin incrementar el costo variable.\n3. **Costos de Insumos (Variables):** Inflación de materia prima.\n4. **Costos Fijos (Nómina/Rentas):** Gastos estructurales.\n5. **Inversión Inicial (CAPEX):** Desviación en compras de maquinaria o adecuaciones.\n\n---\n\n## 3. Matriz de Estrés Cruzada (Doble Entrada)\nCruza simultáneamente caídas de volumen de clientes (X) contra reducciones de tarifa de servicio (Y) para definir la frontera geométrica donde el proyecto deja de ser viable.\n"
+    },
+    {
+      "id": "fuentes",
+      "title": "Fuentes y Documentación Relacionada",
+      "audience": "cliente",
+      "markdown": "Este artículo forma parte del acervo canónico de Fondo Thoth AC.\n\nDocumentos metodológicos complementarios en el repositorio:\n\n- `docs/zopp.md` (ZOPP y Marco Lógico)\n\n- `docs/hoshin_kanri.md` (Dirección Hoshin)\n\n- `docs/amoeba_management.md` (Gestión Amoeba Kyocera)\n\n- `docs/MATRIZ_MODULOS.md` (Matriz integral de módulos)"
+    }
+  ]
+}

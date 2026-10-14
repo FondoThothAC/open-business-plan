@@ -1,0 +1,30 @@
+{
+  "id": "archivado.matematicas-financieras-wacc-van-tir",
+  "title": "Matemáticas Financieras: Fórmulas de WACC, VAN, TIR y Payback",
+  "summary": "Fórmulas matemáticas formales y criterios de viabilidad aplicados en el motor financiero de Open Business Plan.",
+  "kind": "archivado",
+  "audience": "cliente",
+  "category": "finanzas",
+  "readTime": "7 min",
+  "author": "Dirección Financiera OBP",
+  "sections": [
+    {
+      "id": "resumen",
+      "title": "Ficha y Metadatos",
+      "audience": "cliente",
+      "markdown": "**Categoría de origen:** Finanzas y SAGARPA\n\n**Autor:** Dirección Financiera OBP · **Tiempo estimado de lectura:** 7 min\n\n**Etiquetas temáticas:** `WACC`, `VAN`, `VPN`, `TIR`, `Payback`, `Finanzas`\n\n**Resumen:** Fórmulas matemáticas formales y criterios de viabilidad aplicados en el motor financiero de Open Business Plan."
+    },
+    {
+      "id": "contenido",
+      "title": "Contenido Completo",
+      "audience": "cliente",
+      "markdown": "\n# Matemáticas Financieras: Fórmulas de WACC, VAN, TIR y Payback\n\nOpen Business Plan utiliza fórmulas financieras de grado bancario para garantizar la viabilidad cuantitativa de cada proyecto formulado.\n\n---\n\n## 1. WACC (Weighted Average Cost of Capital)\nEl Costo Promedio Ponderado de Capital representa la tasa mínima de retorno requerida por los aportantes de recursos (deuda y capital propio):\n\nWACC = ( {E{V × K_e ) + ( {D{V × K_d × (1 - T) )\n\nDonde:\n- $E$: Capital propio aportado por socios.\n- $D$: Deuda financiera contratada.\n- $V = E + D$: Valor total de la estructura de financiamiento.\n- $K_e$: Costo del capital propio (calculado habitualmente vía CAPM: $R_f + \\beta(R_m - R_f)$).\n- $K_d$: Tasa de interés pactada de la deuda.\n- $T$: Tasa impositiva corporativa (ISR en México: 30%).\n\n---\n\n## 2. VAN (Valor Actual Neto) / NPV\nRepresenta el valor presente de los flujos de caja futuros generados por el proyecto, descontados a la tasa WACC, menos la inversión inicial:\n\nVAN = -I_0 + Σ_{t=1^{n {FC_t{(1 + r)^t\n\n- **Criterio de Aceptación:**\n  - $\\text{VAN} > 0$: El proyecto genera riqueza por encima del costo de capital. **Viable**.\n  - $\\text{VAN} = 0$: El proyecto rinde exactamente el costo de oportunidad. Indiferente.\n  - $\\text{VAN} < 0$: El proyecto destruye valor económico. **No viable**.\n\n---\n\n## 3. TIR (Tasa Interna de Retorno) / IRR\nEs la tasa de descuento $r$ que hace que el Valor Actual Neto sea exactamente igual a cero:\n\nVAN = -I_0 + Σ_{t=1^{n {FC_t{(1 + TIR)^t = 0\n\n- **Criterio de Aceptación:**\n  - $\\text{TIR} > \\text{WACC}$: El retorno supera el costo de fondeo. Proyecto aprobado.\n  - $\\text{TIR} < \\text{WACC}$: Retorno inferior al costo de capital. Rechazado.\n\n---\n\n## 4. Periodo de Recuperación (Payback Descontado)\nCalcula el número de años o meses necesarios para que la suma acumulada de flujos de caja descontados iguale la inversión inicial $I_0$.\n\n> [!TIP]\n> En proyectos PyME en México, el Payback promedio saludable oscila entre **2.5 y 4.2 años**.\n"
+    },
+    {
+      "id": "fuentes",
+      "title": "Fuentes y Documentación Relacionada",
+      "audience": "cliente",
+      "markdown": "Este artículo forma parte del acervo canónico de Fondo Thoth AC.\n\nDocumentos metodológicos complementarios en el repositorio:\n\n- `docs/zopp.md` (ZOPP y Marco Lógico)\n\n- `docs/hoshin_kanri.md` (Dirección Hoshin)\n\n- `docs/amoeba_management.md` (Gestión Amoeba Kyocera)\n\n- `docs/MATRIZ_MODULOS.md` (Matriz integral de módulos)"
+    }
+  ]
+}
