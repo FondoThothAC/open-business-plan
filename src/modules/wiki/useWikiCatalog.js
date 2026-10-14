@@ -7,7 +7,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { getApiBase } from '../../config/apiConfig';
 import { useAuth } from '../../contexts/AuthContext';
-import { REVERSE_FRAMEWORK_SLUG_MAP } from '../../config/urlRouting';
+import { FRAMEWORK_SLUG_MAP } from '../../config/urlRouting';
 
 /**
  * Hook maestro del catálogo de la Wiki.
@@ -90,7 +90,7 @@ export function useWikiCatalog(initialPageId = null) {
     clean = clean.replace(/\//g, '.');
 
     // Traducir slug de URL si corresponde (ej. plan-negocios -> business)
-    for (const [slug, internalKey] of Object.entries(REVERSE_FRAMEWORK_SLUG_MAP)) {
+    for (const [slug, internalKey] of Object.entries(FRAMEWORK_SLUG_MAP)) {
       if (clean.includes(slug)) {
         clean = clean.replace(slug, internalKey);
       }
