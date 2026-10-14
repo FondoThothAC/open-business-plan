@@ -16,7 +16,14 @@ import {
   buildTelegramSystemPrompt,
   formatProjectInfoResponse,
   formatFinancialSnapshotResponse,
-  formatQuantumDiagnosticResponse
+  formatQuantumDiagnosticResponse,
+  detectFinancialLeverIntent,
+  calculateFinancialLever,
+  formatFinancialLeverProposal,
+  applyPendingLeverAdjustment,
+  analyzeInvestmentProposal,
+  formatInvestmentAnalysisResponse,
+  classifyPhotoIntent
 } from '../server/integrations/telegramBot.js';
 
 test('Telegram Bot TDD Suite', async (t) => {
@@ -192,6 +199,127 @@ test('Telegram Bot TDD Suite', async (t) => {
     assert.ok(res.includes('Fondo Thoth AC'));
     assert.ok(res.includes('Fusión Atómica') || res.includes('fusión atómica') || res.includes('FUSIÓN ATÓMICA'));
     assert.ok(res.includes('Delegación') || res.includes('delegación'));
+  });
+
+  // ════════════════════════════════════════════════════════════════════════
+  // NUEVAS PRUEBAS: PALANCAS, CONSULTORÍA DE INVERSIÓN Y VISIÓN MULTIMODAL
+  // ════════════════════════════════════════════════════════════════════════
+
+  await t.test('detectFinancialLeverIntent detecta intenciones de margen, precio y costos', () => {
+    const intent1 = detectFinancialLeverIntent('¿Es posible aumentar el margen de ganancia?');
+    assert.ok(intent1);
+    assert.equal(intent1.type, 'margen');
+    assert.equal(intent1.targetValue, null);
+
+    const intent2 = detectFinancialLeverIntent('Quiero subir el margen de ganancia al 36%');
+    assert.ok(intent2);
+    assert.equal(intent2.type, 'margen');
+    assert.equal(intent2.targetValue, 36);
+
+    const intent3 = detectFinancialLeverIntent('Podemos aumentar el precio un 10%');
+    assert.ok(intent3);
+    assert.equal(intent3.type, 'precio');
+    assert.equal(intent3.deltaPercent, 10);
+
+    const intent4 = detectFinancialLeverIntent('Reducir costos de producción en 8%');
+    assert.ok(intent4);
+    assert.equal(intent4.type, 'costos');
+    assert.equal(intent4.deltaPercent, -8);
+
+    const intentNone = detectFinancialLeverIntent('¿Qué opinas del clima y la lluvia hoy?');
+    assert.equal(intentNone, null);
+  });
+
+  await t.test('calculateFinancialLever calcula la simulación y genera botones interactivos', () => {
+    const mockProject = {
+      nombre: 'VCV Cortes Finos SA de CV',
+      simulador_financiero: {
+        margen_promedio: 31.13,
+        punto_equilibrio_mensual: 781.87,
+        ventas_proyectadas_mes: 250000
+      }
+    };
+
+    const intent = { type: 'margen', targetValue: 35 };
+    const proposal = calculateFinancialLever(mockProject, intent);
+
+    assert.ok(proposal);
+    assert.ok(proposal.leverId.startsWith('lev_'));
+    assert.equal(proposal.currentMargin, 31.13);
+    assert.equal(proposal.targetMargin, 35);
+    assert.ok(proposal.requiredPriceIncreasePercent > 0);
+    assert.ok(proposal.bepNuevo < proposal.bepActual);
+    assert.ok(proposal.summaryText.includes('35%'));
+
+    const formatted = formatFinancialLeverProposal(proposal);
+    assert.ok(formatted.text.includes('SIMULACIÓN DE PALANCA FINANCIERA'));
+    assert.ok(Array.isArray(formatted.inlineKeyboard));
+    assert.equal(formatted.inlineKeyboard[0].length, 2);
+    assert.ok(formatted.inlineKeyboard[0][0].callback_data.includes(proposal.leverId));
+    assert.ok(formatted.inlineKeyboard[0][1].callback_data.includes(proposal.leverId));
+  });
+
+  await t.test('applyPendingLeverAdjustment aplica el cambio en el proyecto JSON', () => {
+    const mockProject = {
+      nombre: 'VCV Cortes Finos SA de CV',
+      simulador_financiero: {
+        margen_promedio: 31.13,
+        punto_equilibrio_mensual: 781.87
+      }
+    };
+
+    const proposal = {
+      leverId: 'lev_test123',
+      targetMargin: 35.0,
+      bepNuevo: 720.5
+    };
+
+    const updated = applyPendingLeverAdjustment(mockProject, proposal);
+    assert.equal(updated.simulador_financiero.margen_promedio, 35.0);
+    assert.equal(updated.simulador_financiero.punto_equilibrio_mensual, 720.5);
+    assert.ok(updated.fechaActualizacion);
+  });
+
+  await t.test('analyzeInvestmentProposal desglosa valuación pre/post-money, deuda vs equity y alerta cuántica', () => {
+    const query = 'oye nueva info el emprendedor me dijo que alguien le quiere invertir 200 000 pesos por el 40 % del proyecto como afecta eso nos ayuda o mejor un prestamo';
+    const mockProject = {
+      nombre: 'Empresa Demo',
+      montoInversion: 500000,
+      simulador_financiero: {
+        margen_promedio: 30,
+        utilidad_neta_anual_proyectada: 250000
+      }
+    };
+
+    const analysis = analyzeInvestmentProposal(query, mockProject);
+    assert.ok(analysis.isOffer);
+    assert.equal(analysis.investmentAmount, 200000);
+    assert.equal(analysis.equityPercentage, 40);
+
+    assert.equal(analysis.postMoneyValuation, 500000);
+    assert.equal(analysis.preMoneyValuation, 300000);
+
+    assert.equal(analysis.dilutionRisk, 'CRITICA');
+    assert.ok(analysis.annualEquityCost > analysis.annualDebtCost);
+    assert.ok(analysis.governanceAlert.includes('Fondo Thoth AC') || analysis.governanceAlert.includes('Gobernanza'));
+    assert.ok(analysis.counterProposal.includes('10%') || analysis.counterProposal.includes('15%') || analysis.counterProposal.includes('SAFE'));
+
+    const formatted = formatInvestmentAnalysisResponse(analysis, { nombre: 'Empresa Demo' });
+    assert.ok(formatted.includes('VALUACIÓN IMPLÍCITA'));
+    assert.ok(formatted.includes('500,000'));
+    assert.ok(formatted.includes('300,000'));
+    assert.ok(formatted.includes('EQUITY VS. DEUDA'));
+    assert.ok(formatted.includes('CONTRAPROPUESTA'));
+  });
+
+  await t.test('classifyPhotoIntent clasifica fotos por su pie de foto o contexto', () => {
+    assert.equal(classifyPhotoIntent('foto de este torno mecánico para el taller'), 'machinery');
+    assert.equal(classifyPhotoIntent('línea de corte y envasadora al vacío industrial'), 'machinery');
+    assert.equal(classifyPhotoIntent('fachada del local en plaza comercial para sucursal'), 'location');
+    assert.equal(classifyPhotoIntent('mira este local en renta'), 'location');
+    assert.equal(classifyPhotoIntent('menú y platillo con precios del competidor'), 'product');
+    assert.equal(classifyPhotoIntent('inspiración para logo y paleta de colores'), 'brand');
+    assert.equal(classifyPhotoIntent(''), 'brand');
   });
 
 });
