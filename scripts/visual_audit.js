@@ -8,10 +8,13 @@ async function runVisualAudit() {
   console.log('🚀 Iniciando auditoría visual quirúrgica con Puppeteer...');
   const browser = await puppeteer.launch({
     headless: 'new',
+    protocolTimeout: 120000,
     args: ['--no-sandbox', '--disable-setuid-sandbox', '--window-size=1440,960']
   });
 
   const page = await browser.newPage();
+  page.setDefaultNavigationTimeout(60000);
+  page.setDefaultTimeout(60000);
   await page.setViewport({ width: 1440, height: 960, deviceScaleFactor: 2 });
 
   // 1. Inyectar Cookie de Autenticación en fondothoth.com
@@ -44,11 +47,11 @@ async function runVisualAudit() {
 
   try {
     // 3. Navegar a FODA en fondothoth.com/obp/business/foda
-    console.log('📸 [Paso 1] Navegando a FODA (https://fondothoth.com/obp/business/foda)...');
-    await page.goto('https://fondothoth.com/obp/business/foda', { waitUntil: 'networkidle2', timeout: 35000 });
-    await new Promise(r => setTimeout(r, 2500));
+    console.log('📸 Navegando a FODA...');
+    await page.goto('https://fondothoth.com/obp/business/foda', { waitUntil: 'networkidle2', timeout: 45000 });
+    await new Promise(r => setTimeout(r, 2000));
 
-    // Si aún aparece algún modal o wizard, cerrarlo
+    // Si aparece algún modal o wizard de bienvenida, cerrarlo
     await page.evaluate(() => {
       const closeBtns = document.querySelectorAll('button');
       for (const btn of closeBtns) {
@@ -59,67 +62,25 @@ async function runVisualAudit() {
     });
     await new Promise(r => setTimeout(r, 1000));
 
-    // Captura completa del tablero FODA
-    const fodaImgPath = path.join(ARTIFACT_DIR, 'verificacion_ui_foda.png');
-    await page.screenshot({ path: fodaImgPath, fullPage: false });
-    console.log('   ✓ Captura de FODA guardada en:', fodaImgPath);
-
-    // 4. Abrir modal de conversión en FODA (Opción A con IA)
-    console.log('📸 [Paso 2] Abriendo modal de Ley de Conversión a Fortaleza...');
-    const convertBtn = await page.$('button[title*="Convertir"], button[title*="Fortaleza"], .foda-card-debilidades button');
-    if (convertBtn) {
-      await convertBtn.click();
-      await new Promise(r => setTimeout(r, 1200));
-
-      const modalImgPath = path.join(ARTIFACT_DIR, 'verificacion_ui_modal_conversion.png');
-      await page.screenshot({ path: modalImgPath, fullPage: false });
-      console.log('   ✓ Captura del Modal de Conversión con IA guardada en:', modalImgPath);
-
-      // Cerrar modal
-      await page.keyboard.press('Escape');
-      await new Promise(r => setTimeout(r, 500));
-    }
-
-    // 5. Navegar al Wiki
-    console.log('📸 [Paso 3] Navegando al Wiki de Software OBP (https://fondothoth.com/obp/wiki)...');
-    await page.goto('https://fondothoth.com/obp/wiki', { waitUntil: 'networkidle2', timeout: 35000 });
-    await new Promise(r => setTimeout(r, 2500));
-
-    const wikiImgPath = path.join(ARTIFACT_DIR, 'verificacion_ui_wiki.png');
-    await page.screenshot({ path: wikiImgPath, fullPage: false });
-    console.log('   ✓ Captura de Wiki guardada en:', wikiImgPath);
-
-    // 6. En el Wiki, buscar y seleccionar el artículo de Fondo Thoth AC
-    console.log('📸 [Paso 4] Seleccionando artículo con diagramas en el árbol...');
-    const clickedArticle = await page.evaluate(() => {
-      // Buscar elementos del árbol que contengan "FODA Dinámico" o "Archivados"
-      const nodes = Array.from(document.querySelectorAll('.wiki-tree-item, .wiki-tree-branch-header, button, div'));
-      for (const el of nodes) {
-        if (el.textContent.includes('Archivados (por rescatar)')) {
-          el.click();
-        }
-      }
-      return true;
-    });
-
-    await new Promise(r => setTimeout(r, 1000));
-
-    await page.evaluate(() => {
-      const items = Array.from(document.querySelectorAll('.wiki-tree-item, a, button, span'));
-      for (const item of items) {
-        if (item.textContent.includes('FODA Dinámico') || item.textContent.includes('Formulación Estratégica')) {
-          item.click();
-          return true;
-        }
+    // Buscar y hacer clic específicamente en el botón "Convertir en Fortaleza"
+    const clickedConvert = await page.evaluate(() => {
+      const btns = Array.from(document.querySelectorAll('button'));
+      const target = btns.find(b => b.textContent.includes('Convertir en Fortaleza'));
+      if (target) {
+        target.click();
+        return true;
       }
       return false;
     });
 
-    await new Promise(r => setTimeout(r, 3000));
+    if (clickedConvert) {
+      console.log('   ✓ Clic en "Convertir en Fortaleza" realizado.');
+      await new Promise(r => setTimeout(r, 1500));
 
-    const diagramasImgPath = path.join(ARTIFACT_DIR, 'verificacion_ui_wiki_diagramas.png');
-    await page.screenshot({ path: diagramasImgPath, fullPage: false });
-    console.log('   ✓ Captura de los Diagramas Metodológicos guardada en:', diagramasImgPath);
+      const modalImgPath = path.join(ARTIFACT_DIR, 'verificacion_ui_modal_conversion.png');
+      await page.screenshot({ path: modalImgPath, fullPage: false });
+      console.log('   ✓ Captura del Modal de Conversión con IA guardada en:', modalImgPath);
+    }
 
     console.log('🎉 Auditoría visual finalizada exitosamente.');
   } catch (error) {
