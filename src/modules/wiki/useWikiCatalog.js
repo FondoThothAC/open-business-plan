@@ -98,7 +98,13 @@ export function useWikiCatalog(initialPageId = null) {
 
     // Prefijar 'modulo.' si tiene la forma 'business.introduccion'
     const partes = clean.split('.');
-    if (partes.length === 2 && !partes[0].startsWith('modelo') && !partes[0].startsWith('modulo')) {
+    if (
+      partes.length === 2 &&
+      !partes[0].startsWith('modelo') &&
+      !partes[0].startsWith('modulo') &&
+      !partes[0].startsWith('archivado') &&
+      !partes[0].startsWith('referencia')
+    ) {
       clean = `modulo.${clean}`;
     }
 

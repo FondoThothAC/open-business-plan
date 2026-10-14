@@ -66,4 +66,30 @@ describe('Enrutamiento y Deep Linking de la Wiki (F2)', () => {
       assert.ok(meta.title, `Página ${pageId} debe tener título`);
     }
   });
+
+  it('Preserva los identificadores canónicos de páginas archivadas y de referencia sin prefijar modulo.', () => {
+    const normalize = (rawId) => {
+      let clean = String(rawId).replace(/^\/+/, '').replace(/\/+$/, '').replace(/\//g, '.');
+      for (const [slug, internalKey] of Object.entries(FRAMEWORK_SLUG_MAP)) {
+        if (clean.includes(slug)) clean = clean.replace(slug, internalKey);
+      }
+      const partes = clean.split('.');
+      if (
+        partes.length === 2 &&
+        !partes[0].startsWith('modelo') &&
+        !partes[0].startsWith('modulo') &&
+        !partes[0].startsWith('archivado') &&
+        !partes[0].startsWith('referencia')
+      ) {
+        clean = `modulo.${clean}`;
+      }
+      return clean;
+    };
+
+    assert.equal(normalize('archivado.foda-dinamico-conversion-fortalezas'), 'archivado.foda-dinamico-conversion-fortalezas');
+    assert.equal(normalize('referencia.api'), 'referencia.api');
+    assert.equal(normalize('business.introduccion'), 'modulo.business.introduccion');
+    assert.equal(normalize('plan-negocios/introduccion'), 'modulo.business.introduccion');
+    assert.equal(normalize('modelo.business'), 'modelo.business');
+  });
 });
