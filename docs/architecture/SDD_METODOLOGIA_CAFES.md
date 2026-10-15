@@ -55,6 +55,7 @@ El diseño, implementación y mantenimiento de ambos frameworks se rige por las 
   - Feature 4: Guías contextuales de IA de campo (`BOB_UNISON_GUIDES` y `CAFES_UNISON_GUIDES`).
   - Feature 5: Box Registry y Module Box Map (5 widgets docentes para CAFES y 8 avanzados para Bob).
   - Feature 6: Motor de exportación Word (.docx) con soporte completo para las 9 Unidades A-I.
+  - Feature 7: Gestor Multi-Carpeta en la UI (`DocumentUploader.jsx`) con soporte para subir archivos sueltos a carpetas activas, subida de carpetas completas del disco local (`webkitdirectory`), filtrado por pestañas temáticas (`entrevistas`, `calculos`, `inegi`, `anexos`, `general`), creación de carpetas personalizadas y preservación de badges de carpeta en el pipeline RAG (`evidenceContext.js`).
 
 ### 2.6. EDD (Event-Driven Development)
 - Flujo reactivo de eventos desacoplados mediante `PlanContext`:
