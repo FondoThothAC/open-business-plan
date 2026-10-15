@@ -475,11 +475,11 @@ export const BOX_REGISTRY = {
     }
   ],
 
-  cafes: [
+  bob_unison: [
     {
       id: 'box_resumen_ejecutivo_1p',
       type: BOX_TYPES.TABLE,
-      title: 'Resumen Ejecutivo CAFES (Síntesis de 1 Página)',
+      title: 'Resumen Ejecutivo Cuántico (Síntesis de 1 Página)',
       description: 'Estructura ejecutiva para fuentes de financiamiento: Problema, Solución, Mercado, Costos y Ask.',
       source: { book: 'CAFES-UNISON / SAETA & Anatomy of a Business Plan', page: 'Manual CAFES 2026' }
     },
@@ -532,8 +532,48 @@ export const BOX_REGISTRY = {
       description: 'Distribución de probabilidad de utilidades y estrés ante caídas de ventas.',
       source: { book: 'ONUDI Manual Industrial', page: 'p. 142' }
     }
+  ],
+
+  cafes_unison: [
+    {
+      id: 'box_resumen_ejecutivo_1p',
+      type: BOX_TYPES.TABLE,
+      title: 'Resumen Ejecutivo CAFES (Síntesis de 1 Página)',
+      description: 'Estructura ejecutiva para fuentes de financiamiento: Problema, Solución, Mercado, Costos y Ask.',
+      source: { book: 'CAFES-UNISON / SAETA & Anatomy of a Business Plan', page: 'Manual CAFES 2026' }
+    },
+    {
+      id: 'box_canvas_osterwalder',
+      type: BOX_TYPES.CANVAS,
+      title: 'Lienzo de Modelo de Negocio Canvas (9 Bloques)',
+      description: 'Mapeo estratégico simplificado para microempresas y autoempleo.',
+      source: { book: 'Business Model Generation (Osterwalder)', page: 'p. 14' }
+    },
+    {
+      id: 'box_micro_croquis_2d',
+      type: BOX_TYPES.CANVAS,
+      title: 'Croquis 2D y Lay-out del Espacio de Trabajo',
+      description: 'Distribución física del taller, cocina, local o puesto de trabajo.',
+      source: { book: 'Manual de Plan de Negocios Panamá (Cap. 9)', page: 'p. 24' }
+    },
+    {
+      id: 'box_punto_equilibrio_micro',
+      type: BOX_TYPES.FORMULA,
+      title: 'Punto de Equilibrio y Margen Unitario de Micronegocio',
+      description: 'Cálculo directo de ventas mínimas diarias/mensuales para cubrir costos fijos y variables.',
+      source: { book: 'Starting a Business QuickStart Guide & Manual CAFES', page: 'Ch. 13' }
+    },
+    {
+      id: 'box_relacion_bc_payback',
+      type: BOX_TYPES.FORMULA,
+      title: 'Relación Beneficio / Costo (B/C) y Periodo de Recuperación',
+      description: 'Indicadores contables requeridos en la Unidad F del índice docente de CAFES.',
+      source: { book: 'CAFES UNISON / SAGARPA', page: 'Manual CAFES 2026' }
+    }
   ]
 };
+
+BOX_REGISTRY.cafes = BOX_REGISTRY.cafes_unison;
 
 /**
  * Obtiene la lista de boxes para un tipo de documento con fallback

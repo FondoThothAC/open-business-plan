@@ -1,18 +1,18 @@
 {
-  "id": "modulo.cafes.plan_operaciones",
+  "id": "modulo.bob_unison.plan_operaciones",
   "title": "4. Plan de Operaciones, Cuello de Botella y Layout",
   "summary": "Flujo del proceso, cuello de botella (TOC), programa productivo, proveedores, layout y logística.",
   "kind": "modulo",
   "audience": "cliente",
-  "model": "cafes",
+  "model": "bob_unison",
   "moduleKey": "plan_operaciones",
   "pillarKey": "unidad_c",
-  "openUrl": "/cafes/plan_operaciones",
+  "openUrl": "/bob_unison/plan_operaciones",
   "fields": [
     {
       "key": "flujo_proceso_diagrama",
       "type": "text",
-      "address": "cafes.unidad_c.plan_operaciones.flujo_proceso_diagrama",
+      "address": "bob_unison.unidad_c.plan_operaciones.flujo_proceso_diagrama",
       "prompt": "Diagrama paso a paso de la producción: desde la recepción de insumos, preparación, horneado/ensamble, decorado, empaque y entrega.",
       "ejemplo": "Ej: 1) Pesaje de ingredientes (10 min) -> 2) Batido y mezclado (15 min) -> 3) Horneado (35 min) -> 4) Enfriado (40 min) -> 5) Relleno y decorado (25 min) -> 6) Empaque y refrigeración (10 min).",
       "benchmark": "Flujo lineal continuo sin retrocesos ni contaminación cruzada.",
@@ -22,7 +22,7 @@
     {
       "key": "capacidad_cuello_botella_toc",
       "type": "text",
-      "address": "cafes.unidad_c.plan_operaciones.capacidad_cuello_botella_toc",
+      "address": "bob_unison.unidad_c.plan_operaciones.capacidad_cuello_botella_toc",
       "prompt": "Teoría de Restricciones (TOC): Identifica la capacidad máxima instalada y la estación que representa el cuello de botella del proceso.",
       "ejemplo": "Ej: El cuello de botella es el horno casero (capacidad máx: 4 pasteles simultáneos cada 45 min = máx 24 pasteles/día).",
       "benchmark": "Identificación formal de la restricción para planear su elevación.",
@@ -32,7 +32,7 @@
     {
       "key": "programa_produccion_metas",
       "type": "text",
-      "address": "cafes.unidad_c.plan_operaciones.programa_produccion_metas",
+      "address": "bob_unison.unidad_c.plan_operaciones.programa_produccion_metas",
       "prompt": "Volúmenes meta de producción semanal, mensual y anual ajustados a la capacidad instalada real.",
       "ejemplo": "Ej: Meta de producción: 40 unidades semanales (160 mensuales; 1,920 anuales), operando al 65% de la capacidad máxima.",
       "benchmark": "Utilización de capacidad entre 60% y 80% para evitar sobrecarga.",
@@ -42,7 +42,7 @@
     {
       "key": "aseguramiento_calidad_inocuidad",
       "type": "text",
-      "address": "cafes.unidad_c.plan_operaciones.aseguramiento_calidad_inocuidad",
+      "address": "bob_unison.unidad_c.plan_operaciones.aseguramiento_calidad_inocuidad",
       "prompt": "Procedimientos de control de calidad: inspección visual, pruebas de sabor, fecha de consumo preferente y trazabilidad.",
       "ejemplo": "Ej: Revisión organoléptica de materia prima, prueba de horneado con termómetro de aguja y rotulado de lote y fecha.",
       "benchmark": "Tasa de rechazo o devolución < 1%.",
@@ -52,7 +52,7 @@
     {
       "key": "lista_insumos_proveedores",
       "type": "text",
-      "address": "cafes.unidad_c.plan_operaciones.lista_insumos_proveedores",
+      "address": "bob_unison.unidad_c.plan_operaciones.lista_insumos_proveedores",
       "prompt": "Directorio de materias primas con precios cotizados en al menos 2 proveedores locales y condiciones de compra.",
       "ejemplo": "Ej: Harina y azúcar en Central de Abastos (Proveedor A: $14/kg vs Proveedor B: $16/kg); compras semanales de contado.",
       "benchmark": "Mínimo dos cotizaciones por insumo crítico.",
@@ -62,7 +62,7 @@
     {
       "key": "equipos_herramientas_catalogo",
       "type": "text",
-      "address": "cafes.unidad_c.plan_operaciones.equipos_herramientas_catalogo",
+      "address": "bob_unison.unidad_c.plan_operaciones.equipos_herramientas_catalogo",
       "prompt": "Inventario de maquinaria fija y herramientas menores requeridas, especificando si ya se tienen o se van a comprar.",
       "ejemplo": "Ej: Horno de convección 4 charolas (nuevo, $22,000), batidora planetaria 10L (ya se tiene), mesa acero inoxidable (nuevo, $8,000).",
       "benchmark": "Vida útil estimada y ficha técnica de cada equipo.",
@@ -72,7 +72,7 @@
     {
       "key": "layout_espacio_trabajo",
       "type": "text",
-      "address": "cafes.unidad_c.plan_operaciones.layout_espacio_trabajo",
+      "address": "bob_unison.unidad_c.plan_operaciones.layout_espacio_trabajo",
       "prompt": "Distribución física del área de trabajo: zonas de lavado, preparación, cocción/ensamble, empaque y producto terminado.",
       "ejemplo": "Ej: Taller de 20m² organizado en forma de \"U\": área húmeda a la izquierda, mesa central de ensamble, horno al fondo y empaque a la salida.",
       "benchmark": "Distancias mínimas de seguridad y ventilación adecuada.",
@@ -82,7 +82,7 @@
     {
       "key": "logistica_entregas_embalaje",
       "type": "text",
-      "address": "cafes.unidad_c.plan_operaciones.logistica_entregas_embalaje",
+      "address": "bob_unison.unidad_c.plan_operaciones.logistica_entregas_embalaje",
       "prompt": "Modalidad de entrega al cliente: mostrador en local, entrega propia a domicilio o convenios de mensajería.",
       "ejemplo": "Ej: 60% retiro en domicilio por el cliente; 40% entrega a domicilio en auto familiar en hieleras térmicas.",
       "benchmark": "Costo de entrega cubierto por el cliente o absorbido en precio de venta.",
@@ -92,7 +92,7 @@
     {
       "key": "inventarios_rotacion_minimos",
       "type": "text",
-      "address": "cafes.unidad_c.plan_operaciones.inventarios_rotacion_minimos",
+      "address": "bob_unison.unidad_c.plan_operaciones.inventarios_rotacion_minimos",
       "prompt": "Niveles mínimos de stock de materias primas no perecederas y frecuencia de rotación de insumos perecederos.",
       "ejemplo": "Ej: Harinas y empaques: stock de seguridad para 15 días; lácteos y huevos: compras cada 3 días para garantizar frescura.",
       "benchmark": "Rotación de perecederos menor a 4 días; cero caducidades.",
@@ -102,7 +102,7 @@
     {
       "key": "manejo_residuos_seguridad",
       "type": "text",
-      "address": "cafes.unidad_c.plan_operaciones.manejo_residuos_seguridad",
+      "address": "bob_unison.unidad_c.plan_operaciones.manejo_residuos_seguridad",
       "prompt": "Manejo ecológico de desechos orgánicos e inorgánicos, extintor de incendios, botiquín de primeros auxilios y seguridad ocupacional.",
       "ejemplo": "Ej: Separación de cartón y plástico para reciclaje; extintor tipo ABC de 4.5kg junto al área de cocción y botiquín accesible.",
       "benchmark": "Normas básicas de Protección Civil y prevención de quemaduras.",
@@ -131,7 +131,7 @@
       "id": "uso",
       "title": "Cómo se usa en el plan",
       "audience": "cliente",
-      "markdown": "**Qué es.** Flujo del proceso, cuello de botella (TOC), programa productivo, proveedores, layout y logística.\n\n**Cómo se usa.** Está en el pilar **Unidad C · Operaciones, Capacidad y Producción** del modelo *Plan de Negocios CAFES (Emprendimiento Social y Familiar)*. Se abre en `/cafes/plan_operaciones`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 10 campos: `flujo_proceso_diagrama`, `capacidad_cuello_botella_toc`, `programa_produccion_metas`, `aseguramiento_calidad_inocuidad`, `lista_insumos_proveedores`, `equipos_herramientas_catalogo`, `layout_espacio_trabajo`, `logistica_entregas_embalaje`, `inventarios_rotacion_minimos`, `manejo_residuos_seguridad`.\n\n**Herramientas del módulo.** 2 caja(s): `box_kpi_otd_dso_dio_ccc`, `box_micro_croquis_2d`."
+      "markdown": "**Qué es.** Flujo del proceso, cuello de botella (TOC), programa productivo, proveedores, layout y logística.\n\n**Cómo se usa.** Está en el pilar **Unidad C · Operaciones, Cuello de Botella TOC y Capacidad** del modelo *Método Bob 1 UNISON (OBP + Empresas Cuánticas)*. Se abre en `/bob_unison/plan_operaciones`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 10 campos: `flujo_proceso_diagrama`, `capacidad_cuello_botella_toc`, `programa_produccion_metas`, `aseguramiento_calidad_inocuidad`, `lista_insumos_proveedores`, `equipos_herramientas_catalogo`, `layout_espacio_trabajo`, `logistica_entregas_embalaje`, `inventarios_rotacion_minimos`, `manejo_residuos_seguridad`.\n\n**Herramientas del módulo.** 2 caja(s): `box_kpi_otd_dso_dio_ccc`, `box_micro_croquis_2d`."
     },
     {
       "id": "campos",
@@ -149,13 +149,13 @@
       "id": "porque",
       "title": "Por qué existe",
       "audience": "cliente",
-      "markdown": "Forma parte del pilar **Unidad C · Operaciones, Capacidad y Producción** de *Plan de Negocios CAFES (Emprendimiento Social y Familiar)*. La justificación metodológica completa está en la página del modelo y en `docs/cafes.md`."
+      "markdown": "Forma parte del pilar **Unidad C · Operaciones, Cuello de Botella TOC y Capacidad** de *Método Bob 1 UNISON (OBP + Empresas Cuánticas)*. La justificación metodológica completa está en la página del modelo y en `docs/bob_unison.md`."
     },
     {
       "id": "tecnico",
       "title": "Detalles técnicos",
       "audience": "tecnico",
-      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `cafes.unidad_c.plan_operaciones.flujo_proceso_diagrama` → tipo `text`\n- `cafes.unidad_c.plan_operaciones.capacidad_cuello_botella_toc` → tipo `text`\n- `cafes.unidad_c.plan_operaciones.programa_produccion_metas` → tipo `text`\n- `cafes.unidad_c.plan_operaciones.aseguramiento_calidad_inocuidad` → tipo `text`\n- `cafes.unidad_c.plan_operaciones.lista_insumos_proveedores` → tipo `text`\n- `cafes.unidad_c.plan_operaciones.equipos_herramientas_catalogo` → tipo `text`\n- `cafes.unidad_c.plan_operaciones.layout_espacio_trabajo` → tipo `text`\n- `cafes.unidad_c.plan_operaciones.logistica_entregas_embalaje` → tipo `text`\n- `cafes.unidad_c.plan_operaciones.inventarios_rotacion_minimos` → tipo `text`\n- `cafes.unidad_c.plan_operaciones.manejo_residuos_seguridad` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `cafes:plan_operaciones`): `box_kpi_otd_dso_dio_ccc`, `box_micro_croquis_2d`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `bob_unison.unidad_c.plan_operaciones.flujo_proceso_diagrama` → tipo `text`\n- `bob_unison.unidad_c.plan_operaciones.capacidad_cuello_botella_toc` → tipo `text`\n- `bob_unison.unidad_c.plan_operaciones.programa_produccion_metas` → tipo `text`\n- `bob_unison.unidad_c.plan_operaciones.aseguramiento_calidad_inocuidad` → tipo `text`\n- `bob_unison.unidad_c.plan_operaciones.lista_insumos_proveedores` → tipo `text`\n- `bob_unison.unidad_c.plan_operaciones.equipos_herramientas_catalogo` → tipo `text`\n- `bob_unison.unidad_c.plan_operaciones.layout_espacio_trabajo` → tipo `text`\n- `bob_unison.unidad_c.plan_operaciones.logistica_entregas_embalaje` → tipo `text`\n- `bob_unison.unidad_c.plan_operaciones.inventarios_rotacion_minimos` → tipo `text`\n- `bob_unison.unidad_c.plan_operaciones.manejo_residuos_seguridad` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `bob_unison:plan_operaciones`): `box_kpi_otd_dso_dio_ccc`, `box_micro_croquis_2d`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
     }
   ]
 }

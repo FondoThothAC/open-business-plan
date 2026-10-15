@@ -1,18 +1,18 @@
 {
-  "id": "modulo.cafes.idea_portafolio",
-  "title": "2. Idea de Negocio y Portafolio de Productos",
-  "summary": "Fichas técnicas, BOM de insumos, presentaciones, calidad e inocuidad alimentaria/comercial.",
+  "id": "modulo.cafes_unison.idea_portafolio",
+  "title": "2. Idea de Negocio y Portafolio",
+  "summary": "Descripción de productos, fichas técnicas con receta/BOM, presentaciones, inocuidad y alcance inicial.",
   "kind": "modulo",
   "audience": "cliente",
-  "model": "cafes",
+  "model": "cafes_unison",
   "moduleKey": "idea_portafolio",
   "pillarKey": "unidad_b",
-  "openUrl": "/cafes/idea_portafolio",
+  "openUrl": "/cafes_unison/idea_portafolio",
   "fields": [
     {
       "key": "descripcion_productos_servicios",
       "type": "text",
-      "address": "cafes.unidad_b.idea_portafolio.descripcion_productos_servicios",
+      "address": "cafes_unison.unidad_b.idea_portafolio.descripcion_productos_servicios",
       "prompt": "Descripción detallada de cada producto o servicio: ingredientes, características físicas, sabor, porciones y uso.",
       "ejemplo": "Ej: Pasteles de tres leches tradicionales, quequitos decorados y gelatinas mosaico individuales para eventos familiares.",
       "benchmark": "Catálogo definido con al menos 3 productos estándar.",
@@ -22,7 +22,7 @@
     {
       "key": "fichas_tecnicas_bom",
       "type": "text",
-      "address": "cafes.unidad_b.idea_portafolio.fichas_tecnicas_bom",
+      "address": "cafes_unison.unidad_b.idea_portafolio.fichas_tecnicas_bom",
       "prompt": "Ficha técnica por producto con lista de ingredientes o insumos (BOM), cantidades exactas, merma y tiempo de elaboración.",
       "ejemplo": "Ej: Pastel mediano: 500g harina ($12), 6 huevos ($18), 1 lata tres leches ($28), crema batida ($25); costo insumos $83 MXN; tiempo 75 min; merma 3%.",
       "benchmark": "Costeo unitario basado en recetas con merma calculada.",
@@ -32,7 +32,7 @@
     {
       "key": "presentaciones_empaques",
       "type": "text",
-      "address": "cafes.unidad_b.idea_portafolio.presentaciones_empaques",
+      "address": "cafes_unison.unidad_b.idea_portafolio.presentaciones_empaques",
       "prompt": "Medidas, empaques ecológicos o grado alimenticio, etiquetas y presentación visual para el cliente.",
       "ejemplo": "Ej: Cajas de cartón blanco biodegradable con domo transparente, base rígida y etiqueta con logotipo y fecha de elaboración.",
       "benchmark": "Empaque que preserva la frescura e higiene durante el traslado.",
@@ -42,7 +42,7 @@
     {
       "key": "requerimientos_inocuidad_calidad",
       "type": "text",
-      "address": "cafes.unidad_b.idea_portafolio.requerimientos_inocuidad_calidad",
+      "address": "cafes_unison.unidad_b.idea_portafolio.requerimientos_inocuidad_calidad",
       "prompt": "Normas de higiene, desinfección, manejo de alimentos o floristería, control de temperaturas y caducidad.",
       "ejemplo": "Ej: Uso obligatorio de red para cabello, cubrebocas, lavado de manos cada 30 min y refrigeración estricta a 4°C.",
       "benchmark": "Cumplimiento de la NOM-251-SSA1-2009 de prácticas de higiene.",
@@ -52,7 +52,7 @@
     {
       "key": "alcance_limitaciones_iniciales",
       "type": "text",
-      "address": "cafes.unidad_b.idea_portafolio.alcance_limitaciones_iniciales",
+      "address": "cafes_unison.unidad_b.idea_portafolio.alcance_limitaciones_iniciales",
       "prompt": "Claridad de lo que sí y lo que NO se atenderá al arranque del proyecto para no comprometer la calidad.",
       "ejemplo": "Ej: Se atenderán únicamente pedidos de pastelería estándar con 48h de anticipación; no se elaborarán banquetes masivos al inicio.",
       "benchmark": "Enfoque en productos de alta rotación sin dispersión de recursos.",
@@ -66,7 +66,7 @@
       "id": "uso",
       "title": "Cómo se usa en el plan",
       "audience": "cliente",
-      "markdown": "**Qué es.** Fichas técnicas, BOM de insumos, presentaciones, calidad e inocuidad alimentaria/comercial.\n\n**Cómo se usa.** Está en el pilar **Unidad B · Mercado, Portafolio y Cliente** del modelo *Plan de Negocios CAFES (Emprendimiento Social y Familiar)*. Se abre en `/cafes/idea_portafolio`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 5 campos: `descripcion_productos_servicios`, `fichas_tecnicas_bom`, `presentaciones_empaques`, `requerimientos_inocuidad_calidad`, `alcance_limitaciones_iniciales`.\n\n**Herramientas del módulo.** Ninguna específica: se apoya en los campos de texto."
+      "markdown": "**Qué es.** Descripción de productos, fichas técnicas con receta/BOM, presentaciones, inocuidad y alcance inicial.\n\n**Cómo se usa.** Está en el pilar **Unidad B · Mercado y Cliente** del modelo *Plan de Negocios CAFES UNISON*. Se abre en `/cafes_unison/idea_portafolio`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 5 campos: `descripcion_productos_servicios`, `fichas_tecnicas_bom`, `presentaciones_empaques`, `requerimientos_inocuidad_calidad`, `alcance_limitaciones_iniciales`.\n\n**Herramientas del módulo.** Ninguna específica: se apoya en los campos de texto."
     },
     {
       "id": "campos",
@@ -84,13 +84,13 @@
       "id": "porque",
       "title": "Por qué existe",
       "audience": "cliente",
-      "markdown": "Forma parte del pilar **Unidad B · Mercado, Portafolio y Cliente** de *Plan de Negocios CAFES (Emprendimiento Social y Familiar)*. La justificación metodológica completa está en la página del modelo y en `docs/cafes.md`."
+      "markdown": "Forma parte del pilar **Unidad B · Mercado y Cliente** de *Plan de Negocios CAFES UNISON*. La justificación metodológica completa está en la página del modelo y en `docs/cafes.md`."
     },
     {
       "id": "tecnico",
       "title": "Detalles técnicos",
       "audience": "tecnico",
-      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `cafes.unidad_b.idea_portafolio.descripcion_productos_servicios` → tipo `text`\n- `cafes.unidad_b.idea_portafolio.fichas_tecnicas_bom` → tipo `text`\n- `cafes.unidad_b.idea_portafolio.presentaciones_empaques` → tipo `text`\n- `cafes.unidad_b.idea_portafolio.requerimientos_inocuidad_calidad` → tipo `text`\n- `cafes.unidad_b.idea_portafolio.alcance_limitaciones_iniciales` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas:** `src/config/moduleBoxMap.js` no declara cajas para `cafes:idea_portafolio`; la pantalla muestra solo los campos de texto.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `cafes_unison.unidad_b.idea_portafolio.descripcion_productos_servicios` → tipo `text`\n- `cafes_unison.unidad_b.idea_portafolio.fichas_tecnicas_bom` → tipo `text`\n- `cafes_unison.unidad_b.idea_portafolio.presentaciones_empaques` → tipo `text`\n- `cafes_unison.unidad_b.idea_portafolio.requerimientos_inocuidad_calidad` → tipo `text`\n- `cafes_unison.unidad_b.idea_portafolio.alcance_limitaciones_iniciales` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas:** `src/config/moduleBoxMap.js` no declara cajas para `cafes_unison:idea_portafolio`; la pantalla muestra solo los campos de texto.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
     }
   ]
 }

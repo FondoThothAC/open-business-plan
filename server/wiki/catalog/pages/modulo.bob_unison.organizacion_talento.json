@@ -1,0 +1,96 @@
+{
+  "id": "modulo.bob_unison.organizacion_talento",
+  "title": "6. Organización, Talento y Modelo Atómico",
+  "summary": "Estructura del equipo, tareas estándar, salarios con carga patronal, manuales y turnos familiares.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "bob_unison",
+  "moduleKey": "organizacion_talento",
+  "pillarKey": "unidad_d",
+  "openUrl": "/bob_unison/organizacion_talento",
+  "fields": [
+    {
+      "key": "estructura_equipo_organigrama",
+      "type": "text",
+      "address": "bob_unison.unidad_d.organizacion_talento.estructura_equipo_organigrama",
+      "prompt": "Organigrama visual sencillo y definición clara de quién es responsable de la producción, ventas y administración.",
+      "ejemplo": "Ej: Dirección y Producción: Emprendedora titular; Ventas y Envíos: Colaborador familiar; Contabilidad: Contador externo.",
+      "benchmark": "Líneas de reporte y responsabilidades sin ambigüedad.",
+      "cita": "Anatomy of a Business Plan & Fondo Thoth AC",
+      "placeholder": "Organigrama y roles del equipo de trabajo..."
+    },
+    {
+      "key": "perfiles_tareas_tiempos",
+      "type": "text",
+      "address": "bob_unison.unidad_d.organizacion_talento.perfiles_tareas_tiempos",
+      "prompt": "Descripción de puestos: tareas cotidianas asignadas a cada persona y tiempos estándar por actividad.",
+      "ejemplo": "Ej: Puesto repostero: mezclado, horneado y decorado (4 horas diarias); Puesto atención: WhatsApp, empaque y cobranza (2 horas diarias).",
+      "benchmark": "Manual de funciones de una página por colaborador.",
+      "cita": "Operations Management (Slack)",
+      "placeholder": "Tareas diarias y horas dedicadas por puesto..."
+    },
+    {
+      "key": "politica_sueldos_capacitacion",
+      "type": "text",
+      "address": "bob_unison.unidad_d.organizacion_talento.politica_sueldos_capacitacion",
+      "prompt": "Política de estipendios o sueldos para el emprendedor y ayudantes, considerando una reserva patronal para formalización.",
+      "ejemplo": "Ej: Sueldo base del emprendedor de $8,000 MXN mensuales; ayudante de fin de semana $2,500 MXN; reserva del 32% para futura carga IMSS.",
+      "benchmark": "El fundador DEBE asignarse un sueldo explícito en la estructura de costos.",
+      "cita": "Starting a Business QuickStart Guide & Fondo Thoth",
+      "placeholder": "Sueldos fijados, estipendios y capacitación..."
+    },
+    {
+      "key": "manuales_operacion_calidad",
+      "type": "text",
+      "address": "bob_unison.unidad_d.organizacion_talento.manuales_operacion_calidad",
+      "prompt": "Manuales operativos breves (1-2 páginas): apertura y cierre de cocina/taller, limpieza profunda y protocolo de atención al cliente.",
+      "ejemplo": "Ej: Checklist diario de limpieza y desinfección al cierre; protocolo de respuesta inmediata y amable por WhatsApp.",
+      "benchmark": "Listas de verificación aplicadas diariamente.",
+      "cita": "Manual CAFES-UNISON / SAETA",
+      "placeholder": "Manuales de operación, atención y calidad..."
+    },
+    {
+      "key": "turnos_conciliacion_familiar",
+      "type": "text",
+      "address": "bob_unison.unidad_d.organizacion_talento.turnos_conciliacion_familiar",
+      "prompt": "Organización de horarios de trabajo compatibles con el cuidado de hijos, escuelas y quehaceres del hogar.",
+      "ejemplo": "Ej: Producción intensiva de 9:00 AM a 1:00 PM mientras los hijos están en la escuela; empaque y entregas de 4:00 PM a 6:30 PM.",
+      "benchmark": "Equilibrio operativo sin vulnerar la dinámica del hogar.",
+      "cita": "Manual de Emprendimiento Social y Familiar CAFES",
+      "placeholder": "Turnos, cuidado de hijos y dinámica del hogar..."
+    }
+  ],
+  "boxes": [],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Estructura del equipo, tareas estándar, salarios con carga patronal, manuales y turnos familiares.\n\n**Cómo se usa.** Está en el pilar **Unidad D · Legal, Organización Cuántica y Modelo Canvas** del modelo *Método Bob 1 UNISON (OBP + Empresas Cuánticas)*. Se abre en `/bob_unison/organizacion_talento`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 5 campos: `estructura_equipo_organigrama`, `perfiles_tareas_tiempos`, `politica_sueldos_capacitacion`, `manuales_operacion_calidad`, `turnos_conciliacion_familiar`.\n\n**Herramientas del módulo.** Ninguna específica: se apoya en los campos de texto."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `estructura_equipo_organigrama`\n\n**El prompt que usa:** Organigrama visual sencillo y definición clara de quién es responsable de la producción, ventas y administración.\n\n**Ejemplo que muestra la guía:** Ej: Dirección y Producción: Emprendedora titular; Ventas y Envíos: Colaborador familiar; Contabilidad: Contador externo.\n\n**Benchmark / criterio de calidad:** Líneas de reporte y responsabilidades sin ambigüedad.\n\n**De dónde viene la guía:** Anatomy of a Business Plan & Fondo Thoth AC\n\n### `perfiles_tareas_tiempos`\n\n**El prompt que usa:** Descripción de puestos: tareas cotidianas asignadas a cada persona y tiempos estándar por actividad.\n\n**Ejemplo que muestra la guía:** Ej: Puesto repostero: mezclado, horneado y decorado (4 horas diarias); Puesto atención: WhatsApp, empaque y cobranza (2 horas diarias).\n\n**Benchmark / criterio de calidad:** Manual de funciones de una página por colaborador.\n\n**De dónde viene la guía:** Operations Management (Slack)\n\n### `politica_sueldos_capacitacion`\n\n**El prompt que usa:** Política de estipendios o sueldos para el emprendedor y ayudantes, considerando una reserva patronal para formalización.\n\n**Ejemplo que muestra la guía:** Ej: Sueldo base del emprendedor de $8,000 MXN mensuales; ayudante de fin de semana $2,500 MXN; reserva del 32% para futura carga IMSS.\n\n**Benchmark / criterio de calidad:** El fundador DEBE asignarse un sueldo explícito en la estructura de costos.\n\n**De dónde viene la guía:** Starting a Business QuickStart Guide & Fondo Thoth\n\n### `manuales_operacion_calidad`\n\n**El prompt que usa:** Manuales operativos breves (1-2 páginas): apertura y cierre de cocina/taller, limpieza profunda y protocolo de atención al cliente.\n\n**Ejemplo que muestra la guía:** Ej: Checklist diario de limpieza y desinfección al cierre; protocolo de respuesta inmediata y amable por WhatsApp.\n\n**Benchmark / criterio de calidad:** Listas de verificación aplicadas diariamente.\n\n**De dónde viene la guía:** Manual CAFES-UNISON / SAETA\n\n### `turnos_conciliacion_familiar`\n\n**El prompt que usa:** Organización de horarios de trabajo compatibles con el cuidado de hijos, escuelas y quehaceres del hogar.\n\n**Ejemplo que muestra la guía:** Ej: Producción intensiva de 9:00 AM a 1:00 PM mientras los hijos están en la escuela; empaque y entregas de 4:00 PM a 6:30 PM.\n\n**Benchmark / criterio de calidad:** Equilibrio operativo sin vulnerar la dinámica del hogar.\n\n**De dónde viene la guía:** Manual de Emprendimiento Social y Familiar CAFES"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "Sin cajas asociadas."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Unidad D · Legal, Organización Cuántica y Modelo Canvas** de *Método Bob 1 UNISON (OBP + Empresas Cuánticas)*. La justificación metodológica completa está en la página del modelo y en `docs/bob_unison.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `bob_unison.unidad_d.organizacion_talento.estructura_equipo_organigrama` → tipo `text`\n- `bob_unison.unidad_d.organizacion_talento.perfiles_tareas_tiempos` → tipo `text`\n- `bob_unison.unidad_d.organizacion_talento.politica_sueldos_capacitacion` → tipo `text`\n- `bob_unison.unidad_d.organizacion_talento.manuales_operacion_calidad` → tipo `text`\n- `bob_unison.unidad_d.organizacion_talento.turnos_conciliacion_familiar` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas:** `src/config/moduleBoxMap.js` no declara cajas para `bob_unison:organizacion_talento`; la pantalla muestra solo los campos de texto.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

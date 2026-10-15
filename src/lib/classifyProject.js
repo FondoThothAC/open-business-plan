@@ -33,12 +33,13 @@ Un emprendedor ha narrado la idea de su proyecto en texto libre (o dictado por v
 ${rawText}
 """
 
-Tu tarea es analizar la naturaleza de la idea y clasificarla en el framework estratégico MÁS ADECUADO de entre los siguientes 13 disponibles:
+Tu tarea es analizar la naturaleza de la idea y clasificarla en el framework estratégico MÁS ADECUADO de entre los siguientes 14 disponibles:
 
 ${frameworksSummary}
 
 Criterios de clasificación:
-- Si menciona oficios familiares, piñatas, repostería, autoempleo familiar vulnerable, capital semilla universitario, subsidios, CAFES, SAETA o UNISON → "cafes".
+- Si menciona método bob, cuántica, modelo atómico, teoría de restricciones o escalabilidad OBP con UNISON → "bob_unison".
+- Si menciona metodología CAFES, asesoría universitaria a secas, programa CAFES-UNISON, SAETA, oficios familiares o piñatas → "cafes_unison".
 - Si menciona impacto social, comunidad, ONGs, pobreza, educación pública o fondos BID → "social_bid" o "zopp".
 - Si es una app, SaaS, tecnología de punta, IA, patente, laboratorio o I+D → "technology_id" o "agile_startup".
 - Si es un negocio tradicional pequeño, local, de autoempleo (tortillería, barbería, papelería, fonda) sin vinculación universitaria → "micro_business".
@@ -106,9 +107,12 @@ Devuelve ÚNICAMENTE un objeto JSON válido con la siguiente estructura (sin for
     let inferredId = 'business';
     let reasoning = 'Inferencia rápida basada en palabras clave del proyecto.';
 
-    if (textLower.includes('cafes') || textLower.includes('saeta') || textLower.includes('unison') || textLower.includes('piñata') || textLower.includes('oficio familiar') || textLower.includes('emprendimiento familiar')) {
-      inferredId = 'cafes';
-      reasoning = 'Detectada orientación hacia la Metodología CAFES-UNISON / SAETA de emprendimiento familiar y oficios.';
+    if (textLower.includes('bob') || textLower.includes('cuantico') || textLower.includes('cuántica') || textLower.includes('fondo thoth') || textLower.includes('atomico') || textLower.includes('atómico')) {
+      inferredId = 'bob_unison';
+      reasoning = 'Detectada orientación hacia el Método Bob 1 UNISON con escalabilidad cuántica y OBP.';
+    } else if (textLower.includes('cafes') || textLower.includes('saeta') || textLower.includes('unison') || textLower.includes('piñata') || textLower.includes('oficio familiar') || textLower.includes('emprendimiento familiar')) {
+      inferredId = 'cafes_unison';
+      reasoning = 'Detectada orientación hacia el Plan de Negocios CAFES UNISON de emprendimiento social y familiar.';
     } else if (textLower.includes('social') || textLower.includes('comunidad') || textLower.includes('ong') || textLower.includes('bid')) {
       inferredId = 'social_bid';
       reasoning = 'Detectada orientación hacia desarrollo social e impacto comunitario.';

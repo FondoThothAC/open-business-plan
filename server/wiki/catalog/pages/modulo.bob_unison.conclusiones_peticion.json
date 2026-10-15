@@ -1,0 +1,76 @@
+{
+  "id": "modulo.bob_unison.conclusiones_peticion",
+  "title": "14. Conclusiones y Petición Formal de Recursos",
+  "summary": "Argumento integral de factibilidad, compromisos del emprendedor y mentoría/capacitación requerida.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "bob_unison",
+  "moduleKey": "conclusiones_peticion",
+  "pillarKey": "unidad_h",
+  "openUrl": "/bob_unison/conclusiones_peticion",
+  "fields": [
+    {
+      "key": "argumento_factibilidad_sintesis",
+      "type": "text",
+      "address": "bob_unison.unidad_h.conclusiones_peticion.argumento_factibilidad_sintesis",
+      "prompt": "Resumen contundente que demuestra por qué el proyecto es viable en mercado, técnico, legal, social y financiero.",
+      "ejemplo": "Ej: Proyecto con demanda validada en sondeos, capacidad técnica comprobada, margen bruto del 44%, relación B/C de 1.34 y alto impacto en la economía familiar.",
+      "benchmark": "Síntesis concluyente para comités de evaluación.",
+      "cita": "Anatomy of a Business Plan & CAFES",
+      "placeholder": "Argumentación final de factibilidad integral..."
+    },
+    {
+      "key": "compromisos_metas_emprendedor",
+      "type": "text",
+      "address": "bob_unison.unidad_h.conclusiones_peticion.compromisos_metas_emprendedor",
+      "prompt": "Compromisos asumidos por el titular: cumplimiento de metas de producción, asistencia a mentorías y reinversión de utilidades.",
+      "ejemplo": "Ej: Compromiso de dedicar 35 horas semanales, mantener en buen estado el equipo, acudir a sesiones de asesoría y reinvertir el 20% de utilidades.",
+      "benchmark": "Firma de carta compromiso con metas trimestrales.",
+      "cita": "Manual CAFES-UNISON / SAETA",
+      "placeholder": "Compromisos de trabajo, metas y reinversión..."
+    },
+    {
+      "key": "requerimientos_acompanamiento_mentoria",
+      "type": "text",
+      "address": "bob_unison.unidad_h.conclusiones_peticion.requerimientos_acompanamiento_mentoria",
+      "prompt": "Tipo de apoyo y mentoría que el emprendedor solicita a la universidad o incubadora para garantizar el éxito del negocio.",
+      "ejemplo": "Ej: Asesoría trimestral en revisión de costeo, acompañamiento en trámites fiscales de RESICO y vinculación a ferias comerciales.",
+      "benchmark": "Acompañamiento técnico continuo durante los primeros 6 meses.",
+      "cita": "Convenio CAFES-UNISON / SAETA",
+      "placeholder": "Mentorías, talleres y asesorías requeridas..."
+    }
+  ],
+  "boxes": [],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Argumento integral de factibilidad, compromisos del emprendedor y mentoría/capacitación requerida.\n\n**Cómo se usa.** Está en el pilar **Unidad H · Implementación y Solicitud al Financiador** del modelo *Método Bob 1 UNISON (OBP + Empresas Cuánticas)*. Se abre en `/bob_unison/conclusiones_peticion`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 3 campos: `argumento_factibilidad_sintesis`, `compromisos_metas_emprendedor`, `requerimientos_acompanamiento_mentoria`.\n\n**Herramientas del módulo.** Ninguna específica: se apoya en los campos de texto."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `argumento_factibilidad_sintesis`\n\n**El prompt que usa:** Resumen contundente que demuestra por qué el proyecto es viable en mercado, técnico, legal, social y financiero.\n\n**Ejemplo que muestra la guía:** Ej: Proyecto con demanda validada en sondeos, capacidad técnica comprobada, margen bruto del 44%, relación B/C de 1.34 y alto impacto en la economía familiar.\n\n**Benchmark / criterio de calidad:** Síntesis concluyente para comités de evaluación.\n\n**De dónde viene la guía:** Anatomy of a Business Plan & CAFES\n\n### `compromisos_metas_emprendedor`\n\n**El prompt que usa:** Compromisos asumidos por el titular: cumplimiento de metas de producción, asistencia a mentorías y reinversión de utilidades.\n\n**Ejemplo que muestra la guía:** Ej: Compromiso de dedicar 35 horas semanales, mantener en buen estado el equipo, acudir a sesiones de asesoría y reinvertir el 20% de utilidades.\n\n**Benchmark / criterio de calidad:** Firma de carta compromiso con metas trimestrales.\n\n**De dónde viene la guía:** Manual CAFES-UNISON / SAETA\n\n### `requerimientos_acompanamiento_mentoria`\n\n**El prompt que usa:** Tipo de apoyo y mentoría que el emprendedor solicita a la universidad o incubadora para garantizar el éxito del negocio.\n\n**Ejemplo que muestra la guía:** Ej: Asesoría trimestral en revisión de costeo, acompañamiento en trámites fiscales de RESICO y vinculación a ferias comerciales.\n\n**Benchmark / criterio de calidad:** Acompañamiento técnico continuo durante los primeros 6 meses.\n\n**De dónde viene la guía:** Convenio CAFES-UNISON / SAETA"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "Sin cajas asociadas."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Unidad H · Implementación y Solicitud al Financiador** de *Método Bob 1 UNISON (OBP + Empresas Cuánticas)*. La justificación metodológica completa está en la página del modelo y en `docs/bob_unison.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `bob_unison.unidad_h.conclusiones_peticion.argumento_factibilidad_sintesis` → tipo `text`\n- `bob_unison.unidad_h.conclusiones_peticion.compromisos_metas_emprendedor` → tipo `text`\n- `bob_unison.unidad_h.conclusiones_peticion.requerimientos_acompanamiento_mentoria` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas:** `src/config/moduleBoxMap.js` no declara cajas para `bob_unison:conclusiones_peticion`; la pantalla muestra solo los campos de texto.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

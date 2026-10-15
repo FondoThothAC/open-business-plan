@@ -1,0 +1,104 @@
+{
+  "id": "modulo.cafes_unison.propuesta_valor_canvas",
+  "title": "7. Propuesta de Valor y Modelo de Negocio",
+  "summary": "Propuesta de valor, promesa al cliente, Lienzo Canvas resumido de 9 bloques, política de precios y pruebas piloto.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "cafes_unison",
+  "moduleKey": "propuesta_valor_canvas",
+  "pillarKey": "unidad_d",
+  "openUrl": "/cafes_unison/propuesta_valor_canvas",
+  "fields": [
+    {
+      "key": "propuesta_valor_beneficios",
+      "type": "text",
+      "address": "cafes_unison.unidad_d.propuesta_valor_canvas.propuesta_valor_beneficios",
+      "prompt": "Beneficios emocionales y funcionales que recibe el cliente al elegirte frente a opciones comerciales comunes.",
+      "ejemplo": "Ej: La tranquilidad de festejar con un pastel casero fresco, delicioso y personalizado que enorgullece a la familia anfitriona.",
+      "benchmark": "Beneficios centrados en la solución de problemas reales del cliente.",
+      "cita": "Value Proposition Design (Osterwalder)",
+      "placeholder": "Beneficios emocionales y funcionales clave..."
+    },
+    {
+      "key": "promesa_experiencia_cliente",
+      "type": "text",
+      "address": "cafes_unison.unidad_d.propuesta_valor_canvas.promesa_experiencia_cliente",
+      "prompt": "La promesa de servicio: puntualidad en la entrega, frescura garantizada y trato cercano y respetuoso.",
+      "ejemplo": "Ej: Tu pastel listo a tiempo, exactamente como lo soñaste, o te bonificamos el 50% de tu compra.",
+      "benchmark": "Promesa de servicio audaz pero 100% cumplible.",
+      "cita": "Creating a Business Plan For Dummies",
+      "placeholder": "Promesa de servicio y experiencia memorable..."
+    },
+    {
+      "key": "lienzo_canvas_9bloques",
+      "type": "text",
+      "address": "cafes_unison.unidad_d.propuesta_valor_canvas.lienzo_canvas_9bloques",
+      "prompt": "Resumen ejecutivo de los 9 bloques del Canvas: Socios clave, Actividades, Recursos, Propuesta de valor, Relaciones, Canales, Segmentos, Costos e Ingresos.",
+      "ejemplo": "Ej: Socios: Proveedores locales y SAETA; Actividades: Horneado y venta; Recursos: Horno y recetas; Propuesta: Repostería personalizada; Canales: WhatsApp y bazares; Segmento: Familias locales; Costos: Insumos y energía; Ingresos: Venta directa.",
+      "benchmark": "Alineación de los 9 bloques de Osterwalder.",
+      "cita": "Business Model Generation (Osterwalder)",
+      "placeholder": "Lienzo Canvas de 9 bloques estructurado..."
+    },
+    {
+      "key": "politica_precios_margen",
+      "type": "text",
+      "address": "cafes_unison.unidad_d.propuesta_valor_canvas.politica_precios_margen",
+      "prompt": "Cálculo del precio de venta a partir del costeo unitario: costo de insumos + mano de obra + gastos indirectos + margen de ganancia.",
+      "ejemplo": "Ej: Costo unitario total: $110 MXN; margen deseado: 45%; precio de venta sugerido: $200 MXN al público.",
+      "benchmark": "Margen de contribución mínimo del 35% por producto.",
+      "cita": "Manual de Costos CAFES-UNISON",
+      "placeholder": "Fórmula de fijación de precios y margen neto..."
+    },
+    {
+      "key": "estrategia_pruebas_aprendizaje",
+      "type": "text",
+      "address": "cafes_unison.unidad_d.propuesta_valor_canvas.estrategia_pruebas_aprendizaje",
+      "prompt": "Mecanismo de aprendizaje constante a partir de los comentarios de los clientes para mejorar recetas y presentación.",
+      "ejemplo": "Ej: Mensaje de seguimiento por WhatsApp al día siguiente del evento solicitando opinión y sugerencias de mejora.",
+      "benchmark": "Bucle Lean: Producir -> Medir -> Aprender.",
+      "cita": "The Lean Startup",
+      "placeholder": "Pruebas piloto y retroalimentación de clientes..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_canvas_osterwalder",
+      "title": "Lienzo de Modelo de Negocio Canvas (9 Bloques)",
+      "type": "canvas",
+      "description": "Mapeo estratégico simplificado para microempresas y autoempleo.",
+      "source": "Business Model Generation (Osterwalder) — p. 14"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Propuesta de valor, promesa al cliente, Lienzo Canvas resumido de 9 bloques, política de precios y pruebas piloto.\n\n**Cómo se usa.** Está en el pilar **Unidad D · Legal y Organización** del modelo *Plan de Negocios CAFES UNISON*. Se abre en `/cafes_unison/propuesta_valor_canvas`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 5 campos: `propuesta_valor_beneficios`, `promesa_experiencia_cliente`, `lienzo_canvas_9bloques`, `politica_precios_margen`, `estrategia_pruebas_aprendizaje`.\n\n**Herramientas del módulo.** 1 caja(s): `box_canvas_osterwalder`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `propuesta_valor_beneficios`\n\n**El prompt que usa:** Beneficios emocionales y funcionales que recibe el cliente al elegirte frente a opciones comerciales comunes.\n\n**Ejemplo que muestra la guía:** Ej: La tranquilidad de festejar con un pastel casero fresco, delicioso y personalizado que enorgullece a la familia anfitriona.\n\n**Benchmark / criterio de calidad:** Beneficios centrados en la solución de problemas reales del cliente.\n\n**De dónde viene la guía:** Value Proposition Design (Osterwalder)\n\n### `promesa_experiencia_cliente`\n\n**El prompt que usa:** La promesa de servicio: puntualidad en la entrega, frescura garantizada y trato cercano y respetuoso.\n\n**Ejemplo que muestra la guía:** Ej: Tu pastel listo a tiempo, exactamente como lo soñaste, o te bonificamos el 50% de tu compra.\n\n**Benchmark / criterio de calidad:** Promesa de servicio audaz pero 100% cumplible.\n\n**De dónde viene la guía:** Creating a Business Plan For Dummies\n\n### `lienzo_canvas_9bloques`\n\n**El prompt que usa:** Resumen ejecutivo de los 9 bloques del Canvas: Socios clave, Actividades, Recursos, Propuesta de valor, Relaciones, Canales, Segmentos, Costos e Ingresos.\n\n**Ejemplo que muestra la guía:** Ej: Socios: Proveedores locales y SAETA; Actividades: Horneado y venta; Recursos: Horno y recetas; Propuesta: Repostería personalizada; Canales: WhatsApp y bazares; Segmento: Familias locales; Costos: Insumos y energía; Ingresos: Venta directa.\n\n**Benchmark / criterio de calidad:** Alineación de los 9 bloques de Osterwalder.\n\n**De dónde viene la guía:** Business Model Generation (Osterwalder)\n\n### `politica_precios_margen`\n\n**El prompt que usa:** Cálculo del precio de venta a partir del costeo unitario: costo de insumos + mano de obra + gastos indirectos + margen de ganancia.\n\n**Ejemplo que muestra la guía:** Ej: Costo unitario total: $110 MXN; margen deseado: 45%; precio de venta sugerido: $200 MXN al público.\n\n**Benchmark / criterio de calidad:** Margen de contribución mínimo del 35% por producto.\n\n**De dónde viene la guía:** Manual de Costos CAFES-UNISON\n\n### `estrategia_pruebas_aprendizaje`\n\n**El prompt que usa:** Mecanismo de aprendizaje constante a partir de los comentarios de los clientes para mejorar recetas y presentación.\n\n**Ejemplo que muestra la guía:** Ej: Mensaje de seguimiento por WhatsApp al día siguiente del evento solicitando opinión y sugerencias de mejora.\n\n**Benchmark / criterio de calidad:** Bucle Lean: Producir -> Medir -> Aprender.\n\n**De dónde viene la guía:** The Lean Startup"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Lienzo de Modelo de Negocio Canvas (9 Bloques)\n\n`box_canvas_osterwalder` · tipo **canvas** · fuente: Business Model Generation (Osterwalder) — p. 14\n\nMapeo estratégico simplificado para microempresas y autoempleo."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Unidad D · Legal y Organización** de *Plan de Negocios CAFES UNISON*. La justificación metodológica completa está en la página del modelo y en `docs/cafes.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `cafes_unison.unidad_d.propuesta_valor_canvas.propuesta_valor_beneficios` → tipo `text`\n- `cafes_unison.unidad_d.propuesta_valor_canvas.promesa_experiencia_cliente` → tipo `text`\n- `cafes_unison.unidad_d.propuesta_valor_canvas.lienzo_canvas_9bloques` → tipo `text`\n- `cafes_unison.unidad_d.propuesta_valor_canvas.politica_precios_margen` → tipo `text`\n- `cafes_unison.unidad_d.propuesta_valor_canvas.estrategia_pruebas_aprendizaje` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `cafes_unison:propuesta_valor_canvas`): `box_canvas_osterwalder`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

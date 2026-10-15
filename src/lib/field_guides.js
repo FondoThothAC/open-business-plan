@@ -3807,7 +3807,32 @@ export const CAFES_GUIDES = {
     "cita": "Calculadora Financiera OBP & CAFES-UNISON",
     "placeholder": "Parámetros del simulador financiero y corridas..."
   },
+  "estimacion_demanda_conservadora": {
+    "instruccion": "Estima el volumen conservador de ventas diarias, semanales o mensuales que el negocio puede captar de forma realista al inicio, multiplicando el número de clientes esperados por la frecuencia de compra promedio.",
+    "ejemplo": "Ej: Se proyecta atender a 15 clientes diarios de lunes a sábado con un ticket promedio de $65 MXN, generando una demanda mensual estimada de 360 órdenes y ventas de $23,400 MXN.",
+    "benchmark": "En microempresas de alimentos y oficios familiares, se aconseja proyectar con un factor de ocupación del 40% al 60% de la capacidad máxima durante los primeros 3 meses de operación.",
+    "cita": "Manual de Asesoría CAFES UNISON (Metodología de Demanda Conservadora)",
+    "placeholder": "Detalla clientes estimados al día/semana y unidades esperadas..."
+  },
+  "capacidad_cuello_botella": {
+    "instruccion": "Identifica la etapa del proceso productivo con menor ritmo de salida que determina el tope máximo de producción diaria o semanal.",
+    "ejemplo": "Ej: El horneado es la etapa más lenta (capacidad máxima de 6 pasteles cada 2 horas), lo que limita la producción diaria a un máximo de 18 piezas en una jornada de 8 horas.",
+    "benchmark": "Conocer la restricción de capacidad evita aceptar pedidos que excedan el tiempo de entrega y comprometan la calidad del producto.",
+    "cita": "Manual CAFES UNISON (Plan de Operaciones)",
+    "placeholder": "Indica el paso más lento del proceso y unidades máximas al día..."
+  },
+  "indicadores_rentabilidad_bc_roi": {
+    "instruccion": "Calcula y explica los indicadores contables de rentabilidad: margen bruto, margen neto, Retorno sobre la Inversión (ROI), periodo de recuperación (payback) y Relación Beneficio/Costo (B/C).",
+    "ejemplo": "Ej: Margen bruto del 42.5%, margen neto del 18.2%, ROI del 31.4% y relación Beneficio/Costo de 1.28 (por cada peso gastado se recuperan $1.28 MXN).",
+    "benchmark": "Para programas de financiamiento social y microcréditos, una relación B/C superior a 1.15 y un payback menor a 24 meses son criterios clave de elegibilidad.",
+    "cita": "Manual de Formulación y Evaluación de Proyectos SAGARPA / INAES & CAFES UNISON",
+    "placeholder": "Resume el margen neto, ROI, tiempo de recuperación y la relación B/C..."
+  }
 };
+
+export const BOB_UNISON_GUIDES = CAFES_GUIDES;
+export const CAFES_UNISON_GUIDES = CAFES_GUIDES;
+
 export const FIELD_GUIDES_MAP = {
   business: BUSINESS_GUIDES,
   social_bid: SOCIAL_BID_GUIDES,
@@ -3821,5 +3846,7 @@ export const FIELD_GUIDES_MAP = {
   amoeba_management: AMOEBA_MANAGEMENT_GUIDES,
   guanxi_plan: GUANXI_PLAN_GUIDES,
   onudi_project: ONUDI_PROJECT_GUIDES,
-  cafes: CAFES_GUIDES,
+  bob_unison: BOB_UNISON_GUIDES,
+  cafes_unison: CAFES_UNISON_GUIDES,
+  cafes: CAFES_UNISON_GUIDES,
 };

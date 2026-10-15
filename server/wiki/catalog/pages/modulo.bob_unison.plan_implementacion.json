@@ -1,18 +1,18 @@
 {
-  "id": "modulo.cafes.plan_implementacion",
+  "id": "modulo.bob_unison.plan_implementacion",
   "title": "12. Plan de Implementación (Ruta Crítica 12 Semanas)",
   "summary": "Gantt de arranque, entregables semanales, responsables, KPIs de avance y contingencias.",
   "kind": "modulo",
   "audience": "cliente",
-  "model": "cafes",
+  "model": "bob_unison",
   "moduleKey": "plan_implementacion",
   "pillarKey": "unidad_h",
-  "openUrl": "/cafes/plan_implementacion",
+  "openUrl": "/bob_unison/plan_implementacion",
   "fields": [
     {
       "key": "ruta_critica_gantt_12semanas",
       "type": "text",
-      "address": "cafes.unidad_h.plan_implementacion.ruta_critica_gantt_12semanas",
+      "address": "bob_unison.unidad_h.plan_implementacion.ruta_critica_gantt_12semanas",
       "prompt": "Cronograma de la ruta crítica de 12 semanas (Gantt): compras, adecuación, trámites, pruebas, mercadotecnia y arranque.",
       "ejemplo": "Ej: Sem 1-2: Trámite de capital semilla y cotizaciones; Sem 3-4: Adquisición de maquinaria; Sem 5-6: Instalación eléctrica y gas; Sem 7-8: Pruebas; Sem 9-10: Campaña; Sem 11-12: Venta.",
       "benchmark": "Hitos secuenciales sin holguras críticas en compras.",
@@ -22,7 +22,7 @@
     {
       "key": "hitos_entregables_semanales",
       "type": "text",
-      "address": "cafes.unidad_h.plan_implementacion.hitos_entregables_semanales",
+      "address": "bob_unison.unidad_h.plan_implementacion.hitos_entregables_semanales",
       "prompt": "Lista de entregables tangibles por semana para comprobar el avance ante evaluadores o tutores del programa.",
       "ejemplo": "Ej: Sem 2: Facturas de compra; Sem 4: Foto de equipo instalado; Sem 8: Ficha de cata y degustación; Sem 12: Primera factura emitida.",
       "benchmark": "Evidencia física o documental por cada hito de avance.",
@@ -32,7 +32,7 @@
     {
       "key": "indicadores_avance_responsables",
       "type": "text",
-      "address": "cafes.unidad_h.plan_implementacion.indicadores_avance_responsables",
+      "address": "bob_unison.unidad_h.plan_implementacion.indicadores_avance_responsables",
       "prompt": "Quién es responsable de cada actividad del cronograma y cómo se mide el cumplimiento en tiempo y forma.",
       "ejemplo": "Ej: Adquisiciones: Titular del proyecto; Acondicionamiento: Electricista certificado supervisado por titular; Cumplimiento: 100% en tiempo.",
       "benchmark": "Un solo responsable nominal por actividad.",
@@ -42,7 +42,7 @@
     {
       "key": "plan_contingencias_arranque",
       "type": "text",
-      "address": "cafes.unidad_h.plan_implementacion.plan_contingencias_arranque",
+      "address": "bob_unison.unidad_h.plan_implementacion.plan_contingencias_arranque",
       "prompt": "Medidas para absorber retrasos de proveedores o demoras en la entrega de maquinaria sin frenar la apertura.",
       "ejemplo": "Ej: En caso de demora del proveedor del horno, se inicia con producción en horno auxiliar casero para cumplir pedidos comprometidos.",
       "benchmark": "Plan alternativo para no retrasar la inauguración.",
@@ -56,7 +56,7 @@
       "id": "uso",
       "title": "Cómo se usa en el plan",
       "audience": "cliente",
-      "markdown": "**Qué es.** Gantt de arranque, entregables semanales, responsables, KPIs de avance y contingencias.\n\n**Cómo se usa.** Está en el pilar **Unidad H · Implementación y Solicitud al Financiador** del modelo *Plan de Negocios CAFES (Emprendimiento Social y Familiar)*. Se abre en `/cafes/plan_implementacion`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 4 campos: `ruta_critica_gantt_12semanas`, `hitos_entregables_semanales`, `indicadores_avance_responsables`, `plan_contingencias_arranque`.\n\n**Herramientas del módulo.** Ninguna específica: se apoya en los campos de texto."
+      "markdown": "**Qué es.** Gantt de arranque, entregables semanales, responsables, KPIs de avance y contingencias.\n\n**Cómo se usa.** Está en el pilar **Unidad H · Implementación y Solicitud al Financiador** del modelo *Método Bob 1 UNISON (OBP + Empresas Cuánticas)*. Se abre en `/bob_unison/plan_implementacion`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 4 campos: `ruta_critica_gantt_12semanas`, `hitos_entregables_semanales`, `indicadores_avance_responsables`, `plan_contingencias_arranque`.\n\n**Herramientas del módulo.** Ninguna específica: se apoya en los campos de texto."
     },
     {
       "id": "campos",
@@ -74,13 +74,13 @@
       "id": "porque",
       "title": "Por qué existe",
       "audience": "cliente",
-      "markdown": "Forma parte del pilar **Unidad H · Implementación y Solicitud al Financiador** de *Plan de Negocios CAFES (Emprendimiento Social y Familiar)*. La justificación metodológica completa está en la página del modelo y en `docs/cafes.md`."
+      "markdown": "Forma parte del pilar **Unidad H · Implementación y Solicitud al Financiador** de *Método Bob 1 UNISON (OBP + Empresas Cuánticas)*. La justificación metodológica completa está en la página del modelo y en `docs/bob_unison.md`."
     },
     {
       "id": "tecnico",
       "title": "Detalles técnicos",
       "audience": "tecnico",
-      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `cafes.unidad_h.plan_implementacion.ruta_critica_gantt_12semanas` → tipo `text`\n- `cafes.unidad_h.plan_implementacion.hitos_entregables_semanales` → tipo `text`\n- `cafes.unidad_h.plan_implementacion.indicadores_avance_responsables` → tipo `text`\n- `cafes.unidad_h.plan_implementacion.plan_contingencias_arranque` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas:** `src/config/moduleBoxMap.js` no declara cajas para `cafes:plan_implementacion`; la pantalla muestra solo los campos de texto.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `bob_unison.unidad_h.plan_implementacion.ruta_critica_gantt_12semanas` → tipo `text`\n- `bob_unison.unidad_h.plan_implementacion.hitos_entregables_semanales` → tipo `text`\n- `bob_unison.unidad_h.plan_implementacion.indicadores_avance_responsables` → tipo `text`\n- `bob_unison.unidad_h.plan_implementacion.plan_contingencias_arranque` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas:** `src/config/moduleBoxMap.js` no declara cajas para `bob_unison:plan_implementacion`; la pantalla muestra solo los campos de texto.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
     }
   ]
 }

@@ -1,18 +1,18 @@
 {
-  "id": "modulo.cafes.requerimiento_capital",
+  "id": "modulo.bob_unison.requerimiento_capital",
   "title": "13. Requerimiento de Capital Semilla e Inversión",
   "summary": "Monto solicitado, desglose por rubro, aportación propia en especie/efectivo, cotizaciones, impacto marginal antes/después y comprobación.",
   "kind": "modulo",
   "audience": "cliente",
-  "model": "cafes",
+  "model": "bob_unison",
   "moduleKey": "requerimiento_capital",
   "pillarKey": "unidad_h",
-  "openUrl": "/cafes/requerimiento_capital",
+  "openUrl": "/bob_unison/requerimiento_capital",
   "fields": [
     {
       "key": "monto_solicitado_total",
       "type": "text",
-      "address": "cafes.unidad_h.requerimiento_capital.monto_solicitado_total",
+      "address": "bob_unison.unidad_h.requerimiento_capital.monto_solicitado_total",
       "prompt": "Cifra exacta del monto de capital semilla o financiamiento solicitado al fondo, banco o convocatoria.",
       "ejemplo": "Ej: $35,000 MXN (Treinta y cinco mil pesos 00/100 M.N.).",
       "benchmark": "El monto solicitado debe coincidir exactamente con las cotizaciones anexas.",
@@ -22,7 +22,7 @@
     {
       "key": "desglose_rubros_destino",
       "type": "text",
-      "address": "cafes.unidad_h.requerimiento_capital.desglose_rubros_destino",
+      "address": "bob_unison.unidad_h.requerimiento_capital.desglose_rubros_destino",
       "prompt": "Tabla desglosada por rubro: Inversión en equipo, herramientas, insumos iniciales, acondicionamiento y mercadotecnia.",
       "ejemplo": "Ej: 1) Horno de convección: $22,000; 2) Mesa acero inoxidable: $8,000; 3) Insumos iniciales: $3,500; 4) Empaques e imagen: $1,500. Total: $35,000 MXN.",
       "benchmark": "Desglose alineado a las reglas de operación del fondo.",
@@ -32,7 +32,7 @@
     {
       "key": "aportacion_propia_fuentes",
       "type": "text",
-      "address": "cafes.unidad_h.requerimiento_capital.aportacion_propia_fuentes",
+      "address": "bob_unison.unidad_h.requerimiento_capital.aportacion_propia_fuentes",
       "prompt": "Aportación del emprendedor (en efectivo o en especie: local, batidora propia, gas, horas de trabajo no remuneradas).",
       "ejemplo": "Ej: Aportación propia: Local habilitado ($15,000 valor estimado) + batidora 10L ($9,500) + $5,000 MXN en efectivo. Total aportación: $29,500 MXN (45% del total).",
       "benchmark": "Aportación propia recomendada de al menos el 20% del valor total del proyecto.",
@@ -42,7 +42,7 @@
     {
       "key": "evidencias_cotizaciones_proveedor",
       "type": "text",
-      "address": "cafes.unidad_h.requerimiento_capital.evidencias_cotizaciones_proveedor",
+      "address": "bob_unison.unidad_h.requerimiento_capital.evidencias_cotizaciones_proveedor",
       "prompt": "Relación de cotizaciones formales anexas: nombre comercial del proveedor, fecha de cotización, vigencia y enlace o teléfono.",
       "ejemplo": "Ej: Cotización #1: Ferretería y Maquinaria del Norte (Vigencia 30 días, Tel 662-214-8800); Cotización #2: Equipos Gastronómicos Sonora.",
       "benchmark": "Cotizaciones vigentes con datos fiscales del proveedor.",
@@ -52,7 +52,7 @@
     {
       "key": "impacto_capital_ventas_utilidad",
       "type": "text",
-      "address": "cafes.unidad_h.requerimiento_capital.impacto_capital_ventas_utilidad",
+      "address": "bob_unison.unidad_h.requerimiento_capital.impacto_capital_ventas_utilidad",
       "prompt": "Comparativa de antes y después del capital semilla: cómo cambia la capacidad, las ventas y la utilidad al contar con el equipo.",
       "ejemplo": "Ej: Antes: 10 pasteles/semana ($8,000 venta/mes, utilidad $2,800); Después con horno industrial: 40 pasteles/semana ($38,000 venta/mes, utilidad $14,500).",
       "benchmark": "Demostración de salto cuántico en productividad y margen.",
@@ -62,7 +62,7 @@
     {
       "key": "plan_uso_rendicion_cuentas",
       "type": "text",
-      "address": "cafes.unidad_h.requerimiento_capital.plan_uso_rendicion_cuentas",
+      "address": "bob_unison.unidad_h.requerimiento_capital.plan_uso_rendicion_cuentas",
       "prompt": "Mecanismo de comprobación del recurso: facturas fiscales a nombre del titular, fotografías de los bienes adquiridos y bitácora de gastos.",
       "ejemplo": "Ej: Se presentarán facturas CFDI con archivo XML en plazo no mayor a 30 días naturales posteriores a la entrega del recurso y registro fotográfico.",
       "benchmark": "Comprobación al 100% mediante facturas electrónicas válidas ante el SAT.",
@@ -76,7 +76,7 @@
       "id": "uso",
       "title": "Cómo se usa en el plan",
       "audience": "cliente",
-      "markdown": "**Qué es.** Monto solicitado, desglose por rubro, aportación propia en especie/efectivo, cotizaciones, impacto marginal antes/después y comprobación.\n\n**Cómo se usa.** Está en el pilar **Unidad H · Implementación y Solicitud al Financiador** del modelo *Plan de Negocios CAFES (Emprendimiento Social y Familiar)*. Se abre en `/cafes/requerimiento_capital`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 6 campos: `monto_solicitado_total`, `desglose_rubros_destino`, `aportacion_propia_fuentes`, `evidencias_cotizaciones_proveedor`, `impacto_capital_ventas_utilidad`, `plan_uso_rendicion_cuentas`.\n\n**Herramientas del módulo.** Ninguna específica: se apoya en los campos de texto."
+      "markdown": "**Qué es.** Monto solicitado, desglose por rubro, aportación propia en especie/efectivo, cotizaciones, impacto marginal antes/después y comprobación.\n\n**Cómo se usa.** Está en el pilar **Unidad H · Implementación y Solicitud al Financiador** del modelo *Método Bob 1 UNISON (OBP + Empresas Cuánticas)*. Se abre en `/bob_unison/requerimiento_capital`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 6 campos: `monto_solicitado_total`, `desglose_rubros_destino`, `aportacion_propia_fuentes`, `evidencias_cotizaciones_proveedor`, `impacto_capital_ventas_utilidad`, `plan_uso_rendicion_cuentas`.\n\n**Herramientas del módulo.** Ninguna específica: se apoya en los campos de texto."
     },
     {
       "id": "campos",
@@ -94,13 +94,13 @@
       "id": "porque",
       "title": "Por qué existe",
       "audience": "cliente",
-      "markdown": "Forma parte del pilar **Unidad H · Implementación y Solicitud al Financiador** de *Plan de Negocios CAFES (Emprendimiento Social y Familiar)*. La justificación metodológica completa está en la página del modelo y en `docs/cafes.md`."
+      "markdown": "Forma parte del pilar **Unidad H · Implementación y Solicitud al Financiador** de *Método Bob 1 UNISON (OBP + Empresas Cuánticas)*. La justificación metodológica completa está en la página del modelo y en `docs/bob_unison.md`."
     },
     {
       "id": "tecnico",
       "title": "Detalles técnicos",
       "audience": "tecnico",
-      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `cafes.unidad_h.requerimiento_capital.monto_solicitado_total` → tipo `text`\n- `cafes.unidad_h.requerimiento_capital.desglose_rubros_destino` → tipo `text`\n- `cafes.unidad_h.requerimiento_capital.aportacion_propia_fuentes` → tipo `text`\n- `cafes.unidad_h.requerimiento_capital.evidencias_cotizaciones_proveedor` → tipo `text`\n- `cafes.unidad_h.requerimiento_capital.impacto_capital_ventas_utilidad` → tipo `text`\n- `cafes.unidad_h.requerimiento_capital.plan_uso_rendicion_cuentas` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas:** `src/config/moduleBoxMap.js` no declara cajas para `cafes:requerimiento_capital`; la pantalla muestra solo los campos de texto.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `bob_unison.unidad_h.requerimiento_capital.monto_solicitado_total` → tipo `text`\n- `bob_unison.unidad_h.requerimiento_capital.desglose_rubros_destino` → tipo `text`\n- `bob_unison.unidad_h.requerimiento_capital.aportacion_propia_fuentes` → tipo `text`\n- `bob_unison.unidad_h.requerimiento_capital.evidencias_cotizaciones_proveedor` → tipo `text`\n- `bob_unison.unidad_h.requerimiento_capital.impacto_capital_ventas_utilidad` → tipo `text`\n- `bob_unison.unidad_h.requerimiento_capital.plan_uso_rendicion_cuentas` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas:** `src/config/moduleBoxMap.js` no declara cajas para `bob_unison:requerimiento_capital`; la pantalla muestra solo los campos de texto.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
     }
   ]
 }

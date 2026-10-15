@@ -13,11 +13,11 @@ test('Enriquecimiento Integral de las 12 Metodologías con los 13 Libros Técnic
     'business', 'social_bid', 'agile_startup', 'technology_id',
     'micro_business', 'investment_project', 'zopp', 'horizon_europe',
     'hoshin_kanri', 'amoeba_management', 'guanxi_plan', 'onudi_project',
-    'cafes'
+    'bob_unison', 'cafes_unison'
   ];
 
-  await t.test('1. Las 13 metodologías canónicas están definidas y superan el estado de stub (>= 7 módulos c/u)', () => {
-    assert.equal(Object.keys(FRAMEWORKS).length, 13, 'Deben existir exactamente 13 metodologías canónicas');
+  await t.test('1. Las 14 metodologías canónicas están definidas y superan el estado de stub (>= 7 módulos c/u)', () => {
+    assert.equal(Object.keys(FRAMEWORKS).length, 14, 'Deben existir exactamente 14 metodologías canónicas');
 
     for (const key of allFrameworkKeys) {
       const fw = FRAMEWORKS[key];
@@ -102,7 +102,8 @@ test('Enriquecimiento Integral de las 12 Metodologías con los 13 Libros Técnic
     assert.ok(MODULE_BOX_MAP['amoeba_management:principios_inamori_12']?.includes('box_12_principios_inamori'));
     assert.ok(MODULE_BOX_MAP['guanxi_plan:banquet_protocol_ritual']?.includes('box_banquet_protocol_8pasos'));
     assert.ok(MODULE_BOX_MAP['onudi_project:localizacion_industrial']?.includes('box_matriz_localizacion_onudi'));
-    assert.ok(MODULE_BOX_MAP['cafes:plan_financiero']?.includes('box_wacc_van_tir'));
+    assert.ok(MODULE_BOX_MAP['bob_unison:plan_financiero']?.includes('box_wacc_van_tir'));
+    assert.ok(MODULE_BOX_MAP['cafes_unison:plan_financiero']?.includes('box_relacion_bc_payback'));
   });
 
   await t.test('4. Existencia y rigor de los documentos de referencia técnica L3 en docs/', () => {

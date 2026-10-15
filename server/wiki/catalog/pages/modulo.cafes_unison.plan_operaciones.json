@@ -1,0 +1,154 @@
+{
+  "id": "modulo.cafes_unison.plan_operaciones",
+  "title": "4. Plan de Operaciones y Producción",
+  "summary": "Flujo del proceso, capacidad instalada y cuello de botella, programa de producción, insumos, equipos, layout y logística.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "cafes_unison",
+  "moduleKey": "plan_operaciones",
+  "pillarKey": "unidad_c",
+  "openUrl": "/cafes_unison/plan_operaciones",
+  "fields": [
+    {
+      "key": "flujo_proceso_diagrama",
+      "type": "text",
+      "address": "cafes_unison.unidad_c.plan_operaciones.flujo_proceso_diagrama",
+      "prompt": "Diagrama paso a paso de la producción: desde la recepción de insumos, preparación, horneado/ensamble, decorado, empaque y entrega.",
+      "ejemplo": "Ej: 1) Pesaje de ingredientes (10 min) -> 2) Batido y mezclado (15 min) -> 3) Horneado (35 min) -> 4) Enfriado (40 min) -> 5) Relleno y decorado (25 min) -> 6) Empaque y refrigeración (10 min).",
+      "benchmark": "Flujo lineal continuo sin retrocesos ni contaminación cruzada.",
+      "cita": "Operations Management (Slack)",
+      "placeholder": "Paso a paso de producción y tiempos por etapa..."
+    },
+    {
+      "key": "capacidad_cuello_botella",
+      "type": "text",
+      "address": "cafes_unison.unidad_c.plan_operaciones.capacidad_cuello_botella",
+      "prompt": "Identifica la etapa del proceso productivo con menor ritmo de salida que determina el tope máximo de producción diaria o semanal.",
+      "ejemplo": "Ej: El horneado es la etapa más lenta (capacidad máxima de 6 pasteles cada 2 horas), lo que limita la producción diaria a un máximo de 18 piezas en una jornada de 8 horas.",
+      "benchmark": "Conocer la restricción de capacidad evita aceptar pedidos que excedan el tiempo de entrega y comprometan la calidad del producto.",
+      "cita": "Manual CAFES UNISON (Plan de Operaciones)",
+      "placeholder": "Indica el paso más lento del proceso y unidades máximas al día..."
+    },
+    {
+      "key": "programa_produccion_metas",
+      "type": "text",
+      "address": "cafes_unison.unidad_c.plan_operaciones.programa_produccion_metas",
+      "prompt": "Volúmenes meta de producción semanal, mensual y anual ajustados a la capacidad instalada real.",
+      "ejemplo": "Ej: Meta de producción: 40 unidades semanales (160 mensuales; 1,920 anuales), operando al 65% de la capacidad máxima.",
+      "benchmark": "Utilización de capacidad entre 60% y 80% para evitar sobrecarga.",
+      "cita": "Operations Management (Slack)",
+      "placeholder": "Programa y volúmenes meta de producción..."
+    },
+    {
+      "key": "aseguramiento_calidad_inocuidad",
+      "type": "text",
+      "address": "cafes_unison.unidad_c.plan_operaciones.aseguramiento_calidad_inocuidad",
+      "prompt": "Procedimientos de control de calidad: inspección visual, pruebas de sabor, fecha de consumo preferente y trazabilidad.",
+      "ejemplo": "Ej: Revisión organoléptica de materia prima, prueba de horneado con termómetro de aguja y rotulado de lote y fecha.",
+      "benchmark": "Tasa de rechazo o devolución < 1%.",
+      "cita": "Manual de Buenas Prácticas de Higiene & CAFES",
+      "placeholder": "Controles de calidad, sabor y frescura..."
+    },
+    {
+      "key": "lista_insumos_proveedores",
+      "type": "text",
+      "address": "cafes_unison.unidad_c.plan_operaciones.lista_insumos_proveedores",
+      "prompt": "Directorio de materias primas con precios cotizados en al menos 2 proveedores locales y condiciones de compra.",
+      "ejemplo": "Ej: Harina y azúcar en Central de Abastos (Proveedor A: $14/kg vs Proveedor B: $16/kg); compras semanales de contado.",
+      "benchmark": "Mínimo dos cotizaciones por insumo crítico.",
+      "cita": "Manual CAFES-UNISON / SAETA",
+      "placeholder": "Insumos, proveedores cotizados y precios..."
+    },
+    {
+      "key": "equipos_herramientas_catalogo",
+      "type": "text",
+      "address": "cafes_unison.unidad_c.plan_operaciones.equipos_herramientas_catalogo",
+      "prompt": "Inventario de maquinaria fija y herramientas menores requeridas, especificando si ya se tienen o se van a comprar.",
+      "ejemplo": "Ej: Horno de convección 4 charolas (nuevo, $22,000), batidora planetaria 10L (ya se tiene), mesa acero inoxidable (nuevo, $8,000).",
+      "benchmark": "Vida útil estimada y ficha técnica de cada equipo.",
+      "cita": "Anatomy of a Business Plan",
+      "placeholder": "Maquinaria, herramientas y equipamiento..."
+    },
+    {
+      "key": "layout_espacio_trabajo",
+      "type": "text",
+      "address": "cafes_unison.unidad_c.plan_operaciones.layout_espacio_trabajo",
+      "prompt": "Distribución física del área de trabajo: zonas de lavado, preparación, cocción/ensamble, empaque y producto terminado.",
+      "ejemplo": "Ej: Taller de 20m² organizado en forma de \"U\": área húmeda a la izquierda, mesa central de ensamble, horno al fondo y empaque a la salida.",
+      "benchmark": "Distancias mínimas de seguridad y ventilación adecuada.",
+      "cita": "Manual de Plan de Negocios Panamá (Cap. 9)",
+      "placeholder": "Croquis y distribución de áreas de trabajo..."
+    },
+    {
+      "key": "logistica_entregas_embalaje",
+      "type": "text",
+      "address": "cafes_unison.unidad_c.plan_operaciones.logistica_entregas_embalaje",
+      "prompt": "Modalidad de entrega al cliente: mostrador en local, entrega propia a domicilio o convenios de mensajería.",
+      "ejemplo": "Ej: 60% retiro en domicilio por el cliente; 40% entrega a domicilio en auto familiar en hieleras térmicas.",
+      "benchmark": "Costo de entrega cubierto por el cliente o absorbido en precio de venta.",
+      "cita": "Starting a Business QuickStart Guide",
+      "placeholder": "Logística de empaque, traslado y tiempos..."
+    },
+    {
+      "key": "inventarios_rotacion_minimos",
+      "type": "text",
+      "address": "cafes_unison.unidad_c.plan_operaciones.inventarios_rotacion_minimos",
+      "prompt": "Niveles mínimos de stock de materias primas no perecederas y frecuencia de rotación de insumos perecederos.",
+      "ejemplo": "Ej: Harinas y empaques: stock de seguridad para 15 días; lácteos y huevos: compras cada 3 días para garantizar frescura.",
+      "benchmark": "Rotación de perecederos menor a 4 días; cero caducidades.",
+      "cita": "Operations Management (Slack)",
+      "placeholder": "Inventarios mínimos y políticas de rotación..."
+    },
+    {
+      "key": "manejo_residuos_seguridad",
+      "type": "text",
+      "address": "cafes_unison.unidad_c.plan_operaciones.manejo_residuos_seguridad",
+      "prompt": "Manejo ecológico de desechos orgánicos e inorgánicos, extintor de incendios, botiquín de primeros auxilios y seguridad ocupacional.",
+      "ejemplo": "Ej: Separación de cartón y plástico para reciclaje; extintor tipo ABC de 4.5kg junto al área de cocción y botiquín accesible.",
+      "benchmark": "Normas básicas de Protección Civil y prevención de quemaduras.",
+      "cita": "Manual CAFES-UNISON",
+      "placeholder": "Seguridad en taller, botiquín y manejo de basura..."
+    }
+  ],
+  "boxes": [
+    {
+      "id": "box_micro_croquis_2d",
+      "title": "Croquis 2D y Lay-out del Espacio de Trabajo",
+      "type": "canvas",
+      "description": "Distribución física del taller, cocina, local o puesto de trabajo.",
+      "source": "Manual de Plan de Negocios Panamá (Cap. 9) — p. 24"
+    }
+  ],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Flujo del proceso, capacidad instalada y cuello de botella, programa de producción, insumos, equipos, layout y logística.\n\n**Cómo se usa.** Está en el pilar **Unidad C · Propuesta de Valor y Operaciones** del modelo *Plan de Negocios CAFES UNISON*. Se abre en `/cafes_unison/plan_operaciones`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 10 campos: `flujo_proceso_diagrama`, `capacidad_cuello_botella`, `programa_produccion_metas`, `aseguramiento_calidad_inocuidad`, `lista_insumos_proveedores`, `equipos_herramientas_catalogo`, `layout_espacio_trabajo`, `logistica_entregas_embalaje`, `inventarios_rotacion_minimos`, `manejo_residuos_seguridad`.\n\n**Herramientas del módulo.** 1 caja(s): `box_micro_croquis_2d`."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `flujo_proceso_diagrama`\n\n**El prompt que usa:** Diagrama paso a paso de la producción: desde la recepción de insumos, preparación, horneado/ensamble, decorado, empaque y entrega.\n\n**Ejemplo que muestra la guía:** Ej: 1) Pesaje de ingredientes (10 min) -> 2) Batido y mezclado (15 min) -> 3) Horneado (35 min) -> 4) Enfriado (40 min) -> 5) Relleno y decorado (25 min) -> 6) Empaque y refrigeración (10 min).\n\n**Benchmark / criterio de calidad:** Flujo lineal continuo sin retrocesos ni contaminación cruzada.\n\n**De dónde viene la guía:** Operations Management (Slack)\n\n### `capacidad_cuello_botella`\n\n**El prompt que usa:** Identifica la etapa del proceso productivo con menor ritmo de salida que determina el tope máximo de producción diaria o semanal.\n\n**Ejemplo que muestra la guía:** Ej: El horneado es la etapa más lenta (capacidad máxima de 6 pasteles cada 2 horas), lo que limita la producción diaria a un máximo de 18 piezas en una jornada de 8 horas.\n\n**Benchmark / criterio de calidad:** Conocer la restricción de capacidad evita aceptar pedidos que excedan el tiempo de entrega y comprometan la calidad del producto.\n\n**De dónde viene la guía:** Manual CAFES UNISON (Plan de Operaciones)\n\n### `programa_produccion_metas`\n\n**El prompt que usa:** Volúmenes meta de producción semanal, mensual y anual ajustados a la capacidad instalada real.\n\n**Ejemplo que muestra la guía:** Ej: Meta de producción: 40 unidades semanales (160 mensuales; 1,920 anuales), operando al 65% de la capacidad máxima.\n\n**Benchmark / criterio de calidad:** Utilización de capacidad entre 60% y 80% para evitar sobrecarga.\n\n**De dónde viene la guía:** Operations Management (Slack)\n\n### `aseguramiento_calidad_inocuidad`\n\n**El prompt que usa:** Procedimientos de control de calidad: inspección visual, pruebas de sabor, fecha de consumo preferente y trazabilidad.\n\n**Ejemplo que muestra la guía:** Ej: Revisión organoléptica de materia prima, prueba de horneado con termómetro de aguja y rotulado de lote y fecha.\n\n**Benchmark / criterio de calidad:** Tasa de rechazo o devolución < 1%.\n\n**De dónde viene la guía:** Manual de Buenas Prácticas de Higiene & CAFES\n\n### `lista_insumos_proveedores`\n\n**El prompt que usa:** Directorio de materias primas con precios cotizados en al menos 2 proveedores locales y condiciones de compra.\n\n**Ejemplo que muestra la guía:** Ej: Harina y azúcar en Central de Abastos (Proveedor A: $14/kg vs Proveedor B: $16/kg); compras semanales de contado.\n\n**Benchmark / criterio de calidad:** Mínimo dos cotizaciones por insumo crítico.\n\n**De dónde viene la guía:** Manual CAFES-UNISON / SAETA\n\n### `equipos_herramientas_catalogo`\n\n**El prompt que usa:** Inventario de maquinaria fija y herramientas menores requeridas, especificando si ya se tienen o se van a comprar.\n\n**Ejemplo que muestra la guía:** Ej: Horno de convección 4 charolas (nuevo, $22,000), batidora planetaria 10L (ya se tiene), mesa acero inoxidable (nuevo, $8,000).\n\n**Benchmark / criterio de calidad:** Vida útil estimada y ficha técnica de cada equipo.\n\n**De dónde viene la guía:** Anatomy of a Business Plan\n\n### `layout_espacio_trabajo`\n\n**El prompt que usa:** Distribución física del área de trabajo: zonas de lavado, preparación, cocción/ensamble, empaque y producto terminado.\n\n**Ejemplo que muestra la guía:** Ej: Taller de 20m² organizado en forma de \"U\": área húmeda a la izquierda, mesa central de ensamble, horno al fondo y empaque a la salida.\n\n**Benchmark / criterio de calidad:** Distancias mínimas de seguridad y ventilación adecuada.\n\n**De dónde viene la guía:** Manual de Plan de Negocios Panamá (Cap. 9)\n\n### `logistica_entregas_embalaje`\n\n**El prompt que usa:** Modalidad de entrega al cliente: mostrador en local, entrega propia a domicilio o convenios de mensajería.\n\n**Ejemplo que muestra la guía:** Ej: 60% retiro en domicilio por el cliente; 40% entrega a domicilio en auto familiar en hieleras térmicas.\n\n**Benchmark / criterio de calidad:** Costo de entrega cubierto por el cliente o absorbido en precio de venta.\n\n**De dónde viene la guía:** Starting a Business QuickStart Guide\n\n### `inventarios_rotacion_minimos`\n\n**El prompt que usa:** Niveles mínimos de stock de materias primas no perecederas y frecuencia de rotación de insumos perecederos.\n\n**Ejemplo que muestra la guía:** Ej: Harinas y empaques: stock de seguridad para 15 días; lácteos y huevos: compras cada 3 días para garantizar frescura.\n\n**Benchmark / criterio de calidad:** Rotación de perecederos menor a 4 días; cero caducidades.\n\n**De dónde viene la guía:** Operations Management (Slack)\n\n### `manejo_residuos_seguridad`\n\n**El prompt que usa:** Manejo ecológico de desechos orgánicos e inorgánicos, extintor de incendios, botiquín de primeros auxilios y seguridad ocupacional.\n\n**Ejemplo que muestra la guía:** Ej: Separación de cartón y plástico para reciclaje; extintor tipo ABC de 4.5kg junto al área de cocción y botiquín accesible.\n\n**Benchmark / criterio de calidad:** Normas básicas de Protección Civil y prevención de quemaduras.\n\n**De dónde viene la guía:** Manual CAFES-UNISON"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "### Croquis 2D y Lay-out del Espacio de Trabajo\n\n`box_micro_croquis_2d` · tipo **canvas** · fuente: Manual de Plan de Negocios Panamá (Cap. 9) — p. 24\n\nDistribución física del taller, cocina, local o puesto de trabajo."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Unidad C · Propuesta de Valor y Operaciones** de *Plan de Negocios CAFES UNISON*. La justificación metodológica completa está en la página del modelo y en `docs/cafes.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `cafes_unison.unidad_c.plan_operaciones.flujo_proceso_diagrama` → tipo `text`\n- `cafes_unison.unidad_c.plan_operaciones.capacidad_cuello_botella` → tipo `text`\n- `cafes_unison.unidad_c.plan_operaciones.programa_produccion_metas` → tipo `text`\n- `cafes_unison.unidad_c.plan_operaciones.aseguramiento_calidad_inocuidad` → tipo `text`\n- `cafes_unison.unidad_c.plan_operaciones.lista_insumos_proveedores` → tipo `text`\n- `cafes_unison.unidad_c.plan_operaciones.equipos_herramientas_catalogo` → tipo `text`\n- `cafes_unison.unidad_c.plan_operaciones.layout_espacio_trabajo` → tipo `text`\n- `cafes_unison.unidad_c.plan_operaciones.logistica_entregas_embalaje` → tipo `text`\n- `cafes_unison.unidad_c.plan_operaciones.inventarios_rotacion_minimos` → tipo `text`\n- `cafes_unison.unidad_c.plan_operaciones.manejo_residuos_seguridad` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `cafes_unison:plan_operaciones`): `box_micro_croquis_2d`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

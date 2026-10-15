@@ -506,13 +506,13 @@ export const FRAMEWORKS = {
       }
     ]
   },
-  cafes: {
-    id: 'cafes',
-    name: 'Plan de Negocios CAFES (Emprendimiento Social y Familiar)',
+  bob_unison: {
+    id: 'bob_unison',
+    name: 'Método Bob 1 UNISON (OBP + Empresas Cuánticas)',
     pillars: [
       {
         key: 'unidad_a',
-        title: 'Unidad A · Resumen y Perfil del Emprendimiento',
+        title: 'Unidad A · Resumen y Perfil Cuántico',
         modules: [
           {
             key: 'resumen_ejecutivo',
@@ -555,7 +555,7 @@ export const FRAMEWORKS = {
       },
       {
         key: 'unidad_b',
-        title: 'Unidad B · Mercado, Portafolio y Cliente',
+        title: 'Unidad B · Mercado, Portafolio y Dimensionamiento Cuantitativo',
         modules: [
           {
             key: 'idea_portafolio',
@@ -571,7 +571,7 @@ export const FRAMEWORKS = {
           },
           {
             key: 'estudio_mercado',
-            title: '3. Estudio de Mercado Práctico y Demanda',
+            title: '3. Estudio de Mercado y Dimensionamiento Cuantitativo',
             description: 'Segmento, competencia local (3 mínimo), validación, estacionalidad y dimensionamiento TAM/SAM/SOM.',
             fields: [
               'segmento_capacidad_pago',
@@ -588,7 +588,7 @@ export const FRAMEWORKS = {
       },
       {
         key: 'unidad_c',
-        title: 'Unidad C · Operaciones, Capacidad y Producción',
+        title: 'Unidad C · Operaciones, Cuello de Botella TOC y Capacidad',
         modules: [
           {
             key: 'plan_operaciones',
@@ -611,7 +611,7 @@ export const FRAMEWORKS = {
       },
       {
         key: 'unidad_d',
-        title: 'Unidad D · Legal, Organización y Modelo Canvas',
+        title: 'Unidad D · Legal, Organización Cuántica y Modelo Canvas',
         modules: [
           {
             key: 'aspectos_legales',
@@ -674,7 +674,7 @@ export const FRAMEWORKS = {
       },
       {
         key: 'unidad_f',
-        title: 'Unidad F · Finanzas, Factibilidad y Corridas',
+        title: 'Unidad F · Finanzas, Factibilidad y Rigor Cuántico',
         modules: [
           {
             key: 'plan_financiero',
@@ -819,6 +819,314 @@ export const FRAMEWORKS = {
         ]
       }
     ]
+  },
+  cafes_unison: {
+    id: 'cafes_unison',
+    name: 'Plan de Negocios CAFES UNISON',
+    pillars: [
+      {
+        key: 'unidad_a',
+        title: 'Unidad A · Resumen y Perfil del Emprendedor',
+        modules: [
+          {
+            key: 'resumen_ejecutivo',
+            title: '0. Resumen Ejecutivo',
+            description: 'Síntesis ejecutiva de los 14 incisos oficiales del programa docente de CAFES.',
+            fields: [
+              'descripcion_situacion_actual',
+              'problema_oportunidad',
+              'propuesta_valor_diferencial',
+              'cliente_objetivo_resumen',
+              'validacion_demanda_resumen',
+              'ventaja_competitiva',
+              'modelo_ingresos_precios',
+              'capital_semilla_resumen',
+              'ventas_utilidades_resumen',
+              'punto_equilibrio_resumen',
+              'relacion_beneficio_costo_resumen',
+              'impacto_social_familiar_resumen',
+              'riesgos_mitigaciones_resumen',
+              'cronograma_12_semanas_resumen'
+            ]
+          },
+          {
+            key: 'perfil_emprendedor',
+            title: '1. Perfil del Emprendedor y del Proyecto',
+            description: 'Datos de identificación, historia, habilidades, horario disponible, capacitación y situación actual.',
+            fields: [
+              'datos_identificacion',
+              'historia_motivacion',
+              'experiencia_habilidades',
+              'horario_apoyo_familiar',
+              'diagnostico_capacitacion',
+              'situacion_actual_negocio'
+            ]
+          }
+        ]
+      },
+      {
+        key: 'unidad_b',
+        title: 'Unidad B · Mercado y Cliente',
+        modules: [
+          {
+            key: 'idea_portafolio',
+            title: '2. Idea de Negocio y Portafolio',
+            description: 'Descripción de productos, fichas técnicas con receta/BOM, presentaciones, inocuidad y alcance inicial.',
+            fields: [
+              'descripcion_productos_servicios',
+              'fichas_tecnicas_bom',
+              'presentaciones_empaques',
+              'requerimientos_inocuidad_calidad',
+              'alcance_limitaciones_iniciales'
+            ]
+          },
+          {
+            key: 'estudio_mercado',
+            title: '3. Estudio de Mercado Práctico',
+            description: 'Segmento de cliente, necesidades, competencia local (mínimo 3), diferenciadores, validación y estimación de demanda.',
+            fields: [
+              'segmento_capacidad_pago',
+              'necesidades_criterios_compra',
+              'competidores_locales_matriz',
+              'diferenciadores_competencia',
+              'validacion_demanda_piloto',
+              'ubicacion_cobertura_rutas',
+              'estacionalidad_picos_venta',
+              'estimacion_demanda_conservadora'
+            ]
+          }
+        ]
+      },
+      {
+        key: 'unidad_c',
+        title: 'Unidad C · Propuesta de Valor y Operaciones',
+        modules: [
+          {
+            key: 'plan_operaciones',
+            title: '4. Plan de Operaciones y Producción',
+            description: 'Flujo del proceso, capacidad instalada y cuello de botella, programa de producción, insumos, equipos, layout y logística.',
+            fields: [
+              'flujo_proceso_diagrama',
+              'capacidad_cuello_botella',
+              'programa_produccion_metas',
+              'aseguramiento_calidad_inocuidad',
+              'lista_insumos_proveedores',
+              'equipos_herramientas_catalogo',
+              'layout_espacio_trabajo',
+              'logistica_entregas_embalaje',
+              'inventarios_rotacion_minimos',
+              'manejo_residuos_seguridad'
+            ]
+          }
+        ]
+      },
+      {
+        key: 'unidad_d',
+        title: 'Unidad D · Legal y Organización',
+        modules: [
+          {
+            key: 'aspectos_legales',
+            title: '5. Aspectos Legales y Regulatorios',
+            description: 'Esquema de operación, permisos/avisos (COFEPRIS, uso de suelo), marca, contratos esenciales y régimen fiscal RESICO.',
+            fields: [
+              'esquema_operacion_transicion',
+              'permisos_avisos_licencias',
+              'propiedad_intelectual_marca',
+              'contratos_esenciales',
+              'cumplimiento_fiscal_resico'
+            ]
+          },
+          {
+            key: 'organizacion_talento',
+            title: '6. Organización y Talento',
+            description: 'Estructura del equipo, perfiles y tareas estándar, política de sueldos/estipendios, manuales y turnos de conciliación familiar.',
+            fields: [
+              'estructura_equipo_organigrama',
+              'perfiles_tareas_tiempos',
+              'politica_sueldos_capacitacion',
+              'manuales_operacion_calidad',
+              'turnos_conciliacion_familiar'
+            ]
+          },
+          {
+            key: 'propuesta_valor_canvas',
+            title: '7. Propuesta de Valor y Modelo de Negocio',
+            description: 'Propuesta de valor, promesa al cliente, Lienzo Canvas resumido de 9 bloques, política de precios y pruebas piloto.',
+            fields: [
+              'propuesta_valor_beneficios',
+              'promesa_experiencia_cliente',
+              'lienzo_canvas_9bloques',
+              'politica_precios_margen',
+              'estrategia_pruebas_aprendizaje'
+            ]
+          }
+        ]
+      },
+      {
+        key: 'unidad_e',
+        title: 'Unidad E · Marketing y Ventas',
+        modules: [
+          {
+            key: 'plan_comercial',
+            title: '8. Plan Comercial',
+            description: 'Marca y mensajes clave, canales de venta, promoción de bajo costo, portafolio de combos, garantías, alianzas y plan 90 días.',
+            fields: [
+              'marca_identidad_mensajes',
+              'canales_venta_distribucion',
+              'promocion_bajo_costo_referidos',
+              'portafolio_paquetes_combos',
+              'servicio_cliente_garantias',
+              'metas_comerciales_kpis',
+              'alianzas_locales_comunitarias',
+              'plan_lanzamiento_90_dias'
+            ]
+          }
+        ]
+      },
+      {
+        key: 'unidad_f',
+        title: 'Unidad F · Finanzas y Factibilidad',
+        modules: [
+          {
+            key: 'plan_financiero',
+            title: '9. Plan Financiero',
+            description: 'Supuestos base, inversión inicial, capital de trabajo, costos fijos/variables, costeo unitario BOM, punto de equilibrio, proyecciones a 12 meses y 3 años, proforma, flujos, balance, indicadores (B/C, ROI, payback), sensibilidad y crédito.',
+            fields: [
+              'supuestos_base_operativa',
+              'presupuesto_inversion_inicial',
+              'capital_trabajo_caja_chica',
+              'costos_fijos_variables',
+              'costeo_unitario_bom',
+              'depreciacion_equipos',
+              'politica_precios_margen_financiero',
+              'punto_equilibrio_unidades_pesos',
+              'proyeccion_ventas_1_3_anos',
+              'estado_resultados_12_meses',
+              'flujo_efectivo_12_meses',
+              'balance_inicial_cierre_ano1',
+              'indicadores_rentabilidad_bc_roi',
+              'analisis_sensibilidad_escenarios',
+              'escenarios_pesimista_base_optimista',
+              'capacidad_pago_credito'
+            ]
+          }
+        ]
+      },
+      {
+        key: 'unidad_g',
+        title: 'Unidad G · Impacto y Gestión de Riesgos',
+        modules: [
+          {
+            key: 'impacto_social_ambiental',
+            title: '10. Impacto Social, Familiar y Ambiental',
+            description: 'Aumento del ingreso familiar, empleos directos e indirectos, inclusión y equidad, prácticas ambientales y alineación con objetivos.',
+            fields: [
+              'aumento_ingreso_familiar',
+              'empleos_directos_indirectos',
+              'enfoque_inclusion_equidad',
+              'practicas_ambientales_verdes',
+              'alineacion_objetivos_comunitarios'
+            ]
+          },
+          {
+            key: 'matriz_riesgos',
+            title: '11. Matriz de Riesgos',
+            description: 'Identificación de riesgos en 4 cuadrantes (mercado, operativo, financiero, legal), probabilidad e impacto, mitigación y plan B.',
+            fields: [
+              'identificacion_riesgos_matriz',
+              'probabilidad_impacto_calificacion',
+              'medidas_mitigacion_preventiva',
+              'plan_b_gatillos_accion'
+            ]
+          }
+        ]
+      },
+      {
+        key: 'unidad_h',
+        title: 'Unidad H · Implementación y Solicitud al Financiador',
+        modules: [
+          {
+            key: 'plan_implementacion',
+            title: '12. Plan de Implementación',
+            description: 'Ruta crítica en Gantt de 12 semanas, hitos semanales, indicadores de avance y plan de contingencias.',
+            fields: [
+              'ruta_critica_gantt_12semanas',
+              'hitos_entregables_semanales',
+              'indicadores_avance_responsables',
+              'plan_contingencias_arranque'
+            ]
+          },
+          {
+            key: 'requerimiento_capital',
+            title: '13. Requerimiento de Capital Inicial',
+            description: 'Monto total solicitado, desglose analítico, aportación propia vs. otras fuentes, cotizaciones de respaldo, impacto antes/después y rendición de cuentas.',
+            fields: [
+              'monto_solicitado_total',
+              'desglose_rubros_destino',
+              'aportacion_propia_fuentes',
+              'evidencias_cotizaciones_proveedor',
+              'impacto_capital_ventas_utilidad',
+              'plan_uso_rendicion_cuentas'
+            ]
+          },
+          {
+            key: 'conclusiones_peticion',
+            title: '14. Conclusiones y Petición Formal',
+            description: 'Argumento de factibilidad técnica/comercial/financiera, compromisos del emprendedor y requerimientos de acompañamiento.',
+            fields: [
+              'argumento_factibilidad_sintesis',
+              'compromisos_metas_emprendedor',
+              'requerimientos_acompanamiento_mentoria'
+            ]
+          }
+        ]
+      },
+      {
+        key: 'unidad_i',
+        title: 'Unidad I · Anexos (Expediente para Revisión)',
+        modules: [
+          {
+            key: 'expediente_anexos',
+            title: 'Expediente de Anexos (A1 a A22)',
+            description: 'Carpeta de evidencias documentales obligatorias para evaluación formal y dictamen de apoyo.',
+            fields: [
+              'checklist_expediente_completo',
+              'identificaciones_comprobantes_a1',
+              'curriculum_emprendedor_a2',
+              'fotografias_productos_a3',
+              'fichas_tecnicas_costeo_a4',
+              'cotizaciones_equipo_insumos_a5',
+              'directorio_proveedores_a6',
+              'encuestas_validacion_a7',
+              'registro_fotografico_espacio_a8',
+              'diagramas_layout_a9',
+              'permisos_avisos_contratos_a10',
+              'tablas_financieras_impresas_a11',
+              'tabla_amortizacion_credito_a12',
+              'cartas_intencion_pedidos_a13',
+              'manuales_operacion_atencion_a14',
+              'politicas_calidad_inocuidad_a15',
+              'bitacora_piloto_aprendizajes_a16',
+              'evidencias_ventas_iniciales_a17',
+              'carta_compromiso_metas_a18',
+              'checklist_firmado_a19',
+              'diagnostico_habilidades_capacitacion_a20',
+              'convenio_convocatoria_a21',
+              'constancias_capacitacion_a22'
+            ]
+          }
+        ]
+      }
+    ]
   }
 };
+
+// Alias de retrocompatibilidad transparente para cafes (no enumerable para mantener conteo canónico exacto)
+Object.defineProperty(FRAMEWORKS, 'cafes', {
+  get() {
+    return FRAMEWORKS.cafes_unison;
+  },
+  enumerable: false,
+  configurable: true
+});
 

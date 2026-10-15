@@ -1,18 +1,18 @@
 {
-  "id": "modulo.cafes.conclusiones_peticion",
-  "title": "14. Conclusiones y Petición Formal de Recursos",
-  "summary": "Argumento integral de factibilidad, compromisos del emprendedor y mentoría/capacitación requerida.",
+  "id": "modulo.cafes_unison.conclusiones_peticion",
+  "title": "14. Conclusiones y Petición Formal",
+  "summary": "Argumento de factibilidad técnica/comercial/financiera, compromisos del emprendedor y requerimientos de acompañamiento.",
   "kind": "modulo",
   "audience": "cliente",
-  "model": "cafes",
+  "model": "cafes_unison",
   "moduleKey": "conclusiones_peticion",
   "pillarKey": "unidad_h",
-  "openUrl": "/cafes/conclusiones_peticion",
+  "openUrl": "/cafes_unison/conclusiones_peticion",
   "fields": [
     {
       "key": "argumento_factibilidad_sintesis",
       "type": "text",
-      "address": "cafes.unidad_h.conclusiones_peticion.argumento_factibilidad_sintesis",
+      "address": "cafes_unison.unidad_h.conclusiones_peticion.argumento_factibilidad_sintesis",
       "prompt": "Resumen contundente que demuestra por qué el proyecto es viable en mercado, técnico, legal, social y financiero.",
       "ejemplo": "Ej: Proyecto con demanda validada en sondeos, capacidad técnica comprobada, margen bruto del 44%, relación B/C de 1.34 y alto impacto en la economía familiar.",
       "benchmark": "Síntesis concluyente para comités de evaluación.",
@@ -22,7 +22,7 @@
     {
       "key": "compromisos_metas_emprendedor",
       "type": "text",
-      "address": "cafes.unidad_h.conclusiones_peticion.compromisos_metas_emprendedor",
+      "address": "cafes_unison.unidad_h.conclusiones_peticion.compromisos_metas_emprendedor",
       "prompt": "Compromisos asumidos por el titular: cumplimiento de metas de producción, asistencia a mentorías y reinversión de utilidades.",
       "ejemplo": "Ej: Compromiso de dedicar 35 horas semanales, mantener en buen estado el equipo, acudir a sesiones de asesoría y reinvertir el 20% de utilidades.",
       "benchmark": "Firma de carta compromiso con metas trimestrales.",
@@ -32,7 +32,7 @@
     {
       "key": "requerimientos_acompanamiento_mentoria",
       "type": "text",
-      "address": "cafes.unidad_h.conclusiones_peticion.requerimientos_acompanamiento_mentoria",
+      "address": "cafes_unison.unidad_h.conclusiones_peticion.requerimientos_acompanamiento_mentoria",
       "prompt": "Tipo de apoyo y mentoría que el emprendedor solicita a la universidad o incubadora para garantizar el éxito del negocio.",
       "ejemplo": "Ej: Asesoría trimestral en revisión de costeo, acompañamiento en trámites fiscales de RESICO y vinculación a ferias comerciales.",
       "benchmark": "Acompañamiento técnico continuo durante los primeros 6 meses.",
@@ -46,7 +46,7 @@
       "id": "uso",
       "title": "Cómo se usa en el plan",
       "audience": "cliente",
-      "markdown": "**Qué es.** Argumento integral de factibilidad, compromisos del emprendedor y mentoría/capacitación requerida.\n\n**Cómo se usa.** Está en el pilar **Unidad H · Implementación y Solicitud al Financiador** del modelo *Plan de Negocios CAFES (Emprendimiento Social y Familiar)*. Se abre en `/cafes/conclusiones_peticion`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 3 campos: `argumento_factibilidad_sintesis`, `compromisos_metas_emprendedor`, `requerimientos_acompanamiento_mentoria`.\n\n**Herramientas del módulo.** Ninguna específica: se apoya en los campos de texto."
+      "markdown": "**Qué es.** Argumento de factibilidad técnica/comercial/financiera, compromisos del emprendedor y requerimientos de acompañamiento.\n\n**Cómo se usa.** Está en el pilar **Unidad H · Implementación y Solicitud al Financiador** del modelo *Plan de Negocios CAFES UNISON*. Se abre en `/cafes_unison/conclusiones_peticion`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 3 campos: `argumento_factibilidad_sintesis`, `compromisos_metas_emprendedor`, `requerimientos_acompanamiento_mentoria`.\n\n**Herramientas del módulo.** Ninguna específica: se apoya en los campos de texto."
     },
     {
       "id": "campos",
@@ -64,13 +64,13 @@
       "id": "porque",
       "title": "Por qué existe",
       "audience": "cliente",
-      "markdown": "Forma parte del pilar **Unidad H · Implementación y Solicitud al Financiador** de *Plan de Negocios CAFES (Emprendimiento Social y Familiar)*. La justificación metodológica completa está en la página del modelo y en `docs/cafes.md`."
+      "markdown": "Forma parte del pilar **Unidad H · Implementación y Solicitud al Financiador** de *Plan de Negocios CAFES UNISON*. La justificación metodológica completa está en la página del modelo y en `docs/cafes.md`."
     },
     {
       "id": "tecnico",
       "title": "Detalles técnicos",
       "audience": "tecnico",
-      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `cafes.unidad_h.conclusiones_peticion.argumento_factibilidad_sintesis` → tipo `text`\n- `cafes.unidad_h.conclusiones_peticion.compromisos_metas_emprendedor` → tipo `text`\n- `cafes.unidad_h.conclusiones_peticion.requerimientos_acompanamiento_mentoria` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas:** `src/config/moduleBoxMap.js` no declara cajas para `cafes:conclusiones_peticion`; la pantalla muestra solo los campos de texto.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `cafes_unison.unidad_h.conclusiones_peticion.argumento_factibilidad_sintesis` → tipo `text`\n- `cafes_unison.unidad_h.conclusiones_peticion.compromisos_metas_emprendedor` → tipo `text`\n- `cafes_unison.unidad_h.conclusiones_peticion.requerimientos_acompanamiento_mentoria` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas:** `src/config/moduleBoxMap.js` no declara cajas para `cafes_unison:conclusiones_peticion`; la pantalla muestra solo los campos de texto.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
     }
   ]
 }

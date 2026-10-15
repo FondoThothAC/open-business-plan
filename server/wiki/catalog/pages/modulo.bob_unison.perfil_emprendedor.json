@@ -1,18 +1,18 @@
 {
-  "id": "modulo.cafes.perfil_emprendedor",
+  "id": "modulo.bob_unison.perfil_emprendedor",
   "title": "1. Perfil del Emprendedor y Diagnóstico Cuántico",
   "summary": "Identificación, historia, horario disponible, Modelo Atómico (3 Áreas) y ruta de independencia.",
   "kind": "modulo",
   "audience": "cliente",
-  "model": "cafes",
+  "model": "bob_unison",
   "moduleKey": "perfil_emprendedor",
   "pillarKey": "unidad_a",
-  "openUrl": "/cafes/perfil_emprendedor",
+  "openUrl": "/bob_unison/perfil_emprendedor",
   "fields": [
     {
       "key": "datos_identificacion",
       "type": "text",
-      "address": "cafes.unidad_a.perfil_emprendedor.datos_identificacion",
+      "address": "bob_unison.unidad_a.perfil_emprendedor.datos_identificacion",
       "prompt": "Nombre completo del emprendedor/a, domicilio del proyecto, teléfono, correo y datos de contacto.",
       "ejemplo": "Ej: María Elena Morales Ruiz, Calle Arizona #142, Col. San Benito, Hermosillo, Sonora. Tel: 662-123-4567.",
       "benchmark": "Expediente con CURP y comprobante de domicilio vigente < 3 meses.",
@@ -22,7 +22,7 @@
     {
       "key": "historia_motivacion",
       "type": "text",
-      "address": "cafes.unidad_a.perfil_emprendedor.historia_motivacion",
+      "address": "bob_unison.unidad_a.perfil_emprendedor.historia_motivacion",
       "prompt": "Historia personal de cómo nació la idea, motivación para emprender y compromiso de vida con el proyecto.",
       "ejemplo": "Ej: Tradición de repostería heredada de mi abuela; deseo de generar ingresos propios para costear la educación de mis hijos.",
       "benchmark": "Compromiso de permanencia y arraigo en la actividad económica.",
@@ -32,7 +32,7 @@
     {
       "key": "experiencia_habilidades",
       "type": "text",
-      "address": "cafes.unidad_a.perfil_emprendedor.experiencia_habilidades",
+      "address": "bob_unison.unidad_a.perfil_emprendedor.experiencia_habilidades",
       "prompt": "Experiencia previa en el oficio, cursos tomados (ej. SAETA, CECATI, ICATSON) y habilidades desarrolladas.",
       "ejemplo": "Ej: 4 años de experiencia en cocina casera, diploma de SAETA en Panadería y Decoración, y manejo básico de redes sociales.",
       "benchmark": "Al menos 1 constancia o evidencia práctica de dominio del oficio.",
@@ -42,7 +42,7 @@
     {
       "key": "horario_apoyo_familiar",
       "type": "text",
-      "address": "cafes.unidad_a.perfil_emprendedor.horario_apoyo_familiar",
+      "address": "bob_unison.unidad_a.perfil_emprendedor.horario_apoyo_familiar",
       "prompt": "Horas semanales disponibles para el negocio y distribución del apoyo familiar para no descuidar el hogar.",
       "ejemplo": "Ej: 35 horas semanales dedicadas; mi esposo apoya con compras matutinas y mi hija mayor ayuda con empaque.",
       "benchmark": "Disponibilidad mínima de 30 horas semanales sin interferir con cuidados esenciales.",
@@ -52,7 +52,7 @@
     {
       "key": "diagnostico_capacitacion",
       "type": "text",
-      "address": "cafes.unidad_a.perfil_emprendedor.diagnostico_capacitacion",
+      "address": "bob_unison.unidad_a.perfil_emprendedor.diagnostico_capacitacion",
       "prompt": "Áreas donde el emprendedor reconoce que necesita capacitarse (administración, costeo, venta digital, calidad).",
       "ejemplo": "Ej: Necesidad de dominar cálculo de precios por costeo unitario y aprender publicidad básica en Facebook e Instagram.",
       "benchmark": "Plan de capacitación de 20 horas en administración y ventas.",
@@ -62,7 +62,7 @@
     {
       "key": "situacion_actual_negocio",
       "type": "text",
-      "address": "cafes.unidad_a.perfil_emprendedor.situacion_actual_negocio",
+      "address": "bob_unison.unidad_a.perfil_emprendedor.situacion_actual_negocio",
       "prompt": "Si el negocio ya opera, describe ventas mensuales actuales, número de clientes y equipo con el que ya cuenta.",
       "ejemplo": "Ej: Opera informalmente desde hace 6 meses con ventas de $8,000 MXN mensuales y cartera de 18 clientes regulares.",
       "benchmark": "Registro de bitácora de ventas o pedidos previos.",
@@ -72,7 +72,7 @@
     {
       "key": "modelo_atomico_evaluacion",
       "type": "text",
-      "address": "cafes.unidad_a.perfil_emprendedor.modelo_atomico_evaluacion",
+      "address": "bob_unison.unidad_a.perfil_emprendedor.modelo_atomico_evaluacion",
       "prompt": "Diagnóstico Cuántico: Evalúa en cuáles de las 3 áreas nucleares (Finanzas, Operativo, Administrativo) es fuerte el fundador y alerta sobre riesgo de fusión atómica.",
       "ejemplo": "Ej: Fuerte en Operativo (elaboración del producto); débil en Finanzas y Administrativo. Alerta de saturación si opera solo.",
       "benchmark": "El fundador solo debe concentrarse en 1 o máximo 2 áreas nucleares.",
@@ -82,7 +82,7 @@
     {
       "key": "plan_delegacion_cuantica",
       "type": "text",
-      "address": "cafes.unidad_a.perfil_emprendedor.plan_delegacion_cuantica",
+      "address": "bob_unison.unidad_a.perfil_emprendedor.plan_delegacion_cuantica",
       "prompt": "Define qué roles o tareas deben delegarse a terceros o familiares complementarios para no sobrecargar al fundador.",
       "ejemplo": "Ej: Se delega la entrega y cobranza al socio familiar; la contabilidad y cálculo fiscal a despacho externo de bajo costo.",
       "benchmark": "Perfiles de puesto claros con responsabilidades y horas asignadas.",
@@ -92,7 +92,7 @@
     {
       "key": "ruta_independencia_fundador",
       "type": "text",
-      "address": "cafes.unidad_a.perfil_emprendedor.ruta_independencia_fundador",
+      "address": "bob_unison.unidad_a.perfil_emprendedor.ruta_independencia_fundador",
       "prompt": "Estrategia para estandarizar recetas, procesos y manuales para que el negocio funcione sin depender 100% de la presencia del fundador.",
       "ejemplo": "Ej: Recetarios estandarizados con gramajes exactos y manual de atención al cliente para que un ayudante produzca con idéntica calidad.",
       "benchmark": "Documentación de procesos clave con capacidad de reemplazo temporal.",
@@ -106,7 +106,7 @@
       "id": "uso",
       "title": "Cómo se usa en el plan",
       "audience": "cliente",
-      "markdown": "**Qué es.** Identificación, historia, horario disponible, Modelo Atómico (3 Áreas) y ruta de independencia.\n\n**Cómo se usa.** Está en el pilar **Unidad A · Resumen y Perfil del Emprendimiento** del modelo *Plan de Negocios CAFES (Emprendimiento Social y Familiar)*. Se abre en `/cafes/perfil_emprendedor`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 9 campos: `datos_identificacion`, `historia_motivacion`, `experiencia_habilidades`, `horario_apoyo_familiar`, `diagnostico_capacitacion`, `situacion_actual_negocio`, `modelo_atomico_evaluacion`, `plan_delegacion_cuantica`, `ruta_independencia_fundador`.\n\n**Herramientas del módulo.** Ninguna específica: se apoya en los campos de texto."
+      "markdown": "**Qué es.** Identificación, historia, horario disponible, Modelo Atómico (3 Áreas) y ruta de independencia.\n\n**Cómo se usa.** Está en el pilar **Unidad A · Resumen y Perfil Cuántico** del modelo *Método Bob 1 UNISON (OBP + Empresas Cuánticas)*. Se abre en `/bob_unison/perfil_emprendedor`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 9 campos: `datos_identificacion`, `historia_motivacion`, `experiencia_habilidades`, `horario_apoyo_familiar`, `diagnostico_capacitacion`, `situacion_actual_negocio`, `modelo_atomico_evaluacion`, `plan_delegacion_cuantica`, `ruta_independencia_fundador`.\n\n**Herramientas del módulo.** Ninguna específica: se apoya en los campos de texto."
     },
     {
       "id": "campos",
@@ -124,13 +124,13 @@
       "id": "porque",
       "title": "Por qué existe",
       "audience": "cliente",
-      "markdown": "Forma parte del pilar **Unidad A · Resumen y Perfil del Emprendimiento** de *Plan de Negocios CAFES (Emprendimiento Social y Familiar)*. La justificación metodológica completa está en la página del modelo y en `docs/cafes.md`."
+      "markdown": "Forma parte del pilar **Unidad A · Resumen y Perfil Cuántico** de *Método Bob 1 UNISON (OBP + Empresas Cuánticas)*. La justificación metodológica completa está en la página del modelo y en `docs/bob_unison.md`."
     },
     {
       "id": "tecnico",
       "title": "Detalles técnicos",
       "audience": "tecnico",
-      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `cafes.unidad_a.perfil_emprendedor.datos_identificacion` → tipo `text`\n- `cafes.unidad_a.perfil_emprendedor.historia_motivacion` → tipo `text`\n- `cafes.unidad_a.perfil_emprendedor.experiencia_habilidades` → tipo `text`\n- `cafes.unidad_a.perfil_emprendedor.horario_apoyo_familiar` → tipo `text`\n- `cafes.unidad_a.perfil_emprendedor.diagnostico_capacitacion` → tipo `text`\n- `cafes.unidad_a.perfil_emprendedor.situacion_actual_negocio` → tipo `text`\n- `cafes.unidad_a.perfil_emprendedor.modelo_atomico_evaluacion` → tipo `text`\n- `cafes.unidad_a.perfil_emprendedor.plan_delegacion_cuantica` → tipo `text`\n- `cafes.unidad_a.perfil_emprendedor.ruta_independencia_fundador` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas:** `src/config/moduleBoxMap.js` no declara cajas para `cafes:perfil_emprendedor`; la pantalla muestra solo los campos de texto.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `bob_unison.unidad_a.perfil_emprendedor.datos_identificacion` → tipo `text`\n- `bob_unison.unidad_a.perfil_emprendedor.historia_motivacion` → tipo `text`\n- `bob_unison.unidad_a.perfil_emprendedor.experiencia_habilidades` → tipo `text`\n- `bob_unison.unidad_a.perfil_emprendedor.horario_apoyo_familiar` → tipo `text`\n- `bob_unison.unidad_a.perfil_emprendedor.diagnostico_capacitacion` → tipo `text`\n- `bob_unison.unidad_a.perfil_emprendedor.situacion_actual_negocio` → tipo `text`\n- `bob_unison.unidad_a.perfil_emprendedor.modelo_atomico_evaluacion` → tipo `text`\n- `bob_unison.unidad_a.perfil_emprendedor.plan_delegacion_cuantica` → tipo `text`\n- `bob_unison.unidad_a.perfil_emprendedor.ruta_independencia_fundador` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas:** `src/config/moduleBoxMap.js` no declara cajas para `bob_unison:perfil_emprendedor`; la pantalla muestra solo los campos de texto.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
     }
   ]
 }

@@ -1,18 +1,18 @@
 {
-  "id": "modulo.cafes.aspectos_legales",
+  "id": "modulo.bob_unison.aspectos_legales",
   "title": "5. Aspectos Legales y Formalización Gradual",
   "summary": "Transición a la formalidad, permisos de uso de suelo/salud, marca, contratos y régimen fiscal RESICO.",
   "kind": "modulo",
   "audience": "cliente",
-  "model": "cafes",
+  "model": "bob_unison",
   "moduleKey": "aspectos_legales",
   "pillarKey": "unidad_d",
-  "openUrl": "/cafes/aspectos_legales",
+  "openUrl": "/bob_unison/aspectos_legales",
   "fields": [
     {
       "key": "esquema_operacion_transicion",
       "type": "text",
-      "address": "cafes.unidad_d.aspectos_legales.esquema_operacion_transicion",
+      "address": "bob_unison.unidad_d.aspectos_legales.esquema_operacion_transicion",
       "prompt": "Estrategia para pasar de la operación informal inicial hacia la formalización legal y fiscal conforme crezca el negocio.",
       "ejemplo": "Ej: Arranque como persona física en autoempleo; registro ante SAT en RESICO al mes 3 tras validar punto de equilibrio.",
       "benchmark": "Ruta de formalización en 3 fases: Validación -> Alta Fiscal -> Afiliación IMSS.",
@@ -22,7 +22,7 @@
     {
       "key": "permisos_avisos_licencias",
       "type": "text",
-      "address": "cafes.unidad_d.aspectos_legales.permisos_avisos_licencias",
+      "address": "bob_unison.unidad_d.aspectos_legales.permisos_avisos_licencias",
       "prompt": "Avisos y trámites obligatorios según el giro: Aviso de funcionamiento sanitario COFEPRIS, uso de suelo municipal y visto bueno de bomberos.",
       "ejemplo": "Ej: Aviso de funcionamiento COFEPRIS de bajo riesgo (trámite gratuito en línea) y anuencia de vecinos para uso habitacional mixto.",
       "benchmark": "Identificación de costos y tiempos de resolución de licencias.",
@@ -32,7 +32,7 @@
     {
       "key": "propiedad_intelectual_marca",
       "type": "text",
-      "address": "cafes.unidad_d.aspectos_legales.propiedad_intelectual_marca",
+      "address": "bob_unison.unidad_d.aspectos_legales.propiedad_intelectual_marca",
       "prompt": "Búsqueda fonética en Marcanet (IMPI) del nombre comercial y estrategia de registro de marca y logotipo.",
       "ejemplo": "Ej: Búsqueda fonética en clase 30 del IMPI sin coincidencias; logotipo registrado en expediente como paso previo a registro formal.",
       "benchmark": "Verificación de no invasión de marcas preexistentes.",
@@ -42,7 +42,7 @@
     {
       "key": "contratos_esenciales",
       "type": "text",
-      "address": "cafes.unidad_d.aspectos_legales.contratos_esenciales",
+      "address": "bob_unison.unidad_d.aspectos_legales.contratos_esenciales",
       "prompt": "Contratos necesarios: comodato de espacio familiar o arrendamiento de local, contratos con proveedores clave y pedidos de clientes.",
       "ejemplo": "Ej: Contrato de comodato por espacio habitacional familiar y notas de pedido con cláusula de anticipo no reembolsable.",
       "benchmark": "Documentación legal básica para evitar controversias familiares.",
@@ -52,7 +52,7 @@
     {
       "key": "cumplimiento_fiscal_resico",
       "type": "text",
-      "address": "cafes.unidad_d.aspectos_legales.cumplimiento_fiscal_resico",
+      "address": "bob_unison.unidad_d.aspectos_legales.cumplimiento_fiscal_resico",
       "prompt": "Régimen fiscal seleccionado (RESICO - Régimen Simplificado de Confianza), tasa de ISR reducida (1%-2.5%) y emisión de facturas electrónicas.",
       "ejemplo": "Ej: Alta en RESICO como Persona Física con Actividad Empresarial con tasa de ISR del 1% sobre ingresos efectivamente cobrados.",
       "benchmark": "Aprovechamiento de las ventajas del RESICO para microempresarios.",
@@ -66,7 +66,7 @@
       "id": "uso",
       "title": "Cómo se usa en el plan",
       "audience": "cliente",
-      "markdown": "**Qué es.** Transición a la formalidad, permisos de uso de suelo/salud, marca, contratos y régimen fiscal RESICO.\n\n**Cómo se usa.** Está en el pilar **Unidad D · Legal, Organización y Modelo Canvas** del modelo *Plan de Negocios CAFES (Emprendimiento Social y Familiar)*. Se abre en `/cafes/aspectos_legales`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 5 campos: `esquema_operacion_transicion`, `permisos_avisos_licencias`, `propiedad_intelectual_marca`, `contratos_esenciales`, `cumplimiento_fiscal_resico`.\n\n**Herramientas del módulo.** Ninguna específica: se apoya en los campos de texto."
+      "markdown": "**Qué es.** Transición a la formalidad, permisos de uso de suelo/salud, marca, contratos y régimen fiscal RESICO.\n\n**Cómo se usa.** Está en el pilar **Unidad D · Legal, Organización Cuántica y Modelo Canvas** del modelo *Método Bob 1 UNISON (OBP + Empresas Cuánticas)*. Se abre en `/bob_unison/aspectos_legales`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 5 campos: `esquema_operacion_transicion`, `permisos_avisos_licencias`, `propiedad_intelectual_marca`, `contratos_esenciales`, `cumplimiento_fiscal_resico`.\n\n**Herramientas del módulo.** Ninguna específica: se apoya en los campos de texto."
     },
     {
       "id": "campos",
@@ -84,13 +84,13 @@
       "id": "porque",
       "title": "Por qué existe",
       "audience": "cliente",
-      "markdown": "Forma parte del pilar **Unidad D · Legal, Organización y Modelo Canvas** de *Plan de Negocios CAFES (Emprendimiento Social y Familiar)*. La justificación metodológica completa está en la página del modelo y en `docs/cafes.md`."
+      "markdown": "Forma parte del pilar **Unidad D · Legal, Organización Cuántica y Modelo Canvas** de *Método Bob 1 UNISON (OBP + Empresas Cuánticas)*. La justificación metodológica completa está en la página del modelo y en `docs/bob_unison.md`."
     },
     {
       "id": "tecnico",
       "title": "Detalles técnicos",
       "audience": "tecnico",
-      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `cafes.unidad_d.aspectos_legales.esquema_operacion_transicion` → tipo `text`\n- `cafes.unidad_d.aspectos_legales.permisos_avisos_licencias` → tipo `text`\n- `cafes.unidad_d.aspectos_legales.propiedad_intelectual_marca` → tipo `text`\n- `cafes.unidad_d.aspectos_legales.contratos_esenciales` → tipo `text`\n- `cafes.unidad_d.aspectos_legales.cumplimiento_fiscal_resico` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas:** `src/config/moduleBoxMap.js` no declara cajas para `cafes:aspectos_legales`; la pantalla muestra solo los campos de texto.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `bob_unison.unidad_d.aspectos_legales.esquema_operacion_transicion` → tipo `text`\n- `bob_unison.unidad_d.aspectos_legales.permisos_avisos_licencias` → tipo `text`\n- `bob_unison.unidad_d.aspectos_legales.propiedad_intelectual_marca` → tipo `text`\n- `bob_unison.unidad_d.aspectos_legales.contratos_esenciales` → tipo `text`\n- `bob_unison.unidad_d.aspectos_legales.cumplimiento_fiscal_resico` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas:** `src/config/moduleBoxMap.js` no declara cajas para `bob_unison:aspectos_legales`; la pantalla muestra solo los campos de texto.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
     }
   ]
 }

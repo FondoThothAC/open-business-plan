@@ -2,25 +2,25 @@
   "schemaVersion": "wiki-catalog-v1",
   "generator": "scripts/generate-wiki-catalog.js",
   "totals": {
-    "models": 13,
-    "pillars": 59,
-    "modules": 158,
-    "fields": 525,
-    "guideTypes": 13,
-    "boxes": 70,
+    "models": 14,
+    "pillars": 68,
+    "modules": 174,
+    "fields": 652,
+    "guideTypes": 15,
+    "boxes": 80,
     "routes": 134,
     "envServerVars": 34,
     "envClientVars": 13,
     "providerHosts": 11,
     "referencePages": 4,
     "archivedPages": 9,
-    "pages": 184,
-    "slugs": 13
+    "pages": 201,
+    "slugs": 15
   },
   "tree": [
     {
       "id": "modelos",
-      "title": "Modelos de plan (13)",
+      "title": "Modelos de plan (14)",
       "children": [
         {
           "id": "modelo.business",
@@ -1247,169 +1247,326 @@
           ]
         },
         {
-          "id": "modelo.cafes",
-          "title": "Plan de Negocios CAFES (Emprendimiento Social y Familiar)",
-          "pageId": "modelo.cafes",
+          "id": "modelo.bob_unison",
+          "title": "Método Bob 1 UNISON (OBP + Empresas Cuánticas)",
+          "pageId": "modelo.bob_unison",
           "children": [
             {
-              "id": "pilar.cafes.unidad_a",
-              "title": "Unidad A · Resumen y Perfil del Emprendimiento",
+              "id": "pilar.bob_unison.unidad_a",
+              "title": "Unidad A · Resumen y Perfil Cuántico",
               "children": [
                 {
-                  "id": "modulo.cafes.resumen_ejecutivo",
+                  "id": "modulo.bob_unison.resumen_ejecutivo",
                   "title": "0. Resumen Ejecutivo Integral",
-                  "pageId": "modulo.cafes.resumen_ejecutivo",
-                  "openUrl": "/cafes/resumen_ejecutivo"
+                  "pageId": "modulo.bob_unison.resumen_ejecutivo",
+                  "openUrl": "/bob_unison/resumen_ejecutivo"
                 },
                 {
-                  "id": "modulo.cafes.perfil_emprendedor",
+                  "id": "modulo.bob_unison.perfil_emprendedor",
                   "title": "1. Perfil del Emprendedor y Diagnóstico Cuántico",
-                  "pageId": "modulo.cafes.perfil_emprendedor",
-                  "openUrl": "/cafes/perfil_emprendedor"
+                  "pageId": "modulo.bob_unison.perfil_emprendedor",
+                  "openUrl": "/bob_unison/perfil_emprendedor"
                 }
               ]
             },
             {
-              "id": "pilar.cafes.unidad_b",
-              "title": "Unidad B · Mercado, Portafolio y Cliente",
+              "id": "pilar.bob_unison.unidad_b",
+              "title": "Unidad B · Mercado, Portafolio y Dimensionamiento Cuantitativo",
               "children": [
                 {
-                  "id": "modulo.cafes.idea_portafolio",
+                  "id": "modulo.bob_unison.idea_portafolio",
                   "title": "2. Idea de Negocio y Portafolio de Productos",
-                  "pageId": "modulo.cafes.idea_portafolio",
-                  "openUrl": "/cafes/idea_portafolio"
+                  "pageId": "modulo.bob_unison.idea_portafolio",
+                  "openUrl": "/bob_unison/idea_portafolio"
                 },
                 {
-                  "id": "modulo.cafes.estudio_mercado",
-                  "title": "3. Estudio de Mercado Práctico y Demanda",
-                  "pageId": "modulo.cafes.estudio_mercado",
-                  "openUrl": "/cafes/estudio_mercado"
+                  "id": "modulo.bob_unison.estudio_mercado",
+                  "title": "3. Estudio de Mercado y Dimensionamiento Cuantitativo",
+                  "pageId": "modulo.bob_unison.estudio_mercado",
+                  "openUrl": "/bob_unison/estudio_mercado"
                 }
               ]
             },
             {
-              "id": "pilar.cafes.unidad_c",
-              "title": "Unidad C · Operaciones, Capacidad y Producción",
+              "id": "pilar.bob_unison.unidad_c",
+              "title": "Unidad C · Operaciones, Cuello de Botella TOC y Capacidad",
               "children": [
                 {
-                  "id": "modulo.cafes.plan_operaciones",
+                  "id": "modulo.bob_unison.plan_operaciones",
                   "title": "4. Plan de Operaciones, Cuello de Botella y Layout",
-                  "pageId": "modulo.cafes.plan_operaciones",
-                  "openUrl": "/cafes/plan_operaciones"
+                  "pageId": "modulo.bob_unison.plan_operaciones",
+                  "openUrl": "/bob_unison/plan_operaciones"
                 }
               ]
             },
             {
-              "id": "pilar.cafes.unidad_d",
-              "title": "Unidad D · Legal, Organización y Modelo Canvas",
+              "id": "pilar.bob_unison.unidad_d",
+              "title": "Unidad D · Legal, Organización Cuántica y Modelo Canvas",
               "children": [
                 {
-                  "id": "modulo.cafes.aspectos_legales",
+                  "id": "modulo.bob_unison.aspectos_legales",
                   "title": "5. Aspectos Legales y Formalización Gradual",
-                  "pageId": "modulo.cafes.aspectos_legales",
-                  "openUrl": "/cafes/aspectos_legales"
+                  "pageId": "modulo.bob_unison.aspectos_legales",
+                  "openUrl": "/bob_unison/aspectos_legales"
                 },
                 {
-                  "id": "modulo.cafes.organizacion_talento",
+                  "id": "modulo.bob_unison.organizacion_talento",
                   "title": "6. Organización, Talento y Modelo Atómico",
-                  "pageId": "modulo.cafes.organizacion_talento",
-                  "openUrl": "/cafes/organizacion_talento"
+                  "pageId": "modulo.bob_unison.organizacion_talento",
+                  "openUrl": "/bob_unison/organizacion_talento"
                 },
                 {
-                  "id": "modulo.cafes.propuesta_valor_canvas",
+                  "id": "modulo.bob_unison.propuesta_valor_canvas",
                   "title": "7. Propuesta de Valor y Lienzo Canvas",
-                  "pageId": "modulo.cafes.propuesta_valor_canvas",
-                  "openUrl": "/cafes/propuesta_valor_canvas"
+                  "pageId": "modulo.bob_unison.propuesta_valor_canvas",
+                  "openUrl": "/bob_unison/propuesta_valor_canvas"
                 }
               ]
             },
             {
-              "id": "pilar.cafes.unidad_e",
+              "id": "pilar.bob_unison.unidad_e",
               "title": "Unidad E · Marketing y Plan Comercial",
               "children": [
                 {
-                  "id": "modulo.cafes.plan_comercial",
+                  "id": "modulo.bob_unison.plan_comercial",
                   "title": "8. Plan Comercial, Canales y Lanzamiento 90 Días",
-                  "pageId": "modulo.cafes.plan_comercial",
-                  "openUrl": "/cafes/plan_comercial"
+                  "pageId": "modulo.bob_unison.plan_comercial",
+                  "openUrl": "/bob_unison/plan_comercial"
                 }
               ]
             },
             {
-              "id": "pilar.cafes.unidad_f",
-              "title": "Unidad F · Finanzas, Factibilidad y Corridas",
+              "id": "pilar.bob_unison.unidad_f",
+              "title": "Unidad F · Finanzas, Factibilidad y Rigor Cuántico",
               "children": [
                 {
-                  "id": "modulo.cafes.plan_financiero",
+                  "id": "modulo.bob_unison.plan_financiero",
                   "title": "9. Plan Financiero, Proyecciones y Rentabilidad (B/C, TIR, VAN)",
-                  "pageId": "modulo.cafes.plan_financiero",
-                  "openUrl": "/cafes/plan_financiero"
+                  "pageId": "modulo.bob_unison.plan_financiero",
+                  "openUrl": "/bob_unison/plan_financiero"
                 }
               ]
             },
             {
-              "id": "pilar.cafes.unidad_g",
+              "id": "pilar.bob_unison.unidad_g",
               "title": "Unidad G · Impacto Social, Familiar y Gestión de Riesgos",
               "children": [
                 {
-                  "id": "modulo.cafes.impacto_social_ambiental",
+                  "id": "modulo.bob_unison.impacto_social_ambiental",
                   "title": "10. Impacto Social, Familiar y Ambiental",
-                  "pageId": "modulo.cafes.impacto_social_ambiental",
-                  "openUrl": "/cafes/impacto_social_ambiental"
+                  "pageId": "modulo.bob_unison.impacto_social_ambiental",
+                  "openUrl": "/bob_unison/impacto_social_ambiental"
                 },
                 {
-                  "id": "modulo.cafes.matriz_riesgos",
+                  "id": "modulo.bob_unison.matriz_riesgos",
                   "title": "11. Matriz de Riesgos y Plan B",
-                  "pageId": "modulo.cafes.matriz_riesgos",
-                  "openUrl": "/cafes/matriz_riesgos"
+                  "pageId": "modulo.bob_unison.matriz_riesgos",
+                  "openUrl": "/bob_unison/matriz_riesgos"
                 }
               ]
             },
             {
-              "id": "pilar.cafes.unidad_h",
+              "id": "pilar.bob_unison.unidad_h",
               "title": "Unidad H · Implementación y Solicitud al Financiador",
               "children": [
                 {
-                  "id": "modulo.cafes.plan_implementacion",
+                  "id": "modulo.bob_unison.plan_implementacion",
                   "title": "12. Plan de Implementación (Ruta Crítica 12 Semanas)",
-                  "pageId": "modulo.cafes.plan_implementacion",
-                  "openUrl": "/cafes/plan_implementacion"
+                  "pageId": "modulo.bob_unison.plan_implementacion",
+                  "openUrl": "/bob_unison/plan_implementacion"
                 },
                 {
-                  "id": "modulo.cafes.requerimiento_capital",
+                  "id": "modulo.bob_unison.requerimiento_capital",
                   "title": "13. Requerimiento de Capital Semilla e Inversión",
-                  "pageId": "modulo.cafes.requerimiento_capital",
-                  "openUrl": "/cafes/requerimiento_capital"
+                  "pageId": "modulo.bob_unison.requerimiento_capital",
+                  "openUrl": "/bob_unison/requerimiento_capital"
                 },
                 {
-                  "id": "modulo.cafes.conclusiones_peticion",
+                  "id": "modulo.bob_unison.conclusiones_peticion",
                   "title": "14. Conclusiones y Petición Formal de Recursos",
-                  "pageId": "modulo.cafes.conclusiones_peticion",
-                  "openUrl": "/cafes/conclusiones_peticion"
+                  "pageId": "modulo.bob_unison.conclusiones_peticion",
+                  "openUrl": "/bob_unison/conclusiones_peticion"
                 }
               ]
             },
             {
-              "id": "pilar.cafes.unidad_i",
+              "id": "pilar.bob_unison.unidad_i",
               "title": "Unidad I · Anexos y Expediente de Verificación",
               "children": [
                 {
-                  "id": "modulo.cafes.expediente_anexos",
+                  "id": "modulo.bob_unison.expediente_anexos",
                   "title": "Anexos (A1 a A22) y Checklist de Control",
-                  "pageId": "modulo.cafes.expediente_anexos",
-                  "openUrl": "/cafes/expediente_anexos"
+                  "pageId": "modulo.bob_unison.expediente_anexos",
+                  "openUrl": "/bob_unison/expediente_anexos"
                 }
               ]
             },
             {
-              "id": "pilar.cafes.simulador_financiero",
+              "id": "pilar.bob_unison.simulador_financiero",
               "title": "Simulador Financiero y Corridas Cuánticas",
               "children": [
                 {
-                  "id": "modulo.cafes.simulador",
+                  "id": "modulo.bob_unison.simulador",
                   "title": "Simulador Financiero y Escenarios Monte Carlo",
-                  "pageId": "modulo.cafes.simulador",
-                  "openUrl": "/cafes/simulador"
+                  "pageId": "modulo.bob_unison.simulador",
+                  "openUrl": "/bob_unison/simulador"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "modelo.cafes_unison",
+          "title": "Plan de Negocios CAFES UNISON",
+          "pageId": "modelo.cafes_unison",
+          "children": [
+            {
+              "id": "pilar.cafes_unison.unidad_a",
+              "title": "Unidad A · Resumen y Perfil del Emprendedor",
+              "children": [
+                {
+                  "id": "modulo.cafes_unison.resumen_ejecutivo",
+                  "title": "0. Resumen Ejecutivo",
+                  "pageId": "modulo.cafes_unison.resumen_ejecutivo",
+                  "openUrl": "/cafes_unison/resumen_ejecutivo"
+                },
+                {
+                  "id": "modulo.cafes_unison.perfil_emprendedor",
+                  "title": "1. Perfil del Emprendedor y del Proyecto",
+                  "pageId": "modulo.cafes_unison.perfil_emprendedor",
+                  "openUrl": "/cafes_unison/perfil_emprendedor"
+                }
+              ]
+            },
+            {
+              "id": "pilar.cafes_unison.unidad_b",
+              "title": "Unidad B · Mercado y Cliente",
+              "children": [
+                {
+                  "id": "modulo.cafes_unison.idea_portafolio",
+                  "title": "2. Idea de Negocio y Portafolio",
+                  "pageId": "modulo.cafes_unison.idea_portafolio",
+                  "openUrl": "/cafes_unison/idea_portafolio"
+                },
+                {
+                  "id": "modulo.cafes_unison.estudio_mercado",
+                  "title": "3. Estudio de Mercado Práctico",
+                  "pageId": "modulo.cafes_unison.estudio_mercado",
+                  "openUrl": "/cafes_unison/estudio_mercado"
+                }
+              ]
+            },
+            {
+              "id": "pilar.cafes_unison.unidad_c",
+              "title": "Unidad C · Propuesta de Valor y Operaciones",
+              "children": [
+                {
+                  "id": "modulo.cafes_unison.plan_operaciones",
+                  "title": "4. Plan de Operaciones y Producción",
+                  "pageId": "modulo.cafes_unison.plan_operaciones",
+                  "openUrl": "/cafes_unison/plan_operaciones"
+                }
+              ]
+            },
+            {
+              "id": "pilar.cafes_unison.unidad_d",
+              "title": "Unidad D · Legal y Organización",
+              "children": [
+                {
+                  "id": "modulo.cafes_unison.aspectos_legales",
+                  "title": "5. Aspectos Legales y Regulatorios",
+                  "pageId": "modulo.cafes_unison.aspectos_legales",
+                  "openUrl": "/cafes_unison/aspectos_legales"
+                },
+                {
+                  "id": "modulo.cafes_unison.organizacion_talento",
+                  "title": "6. Organización y Talento",
+                  "pageId": "modulo.cafes_unison.organizacion_talento",
+                  "openUrl": "/cafes_unison/organizacion_talento"
+                },
+                {
+                  "id": "modulo.cafes_unison.propuesta_valor_canvas",
+                  "title": "7. Propuesta de Valor y Modelo de Negocio",
+                  "pageId": "modulo.cafes_unison.propuesta_valor_canvas",
+                  "openUrl": "/cafes_unison/propuesta_valor_canvas"
+                }
+              ]
+            },
+            {
+              "id": "pilar.cafes_unison.unidad_e",
+              "title": "Unidad E · Marketing y Ventas",
+              "children": [
+                {
+                  "id": "modulo.cafes_unison.plan_comercial",
+                  "title": "8. Plan Comercial",
+                  "pageId": "modulo.cafes_unison.plan_comercial",
+                  "openUrl": "/cafes_unison/plan_comercial"
+                }
+              ]
+            },
+            {
+              "id": "pilar.cafes_unison.unidad_f",
+              "title": "Unidad F · Finanzas y Factibilidad",
+              "children": [
+                {
+                  "id": "modulo.cafes_unison.plan_financiero",
+                  "title": "9. Plan Financiero",
+                  "pageId": "modulo.cafes_unison.plan_financiero",
+                  "openUrl": "/cafes_unison/plan_financiero"
+                }
+              ]
+            },
+            {
+              "id": "pilar.cafes_unison.unidad_g",
+              "title": "Unidad G · Impacto y Gestión de Riesgos",
+              "children": [
+                {
+                  "id": "modulo.cafes_unison.impacto_social_ambiental",
+                  "title": "10. Impacto Social, Familiar y Ambiental",
+                  "pageId": "modulo.cafes_unison.impacto_social_ambiental",
+                  "openUrl": "/cafes_unison/impacto_social_ambiental"
+                },
+                {
+                  "id": "modulo.cafes_unison.matriz_riesgos",
+                  "title": "11. Matriz de Riesgos",
+                  "pageId": "modulo.cafes_unison.matriz_riesgos",
+                  "openUrl": "/cafes_unison/matriz_riesgos"
+                }
+              ]
+            },
+            {
+              "id": "pilar.cafes_unison.unidad_h",
+              "title": "Unidad H · Implementación y Solicitud al Financiador",
+              "children": [
+                {
+                  "id": "modulo.cafes_unison.plan_implementacion",
+                  "title": "12. Plan de Implementación",
+                  "pageId": "modulo.cafes_unison.plan_implementacion",
+                  "openUrl": "/cafes_unison/plan_implementacion"
+                },
+                {
+                  "id": "modulo.cafes_unison.requerimiento_capital",
+                  "title": "13. Requerimiento de Capital Inicial",
+                  "pageId": "modulo.cafes_unison.requerimiento_capital",
+                  "openUrl": "/cafes_unison/requerimiento_capital"
+                },
+                {
+                  "id": "modulo.cafes_unison.conclusiones_peticion",
+                  "title": "14. Conclusiones y Petición Formal",
+                  "pageId": "modulo.cafes_unison.conclusiones_peticion",
+                  "openUrl": "/cafes_unison/conclusiones_peticion"
+                }
+              ]
+            },
+            {
+              "id": "pilar.cafes_unison.unidad_i",
+              "title": "Unidad I · Anexos (Expediente para Revisión)",
+              "children": [
+                {
+                  "id": "modulo.cafes_unison.expediente_anexos",
+                  "title": "Expediente de Anexos (A1 a A22)",
+                  "pageId": "modulo.cafes_unison.expediente_anexos",
+                  "openUrl": "/cafes_unison/expediente_anexos"
                 }
               ]
             }
@@ -1580,10 +1737,17 @@
       "kind": "modelo",
       "audience": "cliente"
     },
-    "modelo.cafes": {
-      "file": "pages/modelo.cafes.json",
-      "title": "Plan de Negocios CAFES (Emprendimiento Social y Familiar)",
+    "modelo.bob_unison": {
+      "file": "pages/modelo.bob_unison.json",
+      "title": "Método Bob 1 UNISON (OBP + Empresas Cuánticas)",
       "summary": "Modelo de plan con 17 módulos y 131 campos.",
+      "kind": "modelo",
+      "audience": "cliente"
+    },
+    "modelo.cafes_unison": {
+      "file": "pages/modelo.cafes_unison.json",
+      "title": "Plan de Negocios CAFES UNISON",
+      "summary": "Modelo de plan con 16 módulos y 127 campos.",
       "kind": "modelo",
       "audience": "cliente"
     },
@@ -2715,141 +2879,269 @@
       "audience": "cliente",
       "openUrl": "/onudi_project/simulador"
     },
-    "modulo.cafes.resumen_ejecutivo": {
-      "file": "pages/modulo.cafes.resumen_ejecutivo.json",
+    "modulo.bob_unison.resumen_ejecutivo": {
+      "file": "pages/modulo.bob_unison.resumen_ejecutivo.json",
       "title": "0. Resumen Ejecutivo Integral",
       "summary": "Síntesis ejecutiva de oportunidad, propuesta de valor, demanda, inversión y viabilidad.",
       "kind": "modulo",
       "audience": "cliente",
-      "openUrl": "/cafes/resumen_ejecutivo"
+      "openUrl": "/bob_unison/resumen_ejecutivo"
     },
-    "modulo.cafes.perfil_emprendedor": {
-      "file": "pages/modulo.cafes.perfil_emprendedor.json",
+    "modulo.bob_unison.perfil_emprendedor": {
+      "file": "pages/modulo.bob_unison.perfil_emprendedor.json",
       "title": "1. Perfil del Emprendedor y Diagnóstico Cuántico",
       "summary": "Identificación, historia, horario disponible, Modelo Atómico (3 Áreas) y ruta de independencia.",
       "kind": "modulo",
       "audience": "cliente",
-      "openUrl": "/cafes/perfil_emprendedor"
+      "openUrl": "/bob_unison/perfil_emprendedor"
     },
-    "modulo.cafes.idea_portafolio": {
-      "file": "pages/modulo.cafes.idea_portafolio.json",
+    "modulo.bob_unison.idea_portafolio": {
+      "file": "pages/modulo.bob_unison.idea_portafolio.json",
       "title": "2. Idea de Negocio y Portafolio de Productos",
       "summary": "Fichas técnicas, BOM de insumos, presentaciones, calidad e inocuidad alimentaria/comercial.",
       "kind": "modulo",
       "audience": "cliente",
-      "openUrl": "/cafes/idea_portafolio"
+      "openUrl": "/bob_unison/idea_portafolio"
     },
-    "modulo.cafes.estudio_mercado": {
-      "file": "pages/modulo.cafes.estudio_mercado.json",
-      "title": "3. Estudio de Mercado Práctico y Demanda",
+    "modulo.bob_unison.estudio_mercado": {
+      "file": "pages/modulo.bob_unison.estudio_mercado.json",
+      "title": "3. Estudio de Mercado y Dimensionamiento Cuantitativo",
       "summary": "Segmento, competencia local (3 mínimo), validación, estacionalidad y dimensionamiento TAM/SAM/SOM.",
       "kind": "modulo",
       "audience": "cliente",
-      "openUrl": "/cafes/estudio_mercado"
+      "openUrl": "/bob_unison/estudio_mercado"
     },
-    "modulo.cafes.plan_operaciones": {
-      "file": "pages/modulo.cafes.plan_operaciones.json",
+    "modulo.bob_unison.plan_operaciones": {
+      "file": "pages/modulo.bob_unison.plan_operaciones.json",
       "title": "4. Plan de Operaciones, Cuello de Botella y Layout",
       "summary": "Flujo del proceso, cuello de botella (TOC), programa productivo, proveedores, layout y logística.",
       "kind": "modulo",
       "audience": "cliente",
-      "openUrl": "/cafes/plan_operaciones"
+      "openUrl": "/bob_unison/plan_operaciones"
     },
-    "modulo.cafes.aspectos_legales": {
-      "file": "pages/modulo.cafes.aspectos_legales.json",
+    "modulo.bob_unison.aspectos_legales": {
+      "file": "pages/modulo.bob_unison.aspectos_legales.json",
       "title": "5. Aspectos Legales y Formalización Gradual",
       "summary": "Transición a la formalidad, permisos de uso de suelo/salud, marca, contratos y régimen fiscal RESICO.",
       "kind": "modulo",
       "audience": "cliente",
-      "openUrl": "/cafes/aspectos_legales"
+      "openUrl": "/bob_unison/aspectos_legales"
     },
-    "modulo.cafes.organizacion_talento": {
-      "file": "pages/modulo.cafes.organizacion_talento.json",
+    "modulo.bob_unison.organizacion_talento": {
+      "file": "pages/modulo.bob_unison.organizacion_talento.json",
       "title": "6. Organización, Talento y Modelo Atómico",
       "summary": "Estructura del equipo, tareas estándar, salarios con carga patronal, manuales y turnos familiares.",
       "kind": "modulo",
       "audience": "cliente",
-      "openUrl": "/cafes/organizacion_talento"
+      "openUrl": "/bob_unison/organizacion_talento"
     },
-    "modulo.cafes.propuesta_valor_canvas": {
-      "file": "pages/modulo.cafes.propuesta_valor_canvas.json",
+    "modulo.bob_unison.propuesta_valor_canvas": {
+      "file": "pages/modulo.bob_unison.propuesta_valor_canvas.json",
       "title": "7. Propuesta de Valor y Lienzo Canvas",
       "summary": "Propuesta de valor, promesa de servicio, Canvas de 9 bloques, política de precios y pruebas piloto.",
       "kind": "modulo",
       "audience": "cliente",
-      "openUrl": "/cafes/propuesta_valor_canvas"
+      "openUrl": "/bob_unison/propuesta_valor_canvas"
     },
-    "modulo.cafes.plan_comercial": {
-      "file": "pages/modulo.cafes.plan_comercial.json",
+    "modulo.bob_unison.plan_comercial": {
+      "file": "pages/modulo.bob_unison.plan_comercial.json",
       "title": "8. Plan Comercial, Canales y Lanzamiento 90 Días",
       "summary": "Identidad de marca, canales (WhatsApp, ferias), promoción de bajo costo, garantías, alianzas y plan 90 días.",
       "kind": "modulo",
       "audience": "cliente",
-      "openUrl": "/cafes/plan_comercial"
+      "openUrl": "/bob_unison/plan_comercial"
     },
-    "modulo.cafes.plan_financiero": {
-      "file": "pages/modulo.cafes.plan_financiero.json",
+    "modulo.bob_unison.plan_financiero": {
+      "file": "pages/modulo.bob_unison.plan_financiero.json",
       "title": "9. Plan Financiero, Proyecciones y Rentabilidad (B/C, TIR, VAN)",
       "summary": "Inversión inicial, capital de trabajo, costos fijos/variables, BOM, punto de equilibrio, proyecciones a 12 meses y 3 años, rentabilidad (B/C, ROI, VAN, TIR), sensibilidad y capaci…",
       "kind": "modulo",
       "audience": "cliente",
-      "openUrl": "/cafes/plan_financiero"
+      "openUrl": "/bob_unison/plan_financiero"
     },
-    "modulo.cafes.impacto_social_ambiental": {
-      "file": "pages/modulo.cafes.impacto_social_ambiental.json",
+    "modulo.bob_unison.impacto_social_ambiental": {
+      "file": "pages/modulo.bob_unison.impacto_social_ambiental.json",
       "title": "10. Impacto Social, Familiar y Ambiental",
       "summary": "Elevación del ingreso familiar, empleos generados, equidad de género, prácticas verdes y alineación a metas.",
       "kind": "modulo",
       "audience": "cliente",
-      "openUrl": "/cafes/impacto_social_ambiental"
+      "openUrl": "/bob_unison/impacto_social_ambiental"
     },
-    "modulo.cafes.matriz_riesgos": {
-      "file": "pages/modulo.cafes.matriz_riesgos.json",
+    "modulo.bob_unison.matriz_riesgos": {
+      "file": "pages/modulo.bob_unison.matriz_riesgos.json",
       "title": "11. Matriz de Riesgos y Plan B",
       "summary": "Identificación de riesgos de mercado, operativos, financieros y legales, probabilidad/impacto, mitigación y gatillos Plan B.",
       "kind": "modulo",
       "audience": "cliente",
-      "openUrl": "/cafes/matriz_riesgos"
+      "openUrl": "/bob_unison/matriz_riesgos"
     },
-    "modulo.cafes.plan_implementacion": {
-      "file": "pages/modulo.cafes.plan_implementacion.json",
+    "modulo.bob_unison.plan_implementacion": {
+      "file": "pages/modulo.bob_unison.plan_implementacion.json",
       "title": "12. Plan de Implementación (Ruta Crítica 12 Semanas)",
       "summary": "Gantt de arranque, entregables semanales, responsables, KPIs de avance y contingencias.",
       "kind": "modulo",
       "audience": "cliente",
-      "openUrl": "/cafes/plan_implementacion"
+      "openUrl": "/bob_unison/plan_implementacion"
     },
-    "modulo.cafes.requerimiento_capital": {
-      "file": "pages/modulo.cafes.requerimiento_capital.json",
+    "modulo.bob_unison.requerimiento_capital": {
+      "file": "pages/modulo.bob_unison.requerimiento_capital.json",
       "title": "13. Requerimiento de Capital Semilla e Inversión",
       "summary": "Monto solicitado, desglose por rubro, aportación propia en especie/efectivo, cotizaciones, impacto marginal antes/después y comprobación.",
       "kind": "modulo",
       "audience": "cliente",
-      "openUrl": "/cafes/requerimiento_capital"
+      "openUrl": "/bob_unison/requerimiento_capital"
     },
-    "modulo.cafes.conclusiones_peticion": {
-      "file": "pages/modulo.cafes.conclusiones_peticion.json",
+    "modulo.bob_unison.conclusiones_peticion": {
+      "file": "pages/modulo.bob_unison.conclusiones_peticion.json",
       "title": "14. Conclusiones y Petición Formal de Recursos",
       "summary": "Argumento integral de factibilidad, compromisos del emprendedor y mentoría/capacitación requerida.",
       "kind": "modulo",
       "audience": "cliente",
-      "openUrl": "/cafes/conclusiones_peticion"
+      "openUrl": "/bob_unison/conclusiones_peticion"
     },
-    "modulo.cafes.expediente_anexos": {
-      "file": "pages/modulo.cafes.expediente_anexos.json",
+    "modulo.bob_unison.expediente_anexos": {
+      "file": "pages/modulo.bob_unison.expediente_anexos.json",
       "title": "Anexos (A1 a A22) y Checklist de Control",
       "summary": "Expediente documental completo para comités de evaluación, convocatorias y financiamiento.",
       "kind": "modulo",
       "audience": "cliente",
-      "openUrl": "/cafes/expediente_anexos"
+      "openUrl": "/bob_unison/expediente_anexos"
     },
-    "modulo.cafes.simulador": {
-      "file": "pages/modulo.cafes.simulador.json",
+    "modulo.bob_unison.simulador": {
+      "file": "pages/modulo.bob_unison.simulador.json",
       "title": "Simulador Financiero y Escenarios Monte Carlo",
       "summary": "Simulador interactivo con cálculo automático de estados proforma, punto de equilibrio, B/C, TIR, VAN y análisis de estrés.",
       "kind": "modulo",
       "audience": "cliente",
-      "openUrl": "/cafes/simulador"
+      "openUrl": "/bob_unison/simulador"
+    },
+    "modulo.cafes_unison.resumen_ejecutivo": {
+      "file": "pages/modulo.cafes_unison.resumen_ejecutivo.json",
+      "title": "0. Resumen Ejecutivo",
+      "summary": "Síntesis ejecutiva de los 14 incisos oficiales del programa docente de CAFES.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/cafes_unison/resumen_ejecutivo"
+    },
+    "modulo.cafes_unison.perfil_emprendedor": {
+      "file": "pages/modulo.cafes_unison.perfil_emprendedor.json",
+      "title": "1. Perfil del Emprendedor y del Proyecto",
+      "summary": "Datos de identificación, historia, habilidades, horario disponible, capacitación y situación actual.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/cafes_unison/perfil_emprendedor"
+    },
+    "modulo.cafes_unison.idea_portafolio": {
+      "file": "pages/modulo.cafes_unison.idea_portafolio.json",
+      "title": "2. Idea de Negocio y Portafolio",
+      "summary": "Descripción de productos, fichas técnicas con receta/BOM, presentaciones, inocuidad y alcance inicial.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/cafes_unison/idea_portafolio"
+    },
+    "modulo.cafes_unison.estudio_mercado": {
+      "file": "pages/modulo.cafes_unison.estudio_mercado.json",
+      "title": "3. Estudio de Mercado Práctico",
+      "summary": "Segmento de cliente, necesidades, competencia local (mínimo 3), diferenciadores, validación y estimación de demanda.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/cafes_unison/estudio_mercado"
+    },
+    "modulo.cafes_unison.plan_operaciones": {
+      "file": "pages/modulo.cafes_unison.plan_operaciones.json",
+      "title": "4. Plan de Operaciones y Producción",
+      "summary": "Flujo del proceso, capacidad instalada y cuello de botella, programa de producción, insumos, equipos, layout y logística.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/cafes_unison/plan_operaciones"
+    },
+    "modulo.cafes_unison.aspectos_legales": {
+      "file": "pages/modulo.cafes_unison.aspectos_legales.json",
+      "title": "5. Aspectos Legales y Regulatorios",
+      "summary": "Esquema de operación, permisos/avisos (COFEPRIS, uso de suelo), marca, contratos esenciales y régimen fiscal RESICO.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/cafes_unison/aspectos_legales"
+    },
+    "modulo.cafes_unison.organizacion_talento": {
+      "file": "pages/modulo.cafes_unison.organizacion_talento.json",
+      "title": "6. Organización y Talento",
+      "summary": "Estructura del equipo, perfiles y tareas estándar, política de sueldos/estipendios, manuales y turnos de conciliación familiar.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/cafes_unison/organizacion_talento"
+    },
+    "modulo.cafes_unison.propuesta_valor_canvas": {
+      "file": "pages/modulo.cafes_unison.propuesta_valor_canvas.json",
+      "title": "7. Propuesta de Valor y Modelo de Negocio",
+      "summary": "Propuesta de valor, promesa al cliente, Lienzo Canvas resumido de 9 bloques, política de precios y pruebas piloto.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/cafes_unison/propuesta_valor_canvas"
+    },
+    "modulo.cafes_unison.plan_comercial": {
+      "file": "pages/modulo.cafes_unison.plan_comercial.json",
+      "title": "8. Plan Comercial",
+      "summary": "Marca y mensajes clave, canales de venta, promoción de bajo costo, portafolio de combos, garantías, alianzas y plan 90 días.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/cafes_unison/plan_comercial"
+    },
+    "modulo.cafes_unison.plan_financiero": {
+      "file": "pages/modulo.cafes_unison.plan_financiero.json",
+      "title": "9. Plan Financiero",
+      "summary": "Supuestos base, inversión inicial, capital de trabajo, costos fijos/variables, costeo unitario BOM, punto de equilibrio, proyecciones a 12 meses y 3 años, proforma, flujos, balanc…",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/cafes_unison/plan_financiero"
+    },
+    "modulo.cafes_unison.impacto_social_ambiental": {
+      "file": "pages/modulo.cafes_unison.impacto_social_ambiental.json",
+      "title": "10. Impacto Social, Familiar y Ambiental",
+      "summary": "Aumento del ingreso familiar, empleos directos e indirectos, inclusión y equidad, prácticas ambientales y alineación con objetivos.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/cafes_unison/impacto_social_ambiental"
+    },
+    "modulo.cafes_unison.matriz_riesgos": {
+      "file": "pages/modulo.cafes_unison.matriz_riesgos.json",
+      "title": "11. Matriz de Riesgos",
+      "summary": "Identificación de riesgos en 4 cuadrantes (mercado, operativo, financiero, legal), probabilidad e impacto, mitigación y plan B.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/cafes_unison/matriz_riesgos"
+    },
+    "modulo.cafes_unison.plan_implementacion": {
+      "file": "pages/modulo.cafes_unison.plan_implementacion.json",
+      "title": "12. Plan de Implementación",
+      "summary": "Ruta crítica en Gantt de 12 semanas, hitos semanales, indicadores de avance y plan de contingencias.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/cafes_unison/plan_implementacion"
+    },
+    "modulo.cafes_unison.requerimiento_capital": {
+      "file": "pages/modulo.cafes_unison.requerimiento_capital.json",
+      "title": "13. Requerimiento de Capital Inicial",
+      "summary": "Monto total solicitado, desglose analítico, aportación propia vs. otras fuentes, cotizaciones de respaldo, impacto antes/después y rendición de cuentas.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/cafes_unison/requerimiento_capital"
+    },
+    "modulo.cafes_unison.conclusiones_peticion": {
+      "file": "pages/modulo.cafes_unison.conclusiones_peticion.json",
+      "title": "14. Conclusiones y Petición Formal",
+      "summary": "Argumento de factibilidad técnica/comercial/financiera, compromisos del emprendedor y requerimientos de acompañamiento.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/cafes_unison/conclusiones_peticion"
+    },
+    "modulo.cafes_unison.expediente_anexos": {
+      "file": "pages/modulo.cafes_unison.expediente_anexos.json",
+      "title": "Expediente de Anexos (A1 a A22)",
+      "summary": "Carpeta de evidencias documentales obligatorias para evaluación formal y dictamen de apoyo.",
+      "kind": "modulo",
+      "audience": "cliente",
+      "openUrl": "/cafes_unison/expediente_anexos"
     },
     "referencia-apis": {
       "file": "pages/referencia-apis.json",

@@ -45,9 +45,15 @@ export const FRAMEWORK_SLUG_MAP = {
   'guanxi_plan': 'guanxi_plan',
   'onudi': 'onudi_project',
   'onudi_project': 'onudi_project',
-  'cafes': 'cafes',
-  'plan-cafes': 'cafes',
-  'metodo-cafes': 'cafes'
+  'cafes': 'cafes_unison',
+  'plan-cafes': 'cafes_unison',
+  'metodo-cafes': 'cafes_unison',
+  'cafes-unison': 'cafes_unison',
+  'cafes_unison': 'cafes_unison',
+  'bob-unison': 'bob_unison',
+  'metodo-bob': 'bob_unison',
+  'bob1-unison': 'bob_unison',
+  'bob_unison': 'bob_unison'
 };
 
 /**
@@ -66,7 +72,9 @@ export const REVERSE_FRAMEWORK_SLUG_MAP = {
   amoeba_management: 'amoeba',
   guanxi_plan: 'guanxi',
   onudi_project: 'onudi',
-  cafes: 'plan-cafes'
+  cafes: 'plan-cafes',
+  cafes_unison: 'plan-cafes',
+  bob_unison: 'metodo-bob'
 };
 
 /**

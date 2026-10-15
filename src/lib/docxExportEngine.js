@@ -106,9 +106,11 @@ export function buildDocxDocument(project = {}, options = {}) {
   const scope = options.scope || 'executive';
   const nombreEmpresa = project.companyName || project.nombre || 'Plan de Negocios';
   const sector = project.sector || project.semilla?.negocio?.giro || 'Sector Agroindustrial / Alimentos';
-  const frameworkKey = project.framework || project.config?.projectType || 'business';
+  const frameworkKey = project.framework || project.config?.framework || project.config?.projectType || 'business';
   const activeFw = FRAMEWORKS[frameworkKey] || FRAMEWORKS.business;
   const metodologia = activeFw?.name || 'Plan de Negocios Tradicional';
+  const totalFrameworks = Object.keys(FRAMEWORKS).length;
+  const isCafes = frameworkKey === 'cafes_unison' || frameworkKey === 'cafes';
   const fecha = new Date().toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' });
 
   // Inversión Requerida dinámica
@@ -116,7 +118,8 @@ export function buildDocxDocument(project = {}, options = {}) {
                          project.inversionRequerida ||
                          project.resumen_ejecutivo?.elevator_pitch?.ask ||
                          (project.resumen_ejecutivo?.dictamen_viabilidad?.fase1?.monto_requerido ? `$${project.resumen_ejecutivo.dictamen_viabilidad.fase1.monto_requerido.toLocaleString('es-MX')} MXN` : null) ||
-                         '$4,000,000 MXN';
+                         (project.config?.fichaDrivers?.inversionTotalRequerida ? `$${project.config.fichaDrivers.inversionTotalRequerida.toLocaleString('es-MX')} MXN` : null) ||
+                         '$150,000 MXN';
 
   const children = [];
 
@@ -141,8 +144,8 @@ export function buildDocxDocument(project = {}, options = {}) {
       children: [
         new TextRun({
           text: scope === 'executive' 
-            ? 'DOSSIER EJECUTIVO & DICTAMEN DE VIABILIDAD FINANCIERA'
-            : 'PLAN ESTRATÉGICO INTEGRAL (DOCUMENTO MAESTRO 12 METODOLOGÍAS)',
+            ? (isCafes ? 'PLAN DE NEGOCIOS ACADÉMICO — CAFES UNISON' : 'DOSSIER EJECUTIVO & DICTAMEN DE VIABILIDAD FINANCIERA')
+            : `PLAN ESTRATÉGICO INTEGRAL (DOCUMENTO MAESTRO ${totalFrameworks} METODOLOGÍAS)`,
           bold: true,
           size: 20,
           color: COLORS.ACCENT,
@@ -162,7 +165,7 @@ export function buildDocxDocument(project = {}, options = {}) {
         new TextRun({ 
           text: scope === 'executive'
             ? `Metodología Base: ${metodologia} (Enfoque Ejecutivo Canónico)`
-            : `Metodología Base: ${metodologia} (Integración Completa de 12 Frameworks)`, 
+            : `Metodología Base: ${metodologia} (Integración Completa de ${totalFrameworks} Frameworks)`, 
           size: 17, 
           color: COLORS.MUTED, 
           font: 'Arial' 
@@ -234,8 +237,8 @@ export function buildDocxDocument(project = {}, options = {}) {
     new Paragraph({ pageBreakBefore: true }) // Salto a Sección Ejecutiva
   );
 
-  // 2. RESUMEN EJECUTIVO & ESTRATEGIA EN DOS FASES CUÁNTICAS
-  const resumen = project.resumen_ejecutivo || {};
+  // 2. RESUMEN EJECUTIVO & ESTRATEGIA SEGÚN METODOLOGÍA
+  const resumen = project.resumen_ejecutivo || project.unidad_a_perfil?.resumen_ejecutivo || {};
   const dictamen = resumen.dictamen_viabilidad || {};
 
   children.push(
@@ -243,7 +246,14 @@ export function buildDocxDocument(project = {}, options = {}) {
       heading: HeadingLevel.HEADING_1,
       spacing: { before: 180, after: 160 },
       children: [
-        new TextRun({ text: '1. Resumen Ejecutivo & Estrategia de Escalamiento Cuántico', bold: true, color: COLORS.PRIMARY, font: 'Arial' })
+        new TextRun({ 
+          text: isCafes 
+            ? '1. Resumen Ejecutivo del Plan de Negocios (CAFES UNISON)' 
+            : '1. Resumen Ejecutivo & Estrategia de Escalamiento Cuántico', 
+          bold: true, 
+          color: COLORS.PRIMARY, 
+          font: 'Arial' 
+        })
       ]
     }),
     new Paragraph({
@@ -252,7 +262,7 @@ export function buildDocxDocument(project = {}, options = {}) {
         new TextRun({
           text: resumen.elevator_pitch?.problema && resumen.elevator_pitch?.solucion
             ? `${resumen.elevator_pitch.solucion} Enfoque de mitigación: ${resumen.elevator_pitch.problema}`
-            : project.descripcion || 'Plan estratégico enfocado en optimizar el modelo operativo y comercial con alta rentabilidad y control de riesgos.',
+            : (resumen.resumen_ejecutivo || project.descripcion || 'Plan estratégico enfocado en optimizar el modelo operativo y comercial con alta rentabilidad y control de riesgos.'),
           size: 19,
           font: 'Arial'
         })
@@ -300,7 +310,7 @@ export function buildDocxDocument(project = {}, options = {}) {
   // 3. ESTADOS FINANCIEROS Y CORRIDA AUTOMÁTICA
   let corridaData = null;
   try {
-    const rawCorrida = project.organizacion?.estados_financieros?.corrida_automatica;
+    const rawCorrida = project.organizacion?.estados_financieros?.corrida_automatica || project.unidad_f_financiero?.plan_financiero_integral?.corrida_automatica;
     if (rawCorrida && typeof rawCorrida === 'string') {
       corridaData = JSON.parse(rawCorrida);
     } else if (rawCorrida && typeof rawCorrida === 'object') {
@@ -422,7 +432,7 @@ export function buildDocxDocument(project = {}, options = {}) {
         new TextRun({ 
           text: scope === 'executive' 
             ? '3. Módulos Estratégicos del Plan de Negocios' 
-            : '3. Desarrollo Exhaustivo Multimetodología (12 Frameworks)', 
+            : `3. Desarrollo Exhaustivo Multimetodología (${totalFrameworks} Frameworks)`, 
           bold: true, 
           color: COLORS.PRIMARY, 
           font: 'Arial' 
@@ -505,7 +515,7 @@ export function buildDocxDocument(project = {}, options = {}) {
       });
     });
   } else {
-    // Modo Maestro (12 Metodologías): Recorrer todas las metodologías de FRAMEWORKS
+    // Modo Maestro (14 Metodologías): Recorrer todas las metodologías de FRAMEWORKS
     let fwIndex = 1;
     Object.entries(FRAMEWORKS).forEach(([fwId, fwConfig]) => {
       children.push(

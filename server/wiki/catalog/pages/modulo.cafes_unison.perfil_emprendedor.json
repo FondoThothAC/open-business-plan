@@ -1,0 +1,106 @@
+{
+  "id": "modulo.cafes_unison.perfil_emprendedor",
+  "title": "1. Perfil del Emprendedor y del Proyecto",
+  "summary": "Datos de identificación, historia, habilidades, horario disponible, capacitación y situación actual.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "cafes_unison",
+  "moduleKey": "perfil_emprendedor",
+  "pillarKey": "unidad_a",
+  "openUrl": "/cafes_unison/perfil_emprendedor",
+  "fields": [
+    {
+      "key": "datos_identificacion",
+      "type": "text",
+      "address": "cafes_unison.unidad_a.perfil_emprendedor.datos_identificacion",
+      "prompt": "Nombre completo del emprendedor/a, domicilio del proyecto, teléfono, correo y datos de contacto.",
+      "ejemplo": "Ej: María Elena Morales Ruiz, Calle Arizona #142, Col. San Benito, Hermosillo, Sonora. Tel: 662-123-4567.",
+      "benchmark": "Expediente con CURP y comprobante de domicilio vigente < 3 meses.",
+      "cita": "Manual de Convocatorias CAFES-UNISON",
+      "placeholder": "Datos de contacto e identificación del titular..."
+    },
+    {
+      "key": "historia_motivacion",
+      "type": "text",
+      "address": "cafes_unison.unidad_a.perfil_emprendedor.historia_motivacion",
+      "prompt": "Historia personal de cómo nació la idea, motivación para emprender y compromiso de vida con el proyecto.",
+      "ejemplo": "Ej: Tradición de repostería heredada de mi abuela; deseo de generar ingresos propios para costear la educación de mis hijos.",
+      "benchmark": "Compromiso de permanencia y arraigo en la actividad económica.",
+      "cita": "Metodología CAFES-UNISON",
+      "placeholder": "Historia, raíces y motivación para emprender..."
+    },
+    {
+      "key": "experiencia_habilidades",
+      "type": "text",
+      "address": "cafes_unison.unidad_a.perfil_emprendedor.experiencia_habilidades",
+      "prompt": "Experiencia previa en el oficio, cursos tomados (ej. SAETA, CECATI, ICATSON) y habilidades desarrolladas.",
+      "ejemplo": "Ej: 4 años de experiencia en cocina casera, diploma de SAETA en Panadería y Decoración, y manejo básico de redes sociales.",
+      "benchmark": "Al menos 1 constancia o evidencia práctica de dominio del oficio.",
+      "cita": "Convenio CAFES-UNISON / SAETA",
+      "placeholder": "Oficios aprendidos, constancias y habilidades..."
+    },
+    {
+      "key": "horario_apoyo_familiar",
+      "type": "text",
+      "address": "cafes_unison.unidad_a.perfil_emprendedor.horario_apoyo_familiar",
+      "prompt": "Horas semanales disponibles para el negocio y distribución del apoyo familiar para no descuidar el hogar.",
+      "ejemplo": "Ej: 35 horas semanales dedicadas; mi esposo apoya con compras matutinas y mi hija mayor ayuda con empaque.",
+      "benchmark": "Disponibilidad mínima de 30 horas semanales sin interferir con cuidados esenciales.",
+      "cita": "Manual de Emprendimiento Familiar CAFES",
+      "placeholder": "Horarios operativos y apoyo de familiares..."
+    },
+    {
+      "key": "diagnostico_capacitacion",
+      "type": "text",
+      "address": "cafes_unison.unidad_a.perfil_emprendedor.diagnostico_capacitacion",
+      "prompt": "Áreas donde el emprendedor reconoce que necesita capacitarse (administración, costeo, venta digital, calidad).",
+      "ejemplo": "Ej: Necesidad de dominar cálculo de precios por costeo unitario y aprender publicidad básica en Facebook e Instagram.",
+      "benchmark": "Plan de capacitación de 20 horas en administración y ventas.",
+      "cita": "Metodología CAFES-UNISON / SAETA",
+      "placeholder": "Necesidades de capacitación detectadas..."
+    },
+    {
+      "key": "situacion_actual_negocio",
+      "type": "text",
+      "address": "cafes_unison.unidad_a.perfil_emprendedor.situacion_actual_negocio",
+      "prompt": "Si el negocio ya opera, describe ventas mensuales actuales, número de clientes y equipo con el que ya cuenta.",
+      "ejemplo": "Ej: Opera informalmente desde hace 6 meses con ventas de $8,000 MXN mensuales y cartera de 18 clientes regulares.",
+      "benchmark": "Registro de bitácora de ventas o pedidos previos.",
+      "cita": "Manual CAFES-UNISON",
+      "placeholder": "Ventas, clientes y herramientas que ya se tienen..."
+    }
+  ],
+  "boxes": [],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Datos de identificación, historia, habilidades, horario disponible, capacitación y situación actual.\n\n**Cómo se usa.** Está en el pilar **Unidad A · Resumen y Perfil del Emprendedor** del modelo *Plan de Negocios CAFES UNISON*. Se abre en `/cafes_unison/perfil_emprendedor`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 6 campos: `datos_identificacion`, `historia_motivacion`, `experiencia_habilidades`, `horario_apoyo_familiar`, `diagnostico_capacitacion`, `situacion_actual_negocio`.\n\n**Herramientas del módulo.** Ninguna específica: se apoya en los campos de texto."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `datos_identificacion`\n\n**El prompt que usa:** Nombre completo del emprendedor/a, domicilio del proyecto, teléfono, correo y datos de contacto.\n\n**Ejemplo que muestra la guía:** Ej: María Elena Morales Ruiz, Calle Arizona #142, Col. San Benito, Hermosillo, Sonora. Tel: 662-123-4567.\n\n**Benchmark / criterio de calidad:** Expediente con CURP y comprobante de domicilio vigente < 3 meses.\n\n**De dónde viene la guía:** Manual de Convocatorias CAFES-UNISON\n\n### `historia_motivacion`\n\n**El prompt que usa:** Historia personal de cómo nació la idea, motivación para emprender y compromiso de vida con el proyecto.\n\n**Ejemplo que muestra la guía:** Ej: Tradición de repostería heredada de mi abuela; deseo de generar ingresos propios para costear la educación de mis hijos.\n\n**Benchmark / criterio de calidad:** Compromiso de permanencia y arraigo en la actividad económica.\n\n**De dónde viene la guía:** Metodología CAFES-UNISON\n\n### `experiencia_habilidades`\n\n**El prompt que usa:** Experiencia previa en el oficio, cursos tomados (ej. SAETA, CECATI, ICATSON) y habilidades desarrolladas.\n\n**Ejemplo que muestra la guía:** Ej: 4 años de experiencia en cocina casera, diploma de SAETA en Panadería y Decoración, y manejo básico de redes sociales.\n\n**Benchmark / criterio de calidad:** Al menos 1 constancia o evidencia práctica de dominio del oficio.\n\n**De dónde viene la guía:** Convenio CAFES-UNISON / SAETA\n\n### `horario_apoyo_familiar`\n\n**El prompt que usa:** Horas semanales disponibles para el negocio y distribución del apoyo familiar para no descuidar el hogar.\n\n**Ejemplo que muestra la guía:** Ej: 35 horas semanales dedicadas; mi esposo apoya con compras matutinas y mi hija mayor ayuda con empaque.\n\n**Benchmark / criterio de calidad:** Disponibilidad mínima de 30 horas semanales sin interferir con cuidados esenciales.\n\n**De dónde viene la guía:** Manual de Emprendimiento Familiar CAFES\n\n### `diagnostico_capacitacion`\n\n**El prompt que usa:** Áreas donde el emprendedor reconoce que necesita capacitarse (administración, costeo, venta digital, calidad).\n\n**Ejemplo que muestra la guía:** Ej: Necesidad de dominar cálculo de precios por costeo unitario y aprender publicidad básica en Facebook e Instagram.\n\n**Benchmark / criterio de calidad:** Plan de capacitación de 20 horas en administración y ventas.\n\n**De dónde viene la guía:** Metodología CAFES-UNISON / SAETA\n\n### `situacion_actual_negocio`\n\n**El prompt que usa:** Si el negocio ya opera, describe ventas mensuales actuales, número de clientes y equipo con el que ya cuenta.\n\n**Ejemplo que muestra la guía:** Ej: Opera informalmente desde hace 6 meses con ventas de $8,000 MXN mensuales y cartera de 18 clientes regulares.\n\n**Benchmark / criterio de calidad:** Registro de bitácora de ventas o pedidos previos.\n\n**De dónde viene la guía:** Manual CAFES-UNISON"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "Sin cajas asociadas."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Unidad A · Resumen y Perfil del Emprendedor** de *Plan de Negocios CAFES UNISON*. La justificación metodológica completa está en la página del modelo y en `docs/cafes.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `cafes_unison.unidad_a.perfil_emprendedor.datos_identificacion` → tipo `text`\n- `cafes_unison.unidad_a.perfil_emprendedor.historia_motivacion` → tipo `text`\n- `cafes_unison.unidad_a.perfil_emprendedor.experiencia_habilidades` → tipo `text`\n- `cafes_unison.unidad_a.perfil_emprendedor.horario_apoyo_familiar` → tipo `text`\n- `cafes_unison.unidad_a.perfil_emprendedor.diagnostico_capacitacion` → tipo `text`\n- `cafes_unison.unidad_a.perfil_emprendedor.situacion_actual_negocio` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas:** `src/config/moduleBoxMap.js` no declara cajas para `cafes_unison:perfil_emprendedor`; la pantalla muestra solo los campos de texto.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

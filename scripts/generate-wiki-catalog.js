@@ -42,6 +42,8 @@ export const METHODOLOGY_DOCS = {
   amoeba_management: 'docs/amoeba_management.md',
   guanxi_plan: 'docs/guanxi_plan.md',
   onudi_project: 'docs/onudi_project.md',
+  bob_unison: 'docs/bob_unison.md',
+  cafes_unison: 'docs/cafes.md',
   cafes: 'docs/cafes.md'
 };
 

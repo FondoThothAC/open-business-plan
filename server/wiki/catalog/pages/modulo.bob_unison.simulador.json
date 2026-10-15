@@ -1,18 +1,18 @@
 {
-  "id": "modulo.cafes.simulador",
+  "id": "modulo.bob_unison.simulador",
   "title": "Simulador Financiero y Escenarios Monte Carlo",
   "summary": "Simulador interactivo con cálculo automático de estados proforma, punto de equilibrio, B/C, TIR, VAN y análisis de estrés.",
   "kind": "modulo",
   "audience": "cliente",
-  "model": "cafes",
+  "model": "bob_unison",
   "moduleKey": "simulador",
   "pillarKey": "simulador_financiero",
-  "openUrl": "/cafes/simulador",
+  "openUrl": "/bob_unison/simulador",
   "fields": [
     {
       "key": "iframe_simulador",
       "type": "text",
-      "address": "cafes.simulador_financiero.simulador.iframe_simulador",
+      "address": "bob_unison.simulador_financiero.simulador.iframe_simulador",
       "prompt": "Describe los parámetros de las corridas financieras interactivas, estados de resultados y simulador de Monte Carlo.",
       "ejemplo": "Ej: Simulación interactiva con corridas a 12 meses y 3 años con análisis de estrés de +-15% en ventas y costos.",
       "benchmark": "Cálculos sincronizados con el motor financiero canónico de OBP.",
@@ -34,7 +34,7 @@
       "id": "uso",
       "title": "Cómo se usa en el plan",
       "audience": "cliente",
-      "markdown": "**Qué es.** Simulador interactivo con cálculo automático de estados proforma, punto de equilibrio, B/C, TIR, VAN y análisis de estrés.\n\n**Cómo se usa.** Está en el pilar **Simulador Financiero y Corridas Cuánticas** del modelo *Plan de Negocios CAFES (Emprendimiento Social y Familiar)*. Se abre en `/cafes/simulador`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 1 campo: `iframe_simulador`.\n\n**Herramientas del módulo.** 1 caja(s): `box_montecarlo_sim`."
+      "markdown": "**Qué es.** Simulador interactivo con cálculo automático de estados proforma, punto de equilibrio, B/C, TIR, VAN y análisis de estrés.\n\n**Cómo se usa.** Está en el pilar **Simulador Financiero y Corridas Cuánticas** del modelo *Método Bob 1 UNISON (OBP + Empresas Cuánticas)*. Se abre en `/bob_unison/simulador`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 1 campo: `iframe_simulador`.\n\n**Herramientas del módulo.** 1 caja(s): `box_montecarlo_sim`."
     },
     {
       "id": "campos",
@@ -52,13 +52,13 @@
       "id": "porque",
       "title": "Por qué existe",
       "audience": "cliente",
-      "markdown": "Forma parte del pilar **Simulador Financiero y Corridas Cuánticas** de *Plan de Negocios CAFES (Emprendimiento Social y Familiar)*. La justificación metodológica completa está en la página del modelo y en `docs/cafes.md`."
+      "markdown": "Forma parte del pilar **Simulador Financiero y Corridas Cuánticas** de *Método Bob 1 UNISON (OBP + Empresas Cuánticas)*. La justificación metodológica completa está en la página del modelo y en `docs/bob_unison.md`."
     },
     {
       "id": "tecnico",
       "title": "Detalles técnicos",
       "audience": "tecnico",
-      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `cafes.simulador_financiero.simulador.iframe_simulador` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `cafes:simulador`): `box_montecarlo_sim`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `bob_unison.simulador_financiero.simulador.iframe_simulador` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `bob_unison:simulador`): `box_montecarlo_sim`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
     }
   ]
 }

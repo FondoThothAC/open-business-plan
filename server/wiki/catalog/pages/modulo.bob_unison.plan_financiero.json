@@ -1,18 +1,18 @@
 {
-  "id": "modulo.cafes.plan_financiero",
+  "id": "modulo.bob_unison.plan_financiero",
   "title": "9. Plan Financiero, Proyecciones y Rentabilidad (B/C, TIR, VAN)",
   "summary": "Inversión inicial, capital de trabajo, costos fijos/variables, BOM, punto de equilibrio, proyecciones a 12 meses y 3 años, rentabilidad (B/C, ROI, VAN, TIR), sensibilidad y capaci…",
   "kind": "modulo",
   "audience": "cliente",
-  "model": "cafes",
+  "model": "bob_unison",
   "moduleKey": "plan_financiero",
   "pillarKey": "unidad_f",
-  "openUrl": "/cafes/plan_financiero",
+  "openUrl": "/bob_unison/plan_financiero",
   "fields": [
     {
       "key": "supuestos_base_operativa",
       "type": "text",
-      "address": "cafes.unidad_f.plan_financiero.supuestos_base_operativa",
+      "address": "bob_unison.unidad_f.plan_financiero.supuestos_base_operativa",
       "prompt": "Supuestos de formulación: días trabajados al mes, horas diarias, capacidad de producción, porcentaje de merma y días de crédito.",
       "ejemplo": "Ej: 24 días laborables al mes; 7 horas diarias; 3% merma de insumos; 100% ventas de contado (cero cartera vencida).",
       "benchmark": "Supuestos conservadores y verificables.",
@@ -22,7 +22,7 @@
     {
       "key": "presupuesto_inversion_inicial",
       "type": "text",
-      "address": "cafes.unidad_f.plan_financiero.presupuesto_inversion_inicial",
+      "address": "bob_unison.unidad_f.plan_financiero.presupuesto_inversion_inicial",
       "prompt": "Inversión fija requerida para arrancar: maquinaria, herramientas, mobiliario, instalaciones y equipos de transporte.",
       "ejemplo": "Ej: Horno $22,000; Batidora $9,500; Mesa $6,000; Charolas y moldes $3,500; Total Inversión Fija: $41,000 MXN.",
       "benchmark": "Presupuesto basado en cotizaciones formales por escrito.",
@@ -32,7 +32,7 @@
     {
       "key": "capital_trabajo_caja_chica",
       "type": "text",
-      "address": "cafes.unidad_f.plan_financiero.capital_trabajo_caja_chica",
+      "address": "bob_unison.unidad_f.plan_financiero.capital_trabajo_caja_chica",
       "prompt": "Capital de trabajo necesario para cubrir compras iniciales de insumos, gas, luz y caja chica antes de recibir los primeros ingresos.",
       "ejemplo": "Ej: $8,000 MXN para insumos del primer mes + $2,000 MXN de fondo de caja chica. Total Capital de Trabajo: $10,000 MXN.",
       "benchmark": "Equivalente a 1 mes de costos operativos variables y fijos.",
@@ -42,7 +42,7 @@
     {
       "key": "costos_fijos_variables",
       "type": "text",
-      "address": "cafes.unidad_f.plan_financiero.costos_fijos_variables",
+      "address": "bob_unison.unidad_f.plan_financiero.costos_fijos_variables",
       "prompt": "Desglose mensual de costos fijos (luz, gas, sueldos fijos, internet, renta) y costos variables (harinas, azúcar, empaques).",
       "ejemplo": "Ej: Fijos mensuales: $11,500 MXN (sueldo $8,000, servicios $2,500, mantenimiento $1,000); Variables: 40% sobre el precio de venta.",
       "benchmark": "Clara separación de costos fijos vs variables.",
@@ -52,7 +52,7 @@
     {
       "key": "costeo_unitario_bom",
       "type": "text",
-      "address": "cafes.unidad_f.plan_financiero.costeo_unitario_bom",
+      "address": "bob_unison.unidad_f.plan_financiero.costeo_unitario_bom",
       "prompt": "Costeo detallado por unidad producida para los productos principales del portafolio.",
       "ejemplo": "Ej: Pastel estándar: Materia prima $83 + Mano de obra directa $35 + Gastos indirectos prorrateados $22 = Costo Unitario Total: $140 MXN.",
       "benchmark": "Absorción completa de costos directos e indirectos.",
@@ -62,7 +62,7 @@
     {
       "key": "depreciacion_equipos",
       "type": "text",
-      "address": "cafes.unidad_f.plan_financiero.depreciacion_equipos",
+      "address": "bob_unison.unidad_f.plan_financiero.depreciacion_equipos",
       "prompt": "Cálculo de depreciación en línea recta de los equipos principales según su vida útil (ej. 10 años maquinaria = 10% anual).",
       "ejemplo": "Ej: Horno ($22,000 a 10 años = $2,200/año = $183/mes); Batidora ($9,500 a 5 años = $1,900/año = $158/mes).",
       "benchmark": "Inclusión del gasto de depreciación para reemplazo futuro.",
@@ -72,7 +72,7 @@
     {
       "key": "politica_precios_margen_financiero",
       "type": "text",
-      "address": "cafes.unidad_f.plan_financiero.politica_precios_margen_financiero",
+      "address": "bob_unison.unidad_f.plan_financiero.politica_precios_margen_financiero",
       "prompt": "Determinación del precio de venta final y margen de ganancia bruto y neto por línea de producto.",
       "ejemplo": "Ej: Costo unitario $140 MXN; Precio de venta $250 MXN; Margen bruto: $110 MXN (44%); Margen neto después de costos fijos: 28%.",
       "benchmark": "Margen financiero competitivo acorde al mercado local.",
@@ -82,7 +82,7 @@
     {
       "key": "punto_equilibrio_unidades_pesos",
       "type": "text",
-      "address": "cafes.unidad_f.plan_financiero.punto_equilibrio_unidades_pesos",
+      "address": "bob_unison.unidad_f.plan_financiero.punto_equilibrio_unidades_pesos",
       "prompt": "Cálculo exacto del punto de equilibrio mensual: Costos Fijos / Margen de Contribución Unitario.",
       "ejemplo": "Ej: $11,500 fijos / $110 margen unitario = 105 unidades al mes ($26,250 MXN en ventas mensuales requeridas).",
       "benchmark": "El punto de equilibrio debe ser inferior al 60% de la capacidad de producción.",
@@ -92,7 +92,7 @@
     {
       "key": "proyeccion_ventas_1_3_anos",
       "type": "text",
-      "address": "cafes.unidad_f.plan_financiero.proyeccion_ventas_1_3_anos",
+      "address": "bob_unison.unidad_f.plan_financiero.proyeccion_ventas_1_3_anos",
       "prompt": "Proyección mensual de ventas en unidades y dinero para el Año 1, y proyecciones anuales para los Años 2 y 3.",
       "ejemplo": "Ej: Año 1: $420,000 MXN (crecimiento gradual de $25k a $45k/mes); Año 2: $550,000 MXN (+31%); Año 3: $680,000 MXN (+23%).",
       "benchmark": "Crecimiento prudente con escalamiento sostenible.",
@@ -102,7 +102,7 @@
     {
       "key": "estado_resultados_12_meses",
       "type": "text",
-      "address": "cafes.unidad_f.plan_financiero.estado_resultados_12_meses",
+      "address": "bob_unison.unidad_f.plan_financiero.estado_resultados_12_meses",
       "prompt": "Estado de Resultados proforma mensual a 12 meses: Ventas - Costo de Ventas = Utilidad Bruta - Gastos Operativos = Utilidad Neta.",
       "ejemplo": "Ej: Mes 12: Ventas $42,000 - Costos var $16,800 = Utilidad bruta $25,200 - Costos fijos $11,500 = Utilidad neta $13,700 MXN.",
       "benchmark": "Resultados positivos desde el mes 3 de operación.",
@@ -112,7 +112,7 @@
     {
       "key": "flujo_efectivo_12_meses",
       "type": "text",
-      "address": "cafes.unidad_f.plan_financiero.flujo_efectivo_12_meses",
+      "address": "bob_unison.unidad_f.plan_financiero.flujo_efectivo_12_meses",
       "prompt": "Flujo de caja mensual a 12 meses: Saldo inicial + Entradas en efectivo - Salidas en efectivo = Saldo final de caja acumulado.",
       "ejemplo": "Ej: Mantiene siempre saldo positivo de caja superior a $5,000 MXN para imprevistos operativos en todos los meses.",
       "benchmark": "Flujo de caja libre positivo sin quiebre de liquidez.",
@@ -122,7 +122,7 @@
     {
       "key": "balance_inicial_cierre_ano1",
       "type": "text",
-      "address": "cafes.unidad_f.plan_financiero.balance_inicial_cierre_ano1",
+      "address": "bob_unison.unidad_f.plan_financiero.balance_inicial_cierre_ano1",
       "prompt": "Balance general simplificado al arranque y al cierre del primer año: Activo (Caja + Equipo) = Pasivo (Deuda) + Capital Contable.",
       "ejemplo": "Ej: Balance Inicial: Activo $51,000 = Pasivo $0 + Capital $51,000; Cierre Año 1: Activo $84,500 = Pasivo $0 + Capital $84,500.",
       "benchmark": "Estructura financiera balanceada con incremento de patrimonio.",
@@ -132,7 +132,7 @@
     {
       "key": "indicadores_rentabilidad_bc_roi_van_tir",
       "type": "text",
-      "address": "cafes.unidad_f.plan_financiero.indicadores_rentabilidad_bc_roi_van_tir",
+      "address": "bob_unison.unidad_f.plan_financiero.indicadores_rentabilidad_bc_roi_van_tir",
       "prompt": "Indicadores cuantitativos de rentabilidad: Relación Beneficio/Costo (B/C), Retorno de Inversión (ROI), Payback, VAN y TIR con tasa de descuento.",
       "ejemplo": "Ej: B/C: 1.34; ROI: 58%; Payback: 14 meses; VAN (tasa 12%): $42,850 MXN; TIR: 34.8%.",
       "benchmark": "B/C > 1.15; TIR > Tasa de descuento; VAN > 0.",
@@ -142,7 +142,7 @@
     {
       "key": "analisis_sensibilidad_escenarios",
       "type": "text",
-      "address": "cafes.unidad_f.plan_financiero.analisis_sensibilidad_escenarios",
+      "address": "bob_unison.unidad_f.plan_financiero.analisis_sensibilidad_escenarios",
       "prompt": "Evaluación de impacto ante fluctuaciones de mercado: caída de ventas del 10% y aumento de costos de insumos del 10%.",
       "ejemplo": "Ej: Si las ventas caen 10%, la utilidad neta mensual pasa de $13,700 a $9,500 MXN, manteniendo margen de solvencia positivo.",
       "benchmark": "Supervivencia demostrada ante shocks de mercado del +-10%.",
@@ -152,7 +152,7 @@
     {
       "key": "escenarios_pesimista_base_optimista",
       "type": "text",
-      "address": "cafes.unidad_f.plan_financiero.escenarios_pesimista_base_optimista",
+      "address": "bob_unison.unidad_f.plan_financiero.escenarios_pesimista_base_optimista",
       "prompt": "Construcción de tres escenarios de desempeño financiero: pesimista (60% de meta), base (100% de meta) y optimista (130% de meta).",
       "ejemplo": "Ej: Pesimista: Ventas $25,200/mes (utilidad $3,600); Base: Ventas $42,000/mes (utilidad $13,700); Optimista: Ventas $54,600/mes (utilidad $21,200).",
       "benchmark": "El escenario pesimista debe mantenerse por encima del punto de equilibrio.",
@@ -162,7 +162,7 @@
     {
       "key": "capacidad_pago_credito",
       "type": "text",
-      "address": "cafes.unidad_f.plan_financiero.capacidad_pago_credito",
+      "address": "bob_unison.unidad_f.plan_financiero.capacidad_pago_credito",
       "prompt": "En caso de solicitar financiamiento o crédito, demostrar la capacidad mensual para pagar el servicio de la deuda sin asfixiar la operación.",
       "ejemplo": "Ej: Cuota mensual del crédito $1,850 MXN; utilidad neta disponible $13,700 MXN; cobertura de deuda de 7.4 a 1.",
       "benchmark": "Cobertura del servicio de la deuda (DSCR) > 1.8x.",
@@ -198,7 +198,7 @@
       "id": "uso",
       "title": "Cómo se usa en el plan",
       "audience": "cliente",
-      "markdown": "**Qué es.** Inversión inicial, capital de trabajo, costos fijos/variables, BOM, punto de equilibrio, proyecciones a 12 meses y 3 años, rentabilidad (B/C, ROI, VAN, TIR), sensibilidad y capacidad de pago.\n\n**Cómo se usa.** Está en el pilar **Unidad F · Finanzas, Factibilidad y Corridas** del modelo *Plan de Negocios CAFES (Emprendimiento Social y Familiar)*. Se abre en `/cafes/plan_financiero`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 16 campos: `supuestos_base_operativa`, `presupuesto_inversion_inicial`, `capital_trabajo_caja_chica`, `costos_fijos_variables`, `costeo_unitario_bom`, `depreciacion_equipos`, `politica_precios_margen_financiero`, `punto_equilibrio_unidades_pesos`, `proyeccion_ventas_1_3_anos`, `estado_resultados_12_meses`, `flujo_efectivo_12_meses`, `balance_inicial_cierre_ano1`, `indicadores_rentabilidad_bc_roi_van_tir`, `analisis_sensibilidad_escenarios`, `escenarios_pesimista_base_optimista`, `capacidad_pago_credito`.\n\n**Herramientas del módulo.** 3 caja(s): `box_punto_equilibrio_micro`, `box_wacc_van_tir`, `box_montecarlo_sim`."
+      "markdown": "**Qué es.** Inversión inicial, capital de trabajo, costos fijos/variables, BOM, punto de equilibrio, proyecciones a 12 meses y 3 años, rentabilidad (B/C, ROI, VAN, TIR), sensibilidad y capacidad de pago.\n\n**Cómo se usa.** Está en el pilar **Unidad F · Finanzas, Factibilidad y Rigor Cuántico** del modelo *Método Bob 1 UNISON (OBP + Empresas Cuánticas)*. Se abre en `/bob_unison/plan_financiero`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 16 campos: `supuestos_base_operativa`, `presupuesto_inversion_inicial`, `capital_trabajo_caja_chica`, `costos_fijos_variables`, `costeo_unitario_bom`, `depreciacion_equipos`, `politica_precios_margen_financiero`, `punto_equilibrio_unidades_pesos`, `proyeccion_ventas_1_3_anos`, `estado_resultados_12_meses`, `flujo_efectivo_12_meses`, `balance_inicial_cierre_ano1`, `indicadores_rentabilidad_bc_roi_van_tir`, `analisis_sensibilidad_escenarios`, `escenarios_pesimista_base_optimista`, `capacidad_pago_credito`.\n\n**Herramientas del módulo.** 3 caja(s): `box_punto_equilibrio_micro`, `box_wacc_van_tir`, `box_montecarlo_sim`."
     },
     {
       "id": "campos",
@@ -216,13 +216,13 @@
       "id": "porque",
       "title": "Por qué existe",
       "audience": "cliente",
-      "markdown": "Forma parte del pilar **Unidad F · Finanzas, Factibilidad y Corridas** de *Plan de Negocios CAFES (Emprendimiento Social y Familiar)*. La justificación metodológica completa está en la página del modelo y en `docs/cafes.md`."
+      "markdown": "Forma parte del pilar **Unidad F · Finanzas, Factibilidad y Rigor Cuántico** de *Método Bob 1 UNISON (OBP + Empresas Cuánticas)*. La justificación metodológica completa está en la página del modelo y en `docs/bob_unison.md`."
     },
     {
       "id": "tecnico",
       "title": "Detalles técnicos",
       "audience": "tecnico",
-      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `cafes.unidad_f.plan_financiero.supuestos_base_operativa` → tipo `text`\n- `cafes.unidad_f.plan_financiero.presupuesto_inversion_inicial` → tipo `text`\n- `cafes.unidad_f.plan_financiero.capital_trabajo_caja_chica` → tipo `text`\n- `cafes.unidad_f.plan_financiero.costos_fijos_variables` → tipo `text`\n- `cafes.unidad_f.plan_financiero.costeo_unitario_bom` → tipo `text`\n- `cafes.unidad_f.plan_financiero.depreciacion_equipos` → tipo `text`\n- `cafes.unidad_f.plan_financiero.politica_precios_margen_financiero` → tipo `text`\n- `cafes.unidad_f.plan_financiero.punto_equilibrio_unidades_pesos` → tipo `text`\n- `cafes.unidad_f.plan_financiero.proyeccion_ventas_1_3_anos` → tipo `text`\n- `cafes.unidad_f.plan_financiero.estado_resultados_12_meses` → tipo `text`\n- `cafes.unidad_f.plan_financiero.flujo_efectivo_12_meses` → tipo `text`\n- `cafes.unidad_f.plan_financiero.balance_inicial_cierre_ano1` → tipo `text`\n- `cafes.unidad_f.plan_financiero.indicadores_rentabilidad_bc_roi_van_tir` → tipo `text`\n- `cafes.unidad_f.plan_financiero.analisis_sensibilidad_escenarios` → tipo `text`\n- `cafes.unidad_f.plan_financiero.escenarios_pesimista_base_optimista` → tipo `text`\n- `cafes.unidad_f.plan_financiero.capacidad_pago_credito` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `cafes:plan_financiero`): `box_punto_equilibrio_micro`, `box_wacc_van_tir`, `box_montecarlo_sim`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `bob_unison.unidad_f.plan_financiero.supuestos_base_operativa` → tipo `text`\n- `bob_unison.unidad_f.plan_financiero.presupuesto_inversion_inicial` → tipo `text`\n- `bob_unison.unidad_f.plan_financiero.capital_trabajo_caja_chica` → tipo `text`\n- `bob_unison.unidad_f.plan_financiero.costos_fijos_variables` → tipo `text`\n- `bob_unison.unidad_f.plan_financiero.costeo_unitario_bom` → tipo `text`\n- `bob_unison.unidad_f.plan_financiero.depreciacion_equipos` → tipo `text`\n- `bob_unison.unidad_f.plan_financiero.politica_precios_margen_financiero` → tipo `text`\n- `bob_unison.unidad_f.plan_financiero.punto_equilibrio_unidades_pesos` → tipo `text`\n- `bob_unison.unidad_f.plan_financiero.proyeccion_ventas_1_3_anos` → tipo `text`\n- `bob_unison.unidad_f.plan_financiero.estado_resultados_12_meses` → tipo `text`\n- `bob_unison.unidad_f.plan_financiero.flujo_efectivo_12_meses` → tipo `text`\n- `bob_unison.unidad_f.plan_financiero.balance_inicial_cierre_ano1` → tipo `text`\n- `bob_unison.unidad_f.plan_financiero.indicadores_rentabilidad_bc_roi_van_tir` → tipo `text`\n- `bob_unison.unidad_f.plan_financiero.analisis_sensibilidad_escenarios` → tipo `text`\n- `bob_unison.unidad_f.plan_financiero.escenarios_pesimista_base_optimista` → tipo `text`\n- `bob_unison.unidad_f.plan_financiero.capacidad_pago_credito` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `bob_unison:plan_financiero`): `box_punto_equilibrio_micro`, `box_wacc_van_tir`, `box_montecarlo_sim`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
     }
   ]
 }

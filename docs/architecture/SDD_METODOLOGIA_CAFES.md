@@ -1,144 +1,205 @@
-# Software Design Document (SDD): Metodología Plan de Negocios CAFES (UNISON / SAETA)
+# Software Design Document (SDD): Metodologías UNISON (Método Bob 1 UNISON & Plan CAFES UNISON)
 
-## 1. Identificación y Propósito del Sistema
+## 1. Identificación y Contexto Institucional
 
 - **Documento:** SDD_METODOLOGIA_CAFES.md
-- **Versión:** 1.0.0
-- **Fecha:** Octubre 2026
-- **Autoría:** Antigravity AI & Equipo Técnico OBP
-- **Contexto Institucional:** CAFES-UNISON (Coordinación / Centro de Asesoría Financiera y Emprendimiento Social - Universidad de Sonora) en colaboración con SAETA TAP para el fomento de microempresas, autoempleo y oficios familiares (repostería, piñatas, barbería, alimentos, confección y servicios locales).
-
-El propósito de este documento es especificar la arquitectura, estructura de datos, flujos de integración y reglas de negocio para el marco de trabajo **`cafes` (Plan de Negocios CAFES)** dentro de la plataforma Open Business Plan (OBP v7.0).
-
----
-
-## 2. Metodologías de Desarrollo Aplicadas (Ciclo DD Integral)
-
-El diseño e implementación de la Metodología CAFES se rige estrictamente por las siguientes disciplinas de ingeniería:
-
-1. **SDD (Software Design Document):** Este documento arquitectónico formal que define modelos, contratos de interfaz y diagramas de flujo.
-2. **TDD (Test-Driven Development):** Pruebas unitarias automatizadas (`tests/cafesFramework.test.js`) que validan la existencia, tipado y completitud de todos los pilares, módulos y campos antes de su consumo en componentes de vista.
-3. **ATDD (Acceptance Test-Driven Development):** Criterios de aceptación funcionales basados en la rúbrica del docente (`INDICE DE PLAN DE NEGOCIOS 10.2026-2.docx`) y las entidades evaluadoras de capital semilla.
-4. **DDD (Domain-Driven Design):** Modelo de dominio centrado en el microemprendimiento popular: `UnidadAcademica`, `PerfilAtomico`, `BOM_Receta`, `PuntoEquilibrio`, `RelacionBC`, `RutaFormalizacion` y `ExpedienteAnexos`.
-5. **FDD (Feature-Driven Development):** Entrega estructurada en 5 características esenciales: F1 (Configuración de Framework), F2 (Guías de IA de Campo), F3 (Mapeo de Widgets/Boxes), F4 (Exportación Ejecutiva Word), F5 (Suite TDD de Verificación).
-6. **EDD (Event-Driven Development):** Despacho y escucha de eventos reactivos en `PlanContext` para actualización en tiempo real de cálculos financieros y autoguardado.
-7. **XP (Extreme Programming):** Estándares estrictos de código completo, sin fragmentaciones, pruebas automatizadas continuas y refactorización orientada a la simplicidad.
-8. **RAD (Rapid Application Development):** Aprovechamiento de la biblioteca de componentes interactivos de OBP (`BoxCanvas`, `MonteCarloSimulator`, `QuantumProfileCard`, `FloorPlanDiagram`).
-9. **DevOps & SRE:** Pipelines de validación local mediante scripts unificados (`npm test`, `npm run build`, `./git_sync.sh`) y acuerdos de nivel de servicio (SLI/SLO/SLA).
-10. **UXDD (UX-Driven Development):** Interfaz amigable en español neutro premium, visualización de badges por área atómica, microcopia clara y empática para usuarios sin formación contable avanzada.
-11. **BDD (Behavior-Driven Development):** Especificación de escenarios Dado/Cuando/Entonces para los flujos principales de usuario.
-12. **Empresas Cuánticas (Fondo Thoth AC):** Integración nuclear del Modelo Atómico de 3 Áreas (Finanzas, Operativo, Administrativo) para prevenir la saturación y promover la delegación e independencia del fundador.
+- **Versión:** 2.1.0 (Arquitectura Dual Canónica Integral)
+- **Fecha de Actualización:** Octubre 2026
+- **Entorno y Autoría:** Antigravity AI & Equipo Técnico OBP
+- **Contexto Institucional:** Centro de Asesoría Financiera y Emprendimiento Social (CAFES) — Departamento de Economía, Facultad Interdisciplinaria de Ciencias Económicas y Administrativas, Universidad de Sonora (UNISON), en vinculación con el programa SAETA TAP.
+- **Titular y Asesoría Académica:** Dr. Rafael Castillo Esquer / Coordinación CAFES UNISON (Edificio 10L, Campus Hermosillo).
+- **Propósito Dual:** Proporcionar en el sistema Open Business Plan (OBP) dos metodologías complementarias de formulación de planes de negocio:
+  1. **Framework 13 (`bob_unison`):** "Método Bob 1 UNISON" — Modelo enriquecido que fusiona el rigor académico de UNISON con Open Business Plan (OBP) y la metodología **Empresas Cuánticas (Fondo Thoth AC)**: Modelo Atómico de 3 Áreas (Finanzas, Operativo, Administrativo), ruta de autonomía del fundador, umbrales de escala cuántica, análisis TAM/SAM/SOM, Unit Economics (CAC/LTV), Teoría de Restricciones (TOC) y el pilar interactivo del Simulador Financiero OBP (10 pilares, 17 módulos).
+  2. **Framework 14 (`cafes_unison`):** "Plan de Negocios CAFES UNISON" — Modelo académico oficial a secas, 100% fiel al documento original del docente (`INDICE DE PLAN DE NEGOCIOS 10.2026-2.docx`), "ni más, ni menos": exactamente 9 Unidades (Unidad A a I), 15 módulos académicos (0 al 14) + Expediente de Anexos (A1 a A22). Sin pilar extra de simulador OBP (las finanzas se tratan de forma autosuficiente en la Unidad F / Módulo 9 conforme al índice).
 
 ---
 
-## 3. Modelo Conceptual del Marco CAFES (C-A-F-E-S)
+## 2. Marco Metodológico Canónico (Ciclo DD Integral)
 
-El framework organiza las **9 Unidades del Docente (A a I)** bajo los 5 pilares metodológicos del acrónimo:
+El diseño, implementación y mantenimiento de ambos frameworks se rige por las siguientes disciplinas de ingeniería:
 
-```mermaid
-flowchart TD
-    subgraph MetodologiaCAFES["Metodología Plan de Negocios CAFES"]
-        C["C · Comercial & Mercado"]
-        A["A · Administrativo & Legal"]
-        F["F · Financiero & Factibilidad"]
-        E["E · Estratégico & Operativo"]
-        S["S · Social, Sostenibilidad & Solicitud"]
-    end
+### 2.1. SDD (Software Design Document)
+- Especificación formal de la arquitectura de datos, árboles de navegación, modelos jerárquicos y contratos de interfaz.
+- Mapeo bidireccional de rutas semánticas (`/planes/metodo-bob/...` y `/planes/plan-cafes/...`).
+- Motor de exportación ejecutiva a Microsoft Word (`docxExportEngine.js`) con soporte multi-metodología.
 
-    C --> UB["Unidad B: Idea de Negocio, Portafolio & Estudio de Mercado (TAM/SAM/SOM)"]
-    C --> UE["Unidad E: Plan Comercial, Marketing & Lanzamiento 90 Días"]
-    C --> U7["Módulo 7: Lienzo Canvas (9 Bloques)"]
+### 2.2. TDD (Test-Driven Development)
+- Baterías de pruebas unitarias automatizadas ejecutadas con `node --test`:
+  - `tests/bobUnisonFramework.test.js`: 10 pruebas que validan los 10 pilares, 17 módulos, Modelo Atómico y simulador OBP.
+  - `tests/cafesFramework.test.js`: 10 pruebas que garantizan la estructura estricta de 9 Unidades A-I, 15 módulos y 22 anexos.
+  - `tests/frameworksAndBooksEnrichment.test.js`: 15 pruebas de integridad de los 14 marcos canónicos.
+  - `tests/wikiCatalogSync.test.js`: Validación determinista byte a byte del catálogo y páginas generadas.
+  - Suite integral del sistema: 519 pruebas pasando sin un solo fallo (`pass 519, fail 0`).
 
-    A --> UD5["Módulo 5: Aspectos Legales & Formalización Progresiva (RESICO/SAT)"]
-    A --> UD6["Módulo 6: Organización, Talento & Carga Patronal"]
-    A --> PRE["Preliminares: Carta de Presentación & Declaración de Veracidad"]
+### 2.3. ATDD (Acceptance Test-Driven Development)
+- Criterios de aceptación derivados directamente de la rúbrica docente de CAFES UNISON:
+  - Criterio 1: Exactitud en la enumeración de módulos (Módulos 0 al 14 respetando subdivisiones decimales 0.1-0.14, 1.1-1.6, etc.).
+  - Criterio 2: El módulo `perfil_emprendedor` captura exclusivamente variables cualitativas de autoempleo (sin forzar cálculos algorítmicos complejos no solicitados en la plantilla docente).
+  - Criterio 3: El módulo financiero incluye obligatoriamente la Relación Beneficio/Costo (B/C), Punto de Equilibrio y Periodo de Recuperación (Payback).
+  - Criterio 4: Exportación limpia a formato Word (.docx) apta para entrega física ante comités de financiamiento solidario.
 
-    F --> UF["Unidad F: Plan Financiero, Indicadores (B/C, TIR, VAN) & Proforma"]
-    F --> SIM["Simulador Financiero & Análisis de Estrés Monte Carlo"]
+### 2.4. DDD (Domain-Driven Design)
+- Lenguaje ubicuo del dominio de economía social y microemprendimiento:
+  - `UnidadAcademica`: Agrupador curricular oficial de CAFES UNISON.
+  - `PerfilEmprendedor`: Entidad de caracterización humana y diagnóstico de vulnerabilidad/autoempleo.
+  - `PortafolioBOM`: Lista de materiales por lote de producción artesanal.
+  - `EstudioMercadoLocal`: Consumo barrial y microdatos georreferenciados (INEGI DENUE Sonora).
+  - `MemoriaCalculo`: Estructura contable de ingresos, egresos y punto de equilibrio en hoja de cálculo.
+  - `ExpedienteAnexos`: Agregado documental de 22 soportes y constancias (A1 a A22).
 
-    E --> UA["Unidad A: Resumen Ejecutivo & Perfil del Emprendedor Cuántico (3 Áreas)"]
-    E --> UC["Unidad C: Operaciones, Cuello de Botella (TOC) & Layout"]
+### 2.5. FDD (Feature-Driven Development)
+- Despliegue guiado por características modulares:
+  - Feature 1: Registro formal de `bob_unison` y `cafes_unison` en `FRAMEWORKS`.
+  - Feature 2: Ruteo y slugs semánticos en `urlRouting.js`.
+  - Feature 3: Identidad visual, iconos (`Sparkles` violeta vs `GraduationCap` azul UNISON) y navegación en `Layout.jsx`.
+  - Feature 4: Guías contextuales de IA de campo (`BOB_UNISON_GUIDES` y `CAFES_UNISON_GUIDES`).
+  - Feature 5: Box Registry y Module Box Map (5 widgets docentes para CAFES y 8 avanzados para Bob).
+  - Feature 6: Motor de exportación Word (.docx) con soporte completo para las 9 Unidades A-I.
 
-    S --> UG["Unidad G: Impacto Social, Familiar, Ambiental & Matriz de Riesgos"]
-    S --> UH["Unidad H: Plan de Implementación (Gantt 12s) & Solicitud Capital Semilla"]
-    S --> UI["Unidad I: Expediente de Anexos (A1-A22) & Checklist de Verificación"]
+### 2.6. EDD (Event-Driven Development)
+- Flujo reactivo de eventos desacoplados mediante `PlanContext`:
+  - `FIELD_UPDATED`: Disparo de recálculo en cascada al modificar costos de insumos o precios de venta.
+  - `CORRIDA_AUTO_CALCULATED`: Sincronización automática de punto de equilibrio y relación B/C.
+  - `METHODOLOGY_SWITCHED`: Transición sin pérdida de datos entre `cafes_unison` y `bob_unison`.
+  - `AUTOSAVE_TRIGGERED`: Persistencia asíncrona local con control de versiones y copia de seguridad.
+
+### 2.7. XP (Extreme Programming)
+- Programación por pares con agentes especializados (Antigravity AI y usuario).
+- **Regla Estricta de Código:** Funciones, hooks y componentes entregados SIEMPRE completos de principio a fin, sin recortes ni fragmentos (`// ... resto del código`).
+- Refactorización continua orientada a la simplicidad y eliminación de redundancias.
+- Integración continua local con validaciones antes de cada commit.
+
+### 2.8. RAD (Rapid Application Development)
+- Desarrollo acelerado de componentes reutilizables:
+  - `BoxCanvas`: Vista rápida del lienzo de 9 bloques.
+  - `ChecklistAnexos`: Gestor de carga y verificación del expediente A1 a A22.
+  - `CalculadoraCostosMicro`: Simulador instantáneo de margen bruto y punto de equilibrio por lote.
+  - `Layout2D`: Croquis interactivo del taller y distribución de maquinaria.
+
+### 2.9. DEV OPS & Integración Continua
+- Ciclo automatizado de build y empaquetado:
+  - Compilación de producción con Vite: `npm run build` (< 30 segundos).
+  - Generación determinista del catálogo Wiki: `npm run wiki:build`.
+  - Sincronización proactiva de repositorio: `./git_sync.sh "mensaje en español"`.
+  - Estructuración de carpetas de insumos para ingesta de datos:
+    - `data/cafes/entrevistas/`
+    - `data/cafes/inegi/`
+    - `data/cafes/calculos/`
+    - `data/cafes/anexos/`
+
+### 2.10. UXDD (UX-Driven Development)
+- Experiencia de usuario empática, clara y accesible para emprendedores familiares:
+  - Terminología en español neutro premium, eliminando jerga financiera intimidante ("con peras y manzanas").
+  - Identidad institucional respetuosa: Azul UNISON (`#004990`) y acentos de dignidad artesanal (`#d97706`).
+  - Navegación fluida por pasos y barras de progreso visual de las 9 Unidades académicas.
+  - Tooltips e instrucciones en campo concisas (<= 400 caracteres) y placeholders explicativos (<= 80 caracteres).
+
+### 2.11. BDD (Behavior-Driven Development)
+- Escenarios de comportamiento de usuario formalizados en lenguaje Gherkin (Español):
+
+```gherkin
+Escenario: Emprendedor consulta su plan bajo el método académico oficial CAFES UNISON
+  Dado que el usuario abre un proyecto con metodología "cafes_unison"
+  Cuando navega por la barra lateral de módulos
+  Entonces visualiza exactamente 9 Unidades identificadas de la A a la I
+  Y encuentra 15 módulos académicos numerados del 0 al 14
+  Y visualiza el Expediente de Anexos con 22 documentos obligatorios
+  Y no se presenta ningún pilar externo de simulador financiero OBP.
+
+Escenario: Emprendedor activa el Método Bob 1 UNISON enriquecido
+  Dado que el usuario selecciona el framework "bob_unison"
+  Cuando accede al módulo de diagnóstico del fundador
+  Entonces el sistema evalúa el Modelo Atómico de 3 Áreas (Finanzas, Operativo, Administrativo)
+  Y genera recomendaciones específicas de delegación para prevenir el micromanagement
+  Y habilita el pilar interactivo de Simulador Financiero con análisis de sensibilidad Monte Carlo.
 ```
 
 ---
 
-## 4. Estructura de Datos (Esquema Canónico)
+## 3. Arquitectura Comparativa: Framework 13 vs. Framework 14
 
-### Identificador Canónico: `cafes`
-- **Nombre:** `Plan de Negocios CAFES (Emprendimiento Social y Familiar)`
-- **Total Pilares:** 10 (9 Unidades A a I + Simulador Financiero)
-- **Total Módulos:** 15 módulos académicos
-- **Total Campos:** 108 campos específicos de negocio con soporte para redacción por IA
+```mermaid
+graph TD
+    subgraph F13 ["Framework 13: bob_unison (Método Bob 1 UNISON)"]
+        B1["10 Pilares (Unidades A a I + Simulador Financiero OBP)"]
+        B2["17 Módulos en Total"]
+        B3["Modelo Atómico 3 Áreas & Plan de Delegación"]
+        B4["TAM/SAM/SOM Cuantitativo & Unit Economics CAC/LTV"]
+        B5["Teoría de Restricciones (TOC) & Cuello de Botella"]
+        B6["VAN, TIR & Simulación Monte Carlo 1000 iteraciones"]
+        B7["8 Boxes Interactivos Avanzados"]
+    end
 
-### Desglose de Pilares y Módulos:
-1. `unidad_a` (Resumen y Perfil del Emprendimiento):
-   - `resumen_ejecutivo` (0. Resumen Ejecutivo Integral - 14 campos)
-   - `perfil_emprendedor` (1. Perfil del Emprendedor y Diagnóstico Cuántico - 9 campos)
-2. `unidad_b` (Mercado, Portafolio y Cliente):
-   - `idea_portafolio` (2. Idea de Negocio y Portafolio de Productos - 5 campos)
-   - `estudio_mercado` (3. Estudio de Mercado Práctico y Demanda - 8 campos)
-3. `unidad_c` (Operaciones, Capacidad y Producción):
-   - `plan_operaciones` (4. Plan de Operaciones, Cuello de Botella y Layout - 10 campos)
-4. `unidad_d` (Legal, Organización y Modelo Canvas):
-   - `aspectos_legales` (5. Aspectos Legales y Formalización Gradual - 5 campos)
-   - `organizacion_talento` (6. Organización, Talento y Modelo Atómico - 5 campos)
-   - `propuesta_valor_canvas` (7. Propuesta de Valor y Lienzo Canvas - 5 campos)
-5. `unidad_e` (Marketing y Plan Comercial):
-   - `plan_comercial` (8. Plan Comercial, Canales y Lanzamiento 90 Días - 8 campos)
-6. `unidad_f` (Finanzas, Factibilidad y Corridas):
-   - `plan_financiero` (9. Plan Financiero, Proyecciones y Rentabilidad - 16 campos)
-7. `unidad_g` (Impacto Social, Familiar y Gestión de Riesgos):
-   - `impacto_social_ambiental` (10. Impacto Social, Familiar y Ambiental - 5 campos)
-   - `matriz_riesgos` (11. Matriz de Riesgos y Plan B - 4 campos)
-8. `unidad_h` (Implementación y Solicitud al Financiador):
-   - `plan_implementacion` (12. Plan de Implementación / Gantt 12 Semanas - 4 campos)
-   - `requerimiento_capital` (13. Requerimiento de Capital Semilla e Inversión - 6 campos)
-   - `conclusiones_peticion` (14. Conclusiones y Petición Formal de Recursos - 3 campos)
-9. `unidad_i` (Anexos y Expediente de Verificación):
-   - `expediente_anexos` (Anexos A1 a A22 y Checklist de Control - 23 campos)
-10. `simulador_financiero` (Simulador Financiero y Corridas):
-   - `simulador` (Simulador Financiero y Escenarios Monte Carlo - 1 campo)
+    subgraph F14 ["Framework 14: cafes_unison (Plan CAFES UNISON A Secas)"]
+        C1["9 Pilares (Unidades A a I Estrictamente)"]
+        C2["16 Módulos (0 a 14 Académicos + Expediente Anexos A1-A22)"]
+        C3["Perfil del Emprendedor Cualitativo (Entrevista Docente)"]
+        C4["Estudio de Mercado Práctico (Insumos INEGI Sonora/Hermosillo)"]
+        C5["Capacidad Instalada & Proceso Operativo Simple"]
+        C6["Plan Financiero Módulo 9 (Memoria de Cálculo Excel CAFES)"]
+        C7["Widgets Sobrios: Checklist Anexos, Costeo BOM, Layout 2D"]
+    end
+```
 
 ---
 
-## 5. Criterios de Aceptación (ATDD) y Comportamiento Esperado (BDD)
+## 4. Estructura Canónica de Módulos (Framework 14: `cafes_unison`)
 
-### Escenario 1: Creación y Selección de Proyecto CAFES
-- **Dado** que un estudiante o asesor abre el selector de metodologías de OBP,
-- **Cuando** selecciona la opción "Plan CAFES (UNISON)",
-- **Entonces** la barra lateral debe renderizar de forma correlativa las 9 Unidades (Unidad A a I) más el Simulador Financiero, desplegando los 15 módulos académicos correspondientes.
+Siguiendo al 100% el índice del docente (`INDICE DE PLAN DE NEGOCIOS 10.2026-2.docx`):
 
-### Escenario 2: Diagnóstico Cuántico del Emprendedor
-- **Dado** que el usuario ingresa a la Unidad A, Módulo 1 (`perfil_emprendedor`),
-- **Cuando** revisa el módulo,
-- **Entonces** debe contar con campos para el Modelo Atómico de 3 Áreas (Finanzas, Operativo, Administrativo), identificando debilidades del fundador y generando la ruta de delegación e independencia.
+### Unidad A · Resumen y Perfil
+- **0. Resumen Ejecutivo:** Incisos 0.1 al 0.14.
+- **1. Perfil del Emprendedor y del Proyecto:** Incisos 1.1 al 1.6 (Entrevista diagnóstica cualitativa).
 
-### Escenario 3: Cálculo y Justificación de la Demanda (TAM/SAM/SOM)
-- **Dado** que el usuario ingresa a la Unidad B, Módulo 3 (`estudio_mercado`),
-- **Cuando** solicita la asistencia de la IA o edita el campo `estimacion_demanda_tam_sam_som`,
-- **Entonces** el sistema debe estructurar el tamaño del mercado en TAM, SAM y SOM con datos realistas para el municipio o zona de influencia en Sonora/México.
+### Unidad B · Mercado y Cliente
+- **2. Idea de Negocio y Portafolio:** Incisos 2.1 al 2.5 (Fichas técnicas y BOM de materiales por lote).
+- **3. Estudio de Mercado Práctico:** Incisos 3.1 al 3.8 (Microdatos locales INEGI, competencia y canales).
 
-### Escenario 4: Evaluación Financiera con B/C, VAN, TIR y Monte Carlo
-- **Dado** que el usuario formula su presupuesto en la Unidad F, Módulo 9 (`plan_financiero`),
-- **Cuando** se calculan las proyecciones,
-- **Entonces** el sistema debe reportar el Punto de Equilibrio (unidades y pesos), la Relación Beneficio/Costo (B/C > 1.0), el VAN y la TIR considerando la tasa de descuento de oportunidad.
+### Unidad C · Propuesta de Valor y Operaciones
+- **4. Plan de Operaciones y Producción:** Incisos 4.1 al 4.10 (Flujogramas, capacidad instalada y layout 2D).
 
-### Escenario 5: Exportación a Microsoft Word (.docx)
-- **Dado** un proyecto completo bajo el método `cafes`,
-- **Cuando** el usuario ejecuta la exportación ejecutiva a Word,
-- **Entonces** el documento generado debe incluir portada institucional, Carta de Presentación, Declaración de Veracidad, Índice General, las 9 unidades temáticas desglosadas y la lista de control de Anexos (A1-A22).
+### Unidad D · Legal y Organización
+- **5. Aspectos Legales y Regulatorios:** Incisos 5.1 al 5.5 (Transición formal RESICO y licencias).
+- **6. Organización y Talento:** Incisos 6.1 al 6.5 (Turnos de trabajo y conciliación familiar).
+- **7. Propuesta de Valor y Modelo de Negocio:** Incisos 7.1 al 7.5 (Lienzo Canvas de 9 bloques).
+
+### Unidad E · Marketing y Ventas
+- **8. Plan Comercial:** Incisos 8.1 al 8.8 (Promoción comunitaria, redes y plan de ventas de 90 días).
+
+### Unidad F · Finanzas y Factibilidad
+- **9. Plan Financiero:** Incisos 9.1 al 9.16 (Supuestos, costeo, proforma, flujos, balance, B/C, payback y sensibilidad).
+
+### Unidad G · Impacto y Gestión de Riesgos
+- **10. Impacto Social, Familiar y Ambiental:** Incisos 10.1 al 10.5 (Empleo digno, ingreso familiar y sustentabilidad).
+- **11. Matriz de Riesgos:** Incisos 11.1 al 11.4 (Probabilidad, impacto y planes de contingencia).
+
+### Unidad H · Implementación y Solicitud al Financiador
+- **12. Plan de Implementación:** Incisos 12.1 al 12.4 (Cronograma Gantt de 12 semanas e hitos críticos).
+- **13. Requerimiento de Capital Inicial:** Incisos 13.1 al 13.6 (Presupuesto, cotizaciones y aportación propia).
+- **14. Conclusiones y Petición Formal:** Incisos 14.1 al 14.3 (Síntesis de viabilidad y petición formal al comité).
+
+### Unidad I · Anexos (Expediente de Revisión)
+- **Expediente de Anexos:** A1 al A22 (22 documentos de respaldo y comprobantes oficiales).
 
 ---
 
-## 6. Métricas SRE (SLI, SLO, SLA)
+## 5. Acuerdos de Nivel de Servicio (SRE / SLI, SLO, SLA)
 
-| Métrica | Definición | Meta (SLO) | Compromiso (SLA) |
+| Dimensión de Servicio | Indicador Clave (SLI) | Objetivo de Rendimiento (SLO) | Acuerdo de Nivel de Servicio (SLA) |
 | :--- | :--- | :--- | :--- |
-| **SLI-1: Latencia de Renderizado** | Tiempo desde la selección de un módulo de CAFES hasta su renderizado completo en el DOM. | P95 < 80ms | P99 < 150ms |
-| **SLI-2: Tasa de Error en Exportación** | Porcentaje de documentos exportados a `.docx` exitosamente sin excepciones. | 100% | > 99.8% |
-| **SLI-3: Tiempo de Ejecución de Corridas** | Duración del recálculo financiero de 12 meses proforma y punto de equilibrio. | < 50ms | < 120ms |
-| **SLI-4: Cobertura de Pruebas Unitarias** | Porcentaje de módulos y campos de CAFES cubiertos por aserciones de prueba en Vitest. | 100% | 100% |
+| **Latencia de Carga Modular** | Tiempo transcurrido entre clic en navegación y renderizado completo del módulo | < 120 ms en el percentil 95 (P95) | < 350 ms garantizado en el percentil 99 (P99) |
+| **Tiempo de Exportación Word (.docx)** | Tiempo de compilación de las 9 Unidades A-I a archivo binario .docx | < 1.5 segundos en documentos estándar | < 3.0 segundos en documentos con anexos densos |
+| **Disponibilidad de la Plataforma** | Porcentaje de tiempo de actividad sin errores 5xx en el servidor API | >= 99.9% de uptime mensual | >= 99.5% de disponibilidad mensual |
+| **Integridad y Coherencia Contable** | Verificación automática de sumas y balances en proyecciones financieras | 100% de coherencia (cero discrepancias de suma) | 100% garantizado por tests unitarios |
+| **Tasa de Éxito de Compilación** | Porcentaje de compilaciones `npm run build` exitosas en el pipeline | 100% libre de advertencias críticas o fallos | 100% de builds reproducibles |
+| **Tiempo de Respuesta del Asesor IA** | Tiempo de generación de sugerencias de campo contextuales | < 2.5 segundos en inferencia local Ollama/LM Studio | < 5.0 segundos con failover de API remota |
+
+---
+
+## 6. Proyectos Auditados y Estado de Insumos
+
+1. **Raúl (`galletas_de_semillas_saludables`):** Costeo por lote verificado ($10.44/galleta). Pendiente: Entrevista cualitativa de autoempleo y datos INEGI de Villas del Real.
+2. **Viktor Acuña (`closets_y_cocinas_corona`):** Entrevista de 60 min con María Alejandra y Marcelo Corona verificada, CAPEX $150k validado. Pendiente: DENUE carpinterías Sonora y memoria de costeo de 5 modelos de catálogo.
+3. **VCV Carnes (`vcv_cortes_finos_sa_de_cv`):** Formulación agroindustrial premium validada ($4M MXN). Pendiente: Adaptación cualitativa al enfoque de pequeños ganaderos proveedores de la sierra sonorense.
+4. **Piñatas (`pinatas_artesanales_sonora`):** Proyecto creado y poblado canónicamente al 100% con las 9 Unidades de CAFES UNISON ($12,500 MXN inversión, B/C 1.48, Payback 4.2 meses).
+5. **Velas Artesanales (`velas_aromaticas_y_artesanales_kino`):** Proyecto modelo de ejemplo creado y poblado al 100% con las 9 Unidades de CAFES UNISON ($15,000 MXN inversión, B/C 1.54, Payback 3.8 meses).

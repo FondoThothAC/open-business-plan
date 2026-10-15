@@ -1,18 +1,18 @@
 {
-  "id": "modulo.cafes.expediente_anexos",
+  "id": "modulo.bob_unison.expediente_anexos",
   "title": "Anexos (A1 a A22) y Checklist de Control",
   "summary": "Expediente documental completo para comités de evaluación, convocatorias y financiamiento.",
   "kind": "modulo",
   "audience": "cliente",
-  "model": "cafes",
+  "model": "bob_unison",
   "moduleKey": "expediente_anexos",
   "pillarKey": "unidad_i",
-  "openUrl": "/cafes/expediente_anexos",
+  "openUrl": "/bob_unison/expediente_anexos",
   "fields": [
     {
       "key": "checklist_expediente_completo",
       "type": "text",
-      "address": "cafes.unidad_i.expediente_anexos.checklist_expediente_completo",
+      "address": "bob_unison.unidad_i.expediente_anexos.checklist_expediente_completo",
       "prompt": "Lista de control firmada que certifica que todos los documentos anexos (A1 a A22) han sido recopilados y revisados.",
       "ejemplo": "Ej: Expediente con 22 documentos verificados y foliados conforme al índice oficial del programa.",
       "benchmark": "100% de cumplimiento en la lista de cotejo documental.",
@@ -22,7 +22,7 @@
     {
       "key": "identificaciones_comprobantes_a1",
       "type": "text",
-      "address": "cafes.unidad_i.expediente_anexos.identificaciones_comprobantes_a1",
+      "address": "bob_unison.unidad_i.expediente_anexos.identificaciones_comprobantes_a1",
       "prompt": "Anexo A1: Copia de credencial de elector (INE/IFE), CURP y comprobante de domicilio reciente del emprendedor/a.",
       "ejemplo": "Ej: INE vigente por ambos lados, CURP certificada y recibo de luz (CFE) con antigüedad menor a 60 días.",
       "benchmark": "Documentación oficial legible y vigente.",
@@ -32,7 +32,7 @@
     {
       "key": "curriculum_emprendedor_a2",
       "type": "text",
-      "address": "cafes.unidad_i.expediente_anexos.curriculum_emprendedor_a2",
+      "address": "bob_unison.unidad_i.expediente_anexos.curriculum_emprendedor_a2",
       "prompt": "Anexo A2: Síntesis curricular del emprendedor y miembros del equipo (máximo 1 página por persona).",
       "ejemplo": "Ej: Trayectoria laboral, cursos de capacitación técnica tomados y habilidades desarrolladas.",
       "benchmark": "Enfoque en experiencia práctica relevante para el giro.",
@@ -42,7 +42,7 @@
     {
       "key": "fotografias_productos_a3",
       "type": "text",
-      "address": "cafes.unidad_i.expediente_anexos.fotografias_productos_a3",
+      "address": "bob_unison.unidad_i.expediente_anexos.fotografias_productos_a3",
       "prompt": "Anexo A3: Muestrario fotográfico a color de los productos elaborados y muestras de presentación.",
       "ejemplo": "Ej: Registro de 6 fotografías en alta resolución de pasteles decorados, quequitos y empaques terminados.",
       "benchmark": "Fotografías nítidas con buena iluminación y presentación higiénica.",
@@ -52,7 +52,7 @@
     {
       "key": "fichas_tecnicas_costeo_a4",
       "type": "text",
-      "address": "cafes.unidad_i.expediente_anexos.fichas_tecnicas_costeo_a4",
+      "address": "bob_unison.unidad_i.expediente_anexos.fichas_tecnicas_costeo_a4",
       "prompt": "Anexo A4: Formato impreso de las fichas técnicas de costeo unitario y recetas completas por producto.",
       "ejemplo": "Ej: Hojas de cálculo impresas con gramajes, precios de insumos por gramo y costo total por pieza.",
       "benchmark": "Cálculos matemáticos revisados sin errores de suma.",
@@ -62,7 +62,7 @@
     {
       "key": "cotizaciones_equipo_insumos_a5",
       "type": "text",
-      "address": "cafes.unidad_i.expediente_anexos.cotizaciones_equipo_insumos_a5",
+      "address": "bob_unison.unidad_i.expediente_anexos.cotizaciones_equipo_insumos_a5",
       "prompt": "Anexo A5: Copia física o digital de las cotizaciones formales de maquinaria, herramientas e insumos.",
       "ejemplo": "Ej: Cotizaciones con membrete de Ferretería del Norte y Maquinaria Gastronómica fechadas en el mes en curso.",
       "benchmark": "Mínimo 2 cotizaciones por rubro de inversión.",
@@ -72,7 +72,7 @@
     {
       "key": "directorio_proveedores_a6",
       "type": "text",
-      "address": "cafes.unidad_i.expediente_anexos.directorio_proveedores_a6",
+      "address": "bob_unison.unidad_i.expediente_anexos.directorio_proveedores_a6",
       "prompt": "Anexo A6: Directorio telefónico y domiciliario de los proveedores seleccionados con listas de precios de mayoreo.",
       "ejemplo": "Ej: Datos de contacto de molinos, distribuidores de azúcar, comercializadoras de empaque y materias primas.",
       "benchmark": "Directorio local actualizado con teléfonos activos.",
@@ -82,7 +82,7 @@
     {
       "key": "encuestas_validacion_a7",
       "type": "text",
-      "address": "cafes.unidad_i.expediente_anexos.encuestas_validacion_a7",
+      "address": "bob_unison.unidad_i.expediente_anexos.encuestas_validacion_a7",
       "prompt": "Anexo A7: Hojas de encuestas aplicadas a clientes potenciales y resumen estadístico de los resultados de validación.",
       "ejemplo": "Ej: 30 encuestas físicas aplicadas a vecinos con tabulación de frecuencia de consumo y preferencias de sabor.",
       "benchmark": "Encuestas debidamente foliadas y firmadas por los encuestados.",
@@ -92,7 +92,7 @@
     {
       "key": "registro_fotografico_espacio_a8",
       "type": "text",
-      "address": "cafes.unidad_i.expediente_anexos.registro_fotografico_espacio_a8",
+      "address": "bob_unison.unidad_i.expediente_anexos.registro_fotografico_espacio_a8",
       "prompt": "Anexo A8: Reporte fotográfico del espacio donde operará el negocio (local, taller, cocina o patio de trabajo).",
       "ejemplo": "Ej: 4 fotografías que muestran las condiciones físicas actuales del espacio de trabajo y conexiones de servicio.",
       "benchmark": "Evidencia de viabilidad física y condiciones salubres.",
@@ -102,7 +102,7 @@
     {
       "key": "diagramas_layout_a9",
       "type": "text",
-      "address": "cafes.unidad_i.expediente_anexos.diagramas_layout_a9",
+      "address": "bob_unison.unidad_i.expediente_anexos.diagramas_layout_a9",
       "prompt": "Anexo A9: Diagrama técnico o plano arquitectónico del lay-out con medidas exactas de las áreas de trabajo.",
       "ejemplo": "Ej: Plano acotado en escala 1:50 que muestra la ubicación del horno, mesa de trabajo, tarja y extintor.",
       "benchmark": "Plano legible con cotas y zonas señaladas.",
@@ -112,7 +112,7 @@
     {
       "key": "permisos_avisos_contratos_a10",
       "type": "text",
-      "address": "cafes.unidad_i.expediente_anexos.permisos_avisos_contratos_a10",
+      "address": "bob_unison.unidad_i.expediente_anexos.permisos_avisos_contratos_a10",
       "prompt": "Anexo A10: Copia de avisos sanitarios, licencias de uso de suelo o contratos de arrendamiento/comodato (si aplica).",
       "ejemplo": "Ej: Acuse de recibo de aviso de funcionamiento COFEPRIS y contrato de comodato firmado con el propietario del predio.",
       "benchmark": "Documentos en regla y cotejados.",
@@ -122,7 +122,7 @@
     {
       "key": "tablas_financieras_impresas_a11",
       "type": "text",
-      "address": "cafes.unidad_i.expediente_anexos.tablas_financieras_impresas_a11",
+      "address": "bob_unison.unidad_i.expediente_anexos.tablas_financieras_impresas_a11",
       "prompt": "Anexo A11: Juego completo de tablas financieras impresas con supuestos visibles, estados de resultados y flujos de caja.",
       "ejemplo": "Ej: Reporte financiero de 12 páginas con corridas mensuales del primer año y proyecciones a 3 años.",
       "benchmark": "Tablas limpias con encabezados y fórmulas transparentes.",
@@ -132,7 +132,7 @@
     {
       "key": "tabla_amortizacion_credito_a12",
       "type": "text",
-      "address": "cafes.unidad_i.expediente_anexos.tabla_amortizacion_credito_a12",
+      "address": "bob_unison.unidad_i.expediente_anexos.tabla_amortizacion_credito_a12",
       "prompt": "Anexo A12: Tabla de amortización en caso de que el proyecto involucre un crédito bancario, microcrédito o fondo revolvente.",
       "ejemplo": "Ej: Tabla de amortización a 24 meses con cuotas fijas de capital e intereses y saldo insoluto.",
       "benchmark": "Cálculo exacto del costo financiero y tasa de interés.",
@@ -142,7 +142,7 @@
     {
       "key": "cartas_intencion_pedidos_a13",
       "type": "text",
-      "address": "cafes.unidad_i.expediente_anexos.cartas_intencion_pedidos_a13",
+      "address": "bob_unison.unidad_i.expediente_anexos.cartas_intencion_pedidos_a13",
       "prompt": "Anexo A13: Cartas de intención de compra, pedidos piloto firmados o convenios preliminares con clientes y comercios.",
       "ejemplo": "Ej: 3 cartas firmadas por salones de eventos y organizadores vecinales manifestando interés de compra regular.",
       "benchmark": "Cartas con nombre, teléfono y firma autógrafa.",
@@ -152,7 +152,7 @@
     {
       "key": "manuales_operacion_atencion_a14",
       "type": "text",
-      "address": "cafes.unidad_i.expediente_anexos.manuales_operacion_atencion_a14",
+      "address": "bob_unison.unidad_i.expediente_anexos.manuales_operacion_atencion_a14",
       "prompt": "Anexo A14: Documento impreso con el manual básico de operaciones, recetas estandarizadas y protocolo de servicio.",
       "ejemplo": "Ej: Carpeta de procedimientos con el paso a paso detallado para que cualquier colaborador opere con la misma calidad.",
       "benchmark": "Manual comprensible y de fácil consulta.",
@@ -162,7 +162,7 @@
     {
       "key": "politicas_calidad_inocuidad_a15",
       "type": "text",
-      "address": "cafes.unidad_i.expediente_anexos.politicas_calidad_inocuidad_a15",
+      "address": "bob_unison.unidad_i.expediente_anexos.politicas_calidad_inocuidad_a15",
       "prompt": "Anexo A15: Documento con las políticas de higiene, inocuidad alimentaria o calidad según el giro del micronegocio.",
       "ejemplo": "Ej: Reglamento interno de inocuidad: vestimenta, desinfección de superficies y protocolo de rechazo de insumos.",
       "benchmark": "Alineación con normas sanitarias vigentes.",
@@ -172,7 +172,7 @@
     {
       "key": "bitacora_piloto_aprendizajes_a16",
       "type": "text",
-      "address": "cafes.unidad_i.expediente_anexos.bitacora_piloto_aprendizajes_a16",
+      "address": "bob_unison.unidad_i.expediente_anexos.bitacora_piloto_aprendizajes_a16",
       "prompt": "Anexo A16: Bitácora de pruebas piloto con registro de fechas, productos elaborados, comentarios de clientes y ajustes hechos.",
       "ejemplo": "Ej: Registro de 15 pruebas realizadas durante el mes de preparación con ajustes en azúcar y tiempos de cocción.",
       "benchmark": "Evidencia de aprendizaje iterativo antes del arranque.",
@@ -182,7 +182,7 @@
     {
       "key": "evidencias_ventas_iniciales_a17",
       "type": "text",
-      "address": "cafes.unidad_i.expediente_anexos.evidencias_ventas_iniciales_a17",
+      "address": "bob_unison.unidad_i.expediente_anexos.evidencias_ventas_iniciales_a17",
       "prompt": "Anexo A17: Comprobantes de ventas previas: notas de remisión, tickets, capturas de transferencias bancarias o depósitos.",
       "ejemplo": "Ej: Copia de 20 notas de venta y estados de cuenta con transferencias de clientes de los últimos dos meses.",
       "benchmark": "Comprobantes que acrediten tracción comercial real.",
@@ -192,7 +192,7 @@
     {
       "key": "carta_compromiso_metas_a18",
       "type": "text",
-      "address": "cafes.unidad_i.expediente_anexos.carta_compromiso_metas_a18",
+      "address": "bob_unison.unidad_i.expediente_anexos.carta_compromiso_metas_a18",
       "prompt": "Anexo A18: Carta de compromiso formal firmada por el emprendedor comprometiéndose a cumplir las metas del plan.",
       "ejemplo": "Ej: Documento firmado donde se asume el compromiso de reportar avances trimestrales y aplicar el recurso con honestidad.",
       "benchmark": "Carta con firma autógrafa y huella digital del titular.",
@@ -202,7 +202,7 @@
     {
       "key": "checklist_firmado_a19",
       "type": "text",
-      "address": "cafes.unidad_i.expediente_anexos.checklist_firmado_a19",
+      "address": "bob_unison.unidad_i.expediente_anexos.checklist_firmado_a19",
       "prompt": "Anexo A19: Lista de cotejo institucional firmada por el asesor del programa CAFES y el emprendedor certificando el expediente completo.",
       "ejemplo": "Ej: Formato institucional de la UNISON con palomeo de todos los requisitos documentales y firmas correspondientes.",
       "benchmark": "Validación conjunta asesor-emprendedor.",
@@ -212,7 +212,7 @@
     {
       "key": "diagnostico_habilidades_capacitacion_a20",
       "type": "text",
-      "address": "cafes.unidad_i.expediente_anexos.diagnostico_habilidades_capacitacion_a20",
+      "address": "bob_unison.unidad_i.expediente_anexos.diagnostico_habilidades_capacitacion_a20",
       "prompt": "Anexo A20: Ficha del diagnóstico de habilidades del emprendedor y plan individual de capacitación asignado por CAFES.",
       "ejemplo": "Ej: Evaluación diagnóstica inicial y programa calendarizado de talleres de costeo y comercialización.",
       "benchmark": "Plan de capacitación personalizado para cubrir áreas débiles.",
@@ -222,7 +222,7 @@
     {
       "key": "convenio_convocatoria_a21",
       "type": "text",
-      "address": "cafes.unidad_i.expediente_anexos.convenio_convocatoria_a21",
+      "address": "bob_unison.unidad_i.expediente_anexos.convenio_convocatoria_a21",
       "prompt": "Anexo A21: Copia de la convocatoria, lineamientos del fondo o convenio institucional aplicable (ej. CAFES/SAETA).",
       "ejemplo": "Ej: Bases de la convocatoria de Apoyo al Emprendimiento Social 2026 y convenio de colaboración UNISON-SAETA.",
       "benchmark": "Identificación de la convocatoria de financiamiento meta.",
@@ -232,7 +232,7 @@
     {
       "key": "constancias_capacitacion_a22",
       "type": "text",
-      "address": "cafes.unidad_i.expediente_anexos.constancias_capacitacion_a22",
+      "address": "bob_unison.unidad_i.expediente_anexos.constancias_capacitacion_a22",
       "prompt": "Anexo A22: Copia de diplomas, reconocimientos o constancias de capacitación emitidas por UNISON, SAETA o instituciones reconocidas.",
       "ejemplo": "Ej: Constancia del curso de Panadería y Repostería emitido por SAETA y constancia del taller de Finanzas Personales de CAFES-UNISON.",
       "benchmark": "Constancias oficiales con folio y firma de instructores.",
@@ -246,7 +246,7 @@
       "id": "uso",
       "title": "Cómo se usa en el plan",
       "audience": "cliente",
-      "markdown": "**Qué es.** Expediente documental completo para comités de evaluación, convocatorias y financiamiento.\n\n**Cómo se usa.** Está en el pilar **Unidad I · Anexos y Expediente de Verificación** del modelo *Plan de Negocios CAFES (Emprendimiento Social y Familiar)*. Se abre en `/cafes/expediente_anexos`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 23 campos: `checklist_expediente_completo`, `identificaciones_comprobantes_a1`, `curriculum_emprendedor_a2`, `fotografias_productos_a3`, `fichas_tecnicas_costeo_a4`, `cotizaciones_equipo_insumos_a5`, `directorio_proveedores_a6`, `encuestas_validacion_a7`, `registro_fotografico_espacio_a8`, `diagramas_layout_a9`, `permisos_avisos_contratos_a10`, `tablas_financieras_impresas_a11`, `tabla_amortizacion_credito_a12`, `cartas_intencion_pedidos_a13`, `manuales_operacion_atencion_a14`, `politicas_calidad_inocuidad_a15`, `bitacora_piloto_aprendizajes_a16`, `evidencias_ventas_iniciales_a17`, `carta_compromiso_metas_a18`, `checklist_firmado_a19`, `diagnostico_habilidades_capacitacion_a20`, `convenio_convocatoria_a21`, `constancias_capacitacion_a22`.\n\n**Herramientas del módulo.** Ninguna específica: se apoya en los campos de texto."
+      "markdown": "**Qué es.** Expediente documental completo para comités de evaluación, convocatorias y financiamiento.\n\n**Cómo se usa.** Está en el pilar **Unidad I · Anexos y Expediente de Verificación** del modelo *Método Bob 1 UNISON (OBP + Empresas Cuánticas)*. Se abre en `/bob_unison/expediente_anexos`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 23 campos: `checklist_expediente_completo`, `identificaciones_comprobantes_a1`, `curriculum_emprendedor_a2`, `fotografias_productos_a3`, `fichas_tecnicas_costeo_a4`, `cotizaciones_equipo_insumos_a5`, `directorio_proveedores_a6`, `encuestas_validacion_a7`, `registro_fotografico_espacio_a8`, `diagramas_layout_a9`, `permisos_avisos_contratos_a10`, `tablas_financieras_impresas_a11`, `tabla_amortizacion_credito_a12`, `cartas_intencion_pedidos_a13`, `manuales_operacion_atencion_a14`, `politicas_calidad_inocuidad_a15`, `bitacora_piloto_aprendizajes_a16`, `evidencias_ventas_iniciales_a17`, `carta_compromiso_metas_a18`, `checklist_firmado_a19`, `diagnostico_habilidades_capacitacion_a20`, `convenio_convocatoria_a21`, `constancias_capacitacion_a22`.\n\n**Herramientas del módulo.** Ninguna específica: se apoya en los campos de texto."
     },
     {
       "id": "campos",
@@ -264,13 +264,13 @@
       "id": "porque",
       "title": "Por qué existe",
       "audience": "cliente",
-      "markdown": "Forma parte del pilar **Unidad I · Anexos y Expediente de Verificación** de *Plan de Negocios CAFES (Emprendimiento Social y Familiar)*. La justificación metodológica completa está en la página del modelo y en `docs/cafes.md`."
+      "markdown": "Forma parte del pilar **Unidad I · Anexos y Expediente de Verificación** de *Método Bob 1 UNISON (OBP + Empresas Cuánticas)*. La justificación metodológica completa está en la página del modelo y en `docs/bob_unison.md`."
     },
     {
       "id": "tecnico",
       "title": "Detalles técnicos",
       "audience": "tecnico",
-      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `cafes.unidad_i.expediente_anexos.checklist_expediente_completo` → tipo `text`\n- `cafes.unidad_i.expediente_anexos.identificaciones_comprobantes_a1` → tipo `text`\n- `cafes.unidad_i.expediente_anexos.curriculum_emprendedor_a2` → tipo `text`\n- `cafes.unidad_i.expediente_anexos.fotografias_productos_a3` → tipo `text`\n- `cafes.unidad_i.expediente_anexos.fichas_tecnicas_costeo_a4` → tipo `text`\n- `cafes.unidad_i.expediente_anexos.cotizaciones_equipo_insumos_a5` → tipo `text`\n- `cafes.unidad_i.expediente_anexos.directorio_proveedores_a6` → tipo `text`\n- `cafes.unidad_i.expediente_anexos.encuestas_validacion_a7` → tipo `text`\n- `cafes.unidad_i.expediente_anexos.registro_fotografico_espacio_a8` → tipo `text`\n- `cafes.unidad_i.expediente_anexos.diagramas_layout_a9` → tipo `text`\n- `cafes.unidad_i.expediente_anexos.permisos_avisos_contratos_a10` → tipo `text`\n- `cafes.unidad_i.expediente_anexos.tablas_financieras_impresas_a11` → tipo `text`\n- `cafes.unidad_i.expediente_anexos.tabla_amortizacion_credito_a12` → tipo `text`\n- `cafes.unidad_i.expediente_anexos.cartas_intencion_pedidos_a13` → tipo `text`\n- `cafes.unidad_i.expediente_anexos.manuales_operacion_atencion_a14` → tipo `text`\n- `cafes.unidad_i.expediente_anexos.politicas_calidad_inocuidad_a15` → tipo `text`\n- `cafes.unidad_i.expediente_anexos.bitacora_piloto_aprendizajes_a16` → tipo `text`\n- `cafes.unidad_i.expediente_anexos.evidencias_ventas_iniciales_a17` → tipo `text`\n- `cafes.unidad_i.expediente_anexos.carta_compromiso_metas_a18` → tipo `text`\n- `cafes.unidad_i.expediente_anexos.checklist_firmado_a19` → tipo `text`\n- `cafes.unidad_i.expediente_anexos.diagnostico_habilidades_capacitacion_a20` → tipo `text`\n- `cafes.unidad_i.expediente_anexos.convenio_convocatoria_a21` → tipo `text`\n- `cafes.unidad_i.expediente_anexos.constancias_capacitacion_a22` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas:** `src/config/moduleBoxMap.js` no declara cajas para `cafes:expediente_anexos`; la pantalla muestra solo los campos de texto.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `bob_unison.unidad_i.expediente_anexos.checklist_expediente_completo` → tipo `text`\n- `bob_unison.unidad_i.expediente_anexos.identificaciones_comprobantes_a1` → tipo `text`\n- `bob_unison.unidad_i.expediente_anexos.curriculum_emprendedor_a2` → tipo `text`\n- `bob_unison.unidad_i.expediente_anexos.fotografias_productos_a3` → tipo `text`\n- `bob_unison.unidad_i.expediente_anexos.fichas_tecnicas_costeo_a4` → tipo `text`\n- `bob_unison.unidad_i.expediente_anexos.cotizaciones_equipo_insumos_a5` → tipo `text`\n- `bob_unison.unidad_i.expediente_anexos.directorio_proveedores_a6` → tipo `text`\n- `bob_unison.unidad_i.expediente_anexos.encuestas_validacion_a7` → tipo `text`\n- `bob_unison.unidad_i.expediente_anexos.registro_fotografico_espacio_a8` → tipo `text`\n- `bob_unison.unidad_i.expediente_anexos.diagramas_layout_a9` → tipo `text`\n- `bob_unison.unidad_i.expediente_anexos.permisos_avisos_contratos_a10` → tipo `text`\n- `bob_unison.unidad_i.expediente_anexos.tablas_financieras_impresas_a11` → tipo `text`\n- `bob_unison.unidad_i.expediente_anexos.tabla_amortizacion_credito_a12` → tipo `text`\n- `bob_unison.unidad_i.expediente_anexos.cartas_intencion_pedidos_a13` → tipo `text`\n- `bob_unison.unidad_i.expediente_anexos.manuales_operacion_atencion_a14` → tipo `text`\n- `bob_unison.unidad_i.expediente_anexos.politicas_calidad_inocuidad_a15` → tipo `text`\n- `bob_unison.unidad_i.expediente_anexos.bitacora_piloto_aprendizajes_a16` → tipo `text`\n- `bob_unison.unidad_i.expediente_anexos.evidencias_ventas_iniciales_a17` → tipo `text`\n- `bob_unison.unidad_i.expediente_anexos.carta_compromiso_metas_a18` → tipo `text`\n- `bob_unison.unidad_i.expediente_anexos.checklist_firmado_a19` → tipo `text`\n- `bob_unison.unidad_i.expediente_anexos.diagnostico_habilidades_capacitacion_a20` → tipo `text`\n- `bob_unison.unidad_i.expediente_anexos.convenio_convocatoria_a21` → tipo `text`\n- `bob_unison.unidad_i.expediente_anexos.constancias_capacitacion_a22` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas:** `src/config/moduleBoxMap.js` no declara cajas para `bob_unison:expediente_anexos`; la pantalla muestra solo los campos de texto.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
     }
   ]
 }

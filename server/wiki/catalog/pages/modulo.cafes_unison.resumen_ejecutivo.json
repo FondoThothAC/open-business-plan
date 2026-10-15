@@ -1,18 +1,18 @@
 {
-  "id": "modulo.cafes.resumen_ejecutivo",
-  "title": "0. Resumen Ejecutivo Integral",
-  "summary": "Síntesis ejecutiva de oportunidad, propuesta de valor, demanda, inversión y viabilidad.",
+  "id": "modulo.cafes_unison.resumen_ejecutivo",
+  "title": "0. Resumen Ejecutivo",
+  "summary": "Síntesis ejecutiva de los 14 incisos oficiales del programa docente de CAFES.",
   "kind": "modulo",
   "audience": "cliente",
-  "model": "cafes",
+  "model": "cafes_unison",
   "moduleKey": "resumen_ejecutivo",
   "pillarKey": "unidad_a",
-  "openUrl": "/cafes/resumen_ejecutivo",
+  "openUrl": "/cafes_unison/resumen_ejecutivo",
   "fields": [
     {
       "key": "descripcion_situacion_actual",
       "type": "text",
-      "address": "cafes.unidad_a.resumen_ejecutivo.descripcion_situacion_actual",
+      "address": "cafes_unison.unidad_a.resumen_ejecutivo.descripcion_situacion_actual",
       "prompt": "Describe brevemente qué hace el emprendimiento hoy en día, en qué etapa se encuentra y qué productos o servicios ofrece.",
       "ejemplo": "Ej: Taller familiar de elaboración de piñatas artesanales y repostería casera operando desde el domicilio particular en Hermosillo.",
       "benchmark": "Operación activa o etapa pre-operativa con validación local < 3 meses.",
@@ -22,7 +22,7 @@
     {
       "key": "problema_oportunidad",
       "type": "text",
-      "address": "cafes.unidad_a.resumen_ejecutivo.problema_oportunidad",
+      "address": "cafes_unison.unidad_a.resumen_ejecutivo.problema_oportunidad",
       "prompt": "Explica qué necesidad o problema de los clientes atiende tu negocio y por qué existe una oportunidad real de venta.",
       "ejemplo": "Ej: Falta de repostería fresca y temática para festejos familiares a precios accesibles en la colonia sin tener que desplazarse al centro.",
       "benchmark": "Problema validado con al menos 15 clientes potenciales del sector.",
@@ -32,7 +32,7 @@
     {
       "key": "propuesta_valor_diferencial",
       "type": "text",
-      "address": "cafes.unidad_a.resumen_ejecutivo.propuesta_valor_diferencial",
+      "address": "cafes_unison.unidad_a.resumen_ejecutivo.propuesta_valor_diferencial",
       "prompt": "¿Qué hace a tu producto o servicio único y preferible frente a las opciones comerciales comunes?",
       "ejemplo": "Ej: Recetas tradicionales con ingredientes naturales de Sonora, diseños personalizados y entrega puntual a domicilio.",
       "benchmark": "Diferenciador perceptible en calidad, sabor, personalización o tiempo de entrega.",
@@ -42,7 +42,7 @@
     {
       "key": "cliente_objetivo_resumen",
       "type": "text",
-      "address": "cafes.unidad_a.resumen_ejecutivo.cliente_objetivo_resumen",
+      "address": "cafes_unison.unidad_a.resumen_ejecutivo.cliente_objetivo_resumen",
       "prompt": "Perfil resumido de quién compra tus productos: edad, ubicación, ocasiones de consumo y capacidad de pago.",
       "ejemplo": "Ej: Madres de familia y organizadores de eventos de 22 a 50 años en colonias del norte y poniente de Hermosillo.",
       "benchmark": "Segmento local identificado con frecuencia de compra mensual o bimestral.",
@@ -52,7 +52,7 @@
     {
       "key": "validacion_demanda_resumen",
       "type": "text",
-      "address": "cafes.unidad_a.resumen_ejecutivo.validacion_demanda_resumen",
+      "address": "cafes_unison.unidad_a.resumen_ejecutivo.validacion_demanda_resumen",
       "prompt": "Evidencias concretas de que el producto tiene demanda (pedidos piloto, sondeos rápidos, ventas previas).",
       "ejemplo": "Ej: Se realizaron 25 pedidos piloto en el último mes con 100% de satisfacción y 8 recompras espontáneas.",
       "benchmark": "Tasa de satisfacción > 90% y tasa de recompra verificable.",
@@ -62,7 +62,7 @@
     {
       "key": "ventaja_competitiva",
       "type": "text",
-      "address": "cafes.unidad_a.resumen_ejecutivo.ventaja_competitiva",
+      "address": "cafes_unison.unidad_a.resumen_ejecutivo.ventaja_competitiva",
       "prompt": "Factores por los que el negocio sostendrá sus ventas frente a competidores directos e informales.",
       "ejemplo": "Ej: Costos de operación reducidos por taller propio, dominio de la técnica artesanal y atención cercana vía WhatsApp.",
       "benchmark": "Margen bruto superior al 40% y relación de confianza comunitaria.",
@@ -72,7 +72,7 @@
     {
       "key": "modelo_ingresos_precios",
       "type": "text",
-      "address": "cafes.unidad_a.resumen_ejecutivo.modelo_ingresos_precios",
+      "address": "cafes_unison.unidad_a.resumen_ejecutivo.modelo_ingresos_precios",
       "prompt": "Forma en que el negocio genera ingresos: venta directa, paquetes, mayoreo o eventos especiales.",
       "ejemplo": "Ej: Venta individual sobre pedido con anticipo del 50% y paquetes para fiestas con descuento por volumen.",
       "benchmark": "Política de anticipos para asegurar flujo de caja y evitar mermas.",
@@ -82,7 +82,7 @@
     {
       "key": "capital_semilla_resumen",
       "type": "text",
-      "address": "cafes.unidad_a.resumen_ejecutivo.capital_semilla_resumen",
+      "address": "cafes_unison.unidad_a.resumen_ejecutivo.capital_semilla_resumen",
       "prompt": "Monto total de capital semilla requerido y desglose sintético de equipamiento e insumos.",
       "ejemplo": "Ej: $35,000 MXN destinados a horno industrial de convección ($22,000), mesa de acero ($8,000) e insumos iniciales ($5,000).",
       "benchmark": "Presupuesto 100% cotizado con al menos 2 opciones de proveedor.",
@@ -92,7 +92,7 @@
     {
       "key": "ventas_utilidades_resumen",
       "type": "text",
-      "address": "cafes.unidad_a.resumen_ejecutivo.ventas_utilidades_resumen",
+      "address": "cafes_unison.unidad_a.resumen_ejecutivo.ventas_utilidades_resumen",
       "prompt": "Proyección estimada de ventas mensuales y utilidad neta para el primer año de operación formal.",
       "ejemplo": "Ej: Ventas de $38,000 MXN mensuales promedio con una utilidad neta proyectada de $14,500 MXN mensuales.",
       "benchmark": "Margen neto operativo entre 25% y 40% para micronegocios familiares.",
@@ -102,7 +102,7 @@
     {
       "key": "punto_equilibrio_resumen",
       "type": "text",
-      "address": "cafes.unidad_a.resumen_ejecutivo.punto_equilibrio_resumen",
+      "address": "cafes_unison.unidad_a.resumen_ejecutivo.punto_equilibrio_resumen",
       "prompt": "Cifra de ventas mínimas mensuales en dinero y piezas para no ganar ni perder.",
       "ejemplo": "Ej: 65 paquetes o $16,250 MXN mensuales para cubrir todos los costos fijos y variables.",
       "benchmark": "Alcanzable en la semana 2 o 3 de cada mes operativo.",
@@ -112,7 +112,7 @@
     {
       "key": "relacion_beneficio_costo_resumen",
       "type": "text",
-      "address": "cafes.unidad_a.resumen_ejecutivo.relacion_beneficio_costo_resumen",
+      "address": "cafes_unison.unidad_a.resumen_ejecutivo.relacion_beneficio_costo_resumen",
       "prompt": "Indicador B/C que demuestra cuántos pesos de beneficio se generan por cada peso gastado.",
       "ejemplo": "Ej: Relación B/C de 1.38 (por cada $1.00 MXN invertido se recuperan $1.38 MXN en valor presente).",
       "benchmark": "Relación B/C > 1.15 para viabilidad económica.",
@@ -122,7 +122,7 @@
     {
       "key": "impacto_social_familiar_resumen",
       "type": "text",
-      "address": "cafes.unidad_a.resumen_ejecutivo.impacto_social_familiar_resumen",
+      "address": "cafes_unison.unidad_a.resumen_ejecutivo.impacto_social_familiar_resumen",
       "prompt": "Beneficios directos para la economía del hogar, sustento familiar y la comunidad vecinal.",
       "ejemplo": "Ej: Aumento del 45% en el ingreso disponible de la familia y generación de 2 autoempleos dignos en el hogar.",
       "benchmark": "Mejora demostrable en la canasta básica y bienestar familiar.",
@@ -132,7 +132,7 @@
     {
       "key": "riesgos_mitigaciones_resumen",
       "type": "text",
-      "address": "cafes.unidad_a.resumen_ejecutivo.riesgos_mitigaciones_resumen",
+      "address": "cafes_unison.unidad_a.resumen_ejecutivo.riesgos_mitigaciones_resumen",
       "prompt": "Principales riesgos que enfrenta el negocio y cómo se van a prevenir o controlar.",
       "ejemplo": "Ej: Aumento de insumos mitigado con compras en mayoreo; fallas eléctricas mitigadas con respaldo de gas LP.",
       "benchmark": "Matriz preventiva con Plan B inmediato.",
@@ -142,7 +142,7 @@
     {
       "key": "cronograma_12_semanas_resumen",
       "type": "text",
-      "address": "cafes.unidad_a.resumen_ejecutivo.cronograma_12_semanas_resumen",
+      "address": "cafes_unison.unidad_a.resumen_ejecutivo.cronograma_12_semanas_resumen",
       "prompt": "Resumen de hitos clave para la puesta en marcha durante las primeras 12 semanas.",
       "ejemplo": "Ej: Semanas 1-3 compra de equipo; semanas 4-6 acondicionamiento; semanas 7-9 pruebas piloto; semana 10 lanzamiento oficial.",
       "benchmark": "Ruta crítica realista sin retrasos en adquisiciones.",
@@ -164,7 +164,7 @@
       "id": "uso",
       "title": "Cómo se usa en el plan",
       "audience": "cliente",
-      "markdown": "**Qué es.** Síntesis ejecutiva de oportunidad, propuesta de valor, demanda, inversión y viabilidad.\n\n**Cómo se usa.** Está en el pilar **Unidad A · Resumen y Perfil del Emprendimiento** del modelo *Plan de Negocios CAFES (Emprendimiento Social y Familiar)*. Se abre en `/cafes/resumen_ejecutivo`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 14 campos: `descripcion_situacion_actual`, `problema_oportunidad`, `propuesta_valor_diferencial`, `cliente_objetivo_resumen`, `validacion_demanda_resumen`, `ventaja_competitiva`, `modelo_ingresos_precios`, `capital_semilla_resumen`, `ventas_utilidades_resumen`, `punto_equilibrio_resumen`, `relacion_beneficio_costo_resumen`, `impacto_social_familiar_resumen`, `riesgos_mitigaciones_resumen`, `cronograma_12_semanas_resumen`.\n\n**Herramientas del módulo.** 1 caja(s): `box_resumen_ejecutivo_1p`."
+      "markdown": "**Qué es.** Síntesis ejecutiva de los 14 incisos oficiales del programa docente de CAFES.\n\n**Cómo se usa.** Está en el pilar **Unidad A · Resumen y Perfil del Emprendedor** del modelo *Plan de Negocios CAFES UNISON*. Se abre en `/cafes_unison/resumen_ejecutivo`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 14 campos: `descripcion_situacion_actual`, `problema_oportunidad`, `propuesta_valor_diferencial`, `cliente_objetivo_resumen`, `validacion_demanda_resumen`, `ventaja_competitiva`, `modelo_ingresos_precios`, `capital_semilla_resumen`, `ventas_utilidades_resumen`, `punto_equilibrio_resumen`, `relacion_beneficio_costo_resumen`, `impacto_social_familiar_resumen`, `riesgos_mitigaciones_resumen`, `cronograma_12_semanas_resumen`.\n\n**Herramientas del módulo.** 1 caja(s): `box_resumen_ejecutivo_1p`."
     },
     {
       "id": "campos",
@@ -182,13 +182,13 @@
       "id": "porque",
       "title": "Por qué existe",
       "audience": "cliente",
-      "markdown": "Forma parte del pilar **Unidad A · Resumen y Perfil del Emprendimiento** de *Plan de Negocios CAFES (Emprendimiento Social y Familiar)*. La justificación metodológica completa está en la página del modelo y en `docs/cafes.md`."
+      "markdown": "Forma parte del pilar **Unidad A · Resumen y Perfil del Emprendedor** de *Plan de Negocios CAFES UNISON*. La justificación metodológica completa está en la página del modelo y en `docs/cafes.md`."
     },
     {
       "id": "tecnico",
       "title": "Detalles técnicos",
       "audience": "tecnico",
-      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `cafes.unidad_a.resumen_ejecutivo.descripcion_situacion_actual` → tipo `text`\n- `cafes.unidad_a.resumen_ejecutivo.problema_oportunidad` → tipo `text`\n- `cafes.unidad_a.resumen_ejecutivo.propuesta_valor_diferencial` → tipo `text`\n- `cafes.unidad_a.resumen_ejecutivo.cliente_objetivo_resumen` → tipo `text`\n- `cafes.unidad_a.resumen_ejecutivo.validacion_demanda_resumen` → tipo `text`\n- `cafes.unidad_a.resumen_ejecutivo.ventaja_competitiva` → tipo `text`\n- `cafes.unidad_a.resumen_ejecutivo.modelo_ingresos_precios` → tipo `text`\n- `cafes.unidad_a.resumen_ejecutivo.capital_semilla_resumen` → tipo `text`\n- `cafes.unidad_a.resumen_ejecutivo.ventas_utilidades_resumen` → tipo `text`\n- `cafes.unidad_a.resumen_ejecutivo.punto_equilibrio_resumen` → tipo `text`\n- `cafes.unidad_a.resumen_ejecutivo.relacion_beneficio_costo_resumen` → tipo `text`\n- `cafes.unidad_a.resumen_ejecutivo.impacto_social_familiar_resumen` → tipo `text`\n- `cafes.unidad_a.resumen_ejecutivo.riesgos_mitigaciones_resumen` → tipo `text`\n- `cafes.unidad_a.resumen_ejecutivo.cronograma_12_semanas_resumen` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `cafes:resumen_ejecutivo`): `box_resumen_ejecutivo_1p`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `cafes_unison.unidad_a.resumen_ejecutivo.descripcion_situacion_actual` → tipo `text`\n- `cafes_unison.unidad_a.resumen_ejecutivo.problema_oportunidad` → tipo `text`\n- `cafes_unison.unidad_a.resumen_ejecutivo.propuesta_valor_diferencial` → tipo `text`\n- `cafes_unison.unidad_a.resumen_ejecutivo.cliente_objetivo_resumen` → tipo `text`\n- `cafes_unison.unidad_a.resumen_ejecutivo.validacion_demanda_resumen` → tipo `text`\n- `cafes_unison.unidad_a.resumen_ejecutivo.ventaja_competitiva` → tipo `text`\n- `cafes_unison.unidad_a.resumen_ejecutivo.modelo_ingresos_precios` → tipo `text`\n- `cafes_unison.unidad_a.resumen_ejecutivo.capital_semilla_resumen` → tipo `text`\n- `cafes_unison.unidad_a.resumen_ejecutivo.ventas_utilidades_resumen` → tipo `text`\n- `cafes_unison.unidad_a.resumen_ejecutivo.punto_equilibrio_resumen` → tipo `text`\n- `cafes_unison.unidad_a.resumen_ejecutivo.relacion_beneficio_costo_resumen` → tipo `text`\n- `cafes_unison.unidad_a.resumen_ejecutivo.impacto_social_familiar_resumen` → tipo `text`\n- `cafes_unison.unidad_a.resumen_ejecutivo.riesgos_mitigaciones_resumen` → tipo `text`\n- `cafes_unison.unidad_a.resumen_ejecutivo.cronograma_12_semanas_resumen` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `cafes_unison:resumen_ejecutivo`): `box_resumen_ejecutivo_1p`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
     }
   ]
 }

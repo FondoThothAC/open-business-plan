@@ -1,18 +1,18 @@
 {
-  "id": "modulo.cafes.estudio_mercado",
-  "title": "3. Estudio de Mercado Práctico y Demanda",
+  "id": "modulo.bob_unison.estudio_mercado",
+  "title": "3. Estudio de Mercado y Dimensionamiento Cuantitativo",
   "summary": "Segmento, competencia local (3 mínimo), validación, estacionalidad y dimensionamiento TAM/SAM/SOM.",
   "kind": "modulo",
   "audience": "cliente",
-  "model": "cafes",
+  "model": "bob_unison",
   "moduleKey": "estudio_mercado",
   "pillarKey": "unidad_b",
-  "openUrl": "/cafes/estudio_mercado",
+  "openUrl": "/bob_unison/estudio_mercado",
   "fields": [
     {
       "key": "segmento_capacidad_pago",
       "type": "text",
-      "address": "cafes.unidad_b.estudio_mercado.segmento_capacidad_pago",
+      "address": "bob_unison.unidad_b.estudio_mercado.segmento_capacidad_pago",
       "prompt": "Perfil del comprador local: nivel de ingresos promedio, capacidad de gasto por ocasión y hábitos de compra.",
       "ejemplo": "Ej: Familias de nivel socioeconómico C y D+ con presupuesto de $250 a $500 MXN para celebraciones de fin de semana.",
       "benchmark": "Ticket promedio accesible compatible con el ingreso medio del sector.",
@@ -22,7 +22,7 @@
     {
       "key": "necesidades_criterios_compra",
       "type": "text",
-      "address": "cafes.unidad_b.estudio_mercado.necesidades_criterios_compra",
+      "address": "bob_unison.unidad_b.estudio_mercado.necesidades_criterios_compra",
       "prompt": "¿Por qué compra el cliente? Razones principales: frescura, cercanía, sabor, diseño personalizado o precio.",
       "ejemplo": "Ej: Buscan pasteles frescos del día sin conservadores artificiales, con diseños solicitados por sus hijos para cumpleaños.",
       "benchmark": "Jerarquía de valor clara (Sabor > Puntualidad > Precio).",
@@ -32,7 +32,7 @@
     {
       "key": "competidores_locales_matriz",
       "type": "text",
-      "address": "cafes.unidad_b.estudio_mercado.competidores_locales_matriz",
+      "address": "bob_unison.unidad_b.estudio_mercado.competidores_locales_matriz",
       "prompt": "Mapeo de al menos 3 competidores locales directos e indirectos: nombre, ubicación, precios y debilidades detectadas.",
       "ejemplo": "Ej: 1) Panadería La Espiga: precios bajos ($180) pero calidad industrial; 2) Pastelería Susy: alta calidad pero precios elevados ($450); 3) Supermercado local: productos fríos sin personalización.",
       "benchmark": "Matriz comparativa de precios y ubicación en radio de 3 km.",
@@ -42,7 +42,7 @@
     {
       "key": "diferenciadores_competencia",
       "type": "text",
-      "address": "cafes.unidad_b.estudio_mercado.diferenciadores_competencia",
+      "address": "bob_unison.unidad_b.estudio_mercado.diferenciadores_competencia",
       "prompt": "Aspectos en los que coincidimos con la competencia y aquellos donde somos notablemente mejores.",
       "ejemplo": "Ej: Coincidimos en variedad de sabores; nos diferenciamos en ingredientes 100% caseros, decoración moderna y trato cálido.",
       "benchmark": "Ventaja percibida por el 80% de los compradores de prueba.",
@@ -52,7 +52,7 @@
     {
       "key": "validacion_demanda_piloto",
       "type": "text",
-      "address": "cafes.unidad_b.estudio_mercado.validacion_demanda_piloto",
+      "address": "bob_unison.unidad_b.estudio_mercado.validacion_demanda_piloto",
       "prompt": "Sondeos directos realizados: encuestas rápidas a vecinos, pedidos de prueba o ventas en bazares comunitarios.",
       "ejemplo": "Ej: Encuesta a 40 vecinos del sector: 32 indicaron que comprarían repostería casera al menos dos veces al mes.",
       "benchmark": "Tasa de intención de compra > 70% en muestra local.",
@@ -62,7 +62,7 @@
     {
       "key": "ubicacion_cobertura_rutas",
       "type": "text",
-      "address": "cafes.unidad_b.estudio_mercado.ubicacion_cobertura_rutas",
+      "address": "bob_unison.unidad_b.estudio_mercado.ubicacion_cobertura_rutas",
       "prompt": "Ubicación física del negocio, accesibilidad, radio de cobertura para entregas y participación en ferias.",
       "ejemplo": "Ej: Taller en Col. San Benito; entregas a domicilio en radio de 5 km en motocicleta y entrega en punto medio.",
       "benchmark": "Tiempos de traslado < 25 minutos para garantizar frescura.",
@@ -72,7 +72,7 @@
     {
       "key": "estacionalidad_picos_venta",
       "type": "text",
-      "address": "cafes.unidad_b.estudio_mercado.estacionalidad_picos_venta",
+      "address": "bob_unison.unidad_b.estudio_mercado.estacionalidad_picos_venta",
       "prompt": "Meses y fechas con mayor demanda (Día de las Madres, Navidad, graduaciones) y temporadas bajas.",
       "ejemplo": "Ej: Picos de venta en mayo (Día de las Madres), junio (graduaciones) y diciembre (posadas); temporada baja en julio-agosto por vacaciones escolares.",
       "benchmark": "Estrategia de promociones contra-estacionales en meses bajos.",
@@ -82,7 +82,7 @@
     {
       "key": "estimacion_demanda_tam_sam_som",
       "type": "text",
-      "address": "cafes.unidad_b.estudio_mercado.estimacion_demanda_tam_sam_som",
+      "address": "bob_unison.unidad_b.estudio_mercado.estimacion_demanda_tam_sam_som",
       "prompt": "Dimensionamiento cuantitativo: Mercado Total (TAM), Mercado Disponible en la zona (SAM) y Mercado Objetivo conservador (SOM).",
       "ejemplo": "Ej: TAM: 120,000 familias en Hermosillo ($60M/año); SAM: 8,500 familias en la zona norte ($4.2M/año); SOM: 120 familias regulares el Año 1 (180 pedidos/mes = $540,000/año).",
       "benchmark": "SOM conservador equivalente a una cuota de mercado < 2% del SAM.",
@@ -104,7 +104,7 @@
       "id": "uso",
       "title": "Cómo se usa en el plan",
       "audience": "cliente",
-      "markdown": "**Qué es.** Segmento, competencia local (3 mínimo), validación, estacionalidad y dimensionamiento TAM/SAM/SOM.\n\n**Cómo se usa.** Está en el pilar **Unidad B · Mercado, Portafolio y Cliente** del modelo *Plan de Negocios CAFES (Emprendimiento Social y Familiar)*. Se abre en `/cafes/estudio_mercado`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 8 campos: `segmento_capacidad_pago`, `necesidades_criterios_compra`, `competidores_locales_matriz`, `diferenciadores_competencia`, `validacion_demanda_piloto`, `ubicacion_cobertura_rutas`, `estacionalidad_picos_venta`, `estimacion_demanda_tam_sam_som`.\n\n**Herramientas del módulo.** 1 caja(s): `box_tam_sam_som`."
+      "markdown": "**Qué es.** Segmento, competencia local (3 mínimo), validación, estacionalidad y dimensionamiento TAM/SAM/SOM.\n\n**Cómo se usa.** Está en el pilar **Unidad B · Mercado, Portafolio y Dimensionamiento Cuantitativo** del modelo *Método Bob 1 UNISON (OBP + Empresas Cuánticas)*. Se abre en `/bob_unison/estudio_mercado`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 8 campos: `segmento_capacidad_pago`, `necesidades_criterios_compra`, `competidores_locales_matriz`, `diferenciadores_competencia`, `validacion_demanda_piloto`, `ubicacion_cobertura_rutas`, `estacionalidad_picos_venta`, `estimacion_demanda_tam_sam_som`.\n\n**Herramientas del módulo.** 1 caja(s): `box_tam_sam_som`."
     },
     {
       "id": "campos",
@@ -122,13 +122,13 @@
       "id": "porque",
       "title": "Por qué existe",
       "audience": "cliente",
-      "markdown": "Forma parte del pilar **Unidad B · Mercado, Portafolio y Cliente** de *Plan de Negocios CAFES (Emprendimiento Social y Familiar)*. La justificación metodológica completa está en la página del modelo y en `docs/cafes.md`."
+      "markdown": "Forma parte del pilar **Unidad B · Mercado, Portafolio y Dimensionamiento Cuantitativo** de *Método Bob 1 UNISON (OBP + Empresas Cuánticas)*. La justificación metodológica completa está en la página del modelo y en `docs/bob_unison.md`."
     },
     {
       "id": "tecnico",
       "title": "Detalles técnicos",
       "audience": "tecnico",
-      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `cafes.unidad_b.estudio_mercado.segmento_capacidad_pago` → tipo `text`\n- `cafes.unidad_b.estudio_mercado.necesidades_criterios_compra` → tipo `text`\n- `cafes.unidad_b.estudio_mercado.competidores_locales_matriz` → tipo `text`\n- `cafes.unidad_b.estudio_mercado.diferenciadores_competencia` → tipo `text`\n- `cafes.unidad_b.estudio_mercado.validacion_demanda_piloto` → tipo `text`\n- `cafes.unidad_b.estudio_mercado.ubicacion_cobertura_rutas` → tipo `text`\n- `cafes.unidad_b.estudio_mercado.estacionalidad_picos_venta` → tipo `text`\n- `cafes.unidad_b.estudio_mercado.estimacion_demanda_tam_sam_som` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `cafes:estudio_mercado`): `box_tam_sam_som`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `bob_unison.unidad_b.estudio_mercado.segmento_capacidad_pago` → tipo `text`\n- `bob_unison.unidad_b.estudio_mercado.necesidades_criterios_compra` → tipo `text`\n- `bob_unison.unidad_b.estudio_mercado.competidores_locales_matriz` → tipo `text`\n- `bob_unison.unidad_b.estudio_mercado.diferenciadores_competencia` → tipo `text`\n- `bob_unison.unidad_b.estudio_mercado.validacion_demanda_piloto` → tipo `text`\n- `bob_unison.unidad_b.estudio_mercado.ubicacion_cobertura_rutas` → tipo `text`\n- `bob_unison.unidad_b.estudio_mercado.estacionalidad_picos_venta` → tipo `text`\n- `bob_unison.unidad_b.estudio_mercado.estimacion_demanda_tam_sam_som` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas declaradas para este módulo** (`src/config/moduleBoxMap.js`, clave `bob_unison:estudio_mercado`): `box_tam_sam_som`.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
     }
   ]
 }

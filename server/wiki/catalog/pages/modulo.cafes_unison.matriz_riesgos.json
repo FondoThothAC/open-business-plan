@@ -1,0 +1,86 @@
+{
+  "id": "modulo.cafes_unison.matriz_riesgos",
+  "title": "11. Matriz de Riesgos",
+  "summary": "Identificación de riesgos en 4 cuadrantes (mercado, operativo, financiero, legal), probabilidad e impacto, mitigación y plan B.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "cafes_unison",
+  "moduleKey": "matriz_riesgos",
+  "pillarKey": "unidad_g",
+  "openUrl": "/cafes_unison/matriz_riesgos",
+  "fields": [
+    {
+      "key": "identificacion_riesgos_matriz",
+      "type": "text",
+      "address": "cafes_unison.unidad_g.matriz_riesgos.identificacion_riesgos_matriz",
+      "prompt": "Matriz de identificación de riesgos en 4 cuadrantes: Mercado (competencia), Operativo (daño de equipo), Financiero (inflación) y Legal (clausuras).",
+      "ejemplo": "Ej: 1) Aumento en precio de harina/huevo; 2) Falla del horno; 3) Baja de ventas en temporada de calor; 4) Retraso en licencias.",
+      "benchmark": "Identificación de riesgos en las 4 dimensiones críticas.",
+      "cita": "Anatomy of a Business Plan",
+      "placeholder": "Riesgos de mercado, operativos, de dinero y legales..."
+    },
+    {
+      "key": "probabilidad_impacto_calificacion",
+      "type": "text",
+      "address": "cafes_unison.unidad_g.matriz_riesgos.probabilidad_impacto_calificacion",
+      "prompt": "Calificación de cada riesgo según su probabilidad de ocurrencia (Baja, Media, Alta) y su impacto en el negocio (Bajo, Medio, Alto).",
+      "ejemplo": "Ej: Aumento de insumos: Probabilidad Alta, Impacto Medio; Falla de horno: Probabilidad Baja, Impacto Alto.",
+      "benchmark": "Semaforización de riesgos críticos prioritarios.",
+      "cita": "Operations Management (Slack)",
+      "placeholder": "Semaforización: probabilidad e impacto por riesgo..."
+    },
+    {
+      "key": "medidas_mitigacion_preventiva",
+      "type": "text",
+      "address": "cafes_unison.unidad_g.matriz_riesgos.medidas_mitigacion_preventiva",
+      "prompt": "Acciones preventivas para evitar que los riesgos ocurran: mantenimiento de equipo, compras anticipadas o convenios de precios.",
+      "ejemplo": "Ej: Mantenimiento preventivo bimensual del horno; compra anticipada de harinas no perecederas ante avisos de aumento.",
+      "benchmark": "Controles preventivos rutinarios calendarizados.",
+      "cita": "Starting a Business QuickStart Guide",
+      "placeholder": "Medidas de prevención y mantenimiento..."
+    },
+    {
+      "key": "plan_b_gatillos_accion",
+      "type": "text",
+      "address": "cafes_unison.unidad_g.matriz_riesgos.plan_b_gatillos_accion",
+      "prompt": "Gatillos de acción (Plan B): Qué hacer exactamente y a quién acudir si ocurre una emergencia o falla crítica.",
+      "ejemplo": "Ej: Si falla el horno, convenio con panadería vecina para maquilar horneado pagando cuota por charola; si sube el huevo, ajuste temporal de combo.",
+      "benchmark": "Plan de contingencia con solución operativa inmediata.",
+      "cita": "Anatomy of a Business Plan & Fondo Thoth AC",
+      "placeholder": "Plan B inmediato y gatillos de respuesta..."
+    }
+  ],
+  "boxes": [],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Identificación de riesgos en 4 cuadrantes (mercado, operativo, financiero, legal), probabilidad e impacto, mitigación y plan B.\n\n**Cómo se usa.** Está en el pilar **Unidad G · Impacto y Gestión de Riesgos** del modelo *Plan de Negocios CAFES UNISON*. Se abre en `/cafes_unison/matriz_riesgos`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 4 campos: `identificacion_riesgos_matriz`, `probabilidad_impacto_calificacion`, `medidas_mitigacion_preventiva`, `plan_b_gatillos_accion`.\n\n**Herramientas del módulo.** Ninguna específica: se apoya en los campos de texto."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `identificacion_riesgos_matriz`\n\n**El prompt que usa:** Matriz de identificación de riesgos en 4 cuadrantes: Mercado (competencia), Operativo (daño de equipo), Financiero (inflación) y Legal (clausuras).\n\n**Ejemplo que muestra la guía:** Ej: 1) Aumento en precio de harina/huevo; 2) Falla del horno; 3) Baja de ventas en temporada de calor; 4) Retraso en licencias.\n\n**Benchmark / criterio de calidad:** Identificación de riesgos en las 4 dimensiones críticas.\n\n**De dónde viene la guía:** Anatomy of a Business Plan\n\n### `probabilidad_impacto_calificacion`\n\n**El prompt que usa:** Calificación de cada riesgo según su probabilidad de ocurrencia (Baja, Media, Alta) y su impacto en el negocio (Bajo, Medio, Alto).\n\n**Ejemplo que muestra la guía:** Ej: Aumento de insumos: Probabilidad Alta, Impacto Medio; Falla de horno: Probabilidad Baja, Impacto Alto.\n\n**Benchmark / criterio de calidad:** Semaforización de riesgos críticos prioritarios.\n\n**De dónde viene la guía:** Operations Management (Slack)\n\n### `medidas_mitigacion_preventiva`\n\n**El prompt que usa:** Acciones preventivas para evitar que los riesgos ocurran: mantenimiento de equipo, compras anticipadas o convenios de precios.\n\n**Ejemplo que muestra la guía:** Ej: Mantenimiento preventivo bimensual del horno; compra anticipada de harinas no perecederas ante avisos de aumento.\n\n**Benchmark / criterio de calidad:** Controles preventivos rutinarios calendarizados.\n\n**De dónde viene la guía:** Starting a Business QuickStart Guide\n\n### `plan_b_gatillos_accion`\n\n**El prompt que usa:** Gatillos de acción (Plan B): Qué hacer exactamente y a quién acudir si ocurre una emergencia o falla crítica.\n\n**Ejemplo que muestra la guía:** Ej: Si falla el horno, convenio con panadería vecina para maquilar horneado pagando cuota por charola; si sube el huevo, ajuste temporal de combo.\n\n**Benchmark / criterio de calidad:** Plan de contingencia con solución operativa inmediata.\n\n**De dónde viene la guía:** Anatomy of a Business Plan & Fondo Thoth AC"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "Sin cajas asociadas."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Unidad G · Impacto y Gestión de Riesgos** de *Plan de Negocios CAFES UNISON*. La justificación metodológica completa está en la página del modelo y en `docs/cafes.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `cafes_unison.unidad_g.matriz_riesgos.identificacion_riesgos_matriz` → tipo `text`\n- `cafes_unison.unidad_g.matriz_riesgos.probabilidad_impacto_calificacion` → tipo `text`\n- `cafes_unison.unidad_g.matriz_riesgos.medidas_mitigacion_preventiva` → tipo `text`\n- `cafes_unison.unidad_g.matriz_riesgos.plan_b_gatillos_accion` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas:** `src/config/moduleBoxMap.js` no declara cajas para `cafes_unison:matriz_riesgos`; la pantalla muestra solo los campos de texto.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}

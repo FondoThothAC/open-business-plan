@@ -1,18 +1,18 @@
 {
-  "id": "modulo.cafes.impacto_social_ambiental",
+  "id": "modulo.bob_unison.impacto_social_ambiental",
   "title": "10. Impacto Social, Familiar y Ambiental",
   "summary": "Elevación del ingreso familiar, empleos generados, equidad de género, prácticas verdes y alineación a metas.",
   "kind": "modulo",
   "audience": "cliente",
-  "model": "cafes",
+  "model": "bob_unison",
   "moduleKey": "impacto_social_ambiental",
   "pillarKey": "unidad_g",
-  "openUrl": "/cafes/impacto_social_ambiental",
+  "openUrl": "/bob_unison/impacto_social_ambiental",
   "fields": [
     {
       "key": "aumento_ingreso_familiar",
       "type": "text",
-      "address": "cafes.unidad_g.impacto_social_ambiental.aumento_ingreso_familiar",
+      "address": "bob_unison.unidad_g.impacto_social_ambiental.aumento_ingreso_familiar",
       "prompt": "Cuantificación de cuánto aumentará el ingreso mensual neto del hogar gracias a las utilidades generadas por el emprendimiento.",
       "ejemplo": "Ej: Aumento de $9,500 a $14,000 MXN mensuales en la economía del hogar, permitiendo mejorar la alimentación y pagar estudios.",
       "benchmark": "Aumento superior al 30% del ingreso familiar previo.",
@@ -22,7 +22,7 @@
     {
       "key": "empleos_directos_indirectos",
       "type": "text",
-      "address": "cafes.unidad_g.impacto_social_ambiental.empleos_directos_indirectos",
+      "address": "bob_unison.unidad_g.impacto_social_ambiental.empleos_directos_indirectos",
       "prompt": "Número de personas empleadas: autoempleo del titular, familiares que reciben estipendio y empleos indirectos con proveedores locales.",
       "ejemplo": "Ej: 1 autoempleo permanente (titular), 1 empleo familiar de medio tiempo y derrama indirecta en 3 abarroteras del sector.",
       "benchmark": "Generación de empleos dignos sin precarización laboral.",
@@ -32,7 +32,7 @@
     {
       "key": "enfoque_inclusion_equidad",
       "type": "text",
-      "address": "cafes.unidad_g.impacto_social_ambiental.enfoque_inclusion_equidad",
+      "address": "bob_unison.unidad_g.impacto_social_ambiental.enfoque_inclusion_equidad",
       "prompt": "Enfoque de género e inclusión: participación de mujeres jefas de familia, jóvenes o personas adultas mayores en el negocio.",
       "ejemplo": "Ej: Negocio liderado por mujer jefa de familia, con integración laboral de su madre adulta mayor en tareas ligeras de empaque.",
       "benchmark": "Inclusión activa y fortalecimiento de autonomía económica femenina.",
@@ -42,7 +42,7 @@
     {
       "key": "practicas_ambientales_verdes",
       "type": "text",
-      "address": "cafes.unidad_g.impacto_social_ambiental.practicas_ambientales_verdes",
+      "address": "bob_unison.unidad_g.impacto_social_ambiental.practicas_ambientales_verdes",
       "prompt": "Medidas ecológicas: reducción de plásticos de un solo uso, aprovechamiento de mermas orgánicas y uso eficiente de agua y gas.",
       "ejemplo": "Ej: Uso de empaques de cartón kraft compostable, donación de residuos orgánicos para composta y equipo de gas de alta eficiencia.",
       "benchmark": "Manejo responsable de residuos conforme a normas ambientales.",
@@ -52,7 +52,7 @@
     {
       "key": "alineacion_objetivos_comunitarios",
       "type": "text",
-      "address": "cafes.unidad_g.impacto_social_ambiental.alineacion_objetivos_comunitarios",
+      "address": "bob_unison.unidad_g.impacto_social_ambiental.alineacion_objetivos_comunitarios",
       "prompt": "Alineación con metas comunitarias locales: fortalecimiento del comercio barrial, cohesión social y compras en la comunidad.",
       "ejemplo": "Ej: Fomenta el consumo local en la colonia, sustituye productos ultraprocesados por alimentos frescos y retiene el dinero en el barrio.",
       "benchmark": "Impacto comunitario positivo verificable.",
@@ -66,7 +66,7 @@
       "id": "uso",
       "title": "Cómo se usa en el plan",
       "audience": "cliente",
-      "markdown": "**Qué es.** Elevación del ingreso familiar, empleos generados, equidad de género, prácticas verdes y alineación a metas.\n\n**Cómo se usa.** Está en el pilar **Unidad G · Impacto Social, Familiar y Gestión de Riesgos** del modelo *Plan de Negocios CAFES (Emprendimiento Social y Familiar)*. Se abre en `/cafes/impacto_social_ambiental`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 5 campos: `aumento_ingreso_familiar`, `empleos_directos_indirectos`, `enfoque_inclusion_equidad`, `practicas_ambientales_verdes`, `alineacion_objetivos_comunitarios`.\n\n**Herramientas del módulo.** Ninguna específica: se apoya en los campos de texto."
+      "markdown": "**Qué es.** Elevación del ingreso familiar, empleos generados, equidad de género, prácticas verdes y alineación a metas.\n\n**Cómo se usa.** Está en el pilar **Unidad G · Impacto Social, Familiar y Gestión de Riesgos** del modelo *Método Bob 1 UNISON (OBP + Empresas Cuánticas)*. Se abre en `/bob_unison/impacto_social_ambiental`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 5 campos: `aumento_ingreso_familiar`, `empleos_directos_indirectos`, `enfoque_inclusion_equidad`, `practicas_ambientales_verdes`, `alineacion_objetivos_comunitarios`.\n\n**Herramientas del módulo.** Ninguna específica: se apoya en los campos de texto."
     },
     {
       "id": "campos",
@@ -84,13 +84,13 @@
       "id": "porque",
       "title": "Por qué existe",
       "audience": "cliente",
-      "markdown": "Forma parte del pilar **Unidad G · Impacto Social, Familiar y Gestión de Riesgos** de *Plan de Negocios CAFES (Emprendimiento Social y Familiar)*. La justificación metodológica completa está en la página del modelo y en `docs/cafes.md`."
+      "markdown": "Forma parte del pilar **Unidad G · Impacto Social, Familiar y Gestión de Riesgos** de *Método Bob 1 UNISON (OBP + Empresas Cuánticas)*. La justificación metodológica completa está en la página del modelo y en `docs/bob_unison.md`."
     },
     {
       "id": "tecnico",
       "title": "Detalles técnicos",
       "audience": "tecnico",
-      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `cafes.unidad_g.impacto_social_ambiental.aumento_ingreso_familiar` → tipo `text`\n- `cafes.unidad_g.impacto_social_ambiental.empleos_directos_indirectos` → tipo `text`\n- `cafes.unidad_g.impacto_social_ambiental.enfoque_inclusion_equidad` → tipo `text`\n- `cafes.unidad_g.impacto_social_ambiental.practicas_ambientales_verdes` → tipo `text`\n- `cafes.unidad_g.impacto_social_ambiental.alineacion_objetivos_comunitarios` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas:** `src/config/moduleBoxMap.js` no declara cajas para `cafes:impacto_social_ambiental`; la pantalla muestra solo los campos de texto.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `bob_unison.unidad_g.impacto_social_ambiental.aumento_ingreso_familiar` → tipo `text`\n- `bob_unison.unidad_g.impacto_social_ambiental.empleos_directos_indirectos` → tipo `text`\n- `bob_unison.unidad_g.impacto_social_ambiental.enfoque_inclusion_equidad` → tipo `text`\n- `bob_unison.unidad_g.impacto_social_ambiental.practicas_ambientales_verdes` → tipo `text`\n- `bob_unison.unidad_g.impacto_social_ambiental.alineacion_objetivos_comunitarios` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas:** `src/config/moduleBoxMap.js` no declara cajas para `bob_unison:impacto_social_ambiental`; la pantalla muestra solo los campos de texto.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
     }
   ]
 }

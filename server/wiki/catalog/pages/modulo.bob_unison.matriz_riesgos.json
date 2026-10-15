@@ -1,18 +1,18 @@
 {
-  "id": "modulo.cafes.matriz_riesgos",
+  "id": "modulo.bob_unison.matriz_riesgos",
   "title": "11. Matriz de Riesgos y Plan B",
   "summary": "Identificación de riesgos de mercado, operativos, financieros y legales, probabilidad/impacto, mitigación y gatillos Plan B.",
   "kind": "modulo",
   "audience": "cliente",
-  "model": "cafes",
+  "model": "bob_unison",
   "moduleKey": "matriz_riesgos",
   "pillarKey": "unidad_g",
-  "openUrl": "/cafes/matriz_riesgos",
+  "openUrl": "/bob_unison/matriz_riesgos",
   "fields": [
     {
       "key": "identificacion_riesgos_matriz",
       "type": "text",
-      "address": "cafes.unidad_g.matriz_riesgos.identificacion_riesgos_matriz",
+      "address": "bob_unison.unidad_g.matriz_riesgos.identificacion_riesgos_matriz",
       "prompt": "Matriz de identificación de riesgos en 4 cuadrantes: Mercado (competencia), Operativo (daño de equipo), Financiero (inflación) y Legal (clausuras).",
       "ejemplo": "Ej: 1) Aumento en precio de harina/huevo; 2) Falla del horno; 3) Baja de ventas en temporada de calor; 4) Retraso en licencias.",
       "benchmark": "Identificación de riesgos en las 4 dimensiones críticas.",
@@ -22,7 +22,7 @@
     {
       "key": "probabilidad_impacto_calificacion",
       "type": "text",
-      "address": "cafes.unidad_g.matriz_riesgos.probabilidad_impacto_calificacion",
+      "address": "bob_unison.unidad_g.matriz_riesgos.probabilidad_impacto_calificacion",
       "prompt": "Calificación de cada riesgo según su probabilidad de ocurrencia (Baja, Media, Alta) y su impacto en el negocio (Bajo, Medio, Alto).",
       "ejemplo": "Ej: Aumento de insumos: Probabilidad Alta, Impacto Medio; Falla de horno: Probabilidad Baja, Impacto Alto.",
       "benchmark": "Semaforización de riesgos críticos prioritarios.",
@@ -32,7 +32,7 @@
     {
       "key": "medidas_mitigacion_preventiva",
       "type": "text",
-      "address": "cafes.unidad_g.matriz_riesgos.medidas_mitigacion_preventiva",
+      "address": "bob_unison.unidad_g.matriz_riesgos.medidas_mitigacion_preventiva",
       "prompt": "Acciones preventivas para evitar que los riesgos ocurran: mantenimiento de equipo, compras anticipadas o convenios de precios.",
       "ejemplo": "Ej: Mantenimiento preventivo bimensual del horno; compra anticipada de harinas no perecederas ante avisos de aumento.",
       "benchmark": "Controles preventivos rutinarios calendarizados.",
@@ -42,7 +42,7 @@
     {
       "key": "plan_b_gatillos_accion",
       "type": "text",
-      "address": "cafes.unidad_g.matriz_riesgos.plan_b_gatillos_accion",
+      "address": "bob_unison.unidad_g.matriz_riesgos.plan_b_gatillos_accion",
       "prompt": "Gatillos de acción (Plan B): Qué hacer exactamente y a quién acudir si ocurre una emergencia o falla crítica.",
       "ejemplo": "Ej: Si falla el horno, convenio con panadería vecina para maquilar horneado pagando cuota por charola; si sube el huevo, ajuste temporal de combo.",
       "benchmark": "Plan de contingencia con solución operativa inmediata.",
@@ -56,7 +56,7 @@
       "id": "uso",
       "title": "Cómo se usa en el plan",
       "audience": "cliente",
-      "markdown": "**Qué es.** Identificación de riesgos de mercado, operativos, financieros y legales, probabilidad/impacto, mitigación y gatillos Plan B.\n\n**Cómo se usa.** Está en el pilar **Unidad G · Impacto Social, Familiar y Gestión de Riesgos** del modelo *Plan de Negocios CAFES (Emprendimiento Social y Familiar)*. Se abre en `/cafes/matriz_riesgos`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 4 campos: `identificacion_riesgos_matriz`, `probabilidad_impacto_calificacion`, `medidas_mitigacion_preventiva`, `plan_b_gatillos_accion`.\n\n**Herramientas del módulo.** Ninguna específica: se apoya en los campos de texto."
+      "markdown": "**Qué es.** Identificación de riesgos de mercado, operativos, financieros y legales, probabilidad/impacto, mitigación y gatillos Plan B.\n\n**Cómo se usa.** Está en el pilar **Unidad G · Impacto Social, Familiar y Gestión de Riesgos** del modelo *Método Bob 1 UNISON (OBP + Empresas Cuánticas)*. Se abre en `/bob_unison/matriz_riesgos`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 4 campos: `identificacion_riesgos_matriz`, `probabilidad_impacto_calificacion`, `medidas_mitigacion_preventiva`, `plan_b_gatillos_accion`.\n\n**Herramientas del módulo.** Ninguna específica: se apoya en los campos de texto."
     },
     {
       "id": "campos",
@@ -74,13 +74,13 @@
       "id": "porque",
       "title": "Por qué existe",
       "audience": "cliente",
-      "markdown": "Forma parte del pilar **Unidad G · Impacto Social, Familiar y Gestión de Riesgos** de *Plan de Negocios CAFES (Emprendimiento Social y Familiar)*. La justificación metodológica completa está en la página del modelo y en `docs/cafes.md`."
+      "markdown": "Forma parte del pilar **Unidad G · Impacto Social, Familiar y Gestión de Riesgos** de *Método Bob 1 UNISON (OBP + Empresas Cuánticas)*. La justificación metodológica completa está en la página del modelo y en `docs/bob_unison.md`."
     },
     {
       "id": "tecnico",
       "title": "Detalles técnicos",
       "audience": "tecnico",
-      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `cafes.unidad_g.matriz_riesgos.identificacion_riesgos_matriz` → tipo `text`\n- `cafes.unidad_g.matriz_riesgos.probabilidad_impacto_calificacion` → tipo `text`\n- `cafes.unidad_g.matriz_riesgos.medidas_mitigacion_preventiva` → tipo `text`\n- `cafes.unidad_g.matriz_riesgos.plan_b_gatillos_accion` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas:** `src/config/moduleBoxMap.js` no declara cajas para `cafes:matriz_riesgos`; la pantalla muestra solo los campos de texto.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `bob_unison.unidad_g.matriz_riesgos.identificacion_riesgos_matriz` → tipo `text`\n- `bob_unison.unidad_g.matriz_riesgos.probabilidad_impacto_calificacion` → tipo `text`\n- `bob_unison.unidad_g.matriz_riesgos.medidas_mitigacion_preventiva` → tipo `text`\n- `bob_unison.unidad_g.matriz_riesgos.plan_b_gatillos_accion` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas:** `src/config/moduleBoxMap.js` no declara cajas para `bob_unison:matriz_riesgos`; la pantalla muestra solo los campos de texto.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
     }
   ]
 }

@@ -1,0 +1,126 @@
+{
+  "id": "modulo.cafes_unison.estudio_mercado",
+  "title": "3. Estudio de Mercado Práctico",
+  "summary": "Segmento de cliente, necesidades, competencia local (mínimo 3), diferenciadores, validación y estimación de demanda.",
+  "kind": "modulo",
+  "audience": "cliente",
+  "model": "cafes_unison",
+  "moduleKey": "estudio_mercado",
+  "pillarKey": "unidad_b",
+  "openUrl": "/cafes_unison/estudio_mercado",
+  "fields": [
+    {
+      "key": "segmento_capacidad_pago",
+      "type": "text",
+      "address": "cafes_unison.unidad_b.estudio_mercado.segmento_capacidad_pago",
+      "prompt": "Perfil del comprador local: nivel de ingresos promedio, capacidad de gasto por ocasión y hábitos de compra.",
+      "ejemplo": "Ej: Familias de nivel socioeconómico C y D+ con presupuesto de $250 a $500 MXN para celebraciones de fin de semana.",
+      "benchmark": "Ticket promedio accesible compatible con el ingreso medio del sector.",
+      "cita": "Anatomy of a Business Plan",
+      "placeholder": "Capacidad de pago y nivel socioeconómico del cliente..."
+    },
+    {
+      "key": "necesidades_criterios_compra",
+      "type": "text",
+      "address": "cafes_unison.unidad_b.estudio_mercado.necesidades_criterios_compra",
+      "prompt": "¿Por qué compra el cliente? Razones principales: frescura, cercanía, sabor, diseño personalizado o precio.",
+      "ejemplo": "Ej: Buscan pasteles frescos del día sin conservadores artificiales, con diseños solicitados por sus hijos para cumpleaños.",
+      "benchmark": "Jerarquía de valor clara (Sabor > Puntualidad > Precio).",
+      "cita": "Creating a Business Plan For Dummies",
+      "placeholder": "Criterios de compra prioritarios..."
+    },
+    {
+      "key": "competidores_locales_matriz",
+      "type": "text",
+      "address": "cafes_unison.unidad_b.estudio_mercado.competidores_locales_matriz",
+      "prompt": "Mapeo de al menos 3 competidores locales directos e indirectos: nombre, ubicación, precios y debilidades detectadas.",
+      "ejemplo": "Ej: 1) Panadería La Espiga: precios bajos ($180) pero calidad industrial; 2) Pastelería Susy: alta calidad pero precios elevados ($450); 3) Supermercado local: productos fríos sin personalización.",
+      "benchmark": "Matriz comparativa de precios y ubicación en radio de 3 km.",
+      "cita": "Starting a Business QuickStart Guide & CAFES",
+      "placeholder": "Matriz de competidores locales y precios..."
+    },
+    {
+      "key": "diferenciadores_competencia",
+      "type": "text",
+      "address": "cafes_unison.unidad_b.estudio_mercado.diferenciadores_competencia",
+      "prompt": "Aspectos en los que coincidimos con la competencia y aquellos donde somos notablemente mejores.",
+      "ejemplo": "Ej: Coincidimos en variedad de sabores; nos diferenciamos en ingredientes 100% caseros, decoración moderna y trato cálido.",
+      "benchmark": "Ventaja percibida por el 80% de los compradores de prueba.",
+      "cita": "Business Model Generation",
+      "placeholder": "Diferencias frente a las opciones existentes..."
+    },
+    {
+      "key": "validacion_demanda_piloto",
+      "type": "text",
+      "address": "cafes_unison.unidad_b.estudio_mercado.validacion_demanda_piloto",
+      "prompt": "Sondeos directos realizados: encuestas rápidas a vecinos, pedidos de prueba o ventas en bazares comunitarios.",
+      "ejemplo": "Ej: Encuesta a 40 vecinos del sector: 32 indicaron que comprarían repostería casera al menos dos veces al mes.",
+      "benchmark": "Tasa de intención de compra > 70% en muestra local.",
+      "cita": "The Lean Startup & CAFES-UNISON",
+      "placeholder": "Resultados de encuestas exprés y pilotos..."
+    },
+    {
+      "key": "ubicacion_cobertura_rutas",
+      "type": "text",
+      "address": "cafes_unison.unidad_b.estudio_mercado.ubicacion_cobertura_rutas",
+      "prompt": "Ubicación física del negocio, accesibilidad, radio de cobertura para entregas y participación en ferias.",
+      "ejemplo": "Ej: Taller en Col. San Benito; entregas a domicilio en radio de 5 km en motocicleta y entrega en punto medio.",
+      "benchmark": "Tiempos de traslado < 25 minutos para garantizar frescura.",
+      "cita": "Manual de Plan de Negocios Panamá",
+      "placeholder": "Ubicación, radio de entrega y logística local..."
+    },
+    {
+      "key": "estacionalidad_picos_venta",
+      "type": "text",
+      "address": "cafes_unison.unidad_b.estudio_mercado.estacionalidad_picos_venta",
+      "prompt": "Meses y fechas con mayor demanda (Día de las Madres, Navidad, graduaciones) y temporadas bajas.",
+      "ejemplo": "Ej: Picos de venta en mayo (Día de las Madres), junio (graduaciones) y diciembre (posadas); temporada baja en julio-agosto por vacaciones escolares.",
+      "benchmark": "Estrategia de promociones contra-estacionales en meses bajos.",
+      "cita": "Starting a Business QuickStart Guide",
+      "placeholder": "Fechas pico, estacionalidad y meses bajos..."
+    },
+    {
+      "key": "estimacion_demanda_conservadora",
+      "type": "text",
+      "address": "cafes_unison.unidad_b.estudio_mercado.estimacion_demanda_conservadora",
+      "prompt": "Estima el volumen conservador de ventas diarias, semanales o mensuales que el negocio puede captar de forma realista al inicio, multiplicando el número de clientes esperados por la frecuencia de compra promedio.",
+      "ejemplo": "Ej: Se proyecta atender a 15 clientes diarios de lunes a sábado con un ticket promedio de $65 MXN, generando una demanda mensual estimada de 360 órdenes y ventas de $23,400 MXN.",
+      "benchmark": "En microempresas de alimentos y oficios familiares, se aconseja proyectar con un factor de ocupación del 40% al 60% de la capacidad máxima durante los primeros 3 meses de operación.",
+      "cita": "Manual de Asesoría CAFES UNISON (Metodología de Demanda Conservadora)",
+      "placeholder": "Detalla clientes estimados al día/semana y unidades esperadas..."
+    }
+  ],
+  "boxes": [],
+  "sections": [
+    {
+      "id": "uso",
+      "title": "Cómo se usa en el plan",
+      "audience": "cliente",
+      "markdown": "**Qué es.** Segmento de cliente, necesidades, competencia local (mínimo 3), diferenciadores, validación y estimación de demanda.\n\n**Cómo se usa.** Está en el pilar **Unidad B · Mercado y Cliente** del modelo *Plan de Negocios CAFES UNISON*. Se abre en `/cafes_unison/estudio_mercado`, y dentro de la página cada campo es un editor con su propio botón de generación.\n\n**Se rellena con** 8 campos: `segmento_capacidad_pago`, `necesidades_criterios_compra`, `competidores_locales_matriz`, `diferenciadores_competencia`, `validacion_demanda_piloto`, `ubicacion_cobertura_rutas`, `estacionalidad_picos_venta`, `estimacion_demanda_conservadora`.\n\n**Herramientas del módulo.** Ninguna específica: se apoya en los campos de texto."
+    },
+    {
+      "id": "campos",
+      "title": "Campos y el prompt de cada uno",
+      "audience": "cliente",
+      "markdown": "### `segmento_capacidad_pago`\n\n**El prompt que usa:** Perfil del comprador local: nivel de ingresos promedio, capacidad de gasto por ocasión y hábitos de compra.\n\n**Ejemplo que muestra la guía:** Ej: Familias de nivel socioeconómico C y D+ con presupuesto de $250 a $500 MXN para celebraciones de fin de semana.\n\n**Benchmark / criterio de calidad:** Ticket promedio accesible compatible con el ingreso medio del sector.\n\n**De dónde viene la guía:** Anatomy of a Business Plan\n\n### `necesidades_criterios_compra`\n\n**El prompt que usa:** ¿Por qué compra el cliente? Razones principales: frescura, cercanía, sabor, diseño personalizado o precio.\n\n**Ejemplo que muestra la guía:** Ej: Buscan pasteles frescos del día sin conservadores artificiales, con diseños solicitados por sus hijos para cumpleaños.\n\n**Benchmark / criterio de calidad:** Jerarquía de valor clara (Sabor > Puntualidad > Precio).\n\n**De dónde viene la guía:** Creating a Business Plan For Dummies\n\n### `competidores_locales_matriz`\n\n**El prompt que usa:** Mapeo de al menos 3 competidores locales directos e indirectos: nombre, ubicación, precios y debilidades detectadas.\n\n**Ejemplo que muestra la guía:** Ej: 1) Panadería La Espiga: precios bajos ($180) pero calidad industrial; 2) Pastelería Susy: alta calidad pero precios elevados ($450); 3) Supermercado local: productos fríos sin personalización.\n\n**Benchmark / criterio de calidad:** Matriz comparativa de precios y ubicación en radio de 3 km.\n\n**De dónde viene la guía:** Starting a Business QuickStart Guide & CAFES\n\n### `diferenciadores_competencia`\n\n**El prompt que usa:** Aspectos en los que coincidimos con la competencia y aquellos donde somos notablemente mejores.\n\n**Ejemplo que muestra la guía:** Ej: Coincidimos en variedad de sabores; nos diferenciamos en ingredientes 100% caseros, decoración moderna y trato cálido.\n\n**Benchmark / criterio de calidad:** Ventaja percibida por el 80% de los compradores de prueba.\n\n**De dónde viene la guía:** Business Model Generation\n\n### `validacion_demanda_piloto`\n\n**El prompt que usa:** Sondeos directos realizados: encuestas rápidas a vecinos, pedidos de prueba o ventas en bazares comunitarios.\n\n**Ejemplo que muestra la guía:** Ej: Encuesta a 40 vecinos del sector: 32 indicaron que comprarían repostería casera al menos dos veces al mes.\n\n**Benchmark / criterio de calidad:** Tasa de intención de compra > 70% en muestra local.\n\n**De dónde viene la guía:** The Lean Startup & CAFES-UNISON\n\n### `ubicacion_cobertura_rutas`\n\n**El prompt que usa:** Ubicación física del negocio, accesibilidad, radio de cobertura para entregas y participación en ferias.\n\n**Ejemplo que muestra la guía:** Ej: Taller en Col. San Benito; entregas a domicilio en radio de 5 km en motocicleta y entrega en punto medio.\n\n**Benchmark / criterio de calidad:** Tiempos de traslado < 25 minutos para garantizar frescura.\n\n**De dónde viene la guía:** Manual de Plan de Negocios Panamá\n\n### `estacionalidad_picos_venta`\n\n**El prompt que usa:** Meses y fechas con mayor demanda (Día de las Madres, Navidad, graduaciones) y temporadas bajas.\n\n**Ejemplo que muestra la guía:** Ej: Picos de venta en mayo (Día de las Madres), junio (graduaciones) y diciembre (posadas); temporada baja en julio-agosto por vacaciones escolares.\n\n**Benchmark / criterio de calidad:** Estrategia de promociones contra-estacionales en meses bajos.\n\n**De dónde viene la guía:** Starting a Business QuickStart Guide\n\n### `estimacion_demanda_conservadora`\n\n**El prompt que usa:** Estima el volumen conservador de ventas diarias, semanales o mensuales que el negocio puede captar de forma realista al inicio, multiplicando el número de clientes esperados por la frecuencia de compra promedio.\n\n**Ejemplo que muestra la guía:** Ej: Se proyecta atender a 15 clientes diarios de lunes a sábado con un ticket promedio de $65 MXN, generando una demanda mensual estimada de 360 órdenes y ventas de $23,400 MXN.\n\n**Benchmark / criterio de calidad:** En microempresas de alimentos y oficios familiares, se aconseja proyectar con un factor de ocupación del 40% al 60% de la capacidad máxima durante los primeros 3 meses de operación.\n\n**De dónde viene la guía:** Manual de Asesoría CAFES UNISON (Metodología de Demanda Conservadora)"
+    },
+    {
+      "id": "cajas",
+      "title": "Herramientas del módulo",
+      "audience": "cliente",
+      "markdown": "Sin cajas asociadas."
+    },
+    {
+      "id": "porque",
+      "title": "Por qué existe",
+      "audience": "cliente",
+      "markdown": "Forma parte del pilar **Unidad B · Mercado y Cliente** de *Plan de Negocios CAFES UNISON*. La justificación metodológica completa está en la página del modelo y en `docs/cafes.md`."
+    },
+    {
+      "id": "tecnico",
+      "title": "Detalles técnicos",
+      "audience": "tecnico",
+      "markdown": "**Direcciones canónicas** (`src/lib/planContracts.js`, función `fieldAddress`):\n\n- `cafes_unison.unidad_b.estudio_mercado.segmento_capacidad_pago` → tipo `text`\n- `cafes_unison.unidad_b.estudio_mercado.necesidades_criterios_compra` → tipo `text`\n- `cafes_unison.unidad_b.estudio_mercado.competidores_locales_matriz` → tipo `text`\n- `cafes_unison.unidad_b.estudio_mercado.diferenciadores_competencia` → tipo `text`\n- `cafes_unison.unidad_b.estudio_mercado.validacion_demanda_piloto` → tipo `text`\n- `cafes_unison.unidad_b.estudio_mercado.ubicacion_cobertura_rutas` → tipo `text`\n- `cafes_unison.unidad_b.estudio_mercado.estacionalidad_picos_venta` → tipo `text`\n- `cafes_unison.unidad_b.estudio_mercado.estimacion_demanda_conservadora` → tipo `text`\n\n**Cómo se arma el prompt en runtime:** `src/lib/ai.js`, función `generateModuleContent()`. Combina la instrucción de `src/lib/field_guides.js` con el contexto de la semilla, las restricciones financieras y el nivel de verbosidad; si el proyecto tiene un prompt propio en `planData.config.customPrompts`, ese gana.\n\n**Cómo personalizarlo:** el botón de edición de cada campo abre `src/components/PromptEditor.jsx`, que guarda la sobrescritura por proyecto sin tocar el código base.\n\n**Cajas:** `src/config/moduleBoxMap.js` no declara cajas para `cafes_unison:estudio_mercado`; la pantalla muestra solo los campos de texto.\n\n**Fuentes:** `src/config/frameworks.js` · `src/lib/field_guides.js` · `src/config/moduleBoxMap.js` · `src/config/boxRegistry.js`"
+    }
+  ]
+}
